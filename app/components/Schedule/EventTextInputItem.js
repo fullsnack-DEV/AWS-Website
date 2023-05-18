@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, View, Text, TextInput} from 'react-native';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+// import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -11,10 +11,11 @@ function EventTextInputItem({
   placeholder,
   multiline,
   isRequired = false,
-  numberOfLines
+  numberOfLines,
+  containerStyle = {},
 }) {
   return (
-    <View style={styles.containerStyle}>
+    <View style={[styles.containerStyle, containerStyle]}>
       <Text style={styles.headerTextStyle}>
         {title}{' '}
         {isRequired && <Text style={{color: colors.darkThemeColor}}> *</Text>}{' '}
@@ -37,10 +38,10 @@ function EventTextInputItem({
 
 const styles = StyleSheet.create({
   containerStyle: {
-    width: wp('96%'),
-    alignSelf: 'center',
-    padding: wp('1.5%'),
-    marginBottom: 10,
+    // width: wp('96%'),
+    // alignSelf: 'center',
+    // padding: wp('1.5%'),
+    // marginBottom: 10,
   },
   headerTextStyle: {
     fontSize: 16,
@@ -64,8 +65,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    height:150
-  }
+    height: 150,
+  },
 });
 
 export default EventTextInputItem;

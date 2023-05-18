@@ -1,8 +1,3 @@
-/* eslint-disable default-case */
-/* eslint-disable no-dupe-else-if */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-plusplus */
 import React, {
   useEffect,
   useState,
@@ -21,20 +16,20 @@ import {
   Alert,
   TextInput,
   FlatList,
-  Dimensions,
   Platform,
-  // eslint-disable-next-line react-native/split-platform-components
+  Pressable,
 } from 'react-native';
 import moment from 'moment';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 import ActionSheet from 'react-native-actionsheet';
-
-import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
 import {format} from 'react-string-format';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-import {getGeocoordinatesWithPlaceName} from '../../../utils/location'
+import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
@@ -54,18 +49,14 @@ import EventVenueTogglebtn from '../../../components/Schedule/EventVenueTogglebt
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
-import TCThinDivider from '../../../components/TCThinDivider';
-import * as Utility from '../../../utils/index';
 import {
   deleteConfirmation,
-  getHitSlop,
-  getSportName,
   getTCDate,
   ordinal_suffix_of,
   getDayFromDate,
   countNumberOfWeekFromDay,
   countNumberOfWeeks,
-  getRoundedDate
+  getRoundedDate,
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
@@ -74,13 +65,12 @@ import uploadImages from '../../../utils/imageAction';
 import Verbs from '../../../Constants/Verbs';
 import ScreenHeader from '../../../components/ScreenHeader';
 import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
+import CustomModalWrapper from '../../../components/CustomModalWrapper';
+import {ModalTypes} from '../../../Constants/GeneralConstants';
+import {getSportList} from '../../../utils/sportsActivityUtils';
+import SportsListModal from '../registerPlayer/modals/SportsListModal';
 
 export default function CreateEventScreen({navigation, route}) {
-
-  const eventPostedList = [
-    {value: 0, text: strings.scheduleOnlyText},
-    {value: 1, text: strings.scheduleAndPostText},
-  ];
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
   const isFocused = useIsFocused();
@@ -92,25 +82,31 @@ export default function CreateEventScreen({navigation, route}) {
     value: 1,
     text: strings.scheduleAndPostText,
   });
-  const [minAttendees, setMinAttendees] = useState(0);
-  const [maxAttendees, setMaxAttendees] = useState(0);
+  const [minAttendees, setMinAttendees] = useState();
+  const [maxAttendees, setMaxAttendees] = useState();
   const [eventFee, setEventFee] = useState(0);
   const [refundPolicy, setRefundPolicy] = useState('');
   const [toggle] = useState(false);
-  const [eventStartDateTime, setEventStartdateTime] = useState(getRoundedDate(5));
-  const [eventEndDateTime, setEventEnddateTime] = useState(moment(getRoundedDate(5)).add(5, 'm').toDate());
-  const [eventUntilDateTime, setEventUntildateTime] = useState(eventEndDateTime);
+  const [eventStartDateTime, setEventStartdateTime] = useState(
+    getRoundedDate(5),
+  );
+  const [eventEndDateTime, setEventEnddateTime] = useState(
+    moment(getRoundedDate(5)).add(5, 'm').toDate(),
+  );
+  const [eventUntilDateTime, setEventUntildateTime] =
+    useState(eventEndDateTime);
   const [searchLocation, setSearchLocation] = useState();
-  const [locationDetail, setLocationDetail] = useState({latitude: 0.0,longitude: 0.0});
+  const [locationDetail, setLocationDetail] = useState({
+    latitude: 0.0,
+    longitude: 0.0,
+  });
   const [is_Blocked, setIsBlocked] = useState(false);
   const [is_Offline, setIsOffline] = useState(true);
   const [onlineUrl, setOnlineUrl] = useState('');
   const [loading, setloading] = useState(false);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
-  const [modalPostedInvite, setModalPostedInvite] = useState(false);
-  const [sportsSelection, setSportsSelection] = useState();
-  const [selectedSport, setSelectedSport] = useState();
+  const [selectedSport, setSelectedSport] = useState({});
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
 
   const see = 'see';
@@ -145,85 +141,30 @@ export default function CreateEventScreen({navigation, route}) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
-  const [selectWeekMonth, setSelectWeekMonth] = useState(Verbs.eventRecurringEnum.Never);
+  const [selectWeekMonth, setSelectWeekMonth] = useState(
+    Verbs.eventRecurringEnum.Never,
+  );
   const [backgroundThumbnail, setBackgroundThumbnail] = useState();
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
-
-  const whoCanJoinUser = [
-    {text: strings.everyoneRadio, value: 0},
-    {
-      text: strings.followersRadio,
-      value: 1,
-    },
-    {text: strings.onlymeTitleText, value: 2},
-  ];
-
-  const whoCanSeeUser = [
-    {text: strings.everyoneRadio, value: 0},
-    {
-      text: strings.followersRadio,
-      value: 1,
-    },
-    {text: strings.onlymeTitleText, value: 2},
-  ];
-
-  const whoCanInviteUser = [
-    {
-      text: strings.attendeeRadioText,
-      value: 0,
-    },
-    {text: strings.onlymeTitleText, value: 1},
-  ];
-
-  const whoCanJoinGroup = [
-    {text: strings.everyoneRadio, value: 0},
-    {
-      text: strings.followersRadio,
-      value: 1,
-    },
-    {
-      text: strings.member,
-      value: 2,
-    },
-    {text: strings.onlymeTitleText, value: 3},
-  ];
-
-  const whoCanSeeGroup = [
-    {text: strings.everyoneRadio, value: 0},
-    {
-      text: strings.followersRadio,
-      value: 1,
-    },
-    {
-      text: strings.member,
-      value: 2,
-    },
-    {text: strings.teamOnly, value: 3},
-  ];
-
-  const whoCanInviteGroup = [
-    {
-      text: strings.attendeeRadioText,
-      value: 0,
-    },
-    {text: strings.onlymeTitleText, value: 1},
-  ];
+  const venueInputRef = useRef();
+  const refundPolicyInputRef = useRef();
 
   const handleStartDatePress = (date) => {
-    const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date
+    const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date;
     setEventStartdateTime(startDateTime);
     let endDateTime = eventEndDateTime;
     const unitDate = eventUntilDateTime;
-    
-    if (endDateTime.getTime() <= startDateTime.getTime()){
-      endDateTime = toggle ? date.setHours(23,59,59,0)
-      :  moment(startDateTime).add(5, 'm').toDate();
+
+    if (endDateTime.getTime() <= startDateTime.getTime()) {
+      endDateTime = toggle
+        ? date.setHours(23, 59, 59, 0)
+        : moment(startDateTime).add(5, 'm').toDate();
     }
 
-    setEventEnddateTime(endDateTime)
+    setEventEnddateTime(endDateTime);
 
-    if(!unitDate || endDateTime.getTime() > unitDate.getTime()){
-      setEventUntildateTime(moment(endDateTime).add(5, 'm').toDate())
+    if (!unitDate || endDateTime.getTime() > unitDate.getTime()) {
+      setEventUntildateTime(moment(endDateTime).add(5, 'm').toDate());
     }
 
     setStartDateVisible(!startDateVisible);
@@ -236,10 +177,10 @@ export default function CreateEventScreen({navigation, route}) {
   };
 
   const handleEndDatePress = (date) => {
-    const endDateTime = toggle ? date.setHours(23,59,59,0): date;
-    const unitDate = eventUntilDateTime
+    const endDateTime = toggle ? date.setHours(23, 59, 59, 0) : date;
+    const unitDate = eventUntilDateTime;
     setEventEnddateTime(endDateTime);
-    if(!unitDate || endDateTime.getTime() > unitDate.getTime()){
+    if (!unitDate || endDateTime.getTime() > unitDate.getTime()) {
       setEventUntildateTime(moment(endDateTime).add(5, 'm').toDate());
     }
 
@@ -247,22 +188,14 @@ export default function CreateEventScreen({navigation, route}) {
   };
 
   const handleUntilDatePress = (date) => {
-    setEventUntildateTime(toggle ? date.setHours(23,59,59,0): date);
+    setEventUntildateTime(toggle ? date.setHours(23, 59, 59, 0) : date);
     setUntilDateVisible(!untilDateVisible);
   };
 
-
   useEffect(() => {
-    if (isFocused) {
-      getSports();
-      if (route?.params?.locationName) {
-        setLocationDetail({
-              ...locationDetail,
-              latitude:route.params.locationDetail.lat,
-              longitude:route.params.locationDetail.lng,
-            });
-        setSearchLocation(route.params.locationName);
-      }
+    if (isFocused && route.params?.locationName) {
+      setLocationDetail({...route.params.locationDetail});
+      setSearchLocation(route.params.locationName);
     }
   }, [isFocused, route.params]);
 
@@ -273,7 +206,7 @@ export default function CreateEventScreen({navigation, route}) {
         getGeocoordinatesWithPlaceName(Platform.OS)
           .then((location) => {
             setloading(false);
-            if(location.position){
+            if (location.position) {
               const obj = {
                 ...locationDetail,
                 latitude: location.position.coords.latitude,
@@ -285,7 +218,7 @@ export default function CreateEventScreen({navigation, route}) {
           })
           .catch((e) => {
             setloading(false);
-            if(e.message !== strings.userdeniedgps){
+            if (e.message !== strings.userdeniedgps) {
               setTimeout(() => {
                 Alert.alert(strings.alertmessagetitle, e.message);
               }, 10);
@@ -296,7 +229,12 @@ export default function CreateEventScreen({navigation, route}) {
     return () => {
       unsubscribe();
     };
-  }, [route.params.comeName]);
+  }, [route.params.comeName, locationDetail, navigation]);
+
+  useEffect(() => {
+    const list = getSportList(authContext.sports);
+    setSportsData(list);
+  }, [authContext.sports]);
 
   useEffect(() => {
     setloading(true);
@@ -313,80 +251,10 @@ export default function CreateEventScreen({navigation, route}) {
 
         setloading(false);
       })
-      .catch(() => { 
+      .catch(() => {
         setloading(false);
       });
   }, [authContext]);
-
-  const getSports = () => {
-    const sportsList = [
-      ...(authContext?.entity?.obj?.registered_sports?.filter(
-        (obj) => obj.is_active,
-      ) || []),
-      ...(authContext?.entity?.obj?.referee_data?.filter(
-        (obj) => obj.is_active,
-      ) || []),
-      ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
-        (obj) => obj.is_active,
-      ) || []),
-    ];
-
-    const res = sportsList.map((obj) => ({
-      sport_name: obj.sport_name,
-      entity_type: obj.type,
-      sport: obj.sport,
-      sport_type: obj.sport_type
-    }));
-    res.sort((a, b) => a.sport_name !== b.sport_name ? a.sport_name < b.sport_name ? -1 : 1 : 0);
-    const data = Utility.uniqueArray(res, Verbs.sportType);
-
-    let sportArr = [];
-    authContext.sports.map((item) => {
-      const filterFormat = item.format.filter(
-        (obj) => obj,
-      );
-      sportArr = [...sportArr, ...filterFormat];
-      return null;
-    });
-    sportArr.sort((a, b) => a.sport_name !== b.sport_name ? a.sport_name < b.sport_name ? -1 : 1 : 0);
-    const final = Utility.uniqueArray(sportArr, 'sport_name');
-    const tempArr = [...data , ...final];
-    const finalArr = Utility.uniqueArray(tempArr, 'sport_name');
-
-    setSportsData(finalArr);
-  };
-
-  const renderSports = ({item}) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => {
-        setSelectedSport(item);
-      }}>
-      <View
-        style={{
-          padding: 20,
-          paddingHorizontal: 35,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginRight: 40,
-        }}>
-        <Text style={styles.languageList}>
-          {getSportName(item, authContext)}
-        </Text>
-        <View style={styles.checkbox}>
-          {selectedSport?.sport_name === item?.sport_name ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
 
   const renderWhoCan = ({item}) => (
     <TouchableOpacity
@@ -394,32 +262,27 @@ export default function CreateEventScreen({navigation, route}) {
       onPress={() => {
         if (whoOption === see) {
           setWhoCanSeeOption(item);
-        } else if(whoOption === join) {
+        } else if (whoOption === join) {
           setWhoCanJoinOption(item);
-        }else if(whoOption === invite){
+        } else if (whoOption === invite) {
           setWhoCanInviteOption(item);
-        }else{
-          setEventPosted(item)
+        } else {
+          setEventPosted(item);
         }
-
-        setTimeout(() => {
-          setVisibleWhoModal(false);
-          setModalPostedInvite(false);
-        }, 300);
+        setVisibleWhoModal(false);
       }}>
       <View
         style={{
-          padding: 20,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          marginRight: 15,
+          marginBottom: 15,
         }}>
-        <Text style={styles.languageList}>{item.text}</Text>
+        <Text style={styles.languageList}>{item}</Text>
         <View style={styles.checkbox}>
           {(whoOption === see && whoCanSeeOption.value === item?.value) ||
-          (whoOption === join && whoCanJoinOption.value === item?.value) || 
-          (whoOption === posted && eventPosted.value === item?.value) || 
+          (whoOption === join && whoCanJoinOption.value === item?.value) ||
+          (whoOption === posted && eventPosted.value === item?.value) ||
           (whoOption === invite && whoCanInviteOption.value === item?.value) ? (
             <Image
               source={images.radioCheckYellow}
@@ -433,19 +296,25 @@ export default function CreateEventScreen({navigation, route}) {
     </TouchableOpacity>
   );
 
+  const getImage = (item) => {
+    if (item.thumbnail) {
+      return {uri: item.thumbnail};
+    }
+    if (item.entity_type === Verbs.entityTypeTeam) {
+      return images.teamPlaceholder;
+    }
+    return images.clubPlaceholder;
+  };
+
   const renderSeeGroups = ({item, index}) => (
     <GroupEventItems
       eventImageSource={
-        item.entity_type === 'team' ? images.teamPatch : images.clubPatch
+        item.entity_type === Verbs.entityTypeTeam
+          ? images.teamPatch
+          : images.clubPatch
       }
       eventText={item.group_name}
-      groupImageSource={
-        item.thumbnail
-          ? {uri: item.thumbnail}
-          : item.entity_type === 'team'
-          ? images.teamPlaceholder
-          : images.clubPlaceholder
-      }
+      groupImageSource={getImage(item)}
       checkBoxImage={
         item.isSelected ? images.orangeCheckBox : images.uncheckWhite
       }
@@ -460,16 +329,12 @@ export default function CreateEventScreen({navigation, route}) {
   const renderJoinGroups = ({item, index}) => (
     <GroupEventItems
       eventImageSource={
-        item.entity_type === 'team' ? images.teamPatch : images.clubPatch
+        item.entity_type === Verbs.entityTypeTeam
+          ? images.teamPatch
+          : images.clubPatch
       }
       eventText={item.group_name}
-      groupImageSource={
-        item.thumbnail
-          ? {uri: item.thumbnail}
-          : item.entity_type === 'team'
-          ? images.teamPlaceholder
-          : images.clubPlaceholder
-      }
+      groupImageSource={getImage(item)}
       checkBoxImage={
         item.isSelected ? images.orangeCheckBox : images.uncheckWhite
       }
@@ -556,6 +421,8 @@ export default function CreateEventScreen({navigation, route}) {
             break;
           case RESULTS.BLOCKED:
             break;
+          default:
+            break;
         }
       })
       .catch((error) => {
@@ -572,7 +439,7 @@ export default function CreateEventScreen({navigation, route}) {
       Alert.alert(strings.appName, strings.eventTitleValidation);
       return false;
     }
-    if (sportsSelection === undefined) {
+    if (!selectedSport.sport) {
       Alert.alert(strings.appName, strings.chooseSportText);
       return false;
     }
@@ -622,59 +489,47 @@ export default function CreateEventScreen({navigation, route}) {
     eventEndDateTime,
     eventStartDateTime,
     eventTitle,
-    locationDetail,
     maxAttendees,
     minAttendees,
-    sportsSelection,
+    selectedSport.sport,
   ]);
 
   const createEventDone = (data) => {
+    const arr = [...data];
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
     const entityRole =
       entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
 
-    let rule
-    if (
-      selectWeekMonth === Verbs.eventRecurringEnum.Daily
-    ) {
-      rule =  'FREQ=DAILY'
-    } else if (
-      selectWeekMonth === Verbs.eventRecurringEnum.Weekly
-    ) {
-      rule =  'FREQ=WEEKLY'
-    }  else if (
-      selectWeekMonth === Verbs.eventRecurringEnum.WeekOfMonth
-    ) {
+    let rule;
+    if (selectWeekMonth === Verbs.eventRecurringEnum.Daily) {
+      rule = 'FREQ=DAILY';
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.Weekly) {
+      rule = 'FREQ=WEEKLY';
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfMonth) {
       rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(eventStartDateTime)
         .substring(0, 2)
         .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
-    } else if (
-      selectWeekMonth === Verbs.eventRecurringEnum.DayOfMonth
-      ) {
-        rule = `FREQ=MONTHLY;BYMONTHDAY=${eventStartDateTime.getDate()}`;
-    } else if (
-      selectWeekMonth === Verbs.eventRecurringEnum.WeekOfYear
-    ) {
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfMonth) {
+      rule = `FREQ=MONTHLY;BYMONTHDAY=${eventStartDateTime.getDate()}`;
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfYear) {
       rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(eventStartDateTime)
         .substring(0, 2)
         .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
-    } else if (
-      selectWeekMonth === Verbs.eventRecurringEnum.DayOfYear
-      ) {
-        rule = `FREQ=YEARLY;BYMONTHDAY=${eventStartDateTime.getDate()};BYMONTH=${eventStartDateTime.getMonth()}`;
-    } 
-    
-    if(rule){
-      data[0].rrule = rule
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfYear) {
+      rule = `FREQ=YEARLY;BYMONTHDAY=${eventStartDateTime.getDate()};BYMONTH=${eventStartDateTime.getMonth()}`;
     }
 
-    createEvent(entityRole, uid, data, authContext)
-      .then((response) => { 
+    if (rule) {
+      arr[0].rrule = rule;
+    }
+
+    createEvent(entityRole, uid, arr, authContext)
+      .then((response) => {
         setTimeout(() => {
           setloading(false);
-          navigation.navigate('ScheduleScreen' , {
-            event : response.payload[0]
+          navigation.navigate('ScheduleScreen', {
+            event: response.payload[0],
           });
         }, 1000);
       })
@@ -690,7 +545,9 @@ export default function CreateEventScreen({navigation, route}) {
       setloading(true);
       const entity = authContext.entity;
       const entityRole =
-      entity.role === Verbs.entityTypeUser ? Verbs.entityTypeUsers : Verbs.entityTypeGroups;
+        entity.role === Verbs.entityTypeUser
+          ? Verbs.entityTypeUsers
+          : Verbs.entityTypeGroups;
       const data = [
         {
           title: eventTitle,
@@ -702,8 +559,8 @@ export default function CreateEventScreen({navigation, route}) {
           repeat: selectWeekMonth,
           untilDate: getTCDate(eventUntilDateTime),
           blocked: is_Blocked,
-          selected_sport: sportsSelection,
-          who_can_invite:{
+          selected_sport: selectedSport.sport,
+          who_can_invite: {
             ...whoCanInviteOption,
           },
           who_can_see: {
@@ -741,7 +598,7 @@ export default function CreateEventScreen({navigation, route}) {
             venue_detail: locationDetail.venue_detail,
           },
           online_url: onlineUrl,
-          is_Offline
+          is_Offline,
         },
       ];
 
@@ -796,58 +653,114 @@ export default function CreateEventScreen({navigation, route}) {
     }
   };
 
-
   const onSelectAddress = (_location) => {
-    setLocationDetail({...locationDetail, latitude: _location.latitude, longitude : _location.longitude});
-    setSearchLocation(_location.formattedAddress)
+    setLocationDetail({
+      ...locationDetail,
+      latitude: _location.latitude,
+      longitude: _location.longitude,
+    });
+    setSearchLocation(_location.formattedAddress);
   };
 
-  
+  const handleBackPress = () => {
+    Alert.alert(
+      strings.areYouSureQuitCreateEvent,
+      '',
+      [
+        {
+          text: strings.cancel,
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: strings.quit,
+          onPress: () => {
+            navigation.goBack();
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
+  const getOptions = () => {
+    if (
+      authContext.entity.role === Verbs.entityTypeUser ||
+      authContext.entity.role === Verbs.entityTypePlayer
+    ) {
+      if (whoOption === see) {
+        return [
+          strings.everyoneTitleText,
+          strings.followingAndFollowers,
+          strings.following,
+          strings.onlymeTitleText,
+        ];
+      }
+
+      if (whoOption === join) {
+        return [
+          strings.everyoneTitleText,
+          strings.followingAndFollowers,
+          strings.following,
+          strings.inviteOnly,
+          strings.onlymeTitleText,
+        ];
+      }
+
+      if (whoOption === invite) {
+        return [strings.attendeeRadioText, strings.onlymeTitleText];
+      }
+    }
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam ||
+      authContext.entity.role === Verbs.entityTypeClub
+    ) {
+      if (whoOption === see) {
+        return [
+          strings.everyoneTitleText,
+          strings.followerTitleText,
+          strings.membersTitle,
+          format(strings.onlyAccount, authContext.entity.role),
+        ];
+      }
+
+      if (whoOption === join) {
+        return [
+          strings.everyoneTitleText,
+          strings.followerTitleText,
+          strings.membersTitle,
+          format(strings.onlyOrganizer, authContext.entity.role),
+        ];
+      }
+
+      if (whoOption === invite) {
+        return [
+          strings.attendeeRadioText,
+          format(strings.onlyOption, authContext.entity.role),
+        ];
+      }
+    }
+    return [];
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
         title={strings.createAnEvent}
         leftIcon={images.backArrow}
-        leftIconPress={() => {
-          Alert.alert(
-            strings.areYouSureQuitCreateEvent,
-            '',
-            [
-              {
-                text: strings.cancel,
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-              },
-              {
-                text: strings.quit,
-                onPress: () => {
-                  navigation.goBack()
-                },
-              },
-            ],
-            {cancelable: false},
-          );
-        }}
+        leftIconPress={handleBackPress}
         isRightIconText
         rightButtonText={strings.done}
         onRightButtonPress={() => {
           onDonePress();
         }}
         loading={loading}
-        containerStyle={{
-          paddingLeft: 10,
-          paddingRight: 17,
-          paddingTop: 8,
-          paddingBottom: 13,
-          borderBottomWidth: 0,
-        }}
       />
       <ActivityLoader visible={loading} />
 
-      <View style={styles.sperateLine} />
       <TCKeyboardView>
         <ScrollView bounces={false} nestedScrollEnabled={true}>
-          <View style={{paddingHorizontal: 10, marginTop:10}}>
+          <View style={{paddingTop: 10, paddingHorizontal: 10}}>
             <EventBackgroundPhoto
               isEdit={!!backgroundThumbnail}
               isPreview={false}
@@ -856,9 +769,11 @@ export default function CreateEventScreen({navigation, route}) {
                   ? {uri: backgroundThumbnail}
                   : images.backgroundGrayPlceholder
               }
+              containerStyle={{marginBottom: 35}}
               onPress={() => onBGImageClicked()}
             />
-            
+          </View>
+          <View style={{paddingHorizontal: 15}}>
             <EventTextInputItem
               title={strings.title}
               isRequired={true}
@@ -867,6 +782,7 @@ export default function CreateEventScreen({navigation, route}) {
                 setEventTitle(text);
               }}
               value={eventTitle}
+              containerStyle={{marginBottom: 35}}
             />
 
             <View style={styles.containerStyle}>
@@ -884,7 +800,7 @@ export default function CreateEventScreen({navigation, route}) {
                   pointerEvents={'none'}
                   editable={false}
                   // onChangeText={onChangeText}
-                  value={getSportName(sportsSelection, authContext)}
+                  value={selectedSport.sport_name}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />
@@ -897,14 +813,15 @@ export default function CreateEventScreen({navigation, route}) {
               onChangeText={(text) => {
                 setEventDescription(text);
               }}
-              multiline = {true}
-              numberOfLines = {5}
+              multiline={true}
+              numberOfLines={5}
               value={eventDescription}
+              containerStyle={{marginBottom: 35}}
             />
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
-                {strings.organizerTitle} 
+                {strings.organizerTitle}
               </Text>
               <TCProfileView
                 type="medium"
@@ -913,8 +830,8 @@ export default function CreateEventScreen({navigation, route}) {
                   authContext.entity.obj.full_name
                 }
                 image={
-                  authContext?.entity?.obj?.thumbnail
-                    ? {uri: authContext?.entity?.obj?.thumbnail}
+                  authContext.entity.obj.thumbnail
+                    ? {uri: authContext.entity.obj.thumbnail}
                     : images.teamPH
                 }
                 alignSelf={'flex-start'}
@@ -922,101 +839,109 @@ export default function CreateEventScreen({navigation, route}) {
               />
             </View>
 
-
-            <EventItemRender  
-              containerStyle={{position : 'relative', margin: 20}} 
-              headerTextStyle={{fontSize:16}}
-              title={strings.place} isRequired={true}
-            >
+            <EventItemRender
+              containerStyle={{position: 'relative', marginBottom: 35}}
+              headerTextStyle={{fontSize: 16}}
+              title={strings.place}
+              isRequired={true}>
               <EventVenueTogglebtn
                 offline={is_Offline}
-                firstTabTitle='Offline'
-                secondTabTitle='Online'
+                firstTabTitle="Offline"
+                secondTabTitle="Online"
                 onFirstTabPress={() => setIsOffline(true)}
                 onSecondTabPress={() => setIsOffline(false)}
               />
-              {
-              is_Offline ? (
-              <>
-              <TextInput
-                placeholder={strings.venueNamePlaceholder}
-                style={styles.textInputStyle}
-                onChangeText={(value) => {
-                  setLocationDetail({...locationDetail, venue_name: value});
-                }}
-                value={locationDetail.venue_name}
-                textAlignVertical={'center'}
-                placeholderTextColor={colors.userPostTimeColor}
-              />
+              {is_Offline ? (
+                <>
+                  <TextInput
+                    placeholder={strings.venueNamePlaceholder}
+                    style={[styles.textInputStyle, {marginBottom: 10}]}
+                    onChangeText={(value) => {
+                      setLocationDetail({...locationDetail, venue_name: value});
+                    }}
+                    value={locationDetail.venue_name}
+                    textAlignVertical={'center'}
+                    placeholderTextColor={colors.userPostTimeColor}
+                  />
 
-              <TCTouchableLabel
-                placeholder={strings.searchHereText}
-                title={searchLocation}
-                showShadow={false}
-                showNextArrow={false}
-                onPress={() => {
-                  setVisibleLocationModal(true)
-                }}
-                style={{
-                  width: '100%',
-                  alignSelf: 'center',
-                  backgroundColor: colors.textFieldBackground,
-                }}
-              />
-              <EventMapView
-                region={{
-                  latitude: locationDetail.latitude,
-                  longitude: locationDetail.longitude,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}
-                coordinate={{
-                  latitude: locationDetail.latitude,
-                  longitude: locationDetail.longitude,
-                }}
-              />
-              <TextInput
-                placeholder={strings.venueDetailsPlaceholder}
-                style={styles.detailsInputStyle}
-                onChangeText={(value) => {
-                  setLocationDetail({...locationDetail, venue_detail: value});
-                }}
-                value={locationDetail.venue_detail}
-                multiline={true}
-                textAlignVertical={'top'}
-                placeholderTextColor={colors.userPostTimeColor}
-              />
+                  <TCTouchableLabel
+                    placeholder={strings.addressPlaceholder}
+                    title={searchLocation}
+                    showShadow={false}
+                    showNextArrow={false}
+                    onPress={() => {
+                      setVisibleLocationModal(true);
+                    }}
+                    style={{
+                      width: '100%',
+                      alignSelf: 'center',
+                      backgroundColor: colors.textFieldBackground,
+                    }}
+                  />
+                  <EventMapView
+                    region={{
+                      latitude: locationDetail.latitude,
+                      longitude: locationDetail.longitude,
+                      latitudeDelta: 0.0922,
+                      longitudeDelta: 0.0421,
+                    }}
+                    coordinate={{
+                      latitude: locationDetail.latitude,
+                      longitude: locationDetail.longitude,
+                    }}
+                  />
+                  <Pressable
+                    style={styles.detailsContainer}
+                    onPress={() => {
+                      venueInputRef.current.focus();
+                    }}>
+                    <TextInput
+                      ref={venueInputRef}
+                      placeholder={strings.venueDetailsPlaceholder}
+                      style={styles.detailsInputStyle}
+                      onChangeText={(value) => {
+                        setLocationDetail({
+                          ...locationDetail,
+                          venue_detail: value,
+                        });
+                      }}
+                      value={locationDetail.venue_detail}
+                      multiline={true}
+                      textAlignVertical={'top'}
+                      placeholderTextColor={colors.userPostTimeColor}
+                    />
+                  </Pressable>
 
-              <AddressLocationModal
-                visibleLocationModal={visibleLocationModal}
-                setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
-                onAddressSelect={onSelectAddress}
-                handleSetLocationOptions={onSelectAddress}
-                onDonePress={() => {}}
-              />
-              </>
-            ): (
-              <>
-                <TextInput
-                  placeholder={strings.onlineUrl}
-                  style={styles.textInputStyle}
-                  onChangeText={(value) => {
-                    setOnlineUrl(value);
-                  }}
-                  value={onlineUrl}
-                  textAlignVertical={'center'}
-                  placeholderTextColor={colors.userPostTimeColor}
-                />
-              </>
-            )}
+                  <AddressLocationModal
+                    visibleLocationModal={visibleLocationModal}
+                    setVisibleAddressModalhandler={() =>
+                      setVisibleLocationModal(false)
+                    }
+                    onAddressSelect={onSelectAddress}
+                    handleSetLocationOptions={onSelectAddress}
+                    onDonePress={() => {}}
+                  />
+                </>
+              ) : (
+                <>
+                  <TextInput
+                    placeholder={strings.onlineUrl}
+                    style={styles.textInputStyle}
+                    onChangeText={(value) => {
+                      setOnlineUrl(value);
+                    }}
+                    value={onlineUrl}
+                    textAlignVertical={'center'}
+                    placeholderTextColor={colors.userPostTimeColor}
+                  />
+                </>
+              )}
             </EventItemRender>
-
 
             <EventItemRender
               title={strings.timeTitle}
               isRequired={true}
-              headerTextStyle={{marginBottom: 15, fontSize:16}}
-            >
+              headerTextStyle={{marginBottom: 15, fontSize: 16}}>
               <EventTimeSelectItem
                 title={strings.starts}
                 toggle={!toggle}
@@ -1051,19 +976,28 @@ export default function CreateEventScreen({navigation, route}) {
                 onDatePress={() => setEndDateVisible(!endDateVisible)}
               />
 
-              <View style={{flexDirection: 'row', justifyContent: 'flex-end' , marginBottom: 20}}>
-                <Text>
-                  {strings.timezone} &nbsp;
-                </Text>
-                <TouchableOpacity 
-                  onPress={() => {Alert.alert(strings.timezoneAvailability)}}>
-                    <Text
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  marginBottom: 20,
+                }}>
+                <Text>{strings.timezone} &nbsp;</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    Alert.alert(strings.timezoneAvailability);
+                  }}>
+                  <Text
                     style={{
                       textDecorationLine: 'underline',
                       textDecorationStyle: 'solid',
-                      textDecorationColor: colors.darkGrayColor
-                    }} 
-                    >{Intl.DateTimeFormat()?.resolvedOptions().timeZone.split('/').pop()}</Text>
+                      textDecorationColor: colors.darkGrayColor,
+                    }}>
+                    {Intl.DateTimeFormat()
+                      ?.resolvedOptions()
+                      .timeZone.split('/')
+                      .pop()}
+                  </Text>
                 </TouchableOpacity>
               </View>
 
@@ -1071,13 +1005,18 @@ export default function CreateEventScreen({navigation, route}) {
                 title={strings.repeat}
                 dataSource={[
                   {label: strings.daily, value: Verbs.eventRecurringEnum.Daily},
-                  {label: strings.weeklyText, value: Verbs.eventRecurringEnum.Weekly},
+                  {
+                    label: strings.weeklyText,
+                    value: Verbs.eventRecurringEnum.Weekly,
+                  },
                   {
                     label: format(
                       strings.monthlyOnText,
-                      `${countNumberOfWeekFromDay(eventStartDateTime)} ${getDayFromDate(eventStartDateTime)}`,
+                      `${countNumberOfWeekFromDay(
+                        eventStartDateTime,
+                      )} ${getDayFromDate(eventStartDateTime)}`,
                     ),
-                    value: Verbs.eventRecurringEnum.WeekOfMonth
+                    value: Verbs.eventRecurringEnum.WeekOfMonth,
                   },
                   {
                     label: format(
@@ -1089,9 +1028,11 @@ export default function CreateEventScreen({navigation, route}) {
                   {
                     label: format(
                       strings.yearlyOnText,
-                      `${countNumberOfWeekFromDay(eventStartDateTime)} ${getDayFromDate(eventStartDateTime)}`,
+                      `${countNumberOfWeekFromDay(
+                        eventStartDateTime,
+                      )} ${getDayFromDate(eventStartDateTime)}`,
                     ),
-                    value: Verbs.eventRecurringEnum.WeekOfYear
+                    value: Verbs.eventRecurringEnum.WeekOfYear,
                   },
                   {
                     label: format(
@@ -1099,7 +1040,7 @@ export default function CreateEventScreen({navigation, route}) {
                       ordinal_suffix_of(eventStartDateTime.getDate()),
                     ),
                     value: Verbs.eventRecurringEnum.DayOfYear,
-                  }
+                  },
                 ]}
                 placeholder={strings.never}
                 value={selectWeekMonth}
@@ -1127,8 +1068,9 @@ export default function CreateEventScreen({navigation, route}) {
               )}
             </EventItemRender>
 
-
-            <EventItemRender containerStyle={{marginTop: -40, marginBottom: 10}} title={''}>
+            <EventItemRender
+              containerStyle={{marginTop: -40, marginBottom: 10}}
+              title={''}>
               <Text style={styles.availableSubHeader}>
                 {strings.availableSubTitle}
               </Text>
@@ -1146,12 +1088,11 @@ export default function CreateEventScreen({navigation, route}) {
               />
             </EventItemRender>
 
-
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
                 {strings.eventFeeTitle}
               </Text>
-              <View style={[styles.feeContainer, {marginTop:10}]}>
+              <View style={[styles.feeContainer, {marginTop: 10}]}>
                 <TextInput
                   style={styles.eventFeeStyle}
                   placeholder={'0'}
@@ -1161,44 +1102,51 @@ export default function CreateEventScreen({navigation, route}) {
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />
-                <Text style={styles.currencyStyle}>{strings.defaultCurrency}</Text>
-              </View>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontFamily: fonts.RRegular,
-                    textDecorationLine: 'underline',
-                    textAlign:'right',
-                    paddingHorizontal:5,
-                    marginTop:5,
-                    color: colors.lightBlackColor
-                  }}>
-                  {strings.changeCurrency} 
+                <Text style={styles.currencyStyle}>
+                  {strings.defaultCurrency}
                 </Text>
+              </View>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontFamily: fonts.RRegular,
+                  textDecorationLine: 'underline',
+                  textAlign: 'right',
+                  paddingHorizontal: 5,
+                  marginTop: 5,
+                  color: colors.lightBlackColor,
+                }}>
+                {strings.changeCurrency}
+              </Text>
             </View>
 
-
-            <View style={[styles.containerStyle, {marginTop:20}]}>
+            <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
-                {strings.refundPolicyTitle} 
+                {strings.refundPolicyTitle}
               </Text>
 
               <Text style={[styles.subTitleText, {marginTop: 10}]}>
                 {strings.attendeesMustRefundedText}
               </Text>
-
-              <TextInput
-                placeholder={strings.additionalRefundPolicy}
-                style={styles.detailsInputStyle}
-                onChangeText={(value) => setRefundPolicy(value)}
-                value={refundPolicy}
-                multiline={true}
-                textAlignVertical={'top'}
-                placeholderTextColor={colors.userPostTimeColor}
-              />
+              <Pressable
+                onPress={() => {
+                  refundPolicyInputRef.current.focus();
+                }}
+                style={styles.detailsContainer}>
+                <TextInput
+                  ref={refundPolicyInputRef}
+                  placeholder={strings.additionalRefundPolicy}
+                  style={styles.detailsInputStyle}
+                  onChangeText={(value) => setRefundPolicy(value)}
+                  value={refundPolicy}
+                  multiline
+                  textAlignVertical={'top'}
+                  placeholderTextColor={colors.userPostTimeColor}
+                />
+              </Pressable>
             </View>
-          
-            <View style={[styles.containerStyle,{marginTop:10}]}>
+
+            <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
                 {strings.numberOfAttend}
                 {/* <Text style={styles.opetionalTextStyle}>{strings.optional}</Text> */}
@@ -1214,7 +1162,7 @@ export default function CreateEventScreen({navigation, route}) {
               />
             </View>
 
-            <View style={[styles.containerStyle,{marginTop:20}]}>
+            <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
               <TouchableOpacity
                 onPress={() => {
@@ -1267,9 +1215,8 @@ export default function CreateEventScreen({navigation, route}) {
                     style={styles.listStyle}
                   />
                 </View>
-            )}
+              )}
 
-           
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>
               <TouchableOpacity
@@ -1324,13 +1271,12 @@ export default function CreateEventScreen({navigation, route}) {
                 </View>
               )}
 
-            
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanInvite}</Text>
               <TouchableOpacity
                 onPress={() => {
-                  setWhoOption('invite');
-                  setModalPostedInvite(true);
+                  setWhoOption(invite);
+                  setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
                   <Text style={styles.textInputDropStyle}>
@@ -1377,22 +1323,30 @@ export default function CreateEventScreen({navigation, route}) {
                     style={styles.listStyle}
                   />
                 </View>
-            )}
+              )}
 
             <View style={styles.containerStyle}>
               <View style={{flexDirection: 'row'}}>
                 <TouchableOpacity
                   style={styles.checkboxPost}
                   onPress={() => {
-                    if(eventPosted.value === indexTwo) {
-                      setEventPosted({value: 0, text: strings.scheduleOnlyText})
-                    }else{
-                      setEventPosted({value: 1, text: strings.scheduleAndPostText})
+                    if (eventPosted.value === indexTwo) {
+                      setEventPosted({
+                        value: 0,
+                        text: strings.scheduleOnlyText,
+                      });
+                    } else {
+                      setEventPosted({
+                        value: 1,
+                        text: strings.scheduleAndPostText,
+                      });
                     }
                   }}>
                   <Image
                     source={
-                      eventPosted.value === 1 ? images.yellowCheckBox : images.uncheckWhite
+                      eventPosted.value === 1
+                        ? images.yellowCheckBox
+                        : images.uncheckWhite
                     }
                     style={styles.checkboxPostImg}
                     resizeMode={'contain'}
@@ -1403,25 +1357,6 @@ export default function CreateEventScreen({navigation, route}) {
                 </Text>
               </View>
             </View>
-
-            {/* <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.whereEventPosted}</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption('posted');
-                  setModalPostedInvite(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {eventPosted.text}
-                  </Text>
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
-                  />
-                </View>
-              </TouchableOpacity>
-            </View> */}
 
             <DateTimePickerView
               date={eventStartDateTime}
@@ -1456,251 +1391,35 @@ export default function CreateEventScreen({navigation, route}) {
           </View>
         </ScrollView>
       </TCKeyboardView>
-      <Modal
+
+      <SportsListModal
         isVisible={visibleSportsModal}
-        backdropColor="black"
-        onBackdropPress={() => setVisibleSportsModal(false)}
-        onRequestClose={() => setVisibleSportsModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={10}
-        backdropTransitionOutTiming={10}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.1,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleSportsModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-                marginLeft: '10%'
-              }}>
-              {strings.sportsTitleText}
-            </Text>
+        closeList={() => setVisibleSportsModal(false)}
+        title={strings.sportsTitleText}
+        sportsList={sportsData}
+        sport={selectedSport}
+        onNext={(sport) => {
+          setSelectedSport(sport);
+          setVisibleSportsModal(false);
+        }}
+      />
 
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}
-              onPress={() => {
-                setSportsSelection(selectedSport);
-                setTimeout(() => {
-                  setVisibleSportsModal(false);
-                }, 300);
-              }}>
-              {strings.apply}
-            </Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider width="86%" />}
-            showsVerticalScrollIndicator={false}
-            data={sportsData}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderSports}
-          />
-        </View>
-      </Modal>
-
-      <Modal
+      <CustomModalWrapper
         isVisible={visibleWhoModal}
-        backdropColor="black"
-        onBackdropPress={() => setVisibleWhoModal(false)}
-        onRequestClose={() => setVisibleWhoModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={10}
-        backdropTransitionOutTiming={10}
-        style={{
-          margin: 0,
+        closeModal={() => setVisibleWhoModal(false)}
+        modalType={ModalTypes.style3}
+        title={whoOption === join ? strings.whoCanJoin : strings.whoCanSee}
+        containerStyle={{
+          padding: 15,
+          marginBottom: Platform.OS === 'ios' ? 35 : 0,
         }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleWhoModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {whoOption === join
-                  ? strings.whoCanJoin
-                  : strings.whoCanSee}
-            </Text>
-
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.themeColor,
-              }}></Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
-            showsVerticalScrollIndicator={false}
-            data={
-              ['user', 'player'].includes(authContext.entity.role)
-                ? whoOption === join
-                  ? whoCanJoinUser
-                  : whoCanSeeUser
-                : whoOption === join
-                ? whoCanJoinGroup
-                : whoCanSeeGroup
-            }
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderWhoCan}
-          />
-        </View>
-      </Modal>
-
-
-      <Modal
-        isVisible={modalPostedInvite}
-        backdropColor="black"
-        onBackdropPress={() => setModalPostedInvite(false)}
-        onRequestClose={() => setModalPostedInvite(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={10}
-        backdropTransitionOutTiming={10}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setModalPostedInvite(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.whoCanInvite}
-            </Text>
-
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.themeColor,
-              }}></Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
-            showsVerticalScrollIndicator={false}
-            data={
-              ['user', 'player'].includes(authContext.entity.role)
-                ? whoOption === 'posted'
-                  ? eventPostedList
-                  : whoCanInviteUser
-                : whoOption === 'posted'
-                ? eventPostedList
-                : whoCanInviteGroup
-            }
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderWhoCan}
-          />
-        </View>
-      </Modal>
+        <FlatList
+          data={getOptions()}
+          renderItem={renderWhoCan}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      </CustomModalWrapper>
 
       <ActionSheet
         ref={actionSheet}
@@ -1748,33 +1467,20 @@ const styles = StyleSheet.create({
   checkboxPostImg: {
     width: wp('4.5%'),
     height: wp('4.5%'),
-    marginTop: 5
+    marginTop: 5,
   },
   checkboxPost: {
     left: wp(0),
-    marginRight: 10
+    marginRight: 10,
   },
-  sperateLine: {
-    borderColor: colors.writePostSepratorColor,
-    borderWidth: 0.5,
-  },
-
-  // toggleViewStyle: {
-  //   flexDirection: 'row',
-  //   marginHorizontal: 2,
-  //   justifyContent: 'flex-end',
-  //   paddingVertical: 3,
-  //   alignItems: 'center',
-  //   marginBottom: 8,
-  // },
   allDayText: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-   
   },
   availableSubHeader: {
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
@@ -1796,7 +1502,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    marginBottom: 15,
   },
   textInputDropStyle: {
     flex: 1,
@@ -1817,55 +1522,31 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    marginBottom: 15,
     alignItems: 'center',
   },
-  detailsInputStyle: {
+  detailsContainer: {
     backgroundColor: colors.textFieldBackground,
-    borderRadius: 5,
-    color: colors.lightBlackColor,
-    padding: 10,
     marginTop: 10,
+    borderRadius: 5,
+    height: 100,
+    paddingHorizontal: 10,
+    paddingVertical: 9,
+  },
+  detailsInputStyle: {
+    padding: 0,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    marginBottom: 10,
-    height: 100,
+    color: colors.lightBlackColor,
   },
   containerStyle: {
-    width: wp('96%'),
-    alignSelf: 'center',
-    padding: wp('1.5%'),
-    // marginBottom: 30
+    marginBottom: 35,
   },
-
   headerTextStyle: {
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RBold,
     marginVertical: 3,
   },
-  // opetionalTextStyle: {
-  //   fontSize: 12,
-  //   fontFamily: fonts.RRegular,
-  //   marginVertical: 3,
-  //   color: colors.userPostTimeColor,
-  // },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 15,
-    height: 15,
-    marginLeft: 5,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-  },
-
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.thinDividerColor,
-    height: 0.5,
-    width: wp('100%'),
-  },
-
   languageList: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
@@ -1887,7 +1568,6 @@ const styles = StyleSheet.create({
     height: 40,
     textAlign: 'right',
     backgroundColor: colors.textFieldBackground,
-
     borderRadius: 5,
   },
   currencyStyle: {
@@ -1917,7 +1597,6 @@ const styles = StyleSheet.create({
   },
   allStyle: {
     flexDirection: 'row',
-    // backgroundColor:'red',
     alignItems: 'center',
     justifyContent: 'space-between',
     margin: 15,
@@ -1926,6 +1605,7 @@ const styles = StyleSheet.create({
   },
   titleTextStyle: {
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     marginLeft: 15,
@@ -1945,13 +1625,12 @@ const styles = StyleSheet.create({
   activeEventPricacy: {
     paddingVertical: 4,
     borderRadius: 6,
-    backgroundColor: colors.whiteColor
+    backgroundColor: colors.whiteColor,
   },
   inactiveEventPricacy: {
     paddingVertical: 2,
   },
-  inactiveEventPrivacyText:{
+  inactiveEventPrivacyText: {
     paddingVertical: hp('0.8'),
-  }
-  // UI Fixes styling
+  },
 });

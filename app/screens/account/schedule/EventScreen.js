@@ -1,9 +1,4 @@
-import React, {
-  useRef,
-  useState,
-  useContext,
-  useEffect,
-} from 'react';
+import React, {useRef, useState, useContext, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -13,7 +8,7 @@ import {
   SafeAreaView,
   Alert,
   FlatList,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -49,13 +44,13 @@ import {
   getJSDate,
   ordinal_suffix_of,
   getDayFromDate,
-  countNumberOfWeekFromDay
- } from '../../../utils';
- import{getUserFollowerFollowing} from '../../../api/Users';
- import{getGroupMembers} from '../../../api/Groups';
- import ScreenHeader from '../../../components/ScreenHeader';
+  countNumberOfWeekFromDay,
+} from '../../../utils';
+import {getUserFollowerFollowing} from '../../../api/Users';
+import {getGroupMembers} from '../../../api/Groups';
+import ScreenHeader from '../../../components/ScreenHeader';
 
-export default function EventScreen({navigation, route}) { 
+export default function EventScreen({navigation, route}) {
   const actionSheet = useRef();
   const userActionSheet = useRef();
   const isFocused = useIsFocused();
@@ -70,26 +65,25 @@ export default function EventScreen({navigation, route}) {
   const [myMembers, setMyMembers] = useState([]);
   const [infoModal, setInfoModal] = useState(false);
   const [infoType, setInfoType] = useState('');
-  const [recurringEditModal, setRecurringEditModal] =  useState(false);
-  const THISEVENT = 0
-  const FUTUREEVENT = 1
-  const ALLEVENT = 2
+  const [recurringEditModal, setRecurringEditModal] = useState(false);
+  const THISEVENT = 0;
+  const FUTUREEVENT = 1;
+  const ALLEVENT = 2;
 
   const recurringEditList = [
     {
-      text: strings.recuringoptionOne, 
-      value: THISEVENT
+      text: strings.recuringoptionOne,
+      value: THISEVENT,
     },
     {
       text: strings.recurringOptionTwo,
       value: FUTUREEVENT,
     },
     {
-      ext: strings.recurringOptionThree, 
-      value: ALLEVENT
+      ext: strings.recurringOptionThree,
+      value: ALLEVENT,
     },
   ];
-
 
   let titleValue = strings.gameSingular;
   let description = strings.gameWith;
@@ -100,10 +94,8 @@ export default function EventScreen({navigation, route}) {
   let gameDataLati = null;
   let gameDataLongi = null;
 
-
-
   // let blocked = false;
- 
+
   let repeatString = strings.never;
   const isOrganizer = eventData.owner_id === authContext.entity.uid;
   if (eventData) {
@@ -150,7 +142,7 @@ export default function EventScreen({navigation, route}) {
     }
 
     if (eventData.repeat !== Verbs.eventRecurringEnum.Never) {
-      if(untilTime) {
+      if (untilTime) {
         repeatString = format(
           strings.repeatTime,
           repeatString,
@@ -176,19 +168,17 @@ export default function EventScreen({navigation, route}) {
     }
   }
 
-  
   useEffect(() => {
     if (isFocused) {
-      if(route?.params?.event) {
+      if (route?.params?.event) {
         setEventData(route?.params?.event);
       }
     }
   }, [isFocused, route?.params?.comeFrom]);
-  
 
   useEffect(() => {
     const goingData = eventData.going ?? [];
-    
+
     const getUserDetailQuery = {
       size: 1000,
       from: 0,
@@ -231,139 +221,132 @@ export default function EventScreen({navigation, route}) {
         });
     } else {
       getUserIndex(getUserDetailQuery)
+        .then((res) => {
+          const org = res.filter(
+            (obj) => obj.user_id === eventData.created_by.uid,
+          )?.[0];
+          setOrganizer(org);
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+
+    getUserIndex(getUserGoingQuery)
       .then((res) => {
-        const org = res.filter(
-          (obj) => obj.user_id === eventData.created_by.uid,
-        )?.[0];
-        setOrganizer(org);
+        setGoing(res);
       })
       .catch((e) => {
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-    }
-
-    getUserIndex(getUserGoingQuery)
-    .then((res) => {
-      setGoing(res);
-    })
-    .catch((e) => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
-
 
     getUserFollowerFollowing(
-      eventData?.created_by?.group_id ? eventData?.created_by?.group_id : eventData?.owner_id,
       eventData?.created_by?.group_id
-        ? Verbs.entityTypeGroups 
+        ? eventData?.created_by?.group_id
+        : eventData?.owner_id,
+      eventData?.created_by?.group_id
+        ? Verbs.entityTypeGroups
         : Verbs.entityTypePlayers,
       'followers',
       authContext,
     )
-    .then((res) => {
-      if(res.payload.length) {
-        const tempArr = [];
-        res.payload.forEach((item) => {
-          tempArr.push(item.user_id);
-        });
-        setMyFollowers(tempArr);
-      }
-    })
-    .catch(() => {});
-
-
-    if(eventData?.created_by?.group_id)  {
-      getGroupMembers(eventData?.created_by?.group_id , authContext).then((res) => {
-        const tempArr = [];
-        res.payload.forEach((item) => {
-          tempArr.push(item.user_id);
-        });
-        setMyMembers(tempArr);
+      .then((res) => {
+        if (res.payload.length) {
+          const tempArr = [];
+          res.payload.forEach((item) => {
+            tempArr.push(item.user_id);
+          });
+          setMyFollowers(tempArr);
+        }
       })
       .catch(() => {});
+
+    if (eventData?.created_by?.group_id) {
+      getGroupMembers(eventData?.created_by?.group_id, authContext)
+        .then((res) => {
+          const tempArr = [];
+          res.payload.forEach((item) => {
+            tempArr.push(item.user_id);
+          });
+          setMyMembers(tempArr);
+        })
+        .catch(() => {});
     }
   }, [
     eventData?.created_by?.group_id,
     eventData?.created_by?.uid,
-    eventData.going
+    eventData.going,
   ]);
 
-
-
   const checkIsGoing = () => {
-
-    if(!['user', 'player'].includes(authContext.entity.role)) {
+    if (!['user', 'player'].includes(authContext.entity.role)) {
       return false;
     }
 
-    if(eventData?.who_can_join?.value === 0) {
+    if (eventData?.who_can_join?.value === 0) {
       return true;
     }
 
-    if(eventData?.who_can_join?.value === 1){
-      if(myFollowers.includes(authContext.entity.auth.user_id)) {
+    if (eventData?.who_can_join?.value === 1) {
+      if (myFollowers.includes(authContext.entity.auth.user_id)) {
         return true;
       }
     }
 
-    if(['user', 'player'].includes(authContext.entity.role)) {
-      if(eventData?.owner_id === authContext.entity.auth.user_id) {
+    if (['user', 'player'].includes(authContext.entity.role)) {
+      if (eventData?.owner_id === authContext.entity.auth.user_id) {
         return true;
       }
     }
 
-    if(eventData?.who_can_join?.value === 3) {
-      if(myMembers.includes(authContext.entity.auth.user_id)) {
+    if (eventData?.who_can_join?.value === 3) {
+      if (myMembers.includes(authContext.entity.auth.user_id)) {
         return true;
       }
     }
 
-    if(!['user', 'player'].includes(authContext.entity.role)) {
+    if (!['user', 'player'].includes(authContext.entity.role)) {
       return true;
     }
 
     return false;
-   
-  }
-
-
+  };
 
   const checkIsInvite = () => {
-
-    if(eventData?.owner_type === 'groups') {
+    if (eventData?.owner_type === 'groups') {
       return false;
     }
 
-    if(['user', 'player'].includes(authContext.entity.role)) {
-      if(eventData?.who_can_invite?.value === 0) {
+    if (['user', 'player'].includes(authContext.entity.role)) {
+      if (eventData?.who_can_invite?.value === 0) {
         const tempArr = [];
         going.forEach((item) => {
           tempArr.push(item.user_id);
         });
-        if(tempArr.includes(authContext.entity.auth.user_id)) {
+        if (tempArr.includes(authContext.entity.auth.user_id)) {
           return true;
         }
       }
-      if(eventData?.owner_id === authContext.entity.auth.user_id) {
+      if (eventData?.owner_id === authContext.entity.auth.user_id) {
         return true;
       }
-    }else{
+    } else {
       return true;
     }
 
     return false;
-  }
-
+  };
 
   const attendAPICall = () => {
     setloading(true);
     const data = {
       start_datetime: eventData.start_datetime,
-      end_datetime: eventData.end_datetime
-    }
+      end_datetime: eventData.end_datetime,
+    };
     attendEvent(eventData.cal_id, data, authContext)
       .then((response) => {
         setEventData(response?.payload[0]);
@@ -375,7 +358,6 @@ export default function EventScreen({navigation, route}) {
       });
   };
 
-
   const renderGoingView = ({item}) => (
     <View style={styles.goingContainer}>
       <FastImage
@@ -383,46 +365,43 @@ export default function EventScreen({navigation, route}) {
           item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
         }
         style={{
-          height: 40, 
-          width: 40, 
-          borderRadius: 70
+          height: 40,
+          width: 40,
+          borderRadius: 70,
         }}
       />
     </View>
   );
 
-  
   const clickInfoIcon = (type) => {
     setInfoType(type);
     setInfoModal(true);
-  }
-
+  };
 
   const handleDeleteEvent = (recurringOption = '') => {
     const data = {
-      recurring_modification_type : recurringOption,
-      start_datetime : eventData.start_datetime,
-      end_datetime: eventData.end_datetime
+      recurring_modification_type: recurringOption,
+      start_datetime: eventData.start_datetime,
+      end_datetime: eventData.end_datetime,
     };
 
     setloading(true);
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
     const entityRole =
-    entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
+      entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
     deleteEvent(entityRole, uid, eventData.cal_id, authContext, data)
-    .then(() => {
-      setTimeout(() => {
+      .then(() => {
+        setTimeout(() => {
+          setloading(false);
+          navigation.navigate('ScheduleScreen');
+        }, 1000);
+      })
+      .catch((e) => {
         setloading(false);
-        navigation.navigate('ScheduleScreen');
-      }, 1000);
-    })
-    .catch((e) => {
-      setloading(false);
-      Alert.alert('', e.messages);
-    });
-  }
-
+        Alert.alert('', e.messages);
+      });
+  };
 
   const renderDeleteRecurringOptions = ({item}) => (
     <View
@@ -432,22 +411,22 @@ export default function EventScreen({navigation, route}) {
         justifyContent: 'center',
         marginLeft: 15,
         marginRight: 15,
-    }}>
+      }}>
       <View>
-        <Text style={styles.filterTitle} onPress={() => {
-          setRecurringEditModal(false)
-          setTimeout(() => {
-            handleDeleteEvent(item.value)
-          }, 1000);
-        }}>
+        <Text
+          style={styles.filterTitle}
+          onPress={() => {
+            setRecurringEditModal(false);
+            setTimeout(() => {
+              handleDeleteEvent(item.value);
+            }, 1000);
+          }}>
           {item.text}
         </Text>
       </View>
     </View>
   );
 
-
-  
   return (
     <>
       <Modal
@@ -462,48 +441,48 @@ export default function EventScreen({navigation, route}) {
         style={{
           margin: 0,
         }}>
+        <View
+          style={{
+            width: '100%',
+            height: Dimensions.get('window').height / 4,
+            backgroundColor: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 5,
+            elevation: 15,
+          }}>
           <View
             style={{
-              width: '100%',
-              height: Dimensions.get('window').height / 4,
-              backgroundColor: 'white',
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
-              shadowColor: '#000',
-              shadowOffset: {width: 0, height: 1},
-              shadowOpacity: 0.5,
-              shadowRadius: 5,
-              elevation: 15,
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
-            <View
+            <Text
               style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'center',
-                alignItems: 'center',
+                alignSelf: 'center',
+                marginVertical: 10,
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
               }}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  marginVertical: 10,
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                }}>{strings.deleteRecurringEvent} </Text>
-            </View>
-            <TCThinDivider width="92%" />
-            <FlatList
-              ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
-              showsVerticalScrollIndicator={false}
-              data={
-                recurringEditList
-              }
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderDeleteRecurringOptions}
-            />
+              {strings.deleteRecurringEvent}{' '}
+            </Text>
           </View>
+          <TCThinDivider width="92%" />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
+            showsVerticalScrollIndicator={false}
+            data={recurringEditList}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderDeleteRecurringOptions}
+          />
+        </View>
       </Modal>
       <SafeAreaView style={styles.mainContainerStyle}>
         {/* Modal Style 3 */}
@@ -518,14 +497,13 @@ export default function EventScreen({navigation, route}) {
           backdropOpacity={0.7}>
           <SafeAreaView style={styles.modalMainViewStyle}>
             <View style={{padding: 20}}>
-              <View style={styles.sepratorStyle}/>
-              {
-              infoType === 'attendee' ? (
+              <View style={styles.sepratorStyle} />
+              {infoType === 'attendee' ? (
                 <View>
                   <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
                   <Text style={styles.contentText}>{strings.attendyText}</Text>
                 </View>
-              ):(
+              ) : (
                 <View>
                   <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
                   <Text style={styles.contentText}>{strings.feeText}</Text>
@@ -538,11 +516,13 @@ export default function EventScreen({navigation, route}) {
           title={strings.event}
           leftIcon={images.backArrow}
           leftIconPress={() => {
-            navigation.goBack()
+            navigation.goBack();
           }}
           rightIcon2={images.vertical3Dot}
-          rightIcon2Press={() => 
-            isOrganizer ? actionSheet.current.show() : userActionSheet.current.show()
+          rightIcon2Press={() =>
+            isOrganizer
+              ? actionSheet.current.show()
+              : userActionSheet.current.show()
           }
           loading={loading}
           containerStyle={{
@@ -556,9 +536,9 @@ export default function EventScreen({navigation, route}) {
         {/* Modal Style 3 */}
         <ActivityLoader visible={loading} />
         <View style={styles.sperateLine} />
-        <ScrollView 
-        stickyHeaderIndices={[5]}
-        // style={{paddingHorizontal:10}}
+        <ScrollView
+          stickyHeaderIndices={[5]}
+          // style={{paddingHorizontal:10}}
         >
           <View style={styles.EventBackgroundPhoto}>
             <EventBackgroundPhoto
@@ -573,21 +553,22 @@ export default function EventScreen({navigation, route}) {
             />
           </View>
 
-          <Text style={styles.eventTitleStyle}>
-            {titleValue} 
-          </Text>
+          <Text style={styles.eventTitleStyle}>{titleValue}</Text>
 
-          <View 
-          style={{
-            flexDirection: 'row', 
-            alignItems: 'center', 
-          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <Text style={styles.sportTitleStyle}>
-              {' '} 
-              {eventData?.selected_sport && eventData?.selected_sport?.sport_name} 
+              {' '}
+              {eventData?.selected_sport &&
+                eventData?.selected_sport?.sport_name}
             </Text>
             {!eventData.is_Offline && (
-              <Text style={[styles.onlineText, {marginLeft: 10, marginTop: 3}]}>{strings.onlineText}</Text>
+              <Text style={[styles.onlineText, {marginLeft: 10, marginTop: 3}]}>
+                {strings.onlineText}
+              </Text>
             )}
           </View>
 
@@ -595,403 +576,487 @@ export default function EventScreen({navigation, route}) {
             from={strings.from}
             fromTime={moment(startTime).format('MMM DD, YYYY')}
             to={strings.to}
-            toTime={`${moment(startTime).format('hh:mm a')} - ${moment(endTime).format('hh:mm a')}`}
+            toTime={`${moment(startTime).format('hh:mm a')} - ${moment(
+              endTime,
+            ).format('hh:mm a')}`}
             repeat={strings.repeat}
             repeatTime={repeatString}
             location={eventData?.location?.location_name}
             eventOnlineUrl={eventData?.online_url}
-            is_Offline = {eventData?.is_Offline}
+            is_Offline={eventData?.is_Offline}
           />
 
           {/* Join and Invite button wrapper */}
           <View
-          style={{
-            flex: 1,
-            backgroundColor: colors.whiteColor,
-            zIndex: 1000,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            padding: 15,
-          }}>
-          {
-          checkIsGoing()  && (
-            <TCProfileButton
-              title={
-                eventData?.going?.filter(
-                  (entity) => entity === authContext.entity.uid,
-                ).length > 0
-                  ? 'Going'
-                  : 'Join'
-              }
-              style={
-                eventData?.going?.filter(
-                  (entity) => entity === authContext.entity.uid,
-                ).length > 0 ?
-                [styles.firstButtonStyle,{width: checkIsInvite() ? '48%' : '100%'},] 
-                :
-                [styles.firstButtonStyle,{width: checkIsInvite() ? '48%' : '100%', backgroundColor : colors.themeColor}] 
-              }
-              showArrow={false}
-              tickImage={eventData?.going?.filter(
-                (entity) => entity === authContext.entity.uid,
-              ).length > 0}
-              imageStyle={styles.checkMarkStyle}
-              textStyle={
-                eventData?.going?.filter(
-                  (entity) => entity === authContext.entity.uid,
-                ).length > 0
-                  ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
-                  : [styles.attendTextStyle, {color: colors.whiteColor}]
-              }
-              onPressProfile={() => {
-                if (
+            style={{
+              flex: 1,
+              backgroundColor: colors.whiteColor,
+              zIndex: 1000,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              padding: 15,
+            }}>
+            {checkIsGoing() && (
+              <TCProfileButton
+                title={
                   eventData?.going?.filter(
                     (entity) => entity === authContext.entity.uid,
                   ).length > 0
-                ) {
-                  console.log('its going');
-                } else {
-                  attendAPICall();
+                    ? 'Going'
+                    : 'Join'
                 }
-              }}
-            />
-          )}
-         
+                style={
+                  eventData?.going?.filter(
+                    (entity) => entity === authContext.entity.uid,
+                  ).length > 0
+                    ? [
+                        styles.firstButtonStyle,
+                        {width: checkIsInvite() ? '48%' : '100%'},
+                      ]
+                    : [
+                        styles.firstButtonStyle,
+                        {
+                          width: checkIsInvite() ? '48%' : '100%',
+                          backgroundColor: colors.themeColor,
+                        },
+                      ]
+                }
+                showArrow={false}
+                tickImage={
+                  eventData?.going?.filter(
+                    (entity) => entity === authContext.entity.uid,
+                  ).length > 0
+                }
+                imageStyle={styles.checkMarkStyle}
+                textStyle={
+                  eventData?.going?.filter(
+                    (entity) => entity === authContext.entity.uid,
+                  ).length > 0
+                    ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
+                    : [styles.attendTextStyle, {color: colors.whiteColor}]
+                }
+                onPressProfile={() => {
+                  if (
+                    eventData?.going?.filter(
+                      (entity) => entity === authContext.entity.uid,
+                    ).length > 0
+                  ) {
+                    console.log('its going');
+                  } else {
+                    attendAPICall();
+                  }
+                }}
+              />
+            )}
 
-          {checkIsInvite()  && (
-            <TCProfileButton
-              title={'Invite'}
-              style={[styles.firstButtonStyle, {width: checkIsGoing() ? '48%' : '100%'}]}
-              showArrow={false}
-              imageStyle={styles.checkMarkStyle}
-              textStyle={styles.inviteTextStyle}
-              onPressProfile={() =>
-                navigation.navigate('InviteToEventScreen', {
-                  eventId: eventData.cal_id,
-                  start_datetime: eventData.start_datetime,
-                  end_datetime: eventData.end_datetime 
-                })
-           
-              }
-            />
-          )}
+            {checkIsInvite() && (
+              <TCProfileButton
+                title={'Invite'}
+                style={[
+                  styles.firstButtonStyle,
+                  {width: checkIsGoing() ? '48%' : '100%'},
+                ]}
+                showArrow={false}
+                imageStyle={styles.checkMarkStyle}
+                textStyle={styles.inviteTextStyle}
+                onPressProfile={() =>
+                  navigation.navigate('InviteToEventScreen', {
+                    eventId: eventData.cal_id,
+                    start_datetime: eventData.start_datetime,
+                    end_datetime: eventData.end_datetime,
+                  })
+                }
+              />
+            )}
           </View>
 
-          <View style={{ 
-            marginBottom: 20, 
-            backgroundColor: colors.whiteColor, 
-            marginTop:0
-          }}> 
-            <View 
+          <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-evenly',
-              width: '100%'
-            }}
-            >
+              marginBottom: 20,
+              backgroundColor: colors.whiteColor,
+              marginTop: 0,
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-evenly',
+                width: '100%',
+              }}>
               <View
                 style={{
-                  borderBottomWidth : 3, 
-                  borderColor: activeTab === 'info' ? colors.themeColor : colors.lightBlackColor, 
+                  borderBottomWidth: 3,
+                  borderColor:
+                    activeTab === 'info'
+                      ? colors.themeColor
+                      : colors.lightBlackColor,
                   width: '50%',
-              }}
-              > 
+                }}>
                 <TouchableOpacity onPress={() => setActiveTab('info')}>
-                  <Text 
-                  style={{
-                    textAlign: 'center', 
-                    fontSize: 16, 
-                    lineHeight: 24,
-                    fontWeight: activeTab === 'info' ? 'bold' : '',
-                    color: activeTab === 'info' ? colors.themeColor : colors.lightBlackColor,
-                    paddingVertical: 10
-                  }}>{strings.infoTitle}</Text>
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      fontSize: 16,
+                      lineHeight: 24,
+                      fontWeight: activeTab === 'info' ? 'bold' : '',
+                      color:
+                        activeTab === 'info'
+                          ? colors.themeColor
+                          : colors.lightBlackColor,
+                      paddingVertical: 10,
+                    }}>
+                    {strings.infoTitle}
+                  </Text>
                 </TouchableOpacity>
               </View>
               <View
-              style={{
-                borderBottomWidth : 3, 
-                borderColor: activeTab === 'post' ? colors.themeColor : colors.lightBlackColor,
-                width: '50%'
-              }}
-              >
+                style={{
+                  borderBottomWidth: 3,
+                  borderColor:
+                    activeTab === 'post'
+                      ? colors.themeColor
+                      : colors.lightBlackColor,
+                  width: '50%',
+                }}>
                 <TouchableOpacity onPress={() => setActiveTab('post')}>
-                  <Text 
-                  style={{
-                    textAlign: 'center', 
-                    fontSize: 16,
-                    lineHeight: 24,
-                    fontWeight: activeTab === 'post' ? 'bold' : '',
-                    color: activeTab === 'post' ? colors.themeColor : colors.lightBlackColor,
-                    paddingVertical: 10
-                  }}>{strings.postTitle}</Text>
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      fontSize: 16,
+                      lineHeight: 24,
+                      fontWeight: activeTab === 'post' ? 'bold' : '',
+                      color:
+                        activeTab === 'post'
+                          ? colors.themeColor
+                          : colors.lightBlackColor,
+                      paddingVertical: 10,
+                    }}>
+                    {strings.postTitle}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
 
-          {
-          activeTab === 'info' ? (
-          <>
-            <EventItemRender title={strings.description}>
-              <ReadMore
-                numberOfLines={3}
-                style={styles.longTextStyle}
-                seeMoreText={strings.moreText}
-                seeLessText={strings.lessText}
-                seeLessStyle={styles.moreLessText}
-                seeMoreStyle={styles.moreLessText}>
-                {description} {description2} 
-              </ReadMore>
-            </EventItemRender>
-            <TCThinDivider marginTop={10} marginBottom={10} />
-
-
-            <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.organizerTitle}</Text>
-              {organizer && (
-                <View style={{position: 'relative'}}>
-                  <TCProfileView
-                    type="medium"
-                    name={organizer.group_name ?? organizer.full_name}
-                    location={`${organizer.city}, ${organizer.state_abbr ? organizer.state_abbr:''}${organizer.state_abbr ? ',':''} ${organizer.country}`}
-                    image={
-                      organizer.thumbnail ? {uri: organizer.thumbnail} : images.teamPH
-                    }
-                    alignSelf={'flex-start'}
-                    marginTop={10}
-                  />
-                  <Image source={images.starProfile} style={styles.starProfile} />
-                </View>
-              )}
-            </View>
-            <TCThinDivider marginTop={10} marginBottom={10} />
-
-            {eventData?.going?.length > 0 && (
+          {activeTab === 'info' ? (
             <>
-            <View style={styles.containerStyle}>
-              <View 
-              style={{
-                flexDirection:'row', 
-                justifyContent: 'space-between', 
-                alignItems: 'center'
-              }}
-              >
-                <Text
-                  style={styles.headerTextStyle}
-                >{`${strings.goingTitle} (${going?.length})`}
-                </Text>
+              <EventItemRender title={strings.description}>
+                <ReadMore
+                  numberOfLines={3}
+                  style={styles.longTextStyle}
+                  seeMoreText={strings.moreText}
+                  seeLessText={strings.lessText}
+                  seeLessStyle={styles.moreLessText}
+                  seeMoreStyle={styles.moreLessText}>
+                  {description} {description2}
+                </ReadMore>
+              </EventItemRender>
+              <TCThinDivider marginTop={10} marginBottom={10} />
 
-                <Text
-                  onPress={() => {
-                    navigation.navigate('GoingListScreen', {
-                      showRemove: authContext.entity.uid === organizer.user_id,
-                      going_ids: eventData?.going ?? [],
-                      eventData,
-                    });
-                  }}
-                  style={styles.seeAllText}
-                >
-                  {`${strings.seeAllText}`}
+              <View style={styles.containerStyle}>
+                <Text style={styles.headerTextStyle}>
+                  {strings.organizerTitle}
                 </Text>
-              </View>
-
-              <FlatList
-                data={going}
-                horizontal
-                ItemSeparatorComponent={() => (
-                  <View style={{width: 10, height: 35}} />
+                {organizer && (
+                  <View style={{position: 'relative'}}>
+                    <TCProfileView
+                      type="medium"
+                      name={organizer.group_name ?? organizer.full_name}
+                      location={`${organizer.city}, ${
+                        organizer.state_abbr ? organizer.state_abbr : ''
+                      }${organizer.state_abbr ? ',' : ''} ${organizer.country}`}
+                      image={
+                        organizer.thumbnail
+                          ? {uri: organizer.thumbnail}
+                          : images.teamPH
+                      }
+                      alignSelf={'flex-start'}
+                      marginTop={10}
+                    />
+                    <Image
+                      source={images.starProfile}
+                      style={styles.starProfile}
+                    />
+                  </View>
                 )}
-                renderItem={renderGoingView}
-                keyExtractor={(item, index) => index.toString()}
-                style={{padding: 3}}
-              />
-            </View>
-            <TCThinDivider marginTop={10} marginBottom={10} />
-            </>
-            )}
+              </View>
+              <TCThinDivider marginTop={10} marginBottom={10} />
 
-            <EventItemRender title={strings.place} >
-              {eventData?.is_Offline ? (
-              <>
-                <Text style={[styles.textValueStyle, {fontFamily: fonts.RBold}]}>
-                  {eventData?.location?.venue_name} 
-                </Text>
-                <Text style={styles.textValueStyle}>
-                  {eventData?.location?.location_name}
-                </Text>
-                <EventMapView
-                  region={{
-                    latitude: eventData?.location?.latitude ?? Number(gameDataLati),
-                    longitude:
-                      eventData?.location?.longitude ?? Number(gameDataLongi),
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                  }}
-                  coordinate={{
-                    latitude: eventData?.location?.latitude ?? Number(gameDataLati),
-                    longitude:
-                      eventData?.location?.longitude ?? Number(gameDataLongi),
-                  }}
-                />
-                <Text style={[styles.textValueStyle, {marginTop: 10}]}>
-                  {eventData?.location?.venue_detail} 
-                </Text>
-              </>
-              ):(
-                <Text style={[
-                  styles.textValueStyle, 
-                  eventData.online_url && styles.textUrl
-                ]}>
-                  {eventData.online_url ? eventData?.online_url : strings.emptyEventUrl} 
-                </Text>
-              )}
-            </EventItemRender>
-
-            <View style={styles.sepratorViewStyle} />
-
-            <EventItemRender title={strings.timeText}>
-              <View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between' , marginBottom: 10}}>
-                  <Text style={styles.textValueStyle}>
-                    {strings.starts}
-                  </Text>
-                  <Text style={styles.textValueStyle}>
-                  {`${moment(startTime).format(
-                    'MMM DD YYYY'
-                  )}`}  &nbsp; &nbsp; {`${moment(startTime).format(
-                    'hh:mm a'
-                  )}`}
-                  </Text>
-                </View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20}}>
-                  <Text style={styles.textValueStyle}>
-                    {strings.ends}
-                  </Text>
-                  <Text style={styles.textValueStyle}>
-                  {`${moment(endTime).format(
-                    'MMM DD YYYY'
-                  )}`}  &nbsp; &nbsp; {`${moment(endTime).format(
-                    'hh:mm a'
-                  )}`}
-                  </Text>
-                </View>
-                <View style={{flexDirection: 'row', justifyContent: 'flex-end' , marginBottom: 20}}>
-                  <Text style={{fontWeight:'300'}}>
-                    {strings.timezone} &nbsp;
-                  </Text>
-                  <TouchableOpacity 
-                    onPress={() => {Alert.alert(strings.timezoneAvailability)}}>
-                      <Text
+              {eventData?.going?.length > 0 && (
+                <>
+                  <View style={styles.containerStyle}>
+                    <View
                       style={{
-                        textDecorationLine: 'underline',
-                        textDecorationStyle: 'solid',
-                        textDecorationColor: '#000'
-                      }} 
-                      >{Intl.DateTimeFormat()?.resolvedOptions().timeZone.split('/').pop()}</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}>
+                      <Text style={styles.headerTextStyle}>
+                        {`${strings.goingTitle} (${going?.length})`}
+                      </Text>
 
-              {
-              isOrganizer && (
-              <>
-              <TCThinDivider marginTop={10}  marginBottom={10} width='100%'  />
-              <View>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between' , marginBottom: 10}}>
-                  <Text style={styles.textValueStyle}>
-                    {strings.repeat}
-                  </Text>
-                  <Text style={[styles.textValueStyle, { textAlign: 'right'}]}>
-                    {repeatString}
-                  </Text>
-                </View>
-              </View>
-              {
-              !eventData?.blocked ? (
-              <View style={{flexDirection:'row', justifyContent: 'flex-end', alignContent: 'center', marginTop: 10}}>
-                <Image source={images.roundTick} style={{width: 15, height: 15}}/> 
-                <Text style={{color: '#00C168'}}>&nbsp;&nbsp; Available For Challenge</Text>
-              </View>
-              ):(
-              <View style={{flexDirection:'row', justifyContent: 'flex-end', alignContent: 'center', marginTop: 10}}>
-                <Image source={images.roundCross} style={{width: 15, height: 15}}/> 
-                <Text style={{color: '#616161'}}>&nbsp;&nbsp; Blocked For Challenge</Text>
-              </View>
+                      <Text
+                        onPress={() => {
+                          navigation.navigate('GoingListScreen', {
+                            showRemove:
+                              authContext.entity.uid === organizer.user_id,
+                            going_ids: eventData?.going ?? [],
+                            eventData,
+                          });
+                        }}
+                        style={styles.seeAllText}>
+                        {`${strings.seeAllText}`}
+                      </Text>
+                    </View>
+
+                    <FlatList
+                      data={going}
+                      horizontal
+                      ItemSeparatorComponent={() => (
+                        <View style={{width: 10, height: 35}} />
+                      )}
+                      renderItem={renderGoingView}
+                      keyExtractor={(item, index) => index.toString()}
+                      style={{padding: 3}}
+                    />
+                  </View>
+                  <TCThinDivider marginTop={10} marginBottom={10} />
+                </>
               )}
-              </>
-              )}
-            </EventItemRender>
 
-            
-            <View style={styles.sepratorViewStyle} />
-            <EventItemRender title={strings.eventFeeTitle} icon={images.infoIcon} clickInfoIcon={clickInfoIcon} type={'fee'}>
-              <Text style={styles.textValueStyle}>
-                {`${parseFloat(eventData?.event_fee?.value).toFixed(2)} ${
-                  eventData?.event_fee?.currency_type
-                }`}
-              </Text>
-            </EventItemRender>
-
-
-            <View style={styles.sepratorViewStyle} />
-            <EventItemRender title={strings.refundPolicyTitle}>
-              <ReadMore
-                numberOfLines={1}
-                style={styles.longTextStyle}
-                seeMoreText={strings.moreText}
-                seeLessText={strings.lessText}
-                seeLessStyle={styles.moreLessText}
-                seeMoreStyle={styles.moreLessText}>
-                {strings.attendeesMustRefundedText} {eventData?.refund_policy}
-              </ReadMore>
-            </EventItemRender>
-
-
-            <View style={styles.sepratorViewStyle} />
-            <EventItemRender title={strings.numberOfAttend} icon={images.infoIcon} clickInfoIcon={clickInfoIcon} type={'attendee'}>
-              <Text style={styles.textValueStyle}>
-                {format(
-                  strings.minMaxText_dy,
-                  eventData?.min_attendees,
-                  eventData?.max_attendees,
+              <EventItemRender title={strings.place}>
+                {eventData?.is_Offline ? (
+                  <>
+                    <Text
+                      style={[
+                        styles.textValueStyle,
+                        {fontFamily: fonts.RBold},
+                      ]}>
+                      {eventData?.location?.venue_name}
+                    </Text>
+                    <Text style={styles.textValueStyle}>
+                      {eventData?.location?.location_name}
+                    </Text>
+                    <EventMapView
+                      region={{
+                        latitude:
+                          eventData?.location?.latitude ?? Number(gameDataLati),
+                        longitude:
+                          eventData?.location?.longitude ??
+                          Number(gameDataLongi),
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                      }}
+                      coordinate={{
+                        latitude:
+                          eventData?.location?.latitude ?? Number(gameDataLati),
+                        longitude:
+                          eventData?.location?.longitude ??
+                          Number(gameDataLongi),
+                      }}
+                    />
+                    <Text style={[styles.textValueStyle, {marginTop: 10}]}>
+                      {eventData?.location?.venue_detail}
+                    </Text>
+                  </>
+                ) : (
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      eventData.online_url && styles.textUrl,
+                    ]}>
+                    {eventData.online_url
+                      ? eventData?.online_url
+                      : strings.emptyEventUrl}
+                  </Text>
                 )}
-              </Text>
-            </EventItemRender>
+              </EventItemRender>
 
-
-            {
-            isOrganizer && (
-            <>
               <View style={styles.sepratorViewStyle} />
-              <EventItemRender title={strings.whoCanSee}>
+
+              <EventItemRender title={strings.timeText}>
+                <View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginBottom: 10,
+                    }}>
+                    <Text style={styles.textValueStyle}>{strings.starts}</Text>
+                    <Text style={styles.textValueStyle}>
+                      {`${moment(startTime).format('MMM DD YYYY')}`} &nbsp;
+                      &nbsp; {`${moment(startTime).format('hh:mm a')}`}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginBottom: 20,
+                    }}>
+                    <Text style={styles.textValueStyle}>{strings.ends}</Text>
+                    <Text style={styles.textValueStyle}>
+                      {`${moment(endTime).format('MMM DD YYYY')}`} &nbsp; &nbsp;{' '}
+                      {`${moment(endTime).format('hh:mm a')}`}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-end',
+                      marginBottom: 20,
+                    }}>
+                    <Text style={{fontWeight: '300'}}>
+                      {strings.timezone} &nbsp;
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        Alert.alert(strings.timezoneAvailability);
+                      }}>
+                      <Text
+                        style={{
+                          textDecorationLine: 'underline',
+                          textDecorationStyle: 'solid',
+                          textDecorationColor: '#000',
+                        }}>
+                        {Intl.DateTimeFormat()
+                          ?.resolvedOptions()
+                          .timeZone.split('/')
+                          .pop()}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {isOrganizer && (
+                  <>
+                    <TCThinDivider
+                      marginTop={10}
+                      marginBottom={10}
+                      width="100%"
+                    />
+                    <View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginBottom: 10,
+                        }}>
+                        <Text style={styles.textValueStyle}>
+                          {strings.repeat}
+                        </Text>
+                        <Text
+                          style={[styles.textValueStyle, {textAlign: 'right'}]}>
+                          {repeatString}
+                        </Text>
+                      </View>
+                    </View>
+                    {!eventData?.blocked ? (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'flex-end',
+                          alignContent: 'center',
+                          marginTop: 10,
+                        }}>
+                        <Image
+                          source={images.roundTick}
+                          style={{width: 15, height: 15}}
+                        />
+                        <Text style={{color: '#00C168'}}>
+                          &nbsp;&nbsp; Available For Challenge
+                        </Text>
+                      </View>
+                    ) : (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'flex-end',
+                          alignContent: 'center',
+                          marginTop: 10,
+                        }}>
+                        <Image
+                          source={images.roundCross}
+                          style={{width: 15, height: 15}}
+                        />
+                        <Text style={{color: '#616161'}}>
+                          &nbsp;&nbsp; Blocked For Challenge
+                        </Text>
+                      </View>
+                    )}
+                  </>
+                )}
+              </EventItemRender>
+
+              <View style={styles.sepratorViewStyle} />
+              <EventItemRender
+                title={strings.eventFeeTitle}
+                icon={images.infoIcon}
+                clickInfoIcon={clickInfoIcon}
+                type={'fee'}>
                 <Text style={styles.textValueStyle}>
-                  {eventData?.who_can_see?.text}
+                  {`${parseFloat(eventData?.event_fee?.value).toFixed(2)} ${
+                    eventData?.event_fee?.currency_type
+                  }`}
                 </Text>
               </EventItemRender>
 
               <View style={styles.sepratorViewStyle} />
-              <EventItemRender title={strings.whoCanJoin}>
-                <Text style={styles.textValueStyle}>
-                  {eventData?.who_can_join?.text} 
-                </Text>
+              <EventItemRender title={strings.refundPolicyTitle}>
+                <ReadMore
+                  numberOfLines={1}
+                  style={styles.longTextStyle}
+                  seeMoreText={strings.moreText}
+                  seeLessText={strings.lessText}
+                  seeLessStyle={styles.moreLessText}
+                  seeMoreStyle={styles.moreLessText}>
+                  {strings.attendeesMustRefundedText} {eventData?.refund_policy}
+                </ReadMore>
               </EventItemRender>
 
               <View style={styles.sepratorViewStyle} />
-              <EventItemRender title={strings.whoCanInvite}>
+              <EventItemRender
+                title={strings.numberOfAttend}
+                icon={images.infoIcon}
+                clickInfoIcon={clickInfoIcon}
+                type={'attendee'}>
                 <Text style={styles.textValueStyle}>
-                  {eventData?.who_can_invite?.text}
+                  {format(
+                    strings.minMaxText_dy,
+                    eventData?.min_attendees,
+                    eventData?.max_attendees,
+                  )}
                 </Text>
               </EventItemRender>
+
+              {isOrganizer && (
+                <>
+                  <View style={styles.sepratorViewStyle} />
+                  <EventItemRender title={strings.whoCanSee}>
+                    <Text style={styles.textValueStyle}>
+                      {eventData?.who_can_see?.text}
+                    </Text>
+                  </EventItemRender>
+
+                  <View style={styles.sepratorViewStyle} />
+                  <EventItemRender title={strings.whoCanJoin}>
+                    <Text style={styles.textValueStyle}>
+                      {eventData?.who_can_join?.text}
+                    </Text>
+                  </EventItemRender>
+
+                  <View style={styles.sepratorViewStyle} />
+                  <EventItemRender title={strings.whoCanInvite}>
+                    <Text style={styles.textValueStyle}>
+                      {eventData?.who_can_invite?.text}
+                    </Text>
+                  </EventItemRender>
+                </>
+              )}
+
+              <View marginBottom={70} />
             </>
-            )}
-
-            <View marginBottom={70} />
-          </>
-          ):null}
+          ) : null}
         </ScrollView>
-
-      
 
         <ActionSheet
           ref={actionSheet}
@@ -1008,7 +1073,7 @@ export default function EventScreen({navigation, route}) {
                 });
               }
             } else if (index === 1) {
-              if(eventData.rrule) {
+              if (eventData.rrule) {
                 setRecurringEditModal(true);
               } else {
                 handleDeleteEvent();
@@ -1018,7 +1083,11 @@ export default function EventScreen({navigation, route}) {
         />
         <ActionSheet
           ref={userActionSheet}
-          options={[strings.reportText, strings.blockEventOrganiser, strings.cancel]}
+          options={[
+            strings.reportText,
+            strings.blockEventOrganiser,
+            strings.cancel,
+          ]}
           cancelButtonIndex={2}
           // destructiveButtonIndex={1}
           onPress={() => {}}
@@ -1029,9 +1098,9 @@ export default function EventScreen({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
-  onlineText:{
+  onlineText: {
     color: colors.themeColor,
-    fontWeight: '500'
+    fontWeight: '500',
   },
   mainContainerStyle: {
     flex: 1,
@@ -1039,13 +1108,13 @@ const styles = StyleSheet.create({
   sperateLine: {
     borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
-    marginBottom:10
+    marginBottom: 10,
   },
 
   EventBackgroundPhoto: {
-    display:'flex',
-    justifyContent:'center',
-    flexDirection:'row'
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
 
   sepratorViewStyle: {
@@ -1076,7 +1145,7 @@ const styles = StyleSheet.create({
     margin: 0,
     height: 30,
     borderRadius: 5,
-    backgroundColor: '#f5f5f5'
+    backgroundColor: '#f5f5f5',
   },
   attendTextStyle: {
     fontFamily: fonts.RBold,
@@ -1096,7 +1165,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: fonts.RBold,
     // marginVertical: 10,
-    marginBottom:10
+    marginBottom: 10,
   },
   goingContainer: {
     height: 37,
@@ -1106,7 +1175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.thinDividerColor
+    borderColor: colors.thinDividerColor,
   },
   modalMainViewStyle: {
     shadowOpacity: 0.15,
@@ -1119,23 +1188,23 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     maxHeight: hp('32%'),
     flexDirection: 'column',
-    padding: 10
+    padding: 10,
   },
   sepratorStyle: {
     height: 5,
     width: 80,
     backgroundColor: colors.writePostSepratorColor,
     alignSelf: 'center',
-    marginBottom: 20
+    marginBottom: 20,
   },
-  titleText:{
+  titleText: {
     color: colors.blackColor,
     fontSize: 16,
     lineHeight: 24,
     fontWeight: 'bold',
-    marginBottom: 15
+    marginBottom: 15,
   },
-  contentText:{
+  contentText: {
     color: colors.blackColor,
     fontSize: 16,
     lineHeight: 24,
@@ -1150,19 +1219,19 @@ const styles = StyleSheet.create({
     color: colors.userPostTimeColor,
     fontFamily: fonts.RRegular,
   },
-  starProfile:{
+  starProfile: {
     width: 15,
     height: 15,
     position: 'absolute',
     left: 30,
-    top:40
+    top: 40,
   },
-  seeAllText:{
-    color: colors.themeColor
+  seeAllText: {
+    color: colors.themeColor,
   },
   textUrl: {
     textDecorationLine: 'underline',
     textDecorationStyle: 'solid',
-    textDecorationColor: '#000'
-  }
+    textDecorationColor: '#000',
+  },
 });

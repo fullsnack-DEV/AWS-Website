@@ -2041,11 +2041,7 @@ export const getCalendar = async (
   }
 };
 
-export const getEventsSlots = async (
-  participants,
-  fromDate,
-  toDate,
-) => {
+export const getEventsSlots = async (participants, fromDate, toDate) => {
   try {
     return getStorage('scheduleSetting').then(async (ids) => {
       const IDs = ids ?? [];
@@ -2072,12 +2068,17 @@ export const getEventsSlots = async (
           },
         },
       };
-      body.query.bool.must.push({
-        range: {end_datetime: {gt: fromDate}},
-      });
-      body.query.bool.must.push({
-        range: {actual_enddatetime: {lt: toDate}},
-      });
+      if (fromDate) {
+        body.query.bool.must.push({
+          range: {end_datetime: {gt: fromDate}},
+        });
+      }
+
+      if (toDate) {
+        body.query.bool.must.push({
+          range: {actual_enddatetime: {lt: toDate}},
+        });
+      }
       console.log('calender elastic search :=>', JSON.stringify(body));
       return getCalendarIndex(body);
     });
@@ -2570,14 +2571,12 @@ export const getRatingsOptions = (
   return [];
 };
 
-export const groupBy = (
-  array,
-  key,
-) => array.reduce((result, currentValue) => {
+export const groupBy = (array, key) =>
+  array.reduce((result, currentValue) => {
     (result[currentValue[key]] = result[currentValue[key]] || []).push(
-      currentValue
-    )
-    return result
+      currentValue,
+    );
+    return result;
   }, {});
 export const getPrivacyValue = (option, authContext) => {
   const entity = authContext.entity.obj;

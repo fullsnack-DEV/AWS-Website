@@ -2932,4 +2932,9 @@ export default {
   postTitle: 'en_Post',
   list: 'en_List',
   plusDayOne: 'en_+1day',
+  nInvitationSent: 'en_{0} invitations were sent.',
+  followingAndFollowers: 'en_Following & Followers',
+  onlyAccount: 'en_Only {0} account',
+  onlyOrganizer: 'en_Only {0} (organizer)',
+  onlyOption: 'en_Only {0}',
 };

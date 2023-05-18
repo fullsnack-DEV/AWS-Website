@@ -5,62 +5,101 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
-import {Text, View, StyleSheet, FlatList, Alert} from 'react-native';
-
+import {
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  Alert,
+  SafeAreaView,
+  TextInput,
+  Pressable,
+  Image,
+} from 'react-native';
+import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import TCSearchBox from '../../../components/TCSearchBox';
 import AuthContext from '../../../auth/context';
-import ProfileCheckView from '../../../components/groupConnections/ProfileCheckView';
-import TCTags from '../../../components/TCTags';
 import {getUserIndex} from '../../../api/elasticSearch';
-import TCThinDivider from '../../../components/TCThinDivider';
 import {inviteToEvent} from '../../../api/Schedule';
-// import { wrap } from 'lodash';
-
-let stopFetchMore = true;
+import ScreenHeader from '../../../components/ScreenHeader';
+import images from '../../../Constants/ImagePath';
+import GroupIcon from '../../../components/GroupIcon';
+import Verbs from '../../../Constants/Verbs';
 
 export default function InviteToEventScreen({navigation, route}) {
-  const [eventID] = useState(route?.params?.eventId);
   const [loading, setloading] = useState(true);
   const authContext = useContext(AuthContext);
   const [players, setPlayers] = useState([]);
   const [selectedList, setSelectedList] = useState([]);
-  const [pageSize] = useState(10);
-  const [pageFrom, setPageFrom] = useState(0);
-  const [filters, setFilters] = useState();
+  const [searchText, setSearchText] = useState('');
+  const [filteredList, setFilteredList] = useState([]);
 
- 
-  const selectedPlayers = [];
-  useEffect(() => {
-    getUsers(filters);
-  }, []);
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <Text style={styles.sendButtonStyle} onPress={() => sendInvitation()}>
-          Send
-        </Text>
-      ),
+      headerShown: false,
     });
-  }, [navigation, selectedList]);
+  }, [navigation]);
+
+  const getUsers = useCallback(() => {
+    const membersQuery = {
+      query: {
+        bool: {
+          must: [],
+        },
+      },
+    };
+    // if (filterPlayer.searchText) {
+    //   membersQuery.query.bool.must.push({
+    //     query_string: {
+    //       query: `*${filterPlayer.searchText}*`,
+    //       fields: ['full_name'],
+    //     },
+    //   });
+    // }
+    getUserIndex(membersQuery)
+      .then((response) => {
+        setloading(false);
+        setPlayers([...response]);
+        setFilteredList([...response]);
+      })
+      .catch((error) => {
+        setloading(false);
+        Alert.alert(strings.alertmessagetitle, error.message);
+      });
+  }, []);
+
+  useEffect(() => {
+    getUsers();
+  }, [getUsers]);
+
+  useEffect(() => {
+    if (searchText) {
+      const list = players.filter((item) =>
+        item.full_name.includes(searchText),
+      );
+      setFilteredList(list);
+    } else {
+      setFilteredList(players);
+    }
+  }, [players, searchText]);
 
   const sendInvitation = () => {
     setloading(true);
     const data = {
       userIds: selectedList,
-      start_datetime: route?.params?.start_datetime,
-      end_datetime: route?.params?.start_endtime
-    }
-
-    inviteToEvent(eventID, data, authContext)
+      start_datetime: route.params.start_datetime,
+      end_datetime: route.params.end_datetime,
+    };
+    inviteToEvent(route.params.eventId, data, authContext)
       .then((response) => {
         setloading(false);
-        console.log('Response of Invitation sent:', response);
         Alert.alert(
-          response.payload.to.length > 1 ?  `${response.payload.to.length} invitations were sent.` : strings.inviteWasSendText,
+          response.payload.to.length > 1
+            ? format(strings.nInvitationSent, response.payload.to.length)
+            : strings.inviteWasSendText,
           '',
           [
             {
@@ -81,167 +120,213 @@ export default function InviteToEventScreen({navigation, route}) {
       });
   };
 
-  const onScrollHandler = () => {
-    if (!stopFetchMore) {
-      getUsers(filters);
-      stopFetchMore = true;
+  const selectPlayer = (item) => {
+    let newList = [...selectedList];
+
+    const isChecked = newList.includes(item.user_id);
+
+    if (isChecked) {
+      newList = selectedList.filter((ele) => ele !== item.user_id);
+    } else {
+      newList.push(item.user_id);
     }
-  };
-  const getUsers = useCallback(
-    (filterPlayer) => {
-      const membersQuery = {
-        size: pageSize,
-        from: pageFrom,
-        query: {
-          bool: {
-            must: [],
-          },
-        },
-      };
-      if (filterPlayer?.searchText?.length > 0) {
-        membersQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filterPlayer?.searchText}*`,
-            fields: ['full_name'],
-          },
-        });
-      }
-      getUserIndex(membersQuery)
-        .then((response) => {
-          setloading(false);
-          if (response.length > 0) {
-            const result = response.map((obj) => {
-              // eslint-disable-next-line no-param-reassign
-              obj.isChecked = false;
-              return obj;
-            });
-            setPlayers([...players, ...result]);
-            setPageFrom(pageFrom + pageSize);
-            stopFetchMore = true;
-          }
-        })
-        .catch((error) => {
-          setloading(false);
-          Alert.alert(error);
-        });
-    },
-    [pageFrom, pageSize, players],
-  );
-  const selectPlayer = ({item, index}) => {
-    players[index].isChecked = !item.isChecked;
-    setPlayers([...players]);
-    players.map((obj) => {
-      if (obj.isChecked) {
-        selectedPlayers.push(obj.user_id);
-      }
-      return obj;
-    });
-    setSelectedList(selectedPlayers);
+
+    setSelectedList(newList);
   };
 
-  const renderPlayer = ({item, index}) => (
-    <ProfileCheckView
-      playerDetail={item}
-      isChecked={item.isChecked}
-      onPress={() => selectPlayer({item, index})}
-    />
-  );
-  const handleTagPress = ({index}) => {
-    players[index].isChecked = false;
-    setPlayers([...players]);
-    players.map((obj) => {
-      if (obj.isChecked) {
-        selectedPlayers.push(obj.user_id);
-      }
-      return obj;
-    });
+  const renderPlayer = ({item}) => {
+    const isChecked = selectedList.includes(item.user_id);
+    return (
+      <>
+        <Pressable
+          style={[
+            styles.row,
+            {paddingHorizontal: 5, justifyContent: 'space-between'},
+          ]}
+          onPress={() => selectPlayer(item)}>
+          <View style={styles.row}>
+            <GroupIcon
+              imageUrl={item.thumbnail}
+              entityType={Verbs.entityTypePlayer}
+              containerStyle={styles.playerProfile}
+            />
+            <View>
+              <Text style={styles.name}>{item.full_name}</Text>
+              <Text style={styles.city}>{item.city}</Text>
+            </View>
+          </View>
+          <View style={styles.checkBox}>
+            <Image
+              source={isChecked ? images.orangeCheckBox : images.uncheckBox}
+              style={styles.image}
+            />
+          </View>
+        </Pressable>
+        <View style={styles.separator} />
+      </>
+    );
   };
-
-  const applyFilter = useCallback((fil) => {
-    getUsers(fil);
-  }, []);
-  const listEmptyComponent = () => (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text
-        style={{
-          fontFamily: fonts.RRegular,
-          color: colors.grayColor,
-          fontSize: 26,
-        }}>
-        {strings.noPlayer}
-      </Text>
-    </View>
-  );
-
-  const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
-
-  
 
   return (
-    <View style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
-      <Text style={styles.infoTextStyle}>{strings.inviteEventText}</Text>
-      <TCSearchBox
-        width={'90%'}
-        alignSelf="center"
-        onChangeText={(text) => {
-          // searchFilterFunction(text)
-          const tempFilter = {...filters};
+    <SafeAreaView style={styles.parent}>
+      <ScreenHeader
+        title={strings.invite}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isRightIconText
+        rightButtonText={strings.send}
+        onRightButtonPress={() => sendInvitation()}
+      />
 
-          if (text?.length > 0) {
-            tempFilter.searchText = text;
-          } else {
-            delete tempFilter.searchText;
-          }
-          setFilters({
-            ...tempFilter,
-          });
-          setPageFrom(0);
-          setPlayers([]);
-          applyFilter(tempFilter);
-        }}
-      />
-     
-        <TCTags
-          dataSource={players}
-          titleKey={'full_name'}
-          onTagCancelPress={handleTagPress}
+      <ActivityLoader visible={loading} />
+
+      <View style={styles.mainContainer}>
+        <Text style={styles.infoTextStyle}>{strings.inviteEventText}</Text>
+
+        <TextInput
+          placeholder={strings.searchText}
+          style={styles.inputStyle}
+          placeholderTextColor={colors.userPostTimeColor}
+          onChangeText={(text) => {
+            setSearchText(text);
+          }}
         />
-      
-     
-      <FlatList
-        extraData={players}
-        showsVerticalScrollIndicator={false}
-        data={players}
-        keyExtractor={(item, index) => index.toString()}
-        ItemSeparatorComponent={ItemSeparatorComponent}
-        renderItem={renderPlayer}
-        onScroll={onScrollHandler}
-        onEndReachedThreshold={0.01}
-        onScrollBeginDrag={() => {
-          stopFetchMore = false;
-        }}
-        ListEmptyComponent={listEmptyComponent}
-      />
-    </View>
+
+        {selectedList.length > 0 ? (
+          <View style={[styles.row, {marginBottom: 25}]}>
+            {selectedList.map((item, index) => {
+              const user = players.find((obj) => obj.user_id === item);
+              return (
+                <View key={index} style={styles.tag}>
+                  <View
+                    style={{
+                      paddingHorizontal: 10,
+                      borderRightWidth: 1,
+                      borderRightColor: colors.bgColor,
+                    }}>
+                    <Text style={styles.tagLabel}>{user.full_name}</Text>
+                  </View>
+                  <View
+                    style={{
+                      paddingHorizontal: 5,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <Pressable
+                      style={{width: 10, height: 10}}
+                      onPress={() => {
+                        selectPlayer(user);
+                      }}>
+                      <Image source={images.crossImage} style={styles.image} />
+                    </Pressable>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        ) : null}
+
+        <FlatList
+          data={filteredList}
+          renderItem={renderPlayer}
+          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyView}>
+              <Text style={styles.emptyViewText}>{strings.noPlayer}</Text>
+            </View>
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  mainContainer: {
+  parent: {
     flex: 1,
   },
-  infoTextStyle: {
-    marginTop: 20,
-    marginLeft: 20,
-    marginBottom: 20,
-    fontFamily: fonts.RRegular,
-    fontSize: 21,
-    color: colors.lightBlackColor,
-    fontWeight:'500'
+  mainContainer: {
+    flex: 1,
+    paddingTop: 20,
+    paddingHorizontal: 15,
   },
-  sendButtonStyle: {
-    fontFamily: fonts.RRegular,
+  infoTextStyle: {
+    fontSize: 21,
+    lineHeight: 30,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+    marginBottom: 13,
+  },
+  inputStyle: {
+    backgroundColor: colors.textFieldBackground,
+    paddingHorizontal: 26,
+    borderRadius: 25,
+    height: 40,
     fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    marginBottom: 15,
+  },
+  emptyView: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyViewText: {
+    fontFamily: fonts.RRegular,
+    color: colors.grayColor,
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  playerProfile: {
+    width: 40,
+    height: 40,
     marginRight: 10,
+  },
+  separator: {
+    height: 1,
+    marginVertical: 15,
+    backgroundColor: colors.grayBackgroundColor,
+  },
+  checkBox: {
+    width: 22,
+    height: 22,
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  name: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  city: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RLight,
+  },
+  tag: {
+    height: 25,
+    borderRadius: 5,
+    backgroundColor: colors.textFieldBackground,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginRight: 10,
+  },
+  tagLabel: {
+    fontSize: 12,
+    lineHeight: 21,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
   },
 });

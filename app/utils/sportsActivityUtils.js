@@ -101,7 +101,11 @@ const getTitleForRegister = (entityType = Verbs.entityTypePlayer) => {
 
 const getSportList = (sportList, role = Verbs.entityTypePlayer) => {
   const list = [];
-  if (role === Verbs.entityTypePlayer || role === Verbs.entityTypeClub) {
+  if (
+    role === Verbs.entityTypePlayer ||
+    role === Verbs.entityTypeUser ||
+    role === Verbs.entityTypeClub
+  ) {
     sportList.forEach((item) => {
       if (item.format?.length > 0) {
         item.format.forEach((sport) => {

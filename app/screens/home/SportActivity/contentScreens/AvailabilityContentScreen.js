@@ -4,46 +4,48 @@ import * as Utility from '../../../../utils/index';
 import AvailibilityScheduleScreen from '../../../account/schedule/AvailibityScheduleScreen';
 
 const AvailabilityContentScreen = ({userData}) => {
-    const authContext = useContext(AuthContext);
-    const [data, setData] = useState([]);
+  const authContext = useContext(AuthContext);
+  const [data, setData] = useState([]);
 
-    useEffect(() => {
-        getSlotData()
-    },[]);
+  useEffect(() => {
+    getSlotData();
+  }, []);
 
-    const getSlotData = () => {
-        let nextThreeMonth = new Date()
-        nextThreeMonth = nextThreeMonth.setMonth(nextThreeMonth.getMonth() + 3);
-        const startDateUnixTime = Utility.getTCDate(new Date());
-        const endDateUnixTime = Utility.getTCDate(new Date(nextThreeMonth));
-        Utility.getEventsSlots([authContext?.entity?.uid], startDateUnixTime, endDateUnixTime)
-        .then((response) => {
-            let resCalenders = [];
-            resCalenders = response.filter((obj) => {     
-                if (obj.cal_type === 'blocked') {
-                    return obj;
-                }
-                return false;
-            });
-            setData(resCalenders) 
-        });
-    }
+  const getSlotData = () => {
+    let nextThreeMonth = new Date();
+    nextThreeMonth = nextThreeMonth.setMonth(nextThreeMonth.getMonth() + 3);
+    const startDateUnixTime = Utility.getTCDate(new Date());
+    const endDateUnixTime = Utility.getTCDate(new Date(nextThreeMonth));
+    Utility.getEventsSlots(
+      [authContext?.entity?.uid],
+      startDateUnixTime,
+      endDateUnixTime,
+    ).then((response) => {
+      let resCalenders = [];
+      resCalenders = response.filter((obj) => {
+        if (obj.cal_type === 'blocked') {
+          return obj;
+        }
+        return false;
+      });
+      setData(resCalenders);
+    });
+  };
 
-    const onDayPress = () => {
-        getSlotData();
-    }
+  const onDayPress = () => {
+    getSlotData();
+  };
 
-    return (
-        <>
-        {
-        data.length > 0 ? (
-            <AvailibilityScheduleScreen
-            allSlots={data}
-            onDayPress={onDayPress}
-            userData={userData}
-            />
-        ):null}
-        </>
-    );
+  return (
+    <>
+      {data.length > 0 ? (
+        <AvailibilityScheduleScreen
+          allSlots={data}
+          onDayPress={onDayPress}
+          isAdmin={userData.user_id === authContext.entity.uid}
+        />
+      ) : null}
+    </>
+  );
 };
-export default AvailabilityContentScreen
+export default AvailabilityContentScreen;

@@ -150,6 +150,7 @@ const colors = {
   notificationCountBgColor: '#FE440C',
   maskViewColor: 'rgba(0,0,0,0.3)',
   bordercolor: '#EFEFEF',
+  bgColor: '#E4E4E4',
   borderlinecolor: '#dddddd',
   timeZone: 'en_Time Zone',
 };
