@@ -159,7 +159,15 @@ const getSportList = (sportList, role = Verbs.entityTypePlayer) => {
     ? list.sort((a, b) => a.sport.localeCompare(b.sport))
     : [];
 };
-
+const getSingleSportList = (sports) => {
+  const sportList = (sports || []).filter(
+    (obj) => obj.sport_type === Verbs.singleSport,
+  );
+  sportList.sort((a, b) =>
+    a.sport_name.normalize().localeCompare(b.sport_name.normalize()),
+  );
+  return sportList;
+};
 const getEntitySportList = (user = {}, role = Verbs.entityTypePlayer) => {
   let sportList = [];
   if (role === Verbs.entityTypePlayer) {
@@ -372,5 +380,6 @@ export {
   getCardBorderColor,
   getSportDefaultSettings,
   getEntityTpeLabel,
+  getSingleSportList,
   getGroupSportName,
 };

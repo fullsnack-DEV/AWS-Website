@@ -450,7 +450,7 @@ const LocalHomeNavigator = () => (
       name="LookingTeamScreen"
       component={LookingTeamScreen}
       options={{
-        title: 'Looking for a Team',
+        title: strings.individualsLookingforGroups,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -467,7 +467,7 @@ const LocalHomeNavigator = () => (
       name="RefereesListScreen"
       component={RefereesListScreen}
       options={{
-        title: 'Referees',
+        title: strings.refereesAvailable,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -484,7 +484,7 @@ const LocalHomeNavigator = () => (
       name="ScorekeeperListScreen"
       component={ScorekeeperListScreen}
       options={{
-        title: 'Scorekeepers',
+        title: strings.scoreKeeperAvailable,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

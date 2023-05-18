@@ -13,16 +13,18 @@ import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import {strings} from '../../Localization/translation';
 import Verbs from '../Constants/Verbs';
+import {filterType} from '../utils/constant';
 
 function TCPlayerView({
   onPress,
   showStar = false,
   showLevel = false,
-  data,
+  data = {},
   showSport = false,
   subTab,
   sportFilter,
   authContext,
+  fType,
   onPressChallengButton,
   onPressBookButton,
   onPressInviteButton,
@@ -31,7 +33,6 @@ function TCPlayerView({
   let isChallengeButtonShow = false;
   let isBookButtonShow = false;
   let isInviteButtonShow = false;
-
   const filterSport = () => {
     // Case - With Filter
     if (sportFilter.sport !== strings.allSport) {
@@ -59,7 +60,15 @@ function TCPlayerView({
     } else {
       // Case without filter
       sports = sports.filter((value) => {
-        if (value.is_active === true) {
+        // Available challenge case
+        if (fType === filterType.PLAYERAVAILABLECHALLENGE) {
+          if (
+            value.is_active === true &&
+            value.sport_type === Verbs.singleSport
+          ) {
+            return value;
+          }
+        } else if (value.is_active === true) {
           return value;
         }
         return false;
@@ -70,6 +79,7 @@ function TCPlayerView({
     data.registered_sports.map((value) => sports.push(value));
     filterSport();
     if (
+      sportFilter.sport !== strings.allSport &&
       sports.length === 1 &&
       sports[0].sport_type === Verbs.singleSport &&
       sports[0].setting?.availibility === Verbs.on &&
@@ -89,6 +99,7 @@ function TCPlayerView({
     data.referee_data.map((value) => sports.push(value));
     filterSport();
     if (
+      sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeUser &&
       sports.length === 1 &&
       sports[0].setting?.referee_availibility === Verbs.on &&
@@ -100,6 +111,7 @@ function TCPlayerView({
     ) {
       isBookButtonShow = true;
     } else if (
+      sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeTeam &&
       sports.length === 1 &&
       sports[0].setting?.referee_availibility === Verbs.on &&
@@ -113,8 +125,8 @@ function TCPlayerView({
   } else if (subTab === strings.scorekeeperTitle) {
     data.scorekeeper_data.map((value) => sports.push(value));
     filterSport();
-
     if (
+      sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeUser &&
       sports.length === 1 &&
       sports[0].setting?.scorekeeper_availibility === Verbs.on &&
@@ -126,6 +138,7 @@ function TCPlayerView({
     ) {
       isBookButtonShow = true;
     } else if (
+      sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeTeam &&
       sports.length === 1 &&
       sports[0].setting?.scorekeeper_availibility === Verbs.on &&
@@ -138,22 +151,28 @@ function TCPlayerView({
     }
   }
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity
+      onPress={() => {
+        onPress(sports);
+      }}>
       <View style={styles.viewContainer}>
         <Image
           source={
-            data?.thumbnail ? {uri: data?.thumbnail} : images.profilePlaceHolder
+            data.thumbnail ? {uri: data.thumbnail} : images.profilePlaceHolder
           }
           style={styles.profileImage}
         />
 
         <View style={{flexDirection: 'column', marginLeft: 10, flex: 1}}>
           <Text style={styles.entityName} numberOfLines={2}>
-            {data?.full_name}
+            {data.full_name}
           </Text>
           {showSport ? (
-            <Text style={styles.locationText} numberOfLines={1}>
-              {data?.city} ·{' '}
+            <Text
+              style={styles.locationText}
+              numberOfLines={1}
+              ellipsizeMode={'tail'}>
+              {data.city} ·{' '}
               {sports.length === 1 &&
                 sports[0].sport_name?.charAt(0).toUpperCase() +
                   sports[0].sport_name?.slice(1)}
@@ -165,7 +184,7 @@ function TCPlayerView({
             </Text>
           ) : (
             <Text style={styles.locationText} numberOfLines={1}>
-              {data?.city}
+              {data.city}
             </Text>
           )}
           {showStar && (
@@ -195,6 +214,7 @@ function TCPlayerView({
             </View>
           )}
         </View>
+
         {isChallengeButtonShow && (
           <TouchableWithoutFeedback
             onPress={() => {
@@ -202,8 +222,8 @@ function TCPlayerView({
             }}>
             <View
               style={{
-                backgroundColor: '#FF7F00',
-                width: 74,
+                backgroundColor: colors.darkYellowColor,
+                width: 75,
                 height: 25,
                 borderRadius: 5,
                 alignItems: 'center',
@@ -218,8 +238,8 @@ function TCPlayerView({
             onPress={() => onPressBookButton(data, sports[0])}>
             <View
               style={{
-                backgroundColor: '#FF7F00',
-                width: 74,
+                backgroundColor: colors.darkYellowColor,
+                width: 75,
                 height: 25,
                 borderRadius: 5,
                 alignItems: 'center',
@@ -233,14 +253,14 @@ function TCPlayerView({
           <TouchableWithoutFeedback onPress={() => onPressInviteButton(data)}>
             <View
               style={{
-                backgroundColor: '#FF7F00',
-                width: 74,
+                backgroundColor: colors.lightGrey,
+                width: 75,
                 height: 25,
                 borderRadius: 5,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={styles.challengeBtn}>{strings.invite}</Text>
+              <Text style={styles.inviteBtn}>{strings.invite}</Text>
             </View>
           </TouchableWithoutFeedback>
         )}
@@ -283,6 +303,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
+    alignSelf: 'center',
+  },
+  inviteBtn: {
+    fontSize: 12,
+    fontFamily: fonts.RBold,
+    color: colors.themeColor,
     alignSelf: 'center',
   },
 });

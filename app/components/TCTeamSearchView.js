@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 
+import {format} from 'react-string-format';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -17,7 +18,8 @@ import {strings} from '../../Localization/translation';
 function TCTeamSearchView({
   onPress,
   showStar = false,
-  data,
+  showLevelOnly = false,
+  data = {},
   isClub = false,
   authContext,
   onPressChallengeButton,
@@ -102,7 +104,7 @@ function TCTeamSearchView({
           </Text>
 
           {isClub ? (
-            <Text style={styles.locationText} numberOfLines={1}>
+            /* <Text style={styles.locationText} numberOfLines={1}>
               {data.city} ·{' '}
               {sports.length === 1 &&
                 sports[0].sport_name?.charAt(0).toUpperCase() +
@@ -112,13 +114,37 @@ function TCTeamSearchView({
                   sports[0].sport_name?.charAt(0).toUpperCase() +
                   sports[0].sport_name?.slice(1)
                 } & ${sports.length - 1} ${strings.moreText}`}
+            </Text> */
+            <Text style={styles.locationText} numberOfLines={1}>
+              {data.city} ·{' '}
+              {sports.length === 1 &&
+                sports[0].sport_name?.charAt(0).toUpperCase() +
+                  sports[0].sport_name?.slice(1)}
+              {sports.length > 1 && format(strings.sportsText, sports.length)}
             </Text>
           ) : (
-            <Text style={styles.locationText} numberOfLines={1}>
+            /* <Text style={styles.locationText} numberOfLines={1}>
               {data.city} ·{' '}
               {data.sport_name?.charAt(0).toUpperCase() +
                 data.sport_name?.slice(1)}
-            </Text>
+            </Text> */
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <Text
+                style={styles.locationText}
+                numberOfLines={1}
+                ellipsizeMode={'tail'}>
+                {data.city}
+              </Text>
+              <Text
+                style={styles.locationText}
+                numberOfLines={1}
+                ellipsizeMode={'tail'}>
+                {'·' +
+                  ` ${data.sport_name
+                    ?.charAt(0)
+                    .toUpperCase()}${data.sport_name?.slice(1)}`}
+              </Text>
+            </View>
           )}
           {showStar && (
             <Text style={styles.starPoints} numberOfLines={1}>
@@ -126,12 +152,11 @@ function TCTeamSearchView({
               {' · '}
               {data.setting?.game_fee?.fee}{' '}
               {data.setting?.game_fee?.currency_type}
-              {/* {data.length === 1 && data[0].setting
-                ? ` · ${data[0].setting.game_fee?.fee} ${
-                    data[0].setting.game_fee?.currency_type ??
-                    strings.defaultCurrency
-                  }`
-                : ''} */}
+            </Text>
+          )}
+          {showLevelOnly && (
+            <Text style={styles.starPoints} numberOfLines={1}>
+              LV {data.point}
             </Text>
           )}
         </View>
@@ -142,14 +167,14 @@ function TCTeamSearchView({
             }}>
             <View
               style={{
-                backgroundColor: '#FF7F00',
-                width: 74,
+                backgroundColor: colors.lightGrey,
+                width: 75,
                 height: 25,
                 borderRadius: 5,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Text style={styles.challengeBtn}>{strings.join}</Text>
+              <Text style={styles.joinBtn}>{strings.join}</Text>
             </View>
           </TouchableWithoutFeedback>
         )}
@@ -160,8 +185,8 @@ function TCTeamSearchView({
             }}>
             <View
               style={{
-                backgroundColor: '#FF7F00',
-                width: 74,
+                backgroundColor: colors.darkYellowColor,
+                width: 75,
                 height: 25,
                 borderRadius: 5,
                 alignItems: 'center',
@@ -186,7 +211,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 80,
-    backgroundColor: '#00000000',
+    backgroundColor: colors.blackColor,
   },
   placeHolderImg: {
     height: 32,
@@ -207,6 +232,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     marginTop: 1.5,
+    // width: 100,
   },
 
   starPoints: {
@@ -238,12 +264,19 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: colors.whiteColor,
     borderWidth: 1,
-    borderColor: '#dddddd',
+    borderColor: colors.borderlinecolor,
   },
   challengeBtn: {
     fontSize: 12,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
+    alignSelf: 'center',
+  },
+  joinBtn: {
+    fontSize: 12,
+    fontFamily: fonts.RBold,
+    color: colors.themeColor,
+    alignSelf: 'center',
   },
 });
 

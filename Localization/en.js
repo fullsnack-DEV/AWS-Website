@@ -1608,7 +1608,7 @@ export default {
   rules: 'en_Rules',
 
   matchPlaceFee: 'en_Match Place Fee, Referee Fee',
-  scorekeeperFeeText: 'en_Scorekeeper Fee.',
+  scorekeeperFeeText: 'en_Scorekeeper Fee',
   matchPlaceFeeDesc:
     'en_The match place, referees and scorekeepers should be secured by the team who has charge of them at its own expense.',
 
@@ -2696,6 +2696,8 @@ export default {
   filterRandom: 'en_Random',
   filterLowtoHighRefereeFee: 'en_Low to High Referee Fee',
   filterHightoLowRefereeFee: 'High to Low Referee Fee',
+  refereesAvailable: 'en_Referees Available',
+  scoreKeeperAvailable: 'en_Scorekeepers Available',
   filterNext7Day: 'en_Next 7 days',
   refeeringText: 'Refeering',
   scorekeeperingText: 'Scorekeepering',
@@ -2721,6 +2723,7 @@ export default {
   leaveTeam: 'en_Leave Team',
   leaguesPlaceholder: 'en_Languages you can communicate in',
   updateText: 'en_Update',
+  individualsLookingforGroups: 'en_Individuals Looking for Groups',
   batches: 'en_Batches',
   totalAmountInvoice: 'en_Total Amount Invoiced',
   paidText: 'en_Paid',
@@ -2812,8 +2815,14 @@ export default {
   onlineUrl: 'en_URL',
   emptyEventUrl: "en_URL hasn't been provided yet.",
   postTitle: 'en_Post',
+  playersAvailableforChallenge: 'en_Players Available for Challenge',
+  teamAvailableforChallenge: 'en_Teams Available for Challenge',
+  favoriteSports: 'en_Favorite Sports',
+  otherSports: 'en_Other Sports',
+  sportsText: '{0} sports',
   searchForTeamPartener: 'en_Search for team partner',
   matchCapText: 'en_Match',
+
   cancelInvoiveModaltitle:
     'en_Choose recipients of the invoices that you want to cancel.',
   peopleSelected: 'en_people selected',
