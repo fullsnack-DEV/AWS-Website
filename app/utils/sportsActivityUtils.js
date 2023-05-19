@@ -144,6 +144,7 @@ const getSportList = (sportList, role = Verbs.entityTypePlayer) => {
       const obj = {
         sport: item.sport,
         sport_name: item.sport_name,
+        sport_type: item.sport_type,
         default_setting: item.default_setting,
       };
       if (role === Verbs.entityTypeReferee) {

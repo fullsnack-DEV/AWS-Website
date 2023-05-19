@@ -721,7 +721,6 @@ export default function LocalHomeScreen({navigation, route}) {
           },
         });
       }
-
       getGameIndex(recentMatchQuery).then((games) => {
         Utility.getGamesList(games).then((gamedata) => {
           if (games?.length > 0) {

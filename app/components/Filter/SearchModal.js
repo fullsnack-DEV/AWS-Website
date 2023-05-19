@@ -65,16 +65,28 @@ const SearchModal = ({
   const [showSportComponent, setShowSportComponent] = useState(false);
 
   useEffect(() => {
-    setFilterOptions([
-      strings.filterAntTime,
-      strings.filterToday,
-      strings.filterYesterday,
-      strings.filterLast7Day,
-      strings.filterThisMonth,
-      strings.filterLastMonth,
-      strings.filterPickaDate,
-    ]);
-  }, []);
+    if (fType === filterType.UPCOMINGMATCHES) {
+      setFilterOptions([
+        strings.filterAntTime,
+        strings.filterToday,
+        strings.filterTomorrow,
+        strings.filterNext7Day,
+        strings.filterThisMonth,
+        strings.filterNextMonth,
+        strings.filterPickaDate,
+      ]);
+    } else {
+      setFilterOptions([
+        strings.filterAntTime,
+        strings.filterToday,
+        strings.filterYesterday,
+        strings.filterLast7Day,
+        strings.filterThisMonth,
+        strings.filterLastMonth,
+        strings.filterPickaDate,
+      ]);
+    }
+  }, [fType]);
   useEffect(() => {
     if (isVisible) {
       if (fType === filterType.RECRUIITINGMEMBERS) {
@@ -155,9 +167,9 @@ const SearchModal = ({
       if (location1.hasOwnProperty('address')) {
         setFilters({
           ...filters,
-          location: location1.city,
+          location: location1.city ?? location1.address,
           isSearchPlaceholder: false,
-          searchCityLoc: location1.city,
+          searchCityLoc: location1.city ?? location1.address,
         });
       } else {
         setFilters({
@@ -210,7 +222,6 @@ const SearchModal = ({
           justifyContent: 'space-between',
           alignContent: 'center',
           textAlignVertical: 'center',
-          // backgroundColor: colors.redColor,
           flex: 1,
           marginLeft: 10,
           marginRight: 10,
@@ -331,7 +342,6 @@ const SearchModal = ({
         }}
         modalType={ModalTypes.style1}
         title={strings.filter}
-        // containerStyle={styles.bottomPopupContainer}
         headerRightButtonText={strings.apply}
         onRightButtonPress={() => {
           if (fType === filterType.RECRUIITINGMEMBERS) {
@@ -401,6 +411,14 @@ const SearchModal = ({
             if (Number(filters.minFee) >= 0 && Number(filters.maxFee) > 0) {
               tempFilter.fee = `${tempFilter.minFee}-${tempFilter.maxFee}`;
             }
+            // For date
+            if (filters.fromDateTime && filters.toDateTime) {
+              tempFilter.availableTime = `${moment(
+                getJSDate(filters.fromDateTime).getTime(),
+              ).format('MMM DD')}-${moment(
+                getJSDate(filters.toDateTime).getTime(),
+              ).format('MMM DD')}`;
+            }
             onPressApply(tempFilter);
           }
         }}>
@@ -408,7 +426,6 @@ const SearchModal = ({
           style={{
             flex: 1,
             position: 'absolute',
-            // backgroundColor: colors.redColor,
             right: 0,
             left: 0,
             height: Dimensions.get('window').height - 50,
@@ -729,7 +746,6 @@ const SearchModal = ({
                           style={styles.minFee}
                           placeholder={strings.minPlaceholder}
                           autoCorrect={false}
-                          // clearButtonMode={'always'}
                           keyboardType={'numeric'}
                           placeholderTextColor={colors.userPostTimeColor}
                         />
@@ -741,7 +757,6 @@ const SearchModal = ({
                           style={styles.minFee}
                           placeholder={strings.maxPlaceholder}
                           autoCorrect={false}
-                          // clearButtonMode={'always'}
                           keyboardType={'numeric'}
                           placeholderTextColor={colors.userPostTimeColor}
                         />
@@ -793,30 +808,30 @@ const SearchModal = ({
                 )}
               </View>
               <View style={{flex: 1}} />
+              <TouchableOpacity
+                style={styles.resetButton}
+                onPress={() => {
+                  Alert.alert(
+                    strings.areYouSureRemoveFilterText,
+                    '',
+                    [
+                      {
+                        text: strings.cancel,
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                      },
+                      {
+                        text: strings.okTitleText,
+                        onPress: () => onPressReset(),
+                      },
+                    ],
+                    {cancelable: false},
+                  );
+                }}>
+                <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
+              </TouchableOpacity>
             </ScrollView>
           </KeyboardAvoidingView>
-          <TouchableOpacity
-            style={styles.resetButton}
-            onPress={() => {
-              Alert.alert(
-                strings.areYouSureRemoveFilterText,
-                '',
-                [
-                  {
-                    text: strings.cancel,
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                  },
-                  {
-                    text: strings.okTitleText,
-                    onPress: () => onPressReset(),
-                  },
-                ],
-                {cancelable: false},
-              );
-            }}>
-            <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
-          </TouchableOpacity>
         </View>
         <BottomSheet
           isVisible={showTimeActionSheet}
@@ -827,12 +842,18 @@ const SearchModal = ({
           onSelect={(option) => {
             if (option !== strings.filterPickaDate) {
               setTag(0);
-              // setFromDateTime('');
-              // setToDateTime('');
-              setFilters({...filters, fromDateTime: '', toDateTime: ''});
+              const temp = {...filters};
+              temp.fromDateTime = '';
+              temp.toDateTime = '';
+              temp.availableTime = option;
+
+              setFilters({...temp});
+            } else {
+              const temp = {...filters};
+              temp.availableTime = option;
+              setFilters({...temp});
             }
-            // setSelectedTime(option);
-            setFilters({...filters, availableTime: option});
+
             setShowTimeActionSheet(false);
           }}
         />
@@ -869,7 +890,6 @@ const SearchModal = ({
                       style={{
                         flex: 1,
                         flexDirection: 'column',
-                        // height: 80,
                         justifyContent: 'space-between',
                       }}>
                       <View
@@ -940,15 +960,14 @@ const styles = StyleSheet.create({
 
   resetButton: {
     alignSelf: 'center',
-    backgroundColor: colors.ligherGray,
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     height: 25,
     width: 130,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'absolute',
-    bottom: 80,
+    marginTop: 10,
   },
   resetTitle: {
     fontSize: 12,
