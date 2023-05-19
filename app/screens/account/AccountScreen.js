@@ -709,12 +709,29 @@ const AccountScreen = ({navigation, route}) => {
             menuList={accountMenu}
             isAccountDeactivated={authContext.isAccountDeactivated}
             onPressSetting={(rowItem) => {
-              navigation.navigate(
-                rowItem.navigateTo.screenName,
-                rowItem.navigateTo.data,
-              );
+              switch (rowItem.option) {
+                case strings.createTeamText:
+                case strings.createClubText:
+                case strings.addSportsTitle:
+                  // case strings.sendnewinvoice:
+                  handleSectionMemberClick(rowItem);
+                  break;
+
+                default:
+                  navigation.navigate(
+                    rowItem.navigateTo.screenName,
+                    rowItem.navigateTo.data,
+                  );
+                  break;
+              }
             }}
             onPressSport={(rowItem) => {
+              if (
+                rowItem.key === strings.clubstitle &&
+                rowItem.member.length === 0
+              ) {
+                return;
+              }
               handleSectionMemberClick(rowItem);
             }}
             onPressCancelRequest={(rowItem) => {

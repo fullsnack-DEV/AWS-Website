@@ -101,7 +101,7 @@ const paymentMethodMenu = () => [
   },
 ];
 
-const invoicesMenuForUser = () =>  [
+const invoicesMenuForUser = () => [
   {
     key: strings.invoicesTitle,
     icon: images.invoiceIcon,
@@ -133,42 +133,41 @@ const invoicesMenuForUser = () =>  [
   },
 ];
 
-const invoicesMenuForGroup = () =>  [
-    {
-      key: strings.invoicesTitle,
-      icon: images.invoiceIcon,
-      member: [
-        {
-          option: strings.sendnewinvoice,
-          icon: images.sendNewInvoiceIcon,
-        },
-        {
-          option: strings.invoicereceived,
-          icon: images.invoiceRecievedIcon,
-          navigateTo: {
-            screenName: 'Account',
-            data: {
-              screen: 'InvoiceReceivedScreen',
-              params: {
-                comeFrom: 'AccountScreen',
-              },
-            },
-          },
-        },
-        {
-          option: strings.invoicesent,
-          icon: images.invoiceIcon,
-          navigateTo: {
-            screenName: 'InvoiceSentScreen',
-            data: {
+const invoicesMenuForGroup = () => [
+  {
+    key: strings.invoicesTitle,
+    icon: images.invoiceIcon,
+    member: [
+      {
+        option: strings.sendnewinvoice,
+        icon: images.sendNewInvoiceIcon,
+      },
+      {
+        option: strings.invoicereceived,
+        icon: images.invoiceRecievedIcon,
+        navigateTo: {
+          screenName: 'Account',
+          data: {
+            screen: 'InvoiceReceivedScreen',
+            params: {
               comeFrom: 'AccountScreen',
             },
           },
         },
-      ],
-    },
+      },
+      {
+        option: strings.invoicesent,
+        icon: images.invoiceIcon,
+        navigateTo: {
+          screenName: 'InvoiceSentScreen',
+          data: {
+            comeFrom: 'AccountScreen',
+          },
+        },
+      },
+    ],
+  },
 ];
-
 
 export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
   const userMenu = [
@@ -328,9 +327,7 @@ export const prepareTeamMenu = (authContext, clubs) => {
     {
       key: strings.clubstitle,
       icon: images.accountMyClubs,
-      member: [
-        ...prepareGroupsSubMenu(clubs),
-      ],
+      member: [...prepareGroupsSubMenu(clubs)],
     },
     {
       key: strings.leagues,
