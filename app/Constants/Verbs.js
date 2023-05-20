@@ -152,7 +152,7 @@ const Verbs = {
 
   PAYMENT: 'payment',
   CASH: 'Cash',
-  DATE_FORMAT: 'MMM DD, YYYY, hh:mmA',
+  DATE_FORMAT: 'MMM DD YYYY hh:mmA',
   CHEQUE: 'Cheque',
   // Tag verbs
   entityID: 'entityID',
@@ -172,7 +172,7 @@ const Verbs = {
   DATE_MDY_FORMAT: 'll',
 
   THOUSAND_SECOND: '1000',
-  AVAILABILITY_DATE_FORMATE: 'YYYY-MM-DD'
+  AVAILABILITY_DATE_FORMATE: 'YYYY-MM-DD',
 };
 
 export default Verbs;

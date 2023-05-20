@@ -56,6 +56,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
   const [showLogModal, setShowLogModal] = useState(false);
   const authContext = useContext(AuthContext);
   const [logModalType, setLogModalType] = useState(LogType.Payment);
+  const [messages, setMessages] = useState();
   const [showAddedMessages, setShowAddedMessages] = useState(false);
   const userActionSheet = useRef();
   const logManuallyActionSheet = useRef();
@@ -82,9 +83,18 @@ export default function InvoiceDetailScreen({navigation, route}) {
   };
 
   useEffect(() => {
+    console.log(invoice, 'From detail');
     if (isFocused || isApiCalled) {
       getInvoiceData(invoice.invoice_id, authContext);
     }
+  }, [isFocused, isApiCalled]);
+
+  useEffect(() => {
+    const filteredMessages = invoice.resend_data?.filter(
+      (item) => item.message !== undefined,
+    );
+
+    setMessages(filteredMessages);
   }, [isFocused, isApiCalled]);
 
   const getInvoiceData = (invoiceId, auth) => {
@@ -200,30 +210,22 @@ export default function InvoiceDetailScreen({navigation, route}) {
     return null;
   };
 
-  // const payNowClicked = () => {
-  //   if (route.params.paymentMethod) {
-  //     console.log(route.params.paymentMethod);
-
-  //     setLoading(true);
-  //     const body = {};
-  //     body.source = route.params.paymentMethod?.id;
-  //     body.payment_method_type = 'card';
-  //     body.currency_type = invoice.currency_type;
-  //     payStripeInvoice(invoice.invoice_id, body, authContext)
-  //       .then(() => {
-  //         setLoading(false);
-  //         navigation.goBack();
-  //       })
-  //       .catch((e) => {
-  //         setLoading(false);
-  //         setTimeout(() => {
-  //           Alert.alert(strings.alertmessagetitle, e.message);
-  //         }, 10);
-  //       });
-  //   } else {
-  //     Alert.alert(strings.choosePayment);
-  //   }
-  // };
+  const onPayNowClick = () => {
+    if (invoice.invoice_status === Verbs.PARTIALLY_PAID) {
+      Alert.alert(
+        Platform.OS === 'android' ? '' : strings.partiallyPaidMessage,
+        Platform.OS === 'android' ? strings.partiallyPaidMessage : '',
+      );
+      return;
+    }
+    if (invoice.is_merchant) {
+      navigation.navigate('PayInvoiceScreen', {
+        data: invoice,
+      });
+    } else {
+      Alert.alert(strings.merchnatNotRegister);
+    }
+  };
 
   const listEmptyComponent = () => (
     <View style={{paddingHorizontal: 25, marginTop: 20}}>
@@ -498,7 +500,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 height={2}
               />
 
-              {invoice.resend_data?.length > 0 && (
+              {messages?.length >= 1 && (
                 <>
                   <View style={{marginTop: 25, paddingHorizontal: 15}}>
                     <Text
@@ -509,10 +511,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
                         lineHeight: 16,
                         marginBottom: 10,
                       }}>
-                      {format(
-                        strings.addedMeesages,
-                        invoice.resend_data?.length,
-                      )}
+                      {format(strings.addedMeesages, messages?.length)}
                     </Text>
 
                     <TouchableOpacity
@@ -539,7 +538,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
                             color: colors.userPostTimeColor,
                           },
                         ]}>
-                        {invoice?.resend_data[0].message}
+                        {messages[0].message}
                       </ReadMore>
                     </TouchableOpacity>
 
@@ -579,7 +578,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
               <AddedMessagesModal
                 isVisible={showAddedMessages}
                 closeList={() => setShowAddedMessages(false)}
-                Messages={invoice.resend_data}
+                Messages={messages}
               />
 
               {/* log view */}
@@ -642,6 +641,7 @@ export default function InvoiceDetailScreen({navigation, route}) {
                 isVisible={showLogModal}
                 invoice={invoice}
                 log={selectedLog}
+                from={from}
                 closeList={() => setShowLogModal(false)}
                 onActionPress={() => {
                   setTimeout(() => {
@@ -661,12 +661,16 @@ export default function InvoiceDetailScreen({navigation, route}) {
               invoice.invoice_status === Verbs.PARTIALLY_PAID ? (
                 <>
                   <TouchableOpacity
-                    style={styles.btncontainer}
-                    onPress={() =>
-                      navigation.navigate('PayInvoiceScreen', {
-                        data: invoice,
-                      })
-                    }>
+                    style={[
+                      styles.btncontainer,
+                      {
+                        backgroundColor:
+                          invoice.invoice_status === Verbs.UNPAID
+                            ? colors.orangeColor
+                            : colors.userPostTimeColor,
+                      },
+                    ]}
+                    onPress={() => onPayNowClick()}>
                     <Text style={styles.btntextstyle}>{strings.PAYNOW}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity

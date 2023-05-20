@@ -10,6 +10,7 @@ import {
   Text,
   Image,
   SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
 
 import moment from 'moment';
@@ -27,21 +28,33 @@ import {MonthData} from '../../../Constants/GeneralConstants';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
-import {getTCDate} from '../../../utils';
+import {getTCDate, groupBy} from '../../../utils';
 import DateFilterModal from './DatefilterModal';
 import ScreenHeader from '../../../components/ScreenHeader';
+import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
 
 export default function CanceledInvoicesScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [from] = useState(route.params.from);
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
-  const [invoiceList, setInvoiceList] = useState([]);
+
   const [visiblemonthModal, setVisibleMonthModal] = useState();
   const [selectedMonth, setSelectedMonth] = useState(MonthData[1]);
   const [startDateTime, setStartDateTime] = useState(
     new Date(new Date().setDate(new Date().getDate() - 90)),
   );
+
+  const defaultRecords = [
+    {
+      currency_type: 'USD',
+      invoice_total: 0,
+      invoice_paid_total: 0,
+      invoice_open_total: 0,
+      invoices: [],
+    },
+  ];
+  const [data, setData] = useState([]);
   const [endDateTime, setEndDateTime] = useState();
   const [showDateModal, setShowDateModal] = useState(false);
   const [tabs, setTabs] = useState([
@@ -49,7 +62,11 @@ export default function CanceledInvoicesScreen({navigation, route}) {
     strings.canceledNInvoice,
     strings.rejectedNInvoice,
   ]);
+  const [currentRecordSet, setCurrentRecordSet] = useState(defaultRecords[0]);
   const [tabNumber, setTabNumber] = useState(0);
+  const [totalInvoice, setTotalInvoice] = useState(0);
+  const [selectedCurrency, setSelectedCurrency] = useState();
+  const [visibleCurrencySheet, setVisibleCurrencySheet] = useState();
 
   const tabChangePress = useCallback((changeTab) => {
     setTabNumber(changeTab.i);
@@ -95,21 +112,51 @@ export default function CanceledInvoicesScreen({navigation, route}) {
     getCancelledInvoice(type, authContext, TcstartDate, endDateTime)
       .then((response) => {
         setloading(false);
-        setInvoiceList(response.payload);
-        const allTitle = format(strings.allNInvoice, response.payload.length);
-        const canceledTitle = format(
-          strings.canceledNInvoice,
-          response.payload.filter(
-            (obj) => obj.invoice_status === Verbs.INVOICE_CANCELLED,
-          ).length,
-        );
-        const rejectedTitle = format(
-          strings.rejectedNInvoice,
-          response.payload.filter(
-            (obj) => obj.invoice_status === Verbs.INVOICE_REJECTED,
-          ).length,
-        );
-        setTabs([allTitle, canceledTitle, rejectedTitle]);
+
+        let dataObj = defaultRecords;
+        let totalLength = 0;
+        if (response.payload.length > 0) {
+          totalLength = response.payload.length;
+          const result = groupBy(response.payload, 'currency_type');
+          dataObj = [];
+          // eslint-disable-next-line guard-for-in
+          for (const currencyKey in result) {
+            const receiverInvoices = {
+              currency_type: currencyKey,
+              invoice_paid_total: 0.0,
+              invoice_open_total: 0.0,
+              invoice_total: 0.0,
+              invoices: result[currencyKey],
+            };
+
+            receiverInvoices.invoices.map((e) => {
+              receiverInvoices.invoice_paid_total += e.amount_paid;
+              receiverInvoices.invoice_open_total += e.amount_remaining;
+              receiverInvoices.invoice_total += e.amount_due;
+            });
+            dataObj.push(receiverInvoices);
+          }
+          setData(dataObj);
+        }
+        setTotalInvoice(totalLength);
+
+        if (selectedCurrency) {
+          if (selectedCurrency !== strings.all) {
+            const selectedRecord = dataObj.find(
+              (obj) => obj.currency_type === selectedCurrency,
+            );
+            if (selectedRecord) {
+              setCurrentRecordSet(selectedRecord);
+            } else {
+              setCurrentRecordSet(dataObj[0]);
+              setSelectedCurrency(dataObj[0].currency_type);
+              setTabNumber(strings.all);
+            }
+          }
+        } else {
+          setCurrentRecordSet(dataObj[0]);
+          setSelectedCurrency(dataObj[0].currency_type);
+        }
       })
       .catch((e) => {
         setloading(false);
@@ -125,14 +172,40 @@ export default function CanceledInvoicesScreen({navigation, route}) {
     }
   }, [authContext, isFocused, selectedMonth]);
 
+  useEffect(() => {
+    const allTitle = format(
+      strings.allNInvoice,
+      invoiceListByFilter(Verbs.allStatus).length,
+    );
+    const canceledTitle = format(
+      strings.canceledNInvoice,
+      invoiceListByFilter(Verbs.INVOICE_CANCELLED).length,
+    );
+    const rejectedTitle = format(
+      strings.rejectedNInvoice,
+      invoiceListByFilter(Verbs.INVOICE_REJECTED).length,
+    );
+
+    setTabs([allTitle, canceledTitle, rejectedTitle]);
+  }, [currentRecordSet]);
+
   const invoiceListByFilter = useCallback(
     (status) => {
       if (status === Verbs.allStatus) {
-        return invoiceList;
+        return currentRecordSet.invoices;
       }
-      return invoiceList.filter((obj) => obj.invoice_status === status);
+      if (status === Verbs.INVOICE_CANCELLED) {
+        return currentRecordSet.invoices.filter(
+          (obj) => obj.invoice_status === Verbs.INVOICE_CANCELLED,
+        );
+      }
+      if (status === Verbs.INVOICE_REJECTED) {
+        return currentRecordSet.invoices.filter(
+          (obj) => obj.invoice_status === Verbs.INVOICE_REJECTED,
+        );
+      }
     },
-    [invoiceList],
+    [currentRecordSet],
   );
 
   return (
@@ -200,20 +273,65 @@ export default function CanceledInvoicesScreen({navigation, route}) {
             </View>
           </Pressable>
 
-          {/* invocies cancelled */}
+          <View
+            style={{
+              paddingHorizontal: 15,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              backgroundColor: colors.lightGrayBackground,
+              marginTop: 20,
+              marginBottom: selectedCurrency === strings.all ? 20 : 15,
+            }}>
+            <TouchableOpacity
+              onPress={() => setVisibleCurrencySheet(true)}
+              style={{
+                flexDirection: 'row',
+              }}>
+              <Text
+                style={{
+                  fontFamily: fonts.RMedium,
+                  fontSize: 20,
+                  color: colors.lightBlackColor,
+                }}>
+                {selectedCurrency === strings.all
+                  ? strings.allInvoiceText
+                  : `${strings.invoicesIn}`}
+                {selectedCurrency !== strings.all && (
+                  <Text
+                    style={{
+                      fontFamily: fonts.RBold,
+                    }}>
+                    {' '}
+                    {`${currentRecordSet.currency_type}`}
+                  </Text>
+                )}
+              </Text>
+              <Image
+                source={images.invoiceDarkDownArrow}
+                style={{
+                  width: 14,
+                  height: 26,
+                  resizeMode: 'contain',
+                  marginLeft: 5,
+                  alignItems: 'center',
+                  lineHeight: 30,
+                  tintColor: colors.lightBlackColor,
+                }}
+              />
+            </TouchableOpacity>
 
-          <Text style={{marginLeft: 15, marginTop: 30, marginBottom: 15}}>
-            <Text style={{fontSize: 20, fontFamily: fonts.RMedium}}>
-              {
-                invoiceList.filter(
-                  (obj) => obj.invoice_status === Verbs.INVOICE_CANCELLED,
-                ).length
-              }
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: fonts.RMedium,
+                lineHeight: 30,
+                color: colors.lightBlackColor,
+              }}>
+              {selectedCurrency === strings.all
+                ? totalInvoice
+                : currentRecordSet.invoices.length}
             </Text>
-            <Text style={styles.invoiceSentheading}>
-              {''} {strings.invoicesCancelled}
-            </Text>
-          </Text>
+          </View>
         </View>
 
         <BottomSheet
@@ -234,47 +352,83 @@ export default function CanceledInvoicesScreen({navigation, route}) {
           }}
         />
 
-        <View style={{flex: 1}}>
-          {from === Verbs.INVOICERECEVIED ? (
-            <View style={{backgroundColor: colors.whiteColor}}>
-              <TCScrollableProfileTabs
-                tabItem={tabs}
-                tabVerticalScroll={false}
-                onChangeTab={tabChangePress}
-                currentTab={tabNumber}
-                bounces={false}
-                tabStyle={{
-                  marginTop: -4,
-                }}
+        {selectedCurrency === strings.all ? (
+          <>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: colors.whiteColor,
+              }}>
+              <FlatList
+                extraData={data}
+                showsVerticalScrollIndicator={false}
+                data={data}
+                keyExtractor={(index) => index.toString()}
+                ItemSeparatorComponent={() => (
+                  <View style={styles.dividerLine} />
+                )}
+                renderItem={({item}) => (
+                  <InvoiceAmount
+                    style={{
+                      backgroundColor: colors.whiteColor,
+                      marginTop: 15,
+                    }}
+                    currency={item.currency_type}
+                    totalInvoices={item.invoices.length}
+                    totalAmount={item.invoice_total}
+                    paidAmount={item.invoice_paid_total}
+                    openAmount={item.invoice_open_total}
+                    allCurrencySelected={selectedCurrency === strings.all}
+                  />
+                )}
               />
             </View>
-          ) : null}
-          <FlatList
-            data={
-              (tabNumber === 0 && invoiceListByFilter(Verbs.allStatus)) ||
-              (tabNumber === 1 &&
-                invoiceListByFilter(Verbs.INVOICE_CANCELLED)) ||
-              (tabNumber === 2 && invoiceListByFilter(Verbs.INVOICE_REJECTED))
-            }
-            showsVerticalScrollIndicator={false}
-            ListEmptyComponent={() => (
-              <Text
-                style={{
-                  marginTop: 180,
-                  alignSelf: 'center',
-                  color: colors.userPostTimeColor,
-                  fontSize: 16,
-                  fontFamily: fonts.RMedium,
-                  lineHeight: 24,
-                }}>
-                {strings.noinvoice}
-              </Text>
-            )}
-            renderItem={renderCancelledView}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-
+          </>
+        ) : (
+          <View style={{flex: 1}}>
+            {from === Verbs.INVOICERECEVIED ? (
+              <View style={{backgroundColor: colors.whiteColor}}>
+                <TCScrollableProfileTabs
+                  tabItem={tabs}
+                  tabVerticalScroll={false}
+                  onChangeTab={tabChangePress}
+                  currentTab={tabNumber}
+                  bounces={false}
+                  customStyle={{
+                    paddingVertical: 0,
+                  }}
+                  tabStyle={{
+                    marginTop: -4,
+                  }}
+                />
+              </View>
+            ) : null}
+            <FlatList
+              data={
+                (tabNumber === 0 && invoiceListByFilter(Verbs.allStatus)) ||
+                (tabNumber === 1 &&
+                  invoiceListByFilter(Verbs.INVOICE_CANCELLED)) ||
+                (tabNumber === 2 && invoiceListByFilter(Verbs.INVOICE_REJECTED))
+              }
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={() => (
+                <Text
+                  style={{
+                    marginTop: 180,
+                    alignSelf: 'center',
+                    color: colors.userPostTimeColor,
+                    fontSize: 16,
+                    fontFamily: fonts.RMedium,
+                    lineHeight: 24,
+                  }}>
+                  {strings.noinvoice}
+                </Text>
+              )}
+              renderItem={renderCancelledView}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
+        )}
         <DateFilterModal
           isVisible={showDateModal}
           closeList={() => setShowDateModal(false)}
@@ -290,6 +444,30 @@ export default function CanceledInvoicesScreen({navigation, route}) {
             );
           }}
         />
+
+        <BottomSheet
+          isVisible={visibleCurrencySheet}
+          optionList={[strings.all, ...data.map((item) => item.currency_type)]}
+          closeModal={() => setVisibleCurrencySheet(false)}
+          onSelect={(option) => {
+            if (option === strings.all) {
+              setSelectedCurrency(option);
+              setVisibleCurrencySheet(false);
+              return;
+            }
+
+            setVisibleCurrencySheet(false);
+
+            const selectedRecord = data.find(
+              (obj) => obj.currency_type === option,
+            );
+
+            if (selectedRecord) {
+              setSelectedCurrency(option);
+              setCurrentRecordSet(selectedRecord);
+            }
+          }}
+        />
       </View>
     </SafeAreaView>
   );
@@ -297,11 +475,5 @@ export default function CanceledInvoicesScreen({navigation, route}) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-  },
-  invoiceSentheading: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 5,
   },
 });

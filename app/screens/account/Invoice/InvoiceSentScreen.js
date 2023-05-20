@@ -122,7 +122,6 @@ export default function InvoiceSentScreen({navigation}) {
     }
 
     setStartDateTime(startDate);
-    // setEndDateTime(endDate);
   };
 
   useEffect(() => {
@@ -134,7 +133,6 @@ export default function InvoiceSentScreen({navigation}) {
   const getSendInvoices = () => {
     setRefreshflag(false);
     const startDate = getTCDate(startDateTime);
-    // const endDate = getTCDate(endDateTime);
 
     setLoading(true);
 

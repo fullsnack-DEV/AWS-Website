@@ -62,6 +62,8 @@ export default function AddRecipientsInBatchModal({
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
+    console.log(currentInvoice, 'from Current Inovice');
+
     if (visible) {
       setResendMessage();
       if (invoiceAction === InvoiceActionType.AddRecipient) {
@@ -339,7 +341,7 @@ export default function AddRecipientsInBatchModal({
                   color: colors.userPostTimeColor,
                 },
               ]}>
-              {currentInvoice.invoice_desc}
+              {currentInvoice.invoice_description}
             </ReadMore>
           </View>
 

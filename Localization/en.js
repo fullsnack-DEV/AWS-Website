@@ -2826,16 +2826,16 @@ export default {
   cancelInvoiveModaltitle:
     'en_Choose recipients of the invoices that you want to cancel.',
   peopleSelected: 'en_people selected',
-  allRecipientsCount: 'en_All Recipients ({0})',
+  allRecipientsCount: 'en_All Invoices ({0})',
   resendInvoiceModalTitle:
     'en_Please choose recipients. You can also add a new message.',
   addnewMessage: 'en_ADD NEW mESSAGE',
   amountRecevied: 'en_Amount Recevied',
   amountRefunded: 'en_Amount Refunded',
   deleteLogText: 'en_Are you sure you want to delete this log?',
-  deletelogbtntext: 'en_Delete log',
+  deletelogbtntext: 'en_Delete Log',
   loggedbytxt: 'en_Logged by',
-  loggedat: 'en_logged at:',
+  loggedat: 'en_Logged at:',
   transctionNumber: 'en_Transaction No:',
   logaPayment: 'en_Log a Payment',
   logaRefund: 'en_Log a Refund',
@@ -2932,9 +2932,15 @@ export default {
   postTitle: 'en_Post',
   list: 'en_List',
   plusDayOne: 'en_+1day',
+  partiallyPaidMessage:
+    'en_If the invoice has been partially paid, you cannot use this payment method to pay it.',
+  payInvoiceTitle: 'en_Pay Invoice',
+  merchnatNotRegister:
+    'en_invoice sender does not have bank account registered ',
   nInvitationSent: 'en_{0} invitations were sent.',
   followingAndFollowers: 'en_Following & Followers',
   onlyAccount: 'en_Only {0} account',
   onlyOrganizer: 'en_Only {0} (organizer)',
   onlyOption: 'en_Only {0}',
+
 };

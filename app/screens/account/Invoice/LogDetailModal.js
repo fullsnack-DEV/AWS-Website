@@ -16,7 +16,7 @@ import colors from '../../../Constants/Colors';
 import {getJSDate} from '../../../utils';
 import TCThinDivider from '../../../components/TCThinDivider';
 import Verbs from '../../../Constants/Verbs';
-import {deleteInvoiceLog} from '../../../api/Invoice';
+import {addLog, deleteInvoiceLog} from '../../../api/Invoice';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
@@ -25,16 +25,41 @@ export default function LogDetailModal({
   invoice,
   log,
   closeList,
+  from,
   onActionPress = () => {},
 }) {
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
+
   const onDeleteLog = () => {
     setLoading(true);
     deleteInvoiceLog(invoice.invoice_id, log.transaction_id, authContext)
       .then(() => {
         setLoading(false);
         onActionPress();
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const onrefundLog = () => {
+    const body = {};
+    body.payment_mode = log.payment_mode; // Verbs.CASH
+    body.amount = Number(parseFloat(log.amount).toFixed(2));
+    body.strip_refund = true;
+    body.payment_date = Number((new Date().getTime() / 1000).toFixed(0));
+    body.transaction_type = Verbs.refundStatus;
+
+    setLoading(true);
+    addLog(invoice.invoice_id, body, authContext)
+      .then(() => {
+        setLoading(false);
+        onActionPress();
+        closeList();
       })
       .catch((e) => {
         setLoading(false);
@@ -63,7 +88,7 @@ export default function LogDetailModal({
   };
 
   const onRefundPress = () => {
-    console.log('Refund');
+    onrefundLog();
   };
 
   const getPaymentModeText = () => {
@@ -127,7 +152,6 @@ export default function LogDetailModal({
       isVisible={isVisible}
       closeModal={closeList}
       modalType={ModalTypes.style3}
-      onRightButtonPress={() => console.log('NextPressed')}
       headerRightButtonText={strings.done}
       title={strings.log}
       containerStyle={{
@@ -191,7 +215,7 @@ export default function LogDetailModal({
             </Text>
           </View>
           <View style={[styles.rowStyle, {marginTop: 10}]}>
-            <Text style={styles.textStyle}>{strings.amountTitle}</Text>
+            <Text style={styles.textStyle}>{strings.amountTitle}:</Text>
             <Text
               style={[
                 styles.statusTextStyle,
@@ -214,7 +238,7 @@ export default function LogDetailModal({
             </Text>
           </View>
           <View style={[styles.rowStyle, {marginTop: 10}]}>
-            <Text style={styles.textStyle}>{strings.method}</Text>
+            <Text style={styles.textStyle}>{strings.method}:</Text>
             <Text style={styles.statusTextStyle}> {getPaymentModeText()} </Text>
           </View>
           <View style={[styles.rowStyle, {marginTop: 10}]}>
@@ -238,7 +262,7 @@ export default function LogDetailModal({
 
         {/* Delete Log */}
 
-        {RenderDeleteRefundButtons()}
+        {from !== Verbs.INVOICERECEVIED ? RenderDeleteRefundButtons() : null}
       </View>
     </CustomModalWrapper>
   );

@@ -44,6 +44,7 @@ export default function LogModal({
       body.transaction_type =
         mode === LogType.Payment ? Verbs.PAYMENT : Verbs.refundStatus;
       body.notes = notes;
+
       addLog(invoice.invoice_id, body, authContext)
         .then(() => {
           setLoading(false);

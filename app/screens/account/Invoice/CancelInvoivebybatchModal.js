@@ -23,7 +23,7 @@ export default function CancelInvoivebybatchModal({
   visible,
   closeModal,
   batchData,
-  onCancelInvoice = () => {}
+  onCancelInvoice = () => {},
 }) {
   const [recipients, setRecipients] = useState([]);
   const [searchRecipients, setSearchRecipients] = useState([]);
@@ -60,10 +60,7 @@ export default function CancelInvoivebybatchModal({
   }, [visible]);
 
   const renderAllRecipientRow = (isChecked) => {
-    const title = format(
-      strings.allRecipientsCount,
-      batchData.invoices.length,
-    );
+    const title = format(strings.allRecipientsCount, batchData.invoices.length);
     return (
       <>
         <CancelRecepintCell
@@ -84,7 +81,7 @@ export default function CancelInvoivebybatchModal({
     if (selectedRecipients.length > 0) {
       return selectedRecipients.length === 1
         ? `1 ${strings.person}`
-        : `${selectedRecipients.length} ${strings.people}`;
+        : `${selectedRecipients.length} ${strings.people} ${strings.selected} `;
     }
 
     return strings.noneselected;

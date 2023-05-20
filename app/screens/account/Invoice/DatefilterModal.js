@@ -1,4 +1,4 @@
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Platform} from 'react-native';
 import React, {useState} from 'react';
 import moment from 'moment';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
@@ -28,7 +28,7 @@ export default function DateFilterModal({isVisible, closeList, onApplyPress}) {
       isVisible={isVisible}
       closeModal={closeList}
       modalType={ModalTypes.style1}
-      Top={690}
+      Top={Platform.OS === 'android' ? 570 : 690}
       onRightButtonPress={() => onApplyPress(startDate, endDate)}
       headerRightButtonText={strings.apply}
       title={strings.pickaDate}

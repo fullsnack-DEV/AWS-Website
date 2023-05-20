@@ -5,10 +5,11 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
-  Pressable,
+  Alert,
   Platform,
 } from 'react-native';
-import React, {useState} from 'react';
+import {useIsFocused} from '@react-navigation/native';
+import React, {useEffect, useState, useContext} from 'react';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {strings} from '../../../../Localization/translation';
 import images from '../../../Constants/ImagePath';
@@ -18,13 +19,62 @@ import TCThickDivider from '../../../components/TCThickDivider';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import {ModalTypes} from '../../../Constants/GeneralConstants';
 
+import AuthContext from '../../../auth/context';
+
+import {payStripeInvoice} from '../../../api/Invoice';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+
 export default function PayInvoiceScreen({navigation, route}) {
   const [invoiceData] = useState(route.params.data);
+  const [paymentData, setPaymentData] = useState({});
   const [visibleInfo, setVisibleInfo] = useState(false);
+  const authContext = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (route.params?.paymentMethod) {
+      setPaymentData(route.params?.paymentMethod);
+    }
+  }, [isFocused, route.params?.paymentMethod]);
+
+  const onPayMakePayment = () => {
+    const body = {};
+
+    body.source = paymentData.id;
+    body.payment_method_type = paymentData.type;
+    body.currency_type = invoiceData.currency_type;
+
+    setLoading(true);
+    payStripeInvoice(invoiceData.invoice_id, body, authContext)
+      .then((response) => {
+        setLoading(false);
+        if (response.status) {
+          navigation.goBack();
+        }
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
+  const paymentValidation = () => {
+    if (Object.keys(paymentData).length === 0) {
+      Alert.alert(strings.choosePayment);
+      console.log('in if');
+    } else {
+      onPayMakePayment();
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ActivityLoader visible={loading} />
       <ScreenHeader
-        title={'Pay Invoice'}
+        title={strings.payInvoiceTitle}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.goBack();
@@ -39,10 +89,24 @@ export default function PayInvoiceScreen({navigation, route}) {
       <View style={styles.header}>
         <Text style={styles.paymenttext}> {strings.paymentMethod} </Text>
         {/* Add payment method */}
-        <TouchableOpacity style={styles.paybuttonContainer}>
+        <TouchableOpacity
+          style={styles.paybuttonContainer}
+          onPress={() =>
+            navigation.navigate('PaymentMethodsScreen', {
+              comeFrom: 'PayInvoiceScreen',
+            })
+          }>
           <View style={styles.plusIconContainer}>
             <Image source={images.plus} style={styles.plusImageContainer} />
-            <Text style={styles.addPayText}>{strings.addpaymentMethod}</Text>
+            {Object.entries(paymentData).length > 1 ? (
+              <Text style={styles.addPayText}>
+                {`${paymentData.card?.brand.toUpperCase()} * * * * ${
+                  paymentData.card?.last4
+                }`}
+              </Text>
+            ) : (
+              <Text style={styles.addPayText}>{strings.addpaymentMethod}</Text>
+            )}
           </View>
           <Image source={images.rightArrow} style={styles.rightIconstyle} />
         </TouchableOpacity>
@@ -59,7 +123,7 @@ export default function PayInvoiceScreen({navigation, route}) {
             </View>
             <View style={{flex: 1}}>
               <Text style={[styles.textstyle, {alignSelf: 'flex-end'}]}>
-                {invoiceData.amount_due}
+                {invoiceData.amount_due.toFixed(2)}
               </Text>
             </View>
           </View>
@@ -73,7 +137,7 @@ export default function PayInvoiceScreen({navigation, route}) {
               </Text>
             </View>
           </View>
-
+          {/* 
           <View style={styles.rowstyle}>
             <View style={{flex: 1}}>
               <Text style={styles.textstyle}> {strings.international}</Text>
@@ -92,7 +156,7 @@ export default function PayInvoiceScreen({navigation, route}) {
                 0.00
               </Text>
             </View>
-          </View>
+          </View> */}
 
           <TCThickDivider
             height={1}
@@ -104,7 +168,9 @@ export default function PayInvoiceScreen({navigation, route}) {
 
           <View style={[styles.rowstyle, {marginTop: 10, marginBottom: 10}]}>
             <Text style={styles.textstyle}> {strings.total} </Text>
-            <Text style={styles.textstyle}>{invoiceData.amount_due}</Text>
+            <Text style={styles.textstyle}>
+              {invoiceData.amount_due.toFixed(2)}
+            </Text>
           </View>
         </View>
         <Text style={[styles.textstyle, {alignSelf: 'flex-end'}]}>
@@ -113,7 +179,9 @@ export default function PayInvoiceScreen({navigation, route}) {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.makePayButton}>
+      <TouchableOpacity
+        style={styles.makePayButton}
+        onPress={() => paymentValidation()}>
         <Text style={styles.makePayButtonText}>{strings.makeAPayment}</Text>
       </TouchableOpacity>
       {/* Modal */}

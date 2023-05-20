@@ -105,8 +105,8 @@ export default function BatchDetailScreen({navigation, route}) {
     setLoading(true);
     getBatchInvoices(batchid, auth)
       .then((response) => {
-        setBatchData(response.payload);
         setLoading(false);
+        setBatchData(response.payload);
       })
       .catch((e) => {
         setLoading(false);
