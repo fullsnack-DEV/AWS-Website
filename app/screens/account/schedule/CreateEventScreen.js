@@ -47,7 +47,6 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import EventVenueTogglebtn from '../../../components/Schedule/EventVenueTogglebtn';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
 import {
   deleteConfirmation,
@@ -64,11 +63,17 @@ import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventI
 import uploadImages from '../../../utils/imageAction';
 import Verbs from '../../../Constants/Verbs';
 import ScreenHeader from '../../../components/ScreenHeader';
-import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
-import {ModalTypes} from '../../../Constants/GeneralConstants';
+import {
+  DEFAULT_LATITUDE,
+  DEFAULT_LONGITUDE,
+  LATITUDE_DELTA,
+  LONGITUDE_DELTA,
+  ModalTypes,
+} from '../../../Constants/GeneralConstants';
 import {getSportList} from '../../../utils/sportsActivityUtils';
 import SportsListModal from '../registerPlayer/modals/SportsListModal';
+import AddressWithMapModal from '../../../components/AddressWithMap/AddressWithMapModal';
 
 export default function CreateEventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -148,6 +153,18 @@ export default function CreateEventScreen({navigation, route}) {
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
   const venueInputRef = useRef();
   const refundPolicyInputRef = useRef();
+  const [mapRegion, setMapRegion] = useState({
+    latitude: DEFAULT_LATITUDE,
+    longitude: DEFAULT_LONGITUDE,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA,
+  });
+  const [mapcoordinate, setMapCoordinate] = useState({
+    latitude: DEFAULT_LATITUDE,
+    longitude: DEFAULT_LONGITUDE,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA,
+  });
 
   const handleStartDatePress = (date) => {
     const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date;
@@ -559,7 +576,7 @@ export default function CreateEventScreen({navigation, route}) {
           repeat: selectWeekMonth,
           untilDate: getTCDate(eventUntilDateTime),
           blocked: is_Blocked,
-          selected_sport: selectedSport.sport,
+          selected_sport: selectedSport,
           who_can_invite: {
             ...whoCanInviteOption,
           },
@@ -656,10 +673,12 @@ export default function CreateEventScreen({navigation, route}) {
   const onSelectAddress = (_location) => {
     setLocationDetail({
       ...locationDetail,
-      latitude: _location.latitude,
-      longitude: _location.longitude,
+      latitude: _location.coordinate.latitude,
+      longitude: _location.coordinate.longitude,
     });
-    setSearchLocation(_location.formattedAddress);
+    setMapCoordinate(_location.coordinate);
+    setMapRegion(_location.region);
+    setSearchLocation(_location.addressforMap);
   };
 
   const handleBackPress = () => {
@@ -846,8 +865,8 @@ export default function CreateEventScreen({navigation, route}) {
               isRequired={true}>
               <EventVenueTogglebtn
                 offline={is_Offline}
-                firstTabTitle="Offline"
-                secondTabTitle="Online"
+                firstTabTitle={strings.offline}
+                secondTabTitle={strings.online}
                 onFirstTabPress={() => setIsOffline(true)}
                 onSecondTabPress={() => setIsOffline(false)}
               />
@@ -864,7 +883,7 @@ export default function CreateEventScreen({navigation, route}) {
                     placeholderTextColor={colors.userPostTimeColor}
                   />
 
-                  <TCTouchableLabel
+                  {/* <TCTouchableLabel
                     placeholder={strings.addressPlaceholder}
                     title={searchLocation}
                     showShadow={false}
@@ -877,19 +896,11 @@ export default function CreateEventScreen({navigation, route}) {
                       alignSelf: 'center',
                       backgroundColor: colors.textFieldBackground,
                     }}
-                  />
-                  <EventMapView
-                    region={{
-                      latitude: locationDetail.latitude,
-                      longitude: locationDetail.longitude,
-                      latitudeDelta: 0.0922,
-                      longitudeDelta: 0.0421,
-                    }}
-                    coordinate={{
-                      latitude: locationDetail.latitude,
-                      longitude: locationDetail.longitude,
-                    }}
-                  />
+                  /> */}
+                  <Pressable style={styles.textInputStyle}>
+                    <Text style={styles.label}>{searchLocation}</Text>
+                  </Pressable>
+                  <EventMapView region={mapRegion} coordinate={mapcoordinate} />
                   <Pressable
                     style={styles.detailsContainer}
                     onPress={() => {
@@ -912,14 +923,17 @@ export default function CreateEventScreen({navigation, route}) {
                     />
                   </Pressable>
 
-                  <AddressLocationModal
+                  <AddressWithMapModal
                     visibleLocationModal={visibleLocationModal}
                     setVisibleAddressModalhandler={() =>
                       setVisibleLocationModal(false)
                     }
-                    onAddressSelect={onSelectAddress}
-                    handleSetLocationOptions={onSelectAddress}
-                    onDonePress={() => {}}
+                    onAddressSelect={(location) => {
+                      onSelectAddress(location);
+                    }}
+                    existedregion={mapRegion}
+                    existedcoordinates={mapcoordinate}
+                    mapAddress={searchLocation}
                   />
                 </>
               ) : (
@@ -1501,6 +1515,12 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 10,
     fontSize: 16,
+    fontFamily: fonts.RRegular,
+  },
+  label: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
   },
   textInputDropStyle: {

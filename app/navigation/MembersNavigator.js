@@ -219,6 +219,7 @@ import LanguageSettingScreen from '../screens/account/userSettingPrivacy/Languag
 import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
+import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -1450,6 +1451,12 @@ const MembersNavigator = () => (
         title: strings.editbasicinfotitle,
         headerTintColor: colors.blackColor,
       }}
+    />
+
+    <Stack.Screen
+      name="MembershipFeeScreen"
+      component={MembershipFeeScreen}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen

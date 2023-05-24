@@ -10,11 +10,11 @@ import AuthContext from '../../../auth/context';
 import TCEventCard from '../../../components/Schedule/TCEventCard';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
-import { getJSDate, getTCDate } from '../../../utils';
+import {getJSDate, getTCDate} from '../../../utils';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function  EventScheduleScreen({
+export default function EventScheduleScreen({
   onItemPress,
   eventData,
   onThreeDotPress,
@@ -24,15 +24,13 @@ export default function  EventScheduleScreen({
   filterOptions,
   selectedFilter,
   owners,
-  allUserData
+  allUserData,
 }) {
-
   const authContext = useContext(AuthContext);
 
   const [filterData, setFilterData] = useState(null);
 
   useEffect(() => {
-
     let events = eventData.filter(
       (obj) => (obj.game_id && obj.game) || obj.title,
     );
@@ -47,7 +45,8 @@ export default function  EventScheduleScreen({
       ].includes(authContext.entity.role)
     ) {
       if (
-        filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2) &&
+        filterOptions.sort ===
+          ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2) &&
         [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
           authContext.entity.role,
         )
@@ -76,15 +75,29 @@ export default function  EventScheduleScreen({
             events = events.filter((obj) => !obj.game);
           }
         }
-      } else if (filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 2 : 3)) {
-        if (selectedFilter.title.sport !== strings.all && selectedFilter.title !== strings.all) {
+      } else if (
+        filterOptions.sort ===
+        ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 2 : 3)
+      ) {
+        if (
+          selectedFilter.title.sport !== strings.all &&
+          selectedFilter.title !== strings.all
+        ) {
           events = events.filter(
-            (obj) => ((obj.game && obj.game.sport === selectedFilter.title.sport) || 
-            (obj.selected_sport && obj.selected_sport.sport === selectedFilter.title.sport)),
+            (obj) =>
+              (obj.game && obj.game.sport === selectedFilter.title.sport) ||
+              (obj.selected_sport &&
+                obj.selected_sport.sport === selectedFilter.title.sport),
           );
         }
-      } else if (filterOptions.sort === ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 1)) {
-        if (selectedFilter.title.group_name !== strings.all && selectedFilter.title !== strings.all) {
+      } else if (
+        filterOptions.sort ===
+        ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 1)
+      ) {
+        if (
+          selectedFilter.title.group_name !== strings.all &&
+          selectedFilter.title !== strings.all
+        ) {
           if (selectedFilter.title.group_name === Verbs.me) {
             events = events.filter(
               (obj) =>
@@ -117,12 +130,12 @@ export default function  EventScheduleScreen({
     }
     if (events.length > 0) {
       const result = _(events)
-        .groupBy((event) => 
+        .groupBy((event) =>
           // event.start_datetime,
-          moment(getJSDate(event.start_datetime)).format('MMM DD, YYYY')
+          moment(getJSDate(event.start_datetime)).format('MMM DD, YYYY'),
         )
         .value();
-      
+
       const filData = [];
       const nextDateTime = getJSDate(getTCDate(new Date()) + 24 * 60 * 60);
       nextDateTime.setHours(0, 0, 0, 0);
@@ -136,19 +149,26 @@ export default function  EventScheduleScreen({
         const currentDateTime = new Date();
         currentDateTime.setHours(0, 0, 0, 0);
 
-        let title = `${days[getJSDate(result[property][0]?.start_datetime).getDay()]}, ${moment(getJSDate(result[property][0]?.start_datetime)).format('MMM DD')}`;
+        let title = `${
+          days[getJSDate(result[property][0]?.start_datetime).getDay()]
+        }, ${moment(getJSDate(result[property][0]?.start_datetime)).format(
+          'MMM DD',
+        )}`;
 
-        if(start.getTime() === currentDateTime.getTime()) {
-          title = strings.todayTitleText
+        if (start.getTime() === currentDateTime.getTime()) {
+          title = strings.todayTitleText;
         }
 
-        if(start.getTime() === nextDateTime.getTime()) {
-          title = strings.tomorrowTitleText
+        if (start.getTime() === nextDateTime.getTime()) {
+          title = strings.tomorrowTitleText;
         }
 
         temp = {
           title,
-          time: result[property].length > 0 ? result[property][0]?.start_datetime : '',
+          time:
+            result[property].length > 0
+              ? result[property][0]?.start_datetime
+              : '',
           data: result[property].length > 0 ? value : [],
         };
         filData.push(temp);
@@ -157,34 +177,55 @@ export default function  EventScheduleScreen({
     } else {
       setFilterData([]);
     }
-  }, [eventData, filterOptions, selectedFilter]);
-
-
+  }, [
+    eventData,
+    filterOptions,
+    selectedFilter,
+    authContext.entity.role,
+    authContext.entity.uid,
+  ]);
 
   return (
     <>
-    <View style={styles.mainContainer}>
-      {filterData && (
-        <SectionList
-          scrollEnabled={true}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <View style={{marginTop: 15}}>
-              <Text style={styles.noEventText}>
-                {strings.noEventText}
-              </Text>
-              <Text style={styles.dataNotFoundText}>
-                {strings.newEventWillAppearHereText}
-              </Text>
-            </View>
-          }
-          style={{backgroundColor: colors.whiteColor}}
-          renderItem={({item}) => {
-            if (item.cal_type === 'event') {
-              if (item?.game_id && item?.game) {
+      <View style={styles.mainContainer}>
+        {filterData && (
+          <SectionList
+            scrollEnabled={true}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <View style={{marginTop: 15}}>
+                <Text style={styles.noEventText}>{strings.noEventText}</Text>
+                <Text style={styles.dataNotFoundText}>
+                  {strings.newEventWillAppearHereText}
+                </Text>
+              </View>
+            }
+            style={{backgroundColor: colors.whiteColor}}
+            renderItem={({item}) => {
+              if (item.cal_type === 'event') {
+                if (item?.game_id && item?.game) {
+                  return (
+                    <View style={{backgroundColor: colors.whiteColor}}>
+                      <TCEventView
+                        onPress={() => onItemPress(item)}
+                        data={item}
+                        profileID={profileID}
+                        screenUserId={screenUserId}
+                        onThreeDotPress={() => onThreeDotPress(item)}
+                        eventBetweenSection={item.game}
+                        eventOfSection={
+                          item.game &&
+                          item.game.referees &&
+                          item.game.referees.length > 0
+                        }
+                        entity={entity}
+                      />
+                    </View>
+                  );
+                }
                 return (
                   <View style={{backgroundColor: colors.whiteColor}}>
-                    <TCEventView
+                    <TCEventCard
                       onPress={() => onItemPress(item)}
                       data={item}
                       profileID={profileID}
@@ -197,46 +238,27 @@ export default function  EventScheduleScreen({
                         item.game.referees.length > 0
                       }
                       entity={entity}
+                      owners={owners}
+                      allUserData={allUserData}
                     />
                   </View>
                 );
               }
-              return (
-                <View style={{backgroundColor: colors.whiteColor}}>
-                  <TCEventCard
-                    onPress={() => onItemPress(item)}
-                    data={item}
-                    profileID={profileID}
-                    screenUserId={screenUserId}
-                    onThreeDotPress={() => onThreeDotPress(item)}
-                    eventBetweenSection={item.game}
-                    eventOfSection={
-                      item.game &&
-                      item.game.referees &&
-                      item.game.referees.length > 0
-                    }
-                    entity={entity}
-                    owners={owners}
-                    allUserData={allUserData}
-                  />
-                </View>
-              );
+              return null;
+            }}
+            renderSectionHeader={({section}) =>
+              (section?.data || [])?.filter((obj) => obj.cal_type === 'event')
+                .length > 0 && (
+                <Text style={styles.sectionHeader}>
+                  {section.title.toUpperCase()}
+                </Text>
+              )
             }
-            return null;
-          }}
-          renderSectionHeader={({section}) =>
-            (section?.data || [])?.filter((obj) => obj.cal_type === 'event')
-              .length > 0 && (
-              <Text style={styles.sectionHeader}>
-                {section.title.toUpperCase()}
-              </Text>
-            )
-          }
-          sections={filterData}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      )}
-    </View>
+            sections={filterData}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        )}
+      </View>
     </>
   );
 }

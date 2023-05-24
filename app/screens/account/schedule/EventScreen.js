@@ -22,7 +22,6 @@ import {
 } from 'react-native-responsive-screen';
 import ReadMore from '@fawazahmed/react-native-read-more';
 import ActionSheet from 'react-native-actionsheet';
-import FastImage from 'react-native-fast-image';
 
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
@@ -174,7 +173,7 @@ export default function EventScreen({navigation, route}) {
         setEventData(route?.params?.event);
       }
     }
-  }, [isFocused, route?.params?.comeFrom]);
+  }, [isFocused, route?.params]);
 
   useEffect(() => {
     const goingData = eventData.going ?? [];
@@ -276,11 +275,7 @@ export default function EventScreen({navigation, route}) {
         })
         .catch(() => {});
     }
-  }, [
-    eventData?.created_by?.group_id,
-    eventData?.created_by?.uid,
-    eventData.going,
-  ]);
+  }, [eventData, authContext]);
 
   const checkIsGoing = () => {
     if (!['user', 'player'].includes(authContext.entity.role)) {
@@ -360,15 +355,11 @@ export default function EventScreen({navigation, route}) {
 
   const renderGoingView = ({item}) => (
     <View style={styles.goingContainer}>
-      <FastImage
+      <Image
         source={
-          item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
+          item?.thumbnail ? {uri: item.thumbnail} : images.profilePlaceHolder
         }
-        style={{
-          height: 40,
-          width: 40,
-          borderRadius: 70,
-        }}
+        style={styles.image}
       />
     </View>
   );
@@ -811,12 +802,8 @@ export default function EventScreen({navigation, route}) {
                     <FlatList
                       data={going}
                       horizontal
-                      ItemSeparatorComponent={() => (
-                        <View style={{width: 10, height: 35}} />
-                      )}
-                      renderItem={renderGoingView}
                       keyExtractor={(item, index) => index.toString()}
-                      style={{padding: 3}}
+                      renderItem={renderGoingView}
                     />
                   </View>
                   <TCThinDivider marginTop={10} marginBottom={10} />
@@ -1168,14 +1155,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   goingContainer: {
-    height: 37,
-    width: 37,
-    borderRadius: 74,
+    height: 40,
+    width: 40,
+    borderRadius: 20,
     backgroundColor: colors.whiteColor,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.thinDividerColor,
+    marginRight: 10,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderRadius: 20,
   },
   modalMainViewStyle: {
     shadowOpacity: 0.15,

@@ -17,6 +17,8 @@ import fonts from '../../../../Constants/Fonts';
 import Verbs from '../../../../Constants/Verbs';
 import {getRatingsOptions} from '../../../../utils';
 import ReviewsList from '../components/reviews/ReviewsList';
+import CustomModalWrapper from '../../../../components/CustomModalWrapper';
+import {ModalTypes} from '../../../../Constants/GeneralConstants';
 
 const ReviewsContentScreen = ({
   userId,
@@ -34,6 +36,7 @@ const ReviewsContentScreen = ({
   const [totalReviews, setTotalReviews] = useState(0);
   const [totalRatings, setTotalRatings] = useState(0);
   const [ratingsOption, setRatingsOption] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   const authContext = useContext(AuthContext);
 
@@ -80,7 +83,8 @@ const ReviewsContentScreen = ({
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{paddingHorizontal: 15, paddingVertical: 25}}>
           <Text style={styles.title}>
-            {strings.ratings.toUpperCase()} ({totalRatings})
+            {strings.ratings.toUpperCase()} (
+            {parseFloat(totalRatings).toFixed(1)})
           </Text>
 
           {ratingsOption.length > 0 &&
@@ -117,13 +121,15 @@ const ReviewsContentScreen = ({
                     ]}>
                     {ratings[item.name]
                       ? parseFloat(ratings[item.name]).toFixed(1)
-                      : 0}
+                      : '0.0'}
                   </Text>
                 </View>
               </View>
             ))}
 
-          <TouchableOpacity style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() => setShowModal(true)}>
             <Text style={styles.buttonText}>
               {strings.detailInfoAboutRating}
             </Text>
@@ -134,7 +140,8 @@ const ReviewsContentScreen = ({
         />
         <View style={{paddingHorizontal: 15, paddingTop: 25}}>
           <Text style={styles.title}>
-            {strings.reviews.toUpperCase()} ({totalReviews})
+            {strings.reviews.toUpperCase()} (
+            {parseFloat(totalReviews).toFixed(1)})
           </Text>
         </View>
         <ReviewsList
@@ -147,6 +154,12 @@ const ReviewsContentScreen = ({
           entityType={entityType}
         />
       </ScrollView>
+      <CustomModalWrapper
+        isVisible={showModal}
+        closeModal={() => setShowModal(false)}
+        modalType={ModalTypes.style2}>
+        <Text>Hello</Text>
+      </CustomModalWrapper>
     </View>
   );
 };

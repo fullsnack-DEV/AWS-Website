@@ -72,6 +72,7 @@ export default function UserConnections({navigation, route}) {
     setLoading(true);
     const list = [];
     tabList.forEach((item) => {
+      console.log({item});
       list.push(
         getUserFollowerFollowing(
           userId,

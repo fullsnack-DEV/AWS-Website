@@ -1,7 +1,6 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
-  Dimensions,
   Platform,
   Pressable,
   SafeAreaView,
@@ -753,91 +752,61 @@ const AccountScreen = ({navigation, route}) => {
       <CustomModalWrapper
         isVisible={isRulesModalVisible}
         closeModal={() => setIsRulesModalVisible(false)}
-        modalType={ModalTypes.style2}
-        containerStyle={{
-          padding: 0,
-        }}>
-        <View style={styles.modalViewContainer}>
-          <View
-            style={{
-              width: 40,
-              height: 5,
-              alignSelf: 'center',
-              borderRadius: 5,
-              backgroundColor: colors.graySeparater,
-              marginTop: 10,
-            }}
-          />
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>{strings.createTeamText}</Text>
-          </View>
-          <View
-            style={{
-              marginLeft: 20,
-              marginTop: 25,
-              marginBottom: 15,
-            }}>
-            <Text style={styles.rulesText}>{strings.teamCreateClubsText}</Text>
-          </View>
-
-          <View
-            style={{
-              marginLeft: 25,
-
-              marginRight: 27,
-            }}>
-            <View style={styles.rulesTitleContainer}>
-              <View style={styles.rulesDots} />
-              <Text style={styles.rulesText}>
-                {strings.yourTeamWillBelogText}
-              </Text>
-            </View>
-            <View style={styles.rulesTitleContainer}>
-              <View style={styles.rulesDots} />
-              <Text style={styles.rulesText}>
-                {strings.teamCanLeaveClubText}
-              </Text>
-            </View>
-
-            <View style={styles.rulesTitleContainer}>
-              <View
-                style={[
-                  styles.rulesDots,
-                  {marginTop: 10, alignSelf: 'flex-start'},
-                ]}
-              />
-              <Text style={styles.rulesText}>
-                {strings.adminOfTeamWillClubAdminText}
-              </Text>
-            </View>
-          </View>
-          <Pressable
-            onPress={() => {
-              setIsRulesModalVisible(false);
-              setShowOnlyTeamSport(true);
-              setTimeout(() => setVisibleSportsModalForTeam(true), 1000);
-            }}
-            style={{
-              width: 345,
-              height: 40,
-              borderRadius: 22,
-              backgroundColor: colors.reservationAmountColor,
-              justifyContent: 'center',
-              alignItems: 'center',
-              alignSelf: 'center',
-              marginTop: 35,
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                lineHeight: 24,
-                color: colors.whiteColor,
-              }}>
-              {strings.nextTitle}
+        modalType={ModalTypes.style2}>
+        <View>
+          <Text style={styles.modalTitle}>{strings.createTeamText}</Text>
+          <Text style={[styles.rulesText, {marginBottom: 15}]}>
+            {strings.teamCreateClubsText}
+          </Text>
+          <View style={styles.rulesTitleContainer}>
+            <View style={styles.rulesDots} />
+            <Text style={styles.rulesText}>
+              {strings.yourTeamWillBelogText}
             </Text>
-          </Pressable>
+          </View>
+          <View style={styles.rulesTitleContainer}>
+            <View style={styles.rulesDots} />
+            <Text style={styles.rulesText}>{strings.teamCanLeaveClubText}</Text>
+          </View>
+
+          <View style={styles.rulesTitleContainer}>
+            <View
+              style={[
+                styles.rulesDots,
+                {marginTop: 10, alignSelf: 'flex-start'},
+              ]}
+            />
+            <Text style={styles.rulesText}>
+              {strings.adminOfTeamWillClubAdminText}
+            </Text>
+          </View>
         </View>
+        <Pressable
+          onPress={() => {
+            setIsRulesModalVisible(false);
+            setShowOnlyTeamSport(true);
+            setTimeout(() => setVisibleSportsModalForTeam(true), 1000);
+          }}
+          style={{
+            width: 345,
+            height: 40,
+            borderRadius: 22,
+            backgroundColor: colors.reservationAmountColor,
+            justifyContent: 'center',
+            alignItems: 'center',
+            alignSelf: 'center',
+            marginTop: 35,
+          }}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: fonts.RBold,
+              lineHeight: 24,
+              color: colors.whiteColor,
+            }}>
+            {strings.nextTitle}
+          </Text>
+        </Pressable>
       </CustomModalWrapper>
 
       <SportsListModal
@@ -935,33 +904,13 @@ const AccountScreen = ({navigation, route}) => {
 export default AccountScreen;
 
 const styles = StyleSheet.create({
-  modalViewContainer: {
-    height: Dimensions.get('window').height / 2.4,
-    backgroundColor: 'white',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 15,
-  },
-  modalView: {
-    flexDirection: 'row',
-    paddingHorizontal: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   modalTitle: {
-    alignSelf: 'center',
     fontSize: 20,
+    lineHeight: 30,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    marginTop: 25,
+    textAlign: 'center',
+    marginBottom: 15,
   },
 
   rulesTitleContainer: {
@@ -982,5 +931,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
 });

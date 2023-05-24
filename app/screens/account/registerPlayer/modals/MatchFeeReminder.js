@@ -37,6 +37,22 @@ const MatchFeeReminder = ({
     }
   };
 
+  const getContent = () => {
+    switch (entityType) {
+      case Verbs.entityTypePlayer:
+        return strings.matchFeeModalInfo;
+
+      case Verbs.entityTypeReferee:
+        return strings.refereeFeeModalContent;
+
+      case Verbs.entityTypeScorekeeper:
+        return strings.scorekeeperFeeModalContent;
+
+      default:
+        return '';
+    }
+  };
+
   return (
     <CustomModalWrapper
       isVisible={isVisible}
@@ -126,7 +142,7 @@ const MatchFeeReminder = ({
               </Text>
 
               <Text style={[styles.description, {marginBottom: 23}]}>
-                {strings.matchFeeModalInfo}
+                {getContent()}
               </Text>
             </View>
             {entityType === Verbs.entityTypeReferee ? (

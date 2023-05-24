@@ -513,7 +513,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     elevation: 5,
     marginBottom: 20,
-    borderLeftWidth: 8,
+    borderLeftWidth: 5,
     // paddingVertical: 5,
     height: 50,
   },

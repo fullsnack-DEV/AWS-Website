@@ -180,7 +180,7 @@ const CustomWeeklyCalender = ({
               <View
                 key={key}
                 style={{flexDirection: 'column', alignItems: 'center'}}>
-                <View style={{marginBottom: 20}}>
+                <View style={{marginBottom: 9}}>
                   <Text
                     style={{
                       fontSize: 12,

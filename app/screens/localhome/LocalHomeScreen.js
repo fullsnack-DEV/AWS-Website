@@ -408,10 +408,10 @@ export default function LocalHomeScreen({navigation, route}) {
         });
       }
 
-      console.log(
-        '11111 ==>',
-        JSON.stringify(playerAvailableForchallengeQuery),
-      );
+      // console.log(
+      //   '11111 ==>',
+      //   JSON.stringify(playerAvailableForchallengeQuery),
+      // );
 
       // Team available for challenge
       const teamAvailableForchallengeQuery = {
@@ -453,7 +453,7 @@ export default function LocalHomeScreen({navigation, route}) {
         });
       }
 
-      console.log('2222 ==>', JSON.stringify(teamAvailableForchallengeQuery));
+      // console.log('2222 ==>', JSON.stringify(teamAvailableForchallengeQuery));
       /*
       // Looking Challengee query
       const availableForchallengeQuery = {

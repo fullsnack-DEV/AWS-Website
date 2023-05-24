@@ -59,6 +59,7 @@ const CustomModalWrapper = ({
   const getModalHeader = () => {
     switch (modalType) {
       case ModalTypes.style1:
+      case ModalTypes.style4:
         return (
           <ScreenHeader
             leftIcon={showBackButton ? images.backArrow : images.crossImage}
@@ -118,6 +119,7 @@ const CustomModalWrapper = ({
 
       case ModalTypes.style2:
       case ModalTypes.style3:
+      case ModalTypes.style4:
         return styles.card;
 
       case ModalTypes.style5:
@@ -205,8 +207,8 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.whiteColor,
-    borderTopRightRadius: 15,
-    borderTopLeftRadius: 15,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
     shadowColor: colors.blackColor,
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.5,

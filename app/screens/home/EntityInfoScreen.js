@@ -92,7 +92,7 @@ const EntityInfoScreen = ({navigation, route}) => {
         break;
 
       case strings.membershipFee:
-        navigation.navigate('GameFeeEditScreen', {
+        navigation.navigate('MembershipFeeScreen', {
           groupDetails: currentUserData,
         });
         break;
@@ -208,6 +208,7 @@ const EntityInfoScreen = ({navigation, route}) => {
           selectedVenue={selectedVenue}
           onEdit={handleEditOptions}
           onClickPrivacy={handlePrivacyOptions}
+          onAddMember={() => {}}
         />
       )}
     </SafeAreaView>

@@ -37,6 +37,7 @@ import LanguagesListModal from '../account/registerPlayer/modals/LanguagesListMo
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
+import AddressLocationModal from '../../components/AddressLocationModal/AddressLocationModal';
 
 const EditGroupBasicInfoScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -56,6 +57,10 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [selectedSports, setSelectedSports] = useState([]);
   const [showGenderModal, setShowGenderModal] = useState(false);
+  const [showOfficeAddressModal, setShowOfficeAddressModal] = useState(false);
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [country, setCountry] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -195,6 +200,18 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
       isChecked: item.id === lang.id ? !item.isChecked : item.isChecked,
     }));
     setLanguages([...newList]);
+  };
+
+  const handleOfficeAddresOptions = (address = {}) => {
+    setGroupData({...groupData, office_address: address.formattedAddress});
+    setCity(address.city);
+    setState(address.state);
+    setCountry(address.country);
+  };
+
+  const setCityandPostal = (street, code) => {
+    const address = `${street} ${city} ${state} ${country} ${code}`;
+    setGroupData({...groupData, office_address: address});
   };
 
   return (
@@ -387,6 +404,25 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
               </Text>
             </Pressable>
           </View>
+
+          {groupData.entity_type === Verbs.entityTypeClub ? (
+            <View style={{marginBottom: 35}}>
+              <Text style={styles.labelText}>
+                {strings.officeAddress.toUpperCase()}
+              </Text>
+              <Pressable
+                style={styles.inputContainer}
+                onPress={() => setShowOfficeAddressModal(true)}>
+                <Text
+                  style={[
+                    styles.labelText,
+                    {marginBottom: 0, fontFamily: fonts.RRegular},
+                  ]}>
+                  {groupData.office_address}
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
         </ScrollView>
       </TCKeyboardView>
 
@@ -395,6 +431,14 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
         title={strings.homeCityTitleText}
         setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
         onLocationSelect={handleSelectLocationOptions}
+      />
+
+      <AddressLocationModal
+        visibleLocationModal={showOfficeAddressModal}
+        setVisibleAddressModalhandler={() => setShowOfficeAddressModal(false)}
+        onAddressSelect={handleOfficeAddresOptions}
+        handleSetLocationOptions={handleOfficeAddresOptions}
+        onDonePress={(street, code) => setCityandPostal(street, code)}
       />
 
       <SportListMultiModal

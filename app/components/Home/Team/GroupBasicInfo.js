@@ -21,7 +21,7 @@ const GroupBasicInfo = ({groupDetails = {}}) => {
     <View style={styles.parent}>
       <View style={styles.row}>
         <View style={styles.col}>
-          <Text style={styles.label}>{strings.sport}</Text>
+          <Text style={styles.label}>{strings.sportsTitleText}</Text>
         </View>
         <View style={styles.col}>
           <Text style={styles.longTextStyle}>{sportName}</Text>

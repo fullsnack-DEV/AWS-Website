@@ -53,6 +53,7 @@ export default function GroupInfo({
   onPressGroup = () => {},
   onEdit = () => {},
   onClickPrivacy = () => {},
+  onAddMember = () => {},
 }) {
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState('');
@@ -186,6 +187,7 @@ export default function GroupInfo({
             onPressMore={() => {
               onSeeAll(option);
             }}
+            addMember={onAddMember}
           />
         );
 
@@ -271,15 +273,107 @@ export default function GroupInfo({
       case strings.clubsTitleText:
         return (
           <View>
-            {clubList.splice(3).length > 0
-              ? clubList.map((item, index) => (
+            {clubList.length > 0
+              ? clubList.map((item, index) => {
+                  if (index > 2) {
+                    return null;
+                  }
+                  return (
+                    <>
+                      <TeamCard
+                        item={item}
+                        key={index}
+                        onPress={() => onPressGroup(item)}
+                      />
+                      {index !== 2 && clubList.length !== 1 ? (
+                        <View
+                          style={{
+                            height: 1,
+                            backgroundColor: colors.grayBackgroundColor,
+                            marginVertical: 15,
+                          }}
+                        />
+                      ) : null}
+                    </>
+                  );
+                })
+              : null}
+          </View>
+        );
+
+      case strings.membershipFee:
+        return (
+          <>
+            <View
+              style={[
+                styles.row,
+                {marginBottom: 15, alignItems: 'flex-start'},
+              ]}>
+              <View style={styles.col}>
+                <Text style={styles.label}>{strings.membershipfee}</Text>
+              </View>
+              <View style={styles.col}>
+                <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
+                  {groupDetails?.membership_fee
+                    ? `${groupDetails.membership_fee} ${
+                        groupDetails.currency_type ?? Verbs.cad
+                      }/${groupDetails.membership_fee_type}`
+                    : '--'}
+                </Text>
+              </View>
+            </View>
+
+            <View
+              style={[
+                styles.row,
+                {marginBottom: 15, alignItems: 'flex-start'},
+              ]}>
+              <View style={styles.col}>
+                <Text style={styles.label}>{strings.membershipregfee}</Text>
+              </View>
+              <View style={styles.col}>
+                <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
+                  {groupDetails?.registration_fee
+                    ? `${groupDetails.registration_fee}/${
+                        groupDetails.currency_type ?? Verbs.cad
+                      }`
+                    : '--'}
+                </Text>
+              </View>
+            </View>
+            {groupDetails.membership_fee_details && (
+              <View style={{marginBottom: 15}}>
+                <View style={[styles.col, {marginBottom: 10}]}>
+                  <Text style={styles.label}>
+                    {strings.venueDetailsPlaceholder}
+                  </Text>
+                </View>
+                <View>
+                  <Text style={styles.longTextStyle}>
+                    {groupDetails.membership_fee_details}
+                  </Text>
+                </View>
+              </View>
+            )}
+          </>
+        );
+
+      case strings.teams:
+        return (
+          <View>
+            {teamList.length > 0 ? (
+              teamList.map((item, index) => {
+                if (index > 2) {
+                  return null;
+                }
+                return (
                   <>
                     <TeamCard
                       item={item}
                       key={index}
                       onPress={() => onPressGroup(item)}
                     />
-                    {index !== 2 ? (
+                    {index !== 2 && teamList.length !== 1 ? (
                       <View
                         style={{
                           height: 1,
@@ -289,64 +383,8 @@ export default function GroupInfo({
                       />
                     ) : null}
                   </>
-                ))
-              : null}
-          </View>
-        );
-
-      case strings.membershipFee:
-        return (
-          <>
-            <View style={[styles.row, {marginBottom: 15}]}>
-              <View style={styles.col}>
-                <Text style={styles.label}>{strings.membershipfee}</Text>
-              </View>
-              <View style={styles.col}>
-                <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
-                  {groupDetails?.membership_fee
-                    ? `${groupDetails.membership_fee} ${Verbs.cad}/${groupDetails.membership_fee_type}`
-                    : '--'}
-                </Text>
-              </View>
-            </View>
-
-            <View style={[styles.row, {marginBottom: 15}]}>
-              <View style={styles.col}>
-                <Text style={styles.label}>{strings.membershipregfee}</Text>
-              </View>
-              <View style={styles.col}>
-                <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
-                  {groupDetails?.registration_fee
-                    ? `${groupDetails.registration_fee}/${Verbs.cad}`
-                    : '--'}
-                </Text>
-              </View>
-            </View>
-          </>
-        );
-
-      case strings.teams:
-        return (
-          <View>
-            {teamList.splice(3).length > 0 ? (
-              teamList.map((item, index) => (
-                <>
-                  <TeamCard
-                    item={item}
-                    key={index}
-                    onPress={() => onPressGroup(item)}
-                  />
-                  {index !== 2 ? (
-                    <View
-                      style={{
-                        height: 1,
-                        backgroundColor: colors.grayBackgroundColor,
-                        marginVertical: 15,
-                      }}
-                    />
-                  ) : null}
-                </>
-              ))
+                );
+              })
             ) : (
               <Text style={styles.longTextStyle}>{strings.NA}</Text>
             )}
@@ -384,8 +422,14 @@ export default function GroupInfo({
           <>
             <View style={styles.container}>
               <View style={[styles.row, {marginBottom: 15}]}>
-                <View>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Text style={styles.headingLabel}>{item.toUpperCase()}</Text>
+                  {item === strings.matchVenues ? (
+                    <TouchableOpacity
+                      style={{width: 15, height: 15, marginLeft: 5}}>
+                      <Image source={images.infoIcon} style={styles.image} />
+                    </TouchableOpacity>
+                  ) : null}
                 </View>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   {item === strings.membersTitle ||

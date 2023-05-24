@@ -1,13 +1,5 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-  FlatList,
-} from 'react-native';
-import Modal from 'react-native-modal';
+import {Text, View, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
 import moment from 'moment';
 import {getJSDate} from '../../../utils';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
@@ -43,6 +35,7 @@ export default function AvailibilityScheduleScreen({
   const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
     useState(false);
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
+  const [isFromSlots, setIsFromSlots] = useState(false);
 
   useEffect(() => {
     setAllData(allSlots);
@@ -486,6 +479,7 @@ export default function AvailibilityScheduleScreen({
               <AvailabilityListView
                 item={item}
                 onEdit={async () => {
+                  setIsFromSlots(false);
                   await prepareSlotArray(getJSDate(item.time));
                   await setVisibleAvailabilityModal(true);
                 }}
@@ -494,6 +488,7 @@ export default function AvailibilityScheduleScreen({
                 deleteOrCreateSlotData={deleteOrCreateSlotData}
                 isAdmin={isAdmin}
                 onPress={(slot) => {
+                  setIsFromSlots(true);
                   setEditableSlots([slot]);
                   setVisibleAvailabilityModal(true);
                 }}
@@ -518,7 +513,7 @@ export default function AvailibilityScheduleScreen({
           }}
           isListView={listView}
         />
-        <View style={{paddingHorizontal: 15}}>
+        <View style={{paddingHorizontal: 38}}>
           <SlotsBar availableSlots={availableSlots} />
 
           {slotList.map((item, key) => (
@@ -531,8 +526,10 @@ export default function AvailibilityScheduleScreen({
               index={key}
               slots={slotList}
               onPress={() => {
+                console.log({item});
                 if (isAdmin) {
                   setEditableSlots([item]);
+                  setIsFromSlots(true);
                   setVisibleAvailabilityModal(true);
                 }
               }}
@@ -557,50 +554,35 @@ export default function AvailibilityScheduleScreen({
 
       {renderContent()}
 
-      {isAdmin ? (
+      {isAdmin && !listView ? (
         <TouchableOpacity
-          onPress={() => setVisibleAvailabilityModal(true)}
+          onPress={() => {
+            setIsFromSlots(true);
+            setVisibleAvailabilityModal(true);
+          }}
           style={{alignSelf: 'center', marginTop: 20}}>
           <Text style={styles.buttonText}>{strings.editAvailability}</Text>
         </TouchableOpacity>
       ) : null}
 
-      <Modal
+      <ChallengeAvailability
         isVisible={visibleAvailabilityModal}
-        backdropColor="black"
-        style={{margin: 0, justifyContent: 'flex-end'}}
-        hasBackdrop
-        onBackdropPress={() => {
+        closeModal={() => {
+          setIsFromSlots(false);
           setVisibleAvailabilityModal(false);
         }}
-        backdropOpacity={0.5}>
-        <View style={styles.modalMainViewStyle}>
-          <ChallengeAvailability
-            setVisibleAvailabilityModal={setVisibleAvailabilityModal}
-            slots={editableSlots}
-            addToSlotData={addToSlotData}
-            showAddMore={true}
-            deleteFromSlotData={deleteFromSlotData}
-            deleteOrCreateSlotData={deleteOrCreateSlotData}
-          />
-        </View>
-      </Modal>
+        slots={editableSlots}
+        addToSlotData={addToSlotData}
+        showAddMore={true}
+        deleteFromSlotData={deleteFromSlotData}
+        deleteOrCreateSlotData={deleteOrCreateSlotData}
+        isFromSlot={isFromSlots}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  modalMainViewStyle: {
-    shadowOpacity: 0.15,
-    shadowOffset: {
-      height: -10,
-      width: 0,
-    },
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    height: Dimensions.get('window').height - 50,
-  },
   buttonText: {
     fontSize: 12,
     lineHeight: 17,

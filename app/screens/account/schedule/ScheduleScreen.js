@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-return-assign */
 /* eslint-disable no-undef */
 /* eslint-disable no-param-reassign */
@@ -62,7 +63,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import {reservationOpetions} from '../../../utils/constant';
 import Verbs from '../../../Constants/Verbs';
 import AvailibilityScheduleScreen from './AvailibityScheduleScreen';
-import ChallengeAvailability from './ChallengeAvailability';
+// import ChallengeAvailability from './ChallengeAvailability';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import FilterTimeSelectItem from '../../../components/Filter/FilterTimeSelectItem';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
@@ -113,7 +114,7 @@ export default function ScheduleScreen({navigation, route}) {
     strings.eventFilterTimePast,
   ];
   const actionSheet = useRef();
-  const plusActionSheet = useRef();
+  // const plusActionSheet = useRef();
   const isFocused = useIsFocused();
 
   const timeSelectionFutureList = [
@@ -179,10 +180,10 @@ export default function ScheduleScreen({navigation, route}) {
   const [timeFilterOpetion, setTimeFilterOpetion] = useState(0);
   const [rsvpFilterOption, setRsvpFilterOption] = useState(0);
   const [filterPopup, setFilterPopup] = useState(false);
-  const [editableSlotsType, setEditableSlotsType] = useState(false);
+  // const [editableSlotsType, setEditableSlotsType] = useState(false);
   const [allSlots, setAllSlots] = useState([]);
-  const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
-    useState(false);
+  // const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
+  //   useState(false);
   const [settingsModal, setSettingsModal] = useState(false);
   const [allUserData, setAllUserData] = useState([]);
   const [popupFilterHeight, setPopupFilterHeight] = useState(300);
@@ -369,11 +370,11 @@ export default function ScheduleScreen({navigation, route}) {
           // setting?.payload?.user?.club_event_view_settings_option : setting?.payload?.user?.event_view_settings_option;
 
           // setFilterSetting({...filterSetting, sort :  eventViewOption})
-          setSelectedOptions({
-            ...selectedOptions,
-            option: 0,
-            title: strings.all,
-          });
+          // setSelectedOptions({
+          //   ...selectedOptions,
+          //   option: 0,
+          //   title: strings.all,
+          // });
 
           if (scheduleFilter && scheduleFilter?.length > 0) {
             if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
@@ -477,7 +478,7 @@ export default function ScheduleScreen({navigation, route}) {
         console.log('Error==>', e.message);
         Alert.alert(e.message);
       });
-  }, [authContext, isFocused, indigator, selectedOptions]);
+  }, [authContext, selectedOptions]);
 
   const configureEvents = useCallback((eventsData, games) => {
     const eventTimeTableData = eventsData.map((item) => {
@@ -717,7 +718,10 @@ export default function ScheduleScreen({navigation, route}) {
       .then((response) => {
         const allUserIds = [];
         response.forEach((item) => {
-          if (item.cal_type === Verbs.eventVerb) {
+          if (
+            item.cal_type === Verbs.eventVerb &&
+            !allUserData.includes(item.created_by.uid)
+          ) {
             allUserIds.push(item.created_by.uid);
           }
         });
@@ -753,12 +757,9 @@ export default function ScheduleScreen({navigation, route}) {
           if (data && !hasRecord) {
             response = [...response, data];
           }
-          resCalenders = response.filter((obj) => {
-            if (obj.cal_type === 'blocked') {
-              return obj;
-            }
-            return false;
-          });
+          resCalenders = response.filter(
+            (obj) => obj.cal_type === Verbs.blockedVerb,
+          );
           eventsCal = response.filter((obj) => {
             if (obj.cal_type === Verbs.eventVerb) {
               if (obj?.expiry_datetime) {
@@ -1919,7 +1920,7 @@ export default function ScheduleScreen({navigation, route}) {
       </View>
 
       {/*  Availability edit modal */}
-      <Modal
+      {/* <Modal
         onBackdropPress={() => setVisibleAvailabilityModal(false)}
         isVisible={visibleAvailabilityModal}
         animationInTiming={300}
@@ -1941,9 +1942,9 @@ export default function ScheduleScreen({navigation, route}) {
             setEditableSlotsType={setEditableSlotsType}
           />
         </View>
-      </Modal>
+      </Modal> */}
 
-      <ActionSheet
+      {/* <ActionSheet
         ref={plusActionSheet}
         options={[
           strings.createEvent,
@@ -1960,7 +1961,7 @@ export default function ScheduleScreen({navigation, route}) {
             setVisibleAvailabilityModal(true);
           }
         }}
-      />
+      /> */}
     </SafeAreaView>
   );
 }

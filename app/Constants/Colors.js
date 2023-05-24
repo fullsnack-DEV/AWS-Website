@@ -153,5 +153,6 @@ const colors = {
   bgColor: '#E4E4E4',
   borderlinecolor: '#dddddd',
   timeZone: 'en_Time Zone',
+  transperantBlack: 'rgba(0,0,0,0.3)',
 };
 export default colors;

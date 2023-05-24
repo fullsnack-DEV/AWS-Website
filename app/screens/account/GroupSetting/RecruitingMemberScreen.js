@@ -25,7 +25,7 @@ const hiringPlayersOptions = [
   {key: strings.noDisplayItText, id: 0},
 ];
 
-export default function RecruitingMemberScreen({navigation}) {
+export default function RecruitingMemberScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [hiringPlayersSelection, setHiringPlayersSelection] = useState(
@@ -79,7 +79,15 @@ export default function RecruitingMemberScreen({navigation}) {
       <ScreenHeader
         title={strings.recruitingPlayerText}
         leftIcon={images.backArrow}
-        leftIconPress={() => navigation.goBack()}
+        leftIconPress={() => {
+          if (route.params.comeFrom) {
+            navigation.navigate(route.params.comeFrom, {
+              ...route.params.routeParams,
+            });
+          } else {
+            navigation.goBack();
+          }
+        }}
         isRightIconText
         rightButtonText={strings.save}
         onRightButtonPress={() => {

@@ -93,7 +93,11 @@ export default function GroupLongTextScreen({navigation, route}) {
           }}>
           <TextInput
             ref={inputRef}
-            placeholder={strings.enterBioPlaceholder}
+            placeholder={
+              isBylaw
+                ? strings.enterBylawPlaceholder
+                : strings.enterBioPlaceholder
+            }
             onChangeText={(text) => {
               if (isBylaw) {
                 setByLaw(text);

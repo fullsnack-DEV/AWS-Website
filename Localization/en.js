@@ -393,7 +393,7 @@ export default {
   available: 'en_Available For Challenge',
   blockedForChallenge: 'en_Blocked For Challenge',
   editChallengeTitle:
-    'en_Set the time to be available to receive a challenge request or block it.',
+    'en_If a time is available, others can send you a challenge or reservation request during that time.',
 
   // Group setting & Privacy
   connectionTitle: 'en_Connetions',
@@ -576,7 +576,7 @@ export default {
   sport: 'en_Sport',
   hometown: 'en_Home town',
   membersgender: "en_Member's gender",
-  membersage: "en_Member's age",
+  membersage: 'en_Members age',
   language: 'en_Language',
   languagesName: 'en_Korean, English, Hindi, Italian',
   membershipregfee: 'en_Membership registration fee',
@@ -800,7 +800,7 @@ export default {
 
   descriptionClubTextDetails:
     'en_Describe the club more so that people can know about the club.',
-  descriptionClubTextPlaceholder: 'en_Describe the club.',
+  descriptionClubTextPlaceholder: 'en_Describe about your club.',
 
   noFollowersTocreateTeam:
     'en_You have no followers, so you can not create team.',
@@ -2373,7 +2373,7 @@ export default {
   currentScoreKeeperReservation: 'en_Curruent Scorekeeper Reservation',
   orderText: 'en_Order',
   changeListOfSport: 'en_Order of Sports',
-  chnageListOfOrganizer: 'en_Order Of Organizers',
+  chnageListOfOrganizer: 'en_Order of Organizers',
   refreeReservationSetting: 'en_Referee Reservation Setting',
   scoreKeeperReservationSetting: 'en_Scorekeeper Reservation Setting',
   gameType: 'en_Game Type',
@@ -2950,12 +2950,18 @@ export default {
   onlyAccount: 'en_Only {0} account',
   onlyOrganizer: 'en_Only {0} (organizer)',
   onlyOption: 'en_Only {0}',
-
   time: 'en_Time',
   zone: 'en_zone',
   chooseValidFromDate: 'en_Choose valid from Date',
-
-
-
-
+  refereeFeeModalContent:
+    'en_Your referee fee will be 0 CAD per hour if you don’t edit the rate. You can edit it later in Incoming Reservations Settings of the sportactivity.',
+  scorekeeperFeeModalContent:
+    'en_Your scorekeeper fee will be 0 CAD per hour if you don’t edit the rate. You can edit it later in Incoming Reservations Settings of the sportactivity.',
+  sportSelectionModalSubTitle:
+    'en_Teams from various sports can be a member of aclub. You can edit the sports of the club now or later.',
+  offline: 'en_Offline',
+  online: 'en_Online',
+  oneTime: 'en_One-time',
+  recurring: 'en_Recurring',
+  editTimeSlots: 'en_Please edit time slots below. ',
 };

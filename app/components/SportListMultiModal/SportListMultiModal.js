@@ -90,7 +90,11 @@ const SportListMultiModal = ({
       {title === strings.createClubText ? (
         <>
           <Text style={styles.title}>{strings.clubModalTitle}</Text>
-          <Text style={styles.description}>{strings.clubModalSubTitle}</Text>
+          <Text style={styles.description}>
+            {title === strings.createClubText
+              ? strings.sportSelectionModalSubTitle
+              : strings.clubModalSubTitle}
+          </Text>
         </>
       ) : null}
 

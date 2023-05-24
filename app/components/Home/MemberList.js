@@ -10,6 +10,7 @@ const MemberList = ({
   isAdmin = false,
   onPressMember = () => {},
   onPressMore = () => {},
+  addMember = () => {},
   containerStyle = {},
 }) => {
   const [members, setMembers] = useState([]);
@@ -55,9 +56,9 @@ const MemberList = ({
           </Pressable>
         ))}
         {isAdmin && list.length < 9 && (
-          <View style={styles.addIcon}>
+          <Pressable style={styles.addIcon} onPress={addMember}>
             <Image source={images.plus} style={styles.image} />
-          </View>
+          </Pressable>
         )}
       </View>
     );

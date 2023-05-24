@@ -188,6 +188,13 @@ const HomeScreen = ({navigation, route}) => {
           groupID: route.params.uid,
           groupObj: currentUserData,
         });
+        navigation.navigate('RecruitingMemberScreen', {
+          comeFrom: 'HomeScreen',
+          routeParams: {
+            uid: authContext.entity.uid,
+            role: authContext.entity.role,
+          },
+        });
         break;
 
       case strings.blockThisAccount:
@@ -448,9 +455,11 @@ const HomeScreen = ({navigation, route}) => {
 
       <SwitchAccountModal
         isVisible={showSwitchAccountModal}
-        closeModal={() => {
+        closeModal={(obj) => {
+          if (obj) {
+            navigation.setParams({...obj});
+          }
           setShowSwitchAccountModal(false);
-          navigation.navigate('AccountScreen');
         }}
         onCreate={(option) => {
           console.log({option});

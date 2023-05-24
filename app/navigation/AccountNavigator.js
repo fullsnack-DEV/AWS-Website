@@ -270,6 +270,7 @@ import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScre
 import ReplyScreen from '../screens/home/SportActivity/contentScreens/ReplyScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
+import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
 
 // Scorekeeper Review Screen
 
@@ -1973,6 +1974,12 @@ const AccountNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+
+    <Stack.Screen
+      name="MembershipFeeScreen"
+      component={MembershipFeeScreen}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen

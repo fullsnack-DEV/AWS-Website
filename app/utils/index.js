@@ -75,10 +75,10 @@ export const languageList = [
 ];
 
 export const groupMembershipFeeTypes = [
-  {label: 'Weekly', value: 'weekly'},
-  {label: 'Biweekly', value: 'biweekly'},
-  {label: 'Monthly', value: 'monthly'},
-  {label: 'Yearly', value: 'yearly'},
+  {label: 'Weekly', value: 'week'},
+  {label: 'Biweekly', value: 'biweek'},
+  {label: 'Monthly', value: 'month'},
+  {label: 'Yearly', value: 'year'},
 ];
 
 export const countryCode = [

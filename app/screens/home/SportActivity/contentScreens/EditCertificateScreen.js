@@ -145,7 +145,7 @@ const EditCertificateScreen = ({list = [], setData = () => {}}) => {
               ) : (
                 <View />
               )}
-              {index === 0 && item.url ? (
+              {item.url ? (
                 <TouchableOpacity onPress={() => handleDelete(index)}>
                   <Text style={styles.deleteBtn}>{strings.delete}</Text>
                 </TouchableOpacity>

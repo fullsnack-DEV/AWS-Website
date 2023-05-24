@@ -99,16 +99,17 @@ export default function BlockSlotView({
 const styles = StyleSheet.create({
   fieldValue: {
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RMedium,
     textAlign: 'center',
   },
   card: {
     marginBottom: 15,
-    height: 40,
+    padding: 8,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 1,
+    // elevation: 1,
     flexDirection: 'row',
   },
 });

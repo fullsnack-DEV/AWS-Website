@@ -253,6 +253,7 @@ import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
+import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
 
 const Stack = createStackNavigator();
 
@@ -2288,6 +2289,12 @@ const LocalHomeNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+
+    <Stack.Screen
+      name="MembershipFeeScreen"
+      component={MembershipFeeScreen}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen

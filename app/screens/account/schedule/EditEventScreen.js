@@ -885,8 +885,8 @@ export default function EditEventScreen({navigation, route}) {
               title={strings.place}>
               <EventVenueTogglebtn
                 offline={is_Offline}
-                firstTabTitle="Offline"
-                secondTabTitle="Online"
+                firstTabTitle={strings.offline}
+                secondTabTitle={strings.online}
                 onFirstTabPress={() => setIsOffline(true)}
                 onSecondTabPress={() => setIsOffline(false)}
               />
