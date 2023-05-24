@@ -512,6 +512,7 @@ export default function CreateEventScreen({navigation, route}) {
   ]);
 
   const createEventDone = (data) => {
+    
     const arr = [...data];
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
@@ -1138,9 +1139,17 @@ export default function CreateEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>
                 {strings.refundPolicyTitle}
               </Text>
-
               <Text style={[styles.subTitleText, {marginTop: 10}]}>
                 {strings.attendeesMustRefundedText}
+                {strings.readPaymentPolicyText}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontFamily: fonts.RBold,
+                  marginTop: 16,
+                }}>
+                {strings.additionalRefundPolicy}
               </Text>
               <Pressable
                 onPress={() => {

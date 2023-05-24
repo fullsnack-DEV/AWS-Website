@@ -67,6 +67,7 @@ import {getEventById} from '../../api/Schedule';
 import TCInnerLoader from '../../components/TCInnerLoader';
 import errorCode from '../../Constants/errorCode';
 import SendRequestModal from '../../components/SendRequestModal/SendRequestModal';
+import ScreenHeader from '../../components/ScreenHeader';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
@@ -904,6 +905,7 @@ function NotificationsListScreen({navigation}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerShown: false,
       headerRight: () => (
         <TouchableWithoutFeedback
           hitSlop={Utility.getHitSlop(15)}
@@ -1134,6 +1136,12 @@ function NotificationsListScreen({navigation}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.notifications}
+        leftIcon={images.backArrow}
+        rightIcon1={images.chat3Dot}
+        leftIconPress={() => navigation.goBack()}
+      />
       {firstTimeLoading && <NotificationListShimmer />}
 
       <ActivityLoader visible={loading} />

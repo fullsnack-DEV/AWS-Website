@@ -105,8 +105,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
   },
   bgCameraButtonStyle: {
-    height: 22,
-    width: 22,
+    height: 25,
+    width: 25,
     alignSelf: 'flex-end',
     marginEnd: 16,
     marginTop: -37,

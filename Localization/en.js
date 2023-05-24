@@ -351,6 +351,7 @@ export default {
   profilePhotoUser: 'en_Profile Photo Of User Account',
   titleOrDescriptionText: 'en_Add title of certificate',
   title: 'en_TITLE',
+  timeUppercase: 'en_TIME',
   PAYNOW: 'en_PAY NOW',
   sportCreateEvent: 'en_SPORT',
   numberOfAttend: 'en_NUMBER OF ATTENDEES',
@@ -1151,7 +1152,7 @@ export default {
   othersText: 'en_Others',
   thisFeaturesNotAvailableText:
     'en_This feature is not available (on this device / in this context)',
-  minMaxText_dy: 'en_Min {0} Max {1}',
+  minMaxText_dy: 'en_Min {0} en_Max {1}',
   playerTitleText_dy: 'en_Player {0}',
   adminText_dy: 'en_{0} Admin',
   doYouWantToRemoText_dy: 'en_Do you want to remove {0} {1} from {2}?',
@@ -1399,6 +1400,7 @@ export default {
 
   blocked: 'en_Blocked',
   availableText: 'en_Available',
+  primaryrefundpolicy: 'en_Primary Refund policy',
   eventMayBeCancelledByOrganizerText:
     'en_The event may be canceled by the organizer if the minimum number of the attendees isn’t met.',
   attendeesMustRefundedText:

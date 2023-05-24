@@ -860,7 +860,7 @@ export default function EventScreen({navigation, route}) {
 
               <View style={styles.sepratorViewStyle} />
 
-              <EventItemRender title={strings.timeText}>
+              <EventItemRender title={strings.timeUppercase}>
                 <View>
                   <View
                     style={{
@@ -870,7 +870,7 @@ export default function EventScreen({navigation, route}) {
                     }}>
                     <Text style={styles.textValueStyle}>{strings.starts}</Text>
                     <Text style={styles.textValueStyle}>
-                      {`${moment(startTime).format('MMM DD YYYY')}`} &nbsp;
+                      {`${moment(startTime).format('MMM DD, YYYY')}`} &nbsp;
                       &nbsp; {`${moment(startTime).format('hh:mm a')}`}
                     </Text>
                   </View>
@@ -882,8 +882,8 @@ export default function EventScreen({navigation, route}) {
                     }}>
                     <Text style={styles.textValueStyle}>{strings.ends}</Text>
                     <Text style={styles.textValueStyle}>
-                      {`${moment(endTime).format('MMM DD YYYY')}`} &nbsp; &nbsp;{' '}
-                      {`${moment(endTime).format('hh:mm a')}`}
+                      {`${moment(endTime).format('MMM DD, YYYY')}`} &nbsp;
+                      &nbsp; {`${moment(endTime).format('hh:mm a')}`}
                     </Text>
                   </View>
                   <View
@@ -990,12 +990,12 @@ export default function EventScreen({navigation, route}) {
               <View style={styles.sepratorViewStyle} />
               <EventItemRender title={strings.refundPolicyTitle}>
                 <ReadMore
-                  numberOfLines={1}
+                  numberOfLines={2}
                   style={styles.longTextStyle}
                   seeMoreText={strings.moreText}
-                  seeLessText={strings.lessText}
                   seeLessStyle={styles.moreLessText}
-                  seeMoreStyle={styles.moreLessText}>
+                  seeMoreStyle={styles.moreLessText}
+                  seeLessText={strings.lessText}>
                   {strings.attendeesMustRefundedText} {eventData?.refund_policy}
                 </ReadMore>
               </EventItemRender>
@@ -1037,10 +1037,11 @@ export default function EventScreen({navigation, route}) {
                       {eventData?.who_can_invite?.text}
                     </Text>
                   </EventItemRender>
+                  <View style={styles.sepratorViewStyle} />
                 </>
               )}
 
-              <View marginBottom={70} />
+              {/* <View marginBottom={70} /> */}
             </>
           ) : null}
         </ScrollView>
