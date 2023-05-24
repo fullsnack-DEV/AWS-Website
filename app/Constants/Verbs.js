@@ -152,7 +152,7 @@ const Verbs = {
 
   PAYMENT: 'payment',
   CASH: 'Cash',
-  DATE_FORMAT: 'MMM DD YYYY hh:mmA',
+  DATE_FORMAT: 'MMM DD, YYYY, hh:mmA',
   CHEQUE: 'Cheque',
   // Tag verbs
   entityID: 'entityID',

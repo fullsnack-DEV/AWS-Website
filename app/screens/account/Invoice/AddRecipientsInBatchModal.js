@@ -302,7 +302,9 @@ export default function AddRecipientsInBatchModal({
               {strings.amountTitle.toUpperCase()}
             </Text>
             <Text style={styles.invoicetitletext}>
-              {`${currentInvoice.amount_due} ${currentInvoice.currency_type}`}
+              {`${currentInvoice.amount_due.toFixed(2)} ${
+                currentInvoice.currency_type
+              }`}
             </Text>
           </View>
 
@@ -514,13 +516,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 5,
   },
   ListEmptyTextstyle: {
     marginTop: 25,
     fontFamily: fonts.RRegular,
     color: colors.grayColor,
     fontSize: 26,
+    padding: 5,
     lineHeight: 24,
   },
   headerTextstyle: {

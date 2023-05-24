@@ -384,7 +384,10 @@ const SendNewInvoiceModal = ({
           </View>
           {/* Code for Timezone */}
           <View style={styles.linkButton}>
-            <Text style={styles.timeZoneText}> {` ${strings.timeZone}  `}</Text>
+            <Text style={styles.timeZoneText}>
+              {' '}
+              {`${strings.time} ${strings.zone}  `}
+            </Text>
             <TouchableOpacity
               onPress={() => {
                 Alert.alert(

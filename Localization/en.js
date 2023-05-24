@@ -2951,5 +2951,11 @@ export default {
   onlyOrganizer: 'en_Only {0} (organizer)',
   onlyOption: 'en_Only {0}',
 
+  time: 'en_Time',
+  zone: 'en_zone',
+  chooseValidFromDate: 'en_Choose valid from Date',
+
+
+
 
 };

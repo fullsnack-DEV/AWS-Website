@@ -250,7 +250,7 @@ export default function BatchDetailScreen({navigation, route}) {
                   {strings.amountInvoicedCopy}
                 </Text>
                 <Text style={[styles.dueatStyle, {fontFamily: fonts.RMedium}]}>
-                  {` ${batchData.invoice_open_total} ${currency}`}
+                  {` ${batchData.invoice_open_total.toFixed(2)} ${currency}`}
                 </Text>
               </View>
               {/* Total Amount invoices section */}
@@ -259,7 +259,7 @@ export default function BatchDetailScreen({navigation, route}) {
                   {strings.totalAmountInvoice}
                 </Text>
                 <Text style={[styles.dueatStyle, {fontFamily: fonts.RMedium}]}>
-                  {` ${batchData.invoice_total} ${currency}`}
+                  {` ${batchData.invoice_total.toFixed(2)} ${currency}`}
                 </Text>
               </View>
 

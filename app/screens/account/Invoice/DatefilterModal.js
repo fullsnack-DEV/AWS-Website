@@ -1,4 +1,4 @@
-import {View, StyleSheet, Platform} from 'react-native';
+import {View, StyleSheet, Platform, Alert} from 'react-native';
 import React, {useState} from 'react';
 import moment from 'moment';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
@@ -23,13 +23,22 @@ export default function DateFilterModal({isVisible, closeList, onApplyPress}) {
     setVisibleEndDate(false);
   };
 
+  const onValidate = () => {
+    if (endDate < startDate) {
+      Alert.alert(strings.chooseValidFromDate);
+      return;
+    }
+
+    onApplyPress(startDate, endDate);
+  };
+
   return (
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeList}
       modalType={ModalTypes.style1}
       Top={Platform.OS === 'android' ? 570 : 690}
-      onRightButtonPress={() => onApplyPress(startDate, endDate)}
+      onRightButtonPress={() => onValidate()}
       headerRightButtonText={strings.apply}
       title={strings.pickaDate}
       containerStyle={{padding: 0, width: '100%', height: '25%'}}>
@@ -99,12 +108,17 @@ export default function DateFilterModal({isVisible, closeList, onApplyPress}) {
           visible={visibleEndDate}
           onDone={(date) => {
             setEndDate(date);
+            setVisibleEndDate(false);
+            const fromYear = date.getFullYear();
+            const toYear = startDate.getFullYear();
+            // from date should be greater than two date
 
+            if (fromYear === toYear) {
+              return;
+            }
             const oneYearBefore = new Date(date.getTime());
             oneYearBefore.setFullYear(date.getFullYear() - 1);
             setStartDate(oneYearBefore);
-
-            setVisibleEndDate(false);
           }}
           onCancel={handleCancelPress}
           onHide={handleCancelPress}
