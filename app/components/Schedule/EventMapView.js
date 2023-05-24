@@ -6,9 +6,10 @@ import {
 } from 'react-native-responsive-screen';
 import MapView, {Marker} from 'react-native-maps';
 
-function EventMapView({region, coordinate, style}) {
+function EventMapView({region, coordinate, style, onPress = () => {}}) {
   return (
     <MapView
+      onPress={onPress}
       // mapType={Platform.OS === 'android' ? 'none' : 'standard'}
       // provider={PROVIDER_GOOGLE}
       region={region}
@@ -26,8 +27,7 @@ const styles = StyleSheet.create({
     height: hp('20%'),
     borderRadius: 5,
     marginTop: 15,
-    marginBottom:10
-   
+    marginBottom: 10,
   },
 });
 

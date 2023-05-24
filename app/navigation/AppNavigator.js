@@ -641,7 +641,7 @@ const AppNavigator = ({navigation}) => {
                 ? '300+'
                 : authContext.totalNotificationCount,
           }),
-          unmountOnBlur: false,
+          unmountOnBlur: true,
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},

@@ -152,9 +152,9 @@ const HomeScreen = ({navigation, route}) => {
 
   useEffect(() => {
     if (isFocused && route.params?.isEntityCreated && route.params?.entityObj) {
+      setCongratulationsModal(true);
       setCurrentUserData(route.params.entityObj);
       setSettingObject(route.params.entityObj);
-      setCongratulationsModal(true);
     }
 
     if (route.params?.userJoinTeam) {

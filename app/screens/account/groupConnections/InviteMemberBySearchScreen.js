@@ -32,6 +32,7 @@ import {getUserIndex} from '../../../api/elasticSearch';
 import TCThinDivider from '../../../components/TCThinDivider';
 import images from '../../../Constants/ImagePath';
 import {showAlert} from '../../../utils';
+import InviteListShimmer from './InviteListShimmer';
 
 let stopFetchMore = true;
 
@@ -294,22 +295,26 @@ export default function InviteMembersBySearchScreen({navigation}) {
         }}
       />
 
-      <FlatList
-        extraData={players}
-        ListHeaderComponent={listHeaderComponent}
-        showsVerticalScrollIndicator={false}
-        data={players}
-        keyExtractor={(item, index) => index.toString()}
-        ItemSeparatorComponent={ItemSeparatorComponent}
-        renderItem={renderPlayer}
-        onScroll={onScrollHandler}
-        onEndReachedThreshold={0.01}
-        onScrollBeginDrag={() => {
-          stopFetchMore = false;
-        }}
-        stickyHeaderIndices={[0]}
-        ListEmptyComponent={listEmptyComponent}
-      />
+      {players.length === 0 ? (
+        <InviteListShimmer />
+      ) : (
+        <FlatList
+          extraData={players}
+          ListHeaderComponent={listHeaderComponent}
+          showsVerticalScrollIndicator={false}
+          data={players}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={ItemSeparatorComponent}
+          renderItem={renderPlayer}
+          onScroll={onScrollHandler}
+          onEndReachedThreshold={0.01}
+          onScrollBeginDrag={() => {
+            stopFetchMore = false;
+          }}
+          stickyHeaderIndices={[0]}
+          ListEmptyComponent={listEmptyComponent}
+        />
+      )}
     </View>
   );
 }

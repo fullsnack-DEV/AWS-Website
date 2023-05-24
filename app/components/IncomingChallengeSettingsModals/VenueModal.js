@@ -8,18 +8,41 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import {
+  DEFAULT_LATITUDE,
+  DEFAULT_LONGITUDE,
+  LATITUDE_DELTA,
+  LONGITUDE_DELTA,
+} from '../../Constants/GeneralConstants';
+import images from '../../Constants/ImagePath';
+import AddressWithMapModal from '../AddressWithMap/AddressWithMapModal';
 import EventMapView from '../Schedule/EventMapView';
-import ChooseAddressModal from './ChooseAddressModal';
+
 import styles from './ModalStyles';
 
 const VenueModal = ({venues = [], onChange = () => {}}) => {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [selectedVenueIndex, setSelectedVenueIndex] = useState();
   const inputRef = useRef();
+  const [mapRegion, setMapRegion] = useState({
+    latitude: DEFAULT_LATITUDE,
+    longitude: DEFAULT_LONGITUDE,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA,
+  });
+  const [mapcoordinate, setMapCoordinate] = useState({
+    latitude: DEFAULT_LATITUDE,
+    longitude: DEFAULT_LONGITUDE,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA,
+  });
+  const [mapAddress, setMapAddress] = useState();
+  const [openMap, setOpenMap] = useState(false);
 
   return (
     <View style={{flex: 1}}>
@@ -29,9 +52,25 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{paddingBottom: 30}}
         ListHeaderComponent={() => (
-          <Text style={[styles.title, {marginBottom: 28}]}>
-            {strings.venueInfo}
-          </Text>
+          <View>
+            <Text
+              style={[
+                styles.title,
+                {marginBottom: 15, fontFamily: fonts.RMedium},
+              ]}>
+              {strings.venueInfo}
+            </Text>
+            <Image
+              source={images.infoIcon}
+              style={{
+                height: 15,
+                width: 15,
+                position: 'absolute',
+                bottom: 20,
+                left: 139,
+              }}
+            />
+          </View>
         )}
         renderItem={({item, index}) => (
           <View style={{marginBottom: 25}}>
@@ -41,7 +80,10 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
                 <Text
                   style={[
                     styles.label,
-                    {fontFamily: fonts.RBold, color: colors.redColor},
+                    {
+                      fontFamily: fonts.RBold,
+                      color: colors.redColor,
+                    },
                   ]}>
                   *
                 </Text>
@@ -50,7 +92,10 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
 
             <TextInput
               placeholder={strings.venueNamePlaceholder}
-              style={[styles.greyContainer, {marginTop: 8, marginBottom: 10}]}
+              style={[
+                styles.greyContainer,
+                {marginBottom: 5, height: 40, marginTop: 10},
+              ]}
               onChangeText={(text) => {
                 const list = [...venues];
                 list[index].name = text;
@@ -61,23 +106,39 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
 
             <TextInput
               placeholder={strings.addressPlaceholder}
-              style={[styles.greyContainer, {marginTop: 8, marginBottom: 10}]}
+              style={[
+                styles.greyContainer,
+                {marginTop: 8, marginBottom: 5, height: 40},
+              ]}
               onFocus={() => {
                 Keyboard.dismiss();
                 setSelectedVenueIndex(index);
+                setOpenMap(false);
                 setShowLocationModal(true);
               }}
               value={item.address}
             />
+
             {item?.address ? (
-              <EventMapView
-                coordinate={item.coordinate}
-                region={item.region}
-                style={{marginBottom: 25}}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  setMapRegion(item.region);
+                  setMapCoordinate(item.coordinate);
+
+                  setMapAddress(item?.address);
+                  setOpenMap(true);
+                  setSelectedVenueIndex(index);
+
+                  setShowLocationModal(true);
+                }}>
+                <EventMapView
+                  coordinate={item.coordinate}
+                  region={item.region}
+                  style={{marginBottom: 25}}
+                />
+              </TouchableOpacity>
             ) : null}
 
-            <Text style={styles.inputLabel}>{strings.detailText}</Text>
             <Pressable
               style={[
                 styles.inputContainer,
@@ -89,7 +150,7 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
               <TextInput
                 ref={inputRef}
                 style={styles.input}
-                placeholder={strings.durationDetails}
+                placeholder={strings.detailTextVenue}
                 multiline
                 onChangeText={(text) => {
                   const list = [...venues];
@@ -123,11 +184,12 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
           </TouchableOpacity>
         )}
       />
-      <ChooseAddressModal
-        isVisible={showLocationModal}
-        closeModal={() => setShowLocationModal(false)}
-        onChange={(location) => {
+      <AddressWithMapModal
+        visibleLocationModal={showLocationModal}
+        setVisibleAddressModalhandler={() => setShowLocationModal(false)}
+        onAddressSelect={(location) => {
           const list = [...venues];
+          console.log(location, 'From change Coordinates');
           list[selectedVenueIndex] = {
             ...list[selectedVenueIndex],
             ...location,
@@ -135,6 +197,10 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
 
           onChange(list);
         }}
+        existedregion={mapRegion}
+        existedcoordinates={mapcoordinate}
+        openMap={openMap}
+        mapAddress={mapAddress}
       />
     </View>
   );

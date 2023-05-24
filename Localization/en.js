@@ -216,6 +216,7 @@ export default {
   birthdateText: 'en_Choose Date of birth',
   searchCityPlaceholder: 'en_Search by city',
   searchCityStatePlaceholder: 'en_City, state or country',
+  searchcitystatecountry: 'en_Search for city, state or country',
   searchByCityStateText: 'en_Search by city',
   searchCountryCode: 'en_e.g India or IN or 91',
   cityText: 'en_City',
@@ -2932,6 +2933,13 @@ export default {
   postTitle: 'en_Post',
   list: 'en_List',
   plusDayOne: 'en_+1day',
+
+  detailTextVenue: 'en_Details',
+  adjustLocationOnMap: 'en_ Please adjust the location on the map.',
+  chooseLocationOnMap: 'en_Choose Location on Map',
+  venuesText: 'en_Venues',
+  addServicableAreas: 'en_+ Add Serviceable Area',
+
   partiallyPaidMessage:
     'en_If the invoice has been partially paid, you cannot use this payment method to pay it.',
   payInvoiceTitle: 'en_Pay Invoice',
@@ -2942,5 +2950,6 @@ export default {
   onlyAccount: 'en_Only {0} account',
   onlyOrganizer: 'en_Only {0} (organizer)',
   onlyOption: 'en_Only {0}',
+
 
 };

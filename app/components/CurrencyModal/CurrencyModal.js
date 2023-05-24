@@ -17,13 +17,19 @@ import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../TCThinDivider';
 import AuthContext from '../../auth/context';
 
-export default function CurrencyModal({isVisible, closeList, onNext}) {
+export default function CurrencyModal({
+  isVisible,
+  closeList,
+  onNext,
+  existedCurrency = '',
+}) {
   const authContext = useContext(AuthContext);
-  const [selectedCurrency, setSelectedCurrency] = useState();
+  const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [currencydata, setCurrencydata] = useState();
 
   useEffect(() => {
     setCurrencydata(currencyList);
+    setSelectedCurrency('USD');
 
     const currency = getCountry(authContext.entity.obj.country);
 
@@ -42,7 +48,7 @@ export default function CurrencyModal({isVisible, closeList, onNext}) {
         setSelectedCurrency(currency.currency);
       }
     }
-  }, [authContext]);
+  }, [authContext, existedCurrency]);
 
   const RendeCurrencies = ({item, index}) => (
     <TouchableWithoutFeedback
