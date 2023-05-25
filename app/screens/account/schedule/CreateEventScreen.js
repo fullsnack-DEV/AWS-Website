@@ -512,7 +512,6 @@ export default function CreateEventScreen({navigation, route}) {
   ]);
 
   const createEventDone = (data) => {
-    
     const arr = [...data];
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;

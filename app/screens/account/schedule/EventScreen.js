@@ -975,18 +975,19 @@ export default function EventScreen({navigation, route}) {
               </EventItemRender>
 
               <View style={styles.sepratorViewStyle} />
-              <EventItemRender
-                title={strings.eventFeeTitle}
-                icon={images.infoIcon}
-                clickInfoIcon={clickInfoIcon}
-                type={'fee'}>
-                <Text style={styles.textValueStyle}>
-                  {`${parseFloat(eventData?.event_fee?.value).toFixed(2)} ${
-                    eventData?.event_fee?.currency_type
-                  }`}
-                </Text>
-              </EventItemRender>
-
+              <View style={{paddingVertical: 3}}>
+                <EventItemRender
+                  title={strings.eventFeeTitle}
+                  icon={images.infoIcon}
+                  clickInfoIcon={clickInfoIcon}
+                  type={'fee'}>
+                  <Text style={styles.textValueStyle}>
+                    {`${parseFloat(eventData?.event_fee?.value).toFixed(2)} ${
+                      eventData?.event_fee?.currency_type
+                    }`}
+                  </Text>
+                </EventItemRender>
+              </View>
               <View style={styles.sepratorViewStyle} />
               <EventItemRender title={strings.refundPolicyTitle}>
                 <ReadMore
@@ -1001,6 +1002,7 @@ export default function EventScreen({navigation, route}) {
               </EventItemRender>
 
               <View style={styles.sepratorViewStyle} />
+
               <EventItemRender
                 title={strings.numberOfAttend}
                 icon={images.infoIcon}
@@ -1108,7 +1110,7 @@ const styles = StyleSheet.create({
   sepratorViewStyle: {
     borderColor: colors.sepratorColor,
     borderWidth: hp('0.4%'),
-    marginVertical: hp('1.5%'),
+    marginVertical: hp('1.7%'),
   },
   textValueStyle: {
     fontSize: 16,

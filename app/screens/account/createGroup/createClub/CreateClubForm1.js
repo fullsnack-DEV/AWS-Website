@@ -600,7 +600,7 @@ export default function CreateClubForm1({navigation, route}) {
                   }}
                 />
                 <TextInput
-                  placeholder={strings.clubNameplaceholder}
+                  placeholder={strings.clubNamePlaceholder}
                   style={styles.inputTextField}
                   maxLength={20}
                   onChangeText={(text) => setClubName(text)}
@@ -617,7 +617,7 @@ export default function CreateClubForm1({navigation, route}) {
                 />
                 <TouchableOpacity onPress={() => setVisibleLocationModal(true)}>
                   <TextInput
-                    placeholder={strings.searchCityPlaceholder}
+                    placeholder={strings.currentCityPlaceholder}
                     style={styles.inputTextField}
                     value={location}
                     editable={false}

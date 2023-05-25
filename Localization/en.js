@@ -212,7 +212,7 @@ export default {
   searchCityText: 'en_Search City',
 
   locationClubTitle: 'en_HOME CITY',
-  currentCity: 'en_Home City',
+  currentCityPlaceholder: 'en_Home City',
   birthdateText: 'en_Choose Date of birth',
   searchCityPlaceholder: 'en_Search by city',
   searchCityStatePlaceholder: 'en_City, state or country',
@@ -292,7 +292,7 @@ export default {
 
   // CreateClub Screen 1
   clubNameTitle: 'en_What is the club name?',
-  clubNameplaceholder: 'en_Club name',
+  clubNamePlaceholder: 'en_Club Name',
 
   // CreateClub Screen 2
   inviteTitle: 'en_Invitation to Membership',
@@ -577,7 +577,7 @@ export default {
   sport: 'en_Sport',
   hometown: 'en_Home town',
   membersgender: "en_Member's gender",
-  membersage: 'en_Members age',
+  membersage: 'en_Members Age',
   language: 'en_Language',
   languagesName: 'en_Korean, English, Hindi, Italian',
   membershipregfee: 'en_Membership registration fee',
