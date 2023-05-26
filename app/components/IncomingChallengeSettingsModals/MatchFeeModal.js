@@ -2,6 +2,7 @@
 import React, {useState} from 'react';
 import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import {strings} from '../../../Localization/translation';
+import fonts from '../../Constants/Fonts';
 import Verbs from '../../Constants/Verbs';
 import CurrencyModal from '../CurrencyModal/CurrencyModal';
 import styles from './ModalStyles';
@@ -33,11 +34,21 @@ const MatchFeeModal = ({
   };
   return (
     <View>
-      <Text style={styles.title}>{getTitle()}</Text>
-
-      <Text style={styles.matchFeeModalInfoText}>
-        {strings.matchFeeModalInfo}
+      <Text
+        style={[
+          styles.title,
+          entityType === Verbs.entityTypeReferee
+            ? {fontFamily: fonts.RMedium, marginBottom: 20}
+            : {},
+        ]}>
+        {getTitle()}
       </Text>
+
+      {entityType !== Verbs.entityTypeReferee && (
+        <Text style={styles.matchFeeModalInfoText}>
+          {strings.matchFeeModalInfo}
+        </Text>
+      )}
 
       <View
         style={[
@@ -60,7 +71,7 @@ const MatchFeeModal = ({
         <Text
           style={
             styles.label
-          }>{`${selectedcurrency}/${strings.matchCapText}`}</Text>
+          }>{`${selectedcurrency}/${strings.matchText}`}</Text>
       </View>
 
       <TouchableOpacity

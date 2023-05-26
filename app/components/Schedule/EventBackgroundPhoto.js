@@ -7,7 +7,6 @@ import {
   ImageBackground,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -88,14 +87,14 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   bgStyle: {
-    // resizeMode: 'contain',
     height: 200,
-    width: wp('95%'),
+    marginTop: 10,
+    borderRadius: 5,
+    marginBottom: 15,
     alignItems: 'center',
+    marginHorizontal: 10,
     justifyContent: 'center',
     backgroundColor: colors.textFieldBackground,
-    marginBottom: 20,
-    borderRadius: 5,
   },
   imageBorder: {
     borderRadius: 5,

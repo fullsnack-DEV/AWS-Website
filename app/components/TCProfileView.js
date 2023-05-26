@@ -13,7 +13,6 @@ export default function TCProfileView({
   color = colors.lightBlackColor,
   ...Props
 }) {
-  
   return (
     <View style={[styles.topViewContainer, Props]}>
       <View style={styles.profileView}>
@@ -22,7 +21,7 @@ export default function TCProfileView({
       <View style={styles.topTextContainer}>
         {type === 'medium' && name && (
           <Text style={[styles.mediumNameText, {color}]} numberOfLines={1}>
-            {name} 
+            {name}
           </Text>
         )}
         {type === 'large' && name && (
@@ -44,7 +43,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: 40,
     width: 40,
-    borderRadius: 80,
+    borderRadius: 20,
+    resizeMode: 'cover',
   },
 
   topViewContainer: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.thinDividerColor
+    borderColor: colors.thinDividerColor,
   },
   topTextContainer: {
     marginLeft: 10,

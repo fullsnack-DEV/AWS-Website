@@ -12,22 +12,23 @@ function EventItemRender({
   isRequired = false,
   icon,
   clickInfoIcon,
-  type
+  type,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
         <Text style={[styles.headerTextStyle, headerTextStyle]}>
-          {title}{' '} 
+          {title}{' '}
           {isRequired && <Text style={{color: colors.darkThemeColor}}> *</Text>}
         </Text>
-        {
-        icon && (
+        {icon && (
           <TouchableOpacity onPress={() => clickInfoIcon(type)}>
-            <Image source={icon} style={{width: 15, height: 15, marginTop: 5}}/>
+            <Image
+              source={icon}
+              style={{width: 15, height: 15, marginTop: 5}}
+            />
           </TouchableOpacity>
-        )
-        }
+        )}
       </View>
       {children}
     </View>
@@ -42,8 +43,10 @@ const styles = StyleSheet.create({
   },
   headerTextStyle: {
     fontSize: 20,
+    lineHeight: 30,
+    marginBottom: 15,
     fontFamily: fonts.RBold,
-    marginBottom: 10
+    color: colors.lightBlackColor,
   },
 });
 

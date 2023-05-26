@@ -1,66 +1,70 @@
 import React from 'react';
 import {StyleSheet, View, Text, Image} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-function EventTimeItem({fromTime, toTime, location = '', eventOnlineUrl = '', is_Offline}) {
-  return (
-    <View style={styles.containerStyle}>
-      <View style={styles.timeValueStyle}>
-        <Image
+const EventTimeItem = ({
+  fromTime,
+  toTime,
+  location = '',
+  eventOnlineUrl = '',
+  is_Offline,
+}) => (
+  <View style={styles.containerStyle}>
+    <View style={[styles.timeValueStyle, {marginBottom: 5}]}>
+      <Image
         source={images.eventClock}
         style={{width: 14, height: 14, marginRight: 10}}
-        />
-        <Text style={styles.fromTimeTextStyle}>{fromTime} &nbsp; {toTime}</Text>
+      />
+      <View style={styles.timeValueStyle}>
+        <Text style={styles.fromTimeTextStyle}>{fromTime}</Text>
+        <View style={styles.separator} />
+        <Text style={styles.fromTimeTextStyle}>{toTime}</Text>
       </View>
-      {
-      (location.length > 0 || eventOnlineUrl.length > 0) && (
+    </View>
+    {(location.length > 0 || eventOnlineUrl.length > 0) && (
       <View style={styles.timeValueStyle}>
         <Image
-        source={images.eventMap}
-        style={{width: 14, height: 18, marginRight: 10}}
+          source={images.eventMap}
+          style={{width: 14, height: 18, marginRight: 10}}
         />
-        {
-          is_Offline ? (
-            <Text style={styles.fromTimeTextStyle}>{location} </Text>
-          ):(
-              <Text style={[styles.fromTimeTextStyle, {
-                  textDecorationLine: 'underline',
-                  textDecorationStyle: 'solid',
-                  textDecorationColor: colors.darkGrayColor
-                }]}>
-                  {eventOnlineUrl} 
-              </Text>
-          )
-        }
+        {is_Offline ? (
+          <Text style={styles.fromTimeTextStyle}>{location} </Text>
+        ) : (
+          <Text
+            style={[
+              styles.fromTimeTextStyle,
+              {textDecorationLine: 'underline'},
+            ]}>
+            {eventOnlineUrl}
+          </Text>
+        )}
       </View>
-      )}
-    </View>
-  );
-}
+    )}
+  </View>
+);
 
 const styles = StyleSheet.create({
   containerStyle: {
-    width: wp('96%'),
-    marginTop: 20
+    marginTop: 15,
   },
   timeValueStyle: {
     flexDirection: 'row',
-    paddingHorizontal: 15,
-    marginVertical: 3,
-    alignContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   fromTimeTextStyle: {
-    fontFamily: fonts.RRegular,
     fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    lineHeight: 24
-  }
+  },
+  separator: {
+    width: 1,
+    height: 10,
+    marginHorizontal: 10,
+    backgroundColor: colors.darkGrey,
+  },
 });
 
 export default EventTimeItem;

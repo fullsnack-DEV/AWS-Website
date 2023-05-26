@@ -1755,7 +1755,7 @@ export default {
   set: 'en_set',
   sets: 'en_sets',
   lessThanDollerFee: 'en_User should not allow less than $1 match fee.',
-  changeCurrency: 'en_Change Currency',
+  changeCurrency: 'en_Change currency',
   currencySetting: 'en_Currency Setting',
   nOverTime: 'en_{0} Overtime',
   addIntervalPeriod: 'en_+ Add Interval & Period',

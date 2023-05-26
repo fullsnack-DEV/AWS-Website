@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     lineHeight: 35,
-    fontFamily: fonts.RBlack,
+    fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     marginBottom: 13,
     textAlign: 'left',

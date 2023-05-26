@@ -174,6 +174,8 @@ const CustomWeeklyCalender = ({
             containerStyle={{paddingHorizontal: 15}}
             onNext={showNextWeekData}
             onPrev={showPreviousWeekData}
+            startDate={calenderData.startDate}
+            endDate={calenderData.endDate}
           />
           <View style={styles.row}>
             {calenderData.data.map((item, key) => (
@@ -188,7 +190,7 @@ const CustomWeeklyCalender = ({
                       fontFamily: fonts.RMedium,
                       color: colorConstant.lightBlackColor,
                     }}>
-                    {item.day}
+                    {item.day.toUpperCase()}
                   </Text>
                 </View>
                 <TouchableOpacity
@@ -294,29 +296,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   toggleStyle: {
-    width: 50,
-    height: 25,
+    width: 75,
+    height: 28,
     backgroundColor: colorConstant.whiteColor,
     shadowColor: colorConstant.darkGrayColor,
     shadowOffset: {width: -2, height: 4},
     shadowOpacity: 0.2,
     shadowRadius: 3,
-    elevation: 5,
+    elevation: 1,
     alignSelf: 'center',
-    // borderRadius: 5,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    bottom: -24,
+    bottom: -28,
   },
   arrowContainer: {
     width: 20,
     height: 25,
-    backgroundColor: '#f5f5f5',
+    padding: 7,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 8,
+    backgroundColor: colorConstant.textFieldBackground,
   },
   arrowIcon: {
     width: 5,

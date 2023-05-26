@@ -16,10 +16,7 @@ import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import Modal from 'react-native-modal';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import ReadMore from '@fawazahmed/react-native-read-more';
 import ActionSheet from 'react-native-actionsheet';
 
@@ -32,7 +29,6 @@ import EventMapView from '../../../components/Schedule/EventMapView';
 import {strings} from '../../../../Localization/translation';
 import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
 import AuthContext from '../../../auth/context';
-import TCThinDivider from '../../../components/TCThinDivider';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {attendEvent, deleteEvent} from '../../../api/Schedule';
 import TCProfileButton from '../../../components/TCProfileButton';
@@ -56,10 +52,10 @@ export default function EventScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
-  const [organizer, setOrganizer] = useState();
+  const [organizer, setOrganizer] = useState({});
   const [going, setGoing] = useState([]);
-  const [eventData, setEventData] = useState(route?.params?.data);
-  const [activeTab, setActiveTab] = useState('info');
+  const [eventData, setEventData] = useState(route.params.data ?? {});
+  const [activeTab, setActiveTab] = useState(strings.infoTitle);
   const [myFollowers, setMyFollowers] = useState([]);
   const [myMembers, setMyMembers] = useState([]);
   const [infoModal, setInfoModal] = useState(false);
@@ -419,7 +415,608 @@ export default function EventScreen({navigation, route}) {
   );
 
   return (
-    <>
+    <SafeAreaView style={styles.mainContainerStyle}>
+      <ScreenHeader
+        title={strings.event}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack();
+        }}
+        rightIcon2={images.vertical3Dot}
+        rightIcon2Press={() =>
+          isOrganizer
+            ? actionSheet.current.show()
+            : userActionSheet.current.show()
+        }
+        // loading={loading}
+      />
+      <ActivityLoader visible={loading} />
+
+      <ScrollView stickyHeaderIndices={[5]}>
+        <EventBackgroundPhoto
+          isEdit={!!eventData?.background_thumbnail}
+          isPreview={true}
+          isImage={!!eventData?.background_thumbnail}
+          imageURL={
+            eventData?.background_thumbnail
+              ? {uri: eventData?.background_thumbnail}
+              : images.backgroudPlaceholder
+          }
+        />
+        <View style={{paddingHorizontal: 15}}>
+          <Text style={styles.eventTitleStyle}>{titleValue}</Text>
+
+          <View style={styles.row}>
+            <Text style={styles.sportTitleStyle}>
+              {eventData.selected_sport && eventData.selected_sport.sport_name}
+            </Text>
+            {!eventData.is_Offline && (
+              <Text style={styles.onlineText}>{strings.onlineText}</Text>
+            )}
+          </View>
+
+          <EventTimeItem
+            from={strings.from}
+            fromTime={moment(startTime).format('MMM DD, YYYY')}
+            to={strings.to}
+            toTime={`${moment(startTime).format('hh:mm a')} - ${moment(
+              endTime,
+            ).format('hh:mm a')}`}
+            repeat={strings.repeat}
+            repeatTime={repeatString}
+            location={eventData?.location?.location_name}
+            eventOnlineUrl={eventData?.online_url}
+            is_Offline={eventData?.is_Offline}
+          />
+
+          {/* Join and Invite button wrapper */}
+          <View style={styles.buttonContainer}>
+            {checkIsGoing() && (
+              <TCProfileButton
+                title={
+                  (eventData.going ?? []).filter(
+                    (entity) => entity === authContext.entity.uid,
+                  ).length > 0
+                    ? strings.going
+                    : strings.join
+                }
+                style={
+                  (eventData.going ?? []).filter(
+                    (entity) => entity === authContext.entity.uid,
+                  ).length > 0
+                    ? [
+                        styles.firstButtonStyle,
+                        {width: checkIsInvite() ? '48%' : '100%'},
+                      ]
+                    : [
+                        styles.firstButtonStyle,
+                        {
+                          width: checkIsInvite() ? '48%' : '100%',
+                          backgroundColor: colors.themeColor,
+                        },
+                      ]
+                }
+                showArrow={false}
+                tickImage={
+                  (eventData.going ?? []).filter(
+                    (entity) => entity === authContext.entity.uid,
+                  ).length > 0
+                }
+                imageStyle={styles.checkMarkStyle}
+                textStyle={
+                  (eventData.going ?? []).filter(
+                    (entity) => entity === authContext.entity.uid,
+                  ).length > 0
+                    ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
+                    : [styles.attendTextStyle, {color: colors.whiteColor}]
+                }
+                onPressProfile={() => {
+                  if (
+                    (eventData.going ?? []).filter(
+                      (entity) => entity === authContext.entity.uid,
+                    ).length > 0
+                  ) {
+                    //
+                  } else {
+                    attendAPICall();
+                  }
+                }}
+              />
+            )}
+
+            {checkIsInvite() && (
+              <TCProfileButton
+                title={strings.invite}
+                style={[
+                  styles.firstButtonStyle,
+                  {width: checkIsGoing() ? '48%' : '100%'},
+                ]}
+                showArrow={false}
+                imageStyle={styles.checkMarkStyle}
+                textStyle={styles.inviteTextStyle}
+                onPressProfile={() =>
+                  navigation.navigate('InviteToEventScreen', {
+                    eventId: eventData.cal_id,
+                    start_datetime: eventData.start_datetime,
+                    end_datetime: eventData.end_datetime,
+                  })
+                }
+              />
+            )}
+          </View>
+        </View>
+
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[
+              styles.tabItem,
+              activeTab === strings.infoTitle ? styles.activeTabItem : {},
+            ]}
+            onPress={() => setActiveTab(strings.infoTitle)}>
+            <Text
+              style={[
+                styles.tabItemText,
+                activeTab === strings.infoTitle ? styles.activeTabItemText : {},
+              ]}>
+              {strings.infoTitle}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.tabItem,
+              activeTab === strings.postTitle ? styles.activeTabItem : {},
+            ]}
+            onPress={() => setActiveTab(strings.postTitle)}>
+            <Text
+              style={[
+                styles.tabItemText,
+                activeTab === strings.postTitle ? styles.activeTabItemText : {},
+              ]}>
+              {strings.postTitle}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {activeTab === strings.infoTitle ? (
+          <>
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>
+                {strings.organizerTitle}
+              </Text>
+              <ReadMore
+                numberOfLines={3}
+                style={styles.longTextStyle}
+                seeMoreText={strings.moreText}
+                seeLessText={strings.lessText}
+                seeLessStyle={styles.moreLessText}
+                seeMoreStyle={styles.moreLessText}>
+                {description} {description2}
+              </ReadMore>
+            </View>
+            <View style={[styles.divider, {marginHorizontal: 15}]} />
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>
+                {strings.organizerTitle}
+              </Text>
+              {organizer && (
+                <View>
+                  <TCProfileView
+                    type="medium"
+                    name={organizer.group_name ?? organizer.full_name}
+                    location={`${organizer.city}, ${
+                      organizer.state_abbr ? organizer.state_abbr : ''
+                    }${organizer.state_abbr ? ',' : ''} ${organizer.country}`}
+                    image={
+                      organizer.thumbnail
+                        ? {uri: organizer.thumbnail}
+                        : images.teamPH
+                    }
+                    alignSelf={'flex-start'}
+                    marginTop={10}
+                  />
+                  <Image
+                    source={images.starProfile}
+                    style={styles.starProfile}
+                  />
+                </View>
+              )}
+            </View>
+            <View style={[styles.divider, {marginHorizontal: 15}]} />
+
+            {eventData.going?.length > 0 && (
+              <>
+                <View style={styles.containerStyle}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: 15,
+                    }}>
+                    <Text style={[styles.headerTextStyle, {marginBottom: 0}]}>
+                      {`${strings.goingTitle} (${going?.length})`}
+                    </Text>
+
+                    <Text
+                      onPress={() => {
+                        navigation.navigate('GoingListScreen', {
+                          showRemove:
+                            authContext.entity.uid === organizer.user_id,
+                          going_ids: eventData?.going ?? [],
+                          eventData,
+                        });
+                      }}
+                      style={styles.seeAllText}>
+                      {`${strings.seeAllText}`}
+                    </Text>
+                  </View>
+
+                  <FlatList
+                    data={going}
+                    horizontal
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={renderGoingView}
+                  />
+                </View>
+                <View style={[styles.divider, {marginHorizontal: 15}]} />
+              </>
+            )}
+
+            <EventItemRender title={strings.place}>
+              {eventData?.is_Offline ? (
+                <>
+                  <Text
+                    style={[styles.textValueStyle, {fontFamily: fonts.RBold}]}>
+                    {eventData?.location?.venue_name}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {fontFamily: fonts.RRegular},
+                    ]}>
+                    {eventData?.location?.location_name}
+                  </Text>
+                  <EventMapView
+                    region={{
+                      latitude:
+                        eventData?.location?.latitude ?? Number(gameDataLati),
+                      longitude:
+                        eventData?.location?.longitude ?? Number(gameDataLongi),
+                      latitudeDelta: 0.0922,
+                      longitudeDelta: 0.0421,
+                    }}
+                    coordinate={{
+                      latitude:
+                        eventData?.location?.latitude ?? Number(gameDataLati),
+                      longitude:
+                        eventData?.location?.longitude ?? Number(gameDataLongi),
+                    }}
+                  />
+                  <Text style={[styles.textValueStyle, {marginTop: 10}]}>
+                    {eventData?.location?.venue_detail}
+                  </Text>
+                </>
+              ) : (
+                <Text
+                  style={[
+                    styles.textValueStyle,
+                    eventData.online_url && styles.textUrl,
+                  ]}>
+                  {eventData.online_url
+                    ? eventData?.online_url
+                    : strings.emptyEventUrl}
+                </Text>
+              )}
+            </EventItemRender>
+
+            <View style={styles.sepratorViewStyle} />
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>
+                {strings.timeUppercase}
+              </Text>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginBottom: 15,
+                }}>
+                <View>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {color: colors.veryLightBlack},
+                    ]}>
+                    {strings.starts}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                  }}>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {fontFamily: fonts.RRegular},
+                    ]}>
+                    {`${moment(startTime).format('MMM DD, YYYY')}`}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {fontFamily: fonts.RRegular, marginLeft: 25},
+                    ]}>{`${moment(startTime).format('hh:mm a')}`}</Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: 15,
+                }}>
+                <View>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {color: colors.veryLightBlack},
+                    ]}>
+                    {strings.ends}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                  }}>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {fontFamily: fonts.RRegular},
+                    ]}>
+                    {`${moment(endTime).format('MMM DD, YYYY')}`}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {fontFamily: fonts.RRegular, marginLeft: 25},
+                    ]}>{`${moment(endTime).format('hh:mm a')}`}</Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  alignSelf: 'flex-end',
+                }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    lineHeight: 21,
+                    color: colors.lightBlackColor,
+                    fontFamily: fonts.RLight,
+                  }}>
+                  {strings.timezone} &nbsp;
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    Alert.alert(strings.timezoneAvailability);
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      lineHeight: 21,
+                      color: colors.lightBlackColor,
+                      fontFamily: fonts.RRegular,
+                      textDecorationLine: 'underline',
+                    }}>
+                    {Intl.DateTimeFormat()
+                      ?.resolvedOptions()
+                      .timeZone.split('/')
+                      .pop()}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {isOrganizer && (
+                <>
+                  <View style={[styles.divider, {marginVertical: 15}]} />
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text
+                      style={[
+                        styles.textValueStyle,
+                        {color: colors.veryLightBlack},
+                      ]}>
+                      {strings.repeat}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.textValueStyle,
+                        {fontFamily: fonts.RRegular},
+                      ]}>
+                      {repeatString}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      alignSelf: 'flex-end',
+                      marginTop: 25,
+                    }}>
+                    <View
+                      style={{
+                        width: 15,
+                        height: 15,
+                        marginRight: 10,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Image
+                        source={
+                          !eventData?.blocked
+                            ? images.roundTick
+                            : images.roundCross
+                        }
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          resizeMode: 'contain',
+                        }}
+                      />
+                    </View>
+                    <Text
+                      style={[
+                        styles.textValueStyle,
+                        {
+                          color: !eventData?.blocked
+                            ? colors.greeColor
+                            : colors.veryLightBlack,
+                          fontFamily: fonts.RRegular,
+                        },
+                      ]}>
+                      {!eventData?.blocked
+                        ? strings.available
+                        : strings.blockedForChallenge}
+                    </Text>
+                  </View>
+                </>
+              )}
+            </View>
+
+            <View style={styles.sepratorViewStyle} />
+            <EventItemRender
+              title={strings.eventFeeTitle}
+              icon={images.infoIcon}
+              clickInfoIcon={clickInfoIcon}
+              type={'fee'}>
+              <Text
+                style={[styles.textValueStyle, {fontFamily: fonts.RRegular}]}>
+                {`${parseFloat(eventData.event_fee?.value).toFixed(2)} ${
+                  eventData.event_fee?.currency_type
+                }`}
+              </Text>
+            </EventItemRender>
+
+            <View style={styles.sepratorViewStyle} />
+            <EventItemRender title={strings.refundPolicyTitle}>
+              <ReadMore
+                numberOfLines={2}
+                style={styles.longTextStyle}
+                seeMoreText={strings.moreText}
+                seeLessStyle={styles.moreLessText}
+                seeMoreStyle={styles.moreLessText}
+                seeLessText={strings.lessText}>
+                {strings.attendeesMustRefundedText} {eventData?.refund_policy}
+              </ReadMore>
+            </EventItemRender>
+
+            <View style={styles.sepratorViewStyle} />
+            <EventItemRender
+              title={strings.numberOfAttend}
+              icon={images.infoIcon}
+              clickInfoIcon={clickInfoIcon}
+              type={'attendee'}>
+              <Text
+                style={[styles.textValueStyle, {fontFamily: fonts.RRegular}]}>
+                {format(
+                  strings.minMaxText_dy,
+                  `${eventData?.min_attendees}   `,
+                  eventData?.max_attendees,
+                )}
+              </Text>
+            </EventItemRender>
+
+            {isOrganizer && (
+              <>
+                <View style={styles.sepratorViewStyle} />
+                <EventItemRender title={strings.whoCanSee}>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {fontFamily: fonts.RRegular},
+                    ]}>
+                    {eventData?.who_can_see?.text}
+                  </Text>
+                </EventItemRender>
+
+                <View style={styles.sepratorViewStyle} />
+                <EventItemRender title={strings.whoCanJoin}>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {fontFamily: fonts.RRegular},
+                    ]}>
+                    {eventData?.who_can_join?.text}
+                  </Text>
+                </EventItemRender>
+
+                <View style={styles.sepratorViewStyle} />
+                <EventItemRender title={strings.whoCanInvite}>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {fontFamily: fonts.RRegular},
+                    ]}>
+                    {eventData?.who_can_invite?.text}
+                  </Text>
+                </EventItemRender>
+                <View style={styles.sepratorViewStyle} />
+              </>
+            )}
+
+            {/* <View marginBottom={70} /> */}
+          </>
+        ) : null}
+      </ScrollView>
+
+      <ActionSheet
+        ref={actionSheet}
+        options={[strings.edit, strings.delete, strings.cancel]}
+        cancelButtonIndex={2}
+        destructiveButtonIndex={1}
+        onPress={(index) => {
+          if (index === 0) {
+            // editactionsheet.current.show();
+            if (route && route.params && eventData) {
+              navigation.navigate('EditEventScreen', {
+                data: eventData,
+                gameData: route.params.gameData,
+              });
+            }
+          } else if (index === 1) {
+            if (eventData.rrule) {
+              setRecurringEditModal(true);
+            } else {
+              handleDeleteEvent();
+            }
+          }
+        }}
+      />
+      <ActionSheet
+        ref={userActionSheet}
+        options={[
+          strings.reportText,
+          strings.blockEventOrganiser,
+          strings.cancel,
+        ]}
+        cancelButtonIndex={2}
+        // destructiveButtonIndex={1}
+        onPress={() => {}}
+      />
+
       <Modal
         isVisible={recurringEditModal}
         backdropColor="black"
@@ -465,9 +1062,9 @@ export default function EventScreen({navigation, route}) {
               {strings.deleteRecurringEvent}{' '}
             </Text>
           </View>
-          <TCThinDivider width="92%" />
+          {/* <TCThinDivider width="92%" /> */}
           <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
+            // ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
             showsVerticalScrollIndicator={false}
             data={recurringEditList}
             keyExtractor={(item, index) => index.toString()}
@@ -475,667 +1072,81 @@ export default function EventScreen({navigation, route}) {
           />
         </View>
       </Modal>
-      <SafeAreaView style={styles.mainContainerStyle}>
-        {/* Modal Style 3 */}
-        <Modal
-          isVisible={infoModal}
-          backdropColor="black"
-          style={{margin: 0, justifyContent: 'flex-end'}}
-          hasBackdrop
-          onBackdropPress={() => {
-            setInfoModal(false);
-          }}
-          backdropOpacity={0.7}>
-          <SafeAreaView style={styles.modalMainViewStyle}>
-            <View style={{padding: 20}}>
-              <View style={styles.sepratorStyle} />
-              {infoType === 'attendee' ? (
-                <View>
-                  <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
-                  <Text style={styles.contentText}>{strings.attendyText}</Text>
-                </View>
-              ) : (
-                <View>
-                  <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
-                  <Text style={styles.contentText}>{strings.feeText}</Text>
-                </View>
-              )}
-            </View>
-          </SafeAreaView>
-        </Modal>
-        <ScreenHeader
-          title={strings.event}
-          leftIcon={images.backArrow}
-          leftIconPress={() => {
-            navigation.goBack();
-          }}
-          rightIcon2={images.vertical3Dot}
-          rightIcon2Press={() =>
-            isOrganizer
-              ? actionSheet.current.show()
-              : userActionSheet.current.show()
-          }
-          loading={loading}
-          containerStyle={{
-            paddingLeft: 10,
-            paddingRight: 17,
-            paddingTop: 8,
-            paddingBottom: 13,
-            borderBottomWidth: 0,
-          }}
-        />
-        {/* Modal Style 3 */}
-        <ActivityLoader visible={loading} />
-        <View style={styles.sperateLine} />
-        <ScrollView
-          stickyHeaderIndices={[5]}
-          // style={{paddingHorizontal:10}}
-        >
-          <View style={styles.EventBackgroundPhoto}>
-            <EventBackgroundPhoto
-              isEdit={!!eventData?.background_thumbnail}
-              isPreview={true}
-              isImage={!!eventData?.background_thumbnail}
-              imageURL={
-                eventData?.background_thumbnail
-                  ? {uri: eventData?.background_thumbnail}
-                  : images.backgroudPlaceholder
-              }
-            />
-          </View>
 
-          <Text style={styles.eventTitleStyle}>{titleValue}</Text>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <Text style={styles.sportTitleStyle}>
-              {' '}
-              {eventData?.selected_sport &&
-                eventData?.selected_sport?.sport_name}
-            </Text>
-            {!eventData.is_Offline && (
-              <Text style={[styles.onlineText, {marginLeft: 10, marginTop: 3}]}>
-                {strings.onlineText}
-              </Text>
+      {/* Modal Style 3 */}
+      <Modal
+        isVisible={infoModal}
+        backdropColor="black"
+        style={{margin: 0, justifyContent: 'flex-end'}}
+        hasBackdrop
+        onBackdropPress={() => {
+          setInfoModal(false);
+        }}
+        backdropOpacity={0.7}>
+        <SafeAreaView style={styles.modalMainViewStyle}>
+          <View style={{padding: 20}}>
+            <View style={styles.sepratorStyle} />
+            {infoType === 'attendee' ? (
+              <View>
+                <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
+                <Text style={styles.contentText}>{strings.attendyText}</Text>
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
+                <Text style={styles.contentText}>{strings.feeText}</Text>
+              </View>
             )}
           </View>
-
-          <EventTimeItem
-            from={strings.from}
-            fromTime={moment(startTime).format('MMM DD, YYYY')}
-            to={strings.to}
-            toTime={`${moment(startTime).format('hh:mm a')} - ${moment(
-              endTime,
-            ).format('hh:mm a')}`}
-            repeat={strings.repeat}
-            repeatTime={repeatString}
-            location={eventData?.location?.location_name}
-            eventOnlineUrl={eventData?.online_url}
-            is_Offline={eventData?.is_Offline}
-          />
-
-          {/* Join and Invite button wrapper */}
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: colors.whiteColor,
-              zIndex: 1000,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              padding: 15,
-            }}>
-            {checkIsGoing() && (
-              <TCProfileButton
-                title={
-                  eventData?.going?.filter(
-                    (entity) => entity === authContext.entity.uid,
-                  ).length > 0
-                    ? 'Going'
-                    : 'Join'
-                }
-                style={
-                  eventData?.going?.filter(
-                    (entity) => entity === authContext.entity.uid,
-                  ).length > 0
-                    ? [
-                        styles.firstButtonStyle,
-                        {width: checkIsInvite() ? '48%' : '100%'},
-                      ]
-                    : [
-                        styles.firstButtonStyle,
-                        {
-                          width: checkIsInvite() ? '48%' : '100%',
-                          backgroundColor: colors.themeColor,
-                        },
-                      ]
-                }
-                showArrow={false}
-                tickImage={
-                  eventData?.going?.filter(
-                    (entity) => entity === authContext.entity.uid,
-                  ).length > 0
-                }
-                imageStyle={styles.checkMarkStyle}
-                textStyle={
-                  eventData?.going?.filter(
-                    (entity) => entity === authContext.entity.uid,
-                  ).length > 0
-                    ? [styles.attendTextStyle, {color: colors.lightBlackColor}]
-                    : [styles.attendTextStyle, {color: colors.whiteColor}]
-                }
-                onPressProfile={() => {
-                  if (
-                    eventData?.going?.filter(
-                      (entity) => entity === authContext.entity.uid,
-                    ).length > 0
-                  ) {
-                    console.log('its going');
-                  } else {
-                    attendAPICall();
-                  }
-                }}
-              />
-            )}
-
-            {checkIsInvite() && (
-              <TCProfileButton
-                title={'Invite'}
-                style={[
-                  styles.firstButtonStyle,
-                  {width: checkIsGoing() ? '48%' : '100%'},
-                ]}
-                showArrow={false}
-                imageStyle={styles.checkMarkStyle}
-                textStyle={styles.inviteTextStyle}
-                onPressProfile={() =>
-                  navigation.navigate('InviteToEventScreen', {
-                    eventId: eventData.cal_id,
-                    start_datetime: eventData.start_datetime,
-                    end_datetime: eventData.end_datetime,
-                  })
-                }
-              />
-            )}
-          </View>
-
-          <View
-            style={{
-              marginBottom: 20,
-              backgroundColor: colors.whiteColor,
-              marginTop: 0,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-evenly',
-                width: '100%',
-              }}>
-              <View
-                style={{
-                  borderBottomWidth: 3,
-                  borderColor:
-                    activeTab === 'info'
-                      ? colors.themeColor
-                      : colors.lightBlackColor,
-                  width: '50%',
-                }}>
-                <TouchableOpacity onPress={() => setActiveTab('info')}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontSize: 16,
-                      lineHeight: 24,
-                      fontWeight: activeTab === 'info' ? 'bold' : '',
-                      color:
-                        activeTab === 'info'
-                          ? colors.themeColor
-                          : colors.lightBlackColor,
-                      paddingVertical: 10,
-                    }}>
-                    {strings.infoTitle}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View
-                style={{
-                  borderBottomWidth: 3,
-                  borderColor:
-                    activeTab === 'post'
-                      ? colors.themeColor
-                      : colors.lightBlackColor,
-                  width: '50%',
-                }}>
-                <TouchableOpacity onPress={() => setActiveTab('post')}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      fontSize: 16,
-                      lineHeight: 24,
-                      fontWeight: activeTab === 'post' ? 'bold' : '',
-                      color:
-                        activeTab === 'post'
-                          ? colors.themeColor
-                          : colors.lightBlackColor,
-                      paddingVertical: 10,
-                    }}>
-                    {strings.postTitle}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-
-          {activeTab === 'info' ? (
-            <>
-              <EventItemRender title={strings.description}>
-                <ReadMore
-                  numberOfLines={3}
-                  style={styles.longTextStyle}
-                  seeMoreText={strings.moreText}
-                  seeLessText={strings.lessText}
-                  seeLessStyle={styles.moreLessText}
-                  seeMoreStyle={styles.moreLessText}>
-                  {description} {description2}
-                </ReadMore>
-              </EventItemRender>
-              <TCThinDivider marginTop={10} marginBottom={10} />
-
-              <View style={styles.containerStyle}>
-                <Text style={styles.headerTextStyle}>
-                  {strings.organizerTitle}
-                </Text>
-                {organizer && (
-                  <View style={{position: 'relative'}}>
-                    <TCProfileView
-                      type="medium"
-                      name={organizer.group_name ?? organizer.full_name}
-                      location={`${organizer.city}, ${
-                        organizer.state_abbr ? organizer.state_abbr : ''
-                      }${organizer.state_abbr ? ',' : ''} ${organizer.country}`}
-                      image={
-                        organizer.thumbnail
-                          ? {uri: organizer.thumbnail}
-                          : images.teamPH
-                      }
-                      alignSelf={'flex-start'}
-                      marginTop={10}
-                    />
-                    <Image
-                      source={images.starProfile}
-                      style={styles.starProfile}
-                    />
-                  </View>
-                )}
-              </View>
-              <TCThinDivider marginTop={10} marginBottom={10} />
-
-              {eventData?.going?.length > 0 && (
-                <>
-                  <View style={styles.containerStyle}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}>
-                      <Text style={styles.headerTextStyle}>
-                        {`${strings.goingTitle} (${going?.length})`}
-                      </Text>
-
-                      <Text
-                        onPress={() => {
-                          navigation.navigate('GoingListScreen', {
-                            showRemove:
-                              authContext.entity.uid === organizer.user_id,
-                            going_ids: eventData?.going ?? [],
-                            eventData,
-                          });
-                        }}
-                        style={styles.seeAllText}>
-                        {`${strings.seeAllText}`}
-                      </Text>
-                    </View>
-
-                    <FlatList
-                      data={going}
-                      horizontal
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={renderGoingView}
-                    />
-                  </View>
-                  <TCThinDivider marginTop={10} marginBottom={10} />
-                </>
-              )}
-
-              <EventItemRender title={strings.place}>
-                {eventData?.is_Offline ? (
-                  <>
-                    <Text
-                      style={[
-                        styles.textValueStyle,
-                        {fontFamily: fonts.RBold},
-                      ]}>
-                      {eventData?.location?.venue_name}
-                    </Text>
-                    <Text style={styles.textValueStyle}>
-                      {eventData?.location?.location_name}
-                    </Text>
-                    <EventMapView
-                      region={{
-                        latitude:
-                          eventData?.location?.latitude ?? Number(gameDataLati),
-                        longitude:
-                          eventData?.location?.longitude ??
-                          Number(gameDataLongi),
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                      }}
-                      coordinate={{
-                        latitude:
-                          eventData?.location?.latitude ?? Number(gameDataLati),
-                        longitude:
-                          eventData?.location?.longitude ??
-                          Number(gameDataLongi),
-                      }}
-                    />
-                    <Text style={[styles.textValueStyle, {marginTop: 10}]}>
-                      {eventData?.location?.venue_detail}
-                    </Text>
-                  </>
-                ) : (
-                  <Text
-                    style={[
-                      styles.textValueStyle,
-                      eventData.online_url && styles.textUrl,
-                    ]}>
-                    {eventData.online_url
-                      ? eventData?.online_url
-                      : strings.emptyEventUrl}
-                  </Text>
-                )}
-              </EventItemRender>
-
-              <View style={styles.sepratorViewStyle} />
-
-              <EventItemRender title={strings.timeUppercase}>
-                <View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      marginBottom: 10,
-                    }}>
-                    <Text style={styles.textValueStyle}>{strings.starts}</Text>
-                    <Text style={styles.textValueStyle}>
-                      {`${moment(startTime).format('MMM DD, YYYY')}`} &nbsp;
-                      &nbsp; {`${moment(startTime).format('hh:mm a')}`}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      marginBottom: 20,
-                    }}>
-                    <Text style={styles.textValueStyle}>{strings.ends}</Text>
-                    <Text style={styles.textValueStyle}>
-                      {`${moment(endTime).format('MMM DD, YYYY')}`} &nbsp;
-                      &nbsp; {`${moment(endTime).format('hh:mm a')}`}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'flex-end',
-                      marginBottom: 20,
-                    }}>
-                    <Text style={{fontWeight: '300'}}>
-                      {strings.timezone} &nbsp;
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        Alert.alert(strings.timezoneAvailability);
-                      }}>
-                      <Text
-                        style={{
-                          textDecorationLine: 'underline',
-                          textDecorationStyle: 'solid',
-                          textDecorationColor: '#000',
-                        }}>
-                        {Intl.DateTimeFormat()
-                          ?.resolvedOptions()
-                          .timeZone.split('/')
-                          .pop()}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                {isOrganizer && (
-                  <>
-                    <TCThinDivider
-                      marginTop={10}
-                      marginBottom={10}
-                      width="100%"
-                    />
-                    <View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          marginBottom: 10,
-                        }}>
-                        <Text style={styles.textValueStyle}>
-                          {strings.repeat}
-                        </Text>
-                        <Text
-                          style={[styles.textValueStyle, {textAlign: 'right'}]}>
-                          {repeatString}
-                        </Text>
-                      </View>
-                    </View>
-                    {!eventData?.blocked ? (
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'flex-end',
-                          alignContent: 'center',
-                          marginTop: 10,
-                        }}>
-                        <Image
-                          source={images.roundTick}
-                          style={{width: 15, height: 15}}
-                        />
-                        <Text style={{color: '#00C168'}}>
-                          &nbsp;&nbsp; Available For Challenge
-                        </Text>
-                      </View>
-                    ) : (
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'flex-end',
-                          alignContent: 'center',
-                          marginTop: 10,
-                        }}>
-                        <Image
-                          source={images.roundCross}
-                          style={{width: 15, height: 15}}
-                        />
-                        <Text style={{color: '#616161'}}>
-                          &nbsp;&nbsp; Blocked For Challenge
-                        </Text>
-                      </View>
-                    )}
-                  </>
-                )}
-              </EventItemRender>
-
-              <View style={styles.sepratorViewStyle} />
-              <View style={{paddingVertical: 3}}>
-                <EventItemRender
-                  title={strings.eventFeeTitle}
-                  icon={images.infoIcon}
-                  clickInfoIcon={clickInfoIcon}
-                  type={'fee'}>
-                  <Text style={styles.textValueStyle}>
-                    {`${parseFloat(eventData?.event_fee?.value).toFixed(2)} ${
-                      eventData?.event_fee?.currency_type
-                    }`}
-                  </Text>
-                </EventItemRender>
-              </View>
-              <View style={styles.sepratorViewStyle} />
-              <EventItemRender title={strings.refundPolicyTitle}>
-                <ReadMore
-                  numberOfLines={2}
-                  style={styles.longTextStyle}
-                  seeMoreText={strings.moreText}
-                  seeLessStyle={styles.moreLessText}
-                  seeMoreStyle={styles.moreLessText}
-                  seeLessText={strings.lessText}>
-                  {strings.attendeesMustRefundedText} {eventData?.refund_policy}
-                </ReadMore>
-              </EventItemRender>
-
-              <View style={styles.sepratorViewStyle} />
-
-              <EventItemRender
-                title={strings.numberOfAttend}
-                icon={images.infoIcon}
-                clickInfoIcon={clickInfoIcon}
-                type={'attendee'}>
-                <Text style={styles.textValueStyle}>
-                  {format(
-                    strings.minMaxText_dy,
-                    eventData?.min_attendees,
-                    eventData?.max_attendees,
-                  )}
-                </Text>
-              </EventItemRender>
-
-              {isOrganizer && (
-                <>
-                  <View style={styles.sepratorViewStyle} />
-                  <EventItemRender title={strings.whoCanSee}>
-                    <Text style={styles.textValueStyle}>
-                      {eventData?.who_can_see?.text}
-                    </Text>
-                  </EventItemRender>
-
-                  <View style={styles.sepratorViewStyle} />
-                  <EventItemRender title={strings.whoCanJoin}>
-                    <Text style={styles.textValueStyle}>
-                      {eventData?.who_can_join?.text}
-                    </Text>
-                  </EventItemRender>
-
-                  <View style={styles.sepratorViewStyle} />
-                  <EventItemRender title={strings.whoCanInvite}>
-                    <Text style={styles.textValueStyle}>
-                      {eventData?.who_can_invite?.text}
-                    </Text>
-                  </EventItemRender>
-                  <View style={styles.sepratorViewStyle} />
-                </>
-              )}
-
-              {/* <View marginBottom={70} /> */}
-            </>
-          ) : null}
-        </ScrollView>
-
-        <ActionSheet
-          ref={actionSheet}
-          options={[strings.edit, strings.delete, strings.cancel]}
-          cancelButtonIndex={2}
-          destructiveButtonIndex={1}
-          onPress={(index) => {
-            if (index === 0) {
-              // editactionsheet.current.show();
-              if (route && route.params && eventData) {
-                navigation.navigate('EditEventScreen', {
-                  data: eventData,
-                  gameData: route.params.gameData,
-                });
-              }
-            } else if (index === 1) {
-              if (eventData.rrule) {
-                setRecurringEditModal(true);
-              } else {
-                handleDeleteEvent();
-              }
-            }
-          }}
-        />
-        <ActionSheet
-          ref={userActionSheet}
-          options={[
-            strings.reportText,
-            strings.blockEventOrganiser,
-            strings.cancel,
-          ]}
-          cancelButtonIndex={2}
-          // destructiveButtonIndex={1}
-          onPress={() => {}}
-        />
-      </SafeAreaView>
-    </>
+        </SafeAreaView>
+      </Modal>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   onlineText: {
+    fontSize: 12,
+    lineHeight: 18,
     color: colors.themeColor,
-    fontWeight: '500',
+    fontFamily: fonts.RBold,
+    marginLeft: 10,
   },
   mainContainerStyle: {
     flex: 1,
   },
-  sperateLine: {
-    borderColor: colors.writePostSepratorColor,
-    borderWidth: 0.5,
-    marginBottom: 10,
-  },
-
-  EventBackgroundPhoto: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-
   sepratorViewStyle: {
-    borderColor: colors.sepratorColor,
-    borderWidth: hp('0.4%'),
-    marginVertical: hp('1.7%'),
+    height: 7,
+    backgroundColor: colors.grayBackgroundColor,
+    marginVertical: 25,
   },
   textValueStyle: {
     fontSize: 16,
-    fontFamily: fonts.RRegular,
-    marginTop: 3,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
   eventTitleStyle: {
     fontSize: 25,
+    lineHeight: 35,
     fontFamily: fonts.RBold,
-    marginTop: 3,
-    marginLeft: 15,
     color: colors.lightBlackColor,
   },
-
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   sportTitleStyle: {
     fontSize: 16,
-    marginLeft: 15,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
   firstButtonStyle: {
     margin: 0,
-    height: 30,
+    height: 27,
     borderRadius: 5,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.textFieldBackground,
   },
   attendTextStyle: {
     fontFamily: fonts.RBold,
@@ -1147,15 +1158,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   containerStyle: {
-    width: wp('96%'),
-    alignSelf: 'center',
-    padding: wp('1.5%'),
+    paddingHorizontal: 15,
+  },
+  divider: {
+    height: 1,
+    marginVertical: 25,
+    backgroundColor: colors.grayBackgroundColor,
   },
   headerTextStyle: {
     fontSize: 20,
+    lineHeight: 30,
+    marginBottom: 15,
     fontFamily: fonts.RBold,
-    // marginVertical: 10,
-    marginBottom: 10,
+    color: colors.lightBlackColor,
   },
   goingContainer: {
     height: 40,
@@ -1230,5 +1245,45 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     textDecorationStyle: 'solid',
     textDecorationColor: '#000',
+  },
+  buttonContainer: {
+    backgroundColor: colors.whiteColor,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 15,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 25,
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.writePostSepratorColor,
+    paddingBottom: 9,
+  },
+  tabItemText: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  activeTabItem: {
+    paddingBottom: 7,
+    borderBottomWidth: 3,
+    borderBottomColor: colors.tabFontColor,
+  },
+  activeTabItemText: {
+    fontFamily: fonts.RBlack,
+    color: colors.tabFontColor,
+  },
+  longTextStyle: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
 });

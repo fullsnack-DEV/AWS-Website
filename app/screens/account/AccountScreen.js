@@ -42,7 +42,7 @@ import SportsListModal from './registerPlayer/modals/SportsListModal';
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal';
 import MemberListModal from '../../components/MemberListModal/MemberListModal';
-import {getUserIndex} from '../../api/elasticSearch';
+import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
@@ -152,7 +152,19 @@ const AccountScreen = ({navigation, route}) => {
       list.push(getTeamPendingRequest(authContext));
       list.push(getJoinedGroups(Verbs.entityTypeClub, authContext));
     } else if (authContext.entity.role === Verbs.entityTypeTeam) {
-      list.push(getJoinedGroups(Verbs.entityTypeClub, authContext));
+      const parentIds = [...authContext.entity.obj.parent_groups];
+      if (parentIds.length > 0) {
+        const query = {
+          size: 1000,
+          from: 0,
+          query: {
+            terms: {
+              'group_id.keyword': [...parentIds],
+            },
+          },
+        };
+        list.push(getGroupIndex(query));
+      }
     }
     setLoading(true);
     Promise.all(list)
@@ -168,7 +180,8 @@ const AccountScreen = ({navigation, route}) => {
           fetchedTeams = [...response[0].payload, ...response[1].payload];
           fetchedClubs = response[2].payload;
         } else if (authContext.entity.role === Verbs.entityTypeTeam) {
-          fetchedClubs = response[0].payload;
+          fetchedClubs =
+            authContext.entity.obj.parent_groups?.length > 0 ? response[0] : [];
         }
 
         const menu = await getAccountMenu(

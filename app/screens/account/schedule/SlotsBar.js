@@ -11,7 +11,8 @@ const SlotsBar = ({availableSlots = []}) => (
       style={{
         textAlign: 'center',
         fontSize: 16,
-        fontFamily: fonts.RRegular,
+        lineHeight: 24,
+        fontFamily: fonts.RMedium,
         color: colors.lightBlackColor,
         margin: 15,
       }}>
