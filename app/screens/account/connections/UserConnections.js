@@ -13,6 +13,8 @@ import {
   Text,
   Pressable,
   TouchableOpacity,
+  TextInput,
+  Alert,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
@@ -33,6 +35,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import GroupIcon from '../../../components/GroupIcon';
 import {displayLocation} from '../../../utils';
+import {unfollowGroup} from '../../../api/Groups';
 
 const tabList = [strings.followerTitleText, strings.following];
 
@@ -72,7 +75,6 @@ export default function UserConnections({navigation, route}) {
     setLoading(true);
     const list = [];
     tabList.forEach((item) => {
-      console.log({item});
       list.push(
         getUserFollowerFollowing(
           userId,
@@ -88,7 +90,6 @@ export default function UserConnections({navigation, route}) {
     Promise.all(list)
       .then(([follower, following]) => {
         const newData = {};
-        console.log({follower, following});
         newData.following = {
           count: following.payload.length ?? 0,
           data: following.payload.length > 0 ? [...following.payload] : [],
@@ -125,6 +126,63 @@ export default function UserConnections({navigation, route}) {
     return 0;
   };
 
+  const handleFollow = (entityData = {}) => {
+    setLoading(true);
+    if (
+      entityData.entity_type === Verbs.entityTypePlayer ||
+      entityData.entity_type === Verbs.entityTypeUser
+    ) {
+      followUser({entity_type: entityType}, entityData.user_id, authContext)
+        .then(() => {
+          getData();
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    }
+  };
+
+  const handleUnfollow = (entityData = {}) => {
+    setLoading(true);
+    if (
+      entityData.entity_type === Verbs.entityTypePlayer ||
+      entityData.entity_type === Verbs.entityTypeUser
+    ) {
+      const params = {entity_type: entityType};
+      if (selectedTab === strings.followerTitleText) {
+        params.follower_id = entityData.user_id;
+      }
+      const entityId =
+        selectedTab === strings.followerTitleText
+          ? authContext.entity.uid
+          : entityData.user_id;
+
+      unfollowUser(params, entityId, authContext)
+        .then(() => {
+          getData();
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    } else {
+      const params = {
+        entity_type: entityData.entity_type,
+      };
+      unfollowGroup(params, entityData.group_id, authContext)
+        .then(() => {
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    }
+  };
+
   const renderList = (option) => {
     let list = [];
     if (option === strings.followerTitleText && data.follower.count > 0) {
@@ -138,7 +196,7 @@ export default function UserConnections({navigation, route}) {
         <FlatList
           data={list}
           keyExtractor={(item, index) => index.toString()}
-          style={{paddingHorizontal: 15, paddingTop: 15}}
+          style={{paddingHorizontal: 15}}
           renderItem={({item}) => (
             <>
               <View style={[styles.row, {justifyContent: 'space-between'}]}>
@@ -168,17 +226,9 @@ export default function UserConnections({navigation, route}) {
                   style={styles.buttonContainer}
                   onPress={() => {
                     if (item.is_following) {
-                      unfollowUser(
-                        {entity_type: entityType},
-                        userId,
-                        authContext,
-                      );
+                      handleUnfollow(item);
                     } else {
-                      followUser(
-                        {entity_type: entityType},
-                        userId,
-                        authContext,
-                      );
+                      handleFollow(item);
                     }
                   }}>
                   <Text
@@ -239,6 +289,12 @@ export default function UserConnections({navigation, route}) {
         ))}
       </View>
       <View style={{flex: 1}}>
+        <TextInput
+          placeholder={strings.searchText}
+          placeholderTextColor={colors.placeHolderColor}
+          style={styles.input}
+        />
+
         {loading ? <UserListShimmer /> : renderList(selectedTab)}
       </View>
     </SafeAreaView>
@@ -304,5 +360,16 @@ const styles = StyleSheet.create({
     height: 1,
     marginVertical: 15,
     backgroundColor: colors.grayBackgroundColor,
+  },
+  input: {
+    height: 40,
+    fontSize: 16,
+    borderRadius: 5,
+    marginVertical: 15,
+    marginHorizontal: 15,
+    paddingHorizontal: 10,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    backgroundColor: colors.textFieldBackground,
   },
 });

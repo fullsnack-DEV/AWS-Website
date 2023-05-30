@@ -1,4 +1,5 @@
 // @flow
+import ReadMore from '@fawazahmed/react-native-read-more';
 import React, {useEffect, useState} from 'react';
 import {View, Text, Image, Pressable} from 'react-native';
 import {strings} from '../../../Localization/translation';
@@ -138,13 +139,18 @@ const GroupHomeHeader = ({
         ) : null}
 
         {groupData.bio ? (
-          <Text
+          <ReadMore
+            numberOfLines={3}
             style={[
               styles.label,
               groupData.hiringPlayers ? {marginTop: 10} : {marginTop: 15},
-            ]}>
+            ]}
+            seeMoreText={strings.moreText}
+            seeLessText={strings.lessText}
+            seeLessStyle={styles.moreLessText}
+            seeMoreStyle={styles.moreLessText}>
             {groupData.bio}
-          </Text>
+          </ReadMore>
         ) : null}
       </View>
     </View>

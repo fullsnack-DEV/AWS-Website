@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useCallback} from 'react';
 import AuthContext from '../../../../auth/context';
 import * as Utility from '../../../../utils/index';
 import AvailibilityScheduleScreen from '../../../account/schedule/AvailibityScheduleScreen';
@@ -7,30 +7,24 @@ const AvailabilityContentScreen = ({userData}) => {
   const authContext = useContext(AuthContext);
   const [data, setData] = useState([]);
 
+  const getSlotData = useCallback(() => {
+    Utility.getEventsSlots([userData.user_id ?? userData.group_id]).then(
+      (response) => {
+        let resCalenders = [];
+        resCalenders = response.filter((obj) => {
+          if (obj.cal_type === 'blocked') {
+            return obj;
+          }
+          return false;
+        });
+        setData(resCalenders);
+      },
+    );
+  }, [userData.user_id, userData.group_id]);
+
   useEffect(() => {
     getSlotData();
-  }, []);
-
-  const getSlotData = () => {
-    let nextThreeMonth = new Date();
-    nextThreeMonth = nextThreeMonth.setMonth(nextThreeMonth.getMonth() + 3);
-    const startDateUnixTime = Utility.getTCDate(new Date());
-    const endDateUnixTime = Utility.getTCDate(new Date(nextThreeMonth));
-    Utility.getEventsSlots(
-      [authContext?.entity?.uid],
-      startDateUnixTime,
-      endDateUnixTime,
-    ).then((response) => {
-      let resCalenders = [];
-      resCalenders = response.filter((obj) => {
-        if (obj.cal_type === 'blocked') {
-          return obj;
-        }
-        return false;
-      });
-      setData(resCalenders);
-    });
-  };
+  }, [getSlotData]);
 
   const onDayPress = () => {
     getSlotData();

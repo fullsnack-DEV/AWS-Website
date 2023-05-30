@@ -2041,7 +2041,7 @@ export const getCalendar = async (
   }
 };
 
-export const getEventsSlots = async (participants, fromDate, toDate) => {
+export const getEventsSlots = async (participants) => {
   try {
     return getStorage('scheduleSetting').then(async (ids) => {
       const IDs = ids ?? [];
@@ -2068,18 +2068,18 @@ export const getEventsSlots = async (participants, fromDate, toDate) => {
           },
         },
       };
-      if (fromDate) {
-        body.query.bool.must.push({
-          range: {end_datetime: {gt: fromDate}},
-        });
-      }
+      // if (fromDate) {
+      //   body.query.bool.must.push({
+      //     range: {end_datetime: {gt: fromDate}},
+      //   });
+      // }
 
-      if (toDate) {
-        body.query.bool.must.push({
-          range: {actual_enddatetime: {lt: toDate}},
-        });
-      }
-      console.log('calender elastic search :=>', JSON.stringify(body));
+      // if (toDate) {
+      //   body.query.bool.must.push({
+      //     range: {actual_enddatetime: {lt: toDate}},
+      //   });
+      // }
+      // console.log('calender elastic search :=>', JSON.stringify(body));
       return getCalendarIndex(body);
     });
   } catch (error) {

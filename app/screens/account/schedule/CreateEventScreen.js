@@ -100,7 +100,7 @@ export default function CreateEventScreen({navigation, route}) {
   );
   const [eventUntilDateTime, setEventUntildateTime] =
     useState(eventEndDateTime);
-  const [searchLocation, setSearchLocation] = useState();
+  const [searchLocation, setSearchLocation] = useState('');
   const [locationDetail, setLocationDetail] = useState({
     latitude: 0.0,
     longitude: 0.0,
@@ -1112,7 +1112,7 @@ export default function CreateEventScreen({navigation, route}) {
                   placeholder={'0'}
                   keyboardType={'decimal-pad'}
                   onChangeText={(value) => setEventFee(value)}
-                  value={eventFee}
+                  value={`${eventFee}`}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />

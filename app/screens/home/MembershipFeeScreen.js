@@ -80,7 +80,7 @@ const MembershipFeeScreen = ({navigation, route}) => {
     <SafeAreaView style={styles.parent}>
       <ActivityLoader visible={loading} />
       <ScreenHeader
-        title={strings.membershipFee}
+        title={strings.membershipFeeTitle}
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
         isRightIconText
@@ -219,6 +219,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+    padding: 0,
   },
   image: {
     alignSelf: 'center',

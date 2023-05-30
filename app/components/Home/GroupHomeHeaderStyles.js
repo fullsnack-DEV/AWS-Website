@@ -76,6 +76,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.whiteColor,
   },
+  moreLessText: {
+    fontSize: 12,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+  },
 });
 
 export default styles;

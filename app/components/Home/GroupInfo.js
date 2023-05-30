@@ -349,9 +349,15 @@ export default function GroupInfo({
                   </Text>
                 </View>
                 <View>
-                  <Text style={styles.longTextStyle}>
+                  <ReadMore
+                    numberOfLines={3}
+                    style={styles.longTextStyle}
+                    seeMoreText={strings.moreText}
+                    seeLessText={strings.lessText}
+                    seeLessStyle={styles.moreLessText}
+                    seeMoreStyle={styles.moreLessText}>
                     {groupDetails.membership_fee_details}
-                  </Text>
+                  </ReadMore>
                 </View>
               </View>
             )}
@@ -522,7 +528,6 @@ const styles = StyleSheet.create({
   },
   moreLessText: {
     fontSize: 12,
-    lineHeight: 18,
     color: colors.userPostTimeColor,
     fontFamily: fonts.RRegular,
   },

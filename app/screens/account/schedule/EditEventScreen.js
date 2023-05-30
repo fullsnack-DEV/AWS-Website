@@ -1221,40 +1221,41 @@ export default function EditEventScreen({navigation, route}) {
                 </View>
               </TouchableOpacity>
             </View>
-            {whoCanSeeOption.value === 2 && authContext.entity.role === 'user' && (
-              <View>
-                <View style={styles.allStyle}>
-                  <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsAll(!isAll);
-                      const groups = groupsSeeList.map((obj) => ({
-                        ...obj,
-                        isSelected: !isAll,
-                      }));
-                      setGroupsSeeList([...groups]);
-                    }}>
-                    <Image
-                      source={
-                        isAll ? images.orangeCheckBox : images.uncheckWhite
-                      }
-                      style={styles.imageStyle}
-                    />
-                  </TouchableOpacity>
+            {whoCanSeeOption.value === 2 &&
+              authContext.entity.role === 'user' && (
+                <View>
+                  <View style={styles.allStyle}>
+                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsAll(!isAll);
+                        const groups = groupsSeeList.map((obj) => ({
+                          ...obj,
+                          isSelected: !isAll,
+                        }));
+                        setGroupsSeeList([...groups]);
+                      }}>
+                      <Image
+                        source={
+                          isAll ? images.orangeCheckBox : images.uncheckWhite
+                        }
+                        style={styles.imageStyle}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <FlatList
+                    scrollEnabled={false}
+                    data={[...groupsSeeList]}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => (
+                      <View style={{height: wp('4%')}} />
+                    )}
+                    renderItem={renderSeeGroups}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.listStyle}
+                  />
                 </View>
-                <FlatList
-                  scrollEnabled={false}
-                  data={[...groupsSeeList]}
-                  showsVerticalScrollIndicator={false}
-                  ItemSeparatorComponent={() => (
-                    <View style={{height: wp('4%')}} />
-                  )}
-                  renderItem={renderSeeGroups}
-                  keyExtractor={(item, index) => index.toString()}
-                  style={styles.listStyle}
-                />
-              </View>
-            )}
+              )}
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>

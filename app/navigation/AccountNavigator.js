@@ -271,6 +271,7 @@ import ReplyScreen from '../screens/home/SportActivity/contentScreens/ReplyScree
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
+import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
 
 // Scorekeeper Review Screen
 
@@ -529,6 +530,11 @@ const AccountNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+    <Stack.Screen
+      component={GroupFollowersScreen}
+      name="GroupFollowersScreen"
+      options={{headerShown: false}}
     />
 
     {/* Accounts screens */}

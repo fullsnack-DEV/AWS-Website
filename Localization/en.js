@@ -2966,4 +2966,7 @@ export default {
   oneTime: 'en_One-time',
   recurring: 'en_Recurring',
   editTimeSlots: 'en_Please edit time slots below. ',
+  areYouSureToRemove: 'en_Are you sure want to remove {0}?',
+  removeGoingModalText:
+    'en_The event fee should be refunded when an attendee is removed.',
 };

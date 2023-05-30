@@ -180,10 +180,10 @@ export const currencyList = [
 ];
 
 export const DEFAULT_NTRP = '5.0';
-export const DEFAULT_LATITUDE = '35.6762';
-export const DEFAULT_LONGITUDE = '139.6503';
-export const LATITUDE_DELTA = '0.01';
-export const LONGITUDE_DELTA = '0.01';
+export const DEFAULT_LATITUDE = 35.6762;
+export const DEFAULT_LONGITUDE = 139.6503;
+export const LATITUDE_DELTA = 0.01;
+export const LONGITUDE_DELTA = 0.01;
 
 export default EntityStatus;
 export {privacySettingEnum, privacyKey};

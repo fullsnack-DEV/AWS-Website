@@ -1,5 +1,4 @@
-/* eslint-disable guard-for-in */
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {StyleSheet, Text, SectionList, View} from 'react-native';
 import moment from 'moment';
 import _ from 'lodash';
@@ -25,17 +24,161 @@ export default function EventScheduleScreen({
   selectedFilter,
   owners,
   allUserData,
+  timeSelectionOption,
 }) {
   const authContext = useContext(AuthContext);
-
   const [filterData, setFilterData] = useState(null);
+
+  const getDateTime = useCallback((optionsState = strings.filterAntTime) => {
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setHours(0, 0, 0, 0);
+
+    switch (optionsState) {
+      case strings.filterAntTime:
+        return null;
+
+      case strings.filterToday:
+        endDate.setMinutes(59);
+        endDate.setHours(23);
+        break;
+
+      case strings.filterTomorrow:
+        startDate.setHours(0, 0, 0, 0);
+        startDate.setDate(startDate.getDate() + 1);
+        endDate.setDate(endDate.getDate() + 2);
+        break;
+
+      case strings.filterNext7Day:
+        endDate.setDate(endDate.getDate() + 7);
+        break;
+
+      case strings.filterThisMonth:
+        endDate.setMonth(endDate.getMonth() + 1);
+        endDate.setDate(0);
+        endDate.setHours(0, 0, 0, 0);
+        break;
+
+      case strings.filterNextMonth:
+        endDate.setMonth(endDate.getMonth() + 2);
+        endDate.setDate(0);
+        startDate.setMonth(endDate.getMonth());
+        startDate.setDate(1);
+        startDate.setHours(0, 0, 0, 0);
+        break;
+
+      case strings.filterYesterday:
+        startDate.setHours(0, 0, 0, 0);
+        startDate.setDate(startDate.getDate() - 1);
+
+        break;
+
+      case strings.filterLast7Day:
+        startDate.setHours(0, 0, 0, 0);
+        startDate.setDate(startDate.getDate() - 7);
+        break;
+
+      case strings.filterLastMonth:
+        endDate.setMonth(endDate.getMonth());
+        endDate.setDate(0);
+        endDate.setHours(0, 0, 0, 0);
+        startDate.setMonth(endDate.getMonth());
+        startDate.setDate(1);
+        startDate.setHours(0, 0, 0, 0);
+        break;
+
+      default:
+        return null;
+    }
+    return {startDate, endDate};
+  }, []);
+
+  const getEvents = useCallback(
+    (optionsState = strings.filterAntTime, events = []) => {
+      const dateTime = getDateTime(optionsState);
+
+      if (dateTime === null) {
+        if (filterOptions.time === 0) {
+          return events.filter(
+            (item) => new Date().getTime() <= getJSDate(item.start_datetime),
+          );
+        }
+        if (filterOptions.time === 1) {
+          return events.filter(
+            (item) => new Date().getTime() >= getJSDate(item.start_datetime),
+          );
+        }
+      }
+
+      return events.filter(
+        (item) =>
+          dateTime.startDate <= getJSDate(item.start_datetime) &&
+          dateTime.endDate >= getJSDate(item.end_datetime),
+      );
+    },
+    [filterOptions.time, getDateTime],
+  );
+
+  const setEventList = useCallback((eventList = []) => {
+    if (eventList.length > 0) {
+      const result = _(eventList)
+        .groupBy((event) =>
+          // event.start_datetime,
+          moment(getJSDate(event.start_datetime)).format('MMM DD, YYYY'),
+        )
+        .value();
+
+      const filData = [];
+      const nextDateTime = getJSDate(getTCDate(new Date()) + 24 * 60 * 60);
+      nextDateTime.setHours(0, 0, 0, 0);
+      for (const property in result) {
+        if (property) {
+          let temp = {};
+          const value = result[property];
+
+          const start = getJSDate(result[property][0]?.start_datetime);
+          start.setHours(0, 0, 0, 0);
+
+          const currentDateTime = new Date();
+          currentDateTime.setHours(0, 0, 0, 0);
+
+          let title = `${
+            days[getJSDate(result[property][0]?.start_datetime).getDay()]
+          }, ${moment(getJSDate(result[property][0]?.start_datetime)).format(
+            'MMM DD',
+          )}`;
+
+          if (start.getTime() === currentDateTime.getTime()) {
+            title = strings.todayTitleText;
+          }
+
+          if (start.getTime() === nextDateTime.getTime()) {
+            title = strings.tomorrowTitleText;
+          }
+
+          temp = {
+            title,
+            time:
+              result[property].length > 0
+                ? result[property][0]?.start_datetime
+                : '',
+            data: result[property].length > 0 ? value : [],
+          };
+          filData.push(temp);
+        }
+      }
+      setFilterData([...filData]);
+    } else {
+      setFilterData([]);
+    }
+  }, []);
 
   useEffect(() => {
     let events = eventData.filter(
       (obj) => (obj.game_id && obj.game) || obj.title,
     );
 
-    // Future or past event we commented now only supported future event
+    events = getEvents(timeSelectionOption, events);
 
     if (
       [
@@ -128,61 +271,17 @@ export default function EventScheduleScreen({
         }
       }
     }
-    if (events.length > 0) {
-      const result = _(events)
-        .groupBy((event) =>
-          // event.start_datetime,
-          moment(getJSDate(event.start_datetime)).format('MMM DD, YYYY'),
-        )
-        .value();
 
-      const filData = [];
-      const nextDateTime = getJSDate(getTCDate(new Date()) + 24 * 60 * 60);
-      nextDateTime.setHours(0, 0, 0, 0);
-      for (const property in result) {
-        let temp = {};
-        const value = result[property];
-
-        const start = getJSDate(result[property][0]?.start_datetime);
-        start.setHours(0, 0, 0, 0);
-
-        const currentDateTime = new Date();
-        currentDateTime.setHours(0, 0, 0, 0);
-
-        let title = `${
-          days[getJSDate(result[property][0]?.start_datetime).getDay()]
-        }, ${moment(getJSDate(result[property][0]?.start_datetime)).format(
-          'MMM DD',
-        )}`;
-
-        if (start.getTime() === currentDateTime.getTime()) {
-          title = strings.todayTitleText;
-        }
-
-        if (start.getTime() === nextDateTime.getTime()) {
-          title = strings.tomorrowTitleText;
-        }
-
-        temp = {
-          title,
-          time:
-            result[property].length > 0
-              ? result[property][0]?.start_datetime
-              : '',
-          data: result[property].length > 0 ? value : [],
-        };
-        filData.push(temp);
-      }
-      setFilterData([...filData]);
-    } else {
-      setFilterData([]);
-    }
+    setEventList(events);
   }, [
-    eventData,
-    filterOptions,
-    selectedFilter,
-    authContext.entity.role,
     authContext.entity.uid,
+    authContext.entity.role,
+    filterOptions,
+    eventData,
+    selectedFilter,
+    setEventList,
+    timeSelectionOption,
+    getEvents,
   ]);
 
   return (

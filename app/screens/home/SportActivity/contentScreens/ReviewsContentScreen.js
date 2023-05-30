@@ -158,7 +158,23 @@ const ReviewsContentScreen = ({
         isVisible={showModal}
         closeModal={() => setShowModal(false)}
         modalType={ModalTypes.style2}>
-        <Text>Hello</Text>
+        <Text style={[styles.label, {marginBottom: 25}]}>
+          Ratings shows the average ratings that the referee received from teams
+          regarding their matches. The following questions are used to collect
+          ratings from teams.
+        </Text>
+        {ratingsOption.length > 0
+          ? ratingsOption.map((item, index) => (
+              <View key={index} style={{marginBottom: 25}}>
+                <Text style={[styles.label, {fontFamily: fonts.RBold}]}>
+                  {item.title}
+                </Text>
+                <Text style={[styles.label, {marginTop: 10}]}>
+                  {item.details}
+                </Text>
+              </View>
+            ))
+          : null}
       </CustomModalWrapper>
     </View>
   );

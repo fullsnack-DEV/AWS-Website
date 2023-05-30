@@ -193,11 +193,7 @@ const GroupHomeScreen = ({
           });
         }}
         onClickFollowers={() => {
-          navigation.navigate('UserConnections', {
-            tab: strings.followerTitleText,
-            entity_type: groupData.entity_type,
-            user_id: groupId,
-          });
+          navigation.navigate('GroupFollowersScreen', {groupId});
         }}
       />
       <MemberList

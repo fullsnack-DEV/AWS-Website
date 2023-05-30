@@ -220,6 +220,7 @@ import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
+import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -264,6 +265,11 @@ const MembersNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+    <Stack.Screen
+      component={GroupFollowersScreen}
+      name="GroupFollowersScreen"
+      options={{headerShown: false}}
     />
 
     <Stack.Screen

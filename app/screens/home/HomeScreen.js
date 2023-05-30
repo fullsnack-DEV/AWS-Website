@@ -330,7 +330,7 @@ const HomeScreen = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.headerRow}>
-        <View style={styles.row}>
+        <View style={[styles.row, {flex: 1}]}>
           <Pressable
             style={styles.imageContainer}
             onPress={() => {
@@ -345,15 +345,17 @@ const HomeScreen = ({navigation, route}) => {
             <Image source={images.backArrow} style={styles.image} />
           </Pressable>
           <View style={{marginHorizontal: 5}}>
-            <Text style={styles.title}>
+            <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>
               {currentUserData.full_name ?? currentUserData.group_name}
             </Text>
           </View>
-          <Pressable
-            style={styles.dropDownImage}
-            onPress={() => setShowSwitchAccountModal(true)}>
-            <Image source={images.path} style={styles.image} />
-          </Pressable>
+          {isAdmin ? (
+            <Pressable
+              style={styles.dropDownImage}
+              onPress={() => setShowSwitchAccountModal(true)}>
+              <Image source={images.path} style={styles.image} />
+            </Pressable>
+          ) : null}
         </View>
         <View style={styles.row}>
           {!isAdmin ? (

@@ -1,63 +1,62 @@
-import React, {useEffect, useState, useContext} from 'react';
-import {View, StyleSheet, FlatList, Alert, SafeAreaView} from 'react-native';
-
+import React, {useEffect, useState, useContext, useCallback} from 'react';
+import {View, FlatList, Alert, SafeAreaView} from 'react-native';
+import {format} from 'react-string-format';
 import AuthContext from '../../../auth/context';
-import {followUser, unfollowUser} from '../../../api/Users';
-import TCUserList from '../connections/TCUserList';
 import {getUserIndex} from '../../../api/elasticSearch';
 import {strings} from '../../../../Localization/translation';
 import TCRemoveUser from '../connections/TCRemoveUser';
 import {removeAttendeeFromEvent} from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import Verbs from '../../../Constants/Verbs';
 import images from '../../../Constants/ImagePath';
-import colors from '../../../Constants/Colors';
 import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function GoingListScreen({navigation, route}) {
   const [going, setGoing] = useState([]);
   const [loading, setloading] = useState(false);
-  const [eventData] = useState(route?.params?.eventData);
-  const [showRemove] = useState(route?.params?.showRemove);
+  const [eventData] = useState(route.params.eventData ?? {});
   const authContext = useContext(AuthContext);
-  const userRole = authContext?.entity?.role;
 
-  useEffect(() => {
+  const fetchGoingList = useCallback((groupIds = []) => {
     const getUserDetailQuery = {
       size: 1000,
       from: 0,
       query: {
         terms: {
-          'user_id.keyword': route?.params?.going_ids,
+          'user_id.keyword': groupIds,
         },
       },
     };
 
     getUserIndex(getUserDetailQuery)
-    .then((res) => {
-      setGoing(res);
-    })
-    .catch((e) => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
-  }, [route?.params?.going_ids]);
+      .then((res) => {
+        setGoing(res);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, []);
 
-  const removeAttendee = (userData) => {
+  useEffect(() => {
+    if (route.params.going_ids?.length > 0) {
+      fetchGoingList(route.params.going_ids);
+    }
+  }, [route.params.going_ids, fetchGoingList]);
+
+  const removeAttendee = (userData = {}) => {
     setloading(true);
     removeAttendeeFromEvent(eventData.cal_id, [userData.user_id], authContext)
-    .then((response) => {
-      setloading(false);
-      navigation.pop(2);
-      console.log('response-->', response);
-    })
-    .catch((e) => {
-      setloading(false);
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
-    });
+      .then(() => {
+        setloading(false);
+        navigation.pop(2);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
   };
 
   return (
@@ -66,133 +65,53 @@ export default function GoingListScreen({navigation, route}) {
         title={strings.going}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          navigation.goBack()
-        }}
-        containerStyle={{
-          paddingLeft: 10,
-          paddingRight: 17,
-          paddingTop: 8,
-          paddingBottom: 13,
-          borderBottomWidth: 0,
+          navigation.goBack();
         }}
       />
-      
       <ActivityLoader visible={loading} />
-      <View style={styles.sperateLine} />
-      <View style={{flex: 1}}>
+
+      <View style={{flex: 1, paddingTop: 20}}>
         <FlatList
           data={going}
           keyExtractor={(index) => index.toString()}
-          renderItem={({item}) => {
-            const showFollowUnfollowButton = userRole === Verbs.entityTypeUser;
-            if (showRemove) {
-              return (
-                <TCRemoveUser
-                  onProfilePress={() => {
-                    navigation.push('HomeScreen', {
-                      role: [
-                        Verbs.entityTypePlayer,
-                        Verbs.entityTypeUser,
-                      ]?.includes(item?.entity_type)
-                        ? Verbs.entityTypeUser
-                        : item?.entity_type,
-                      uid: [
-                        Verbs.entityTypePlayer,
-                        Verbs.entityTypeUser,
-                      ]?.includes(item?.entity_type)
-                        ? item?.user_id
-                        : item?.group_id,
-                      backButtonVisible: true,
-                      menuBtnVisible: false,
-                    });
-                  }}
-                  profileImage={item?.full_image}
-                  entityType={item?.entity_type}
-                  title={
-                    item?.entity_type === Verbs.entityTypePlayer
-                      ? item?.full_name
-                      : item?.group_name
-                  }
-                  subTitle={`${item?.city} , ${item?.country}`}
-                  is_following={item?.is_following}
-                  onRemovePress={() => {
-                    Alert.alert(
-                      `Are you sure want to remove  ${(item?.entity_type === Verbs.entityTypePlayer
-                        ? item?.full_name
-                        : item?.group_name)}?`,
-                      'The event fee should be refunded when an attendee is removed.',
-                      [
-                        {
-                          text: strings.cancel,
-                          onPress: () => console.log('Cancel Pressed'),
-                          style: 'cancel',
-                        },
-                        {
-                          text: strings.okTitleText,
-                          onPress: () => {
-                            removeAttendee(item);
-                          },
-                        },
-                      ],
-                      {cancelable: true},
-                    );
-                  }}
-                />
-              );
-            }
-            return (
-              <TCUserList
-                onProfilePress={() => {
-                  navigation.push('HomeScreen', {
-                    role: [
-                      Verbs.entityTypePlayer,
-                      Verbs.entityTypeUser,
-                    ]?.includes(item?.entity_type)
-                      ? Verbs.entityTypeUser
-                      : item?.entity_type,
-                    uid: [
-                      Verbs.entityTypePlayer,
-                      Verbs.entityTypeUser,
-                    ]?.includes(item?.entity_type)
-                      ? item?.user_id
-                      : item?.group_id,
-                    backButtonVisible: true,
-                    menuBtnVisible: false,
-                  });
-                }}
-                showFollowUnfollowButton={showFollowUnfollowButton}
-                profileImage={item?.full_image}
-                entityType={item?.entity_type}
-                title={
-                  item?.entity_type === Verbs.entityTypePlayer
-                    ? item?.full_name
-                    : item?.group_name
-                }
-                subTitle={`${item?.city} , ${item?.country}`}
-                is_following={item?.is_following}
-                followUnfollowPress={(wantToFollow) => {
-                  const entity_type = item?.entity_type;
-                  const uid =
-                    item?.entity_type === Verbs.entityTypePlayer
-                      ? item?.user_id
-                      : item?.group_id;
-                  if (wantToFollow) {
-                    followUser({entity_type}, uid, authContext);
-                  } else {
-                    unfollowUser({entity_type}, uid, authContext);
-                  }
-                }}
-              />
-            );
-          }}
+          renderItem={({item}) => (
+            <TCRemoveUser
+              item={item}
+              isOwner={eventData.owner_id === authContext.entity.uid}
+              onProfilePress={() => {
+                navigation.push('HomeScreen', {
+                  role: item.entity_type,
+                  uid: item.user_id ?? item.group_id,
+                  backButtonVisible: true,
+                  menuBtnVisible: false,
+                });
+              }}
+              onRemovePress={() => {
+                Alert.alert(
+                  format(
+                    strings.areYouSureToRemove,
+                    item.full_name ?? item.group_name,
+                  ),
+                  strings.removeGoingModalText,
+                  [
+                    {
+                      text: strings.cancel,
+                      style: 'cancel',
+                    },
+                    {
+                      text: strings.okTitleText,
+                      onPress: () => {
+                        removeAttendee(item);
+                      },
+                    },
+                  ],
+                  {cancelable: true},
+                );
+              }}
+            />
+          )}
         />
       </View>
     </SafeAreaView>
   );
 }
-const styles = StyleSheet.create({
-  sperateLine: {
-    borderColor: colors.writePostSepratorColor,
-    borderWidth: 0.5,
-  },
-});

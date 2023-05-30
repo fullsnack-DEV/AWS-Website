@@ -164,12 +164,10 @@ export default function EventScreen({navigation, route}) {
   }
 
   useEffect(() => {
-    if (isFocused) {
-      if (route?.params?.event) {
-        setEventData(route?.params?.event);
-      }
+    if (isFocused && route.params?.event) {
+      setEventData(route.params.event);
     }
-  }, [isFocused, route?.params]);
+  }, [isFocused, route.params]);
 
   useEffect(() => {
     const goingData = eventData.going ?? [];
@@ -179,7 +177,7 @@ export default function EventScreen({navigation, route}) {
       from: 0,
       query: {
         bool: {
-          must: [{match: {user_id: eventData?.created_by?.uid}}],
+          must: [{match: {user_id: eventData.created_by.uid}}],
         },
       },
     };
@@ -189,7 +187,7 @@ export default function EventScreen({navigation, route}) {
       from: 0,
       query: {
         terms: {
-          'user_id.keyword': [...goingData, eventData?.created_by?.uid],
+          'user_id.keyword': [...goingData, eventData.created_by.uid],
         },
       },
     };
@@ -199,12 +197,12 @@ export default function EventScreen({navigation, route}) {
       from: 0,
       query: {
         bool: {
-          must: [{match: {group_id: eventData?.created_by?.group_id}}],
+          must: [{match: {group_id: eventData.created_by.group_id}}],
         },
       },
     };
 
-    if (eventData?.created_by?.group_id) {
+    if (eventData.created_by.group_id) {
       getGroupIndex(getGroupDetailQuery)
         .then((res) => {
           setOrganizer(res[0]);
@@ -240,10 +238,8 @@ export default function EventScreen({navigation, route}) {
       });
 
     getUserFollowerFollowing(
-      eventData?.created_by?.group_id
-        ? eventData?.created_by?.group_id
-        : eventData?.owner_id,
-      eventData?.created_by?.group_id
+      eventData.created_by.group_id ?? eventData.owner_id,
+      eventData.created_by?.group_id
         ? Verbs.entityTypeGroups
         : Verbs.entityTypePlayers,
       'followers',
@@ -260,8 +256,8 @@ export default function EventScreen({navigation, route}) {
       })
       .catch(() => {});
 
-    if (eventData?.created_by?.group_id) {
-      getGroupMembers(eventData?.created_by?.group_id, authContext)
+    if (eventData.created_by?.group_id) {
+      getGroupMembers(eventData.created_by.group_id, authContext)
         .then((res) => {
           const tempArr = [];
           res.payload.forEach((item) => {
@@ -278,23 +274,23 @@ export default function EventScreen({navigation, route}) {
       return false;
     }
 
-    if (eventData?.who_can_join?.value === 0) {
+    if (eventData.who_can_join?.value === 0) {
       return true;
     }
 
-    if (eventData?.who_can_join?.value === 1) {
+    if (eventData.who_can_join?.value === 1) {
       if (myFollowers.includes(authContext.entity.auth.user_id)) {
         return true;
       }
     }
 
     if (['user', 'player'].includes(authContext.entity.role)) {
-      if (eventData?.owner_id === authContext.entity.auth.user_id) {
+      if (eventData.owner_id === authContext.entity.auth.user_id) {
         return true;
       }
     }
 
-    if (eventData?.who_can_join?.value === 3) {
+    if (eventData.who_can_join?.value === 3) {
       if (myMembers.includes(authContext.entity.auth.user_id)) {
         return true;
       }
@@ -308,12 +304,12 @@ export default function EventScreen({navigation, route}) {
   };
 
   const checkIsInvite = () => {
-    if (eventData?.owner_type === 'groups') {
+    if (eventData.owner_type === 'groups') {
       return false;
     }
 
     if (['user', 'player'].includes(authContext.entity.role)) {
-      if (eventData?.who_can_invite?.value === 0) {
+      if (eventData.who_can_invite?.value === 0) {
         const tempArr = [];
         going.forEach((item) => {
           tempArr.push(item.user_id);
@@ -322,7 +318,7 @@ export default function EventScreen({navigation, route}) {
           return true;
         }
       }
-      if (eventData?.owner_id === authContext.entity.auth.user_id) {
+      if (eventData.owner_id === authContext.entity.auth.user_id) {
         return true;
       }
     } else {
@@ -340,7 +336,7 @@ export default function EventScreen({navigation, route}) {
     };
     attendEvent(eventData.cal_id, data, authContext)
       .then((response) => {
-        setEventData(response?.payload[0]);
+        setEventData(response.payload[0]);
         setloading(false);
       })
       .catch((e) => {
@@ -434,12 +430,12 @@ export default function EventScreen({navigation, route}) {
 
       <ScrollView stickyHeaderIndices={[5]}>
         <EventBackgroundPhoto
-          isEdit={!!eventData?.background_thumbnail}
+          isEdit={!!eventData.background_thumbnail}
           isPreview={true}
-          isImage={!!eventData?.background_thumbnail}
+          isImage={!!eventData.background_thumbnail}
           imageURL={
-            eventData?.background_thumbnail
-              ? {uri: eventData?.background_thumbnail}
+            eventData.background_thumbnail
+              ? {uri: eventData.background_thumbnail}
               : images.backgroudPlaceholder
           }
         />
@@ -464,9 +460,9 @@ export default function EventScreen({navigation, route}) {
             ).format('hh:mm a')}`}
             repeat={strings.repeat}
             repeatTime={repeatString}
-            location={eventData?.location?.location_name}
-            eventOnlineUrl={eventData?.online_url}
-            is_Offline={eventData?.is_Offline}
+            location={eventData.location?.location_name}
+            eventOnlineUrl={eventData.online_url}
+            is_Offline={eventData.is_Offline}
           />
 
           {/* Join and Invite button wrapper */}
@@ -643,7 +639,7 @@ export default function EventScreen({navigation, route}) {
                         navigation.navigate('GoingListScreen', {
                           showRemove:
                             authContext.entity.uid === organizer.user_id,
-                          going_ids: eventData?.going ?? [],
+                          going_ids: eventData.going ?? [],
                           eventData,
                         });
                       }}
@@ -664,37 +660,37 @@ export default function EventScreen({navigation, route}) {
             )}
 
             <EventItemRender title={strings.place}>
-              {eventData?.is_Offline ? (
+              {eventData.is_Offline ? (
                 <>
                   <Text
                     style={[styles.textValueStyle, {fontFamily: fonts.RBold}]}>
-                    {eventData?.location?.venue_name}
+                    {eventData.location?.venue_name}
                   </Text>
                   <Text
                     style={[
                       styles.textValueStyle,
                       {fontFamily: fonts.RRegular},
                     ]}>
-                    {eventData?.location?.location_name}
+                    {eventData.location?.location_name}
                   </Text>
                   <EventMapView
                     region={{
                       latitude:
-                        eventData?.location?.latitude ?? Number(gameDataLati),
+                        eventData.location?.latitude ?? Number(gameDataLati),
                       longitude:
-                        eventData?.location?.longitude ?? Number(gameDataLongi),
+                        eventData.location?.longitude ?? Number(gameDataLongi),
                       latitudeDelta: 0.0922,
                       longitudeDelta: 0.0421,
                     }}
                     coordinate={{
                       latitude:
-                        eventData?.location?.latitude ?? Number(gameDataLati),
+                        eventData.location?.latitude ?? Number(gameDataLati),
                       longitude:
-                        eventData?.location?.longitude ?? Number(gameDataLongi),
+                        eventData.location?.longitude ?? Number(gameDataLongi),
                     }}
                   />
                   <Text style={[styles.textValueStyle, {marginTop: 10}]}>
-                    {eventData?.location?.venue_detail}
+                    {eventData.location?.venue_detail}
                   </Text>
                 </>
               ) : (
@@ -704,7 +700,7 @@ export default function EventScreen({navigation, route}) {
                     eventData.online_url && styles.textUrl,
                   ]}>
                   {eventData.online_url
-                    ? eventData?.online_url
+                    ? eventData.online_url
                     : strings.emptyEventUrl}
                 </Text>
               )}
@@ -866,7 +862,7 @@ export default function EventScreen({navigation, route}) {
                       }}>
                       <Image
                         source={
-                          !eventData?.blocked
+                          !eventData.blocked
                             ? images.roundTick
                             : images.roundCross
                         }
@@ -881,13 +877,13 @@ export default function EventScreen({navigation, route}) {
                       style={[
                         styles.textValueStyle,
                         {
-                          color: !eventData?.blocked
+                          color: !eventData.blocked
                             ? colors.greeColor
                             : colors.veryLightBlack,
                           fontFamily: fonts.RRegular,
                         },
                       ]}>
-                      {!eventData?.blocked
+                      {!eventData.blocked
                         ? strings.available
                         : strings.blockedForChallenge}
                     </Text>
@@ -919,7 +915,7 @@ export default function EventScreen({navigation, route}) {
                 seeLessStyle={styles.moreLessText}
                 seeMoreStyle={styles.moreLessText}
                 seeLessText={strings.lessText}>
-                {strings.attendeesMustRefundedText} {eventData?.refund_policy}
+                {strings.attendeesMustRefundedText} {eventData.refund_policy}
               </ReadMore>
             </EventItemRender>
 
@@ -933,8 +929,8 @@ export default function EventScreen({navigation, route}) {
                 style={[styles.textValueStyle, {fontFamily: fonts.RRegular}]}>
                 {format(
                   strings.minMaxText_dy,
-                  `${eventData?.min_attendees}   `,
-                  eventData?.max_attendees,
+                  `${eventData.min_attendees}   `,
+                  eventData.max_attendees,
                 )}
               </Text>
             </EventItemRender>
@@ -948,7 +944,7 @@ export default function EventScreen({navigation, route}) {
                       styles.textValueStyle,
                       {fontFamily: fonts.RRegular},
                     ]}>
-                    {eventData?.who_can_see?.text}
+                    {eventData.who_can_see?.text}
                   </Text>
                 </EventItemRender>
 
@@ -959,7 +955,7 @@ export default function EventScreen({navigation, route}) {
                       styles.textValueStyle,
                       {fontFamily: fonts.RRegular},
                     ]}>
-                    {eventData?.who_can_join?.text}
+                    {eventData.who_can_join?.text}
                   </Text>
                 </EventItemRender>
 
@@ -970,7 +966,7 @@ export default function EventScreen({navigation, route}) {
                       styles.textValueStyle,
                       {fontFamily: fonts.RRegular},
                     ]}>
-                    {eventData?.who_can_invite?.text}
+                    {eventData.who_can_invite?.text}
                   </Text>
                 </EventItemRender>
                 <View style={styles.sepratorViewStyle} />

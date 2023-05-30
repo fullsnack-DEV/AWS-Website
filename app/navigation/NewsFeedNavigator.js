@@ -92,6 +92,7 @@ import MessageNavigator from './MessageNavigator';
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
+import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
 
 const Stack = createStackNavigator();
 
@@ -453,6 +454,11 @@ const NewsFeedNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+    <Stack.Screen
+      component={GroupFollowersScreen}
+      name="GroupFollowersScreen"
+      options={{headerShown: false}}
     />
 
     {/*    Challenge */}

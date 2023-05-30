@@ -319,7 +319,7 @@ export default function ScheduleScreen({navigation, route}) {
       setIsSortByOthers(true);
     }
     setFilterCancelled(false);
-  }, [eventData, isSortbyOthers]);
+  }, [eventData]);
 
   // Check Validation to show the event settings for clubs
   useEffect(() => {
@@ -478,7 +478,7 @@ export default function ScheduleScreen({navigation, route}) {
         console.log('Error==>', e.message);
         Alert.alert(e.message);
       });
-  }, [authContext, selectedOptions]);
+  }, [authContext]);
 
   const configureEvents = useCallback((eventsData, games) => {
     const eventTimeTableData = eventsData.map((item) => {
@@ -709,12 +709,8 @@ export default function ScheduleScreen({navigation, route}) {
   const getEventsAndSlotsList = async (data = {}) => {
     setIndigator(true);
     const eventTimeTableData = [];
-    const startDateUnixTime = startDateTime
-      ? Utility.getTCDate(startDateTime)
-      : '';
-    const endDateUnixTime = endDateTime ? Utility.getTCDate(endDateTime) : '';
     const participants = await getQueryParticipants();
-    Utility.getEventsSlots(participants, startDateUnixTime, endDateUnixTime)
+    Utility.getEventsSlots(participants)
       .then((response) => {
         const allUserIds = [];
         response.forEach((item) => {
@@ -1132,15 +1128,8 @@ export default function ScheduleScreen({navigation, route}) {
         ).format('MMM DD')}`;
       }
     }
-    const option = [];
 
-    if (timeFilter) {
-      option.push(option);
-    }
-
-    if (rsvpFilterOption > 0) {
-      option.push(rsvpFilterOptions[rsvpFilterOption]);
-    }
+    const option = [timeFilter, rsvpFilterOptions[rsvpFilterOption]];
 
     setFilterTags(option);
   };
@@ -1414,6 +1403,7 @@ export default function ScheduleScreen({navigation, route}) {
                   entity={authContext.entity}
                   owners={owners}
                   allUserData={allUserData}
+                  timeSelectionOption={timeSelectionOption}
                 />
               )}
 
@@ -1607,7 +1597,7 @@ export default function ScheduleScreen({navigation, route}) {
               </TouchableOpacity>
               <Text style={styles.titleText}>{strings.filter}</Text>
               <TouchableOpacity
-                onPress={() => {
+                onPress={async () => {
                   setFilterPopup(false);
                   setIndigator(true);
                   setFilterSetting({
@@ -1616,7 +1606,7 @@ export default function ScheduleScreen({navigation, route}) {
                   });
                   setIndigator(false);
                   setFilterTagOptions();
-                  getEventsAndSlotsList();
+                  // await getEventsAndSlotsList();
                 }}>
                 <Text style={styles.applyText}>{strings.apply}</Text>
               </TouchableOpacity>
