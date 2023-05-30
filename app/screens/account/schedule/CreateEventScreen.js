@@ -897,7 +897,11 @@ export default function CreateEventScreen({navigation, route}) {
                       backgroundColor: colors.textFieldBackground,
                     }}
                   /> */}
-                  <Pressable style={styles.textInputStyle}>
+                  <Pressable
+                    style={styles.textInputStyle}
+                    onPress={() => {
+                      setVisibleLocationModal(true);
+                    }}>
                     <Text style={styles.label}>{searchLocation}</Text>
                   </Pressable>
                   <EventMapView region={mapRegion} coordinate={mapcoordinate} />

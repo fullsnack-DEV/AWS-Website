@@ -139,11 +139,11 @@ export default function ScheduleScreen({navigation, route}) {
 
   const settingsOptions = [strings.eventsViewSettings, strings.viewPrivacy];
 
-  let nextThreeMonth = new Date();
-  nextThreeMonth = nextThreeMonth.setMonth(nextThreeMonth.getMonth() + 3);
+  // let nextThreeMonth = new Date();
+  // nextThreeMonth = nextThreeMonth.setMonth(nextThreeMonth.getMonth() + 3);
 
   const [startDateTime, setStartDateTime] = useState(new Date());
-  const [endDateTime, setEndDateTime] = useState(new Date(nextThreeMonth));
+  const [endDateTime, setEndDateTime] = useState(new Date());
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [timeSelectionOption, setTimeSelectionOption] = useState(
@@ -1128,25 +1128,31 @@ export default function ScheduleScreen({navigation, route}) {
         ).format('MMM DD')}`;
       }
     }
-
-    const option = [timeFilter, rsvpFilterOptions[rsvpFilterOption]];
+    let option = [timeFilter];
+    if (rsvpFilterOptions[rsvpFilterOption] !== strings.eventFilterRsvpAll) {
+      option = [timeFilter, rsvpFilterOptions[rsvpFilterOption]];
+    }
 
     setFilterTags(option);
   };
 
-  const onTagCancelPress = async (item, index) => {
-    if (index === 0) {
-      await getDates(0, strings.filterAntTime);
-      setTimeFilterOpetion(0);
-      setRsvpFilterOption(0);
-      setTimeSelectionOption(strings.filterAntTime);
-      setFilterCancelled(true);
-    } else {
-      setRsvpFilterOption(0);
-    }
+  const onTagCancelPress = async (index) => {
     const filter = [...filterTags];
     filter.splice(index, 1);
     setFilterTags(filter);
+
+    if (filter.length === 0) {
+      setRsvpFilterOption(0);
+      setTimeFilterOpetion(0);
+      setFilterCancelled(true);
+      setTimeSelectionPicker(false);
+      getDates(0, strings.filterAntTime);
+      setTimeSelectionOption(strings.filterAntTime);
+      setFilterSetting({
+        ...filterSetting,
+        time: 0,
+      });
+    }
   };
 
   const renderTags = ({item, index}) => {
@@ -1155,13 +1161,11 @@ export default function ScheduleScreen({navigation, route}) {
     }
     return (
       <>
-        <View
-          style={styles.textContainer}
-          onPress={() => onTagCancelPress({item, index})}>
+        <View style={styles.textContainer}>
           <Text style={styles.tagTitleText}>{item}</Text>
           <TouchableOpacity
             style={styles.closeButton}
-            onPress={() => onTagCancelPress(item, index)}>
+            onPress={() => onTagCancelPress(index)}>
             <Image source={images.cancelImage} style={styles.closeButton} />
           </TouchableOpacity>
         </View>
@@ -1404,6 +1408,8 @@ export default function ScheduleScreen({navigation, route}) {
                   owners={owners}
                   allUserData={allUserData}
                   timeSelectionOption={timeSelectionOption}
+                  startDateTime={startDateTime}
+                  endDateTime={endDateTime}
                 />
               )}
 

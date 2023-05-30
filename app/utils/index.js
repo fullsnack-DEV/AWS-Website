@@ -2562,6 +2562,7 @@ export const getRatingsOptions = (
       const option = {
         name: item.name,
         title: item.title,
+        details: item.details,
       };
       return option;
     });

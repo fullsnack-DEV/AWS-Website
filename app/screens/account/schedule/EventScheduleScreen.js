@@ -14,84 +14,92 @@ import {getJSDate, getTCDate} from '../../../utils';
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function EventScheduleScreen({
-  onItemPress,
-  eventData,
-  onThreeDotPress,
-  entity,
+  onItemPress = () => {},
+  eventData = [],
+  onThreeDotPress = () => {},
+  entity = {},
   profileID,
   screenUserId,
-  filterOptions,
-  selectedFilter,
-  owners,
-  allUserData,
-  timeSelectionOption,
+  filterOptions = {},
+  selectedFilter = {},
+  owners = [],
+  allUserData = [],
+  timeSelectionOption = {},
+  startDateTime = '',
+  endDateTime = '',
 }) {
   const authContext = useContext(AuthContext);
   const [filterData, setFilterData] = useState(null);
 
-  const getDateTime = useCallback((optionsState = strings.filterAntTime) => {
-    const startDate = new Date();
-    const endDate = new Date();
-    endDate.setHours(0, 0, 0, 0);
+  const getDateTime = useCallback(
+    (optionsState = strings.filterAntTime) => {
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setHours(0, 0, 0, 0);
 
-    switch (optionsState) {
-      case strings.filterAntTime:
-        return null;
+      switch (optionsState) {
+        case strings.filterAntTime:
+          return null;
 
-      case strings.filterToday:
-        endDate.setMinutes(59);
-        endDate.setHours(23);
-        break;
+        case strings.filterToday:
+          endDate.setMinutes(59);
+          endDate.setHours(23);
+          break;
 
-      case strings.filterTomorrow:
-        startDate.setHours(0, 0, 0, 0);
-        startDate.setDate(startDate.getDate() + 1);
-        endDate.setDate(endDate.getDate() + 2);
-        break;
+        case strings.filterTomorrow:
+          startDate.setHours(0, 0, 0, 0);
+          startDate.setDate(startDate.getDate() + 1);
+          endDate.setDate(endDate.getDate() + 2);
+          break;
 
-      case strings.filterNext7Day:
-        endDate.setDate(endDate.getDate() + 7);
-        break;
+        case strings.filterNext7Day:
+          endDate.setDate(endDate.getDate() + 7);
+          break;
 
-      case strings.filterThisMonth:
-        endDate.setMonth(endDate.getMonth() + 1);
-        endDate.setDate(0);
-        endDate.setHours(0, 0, 0, 0);
-        break;
+        case strings.filterThisMonth:
+          endDate.setMonth(endDate.getMonth() + 1);
+          endDate.setDate(0);
+          endDate.setHours(0, 0, 0, 0);
+          break;
 
-      case strings.filterNextMonth:
-        endDate.setMonth(endDate.getMonth() + 2);
-        endDate.setDate(0);
-        startDate.setMonth(endDate.getMonth());
-        startDate.setDate(1);
-        startDate.setHours(0, 0, 0, 0);
-        break;
+        case strings.filterNextMonth:
+          endDate.setMonth(endDate.getMonth() + 2);
+          endDate.setDate(0);
+          startDate.setMonth(endDate.getMonth());
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          break;
 
-      case strings.filterYesterday:
-        startDate.setHours(0, 0, 0, 0);
-        startDate.setDate(startDate.getDate() - 1);
+        case strings.filterYesterday:
+          startDate.setHours(0, 0, 0, 0);
+          startDate.setDate(startDate.getDate() - 1);
 
-        break;
+          break;
 
-      case strings.filterLast7Day:
-        startDate.setHours(0, 0, 0, 0);
-        startDate.setDate(startDate.getDate() - 7);
-        break;
+        case strings.filterLast7Day:
+          startDate.setHours(0, 0, 0, 0);
+          startDate.setDate(startDate.getDate() - 7);
+          break;
 
-      case strings.filterLastMonth:
-        endDate.setMonth(endDate.getMonth());
-        endDate.setDate(0);
-        endDate.setHours(0, 0, 0, 0);
-        startDate.setMonth(endDate.getMonth());
-        startDate.setDate(1);
-        startDate.setHours(0, 0, 0, 0);
-        break;
+        case strings.filterLastMonth:
+          endDate.setMonth(endDate.getMonth());
+          endDate.setDate(0);
+          endDate.setHours(0, 0, 0, 0);
+          startDate.setMonth(endDate.getMonth());
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          break;
 
-      default:
-        return null;
-    }
-    return {startDate, endDate};
-  }, []);
+        case strings.filterPickaDate:
+          return {startDate: startDateTime, endDate: endDateTime};
+
+        default:
+          return null;
+      }
+      return {startDate, endDate};
+    },
+    [startDateTime, endDateTime],
+  );
 
   const getEvents = useCallback(
     (optionsState = strings.filterAntTime, events = []) => {
