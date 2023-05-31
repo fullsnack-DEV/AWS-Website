@@ -68,7 +68,7 @@ export default function BatchInvoiceView({data, onPressCard}) {
 
       <View style={styles.invoiveAmountContainer}>
         <Text style={styles.invoiceAmountTexStyle}>
-          {data.invoice_total} {data.invoices[0].currency_type}
+          {data.invoice_total.toFixed(2)} {data.invoices[0].currency_type}
           {/* {data.invvoicetopaid} */}
         </Text>
         {/* {data.invoice_total !== data.invoice_paid_total && (
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flex: 1,
     alignItems: 'center',
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     backgroundColor: colors.whiteColor,
     borderBottomColor: colors.bordercolor,
     paddingVertical: 15,

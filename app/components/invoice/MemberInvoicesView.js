@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     // alignItems: 'flex-start',
     borderBottomWidth: 1,
 
-    borderBottomColor: '#EFEFEF',
+    borderBottomColor: colors.bordercolor,
   },
 
   invoiveAmountContainer: {
