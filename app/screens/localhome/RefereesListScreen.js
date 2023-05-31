@@ -12,17 +12,17 @@ import {
   Alert,
   TextInput,
   SafeAreaView,
+  Pressable,
 } from 'react-native';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import {widthPercentageToDP} from '../../utils';
+import {widthPercentageToDP, getStorage} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
 import {getUserIndex} from '../../api/elasticSearch';
-// import TCRefereeView from '../../components/TCRefereeView';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -31,6 +31,8 @@ import TCPlayerView from '../../components/TCPlayerView';
 import {getSportList} from '../../utils/sportsActivityUtils';
 import Verbs from '../../Constants/Verbs';
 import SearchModal from '../../components/Filter/SearchModal';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 
 let stopFetchMore = true;
 
@@ -46,8 +48,14 @@ export default function RefereesListScreen({navigation, route}) {
   // eslint-disable-next-line no-unused-vars
   const [loadMore, setLoadMore] = useState(false);
   const [location, setLocation] = useState(route.params?.filters?.location);
+  const [imageBaseUrl, setImageBaseUrl] = useState('');
+  const [playerDetailPopup, setPlayerDetailPopup] = useState();
+  const [playerDetail, setPlayerDetail] = useState();
 
   useEffect(() => {
+    getStorage('appSetting').then((setting) => {
+      setImageBaseUrl(setting.base_url_sporticon);
+    });
     const defaultSport = [
       {
         sport: strings.allSport,
@@ -56,10 +64,14 @@ export default function RefereesListScreen({navigation, route}) {
       },
     ];
 
-    setSports([
-      ...defaultSport,
-      ...getSportList(authContext.sports, Verbs.entityTypeReferee),
-    ]);
+    if (authContext.entity.role === Verbs.entityTypeUser) {
+      setSports([
+        ...defaultSport,
+        ...getSportList(authContext.sports, Verbs.entityTypeReferee),
+      ]);
+    } else if (authContext.entity.role === Verbs.entityTypeClub) {
+      setSports([...defaultSport, ...authContext.entity.obj.sports]);
+    }
   }, [authContext]);
 
   useEffect(() => {
@@ -130,14 +142,28 @@ export default function RefereesListScreen({navigation, route}) {
           },
         });
       }
-      // Sport Filter
-      if (filerReferee.sport !== strings.allSport) {
-        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
-          term: {
-            'referee_data.sport.keyword': `${filerReferee.sport.toLowerCase()}`,
-          },
-        });
+
+      if (
+        authContext.entity.role === Verbs.entityTypeUser ||
+        authContext.entity.role === Verbs.entityTypeClub
+      ) {
+        if (filerReferee.sport !== strings.allSport) {
+          refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+            term: {
+              'referee_data.sport.keyword': `${filerReferee.sport.toLowerCase()}`,
+            },
+          });
+        }
+      } else if (authContext.entity.role === Verbs.entityTypeTeam) {
+        if (route.params.teamSportData?.sport) {
+          refereeQuery.query.bool.must[0].nested.query.bool.must.push({
+            term: {
+              'referee_data.sport.keyword': `${route.params.teamSportData.sport.toLowerCase()}`,
+            },
+          });
+        }
       }
+
       if (filerReferee.fee) {
         refereeQuery.query.bool.must[0].nested.query.bool.must.push({
           range: {
@@ -254,20 +280,44 @@ export default function RefereesListScreen({navigation, route}) {
           data={item}
           authContext={authContext}
           subTab={strings.refereesTitle}
-          showStar={filters.sport !== strings.allSport && true}
+          showStar={
+            (authContext.entity.role === Verbs.entityTypeUser &&
+              filters.sport !== strings.allSport) ||
+            (authContext.entity.role === Verbs.entityTypeTeam && true) ||
+            (authContext.entity.role === Verbs.entityTypeClub &&
+              filters.sport !== strings.allSport)
+          }
+          // showStar={filters.sport !== strings.allSport && true}
           showSport={true}
-          sportFilter={filters}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
+          // sportFilter={filters}
+          sportFilter={
+            (authContext.entity.role === Verbs.entityTypeTeam && {
+              ...filters,
+              sport: route.params.teamSportData?.sport,
+              sport_name: route.params.teamSportData?.sport_name,
+              sport_type: route.params.teamSportData?.sport_type,
+            }) ||
+            filters
+          }
+          onPress={(sportsObj) => {
+            if (sportsObj.length > 1) {
+              const data = {
+                sports: sportsObj,
+                uid: item?.user_id,
+                entityType: item?.entity_type,
+              };
+              setPlayerDetail(data);
+              setPlayerDetailPopup(true);
+            } else {
+              navigation.navigate('SportActivityHome', {
+                sport: sportsObj[0].sport,
+                sportType: sportsObj[0]?.sport_type,
+                uid: item?.user_id,
+                entityType: item?.entity_type,
+                showPreview: true,
+                backScreen: 'RefereesListScreen',
+              });
+            }
           }}
           onPressBookButton={(refereeObj, sportObject) => {
             if (
@@ -328,6 +378,9 @@ export default function RefereesListScreen({navigation, route}) {
           tempFilter.maxFee = 0;
           delete tempFilter.fee;
         }
+        if (Object.keys(item)[0] === 'availableTime') {
+          delete tempFilter.availableTime;
+        }
 
         // delete tempFilter[key];
       }
@@ -366,7 +419,6 @@ export default function RefereesListScreen({navigation, route}) {
   };
 
   const applyFilter = useCallback((fil) => {
-    // console.log('apply filter', fil);
     getReferees(fil);
   }, []);
 
@@ -382,7 +434,41 @@ export default function RefereesListScreen({navigation, route}) {
       </Text>
     </View>
   );
-
+  const sportsView = (item) => (
+    <Pressable
+      style={[
+        styles.sportView,
+        styles.row,
+        {borderLeftColor: colors.redColorCard},
+      ]}
+      onPress={() => {
+        setPlayerDetailPopup(false);
+        navigation.navigate('SportActivityHome', {
+          sport: item.sport,
+          sportType: item?.sport_type,
+          uid: playerDetail.uid,
+          entityType: playerDetail.entity_type,
+          showPreview: true,
+          backScreen: 'RefereesListScreen',
+        });
+      }}
+      disabled={item.is_hide}>
+      <View style={styles.innerViewContainer}>
+        <View style={styles.row}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={{uri: `${imageBaseUrl}${item.player_image}`}}
+              style={styles.sportIcon}
+            />
+          </View>
+          <View>
+            <Text style={styles.sportName}>{item.sport_name}</Text>
+            <Text style={styles.matchCount}>0 match</Text>
+          </View>
+        </View>
+      </View>
+    </Pressable>
+  );
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -493,6 +579,21 @@ export default function RefereesListScreen({navigation, route}) {
         onPressCancel={() => {
           setSettingPopup(false);
         }}></SearchModal>
+      <CustomModalWrapper
+        isVisible={playerDetailPopup}
+        closeModal={() => {
+          setPlayerDetailPopup(false);
+        }}
+        modalType={ModalTypes.style2}>
+        <View style={{paddingTop: 0, paddingHorizontal: 0}}>
+          <FlatList
+            data={playerDetail?.sports}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item, index}) => sportsView(item, item.type, index)}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      </CustomModalWrapper>
     </SafeAreaView>
   );
 }
@@ -529,5 +630,58 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontSize: widthPercentageToDP('3.8%'),
     width: widthPercentageToDP('75%'),
+  },
+
+  sportView: {
+    justifyContent: 'space-between',
+    borderRadius: 8,
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.googleColor,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowRadius: 3,
+    shadowOpacity: 0.2,
+    elevation: 5,
+    marginBottom: 20,
+    borderLeftWidth: 8,
+    paddingVertical: 5,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  innerViewContainer: {
+    flex: 1,
+    marginRight: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sportName: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  matchCount: {
+    fontSize: 12,
+    lineHeight: 14,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+  },
+  sportIcon: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  imageContainer: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
   },
 });

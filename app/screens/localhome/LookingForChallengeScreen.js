@@ -87,61 +87,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   const [imageBaseUrl, setImageBaseUrl] = useState('');
 
-  /*
-  useEffect(() => {
-    if (settingPopup) {
-      setLastSelection(locationFilterOpetion);
-    }
-  }, [settingPopup]);
-  useEffect(() => {
-    if (route.params?.locationText) {
-      setSettingPopup(true);
-      setLocation(route.params?.locationText);
-      setTimeout(() => {
-        setLocation(route.params?.locationText);
-      }, 10);
-    }
-  }, [route.params?.locationText]);
-  useEffect(() => {
-    const list = [
-      {
-        label: strings.all,
-        value: strings.allType,
-      },
-    ];
-
-    let sportArr = [];
-
-    authContext.sports.map((item) => {
-      sportArr = [...sportArr, ...item.format];
-      return null;
-    });
-    sportArr.map((obj) => {
-      const dataSource = {
-        label: Utility.getSportName(obj, authContext),
-        value: Utility.getSportName(obj, authContext),
-      };
-      list.push(dataSource);
-    });
-
-    setSports(list);
-  }, [authContext, authContext.sports]);
-  useEffect(() => {
-    getAvailableForChallenge(filters);
-  }, []);
-  useEffect(() => {
-    const tempFilter = {...filters};
-    tempFilter.sport = selectedSport?.sport;
-    tempFilter.location = location;
-    setFilters({
-      ...tempFilter,
-    });
-    setPageFrom(0);
-    setAvailableChallenge([]);
-    applyFilter(tempFilter);
-  }, [location]);
-
-  */
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
@@ -276,13 +221,47 @@ export default function LookingForChallengeScreen({navigation, route}) {
         });
       }
 
+      // Search filter
       if (filerdata?.searchText?.length > 0) {
-        availableForchallengeQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filerdata?.searchText}*`,
-            fields: ['full_name'],
-          },
-        });
+        if (
+          filerdata.sport === strings.allSport &&
+          filerdata.location === strings.worldTitleText
+        ) {
+          availableForchallengeQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerdata?.searchText}*`,
+              fields: [
+                'full_name',
+                'city',
+                'country',
+                'state',
+                'state_abbr',
+                'registered_sports.sport',
+              ],
+            },
+          });
+        } else if (filerdata.sport === strings.allSport) {
+          availableForchallengeQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerdata.searchText.toLowerCase()}*`,
+              fields: ['full_name', 'registered_sports.sport'],
+            },
+          });
+        } else if (filerdata.location === strings.worldTitleText) {
+          availableForchallengeQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerdata.searchText.toLowerCase()}*`,
+              fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
+            },
+          });
+        } else {
+          availableForchallengeQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerdata.searchText.toLowerCase()}*`,
+              fields: ['full_name'],
+            },
+          });
+        }
       }
 
       if (filerdata.fee) {
@@ -346,15 +325,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
         });
       }
 
-      if (filerdata?.searchText?.length > 0) {
-        availableForchallengeQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filerdata?.searchText}*`,
-            fields: ['group_name'],
-          },
-        });
-      }
-
       if (filerdata?.sport !== strings.allSport) {
         availableForchallengeQuery.query.bool.must.push({
           term: {
@@ -363,6 +333,59 @@ export default function LookingForChallengeScreen({navigation, route}) {
             },
           },
         });
+
+        if (filerdata.searchText) {
+          // No filter case
+          if (
+            filerdata.sport === strings.allSport &&
+            filerdata.location === strings.worldTitleText
+          ) {
+            availableForchallengeQuery.query.bool.must.push({
+              query_string: {
+                query: `*${filerdata.searchText.toLowerCase()}*`,
+                fields: [
+                  'group_name',
+                  'city',
+                  'country',
+                  'state',
+                  'state_abbr',
+                  'sport',
+                ],
+              },
+            });
+          }
+          // Sport filter case
+          else if (filerdata.sport === strings.allSport) {
+            availableForchallengeQuery.query.bool.must.push({
+              query_string: {
+                query: `*${filerdata.searchText.toLowerCase()}*`,
+                fields: ['group_name', 'sport'],
+              },
+            });
+          } // location filter case
+          else if (filerdata.location === strings.worldTitleText) {
+            availableForchallengeQuery.query.bool.must.push({
+              query_string: {
+                query: `*${filerdata.searchText.toLowerCase()}*`,
+                fields: [
+                  'group_name',
+                  'city',
+                  'country',
+                  'state',
+                  'state_abbr',
+                ],
+              },
+            });
+          } else {
+            // Default case
+            availableForchallengeQuery.query.bool.must.push({
+              query_string: {
+                query: `*${filerdata.searchText.toLowerCase()}*`,
+                fields: ['group_name'],
+              },
+            });
+          }
+        }
 
         availableForchallengeQuery.query.bool.must.push({
           term: {
@@ -397,84 +420,106 @@ export default function LookingForChallengeScreen({navigation, route}) {
     },
     [pageFrom, pageSize, availableChallenge],
   );
-
-  const userJoinGroup = (groupId) => {
-    setloading(true);
-    const params = {};
-    joinTeam(params, groupId, authContext)
-      .then((response) => {
-        setloading(false);
-        if (response.payload.error_code === ErrorCodes.MEMBEREXISTERRORCODE) {
-          Alert.alert(
-            '',
-            response.payload.user_message,
-            [
-              {
-                text: strings.join,
-                onPress: () => {
-                  joinTeam({...params, is_confirm: true}, groupId, authContext)
-                    .then(() => {})
-                    .catch((error) => {
-                      setTimeout(() => {
-                        Alert.alert(strings.alertmessagetitle, error.message);
-                      }, 10);
-                    });
-                },
-                style: 'destructive',
-              },
-              {
-                text: strings.cancel,
-                onPress: () => {},
-                style: 'cancel',
-              },
-            ],
-            {cancelable: false},
-          );
-        } else if (
-          response.payload.error_code === ErrorCodes.MEMBERALREADYERRORCODE
-        ) {
-          Alert.alert(strings.alertmessagetitle, response.payload.user_message);
-        } else if (
-          response.payload.error_code ===
-          ErrorCodes.MEMBERALREADYINVITEERRORCODE
-        ) {
+  const userJoinGroup = useCallback(
+    (groupId) => {
+      setloading(true);
+      const params = {};
+      joinTeam(params, groupId, authContext)
+        .then((response) => {
           setloading(false);
-          const messageStr = response.payload.user_message;
-          setMessage(messageStr);
-          setTimeout(() => {
-            setActibityId(response.payload.data.activity_id);
+          if (response.payload.error_code === ErrorCodes.MEMBEREXISTERRORCODE) {
+            Alert.alert(
+              '',
+              response.payload.user_message,
+              [
+                {
+                  text: strings.join,
+                  onPress: () => {
+                    joinTeam(
+                      {...params, is_confirm: true},
+                      groupId,
+                      authContext,
+                    )
+                      .then(() => {})
+                      .catch((error) => {
+                        setTimeout(() => {
+                          Alert.alert(strings.alertmessagetitle, error.message);
+                        }, 10);
+                      });
+                  },
+                  style: 'destructive',
+                },
+                {
+                  text: strings.cancel,
+                  onPress: () => {},
+                  style: 'cancel',
+                },
+              ],
+              {cancelable: false},
+            );
+          } else if (
+            response.payload.error_code === ErrorCodes.MEMBERALREADYERRORCODE
+          ) {
+            Alert.alert(
+              strings.alertmessagetitle,
+              response.payload.user_message,
+            );
+          } else if (
+            response.payload.error_code ===
+            ErrorCodes.MEMBERALREADYINVITEERRORCODE
+          ) {
             setloading(false);
-            actionSheet.current.show();
-          }, 50);
-        } else if (
-          response.payload.error_code ===
-          ErrorCodes.MEMBERALREADYREQUESTERRORCODE
-        ) {
-          const messageStr = response.payload.user_message;
-          setActibityId(response.payload.data.activity_id);
-          setMessage(messageStr);
+            const messageStr = response.payload.user_message;
+            setMessage(messageStr);
+            setTimeout(() => {
+              setActibityId(response.payload.data.activity_id);
+              setloading(false);
+              actionSheet.current.show();
+            }, 50);
+          } else if (
+            response.payload.error_code ===
+            ErrorCodes.MEMBERALREADYREQUESTERRORCODE
+          ) {
+            const messageStr = response.payload.user_message;
+            setActibityId(response.payload.data.activity_id);
+            setMessage(messageStr);
+            setTimeout(() => {
+              cancelReqActionSheet.current.show();
+            }, 50);
+          } else if (
+            response.payload.error_code === ErrorCodes.MEMBERINVITEONLYERRORCODE
+          ) {
+            Alert.alert(
+              strings.alertmessagetitle,
+              response.payload.user_message,
+            );
+          } else if (response.payload.action === Verbs.joinVerb) {
+            Alert.alert(
+              strings.alertmessagetitle,
+              strings.acceptRequestMessage,
+            );
+          } else if (response.payload.action === Verbs.requestVerb) {
+            Alert.alert(strings.alertmessagetitle, strings.sendRequest);
+          } else {
+            Alert.alert(
+              strings.alertmessagetitle,
+              strings.acceptRequestMessage,
+            );
+          }
+        })
+        .catch((error) => {
+          setloading(false);
           setTimeout(() => {
-            cancelReqActionSheet.current.show();
-          }, 50);
-        } else if (
-          response.payload.error_code === ErrorCodes.MEMBERINVITEONLYERRORCODE
-        ) {
-          Alert.alert(strings.alertmessagetitle, response.payload.user_message);
-        } else if (response.payload.action === Verbs.joinVerb) {
-          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
-        } else if (response.payload.action === Verbs.requestVerb) {
-          Alert.alert(strings.alertmessagetitle, strings.sendRequest);
-        } else {
-          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
-        }
-      })
-      .catch((error) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
-        }, 10);
-      });
-  };
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    },
+    [authContext],
+  );
+
+  // const userJoinGroup = (groupId) => {
+
+  // };
   const onAccept = (requestId) => {
     setloading(true);
     acceptRequest({}, requestId, authContext)
@@ -512,31 +557,34 @@ export default function LookingForChallengeScreen({navigation, route}) {
         }, 10);
       });
   };
-  const groupInviteUser = async (dataObj) => {
-    setloading(true);
-    const params = {
-      entity_type: authContext.entity.role,
-      uid: authContext.entity.uid,
-    };
-    inviteUser(params, dataObj.user_id, authContext)
-      .then(() => {
-        setloading(false);
+  const groupInviteUser = useCallback(
+    (dataObj) => {
+      setloading(true);
+      const params = {
+        entity_type: authContext.entity.role,
+        uid: authContext.entity.uid,
+      };
+      inviteUser(params, dataObj.user_id, authContext)
+        .then(() => {
+          setloading(false);
 
-        setTimeout(() => {
-          Alert.alert(
-            strings.alertmessagetitle,
-            format(strings.entityInvitedSuccessfully, `${dataObj.full_name}`),
-          );
-        }, 10);
-      })
-      .catch((error) => {
-        setloading(false);
+          setTimeout(() => {
+            Alert.alert(
+              strings.alertmessagetitle,
+              format(strings.isinvitedsuccesfully, `${dataObj.full_name}`),
+            );
+          }, 10);
+        })
+        .catch((error) => {
+          setloading(false);
 
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
-        }, 10);
-      });
-  };
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    },
+    [authContext],
+  );
 
   const renderAvailableChallengeListView = useCallback(
     ({item}) => (
@@ -658,13 +706,13 @@ export default function LookingForChallengeScreen({navigation, route}) {
         }
         if (Object.keys(item)[0] === 'availableTime') {
           delete tempFilter.availableTime;
+          delete tempFilter.fromDateTime;
+          delete tempFilter.toDateTime;
         }
         // delete tempFilter[key];
       }
     });
-    console.log('Temp filter', tempFilter);
     setFilters({...tempFilter});
-    // applyFilter();
     setTimeout(() => {
       setPageFrom(0);
       setAvailableChallenge([]);
@@ -748,29 +796,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
             <Text style={styles.matchCount}>0 match</Text>
           </View>
         </View>
-
-        {/* {showToggleButton ? (
-          <ToggleSwitch
-            isOn={!isHide}
-            onToggle={() => {
-              handleToggle(item);
-            }}
-            onColor={colors.greenColorCard}
-            offColor={colors.userPostTimeColor}
-          />
-        ) : null}
-        {!isAdmin &&
-        isAvailable &&
-        isUserWithSameSport &&
-        authContext.entity.role !== Verbs.entityTypeClub ? (
-          <Pressable style={styles.button}>
-            <Text style={styles.btnText}>
-              {entityType === Verbs.entityTypePlayer
-                ? strings.challenge.toUpperCase()
-                : strings.book.toUpperCase()}
-            </Text>
-          </Pressable>
-        ) : null} */}
       </View>
     </Pressable>
   );
@@ -829,386 +854,10 @@ export default function LookingForChallengeScreen({navigation, route}) {
         }}
         ListEmptyComponent={listEmptyComponent}
       />
-
-      {/* <Modal
-        onBackdropPress={() => {
-          setLocationFilterOpetion(lastSelection);
-          setSettingPopup(false);
-        }}
-        style={{
-          margin: 0,
-        }}
-        isVisible={settingPopup}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}>
-        <View
-          style={[
-            styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 50},
-          ]}>
-          <KeyboardAvoidingView
-            style={{flex: 1}}
-            keyboardVerticalOffset={keyboardVerticalOffset}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}>
-            <ScrollView style={{flex: 1}}>
-              <View style={styles.viewsContainer}>
-                <Text
-                  onPress={() => {
-                    setLocationFilterOpetion(lastSelection);
-                    setSettingPopup(false);
-                  }}
-                  style={styles.cancelText}>
-                  {strings.cancel}
-                </Text>
-                <Text style={styles.locationText}>{strings.filter}</Text>
-                <Text
-                  style={styles.doneText}
-                  onPress={() => {
-                    if (applyValidation()) {
-                      const tempFilter = {...filters};
-                      tempFilter.sport = selectedSport.sport;
-                      tempFilter.sport_type = selectedSport.sport_type;
-                      // tempFilter.location = location;
-                      if (locationFilterOpetion === 0) {
-                        setLocation(strings.worldTitleText);
-                        tempFilter.location = location;
-                      } else if (locationFilterOpetion === 1) {
-                        setLocation(
-                          authContext?.entity?.obj?.city
-                            .charAt(0)
-                            .toUpperCase() +
-                            authContext?.entity?.obj?.city.slice(1),
-                        );
-                        tempFilter.location = location;
-                      } else if (locationFilterOpetion === 2) {
-                        getLocation();
-                        tempFilter.location = location;
-                      }
-                      if (minFee && maxFee) {
-                        tempFilter.gameFee = `${minFee}-${maxFee}`;
-                      }
-                      setFilters({
-                        ...tempFilter,
-                      });
-                      setPageFrom(0);
-                      setAvailableChallenge([]);
-                      applyFilter(tempFilter);
-                      setSettingPopup(false);
-                    }
-                  }}>
-                  {strings.apply}
-                </Text>
-              </View>
-              <TCThinDivider width={'100%'} marginBottom={15} />
-              <View>
-                <View style={{flexDirection: 'column', margin: 15}}>
-                  <View>
-                    <Text style={styles.filterTitleBold}>
-                      {strings.locationTitleText}
-                    </Text>
-                  </View>
-                  <View style={{marginTop: 10}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.filterTitle}>
-                        {strings.locationTitle}
-                      </Text>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setLocationFilterOpetion(
-                            locationType.CURRENT_LOCATION,
-                          );
-                        }}>
-                        <Image
-                          source={
-                            locationFilterOpetion === 2
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.filterTitle}>
-                        {strings.currentCity}
-                      </Text>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setLocationFilterOpetion(locationType.HOME_CITY);
-                        }}>
-                        <Image
-                          source={
-                            locationFilterOpetion === 1
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text style={styles.filterTitle}>{strings.world}</Text>
-                      <TouchableWithoutFeedback
-                        onPress={() => {
-                          setLocationFilterOpetion(locationType.WORLD);
-                        }}>
-                        <Image
-                          source={
-                            locationFilterOpetion === 0
-                              ? images.checkRoundOrange
-                              : images.radioUnselect
-                          }
-                          style={styles.radioButtonStyle}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-
-                    <TouchableWithoutFeedback
-                      onPress={() => {
-                        setLocationFilterOpetion(locationType.SEARCH_CITY);
-                        // setSettingPopup(false);
-                        // navigation.navigate('SearchCityScreen', {
-                        //   comeFrom: 'LookingForChallengeScreen',
-                        // });
-
-                        setVisibleLocationModal(true);
-                      }}>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                        }}>
-                        <View style={styles.searchCityContainer}>
-                          <Text style={styles.searchCityText}>
-                            {route?.params?.locationText ||
-                              (filters.location !== strings.worldTitleText &&
-                                filters.location) ||
-                              strings.searchCityText}
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            alignSelf: 'center',
-                          }}>
-                          <Image
-                            source={
-                              locationFilterOpetion === 3
-                                ? images.checkRoundOrange
-                                : images.radioUnselect
-                            }
-                            style={styles.radioButtonStyle}
-                          />
-                        </View>
-                      </View>
-                    </TouchableWithoutFeedback>
-                  </View>
-                </View>
-                <View>
-                  <View
-                    style={{
-                      flexDirection: 'column',
-                      margin: 15,
-                      justifyContent: 'space-between',
-                    }}>
-                    <View style={{}}>
-                      <Text style={styles.filterTitleBold}>
-                        {strings.sportsEventsTitle}
-                      </Text>
-                    </View>
-                    <View style={{marginTop: 10}}>
-                      <View
-                        style={[
-                          {
-                            marginBottom: 10,
-                            justifyContent: 'flex-start',
-                          },
-                          styles.sportsContainer,
-                        ]}>
-                        <TouchableWithoutFeedback
-                          onPress={() => {
-                            setVisibleSportsModal(true);
-                          }}>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'flex-start',
-                            }}>
-                            <View>
-                              <Text style={styles.searchCityText}>
-                                {selectedSport?.sport_name ?? strings.allType}
-                              </Text>
-                            </View>
-                            <View
-                              style={{
-                                position: 'absolute',
-                                right: 0,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}>
-                              <Icon
-                                size={24}
-                                color="black"
-                                name="chevron-down"
-                              />
-                            </View>
-                          </View>
-                        </TouchableWithoutFeedback>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
-              {selectedSport?.sport !== strings.allType && (
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    margin: 15,
-                    justifyContent: 'space-between',
-                  }}>
-                  <View style={{}}>
-                    <Text style={styles.filterTitle}>
-                      {strings.matchFeesTitle}
-                    </Text>
-                  </View>
-                  <View style={{marginTop: 10}}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
-                      <TextInput
-                        onChangeText={(text) => setMinFee(text)}
-                        value={minFee}
-                        style={styles.minFee}
-                        placeholder={strings.minPlaceholder}
-                        autoCorrect={false}
-                        // clearButtonMode={'always'}
-                        keyboardType={'numeric'}
-                        placeholderTextColor={colors.userPostTimeColor}
-                      />
-                      <TextInput
-                        onChangeText={(text) => setMaxFee(text)}
-                        value={maxFee}
-                        style={styles.minFee}
-                        placeholder={strings.maxPlaceholder}
-                        autoCorrect={false}
-                        // clearButtonMode={'always'}
-                        keyboardType={'numeric'}
-                        placeholderTextColor={colors.userPostTimeColor}
-                      />
-                    </View>
-                  </View>
-                </View>
-              )}
-              <View style={{flex: 1}} />
-            </ScrollView>
-          </KeyboardAvoidingView>
-
-          <TouchableOpacity
-            style={styles.resetButton}
-            onPress={() => {
-              Alert.alert(
-                strings.areYouSureRemoveFilterText,
-                '',
-                [
-                  {
-                    text: strings.cancel,
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                  },
-                  {
-                    text: strings.okTitleText,
-                    onPress: () => onPressReset(),
-                  },
-                ],
-                {cancelable: false},
-              );
-            }}>
-            <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
-          </TouchableOpacity>
-
-          <LocationModal
-            visibleLocationModal={visibleLocationModal}
-            title={strings.cityStateOrCountryTitle}
-            setVisibleLocationModalhandler={() =>
-              setVisibleLocationModal(false)
-            }
-            onLocationSelect={handleSetLocationOptions}
-            placeholder={strings.searchTitle}
-            type={'country'}
-          />
-
-          <Modal
-            isVisible={visibleSportsModal}
-            onBackdropPress={() => setVisibleSportsModal(false)}
-            onRequestClose={() => setVisibleSportsModal(false)}
-            animationInTiming={300}
-            animationOutTiming={800}
-            backdropTransitionInTiming={300}
-            backdropTransitionOutTiming={800}
-            style={{
-              margin: 0,
-            }}>
-            <View
-              behavior="position"
-              style={{
-                width: '100%',
-                height: Dimensions.get('window').height - 75,
-                maxHeight: Dimensions.get('window').height - 75,
-                backgroundColor: 'white',
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                borderTopLeftRadius: 30,
-                borderTopRightRadius: 30,
-                shadowColor: '#000',
-                shadowOffset: {width: 0, height: 1},
-                shadowOpacity: 0.5,
-                shadowRadius: 5,
-                elevation: 15,
-              }}>
-              {ModalHeader()}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  paddingHorizontal: 15,
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}></View>
-              <View style={styles.separatorLine} />
-              <FlatList
-                ItemSeparatorComponent={() => <TCThinDivider />}
-                data={sports}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderSports}
-              />
-            </View>
-          </Modal>
-        </View>
-      </Modal> */}
       <ActionSheet
         ref={actionSheet}
         title={message}
-        options={[strings.acceptInvite, strings.declineInvite, strings.cancel]}
+        options={[strings.acceptInvite, strings.declineTitle, strings.cancel]}
         cancelButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
@@ -1462,13 +1111,13 @@ export default function LookingForChallengeScreen({navigation, route}) {
                 colors={[colors.yellowColor, colors.orangeGradientColor]}
                 style={styles.backgroundView}>
                 <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
-                  {strings.inviteToChallenge}
+                  {strings.inviteToChallengeText}
                 </Text>
               </LinearGradient>
             ) : (
               <View style={styles.backgroundView}>
                 <Text style={styles.myCityText}>
-                  {strings.inviteToChallenge}
+                  {strings.inviteToChallengeText}
                 </Text>
               </View>
             )}
@@ -1491,7 +1140,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
         isVisible={settingPopup}
         onPressApply={(filterData) => {
           setloading(false);
-          console.log('filterData==>11', filterData);
           let tempFilter = {};
           tempFilter = {...filterData};
           setSettingPopup(false);
@@ -1518,7 +1166,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
             tempFilter.location = filterData.searchCityLoc;
           }
           setFilters({...tempFilter});
-          console.log('tempFilter-2===>', tempFilter);
           applyFilter(tempFilter);
         }}
         onPressCancel={() => {
@@ -1608,34 +1255,6 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-
-  // fieldView: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   flex: 1,
-  //   height: 40,
-  //   alignItems: 'center',
-  //   backgroundColor: colors.offwhite,
-  //   borderRadius: 5,
-  //   shadowColor: colors.grayColor,
-  //   shadowOffset: { width: 0, height: 1 },
-  //   shadowOpacity: 0.3,
-  //   shadowRadius: 1,
-  //   elevation: 1,
-  // },
-  // fieldTitle: {
-  //   fontSize: 16,
-  //   color: colors.lightBlackColor,
-  //   fontFamily: fonts.RLight,
-  //   marginLeft: 10,
-  // },
-  // fieldValue: {
-  //   fontSize: 16,
-  //   color: colors.lightBlackColor,
-  //   fontFamily: fonts.RRegular,
-  //   textAlign: 'center',
-  // },
-
   searchTxt: {
     marginLeft: 15,
     fontSize: widthPercentageToDP('3.8%'),

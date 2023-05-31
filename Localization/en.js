@@ -2862,4 +2862,5 @@ export default {
   sentBy: 'en_send by',
   atText: 'en_at {0} ',
   refudviaStripe: 'en_Refund (Through Stripe)',
+  completedMatches: 'en_Completed Matches',
 };

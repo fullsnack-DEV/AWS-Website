@@ -316,7 +316,7 @@ const LocalHomeNavigator = () => (
       name="RecentMatchScreen"
       component={RecentMatchScreen}
       options={{
-        title: 'Recent Matches',
+        title: strings.completedMatches,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -333,7 +333,7 @@ const LocalHomeNavigator = () => (
       name="UpcomingMatchScreen"
       component={UpcomingMatchScreen}
       options={{
-        title: 'Upcoming Matches',
+        title: strings.upcomingMatchesTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
