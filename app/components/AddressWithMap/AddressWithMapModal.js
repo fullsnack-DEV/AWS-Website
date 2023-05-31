@@ -155,14 +155,6 @@ const AddressWithMapModal = ({
     </Pressable>
   );
 
-  const setHandleSetLocationOptions = (locations) => {
-    setCity(locations.city);
-    setState(locations.state);
-    setCountry(locations.country);
-    onAddressSelect(locations);
-    // handleSetLocationOptions(locations, postalCode);
-  };
-
   useEffect(() => {
     if (searchText.length >= 3) {
       if (visibleLocationModal) {
@@ -493,9 +485,11 @@ const AddressWithMapModal = ({
           visibleLocationModal={visibleCityModal}
           setVisibleLocationModalhandler={() => setVisibleCityModal(false)}
           title={strings.cityStateCountryTitle}
-          onLocationSelect={(locations) =>
-            setHandleSetLocationOptions(locations)
-          }
+          onLocationSelect={(locations) => {
+            setCity(locations.city);
+            setState(locations.state);
+            setCountry(locations.country);
+          }}
           placeholder={strings.cityStateCountry}
         />
       </Modal>
