@@ -492,7 +492,7 @@ export default {
   scorekeeperIn: 'en_Scorekeeper In',
   totalGames: 'en_game',
   message: 'en_Message',
-  followSportTeam: 'en_Follow sport Groups.',
+  followSportTeam: 'en_Follow sport Teams.',
   follow: 'en_Follow',
   following: 'en_Following',
   invite: 'en_Invite',
@@ -2969,4 +2969,5 @@ export default {
   areYouSureToRemove: 'en_Are you sure want to remove {0}?',
   removeGoingModalText:
     'en_The event fee should be refunded when an attendee is removed.',
+
 };

@@ -237,12 +237,17 @@ export default function ChooseSportsScreen({navigation, route}) {
       onPress={() => {
         isIconCheckedOrNot({item, index});
       }}>
-      <FastImage
-        resizeMode={'contain'}
-        source={{uri: `${image_base_url}${item.player_image}`}}
-        style={styles.sportImg}
-      />
-      <Text style={styles.sportList}>{item.sport_name}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <FastImage
+          resizeMode={'contain'}
+          source={{uri: `${image_base_url}${item.player_image}`}}
+          style={styles.sportImg}
+        />
+        <Text style={[styles.sportList, {fontSize: 16, lineHeight: 18}]}>
+          {item.sport_name}
+        </Text>
+      </View>
+
       <View style={styles.checkbox}>
         {sports?.[index]?.isChecked ? (
           <FastImage
@@ -409,6 +414,7 @@ export default function ChooseSportsScreen({navigation, route}) {
         {/* <ActivityIndicator animating={loading} size="large" /> */}
 
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={sports}
           style={{top: 0, marginBottom: 35}}
           keyExtractor={(item, index) => index.toString()}
@@ -450,7 +456,9 @@ const styles = StyleSheet.create({
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 40,
+    paddingVertical: 20,
   },
   mainContainer: {
     flex: 1,
@@ -463,24 +471,20 @@ const styles = StyleSheet.create({
   },
   sportList: {
     color: colors.whiteColor,
-    fontSize: wp('4%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
+    // fontSize: wp('4%'),
 
-    // paddingLeft: wp('1%'),
-    width: wp('70%'),
-    margin: wp('4%'),
-    textAlignVertical: 'center',
+    fontFamily: fonts.RRegular,
   },
   sportText: {
     color: colors.whiteColor,
+
+    marginTop: 60,
+    fontSize: 25,
+    lineHeight: 28,
     fontFamily: fonts.RBold,
-    fontSize: wp('6%'),
-    marginBottom: hp('4%'),
-    marginTop: hp('12%'),
     paddingLeft: 30,
     textAlign: 'left',
-    width: wp('70%'),
+    marginBottom: 35,
   },
   nextButtonStyle: {
     fontFamily: fonts.RBold,
