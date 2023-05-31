@@ -1259,7 +1259,10 @@ export default function LocalHomeScreen({navigation, route}) {
             filters.sport_type === strings.all
               ? authContext.entity.obj.sport_type
               : filters.sport_type,
-          sport_name: Utility.getSportName(filters, authContext),
+          sport_name:
+            filters.sport_type === strings.all
+              ? Utility.getSportName(authContext.entity.obj, authContext)
+              : filters.sport_name,
         },
         location,
         locationOption: getLocationOption(),
@@ -1272,7 +1275,10 @@ export default function LocalHomeScreen({navigation, route}) {
         filters.sport_type === strings.all
           ? strings.allSport
           : filters.sport_type,
-      sport_name: Utility.getSportName(filters, authContext),
+      sport_name:
+        filters.sport_type === strings.all
+          ? Utility.getSportName(authContext.entity.obj, authContext)
+          : filters.sport_name,
       location,
       locationOption: getLocationOption(),
     };
@@ -1286,7 +1292,10 @@ export default function LocalHomeScreen({navigation, route}) {
         filters.sport_type === strings.all
           ? strings.allSport
           : filters.sport_type,
-      sport_name: Utility.getSportName(filters, authContext),
+      sport_name:
+        filters.sport_type === strings.all
+          ? Utility.getSportName(authContext.entity.obj, authContext)
+          : filters.sport_name,
       location,
       locationOption: getLocationOption(),
     };
@@ -1442,11 +1451,23 @@ export default function LocalHomeScreen({navigation, route}) {
                 title={strings.recentMatchesTitle}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() =>
-                  navigation.navigate('RecentMatchScreen', {
-                    filters,
-                  })
-                }
+                onPress={() => {
+                  if (authContext.entity.role === Verbs.entityTypeTeam) {
+                    const data = getNextScreenTeamData();
+                    navigation.navigate('RecentMatchScreen', {
+                      filters: {
+                        location: data.location,
+                        locationOption: data.locationOption,
+                      },
+                      teamSportData: data.teamSportData,
+                    });
+                  } else {
+                    const data = getSortDataForNextScreen();
+                    navigation.navigate('RecentMatchScreen', {
+                      filters: data,
+                    });
+                  }
+                }}
               />
               <Carousel
                 data={recentMatch} // recentMatch
@@ -1606,12 +1627,21 @@ export default function LocalHomeScreen({navigation, route}) {
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
-                  console.log('selected sport', selectedSport);
-
-                  const data = getSortDataForNextScreen();
-                  navigation.navigate('RefereesListScreen', {
-                    filters: data,
-                  });
+                  if (authContext.entity.role === Verbs.entityTypeTeam) {
+                    const data = getNextScreenTeamData();
+                    navigation.navigate('RefereesListScreen', {
+                      filters: {
+                        location: data.location,
+                        locationOption: data.locationOption,
+                      },
+                      teamSportData: data.teamSportData,
+                    });
+                  } else {
+                    const data = getSortDataForNextScreen();
+                    navigation.navigate('RefereesListScreen', {
+                      filters: data,
+                    });
+                  }
                 }}
               />
               <FlatList
@@ -1638,10 +1668,21 @@ export default function LocalHomeScreen({navigation, route}) {
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
                 onPress={() => {
-                  const data = getSortDataForNextScreen();
-                  navigation.navigate('ScorekeeperListScreen', {
-                    filters: data,
-                  });
+                  if (authContext.entity.role === Verbs.entityTypeTeam) {
+                    const data = getNextScreenTeamData();
+                    navigation.navigate('ScorekeeperListScreen', {
+                      filters: {
+                        location: data.location,
+                        locationOption: data.locationOption,
+                      },
+                      teamSportData: data.teamSportData,
+                    });
+                  } else {
+                    const data = getSortDataForNextScreen();
+                    navigation.navigate('ScorekeeperListScreen', {
+                      filters: data,
+                    });
+                  }
                 }}
               />
               <FlatList

@@ -163,59 +163,43 @@ export default function UpcomingMatchScreen({navigation, route}) {
         });
       }
 
-      if (filerGames.fromDate && filerGames.toDate) {
+      if (filerGames.fromDateTime && filerGames.toDateTime) {
         upcomingMatchQuery.query.bool.must.push({
           range: {
             start_datetime: {
-              gt: Number(
-                parseFloat(
-                  new Date(filerGames.fromDate).getTime() / 1000,
-                ).toFixed(0),
-              ),
-              lt: Number(
-                parseFloat(
-                  new Date(filerGames.toDate).getTime() / 1000,
-                ).toFixed(0),
-              ),
+              gte: filerGames.fromDateTime,
+              lte: filerGames.toDateTime,
             },
           },
         });
-      } else if (!filerGames.fromDate && !filerGames?.toDate) {
+      } else if (!filerGames.fromDateTime && !filerGames?.toDateTime) {
         upcomingMatchQuery.query.bool.must.push({
           range: {
             start_datetime: {
-              gt: Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+              gte: Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
             },
           },
         });
-      } else if (filerGames.fromDate && !filerGames?.toDate) {
+      } else if (filerGames.fromDateTime && !filerGames?.toDateTime) {
         upcomingMatchQuery.query.bool.must.push({
           range: {
             start_datetime: {
-              gt: Number(
-                parseFloat(
-                  new Date(filerGames.fromDate).getTime() / 1000,
-                ).toFixed(0),
-              ),
+              gte: filerGames.fromDateTime,
             },
           },
         });
-      } else if (!filerGames?.fromDate && filerGames.toDate) {
+      } else if (!filerGames?.fromDateTime && filerGames.toDateTime) {
         upcomingMatchQuery.query.bool.must.push({
           range: {
             start_datetime: {
-              lt: Number(
-                parseFloat(
-                  new Date(filerGames.toDate).getTime() / 1000,
-                ).toFixed(0),
-              ),
-              gt: Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+              lte: filerGames.toDateTime,
+              gte: Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
             },
           },
         });
       }
       // Upcoming match query
-
+      console.log('upcomingMatchQuery ==>', JSON.stringify(upcomingMatchQuery));
       getGameIndex(upcomingMatchQuery)
         .then((games) => {
           if (games.length > 0) {
@@ -234,7 +218,14 @@ export default function UpcomingMatchScreen({navigation, route}) {
           }, 10);
         });
     },
-    [pageFrom, pageSize, upcomingMatch],
+    [
+      authContext.entity.role,
+      pageFrom,
+      pageSize,
+      route.params.teamSportData?.sport,
+      route.params.teamSportData?.sport_type,
+      upcomingMatch,
+    ],
   );
 
   const renderUpcomingMatchItems = useCallback(({item}) => {
@@ -285,6 +276,8 @@ export default function UpcomingMatchScreen({navigation, route}) {
         }
         if (Object.keys(item)[0] === 'availableTime') {
           delete tempFilter.availableTime;
+          delete tempFilter.fromDateTime;
+          delete tempFilter.toDateTime;
         }
       }
     });
@@ -341,8 +334,9 @@ export default function UpcomingMatchScreen({navigation, route}) {
   const searchFilterFunction = (text) => {
     const result = upcomingMatch.filter(
       (x) =>
-        x.full_name?.toLowerCase().includes(text.toLowerCase()) ||
-        x.city?.toLowerCase().includes(text.toLowerCase()),
+        x.away_team_name.toLowerCase().includes(text.toLowerCase()) ||
+        x.home_team_name.toLowerCase().includes(text.toLowerCase()) ||
+        x.city.toLowerCase().includes(text.toLowerCase()),
     );
     if (text.length > 0) {
       setUpcomingMatch(result);

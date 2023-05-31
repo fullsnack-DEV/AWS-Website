@@ -23,7 +23,7 @@ import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import TCThinDivider from '../TCThinDivider';
 import {strings} from '../../../Localization/translation';
-// import TCRefereeView from '../../components/TCRefereeView';
+
 import {
   locationType,
   sortOptionType,
@@ -65,17 +65,7 @@ const SearchModal = ({
   const [showSportComponent, setShowSportComponent] = useState(false);
 
   useEffect(() => {
-    if (fType === filterType.UPCOMINGMATCHES) {
-      setFilterOptions([
-        strings.filterAntTime,
-        strings.filterToday,
-        strings.filterTomorrow,
-        strings.filterNext7Day,
-        strings.filterThisMonth,
-        strings.filterNextMonth,
-        strings.filterPickaDate,
-      ]);
-    } else {
+    if (fType === filterType.RECENTMATCHS) {
       setFilterOptions([
         strings.filterAntTime,
         strings.filterToday,
@@ -83,6 +73,16 @@ const SearchModal = ({
         strings.filterLast7Day,
         strings.filterThisMonth,
         strings.filterLastMonth,
+        strings.filterPickaDate,
+      ]);
+    } else {
+      setFilterOptions([
+        strings.filterAntTime,
+        strings.filterToday,
+        strings.filterTomorrow,
+        strings.filterNext7Day,
+        strings.filterThisMonth,
+        strings.filterNextMonth,
         strings.filterPickaDate,
       ]);
     }
@@ -112,7 +112,8 @@ const SearchModal = ({
           fType === filterType.SCOREKEEPERS ||
           fType === filterType.TEAMAVAILABLECHALLENGE ||
           fType === filterType.UPCOMINGMATCHES ||
-          fType === filterType.PLAYERAVAILABLECHALLENGE,
+          fType === filterType.PLAYERAVAILABLECHALLENGE ||
+          fType === filterType.RECENTMATCHS,
       );
       setShowSportComponent(
         fType === filterType.REFEREES ||
@@ -184,9 +185,31 @@ const SearchModal = ({
   );
   const handleDatePress = (date) => {
     if (tag === 1) {
-      setFilters({...filters, fromDateTime: date});
+      const dateObject = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        0,
+        0,
+        0,
+      ); // Start of the day
+      const fromDate = Number(parseFloat(dateObject / 1000).toFixed(0));
+      const temp = {...filters};
+      temp.fromDateTime = fromDate;
+      setFilters({...temp});
     } else if (tag === 2) {
-      setFilters({...filters, toDateTime: date});
+      const toDateObject = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        23,
+        59,
+        59,
+      ); // End of the day
+      const toDate = Number(parseFloat(toDateObject / 1000).toFixed(0));
+      const temp = {...filters};
+      temp.toDateTime = toDate;
+      setFilters({...temp});
     }
     setDatePickerShow(false);
   };
@@ -257,22 +280,33 @@ const SearchModal = ({
     });
     setTag(0);
   }, []);
-  const applyValidation = useCallback(() => {
-    if (Number(filters.minFee) > 0 && Number(filters.maxFee) <= 0) {
-      Alert.alert(strings.refereeFeeMax);
-      return false;
-    }
-    if (Number(filters.minFee) <= 0 && Number(filters.maxFee) > 0) {
-      Alert.alert(strings.refereeFeeMin);
-      return false;
-    }
-    if (Number(filters.minFee) > Number(filters.maxFee)) {
-      Alert.alert(strings.refereeFeeCorrect);
+  // const applyValidation = useCallback(() => {
+  //   if (Number(filters.minFee) > 0 && Number(filters.maxFee) <= 0) {
+  //     Alert.alert(strings.refereeFeeMax);
+  //     return false;
+  //   }
+  //   if (Number(filters.minFee) <= 0 && Number(filters.maxFee) > 0) {
+  //     Alert.alert(strings.refereeFeeMin);
+  //     return false;
+  //   }
+  //   if (Number(filters.minFee) > Number(filters.maxFee)) {
+  //     Alert.alert(strings.refereeFeeCorrect);
+  //     return false;
+  //   }
+  //   return true;
+  // }, [filters]);
+  const applyDateValidation = useCallback(() => {
+    if (
+      (filters.availableTime === strings.filterPickaDate &&
+        filters?.fromDateTime === '') ||
+      (filters?.fromDateTime === undefined && filters?.toDateTime === '') ||
+      filters?.toDateTime === undefined
+    ) {
+      Alert.alert(strings.chooseCorrectDate);
       return false;
     }
     return true;
-  }, [filters.maxFee, filters.minFee]);
-
+  }, [filters]);
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   const renderGroupsTypeItem = ({item, index}) => (
@@ -403,7 +437,26 @@ const SearchModal = ({
             }
 
             onPressApply(tempFilter);
-          } else if (applyValidation()) {
+          } else if (
+            fType === filterType.RECENTMATCHS ||
+            fType === filterType.UPCOMINGMATCHES
+          ) {
+            const tempFilter = {
+              ...filters,
+            };
+            if (filters.availableTime === strings.filterPickaDate) {
+              if (applyDateValidation()) {
+                tempFilter.availableTime = `${moment(
+                  getJSDate(filters.fromDateTime).getTime(),
+                ).format('MMM DD')}-${moment(
+                  getJSDate(filters.toDateTime).getTime(),
+                ).format('MMM DD')}`;
+                onPressApply(tempFilter);
+              }
+            } else {
+              onPressApply(tempFilter);
+            }
+          } else {
             const tempFilter = {
               ...filters,
             };
@@ -412,14 +465,18 @@ const SearchModal = ({
               tempFilter.fee = `${tempFilter.minFee}-${tempFilter.maxFee}`;
             }
             // For date
-            if (filters.fromDateTime && filters.toDateTime) {
-              tempFilter.availableTime = `${moment(
-                getJSDate(filters.fromDateTime).getTime(),
-              ).format('MMM DD')}-${moment(
-                getJSDate(filters.toDateTime).getTime(),
-              ).format('MMM DD')}`;
+            if (filters.availableTime === strings.filterPickaDate) {
+              if (applyDateValidation()) {
+                tempFilter.availableTime = `${moment(
+                  getJSDate(filters.fromDateTime).getTime(),
+                ).format('MMM DD')}-${moment(
+                  getJSDate(filters.toDateTime).getTime(),
+                ).format('MMM DD')}`;
+                onPressApply(tempFilter);
+              }
+            } else {
+              onPressApply(tempFilter);
             }
-            onPressApply(tempFilter);
           }
         }}>
         <View
@@ -690,8 +747,13 @@ const SearchModal = ({
                         <FilterTimeSelectItem
                           title={strings.from}
                           date={
+                            // filters.fromDateTime
+                            //   ? moment(filters.fromDateTime).format('ll')
+                            //   : ''
                             filters.fromDateTime
-                              ? moment(filters.fromDateTime).format('ll')
+                              ? moment(
+                                  getJSDate(filters.fromDateTime).getTime(),
+                                ).format('ll')
                               : ''
                           }
                           onDatePress={() => {
@@ -705,8 +767,13 @@ const SearchModal = ({
                         <FilterTimeSelectItem
                           title={strings.to}
                           date={
+                            // filters.toDateTime
+                            //   ? moment(filters.toDateTime).format('ll')
+                            //   : ''
                             filters.toDateTime
-                              ? moment(filters.toDateTime).format('ll')
+                              ? moment(
+                                  getJSDate(filters.toDateTime).getTime(),
+                                ).format('ll')
                               : ''
                           }
                           onDatePress={() => {
@@ -840,20 +907,242 @@ const SearchModal = ({
           }}
           optionList={filterOptions}
           onSelect={(option) => {
-            if (option !== strings.filterPickaDate) {
+            if (option === strings.filterAntTime) {
               setTag(0);
               const temp = {...filters};
-              temp.fromDateTime = '';
+              temp.fromDateTime = Number(
+                parseFloat(new Date().getTime() / 1000).toFixed(0),
+              );
               temp.toDateTime = '';
               temp.availableTime = option;
 
+              setFilters({...temp});
+            } else if (option === strings.filterToday) {
+              const today = new Date();
+              const fromDate = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                today.getDate(),
+                0,
+                0,
+                0,
+              ); // Start of the day
+              const toDate = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                today.getDate(),
+                23,
+                59,
+                59,
+              ); // End of the day
+              setTag(0);
+              const temp = {...filters};
+              temp.fromDateTime =
+                fType === filterType.RECENTMATCHS
+                  ? Number(parseFloat(fromDate / 1000).toFixed(0))
+                  : Number(parseFloat(today / 1000).toFixed(0));
+              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
+              temp.availableTime = option;
+              setFilters({...temp});
+            } else if (option === strings.filterTomorrow) {
+              const now = new Date();
+              const tomorrow = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate() + 1,
+              );
+              const startDate = new Date(
+                tomorrow.getFullYear(),
+                tomorrow.getMonth(),
+                tomorrow.getDate(),
+                0,
+                0,
+                0,
+              );
+              const endDate = new Date(
+                tomorrow.getFullYear(),
+                tomorrow.getMonth(),
+                tomorrow.getDate(),
+                23,
+                59,
+                59,
+              );
+              setTag(0);
+              const temp = {...filters};
+              temp.fromDateTime = Number(
+                parseFloat(startDate / 1000).toFixed(0),
+              );
+              temp.toDateTime = Number(parseFloat(endDate / 1000).toFixed(0));
+              temp.availableTime = option;
+              setFilters({...temp});
+            } else if (option === strings.filterYesterday) {
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              const fromDate = new Date(
+                yesterday.getFullYear(),
+                yesterday.getMonth(),
+                yesterday.getDate(),
+                0,
+                0,
+                0,
+              ); // Start of the day
+              const toDate = new Date(
+                yesterday.getFullYear(),
+                yesterday.getMonth(),
+                yesterday.getDate(),
+                23,
+                59,
+                59,
+              ); // End of the day
+              setTag(0);
+              const temp = {...filters};
+              temp.fromDateTime = Number(
+                parseFloat(fromDate / 1000).toFixed(0),
+              );
+              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
+              temp.availableTime = option;
+              setFilters({...temp});
+            } else if (option === strings.filterLast7Day) {
+              const today = new Date();
+              const fromDate = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                today.getDate() - 6,
+                0,
+                0,
+                0,
+              ); // Start of the day for 7 days ago
+              const toDate = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                today.getDate(),
+                23,
+                59,
+                59,
+              ); // End of the day for today
+              setTag(0);
+              const temp = {...filters};
+              temp.fromDateTime = Number(
+                parseFloat(fromDate / 1000).toFixed(0),
+              );
+              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
+              temp.availableTime = option;
+              setFilters({...temp});
+            } else if (option === strings.filterThisMonth) {
+              const today = new Date();
+              const fromDate = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                1,
+                0,
+                0,
+                0,
+              ); // Start of the month
+              const toDate = new Date(
+                today.getFullYear(),
+                today.getMonth() + 1,
+                0,
+                23,
+                59,
+                59,
+              ); // End of the month
+              console.log(
+                'toDate for this month =>',
+                Number(parseFloat(toDate / 1000).toFixed(0)),
+              );
+              setTag(0);
+              const temp = {...filters};
+              // temp.fromDateTime = Number(
+              //   parseFloat(fromDate / 1000).toFixed(0),
+              // );
+              temp.fromDateTime =
+                fType === filterType.RECENTMATCHS
+                  ? Number(parseFloat(fromDate / 1000).toFixed(0))
+                  : Number(parseFloat(today / 1000).toFixed(0));
+              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
+              temp.availableTime = option;
+              setFilters({...temp});
+            } else if (option === strings.filterLastMonth) {
+              const today = new Date();
+              const fromDate = new Date(
+                today.getFullYear(),
+                today.getMonth() - 1,
+                1,
+                0,
+                0,
+                0,
+              ); // Start of the previous month
+              const toDate = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                0,
+                23,
+                59,
+                59,
+              ); // End of the previous month
+              console.log(
+                'From date  last m=>',
+                Number(parseFloat(fromDate / 1000).toFixed(0)),
+              );
+              console.log(
+                'toDate date last m =>',
+                Number(parseFloat(toDate / 1000).toFixed(0)),
+              );
+              setTag(0);
+              const temp = {...filters};
+              temp.fromDateTime = Number(
+                parseFloat(fromDate / 1000).toFixed(0),
+              );
+              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
+              temp.availableTime = option;
+              setFilters({...temp});
+            } else if (option === strings.filterNext7Day) {
+              const now = new Date();
+              const fromDate = now; // Set "from" date as the current time
+
+              const toDate = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate() + 7,
+                23,
+                59,
+                59,
+              ); // Set "to" date as the end of the next 7 days
+              setTag(0);
+              const temp = {...filters};
+              temp.fromDateTime = Number(
+                parseFloat(fromDate / 1000).toFixed(0),
+              );
+              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
+              temp.availableTime = option;
+              setFilters({...temp});
+            } else if (option === strings.filterNextMonth) {
+              const now = new Date();
+              const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1);
+
+              const startDate = new Date(
+                nextMonth.getFullYear(),
+                nextMonth.getMonth(),
+                1,
+              );
+              const endDate = new Date(
+                nextMonth.getFullYear(),
+                nextMonth.getMonth() + 1,
+                0,
+              );
+              setTag(0);
+              const temp = {...filters};
+              temp.fromDateTime = Number(
+                parseFloat(startDate / 1000).toFixed(0),
+              );
+              temp.toDateTime = Number(parseFloat(endDate / 1000).toFixed(0));
+              temp.availableTime = option;
               setFilters({...temp});
             } else {
               const temp = {...filters};
               temp.availableTime = option;
               setFilters({...temp});
             }
-
             setShowTimeActionSheet(false);
           }}
         />
@@ -865,14 +1154,26 @@ const SearchModal = ({
           placeholder={strings.searchTitle}
           type={'country'}
         />
-        <DateTimePickerView
-          visible={datePickerShow}
-          onDone={handleDatePress}
-          onCancel={handleCancelPress}
-          onHide={handleCancelPress}
-          mode={'date'}
-          minimumDate={new Date()}
-        />
+        {fType === filterType.RECENTMATCHS ? (
+          <DateTimePickerView
+            visible={datePickerShow}
+            onDone={handleDatePress}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
+            mode={'date'}
+            maximumDate={new Date()}
+          />
+        ) : (
+          <DateTimePickerView
+            visible={datePickerShow}
+            onDone={handleDatePress}
+            onCancel={handleCancelPress}
+            onHide={handleCancelPress}
+            mode={'date'}
+            minimumDate={new Date()}
+          />
+        )}
+
         {fType === filterType.PLAYERAVAILABLECHALLENGE ? (
           <CustomModalWrapper
             isVisible={visibleSportsModal}

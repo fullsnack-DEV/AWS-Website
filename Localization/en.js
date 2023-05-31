@@ -2877,6 +2877,7 @@ export default {
   sentAt: 'en_sent at',
   atText: 'en_at {0} ',
   refudviaStripe: 'en_Refund (Through Stripe)',
+  completedMatches: 'en_Completed Matches',
   clubteamPrivacyText: 'en_Club and Team (admin) always can see members.',
   requestSwitchModalAlertMessage:
     'en_The team will be created after the team partner accepts your request to create it. Then, you will be able to switch to the team account.',
@@ -2969,5 +2970,4 @@ export default {
   areYouSureToRemove: 'en_Are you sure want to remove {0}?',
   removeGoingModalText:
     'en_The event fee should be refunded when an attendee is removed.',
-
 };

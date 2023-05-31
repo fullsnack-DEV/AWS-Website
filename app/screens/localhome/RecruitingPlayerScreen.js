@@ -268,10 +268,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           },
         });
       }
-      console.log(
-        'Recuriting query==>',
-        JSON.stringify(recruitingPlayersQuery),
-      );
 
       // Looking Challengee query
       getEntityIndex(recruitingPlayersQuery)
@@ -1734,9 +1730,9 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         </View>
       </Modal>
       <SearchModal
-        // enityType={Verbs.entityTypeReferee}
         sports={sports}
         fType={filterType.RECRUIITINGMEMBERS}
+        showSportOption={true}
         filterObject={filters}
         isVisible={settingPopup}
         onPressApply={(filterData) => {

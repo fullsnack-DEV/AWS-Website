@@ -104,9 +104,9 @@ function TCPlayerView({
       sports.length === 1 &&
       sports[0].setting?.referee_availibility === Verbs.on &&
       authContext.entity.uid !== data.user_id &&
-      authContext.entity.obj.registered_sports?.some(
-        (sport) => sport.sport === sports[0].sport,
-      ) &&
+      // authContext.entity.obj.registered_sports?.some(
+      //   (sport) => sport.sport === sports[0].sport,
+      // ) &&
       sports[0].sport_type === Verbs.singleSport
     ) {
       isBookButtonShow = true;
@@ -131,9 +131,9 @@ function TCPlayerView({
       sports.length === 1 &&
       sports[0].setting?.scorekeeper_availibility === Verbs.on &&
       authContext.entity.uid !== data.user_id &&
-      authContext.entity.obj.registered_sports?.some(
-        (sport) => sport.sport === sports[0].sport,
-      ) &&
+      // authContext.entity.obj.registered_sports?.some(
+      //   (sport) => sport.sport === sports[0].sport,
+      // ) &&
       sports[0].sport_type === Verbs.singleSport
     ) {
       isBookButtonShow = true;
@@ -193,7 +193,6 @@ function TCPlayerView({
                 flexDirection: 'row',
                 alignItems: 'center',
               }}>
-              {/* <Image source={images.orangeStar} style={styles.starImage} /> */}
               <Text style={styles.starPoints} numberOfLines={2}>
                 {'★ 5.0'} · {sports[0]?.setting?.game_fee?.fee}{' '}
                 {sports[0]?.setting?.game_fee?.currency_type}
@@ -206,7 +205,6 @@ function TCPlayerView({
                 flexDirection: 'row',
                 alignItems: 'center',
               }}>
-              {/* <Image source={images.orangeStar} style={styles.starImage} /> */}
               <Text style={styles.starPoints} numberOfLines={2}>
                 {'Lv.13'} · {sports[0]?.setting?.game_fee?.fee}{' '}
                 {sports[0]?.setting?.game_fee?.currency_type}

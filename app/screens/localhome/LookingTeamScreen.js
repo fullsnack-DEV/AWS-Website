@@ -296,7 +296,11 @@ export default function LookingTeamScreen({navigation, route}) {
           tempFilter.locationOption = locationType.WORLD;
           tempFilter.isSearchPlaceholder = true;
         }
-
+        if (Object.keys(item)[0] === 'availableTime') {
+          delete tempFilter.availableTime;
+          delete tempFilter.fromDateTime;
+          delete tempFilter.toDateTime;
+        }
         // delete tempFilter[key];
       }
     });
