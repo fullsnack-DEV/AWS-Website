@@ -358,7 +358,7 @@ export default function PersonalInformationScreen({navigation, route}) {
             </View>
 
             <TCLabel
-              title={strings.currentCity.toUpperCase()}
+              title={strings.homeCity.toUpperCase()}
               required={true}
               style={styles.inputLabel}
             />

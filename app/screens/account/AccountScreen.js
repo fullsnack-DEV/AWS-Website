@@ -152,7 +152,7 @@ const AccountScreen = ({navigation, route}) => {
       list.push(getTeamPendingRequest(authContext));
       list.push(getJoinedGroups(Verbs.entityTypeClub, authContext));
     } else if (authContext.entity.role === Verbs.entityTypeTeam) {
-      const parentIds = [...authContext.entity.obj.parent_groups];
+      const parentIds = authContext.entity.obj.parent_groups ?? [];
       if (parentIds.length > 0) {
         const query = {
           size: 1000,
@@ -181,7 +181,9 @@ const AccountScreen = ({navigation, route}) => {
           fetchedClubs = response[2].payload;
         } else if (authContext.entity.role === Verbs.entityTypeTeam) {
           fetchedClubs =
-            authContext.entity.obj.parent_groups?.length > 0 ? response[0] : [];
+            (authContext.entity.obj.parent_groups ?? []).length > 0
+              ? response[0]
+              : [];
         }
 
         const menu = await getAccountMenu(
