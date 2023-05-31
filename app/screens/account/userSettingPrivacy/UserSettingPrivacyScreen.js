@@ -1,4 +1,4 @@
-import React, {useContext, useLayoutEffect, useState, useEffect} from 'react';
+import React, {useContext, useLayoutEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -8,8 +8,6 @@ import {
   SafeAreaView,
   Pressable,
 } from 'react-native';
-import {useIsFocused} from '@react-navigation/native';
-
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -20,10 +18,8 @@ import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function UserSettingPrivacyScreen({navigation}) {
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
 
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
+  const [pointEvent] = useState('auto');
   const userSetting = [
     strings.accountInfo,
     strings.profileText,
@@ -44,17 +40,6 @@ export default function UserSettingPrivacyScreen({navigation}) {
       headerShown: false,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    if (
-      isFocused &&
-      (authContext.entity.obj?.is_pause ||
-        authContext.entity.obj?.is_deactivate)
-    ) {
-      setIsAccountDeactivated(true);
-      setPointEvent('none');
-    }
-  }, [authContext, isFocused]);
 
   const handleOptions = (options) => {
     switch (options) {
@@ -136,14 +121,19 @@ export default function UserSettingPrivacyScreen({navigation}) {
               <Pressable
                 style={[
                   styles.listContainer,
-                  {opacity: isAccountDeactivated && index <= 3 ? 0.3 : 1},
+                  {
+                    opacity:
+                      authContext.isAccountDeactivated && index <= 3 ? 0.3 : 1,
+                  },
                   index === 0 ? {marginTop: 10} : {},
                 ]}
                 onPress={() => {
                   handleOptions(item);
                 }}
                 pointerEvents={
-                  isAccountDeactivated && index <= 3 ? pointEvent : 'auto'
+                  authContext.isAccountDeactivated && index <= 3
+                    ? pointEvent
+                    : 'auto'
                 }>
                 <View>
                   <Text style={styles.listItems}>{item}</Text>

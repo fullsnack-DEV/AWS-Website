@@ -55,7 +55,6 @@ import {strings} from '../../../../Localization/translation';
 import TCMessageButton from '../../../components/TCMessageButton';
 import TCThinDivider from '../../../components/TCThinDivider';
 import GroupMembership from '../../../components/groupConnections/GroupMembership';
-import TCInnerLoader from '../../../components/TCInnerLoader';
 import TCMemberProfile from '../../../components/TCMemberProfile';
 import {shortMonthNames} from '../../../utils/constant';
 import Verbs from '../../../Constants/Verbs';
@@ -66,6 +65,7 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 
 import TCLable from '../../../components/TCLabel';
 import TCTextField from '../../../components/TCTextField';
+import MemberProfileShimmer from './MemberProfileShimmer';
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
@@ -1399,415 +1399,440 @@ export default function MembersProfileScreen({navigation, route}) {
       )}
 
       <ActivityLoader visible={loading} />
-      <TCInnerLoader visible={firstTimeLoad} size={50} />
-      {OpenNoteModal()}
-      {OpenRefreanceModal()}
-      {OpenInfoRequestModal()}
-      {OpenAdminPrivillege()}
 
-      {memberDetail && !firstTimeLoad && (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.roleViewContainer}>
-            <View style={styles.roleView}>
-              <TCMemberProfile
-                marginLeft={0}
-                image={
-                  memberDetail?.thumbnail
-                    ? {uri: memberDetail?.thumbnail}
-                    : images.profilePlaceHolder
-                }
-                name={
-                  `${memberDetail?.first_name} ${memberDetail?.last_name}` ?? ''
-                }
-                location={memberDetail?.home_city || getLocation()}
-              />
+      {firstTimeLoad ? (
+        <MemberProfileShimmer />
+      ) : (
+        <>
+          {OpenNoteModal()}
+          {OpenRefreanceModal()}
+          {OpenInfoRequestModal()}
+          {OpenAdminPrivillege()}
 
-              {!memberDetail?.connected && (
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    navigation.navigate('EditMemberInfoScreen', {
-                      memberInfo: memberDetail,
-                    });
-                  }}>
-                  <Image
-                    source={images.editProfilePencil}
-                    style={styles.editImage}
+          {memberDetail && !firstTimeLoad && (
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={styles.roleViewContainer}>
+                <View style={styles.roleView}>
+                  <TCMemberProfile
+                    marginLeft={0}
+                    image={
+                      memberDetail.thumbnail
+                        ? {uri: memberDetail.thumbnail}
+                        : images.profilePlaceHolder
+                    }
+                    name={
+                      `${memberDetail?.first_name} ${memberDetail?.last_name}` ??
+                      ''
+                    }
+                    location={memberDetail?.home_city || getLocation()}
                   />
-                </TouchableWithoutFeedback>
-              )}
-            </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingLeft: 15,
-                paddingRight: 14,
-
-                marginTop: 11,
-              }}>
-              <Text style={styles.undatedTimeText} numberOfLines={2}>
-                {format(
-                  entity.role === Verbs.entityTypeClub
-                    ? strings.joinedClubOnText
-                    : strings.joinedTeamOnText,
-                  shortMonthNames[
-                    getJSDate(memberDetail.joined_date).getMonth()
-                  ],
-                  getJSDate(memberDetail.joined_date).getDate(),
-                  getJSDate(memberDetail.joined_date).getFullYear(),
-
-                  memberDetail.last_updatedBy
-                    ? memberDetail.last_updatedBy
-                    : memberDetail.first_name,
-
-                  memberDetail.last_updatedBy ? null : memberDetail.last_name,
-                  shortMonthNames[
-                    getJSDate(memberDetail.updated_date).getMonth()
-                  ],
-                  getJSDate(memberDetail.updated_date).getDate(),
-                  getJSDate(memberDetail.updated_date).getFullYear(),
-                )}
-              </Text>
-              <TCProfileButton
-                title={memberDetail.connected ? strings.message : strings.email}
-                style={[styles.messageButtonStyle, {width: 80}]}
-                textStyle={styles.buttonTextStyle}
-                showArrow={false}
-                onPressProfile={() => {
-                  if (memberDetail.connected) {
-                    navigation.push('MessageChat', {
-                      screen: 'MessageChat',
-                      params: {userId: memberDetail.user_id},
-                    });
-                  } else {
-                    Linking.canOpenURL('mailto:')
-                      .then((supported) => {
-                        if (!supported) {
-                          Alert.alert(
-                            strings.townsCupTitle,
-                            strings.configureEmailAccounttext,
-                          );
-                        } else {
-                          return Linking.openURL(
-                            `mailto:${memberDetail.email}`,
-                          );
-                        }
-                      })
-                      .catch((err) => {
-                        console.error(err);
-                      });
-                  }
-                }}
-              />
-            </View>
-
-            {!memberDetail.connected && (
-              <TouchableOpacity
-                onPress={() => {
-                  setloading(true);
-
-                  const obj = {
-                    entity_type: entity.role,
-                    emailIds: [memberDetail.email],
-                    uid: entity.uid,
-                  };
-                  sendInvitationInGroup(obj, authContext)
-                    .then(() => {
-                      setloading(false);
-                      showAlert(strings.emailInviteSent);
-                    })
-                    .catch((e) => {
-                      setloading(false);
-
-                      setTimeout(() => {
-                        showAlert(e.message);
-                      }, 10);
-                    });
-                }}>
-                <View style={styles.inviteButtonContainer}>
-                  <Text style={styles.inviteTextStyle}>
-                    {format(
-                      strings.inviteMemberToGroup,
-                      authContext.entity.role,
-                    ).toUpperCase()}
-                  </Text>
+                  {!memberDetail?.connected && (
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        navigation.navigate('EditMemberInfoScreen', {
+                          memberInfo: memberDetail,
+                        });
+                      }}>
+                      <Image
+                        source={images.editProfilePencil}
+                        style={styles.editImage}
+                      />
+                    </TouchableWithoutFeedback>
+                  )}
                 </View>
-              </TouchableOpacity>
-            )}
-          </View>
-          <TCThickDivider marginTop={26} />
-          <View>
-            <View style={styles.sectionEditView}>
-              <Text style={styles.basicInfoTitle}>
-                {strings.basicinfotitle}
-              </Text>
 
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  navigation.navigate('EditMemberBasicInfoScreen', {
-                    memberInfo: memberDetail,
-                  });
-                }}>
-                <Image
-                  source={images.editProfilePencil}
-                  style={styles.editImage}
-                />
-              </TouchableWithoutFeedback>
-            </View>
-            <TCInfoField
-              valueStyle={{
-                textTransform: 'capitalize',
-              }}
-              title={strings.gender}
-              value={
-                memberDetail?.gender ? memberDetail?.gender : strings.NAText
-              }
-            />
-            <TCInfoField
-              title={strings.birthDatePlaceholder}
-              value={
-                // memberDetail.birthday ? memberDetail.birthday : strings.NAText
-                memberDetail.birthday
-                  ? `${
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingLeft: 15,
+                    paddingRight: 14,
+
+                    marginTop: 11,
+                  }}>
+                  <Text style={styles.undatedTimeText} numberOfLines={2}>
+                    {format(
+                      entity.role === Verbs.entityTypeClub
+                        ? strings.joinedClubOnText
+                        : strings.joinedTeamOnText,
                       shortMonthNames[
-                        new Date(memberDetail?.birthday).getMonth()
-                      ]
-                    } ${new Date(memberDetail?.birthday).getDate()} ,${new Date(
-                      memberDetail?.birthday,
-                    ).getFullYear()}`
-                  : strings.NAText
-              }
-            />
+                        getJSDate(memberDetail.joined_date).getMonth()
+                      ],
+                      getJSDate(memberDetail.joined_date).getDate(),
+                      getJSDate(memberDetail.joined_date).getFullYear(),
 
-            <TCInfoField
-              title={strings.age}
-              value={
-                memberDetail?.birthday
-                  ? getAge(new Date(memberDetail?.birthday))
-                  : strings.NAText
-              }
-            />
+                      memberDetail.last_updatedBy
+                        ? memberDetail.last_updatedBy
+                        : memberDetail.first_name,
 
-            <TCInfoField
-              title={strings.height}
-              value={
-                memberDetail?.height
-                  ? memberDetail?.height.height === 0
-                    ? strings.NAText
-                    : `${memberDetail.height.height} ${memberDetail.height.height_type}`
-                  : strings.NAText
-              }
-            />
+                      memberDetail.last_updatedBy
+                        ? null
+                        : memberDetail.last_name,
+                      shortMonthNames[
+                        getJSDate(memberDetail.updated_date).getMonth()
+                      ],
+                      getJSDate(memberDetail.updated_date).getDate(),
+                      getJSDate(memberDetail.updated_date).getFullYear(),
+                    )}
+                  </Text>
+                  <TCProfileButton
+                    title={
+                      memberDetail.connected ? strings.message : strings.email
+                    }
+                    style={[styles.messageButtonStyle, {width: 80}]}
+                    textStyle={styles.buttonTextStyle}
+                    showArrow={false}
+                    onPressProfile={() => {
+                      if (memberDetail.connected) {
+                        navigation.push('MessageChat', {
+                          screen: 'MessageChat',
+                          params: {userId: memberDetail.user_id},
+                        });
+                      } else {
+                        Linking.canOpenURL('mailto:')
+                          .then((supported) => {
+                            if (!supported) {
+                              Alert.alert(
+                                strings.townsCupTitle,
+                                strings.configureEmailAccounttext,
+                              );
+                            } else {
+                              return Linking.openURL(
+                                `mailto:${memberDetail.email}`,
+                              );
+                            }
+                          })
+                          .catch((err) => {
+                            console.error(err);
+                          });
+                      }
+                    }}
+                  />
+                </View>
 
-            <TCInfoField
-              title={strings.weight}
-              value={
-                memberDetail?.weight
-                  ? memberDetail?.weight.weight === 0
-                    ? strings.NAText
-                    : `${memberDetail.weight.weight} ${memberDetail.weight.weight_type}`
-                  : strings.NAText
-              }
-            />
+                {!memberDetail.connected && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setloading(true);
 
-            <TCInfoField title={strings.phone} value={getMemberPhoneNumber()} />
-            <TCInfoField
-              title={strings.emailtitle}
-              value={memberDetail.email ? memberDetail.email : strings.NAText}
-            />
-            <TCInfoField
-              title={strings.addressPlaceholder}
-              value={
-                memberDetail.street_address
-                  ? `${memberDetail?.street_address},`
-                  : memberDetail?.city &&
-                    memberDetail?.state_abbr &&
-                    memberDetail?.country
-                  ? `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
-                  : strings.NAText
-              }
-            />
-          </View>
-          <TCThickDivider marginTop={20} />
+                      const obj = {
+                        entity_type: entity.role,
+                        emailIds: [memberDetail.email],
+                        uid: entity.uid,
+                      };
+                      sendInvitationInGroup(obj, authContext)
+                        .then(() => {
+                          setloading(false);
+                          showAlert(strings.emailInviteSent);
+                        })
+                        .catch((e) => {
+                          setloading(false);
 
-          {memberDetail.family && (
-            <>
+                          setTimeout(() => {
+                            showAlert(e.message);
+                          }, 10);
+                        });
+                    }}>
+                    <View style={styles.inviteButtonContainer}>
+                      <Text style={styles.inviteTextStyle}>
+                        {format(
+                          strings.inviteMemberToGroup,
+                          authContext.entity.role,
+                        ).toUpperCase()}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              </View>
+              <TCThickDivider marginTop={26} />
               <View>
                 <View style={styles.sectionEditView}>
-                  <Text style={styles.basicInfoTitle}>{strings.family}</Text>
-                  <TouchableWithoutFeedback>
+                  <Text style={styles.basicInfoTitle}>
+                    {strings.basicinfotitle}
+                  </Text>
+
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      navigation.navigate('EditMemberBasicInfoScreen', {
+                        memberInfo: memberDetail,
+                      });
+                    }}>
                     <Image
                       source={images.editProfilePencil}
                       style={styles.editImage}
                     />
                   </TouchableWithoutFeedback>
                 </View>
-                <View style={styles.familyView}>
-                  <TCProfileView type={'medium'} />
-                  <TCMessageButton
-                    title={strings.emailPlaceHolder}
-                    color={colors.googleColor}
-                  />
-                </View>
-                <TCThinDivider />
-                <View style={styles.familyView}>
-                  <TCProfileView type={'medium'} />
-                  <TCMessageButton />
-                </View>
+                <TCInfoField
+                  valueStyle={{
+                    textTransform: 'capitalize',
+                  }}
+                  title={strings.gender}
+                  value={
+                    memberDetail?.gender ? memberDetail?.gender : strings.NAText
+                  }
+                />
+                <TCInfoField
+                  title={strings.birthDatePlaceholder}
+                  value={
+                    // memberDetail.birthday ? memberDetail.birthday : strings.NAText
+                    memberDetail.birthday
+                      ? `${
+                          shortMonthNames[
+                            new Date(memberDetail?.birthday).getMonth()
+                          ]
+                        } ${new Date(
+                          memberDetail?.birthday,
+                        ).getDate()} ,${new Date(
+                          memberDetail?.birthday,
+                        ).getFullYear()}`
+                      : strings.NAText
+                  }
+                />
+
+                <TCInfoField
+                  title={strings.age}
+                  value={
+                    memberDetail?.birthday
+                      ? getAge(new Date(memberDetail?.birthday))
+                      : strings.NAText
+                  }
+                />
+
+                <TCInfoField
+                  title={strings.height}
+                  value={
+                    memberDetail?.height
+                      ? memberDetail?.height.height === 0
+                        ? strings.NAText
+                        : `${memberDetail.height.height} ${memberDetail.height.height_type}`
+                      : strings.NAText
+                  }
+                />
+
+                <TCInfoField
+                  title={strings.weight}
+                  value={
+                    memberDetail?.weight
+                      ? memberDetail?.weight.weight === 0
+                        ? strings.NAText
+                        : `${memberDetail.weight.weight} ${memberDetail.weight.weight_type}`
+                      : strings.NAText
+                  }
+                />
+
+                <TCInfoField
+                  title={strings.phone}
+                  value={getMemberPhoneNumber()}
+                />
+                <TCInfoField
+                  title={strings.emailtitle}
+                  value={
+                    memberDetail.email ? memberDetail.email : strings.NAText
+                  }
+                />
+                <TCInfoField
+                  title={strings.addressPlaceholder}
+                  value={
+                    memberDetail.street_address
+                      ? `${memberDetail?.street_address},`
+                      : memberDetail?.city &&
+                        memberDetail?.state_abbr &&
+                        memberDetail?.country
+                      ? `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
+                      : strings.NAText
+                  }
+                />
               </View>
               <TCThickDivider marginTop={20} />
-            </>
-          )}
-          <View>
-            <View style={styles.sectionEditView}>
-              <Text
-                style={[
-                  styles.basicInfoTitle,
-                  {
-                    marginBottom:
-                      entity.role === Verbs.entityTypeTeam ? -5 : 12,
-                    marginTop: 3,
-                  },
-                ]}>
-                {entity.role === Verbs.entityTypeTeam
-                  ? strings.specifications
-                  : strings.membershipTitle}
-              </Text>
 
-              {/* icon */}
-            </View>
-            {memberDetail.group && entity.role === Verbs.entityTypeClub && (
-              <Pressable>
-                <GroupMembership
-                  groupData={memberDetail.group}
-                  switchID={entity.uid}
-                  edit={!editTeam}
-                  onEditPressed={() => setShowAdminPrivillege(true)}
-                />
-              </Pressable>
-            )}
-            {memberDetail?.teams?.length > 0 && (
-              <TCThinDivider
-                marginTop={15}
-                width={'95%'}
-                backgroundColor={'#E4E4E4'}
-              />
-            )}
-
-            <FlatList
-              data={
-                entity.role === Verbs.entityTypeClub
-                  ? memberDetail?.teams
-                  : [
-                      {
-                        ...memberDetail.group,
-                        positions: memberDetail?.positions,
-                        jersey_number: memberDetail?.jersey_number,
-                        appearance: memberDetail?.appearance,
-                        status: memberDetail?.status,
-                        is_admin: memberDetail?.is_admin,
-                        is_others: memberDetail?.is_others,
-                        is_member: memberDetail?.is_member,
-                        is_coach: memberDetail?.is_coach,
-                        is_parent: memberDetail?.is_parent,
-                        is_player: memberDetail?.is_player,
-                        note: memberDetail?.note,
-                        user_id: memberDetail?.user_id,
-                      },
-                    ]
-              }
-              ListEmptyComponent={listEmptyView}
-              ItemSeparatorComponent={renderSeparator}
-              renderItem={({item}) => (
-                <Pressable
-                  style={{
-                    marginTop: entity.role === Verbs.entityTypeTeam ? 7 : 15,
-                    marginBottom:
-                      entity.role === Verbs.entityTypeTeam ? 15 : -5,
-                    marginLeft: entity.role === Verbs.entityTypeTeam ? -10 : 0,
-                  }}>
-                  <GroupMembership
-                    onlybadge={
-                      entity.role === Verbs.entityTypeTeam ? true : false
-                    }
-                    groupData={item}
-                    switchID={entity.uid}
-                    edit={editTeam}
-                    onEditPressed={() => {
-                      if (
-                        item.hasOwnProperty('status') &&
-                        !Array.isArray(item?.status)
-                      ) {
-                        item.status = [];
-                      }
-
-                      item.is_player = memberDetail.is_player;
-
-                      setGroupMemberDetail(item);
-                      setPositions(item?.positions ?? [{}]);
-                      setVisibleRefranceModal(true);
-                    }}
-                  />
-                </Pressable>
+              {memberDetail.family && (
+                <>
+                  <View>
+                    <View style={styles.sectionEditView}>
+                      <Text style={styles.basicInfoTitle}>
+                        {strings.family}
+                      </Text>
+                      <TouchableWithoutFeedback>
+                        <Image
+                          source={images.editProfilePencil}
+                          style={styles.editImage}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+                    <View style={styles.familyView}>
+                      <TCProfileView type={'medium'} />
+                      <TCMessageButton
+                        title={strings.emailPlaceHolder}
+                        color={colors.googleColor}
+                      />
+                    </View>
+                    <TCThinDivider />
+                    <View style={styles.familyView}>
+                      <TCProfileView type={'medium'} />
+                      <TCMessageButton />
+                    </View>
+                  </View>
+                  <TCThickDivider marginTop={20} />
+                </>
               )}
-              keyExtractor={(item, index) => index.toString()}
-              scrollEnabled={false}
-            />
-          </View>
-          <TCThickDivider
-            marginTop={entity.role === Verbs.entityTypeTeam ? 10 : 20}
-          />
+              <View>
+                <View style={styles.sectionEditView}>
+                  <Text
+                    style={[
+                      styles.basicInfoTitle,
+                      {
+                        marginBottom:
+                          entity.role === Verbs.entityTypeTeam ? -5 : 12,
+                        marginTop: 3,
+                      },
+                    ]}>
+                    {entity.role === Verbs.entityTypeTeam
+                      ? strings.specifications
+                      : strings.membershipTitle}
+                  </Text>
 
-          <View>
-            <View style={[styles.sectionEditView, {marginTop: 15}]}>
-              <Text style={styles.basicInfoTitle}>
-                {strings.writeNotesPlaceholder}
-              </Text>
+                  {/* icon */}
+                </View>
+                {memberDetail.group && entity.role === Verbs.entityTypeClub && (
+                  <Pressable>
+                    <GroupMembership
+                      groupData={memberDetail.group}
+                      switchID={entity.uid}
+                      edit={!editTeam}
+                      onEditPressed={() => setShowAdminPrivillege(true)}
+                    />
+                  </Pressable>
+                )}
+                {memberDetail?.teams?.length > 0 && (
+                  <TCThinDivider
+                    marginTop={15}
+                    width={'95%'}
+                    backgroundColor={'#E4E4E4'}
+                  />
+                )}
 
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  setMemberInfo(memberDetail);
-                  setVisibleNotesModal(true);
-                }}>
-                <Image
-                  source={images.editProfilePencil}
-                  style={styles.editImage}
+                <FlatList
+                  data={
+                    entity.role === Verbs.entityTypeClub
+                      ? memberDetail?.teams
+                      : [
+                          {
+                            ...memberDetail.group,
+                            positions: memberDetail?.positions,
+                            jersey_number: memberDetail?.jersey_number,
+                            appearance: memberDetail?.appearance,
+                            status: memberDetail?.status,
+                            is_admin: memberDetail?.is_admin,
+                            is_others: memberDetail?.is_others,
+                            is_member: memberDetail?.is_member,
+                            is_coach: memberDetail?.is_coach,
+                            is_parent: memberDetail?.is_parent,
+                            is_player: memberDetail?.is_player,
+                            note: memberDetail?.note,
+                            user_id: memberDetail?.user_id,
+                          },
+                        ]
+                  }
+                  ListEmptyComponent={listEmptyView}
+                  ItemSeparatorComponent={renderSeparator}
+                  renderItem={({item}) => (
+                    <Pressable
+                      style={{
+                        marginTop:
+                          entity.role === Verbs.entityTypeTeam ? 7 : 15,
+                        marginBottom:
+                          entity.role === Verbs.entityTypeTeam ? 15 : -5,
+                        marginLeft:
+                          entity.role === Verbs.entityTypeTeam ? -10 : 0,
+                      }}>
+                      <GroupMembership
+                        onlybadge={
+                          entity.role === Verbs.entityTypeTeam ? true : false
+                        }
+                        groupData={item}
+                        switchID={entity.uid}
+                        edit={editTeam}
+                        onEditPressed={() => {
+                          if (
+                            item.hasOwnProperty('status') &&
+                            !Array.isArray(item?.status)
+                          ) {
+                            item.status = [];
+                          }
+
+                          item.is_player = memberDetail.is_player;
+
+                          setGroupMemberDetail(item);
+                          setPositions(item?.positions ?? [{}]);
+                          setVisibleRefranceModal(true);
+                        }}
+                      />
+                    </Pressable>
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                  scrollEnabled={false}
                 />
-              </TouchableWithoutFeedback>
-            </View>
-            <Text style={styles.describeText} numberOfLines={50}>
-              {memberDetail?.note}
-            </Text>
-            <TCThickDivider />
-            <Text
-              style={styles.removeTextStyle}
-              onPress={() => {
-                deleteMemberValidations(switchUser.uid, memberDetail.user_id);
-              }}>
-              {strings.removeMemberFromGroup.toUpperCase()}
-            </Text>
-          </View>
+              </View>
+              <TCThickDivider
+                marginTop={entity.role === Verbs.entityTypeTeam ? 10 : 20}
+              />
 
-          <ActionSheet
-            ref={actionSheet}
-            // title={'News Feed Post'}
-            options={[
-              strings.sendrequestForBaicInfoText,
-              strings.editAdminPrivillege,
-              strings.cancel,
-            ]}
-            cancelButtonIndex={2}
-            onPress={(index) => {
-              if (index === 1) {
-                setShowAdminPrivillege(true);
-              } else if (index === 0) {
-                setShowBasicInfoRequestModal(true);
-              }
-            }}
-          />
-        </ScrollView>
+              <View>
+                <View style={[styles.sectionEditView, {marginTop: 15}]}>
+                  <Text style={styles.basicInfoTitle}>
+                    {strings.writeNotesPlaceholder}
+                  </Text>
+
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      setMemberInfo(memberDetail);
+                      setVisibleNotesModal(true);
+                    }}>
+                    <Image
+                      source={images.editProfilePencil}
+                      style={styles.editImage}
+                    />
+                  </TouchableWithoutFeedback>
+                </View>
+                <Text style={styles.describeText} numberOfLines={50}>
+                  {memberDetail?.note}
+                </Text>
+                <TCThickDivider />
+                <Text
+                  style={styles.removeTextStyle}
+                  onPress={() => {
+                    deleteMemberValidations(
+                      switchUser.uid,
+                      memberDetail.user_id,
+                    );
+                  }}>
+                  {strings.removeMemberFromGroup.toUpperCase()}
+                </Text>
+              </View>
+
+              <ActionSheet
+                ref={actionSheet}
+                // title={'News Feed Post'}
+                options={[
+                  strings.sendrequestForBaicInfoText,
+                  strings.editAdminPrivillege,
+                  strings.cancel,
+                ]}
+                cancelButtonIndex={2}
+                onPress={(index) => {
+                  if (index === 1) {
+                    setShowAdminPrivillege(true);
+                  } else if (index === 0) {
+                    setShowBasicInfoRequestModal(true);
+                  }
+                }}
+              />
+            </ScrollView>
+          )}
+        </>
       )}
     </SafeAreaView>
   );

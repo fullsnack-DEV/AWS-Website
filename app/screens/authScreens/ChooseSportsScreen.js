@@ -17,7 +17,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import QB from 'quickblox-react-native-sdk';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Config from 'react-native-config';
@@ -35,13 +34,6 @@ import fonts from '../../Constants/Fonts';
 import {getGroupIndex} from '../../api/elasticSearch';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import apiCall from '../../utils/apiCall';
-
-import {
-  QBconnectAndSubscribe,
-  QBcreateUser,
-  QBlogin,
-  QB_ACCOUNT_TYPE,
-} from '../../utils/QuickBlox';
 
 export default function ChooseSportsScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
@@ -245,12 +237,17 @@ export default function ChooseSportsScreen({navigation, route}) {
       onPress={() => {
         isIconCheckedOrNot({item, index});
       }}>
-      <FastImage
-        resizeMode={'contain'}
-        source={{uri: `${image_base_url}${item.player_image}`}}
-        style={styles.sportImg}
-      />
-      <Text style={styles.sportList}>{item.sport_name}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <FastImage
+          resizeMode={'contain'}
+          source={{uri: `${image_base_url}${item.player_image}`}}
+          style={styles.sportImg}
+        />
+        <Text style={[styles.sportList, {fontSize: 16, lineHeight: 18}]}>
+          {item.sport_name}
+        </Text>
+      </View>
+
       <View style={styles.checkbox}>
         {sports?.[index]?.isChecked ? (
           <FastImage
@@ -366,16 +363,16 @@ export default function ChooseSportsScreen({navigation, route}) {
       if (token) {
         data.fcm_id = token;
       }
-
-      await createUser(data, authContext)
-        .then((createdUser) => {
+      createUser(data, authContext)
+        .then(async (createdUser) => {
           const authEntity = {...dummyAuthContext.entity};
           authEntity.obj = createdUser?.payload;
           authEntity.auth.user = createdUser?.payload;
           authEntity.role = 'user';
+          console.log({authEntity});
           setDummyAuthContext('entity', authEntity);
           setDummyAuthContext('user', createdUser?.payload);
-          signUpWithQB(createdUser?.payload);
+          await wholeSignUpProcessComplete(createdUser?.payload);
         })
         .catch((e) => {
           setloading(false);
@@ -385,52 +382,24 @@ export default function ChooseSportsScreen({navigation, route}) {
         });
     }
   };
-  const signUpWithQB = async (response) => {
-    let qbEntity = {...dummyAuthContext.entity};
 
-    const setting = await Utility.getStorage('appSetting');
-
-    authContext.setQBCredential(setting);
-    QB.settings.enableAutoReconnect({enable: true});
-    QBlogin(qbEntity.uid, response)
-      .then(async (res) => {
-        qbEntity = {
-          ...qbEntity,
-          QB: {...res.user, connected: true, token: res?.session?.token},
-        };
-        QBconnectAndSubscribe(qbEntity);
-        setDummyAuthContext('entity', qbEntity);
-        await wholeSignUpProcessComplete(response);
-      })
-      .catch(async (error) => {
-        console.log('QB Login Error : ', error.message);
-        qbEntity = {...qbEntity, QB: {connected: false}};
-        setDummyAuthContext('entity', qbEntity);
-        QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
-          .then(() => {
-            QBlogin(qbEntity.uid).then((loginRes) => {
-              console.log('QB loginRes', loginRes);
-            });
-          })
-          .catch((e) => {
-            console.log('QB error', e);
-          });
-        await wholeSignUpProcessComplete(response);
-      });
-  };
   const wholeSignUpProcessComplete = async (userData) => {
-    const entity = dummyAuthContext?.entity;
-    const tokenData = dummyAuthContext?.tokenData;
-    entity.auth.user = {...userData};
-    entity.obj = {...userData};
-    entity.uid = userData?.user_id;
-    entity.isLoggedIn = true;
-    await Utility.setStorage('loggedInEntity', {...entity});
-    await Utility.setStorage('authContextEntity', {...entity});
-    await Utility.setStorage('authContextUser', {...userData});
-    await authContext.setTokenData(tokenData);
-    await authContext.setUser({...userData});
-    await authContext.setEntity({...entity});
+    try {
+      const entity = dummyAuthContext?.entity;
+      const tokenData = dummyAuthContext?.tokenData;
+      entity.auth.user = {...userData};
+      entity.obj = {...userData};
+      entity.uid = userData?.user_id;
+      entity.isLoggedIn = true;
+      await Utility.setStorage('loggedInEntity', {...entity});
+      await Utility.setStorage('authContextEntity', {...entity});
+      await Utility.setStorage('authContextUser', {...userData});
+      await authContext.setTokenData(tokenData);
+      await authContext.setUser({...userData});
+      await authContext.setEntity({...entity});
+    } catch (error) {
+      console.log('error ==>', error);
+    }
 
     setloading(false);
   };
@@ -445,6 +414,7 @@ export default function ChooseSportsScreen({navigation, route}) {
         {/* <ActivityIndicator animating={loading} size="large" /> */}
 
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={sports}
           style={{top: 0, marginBottom: 35}}
           keyExtractor={(item, index) => index.toString()}
@@ -486,7 +456,9 @@ const styles = StyleSheet.create({
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 40,
+    paddingVertical: 20,
   },
   mainContainer: {
     flex: 1,
@@ -499,24 +471,20 @@ const styles = StyleSheet.create({
   },
   sportList: {
     color: colors.whiteColor,
-    fontSize: wp('4%'),
-    textAlign: 'left',
-    fontFamily: fonts.RRegular,
+    // fontSize: wp('4%'),
 
-    // paddingLeft: wp('1%'),
-    width: wp('70%'),
-    margin: wp('4%'),
-    textAlignVertical: 'center',
+    fontFamily: fonts.RRegular,
   },
   sportText: {
     color: colors.whiteColor,
+
+    marginTop: 60,
+    fontSize: 25,
+    lineHeight: 28,
     fontFamily: fonts.RBold,
-    fontSize: wp('6%'),
-    marginBottom: hp('4%'),
-    marginTop: hp('12%'),
     paddingLeft: 30,
     textAlign: 'left',
-    width: wp('70%'),
+    marginBottom: 35,
   },
   nextButtonStyle: {
     fontFamily: fonts.RBold,

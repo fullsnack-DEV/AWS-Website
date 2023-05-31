@@ -197,6 +197,8 @@ import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
+import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
+import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -260,32 +262,14 @@ const ScheduleNavigator = () => (
       name="EntityReviewScreen"
       component={EntityReviewScreen}
       options={{
-        title: 'Review',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="EntityStatScreen"
       component={EntityStatScreen}
       options={{
-        title: 'Stats',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -308,16 +292,7 @@ const ScheduleNavigator = () => (
       name="EntityScoreboardScreen"
       component={EntityScoreboardScreen}
       options={{
-        title: 'Scoreboard',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -340,32 +315,14 @@ const ScheduleNavigator = () => (
       name="EventScreen"
       component={EventScreen}
       options={{
-        title: strings.event,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="GoingListScreen"
       component={GoingListScreen}
       options={{
-        title: strings.going,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -404,32 +361,14 @@ const ScheduleNavigator = () => (
       name="EditEventScreen"
       component={EditEventScreen}
       options={{
-        title: strings.editEvent,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="CreateEventScreen"
       component={CreateEventScreen}
       options={{
-        title: strings.createAnEvent,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -1724,6 +1663,12 @@ const ScheduleNavigator = () => (
     />
 
     <Stack.Screen
+      name="MembershipFeeScreen"
+      component={MembershipFeeScreen}
+      options={{headerShown: false}}
+    />
+
+    <Stack.Screen
       name="GameFeeEditScreen"
       component={GameFeeEditScreen}
       options={{
@@ -2445,6 +2390,11 @@ const ScheduleNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+    <Stack.Screen
+      component={GroupFollowersScreen}
+      name="GroupFollowersScreen"
+      options={{headerShown: false}}
     />
 
     <Stack.Screen

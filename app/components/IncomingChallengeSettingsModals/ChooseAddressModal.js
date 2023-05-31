@@ -35,7 +35,6 @@ const ChooseAddressModal = ({
   const getLocationData = useCallback(
     (searchLocationText) => {
       searchVenue(searchLocationText, authContext).then((response) => {
-        console.log({response});
         setLocationList([...response.predictions]);
         setLoading(false);
       });
@@ -54,7 +53,6 @@ const ChooseAddressModal = ({
 
   const getLatLongData = (addressDescription) => {
     getLatLong(addressDescription, authContext).then((response) => {
-      console.log('Lat/Long response::=>', response);
       const coordinate = {
         latitude: response.results[0].geometry.location.lat,
         longitude: response.results[0].geometry.location.lng,

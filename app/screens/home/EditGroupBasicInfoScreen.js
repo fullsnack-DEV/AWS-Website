@@ -15,7 +15,9 @@ import {
   Image,
   SafeAreaView,
   Pressable,
+  FlatList,
 } from 'react-native';
+import {format} from 'react-string-format';
 import {useIsFocused} from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import {patchGroup} from '../../api/Groups';
@@ -29,15 +31,19 @@ import TCKeyboardView from '../../components/TCKeyboardView';
 import AuthContext from '../../auth/context';
 import Verbs from '../../Constants/Verbs';
 import ScreenHeader from '../../components/ScreenHeader';
-import {getSportName} from '../../utils/sportsActivityUtils';
+import {getGroupSportName} from '../../utils/sportsActivityUtils';
 import LocationModal from '../../components/LocationModal/LocationModal';
 import LanguagesListModal from '../account/registerPlayer/modals/LanguagesListModal';
+import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
+import AddressLocationModal from '../../components/AddressLocationModal/AddressLocationModal';
 
 const EditGroupBasicInfoScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
-  const {groupDetails} = route.params;
+  const {groupDetails, isEditable} = route.params;
 
   const [loading, setloading] = useState(false);
   const [groupData, setGroupData] = useState({});
@@ -48,6 +54,13 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
   const [languageName, setLanguageName] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  const [selectedSports, setSelectedSports] = useState([]);
+  const [showGenderModal, setShowGenderModal] = useState(false);
+  const [showOfficeAddressModal, setShowOfficeAddressModal] = useState(false);
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [country, setCountry] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -95,6 +108,9 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
   useEffect(() => {
     if (isFocused && groupDetails?.group_id) {
       setGroupData({...groupDetails});
+      if (groupDetails.entity_type === Verbs.entityTypeClub) {
+        setSelectedSports(groupDetails.sports);
+      }
     }
   }, [isFocused, groupDetails]);
 
@@ -186,13 +202,29 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
     setLanguages([...newList]);
   };
 
+  const handleOfficeAddresOptions = (address = {}) => {
+    setGroupData({...groupData, office_address: address.formattedAddress});
+    setCity(address.city);
+    setState(address.state);
+    setCountry(address.country);
+  };
+
+  const setCityandPostal = (street, code) => {
+    const address = `${street} ${city} ${state} ${country} ${code}`;
+    setGroupData({...groupData, office_address: address});
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
-        title={strings.basicInfoText}
+        title={
+          isEditable
+            ? format(strings.editOption, strings.basicInfoText)
+            : strings.basicInfoText
+        }
         leftIcon={images.backArrow}
         isRightIconText
-        rightButtonText={strings.updateText}
+        rightButtonText={isEditable ? strings.done : strings.updateText}
         onRightButtonPress={() => {
           onUpdateButtonClicked();
         }}
@@ -205,17 +237,29 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
             <Text style={styles.labelText}>
               {strings.sportsTitleText.toUpperCase()}
             </Text>
-            <Text
-              style={[
-                styles.labelText,
-                {marginBottom: 0, fontFamily: fonts.RRegular},
-              ]}>
-              {getSportName(
-                groupData.sport,
-                groupData.sport_type,
-                authContext.sports,
-              )}
-            </Text>
+            {groupData.entity_type === Verbs.entityTypeTeam ? (
+              <Text
+                style={[
+                  styles.labelText,
+                  {marginBottom: 0, fontFamily: fonts.RRegular},
+                ]}>
+                {getGroupSportName(groupData, authContext.sports)}
+              </Text>
+            ) : null}
+
+            {groupData.entity_type === Verbs.entityTypeClub ? (
+              <Pressable
+                style={styles.inputContainer}
+                onPress={() => setVisibleSportsModal(true)}>
+                <Text
+                  style={[
+                    styles.labelText,
+                    {marginBottom: 0, fontFamily: fonts.RRegular},
+                  ]}>
+                  {getGroupSportName(groupData, authContext.sports)}
+                </Text>
+              </Pressable>
+            ) : null}
           </View>
 
           <View style={{marginBottom: 35}}>
@@ -239,15 +283,35 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
             <Text style={styles.labelText}>
               {strings.membersgender.toUpperCase()}
             </Text>
-            <Text
-              style={[
-                styles.labelText,
-                {marginBottom: 0, fontFamily: fonts.RRegular},
-              ]}>
-              {groupData.gender
-                ? groupData.gender[0].toUpperCase() + groupData.gender.slice(1)
-                : '--'}
-            </Text>
+            {groupData.entity_type === Verbs.entityTypeTeam ? (
+              <Text
+                style={[
+                  styles.labelText,
+                  {marginBottom: 0, fontFamily: fonts.RRegular},
+                ]}>
+                {groupData.gender
+                  ? groupData.gender[0].toUpperCase() +
+                    groupData.gender.slice(1)
+                  : '--'}
+              </Text>
+            ) : null}
+
+            {groupData.entity_type === Verbs.entityTypeClub ? (
+              <Pressable
+                style={styles.inputContainer}
+                onPress={() => setShowGenderModal(true)}>
+                <Text
+                  style={[
+                    styles.labelText,
+                    {marginBottom: 0, fontFamily: fonts.RRegular},
+                  ]}>
+                  {groupData.gender
+                    ? groupData.gender[0].toUpperCase() +
+                      groupData.gender.slice(1)
+                    : '--'}
+                </Text>
+              </Pressable>
+            ) : null}
           </View>
 
           <View style={{marginBottom: 35}}>
@@ -258,7 +322,7 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                // justifyContent: 'space-between',
+                justifyContent: 'space-between',
               }}>
               <View style={{flex: 1}}>
                 <RNPickerSelect
@@ -272,8 +336,14 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
                   }}
                   useNativeAndroidPickerStyle={false}
                   style={{
-                    inputIOS: [styles.inputIOS, {marginRight: 7}],
-                    inputAndroid: [styles.inputAndroid, {marginRight: 7}],
+                    inputIOS: [
+                      styles.inputContainer,
+                      {marginRight: 7, backgroundColor: colors.lightGrey},
+                    ],
+                    inputAndroid: [
+                      styles.inputContainer,
+                      {marginRight: 7, backgroundColor: colors.lightGrey},
+                    ],
                   }}
                   value={groupData.min_age ?? 1}
                   Icon={() => (
@@ -297,8 +367,14 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
                   }}
                   useNativeAndroidPickerStyle={false}
                   style={{
-                    inputIOS: [styles.inputIOS, {marginLeft: 8}],
-                    inputAndroid: [styles.inputAndroid, {marginLeft: 8}],
+                    inputIOS: [
+                      styles.inputContainer,
+                      {marginLeft: 8, backgroundColor: colors.lightGrey},
+                    ],
+                    inputAndroid: [
+                      styles.inputContainer,
+                      {marginLeft: 8, backgroundColor: colors.lightGrey},
+                    ],
                   }}
                   value={groupData.max_age ?? 70}
                   Icon={() => (
@@ -328,6 +404,25 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
               </Text>
             </Pressable>
           </View>
+
+          {groupData.entity_type === Verbs.entityTypeClub ? (
+            <View style={{marginBottom: 35}}>
+              <Text style={styles.labelText}>
+                {strings.officeAddress.toUpperCase()}
+              </Text>
+              <Pressable
+                style={styles.inputContainer}
+                onPress={() => setShowOfficeAddressModal(true)}>
+                <Text
+                  style={[
+                    styles.labelText,
+                    {marginBottom: 0, fontFamily: fonts.RRegular},
+                  ]}>
+                  {groupData.office_address}
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
         </ScrollView>
       </TCKeyboardView>
 
@@ -336,6 +431,26 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
         title={strings.homeCityTitleText}
         setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
         onLocationSelect={handleSelectLocationOptions}
+      />
+
+      <AddressLocationModal
+        visibleLocationModal={showOfficeAddressModal}
+        setVisibleAddressModalhandler={() => setShowOfficeAddressModal(false)}
+        onAddressSelect={handleOfficeAddresOptions}
+        handleSetLocationOptions={handleOfficeAddresOptions}
+        onDonePress={(street, code) => setCityandPostal(street, code)}
+      />
+
+      <SportListMultiModal
+        isVisible={visibleSportsModal}
+        closeList={() => setVisibleSportsModal(false)}
+        title={strings.sportsTitleText}
+        onNext={(sports = []) => {
+          setSelectedSports(sports);
+          setGroupData({...groupData, sports: [...sports]});
+          setVisibleSportsModal(false);
+        }}
+        selectedSports={selectedSports}
       />
 
       <LanguagesListModal
@@ -357,6 +472,45 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
           setSelectedLanguages([...list]);
         }}
       />
+
+      <CustomModalWrapper
+        isVisible={showGenderModal}
+        closeModal={() => setShowGenderModal(false)}
+        modalType={ModalTypes.style1}
+        title={strings.membersgender}>
+        <FlatList
+          data={Utility.groupMemberGenderItems}
+          keyExtractor={(item) => item.value}
+          renderItem={({item}) => (
+            <Pressable
+              style={styles.row}
+              onPress={() => {
+                setGroupData({...groupData, gender: item.value});
+                setShowGenderModal(false);
+              }}>
+              <View>
+                <Text
+                  style={[
+                    styles.labelText,
+                    {fontFamily: fonts.RMedium, marginBottom: 0},
+                  ]}>
+                  {item.label}
+                </Text>
+              </View>
+              <View style={{width: 22, height: 22, alignItems: 'center'}}>
+                <Image
+                  source={
+                    groupData.gender === item.value
+                      ? images.radioCheckYellow
+                      : images.radioUnselect
+                  }
+                  style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+                />
+              </View>
+            </Pressable>
+          )}
+        />
+      </CustomModalWrapper>
     </SafeAreaView>
   );
 };
@@ -382,17 +536,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
   },
-
-  inputIOS: {
-    height: 40,
-    width: '100%',
-    fontSize: 16,
-    borderRadius: 5,
-    paddingRight: 40,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    color: colors.lightBlackColor,
-    backgroundColor: colors.textFieldBackground,
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 15,
   },
 });
 

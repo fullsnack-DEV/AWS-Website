@@ -24,7 +24,7 @@ const TCScrollableProfileTabs = ({
       style={{marginTop: 5, ...tabStyle}}
       tabBarTextStyle={{
         fontSize: 16,
-        fontFamily: fonts.RBold,
+        fontFamily: fonts.RMedium,
         lineHeight: 24,
       }}
       tabBarActiveTextColor={colors.themeColor}

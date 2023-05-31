@@ -1,8 +1,3 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable no-param-reassign */
-/* eslint-disable default-case */
-/* eslint-disable no-unneeded-ternary */
-
 import React, {
   useState,
   useEffect,
@@ -18,13 +13,13 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  TouchableWithoutFeedback,
   Dimensions,
   Platform,
   Alert,
   StyleSheet,
   Animated,
   Pressable,
+  SafeAreaView,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 
@@ -41,11 +36,7 @@ import fonts from '../../../../Constants/Fonts';
 
 import TCLabel from '../../../../components/TCLabel';
 
-import {
-  deleteConfirmation,
-  getSportName,
-  showAlertWithoutTitle,
-} from '../../../../utils';
+import {deleteConfirmation, showAlertWithoutTitle} from '../../../../utils';
 
 import styles from './style';
 import LocationModal from '../../../../components/LocationModal/LocationModal';
@@ -57,6 +48,10 @@ import {createGroup} from '../../../../api/Groups';
 import uploadImages from '../../../../utils/imageAction';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import useSwitchAccount from '../../../../hooks/useSwitchAccount';
+import SportListMultiModal from '../../../../components/SportListMultiModal/SportListMultiModal';
+import {getSportName} from '../../../../utils/sportsActivityUtils';
+import ScreenHeader from '../../../../components/ScreenHeader';
+import TCKeyboardView from '../../../../components/TCKeyboardView';
 
 export default function CreateClubForm1({navigation, route}) {
   const isFocused = useIsFocused();
@@ -69,7 +64,7 @@ export default function CreateClubForm1({navigation, route}) {
   const [country, setCountry] = useState('');
 
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-  const [selectedSports] = useState(route.params);
+  const [selectedSports, setSelectedSports] = useState([]);
   const [sportsName, setSportsName] = useState('');
   const [description, setDescription] = useState('');
   const [currentImageSelection, setCurrentImageSelection] = useState(0);
@@ -83,20 +78,31 @@ export default function CreateClubForm1({navigation, route}) {
 
   const animProgress = React.useState(new Animated.Value(0))[0];
   const {onSwitchProfile} = useSwitchAccount();
+  const [visibleSportsModalForClub, setVisibleSportsModalForClub] =
+    useState(false);
 
   useEffect(() => {
-    let sportText = '';
-    if (selectedSports?.length > 0) {
-      selectedSports?.map((sportItem, index) => {
-        sportText =
-          sportText +
-          (index ? ', ' : '') +
-          getSportName(sportItem, authContext);
-        return null;
+    if (route.params?.length > 0) {
+      setSelectedSports([...route.params]);
+    }
+  }, [route.params]);
+
+  useEffect(() => {
+    if (selectedSports.length > 0) {
+      let sportText = '';
+      selectedSports.forEach((item, index) => {
+        const sportname = getSportName(
+          item.sport,
+          item.sport_type,
+          authContext.sports,
+        );
+
+        sportText += index !== 0 ? `, ${sportname}` : sportname;
       });
+
       setSportsName(sportText);
     }
-  }, [isFocused]);
+  }, [isFocused, authContext, selectedSports]);
 
   const checkClubValidations = useCallback(() => {
     if (clubName === '') {
@@ -109,7 +115,7 @@ export default function CreateClubForm1({navigation, route}) {
     }
 
     return true;
-  }, [clubName, location, description]);
+  }, [clubName, location]);
 
   const onANimate = (val) => {
     Animated.timing(animProgress, {
@@ -123,14 +129,8 @@ export default function CreateClubForm1({navigation, route}) {
     onANimate(20);
     setShowSwitchScreen(true);
 
-    const newArray = selectedSports.map((obj) => {
-      delete obj.isChecked;
-      delete obj.entity_type;
-      return obj;
-    });
-
     const bodyParams = {
-      sports: newArray, // Object of sport
+      sports: selectedSports, // Object of sport
       sports_string: sportsName,
       group_name: clubName,
       city,
@@ -283,35 +283,9 @@ export default function CreateClubForm1({navigation, route}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerShown: showSwitchScreen ? false : true,
-      headerRight: () => (
-        <TouchableOpacity>
-          <Text
-            style={{
-              fontFamily: fonts.RMedium,
-              fontSize: 16,
-              marginRight: 10,
-            }}
-            onPress={() => {
-              if (checkClubValidations()) {
-                onNextPressed();
-              }
-            }}>
-            {strings.done}
-          </Text>
-        </TouchableOpacity>
-      ),
-
-      headerLeft: () => (
-        <TouchableWithoutFeedback
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableWithoutFeedback>
-      ),
+      headerShown: false,
     });
-  }, [clubName, description, location, sportsName, showSwitchScreen]);
+  }, [navigation]);
 
   // for next press
 
@@ -408,6 +382,9 @@ export default function CreateClubForm1({navigation, route}) {
         case RESULTS.BLOCKED:
           console.log('The permission is denied and not requestable anymore');
           break;
+
+        default:
+          break;
       }
     });
   };
@@ -420,7 +397,21 @@ export default function CreateClubForm1({navigation, route}) {
   const placeHolder = images.clubPlaceholderSmall;
 
   return (
-    <>
+    <SafeAreaView style={{flex: 1}}>
+      {!showSwitchScreen && (
+        <ScreenHeader
+          title={strings.createClubText}
+          leftIcon={images.backArrow}
+          leftIconPress={() => navigation.goBack()}
+          isRightIconText
+          rightButtonText={strings.done}
+          onRightButtonPress={() => {
+            if (checkClubValidations()) {
+              onNextPressed();
+            }
+          }}
+        />
+      )}
       {showSwitchScreen && (
         <View
           style={{
@@ -551,138 +542,144 @@ export default function CreateClubForm1({navigation, route}) {
               />
             </Animated.View>
           </Animated.View>
-
-          {/* PRogree Bar */}
         </View>
       )}
-
-      <ScrollView style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
-
-        <View>
-          <TCProfileImageControl
-            profileImage={thumbnail ? {uri: thumbnail} : undefined}
-            profileImagePlaceholder={images.newClubLogo}
-            bgImage={
-              backgroundThumbnail
-                ? {uri: backgroundThumbnail}
-                : images.backgroundGrayPlceholder
-            }
-            onPressBGImage={() => onBGImageClicked()}
-            onPressProfileImage={() => onProfileImageClicked()}
-            bgImageContainerStyle={{
-              marginTop: 55,
-              position: 'absolute',
-              alignSelf: 'center',
-            }}
-            profileImageStyle={{
-              height: 60,
-              width: 60,
-              marginTop: 10,
-            }}
-            profileCameraButtonStyle={{
-              alignSelf: 'flex-start',
-              justifyContent: 'center',
-              height: 25,
-              width: 25,
-
-              borderRadius: 50,
-              elevation: 0,
-            }}
-            profileImageButtonStyle={{
-              alignSelf: 'center',
-            }}
-            profileImageContainerStyle={{
-              marginLeft: 15,
-              height: 60,
-              width: 60,
-            }}
-            showEditButtons
-          />
-
-          <View style={[styles.fieldView, {marginTop: 25}]}>
-            <TCLabel
-              required={true}
-              title={strings.clubNameCaps}
-              style={{
-                lineHeight: 24,
-                fontSize: 16,
-                marginTop: 0,
-              }}
-            />
-            <TextInput
-              placeholder={strings.clubNameplaceholder}
-              style={styles.inputTextField}
-              maxLength={20}
-              onChangeText={(text) => setClubName(text)}
-              value={clubName}
-              placeholderTextColor={colors.userPostTimeColor}
-            />
-          </View>
-
-          <View style={styles.fieldView}>
-            <TCLabel
-              title={strings.locationClubTitle}
-              style={{marginTop: 0}}
-              required={true}
-            />
-            <TouchableOpacity onPress={() => setVisibleLocationModal(true)}>
-              <TextInput
-                placeholder={strings.searchCityPlaceholder}
-                style={styles.inputTextField}
-                value={location}
-                editable={false}
-                pointerEvents="none"
-                placeholderTextColor={colors.userPostTimeColor}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.fieldView}>
-            <TCLabel
-              title={strings.SPORTStxt}
-              style={{marginTop: 0}}
-              required={true}
-            />
-            <TouchableOpacity style={styles.languageView}>
-              <Text
-                style={
-                  sportsName
-                    ? styles.languageText
-                    : styles.languagePlaceholderText
+      <ActivityLoader visible={loading} />
+      <View style={styles.mainContainer}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <TCKeyboardView>
+            <View>
+              <TCProfileImageControl
+                profileImage={thumbnail ? {uri: thumbnail} : undefined}
+                profileImagePlaceholder={images.newClubLogo}
+                bgImage={
+                  backgroundThumbnail
+                    ? {uri: backgroundThumbnail}
+                    : images.backgroundGrayPlceholder
                 }
-                numberOfLines={50}>
-                {sportsName || strings.sportsTitleText}
-              </Text>
-            </TouchableOpacity>
-          </View>
+                onPressBGImage={() => onBGImageClicked()}
+                onPressProfileImage={() => onProfileImageClicked()}
+                bgImageContainerStyle={{
+                  marginTop: 55,
+                  position: 'absolute',
+                  alignSelf: 'center',
+                }}
+                profileImageStyle={{
+                  height: 60,
+                  width: 60,
+                  marginTop: 10,
+                }}
+                profileCameraButtonStyle={{
+                  alignSelf: 'flex-start',
+                  justifyContent: 'center',
+                  height: 25,
+                  width: 25,
 
-          <View style={styles.fieldView}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <TCLabel
-                title={strings.bio}
-                style={{marginTop: 0, textTransform: 'uppercase', fontSize: 16}}
+                  borderRadius: 50,
+                  elevation: 0,
+                }}
+                profileImageButtonStyle={{
+                  alignSelf: 'center',
+                }}
+                profileImageContainerStyle={{
+                  marginLeft: 15,
+                  height: 60,
+                  width: 60,
+                }}
+                showEditButtons
               />
-            </View>
-            <TextInput
-              style={styles.descriptionTxt}
-              onChangeText={(text) => setDescription(text)}
-              value={description}
-              multiline
-              maxLength={1000}
-              textAlignVertical={'top'}
-              numberOfLines={4}
-              placeholder={strings.descriptionClubTextPlaceholder}
-              placeholderTextColor={colors.userPostTimeColor}
-            />
-          </View>
-        </View>
 
-        <View style={{flex: 1}} />
-      </ScrollView>
+              <View style={[styles.fieldView, {marginTop: 25}]}>
+                <TCLabel
+                  required={true}
+                  title={strings.clubNameCaps}
+                  style={{
+                    lineHeight: 24,
+                    fontSize: 16,
+                    marginTop: 0,
+                  }}
+                />
+                <TextInput
+                  placeholder={strings.clubNamePlaceholder}
+                  style={styles.inputTextField}
+                  maxLength={20}
+                  onChangeText={(text) => setClubName(text)}
+                  value={clubName}
+                  placeholderTextColor={colors.userPostTimeColor}
+                />
+              </View>
+
+              <View style={styles.fieldView}>
+                <TCLabel
+                  title={strings.locationClubTitle}
+                  style={{marginTop: 0}}
+                  required={true}
+                />
+                <TouchableOpacity onPress={() => setVisibleLocationModal(true)}>
+                  <TextInput
+                    placeholder={strings.currentCityPlaceholder}
+                    style={styles.inputTextField}
+                    value={location}
+                    editable={false}
+                    pointerEvents="none"
+                    placeholderTextColor={colors.userPostTimeColor}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.fieldView}>
+                <TCLabel
+                  title={strings.SPORTStxt}
+                  style={{marginTop: 0}}
+                  required={true}
+                />
+                <TouchableOpacity
+                  style={styles.languageView}
+                  onPress={() => setVisibleSportsModalForClub(true)}>
+                  <Text
+                    style={
+                      sportsName
+                        ? styles.languageText
+                        : styles.languagePlaceholderText
+                    }
+                    numberOfLines={50}>
+                    {sportsName || strings.sportsTitleText}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.fieldView}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <TCLabel
+                    title={strings.bio}
+                    style={{
+                      marginTop: 0,
+                      textTransform: 'uppercase',
+                      fontSize: 16,
+                    }}
+                  />
+                </View>
+                <TextInput
+                  style={styles.descriptionTxt}
+                  onChangeText={(text) => setDescription(text)}
+                  value={description}
+                  multiline
+                  maxLength={1000}
+                  textAlignVertical={'top'}
+                  numberOfLines={4}
+                  placeholder={strings.descriptionClubTextPlaceholder}
+                  placeholderTextColor={colors.userPostTimeColor}
+                />
+              </View>
+            </View>
+
+            <View style={{flex: 1}} />
+          </TCKeyboardView>
+        </ScrollView>
+      </View>
 
       <ActionSheet
         ref={actionSheet}
@@ -741,6 +738,17 @@ export default function CreateClubForm1({navigation, route}) {
         onLocationSelect={handleSetLocationOptions}
         placeholder={strings.searchByCity}
       />
-    </>
+
+      <SportListMultiModal
+        isVisible={visibleSportsModalForClub}
+        closeList={() => setVisibleSportsModalForClub(false)}
+        title={strings.createClubText}
+        selectedSports={selectedSports}
+        onNext={(sports) => {
+          setSelectedSports([...sports]);
+          setVisibleSportsModalForClub(false);
+        }}
+      />
+    </SafeAreaView>
   );
 }

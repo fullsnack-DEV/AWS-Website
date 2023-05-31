@@ -27,6 +27,7 @@ const ScoreBoardList = ({
   sectionList = [],
   matchCount = 0,
   title = strings.scoreboard,
+  onCardPress = () => {},
 }) => {
   const [scoreboardList, setScoreboardList] = useState({});
   const prepareSeparateList = useCallback(() => {
@@ -150,15 +151,16 @@ const ScoreBoardList = ({
                 <Text style={styles.sectionHeader}>{ele}</Text>
                 <FlatList
                   data={scoreboardList[ele] ?? []}
-                  horizontal
+                  bounces={false}
                   showsHorizontalScrollIndicator={false}
                   renderItem={({item, index}) => (
                     <ScoreboardCard
                       item={item}
                       style={[
-                        {marginTop: 5, marginBottom: 20},
+                        {marginTop: 5, marginBottom: 20, width: '100%'},
                         index > 0 ? {marginLeft: 15} : {},
                       ]}
+                      onCardPress={onCardPress}
                     />
                   )}
                 />

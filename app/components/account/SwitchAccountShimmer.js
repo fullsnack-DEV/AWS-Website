@@ -7,7 +7,7 @@ const SwitchAccountShimmer = () =>
   Array(8)
     .fill('')
     .map((item, index) => (
-      <>
+      <View key={index}>
         <View
           key={index}
           style={[styles.row, {justifyContent: 'space-between'}]}>
@@ -26,7 +26,7 @@ const SwitchAccountShimmer = () =>
           <ShimmerView width={22} height={22} borderRadius={11} />
         </View>
         <ShimmerView height={2} style={{marginVretical: 30}} />
-      </>
+      </View>
     ));
 
 const styles = StyleSheet.create({

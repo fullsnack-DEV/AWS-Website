@@ -156,9 +156,34 @@ export const eventsInviteOptions = {
   4: strings.myGroups,
 };
 
-export const currencyList = ['CAD', 'INR', 'KRW', 'THB', 'USD'];
+export const currencyList = [
+  {
+    countryName: 'Canada',
+    currency: 'CAD',
+  },
+  {
+    countryName: 'India',
+    currency: 'INR',
+  },
+  {
+    countryName: 'Korea',
+    currency: 'KRW',
+  },
+  {
+    countryName: 'ThaiLand',
+    currency: 'THB',
+  },
+  {
+    countryName: 'Unites States',
+    currency: 'USD',
+  },
+];
 
 export const DEFAULT_NTRP = '5.0';
+export const DEFAULT_LATITUDE = 35.6762;
+export const DEFAULT_LONGITUDE = 139.6503;
+export const LATITUDE_DELTA = 0.01;
+export const LONGITUDE_DELTA = 0.01;
 
 export default EntityStatus;
 export {privacySettingEnum, privacyKey};

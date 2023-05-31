@@ -2,12 +2,10 @@ import React from 'react';
 import {StyleSheet, Platform, Image, View, Text} from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
-
 
 export default function EventMonthlySelection({
   dataSource,
@@ -15,85 +13,75 @@ export default function EventMonthlySelection({
   value,
   onValueChange,
   containerStyle,
-  title
+  title,
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
       <Text style={styles.headerTextStyle}>{title}</Text>
-      <RNPickerSelect
-        placeholder={{
-          label: placeholder,
-          value: Verbs.eventRecurringEnum.Never,
-        }}
-        items={dataSource}
-        onValueChange={onValueChange}
-        useNativeAndroidPickerStyle={true}
-        // eslint-disable-next-line no-sequences
-        style={
-          (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid,
-          {...styles})
-        }
-        value={value}
-        Icon={() => (
-          <Image source={images.dropDownArrow} style={styles.downArrow} />
-        )}
-      />
+      <View style={{flex: 1}}>
+        <RNPickerSelect
+          placeholder={{
+            label: placeholder,
+            value: Verbs.eventRecurringEnum.Never,
+          }}
+          items={dataSource}
+          onValueChange={onValueChange}
+          useNativeAndroidPickerStyle={true}
+          // eslint-disable-next-line no-sequences
+          style={
+            (Platform.OS === 'ios' ? styles.inputIOS : styles.inputAndroid,
+            {...styles})
+          }
+          value={value}
+          Icon={() => (
+            <Image source={images.dropDownArrow} style={styles.downArrow} />
+          )}
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   containerStyle: {
-    width: wp('92%'),
-    alignSelf: 'center',
-    padding: wp('1.5%'),
+    // width: wp('92%'),
+    // alignSelf: 'center',
+    padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 5,
     marginBottom: 15,
     backgroundColor: colors.lightGrey,
-    marginHorizontal: 20
   },
   headerTextStyle: {
     fontSize: 16,
-    fontFamily: fonts.RLight,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     // av
-    width: wp('22'),
-    paddingLeft: 5,
+    // width: wp('22'),
+    // paddingLeft: 5,
   },
   inputAndroid: {
-    alignSelf: 'center',
     borderRadius: 5,
-    elevation: 3,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    height: 30,
-    paddingHorizontal: 15,
-    paddingRight: 30,
-    paddingVertical: 12,
-    // width: '100%',
-    // Add new by av
-    width: wp('50'),
+    padding: 10,
     marginLeft: 25,
     marginRight: 10,
   },
   inputIOS: {
-    alignSelf: 'center',
+    borderRadius: 5,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    height: 30,
-    // paddingHorizontal: '30%',
-    // Av
-    width: wp('50'),
-    marginLeft: 41,
+    padding: 10,
+    marginLeft: 25,
     marginRight: 10,
   },
   downArrow: {
     height: 15,
     resizeMode: 'contain',
     tintColor: colors.lightBlackColor,
-    top: 10,
+    top: 5,
     width: 15,
   },
 });

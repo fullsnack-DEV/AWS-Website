@@ -89,7 +89,7 @@ export default function SportHideUnhideScreen({navigation}) {
         isRightIconText
         rightButtonText={strings.save}
         onRightButtonPress={onSavePress}
-        containerStyle={styles.headerRow}
+        // containerStyle={styles.headerRow}
         loading={loading}
       />
 
@@ -100,7 +100,7 @@ export default function SportHideUnhideScreen({navigation}) {
           setUpdatedSportList(list);
         }}
         renderListHeader={() => (
-          <View style={{paddingTop: 15, paddingHorizontal: 15}}>
+          <View style={{paddingTop: 15}}>
             <Text style={styles.label}>{strings.hideUnhideDescription}</Text>
           </View>
         )}
@@ -109,12 +109,12 @@ export default function SportHideUnhideScreen({navigation}) {
   );
 }
 const styles = StyleSheet.create({
-  headerRow: {
-    paddingLeft: 10,
-    paddingTop: 6,
-    paddingRight: 17,
-    paddingBottom: 14,
-  },
+  // headerRow: {
+  //   paddingLeft: 10,
+  //   paddingTop: 6,
+  //   paddingRight: 17,
+  //   paddingBottom: 14,
+  // },
   label: {
     fontSize: 16,
     lineHeight: 24,

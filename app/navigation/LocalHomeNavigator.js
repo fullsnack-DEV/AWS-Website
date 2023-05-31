@@ -253,6 +253,8 @@ import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
+import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
+import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
 
 const Stack = createStackNavigator();
 
@@ -1106,6 +1108,12 @@ const LocalHomeNavigator = () => (
       }}
     />
 
+    <Stack.Screen
+      component={GroupFollowersScreen}
+      name="GroupFollowersScreen"
+      options={{headerShown: false}}
+    />
+
     {/* Accounts screens */}
 
     <Stack.Screen
@@ -1146,16 +1154,7 @@ const LocalHomeNavigator = () => (
       name="EntityReviewScreen"
       component={EntityReviewScreen}
       options={{
-        title: 'Review',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
@@ -1163,32 +1162,14 @@ const LocalHomeNavigator = () => (
       name="EntityStatScreen"
       component={EntityStatScreen}
       options={{
-        title: 'Stats',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="EntityScoreboardScreen"
       component={EntityScoreboardScreen}
       options={{
-        title: 'Scoreboard',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
@@ -1212,16 +1193,7 @@ const LocalHomeNavigator = () => (
       name="EventScreen"
       component={EventScreen}
       options={{
-        title: 'Event',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -2324,6 +2296,12 @@ const LocalHomeNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+
+    <Stack.Screen
+      name="MembershipFeeScreen"
+      component={MembershipFeeScreen}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen

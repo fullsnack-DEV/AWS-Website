@@ -21,7 +21,6 @@ import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import {useIsFocused} from '@react-navigation/native';
 import TCTextField from '../../components/TCTextField';
-import TCProfileImageControl from '../../components/TCProfileImageControl';
 import {patchGroup} from '../../api/Groups';
 import {deleteConfirmation, setAuthContextData} from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -37,6 +36,7 @@ import LocationModal from '../../components/LocationModal/LocationModal';
 import ScreenHeader from '../../components/ScreenHeader';
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 import {getSportName} from '../../utils/sportsActivityUtils';
+import GroupProfileComponent from './components/GroupProfileComponent';
 
 export default function EditGroupProfileScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -294,49 +294,10 @@ export default function EditGroupProfileScreen({navigation}) {
       <TCKeyboardView>
         <ScrollView showsVerticalScrollIndicator={false}>
           <ActivityLoader visible={loading} />
-          <TCProfileImageControl
-            profileImage={
-              groupProfile.thumbnail
-                ? {uri: groupProfile.thumbnail}
-                : images.clubCover
-            }
-            profileImagePlaceholder={
-              authContext.entity.role === Verbs.entityTypeClub
-                ? images.clubPlaceholder
-                : images.teamBcgPlaceholder
-            }
-            bgImage={
-              groupProfile.background_thumbnail
-                ? {uri: groupProfile.background_thumbnail}
-                : undefined
-            }
+          <GroupProfileComponent
+            groupDetails={groupProfile}
             onPressBGImage={() => onBGImageClicked()}
             onPressProfileImage={() => onProfileImageClicked()}
-            bgImageContainerStyle={{
-              marginTop: 55,
-              position: 'absolute',
-              alignSelf: 'center',
-            }}
-            profileImageStyle={{
-              height: 40,
-              width: 40,
-              marginTop: 10,
-            }}
-            profileCameraButtonStyle={{
-              alignSelf: 'flex-start',
-              justifyContent: 'center',
-              height: 25,
-              width: 25,
-              borderRadius: 50,
-              elevation: 0,
-            }}
-            profileImageButtonStyle={{
-              alignSelf: 'center',
-            }}
-            profileImageContainerStyle={{
-              marginLeft: 15,
-            }}
-            showEditButtons
           />
           <View style={{marginTop: 25, paddingHorizontal: 15}}>
             <View style={{marginBottom: 35}}>

@@ -16,6 +16,8 @@ export default function MemberInvoiceView({invoice, onPressCard}) {
       return strings.rejected;
     } else if (invoice.invoice_status === Verbs.paid) {
       return strings.paidText;
+    } else if (invoice.invoice_status === Verbs.PARTIALLY_PAID) {
+      return strings.pariallyPaid;
     }
     return strings.openText;
   };
@@ -69,7 +71,7 @@ export default function MemberInvoiceView({invoice, onPressCard}) {
                 {
                   color:
                     invoice.amount_remaining === 0
-                      ? colors.gameDetailColor
+                      ? colors.neonBlue
                       : colors.darkThemeColor,
                   alignSelf: 'flex-end',
                 },
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
   },
   invoiveAmountContainer: {
     marginVertical: 15,
-    flex: 0.5,
+    flex: 1,
   },
   playerInvoiceInfoContainer: {
     flex: 1,

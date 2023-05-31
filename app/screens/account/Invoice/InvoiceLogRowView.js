@@ -28,11 +28,15 @@ export default function InvoiceLogRowView({data, currency, onPressCard}) {
   };
 
   return (
-    <TouchableOpacity style={styles.viewContainer} onPress={onPressCard}>
+    <TouchableOpacity
+      style={styles.viewContainer}
+      onPress={onPressCard}
+      disabled={data.is_deleted}>
       {/* date and fee cotaainer */}
       <View
         style={{
           flex: 1,
+          opacity: data.is_deleted ? 0.3 : 1,
         }}>
         <Text
           style={{
@@ -56,7 +60,19 @@ export default function InvoiceLogRowView({data, currency, onPressCard}) {
 
       {/* amount Container */}
 
-      <View style={styles.invoiveAmountContainer}>
+      <View
+        style={[
+          styles.invoiveAmountContainer,
+          {opacity: data.is_deleted ? 0.3 : 1},
+        ]}>
+        {data.is_deleted && (
+          <Text
+            style={{
+              alignSelf: 'flex-end',
+            }}>
+            {strings.deleted}
+          </Text>
+        )}
         <Text
           style={[
             styles.invoiceAmountTexStyle,

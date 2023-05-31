@@ -3,7 +3,6 @@ import {
   Text,
   StyleSheet,
   TouchableWithoutFeedback,
-  Image,
   FlatList,
 } from 'react-native';
 import React, {useState, useContext, useEffect} from 'react';
@@ -12,24 +11,32 @@ import {getCountry} from 'country-currency-map';
 import CustomModalWrapper from '../CustomModalWrapper';
 import {currencyList, ModalTypes} from '../../Constants/GeneralConstants';
 import {strings} from '../../../Localization/translation';
-import images from '../../Constants/ImagePath';
+
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../TCThinDivider';
 import AuthContext from '../../auth/context';
 
-export default function CurrencyModal({isVisible, closeList, onNext}) {
+export default function CurrencyModal({
+  isVisible,
+  closeList,
+  onNext,
+  existedCurrency = '',
+}) {
   const authContext = useContext(AuthContext);
-  const [selectedCurrency, setSelectedCurrency] = useState();
+  const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [currencydata, setCurrencydata] = useState();
 
   useEffect(() => {
     setCurrencydata(currencyList);
+    setSelectedCurrency('USD');
 
     const currency = getCountry(authContext.entity.obj.country);
 
     if (currency !== undefined) {
-      const index = currencyList.findIndex((i) => i === currency.currency);
+      const index = currencyList.findIndex(
+        (i) => i.currency === currency.currency,
+      );
 
       if (index !== -1) {
         const removedItem = currencyList.splice(index, 1);
@@ -41,32 +48,61 @@ export default function CurrencyModal({isVisible, closeList, onNext}) {
         setSelectedCurrency(currency.currency);
       }
     }
-  }, [authContext]);
+  }, [authContext, existedCurrency]);
 
-  const RendeCurrencies = ({item}) => (
+  const RendeCurrencies = ({item, index}) => (
     <TouchableWithoutFeedback
       onPress={() => {
-        setSelectedCurrency(item);
+        setSelectedCurrency(item.currency);
+        onNext(item.currency);
+        closeList();
       }}>
       <View
         style={{
-          paddingHorizontal: 40,
-          paddingVertical: 20,
+          paddingHorizontal: 35,
+          paddingVertical: 15,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item}</Text>
-        <View style={styles.checkbox}>
-          {selectedCurrency === item ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+        <View>
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: fonts.RRegular,
+              lineHeight: 24,
+              color:
+                item.currency === selectedCurrency
+                  ? colors.orangeColor
+                  : colors.lightBlackColor,
+            }}>
+            {item.countryName}
+          </Text>
+          {index === 0 && (
+            <Text
+              style={{
+                fontSize: 12,
+                color: colors.userPostTimeColor,
+                lineHeight: 13,
+                marginTop: 2,
+              }}>
+              {strings.homeCity}
+            </Text>
           )}
         </View>
+
+        <Text
+          style={[
+            styles.languageList,
+            {
+              color:
+                item.currency === selectedCurrency
+                  ? colors.orangeColor
+                  : colors.lightBlackColor,
+            },
+          ]}>
+          {item.currency}
+        </Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -75,10 +111,10 @@ export default function CurrencyModal({isVisible, closeList, onNext}) {
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeList}
-      modalType={ModalTypes.style1}
+      modalType={ModalTypes.style6}
       onRightButtonPress={() => onNext(selectedCurrency)}
       headerRightButtonText={strings.next}
-      title={'Currency'}
+      title={strings.changeCurrency}
       containerStyle={{padding: 0, width: '100%', height: '100%'}}
       showBackButton>
       <FlatList
@@ -97,11 +133,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     lineHeight: 24,
-  },
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
   },
 });

@@ -212,10 +212,11 @@ export default {
   searchCityText: 'en_Search City',
 
   locationClubTitle: 'en_HOME CITY',
-  currentCity: 'en_Home City',
+  currentCityPlaceholder: 'en_Home City',
   birthdateText: 'en_Choose Date of birth',
   searchCityPlaceholder: 'en_Search by city',
   searchCityStatePlaceholder: 'en_City, state or country',
+  searchcitystatecountry: 'en_Search for city, state or country',
   searchByCityStateText: 'en_Search by city',
   searchCountryCode: 'en_e.g India or IN or 91',
   cityText: 'en_City',
@@ -291,7 +292,7 @@ export default {
 
   // CreateClub Screen 1
   clubNameTitle: 'en_What is the club name?',
-  clubNameplaceholder: 'en_Club name',
+  clubNamePlaceholder: 'en_Club Name',
 
   // CreateClub Screen 2
   inviteTitle: 'en_Invitation to Membership',
@@ -350,6 +351,7 @@ export default {
   profilePhotoUser: 'en_Profile Photo Of User Account',
   titleOrDescriptionText: 'en_Add title of certificate',
   title: 'en_TITLE',
+  timeUppercase: 'en_TIME',
   PAYNOW: 'en_PAY NOW',
   sportCreateEvent: 'en_SPORT',
   numberOfAttend: 'en_NUMBER OF ATTENDEES',
@@ -392,7 +394,7 @@ export default {
   available: 'en_Available For Challenge',
   blockedForChallenge: 'en_Blocked For Challenge',
   editChallengeTitle:
-    'en_Set the time to be available to receive a challenge request or block it.',
+    'en_If a time is available, others can send you a challenge or reservation request during that time.',
 
   // Group setting & Privacy
   connectionTitle: 'en_Connetions',
@@ -490,7 +492,7 @@ export default {
   scorekeeperIn: 'en_Scorekeeper In',
   totalGames: 'en_game',
   message: 'en_Message',
-  followSportTeam: 'en_Follow sport Groups.',
+  followSportTeam: 'en_Follow sport Teams.',
   follow: 'en_Follow',
   following: 'en_Following',
   invite: 'en_Invite',
@@ -575,7 +577,7 @@ export default {
   sport: 'en_Sport',
   hometown: 'en_Home town',
   membersgender: "en_Member's gender",
-  membersage: "en_Member's age",
+  membersage: 'en_Members Age',
   language: 'en_Language',
   languagesName: 'en_Korean, English, Hindi, Italian',
   membershipregfee: 'en_Membership registration fee',
@@ -799,7 +801,7 @@ export default {
 
   descriptionClubTextDetails:
     'en_Describe the club more so that people can know about the club.',
-  descriptionClubTextPlaceholder: 'en_Describe the club.',
+  descriptionClubTextPlaceholder: 'en_Describe about your club.',
 
   noFollowersTocreateTeam:
     'en_You have no followers, so you can not create team.',
@@ -978,7 +980,7 @@ export default {
   postalCode: 'en_Postal Code',
   // Members
   isYourTeamRecruitingMember:
-    'en_Are you recruiting a new member? Do you want to display the badge below on your team profile?',
+    'en_Are you recruiting a new member? Do you want to display the badge below on your {0} profile?',
   whoCanJoinGroupText: 'en_Who Can Join {0}',
   configureYourRefereeSetting:
     'en_You can’t send offer, please configure your referee setting first.',
@@ -1004,7 +1006,7 @@ export default {
   refundCam: 'en_REFUND',
   refund: 'en_Refund',
   inCashtext: 'en_In Cash',
-  byChequeText: 'en_By cheque',
+  byChequeText: 'en_By Cheque',
   earning: 'en_Earning',
   servicefee: 'en_Service fee',
   totalamount: 'en_Total amount',
@@ -1058,7 +1060,7 @@ export default {
   editHomePlaceText: 'en_Edit Home Place',
   editCertificateText: 'en_Edit Certificates',
   editPolicyText: 'en_Edit Policy',
-
+  editOption: 'en_Edit {0}',
   englishLangText: 'en_English',
   englishCanadaLangText: 'en_English(Canada)',
   englishSingaporeLangText: 'en_English(Singapore)',
@@ -1150,7 +1152,7 @@ export default {
   othersText: 'en_Others',
   thisFeaturesNotAvailableText:
     'en_This feature is not available (on this device / in this context)',
-  minMaxText_dy: 'en_Min {0} Max {1}',
+  minMaxText_dy: 'en_Min {0} en_Max {1}',
   playerTitleText_dy: 'en_Player {0}',
   adminText_dy: 'en_{0} Admin',
   doYouWantToRemoText_dy: 'en_Do you want to remove {0} {1} from {2}?',
@@ -1270,7 +1272,9 @@ export default {
   recruitingPlayerText: 'en_Recruiting Members',
   areYouSureLeaveText: 'en_Are you sure your team wants to leave {0}?',
   leave: 'en_Leave',
-  whatTeamJoinClub: 'en_Which Team Can Join Club',
+  WhichTeamJoinClub: 'en_Which Team Can Join Club',
+  WhatTeamCanJoinClub: 'en_What Team Can Join Club',
+  WhatTeamCanJoinClubQuestionMark: 'en_What Team Can Join Club?',
   canPeopleInviteYouText: 'en_Can People Invite You Their Events',
   toWhatEventPeopleInviteText: 'en_To What Event Can People Invite',
   canPeopleInviteTheirEventText: 'en_Can people invite you to their events ?',
@@ -1291,7 +1295,7 @@ export default {
   validDueDateValidation: 'en_Please select valid due date.',
   invoiceTitleValidation: 'en_Please select invoice title.',
   duedate: 'en_Due Date',
-  lessThan1AmountValidation: 'en_User should not allow less than $1 amount.',
+  lessThan1AmountValidation: 'en_User should not allow less than {0} 1 amount.',
   moreThanInvoiceAmountValidation:
     'en_User should not allow more than invoice amount.',
   notRefundMorethanInvoiceValication:
@@ -1396,6 +1400,7 @@ export default {
 
   blocked: 'en_Blocked',
   availableText: 'en_Available',
+  primaryrefundpolicy: 'en_Primary Refund policy',
   eventMayBeCancelledByOrganizerText:
     'en_The event may be canceled by the organizer if the minimum number of the attendees isn’t met.',
   attendeesMustRefundedText:
@@ -1485,7 +1490,7 @@ export default {
     'en_Email Verification Link is already Sent, Try after some moment',
 
   passwordMustSameValidation: 'en_New Password and Old Password must be same.',
-
+  newTextTitleCase: 'en_New',
   SHOW: 'en_SHOW',
   HIDE: 'en_HIDE',
   profile: 'en_Profile',
@@ -2081,7 +2086,7 @@ export default {
   doYouWantSwitchAc: 'en_Do you want to switch account to',
   noNotification: 'en_No Notification',
   newNotificationn: 'en_New notification will appear here.',
-  respondToInviteCreateTeam: 'en_Respond to invite to create team',
+  respondToInviteCreateTeam: 'en_Respond to Invite to Create Team',
   trash: 'en_Trash',
   editPost: 'en_Edit Post',
   unpausesmall: 'en_unpause',
@@ -2370,7 +2375,7 @@ export default {
   currentScoreKeeperReservation: 'en_Curruent Scorekeeper Reservation',
   orderText: 'en_Order',
   changeListOfSport: 'en_Order of Sports',
-  chnageListOfOrganizer: 'en_Order Of Organizers',
+  chnageListOfOrganizer: 'en_Order of Organizers',
   refreeReservationSetting: 'en_Referee Reservation Setting',
   scoreKeeperReservationSetting: 'en_Scorekeeper Reservation Setting',
   gameType: 'en_Game Type',
@@ -2421,6 +2426,7 @@ export default {
   invited: 'en_Invited',
   joinRequested: 'en_Join Requested',
   groupsRecruitingMembers: 'en_Groups Recruiting Members',
+  recruitingMembers: 'en_Recruiting Members',
   parentBadgeText: 'en_Parent',
   leaveReplyText: 'en_Leave a reply',
   ratingsInfo:
@@ -2678,7 +2684,7 @@ export default {
   groups: 'en_groups',
   maximuminvoicerecipientvalidation:
     'en_You cannot select more than 75 recipients at once.',
-  selectallgroupmember: 'en_All Individual members ({0})',
+  selectallgroupmember: 'en_All Individual Members ({0})',
   selectallteam: 'en_All Teams ({0})',
   noRecipient: 'en_No Recipient',
   filterAntTime: 'en_Anytime',
@@ -2817,19 +2823,22 @@ export default {
   favoriteSports: 'en_Favorite Sports',
   otherSports: 'en_Other Sports',
   sportsText: '{0} sports',
+  searchForTeamPartener: 'en_Search for team partner',
+  matchCapText: 'en_Match',
+
   cancelInvoiveModaltitle:
     'en_Choose recipients of the invoices that you want to cancel.',
   peopleSelected: 'en_people selected',
-  allRecipientsCount: 'en_All Recipients ({0})',
+  allRecipientsCount: 'en_All Invoices ({0})',
   resendInvoiceModalTitle:
     'en_Please choose recipients. You can also add a new message.',
   addnewMessage: 'en_ADD NEW mESSAGE',
   amountRecevied: 'en_Amount Recevied',
   amountRefunded: 'en_Amount Refunded',
   deleteLogText: 'en_Are you sure you want to delete this log?',
-  deletelogbtntext: 'en_delete log',
+  deletelogbtntext: 'en_Delete Log',
   loggedbytxt: 'en_Logged by',
-  loggedat: 'en_logged at',
+  loggedat: 'en_Logged at:',
   transctionNumber: 'en_Transaction No:',
   logaPayment: 'en_Log a Payment',
   logaRefund: 'en_Log a Refund',
@@ -2838,6 +2847,8 @@ export default {
   noinvoice: 'en_No Invoice',
   recruitingBottomText:
     'en_If you select “Yes, display it.”, your team profile may be displayed on the “Recruiting Members” section in Local Home.',
+  recruitingBottomClubText:
+    'en_If you select “Yes, display it.”, your club profile may be displayed on the “Recruiting Members” section in Local Home.',
   areYouSureTo: 'en_Are you sure you want to {0} {1}?',
 
   paidInCash: 'en_Paid in cash',
@@ -2853,14 +2864,110 @@ export default {
   invoicesIn: 'en_Invoices in',
   chooseReciepint: 'en_Choose Recipients',
   chooseReciepientModaltitle:
-    'en_Choose recipients to whom you wantto resent the invoice.',
+    'en_Please add new recipients. You can also add a new message.',
   newRecipents: 'en_New Recipients',
   toalnumberOfInvoices: 'en_Total Number of Invoices',
   addRecipientToBatch: 'en_Add Recipients to Batch',
+  YourAccountIsUnderTermination: 'en_Your account is under termination.',
+  YourAccountHasBeenDeactivated: 'en_Your account has been deactivated',
+  accountPaused: 'en_This {0} account has been paused.',
   throughStripe: 'en_Through Stripe',
   addedMeesages: 'en_Added Message ({0})',
-  sentBy: 'en_send by',
+  sentBy: 'en_sent by',
+  sentAt: 'en_sent at',
   atText: 'en_at {0} ',
   refudviaStripe: 'en_Refund (Through Stripe)',
   completedMatches: 'en_Completed Matches',
+  clubteamPrivacyText: 'en_Club and Team (admin) always can see members.',
+  requestSwitchModalAlertMessage:
+    'en_The team will be created after the team partner accepts your request to create it. Then, you will be able to switch to the team account.',
+  deactivated: 'en_DEACTIVATED',
+  paused: 'en_PAUSED',
+  terminated: 'en_TERMINATED',
+  enterText: 'en_Enter',
+  deleted: 'en_Deleted',
+  resendInvoiceSingleTitle: 'en_Please add new message and choose recipients.',
+  timeZone: 'en_TimeZone',
+  noDescription: 'en_No Description',
+  recipentsText: '{0} Recipients selected',
+  PersonText: 'en_Person',
+  PeopleText: 'en_People',
+  enterAmount: 'en_Enter Amount',
+  enterDescription: 'en_Enter Description',
+
+  clubteamPrivacyTextFollwers:
+    'en_Club and Team (admin) always can see followers.',
+  logType: 'en_Type:',
+  logAmount: 'en_Amount:',
+  logMethod: 'en_Method:',
+  internationalFeeText:
+    'en_An internartional transactin fee is charged when the transaction is processed outside of  the country where your credit card was issued.The international transaction fee is 0.25% of the sum of the match fee and service fee.',
+  addresendRecipintModaltitle:
+    'en_Choose recipients to whom you want to resent the invoice.',
+  addpaymentMethod: 'en_Add a payment method',
+  invoicedAmount: 'en_Invoiced Amount',
+  serviceFee: 'en_Service Fee',
+  international: 'en_International',
+  transactionFee: 'en_Transaction Fee',
+  makeAPayment: 'en_Make a Payment',
+
+  eventFeaturePhoto: 'en_FEATURED PHOTO',
+  eventPhotoRatio: 'en_At least 1284x2778 pixels',
+  eventPhotoEdit: 'en_Edit photo',
+  eventPhotoUpdate: 'en_Upload photo',
+  thisEventOnly: 'en_This event Only',
+  thisAndAllEvent: 'en_This and all following events',
+  allEvents: 'en_All events',
+  attendeeRadioText: 'en_Attendee',
+  attendyText:
+    'en_The event may be canceled by the organizer if the minimum number of the attendees isn’t met.',
+  feeText:
+    'en_Attendees can pay the event fee after they are invoiced by the event organiser.',
+  reportText: 'en_Report This Event',
+  blockEventOrganiser: 'en_Block Event Organiser',
+  recuringoptionOne: 'en_This event Only',
+  recurringOptionTwo: 'en_This and all following events',
+  recurringOptionThree: 'en_All events',
+  gameSingular: 'en_Game',
+  gameWith: 'en_Game With',
+  eventsViewSettings: 'en_Events View Settings',
+  onlineUrl: 'en_URL',
+  emptyEventUrl: "en_URL hasn't been provided yet.",
+  postTitle: 'en_Post',
+  list: 'en_List',
+  plusDayOne: 'en_+1day',
+
+  detailTextVenue: 'en_Details',
+  adjustLocationOnMap: 'en_ Please adjust the location on the map.',
+  chooseLocationOnMap: 'en_Choose Location on Map',
+  venuesText: 'en_Venues',
+  addServicableAreas: 'en_+ Add Serviceable Area',
+
+  partiallyPaidMessage:
+    'en_If the invoice has been partially paid, you cannot use this payment method to pay it.',
+  payInvoiceTitle: 'en_Pay Invoice',
+  merchnatNotRegister:
+    'en_invoice sender does not have bank account registered ',
+  nInvitationSent: 'en_{0} invitations were sent.',
+  followingAndFollowers: 'en_Following & Followers',
+  onlyAccount: 'en_Only {0} account',
+  onlyOrganizer: 'en_Only {0} (organizer)',
+  onlyOption: 'en_Only {0}',
+  time: 'en_Time',
+  zone: 'en_zone',
+  chooseValidFromDate: 'en_Choose valid from Date',
+  refereeFeeModalContent:
+    'en_Your referee fee will be 0 CAD per hour if you don’t edit the rate. You can edit it later in Incoming Reservations Settings of the sportactivity.',
+  scorekeeperFeeModalContent:
+    'en_Your scorekeeper fee will be 0 CAD per hour if you don’t edit the rate. You can edit it later in Incoming Reservations Settings of the sportactivity.',
+  sportSelectionModalSubTitle:
+    'en_Teams from various sports can be a member of aclub. You can edit the sports of the club now or later.',
+  offline: 'en_Offline',
+  online: 'en_Online',
+  oneTime: 'en_One-time',
+  recurring: 'en_Recurring',
+  editTimeSlots: 'en_Please edit time slots below. ',
+  areYouSureToRemove: 'en_Are you sure want to remove {0}?',
+  removeGoingModalText:
+    'en_The event fee should be refunded when an attendee is removed.',
 };

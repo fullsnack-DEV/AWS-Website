@@ -1,6 +1,7 @@
 // @flow
 /* eslint-disable no-param-reassign */
-import React, {useState, useEffect} from 'react';
+/* eslint-disable no-return-assign */
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   FlatList,
   Text,
@@ -26,6 +27,7 @@ const AddResendRecipientsModal = ({
   onClose = () => {},
   invoices = [],
   selectedRecipients = [],
+  ModalTitle = '',
 }) => {
   const [selectedInvoices, setSelectedInvoices] = useState([]);
   const [visibleOptions, setVisibleOptions] = useState();
@@ -60,12 +62,158 @@ const AddResendRecipientsModal = ({
     return strings.noneselected;
   };
 
-  const showHeaderRow = () => renderSelectMemberRow(true);
+  const showHeaderRow = () => {
+    let checked = false;
+    if (selectedOption === strings.allInvoiceText) {
+      if (invoices.length === selectedInvoices.length) {
+        checked = true;
+      }
+    } else if (selectedOption === strings.paidInvoiceText) {
+      const paidInvoices = invoiceListByStatus(strings.paidInvoiceText);
+      if (paidInvoices.length > 0) {
+        const result = paidInvoices.filter((obj) => obj.isChecked);
+        if (result.length === paidInvoices.length) {
+          checked = true;
+        }
+      }
+    } else if (selectedOption === strings.openInvoiceText) {
+      const openInvoices = invoiceListByStatus(strings.openInvoiceText);
+      if (openInvoices.length > 0) {
+        const result = openInvoices.filter((obj) => obj.isChecked);
 
-  const renderSelectMemberRow = () => (
+        if (result.length === openInvoices.length) {
+          checked = true;
+        }
+      }
+    }
+    return renderSelectAllInvoiceByStatus(checked);
+  };
+
+  const selectInvoiceStatus = (isChecked) => {
+    if (selectedOption === strings.allInvoiceText) {
+      if (invoices.length > Verbs.MAXIMUM_RECIPIENT_INVOICE && isChecked) {
+        Alert.alert(strings.maximuminvoicerecipientvalidation);
+        return;
+      }
+      if (isChecked) {
+        invoices.forEach((invoice) => (invoice.isChecked = true));
+        setSelectedInvoices([...invoices]);
+      } else {
+        invoices.forEach((invoice) => (invoice.isChecked = false));
+        setSelectedInvoices([]);
+      }
+    } else if (selectedOption === strings.paidInvoiceText) {
+      const paidInvoices = invoiceListByStatus(strings.paidInvoiceText);
+      if (isChecked) {
+        const uncheckedInvoices = paidInvoices.filter((obj) => !obj.isChecked);
+        if (
+          uncheckedInvoices.length + selectedInvoices.length >
+            Verbs.MAXIMUM_RECIPIENT_INVOICE - 1 &&
+          isChecked
+        ) {
+          Alert.alert(strings.maximuminvoicerecipientvalidation);
+          return;
+        }
+        uncheckedInvoices.forEach((obj) => {
+          const invoice = invoices.find(
+            (inv) => inv.invoice_id === obj.invoice_id,
+          );
+          if (invoice) {
+            invoice.isChecked = true;
+          }
+        });
+        const selInvoices = [...selectedInvoices, ...uncheckedInvoices];
+        setSelectedInvoices(selInvoices);
+      } else {
+        const invoiceTobeRemoved = paidInvoices.filter((obj) => obj.isChecked);
+        invoiceTobeRemoved.forEach((obj) => {
+          const invoice = invoices.find(
+            (inv) => inv.invoice_id === obj.invoice_id,
+          );
+          if (invoice) {
+            invoice.isChecked = false;
+          }
+        });
+
+        const result = selectedInvoices.filter(
+          (obj) =>
+            !invoiceTobeRemoved.some(
+              (inv) => inv.invoice_id === obj.invoice_id,
+            ),
+        );
+        setSelectedInvoices(result);
+      }
+    } else if (selectedOption === strings.openInvoiceText) {
+      const openInvoices = invoiceListByStatus(strings.openInvoiceText);
+      if (isChecked) {
+        const uncheckedInvoices = openInvoices.filter((obj) => !obj.isChecked);
+        if (
+          uncheckedInvoices.length + selectedInvoices.length >
+            Verbs.MAXIMUM_RECIPIENT_INVOICE - 1 &&
+          isChecked
+        ) {
+          Alert.alert(strings.maximuminvoicerecipientvalidation);
+          return;
+        }
+        uncheckedInvoices.forEach((obj) => {
+          const invoice = invoices.find(
+            (inv) => inv.invoice_id === obj.invoice_id,
+          );
+          if (invoice) {
+            invoice.isChecked = true;
+          }
+        });
+        const selInvoices = [...selectedInvoices, ...uncheckedInvoices];
+        setSelectedInvoices(selInvoices);
+      } else {
+        const invoiceTobeRemoved = openInvoices.filter((obj) => obj.isChecked);
+        invoiceTobeRemoved.forEach((obj) => {
+          const invoice = invoices.find(
+            (inv) => inv.invoice_id === obj.invoice_id,
+          );
+          if (invoice) {
+            invoice.isChecked = false;
+          }
+        });
+
+        const result = selectedInvoices.filter(
+          (obj) =>
+            !invoiceTobeRemoved.some(
+              (inv) => inv.invoice_id === obj.invoice_id,
+            ),
+        );
+        setSelectedInvoices(result);
+      }
+    }
+  };
+
+  const invoiceListByStatus = useCallback(
+    (status) => {
+      if (status === strings.allInvoiceText) {
+        return invoices;
+      }
+      if (status === strings.paidInvoiceText) {
+        return invoices.filter((obj) => obj.invoice_status === Verbs.paid);
+      }
+      if (status === strings.openInvoiceText) {
+        return invoices.filter(
+          (obj) =>
+            obj.invoice_status === Verbs.UNPAID ||
+            obj.invoice_status === Verbs.PARTIALLY_PAID ||
+            obj.invoice_status === Verbs.INVOICE_REJECTED,
+        );
+      }
+      return [];
+    },
+    [invoices, selectedOption],
+  );
+
+  const renderSelectAllInvoiceByStatus = (checked) => (
     <>
       {/* Code for open,  paid and all invoice selection */}
       <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={() => selectInvoiceStatus(!checked)}
         style={{
           flexDirection: 'row',
 
@@ -96,26 +244,26 @@ const AddResendRecipientsModal = ({
               {selectedOption}
             </Text>
             <Image
-              source={images.dropDownArrow2}
+              source={images.invoiceDarkDownArrow}
               style={{
-                height: 13,
-                width: 13,
+                width: 11,
+                height: 20,
                 marginLeft: 5,
-                marginTop: -2,
+
+                resizeMode: 'contain',
               }}
             />
           </TouchableOpacity>
         </View>
 
         {/* checkbox */}
-
-        <TouchableOpacity
-          style={{
-            alignSelf: 'center',
-            width: 42,
-          }}>
-          <Image source={images.orangeCheckBox} style={styles.checkImage} />
-        </TouchableOpacity>
+        <Image
+          source={checked ? images.orangeCheckBox : images.whiteUncheck}
+          style={[
+            styles.checkImage,
+            {borderWidth: checked ? 0.3 : 1, marginRight: 10},
+          ]}
+        />
       </TouchableOpacity>
       <View style={styles.dividerLine} />
     </>
@@ -133,22 +281,31 @@ const AddResendRecipientsModal = ({
     onClose();
   };
 
-  const selectCurrentEntity = ({invoice, index}) => {
-    if (selectedInvoices.length > Verbs.MAXIMUM_RECIPIENT_INVOICE - 1) {
+  const selectCurrentEntity = ({invoice}) => {
+    if (
+      selectedInvoices.length > Verbs.MAXIMUM_RECIPIENT_INVOICE - 1 &&
+      !invoice.isChecked
+    ) {
       Alert.alert(strings.maximuminvoicerecipientvalidation);
       return;
     }
 
     const l_selectedInvoices = [];
-    invoices[index].isChecked = !invoice.isChecked;
-    invoices.map((obj) => {
-      if (obj.isChecked) {
-        l_selectedInvoices.push(obj);
-      }
-      return obj;
-    });
+    const inde = invoices.findIndex(
+      (item) => item.invoice_id === invoice.invoice_id,
+    );
 
-    setSelectedInvoices(l_selectedInvoices);
+    if (inde >= -1) {
+      invoices[inde].isChecked = !invoice.isChecked;
+      invoices.map((obj) => {
+        if (obj.isChecked) {
+          l_selectedInvoices.push(obj);
+        }
+        return obj;
+      });
+
+      setSelectedInvoices(l_selectedInvoices);
+    }
   };
 
   const listEmptyComponent = () => (
@@ -177,73 +334,79 @@ const AddResendRecipientsModal = ({
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
       title={strings.chooseReciepint}
-      containerStyle={{padding: 0}}
+      containerStyle={{
+        padding: 0,
+        width: '100%',
+        height: '100%',
+      }}
       headerRightButtonText={strings.done}
       onRightButtonPress={() => onAddRecipients()}
       Top={75}>
       {/* Recipient selections */}
-
-      <Text
-        style={{
-          lineHeight: 24,
-          fontSize: 20,
-          fontFamily: fonts.RMedium,
-          paddingHorizontal: 20,
-          marginTop: 19,
-        }}>
-        {strings.chooseReciepientModaltitle}
-      </Text>
-
-      {/* Bottosmheet */}
-
-      <BottomSheet
-        isVisible={visibleOptions}
-        closeModal={() => setVisibleOptions(false)}
-        optionList={[
-          strings.openInvoiceText,
-          strings.paidInvoiceText,
-          strings.allInvoiceText,
-        ]}
-        onSelect={(option) => {
-          setVisibleOptions(false);
-          setSelectedOption(option);
-        }}
-      />
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignSelf: 'flex-end',
-          marginHorizontal: 15,
-        }}>
+      <View style={{flex: 1}}>
         <Text
           style={{
-            marginTop: 15,
-            color:
-              showSelectedRecipientsText() === strings.noneselected
-                ? colors.placeHolderColor
-                : colors.orangeColorCard,
-            fontSize: 16,
-            textAlign: 'right',
-            fontFamily: fonts.RRegular,
             lineHeight: 24,
+            fontSize: 20,
+            fontFamily: fonts.RMedium,
+            paddingHorizontal: 20,
+            marginTop: 19,
           }}>
-          {showSelectedRecipientsText()}
+          {ModalTitle}
         </Text>
+
+        {/* Bottosmheet */}
+
+        <BottomSheet
+          isVisible={visibleOptions}
+          closeModal={() => setVisibleOptions(false)}
+          optionList={[
+            strings.openInvoiceText,
+            strings.paidInvoiceText,
+            strings.allInvoiceText,
+          ]}
+          onSelect={(option) => {
+            setVisibleOptions(false);
+            setSelectedOption(option);
+          }}
+        />
+
+        <View
+          style={{
+            flexDirection: 'row',
+            alignSelf: 'flex-end',
+            marginHorizontal: 15,
+          }}>
+          <Text
+            style={{
+              marginTop: 15,
+              color:
+                showSelectedRecipientsText() === strings.noneselected
+                  ? colors.placeHolderColor
+                  : colors.orangeColorCard,
+              fontSize: 16,
+              textAlign: 'right',
+              fontFamily: fonts.RRegular,
+              lineHeight: 24,
+            }}>
+            {showSelectedRecipientsText()}
+          </Text>
+        </View>
+
+        {/* {showHeaderRow()} */}
+        {showHeaderRow()}
+
+        <FlatList
+          extraData={invoiceListByStatus(selectedOption)}
+          showsVerticalScrollIndicator={false}
+          data={invoiceListByStatus(selectedOption)}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
+          renderItem={renderRecipient}
+          ListEmptyComponent={listEmptyComponent}
+          ListFooterComponent={() => <View style={{marginBottom: 100}} />}
+        />
       </View>
-
-      {showHeaderRow()}
-
-      <FlatList
-        extraData={invoices}
-        showsVerticalScrollIndicator={false}
-        data={invoices}
-        keyExtractor={(item, index) => index.toString()}
-        ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
-        renderItem={renderRecipient}
-        ListEmptyComponent={listEmptyComponent}
-        ListFooterComponent={() => <View style={{marginBottom: 10}} />}
-      />
     </CustomModalWrapper>
   );
 };

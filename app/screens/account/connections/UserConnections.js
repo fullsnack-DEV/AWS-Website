@@ -13,6 +13,8 @@ import {
   Text,
   Pressable,
   TouchableOpacity,
+  TextInput,
+  Alert,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
@@ -33,6 +35,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import GroupIcon from '../../../components/GroupIcon';
 import {displayLocation} from '../../../utils';
+import {unfollowGroup} from '../../../api/Groups';
 
 const tabList = [strings.followerTitleText, strings.following];
 
@@ -85,9 +88,8 @@ export default function UserConnections({navigation, route}) {
     });
 
     Promise.all(list)
-      .then(([following, follower]) => {
+      .then(([follower, following]) => {
         const newData = {};
-
         newData.following = {
           count: following.payload.length ?? 0,
           data: following.payload.length > 0 ? [...following.payload] : [],
@@ -124,11 +126,64 @@ export default function UserConnections({navigation, route}) {
     return 0;
   };
 
-  const renderList = (option) => {
-    if (option === strings.following && data.following.count > 0) {
-      return null;
+  const handleFollow = (entityData = {}) => {
+    setLoading(true);
+    if (
+      entityData.entity_type === Verbs.entityTypePlayer ||
+      entityData.entity_type === Verbs.entityTypeUser
+    ) {
+      followUser({entity_type: entityType}, entityData.user_id, authContext)
+        .then(() => {
+          getData();
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
     }
+  };
 
+  const handleUnfollow = (entityData = {}) => {
+    setLoading(true);
+    if (
+      entityData.entity_type === Verbs.entityTypePlayer ||
+      entityData.entity_type === Verbs.entityTypeUser
+    ) {
+      const params = {entity_type: entityType};
+      if (selectedTab === strings.followerTitleText) {
+        params.follower_id = entityData.user_id;
+      }
+      const entityId =
+        selectedTab === strings.followerTitleText
+          ? authContext.entity.uid
+          : entityData.user_id;
+
+      unfollowUser(params, entityId, authContext)
+        .then(() => {
+          getData();
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    } else {
+      const params = {
+        entity_type: entityData.entity_type,
+      };
+      unfollowGroup(params, entityData.group_id, authContext)
+        .then(() => {
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    }
+  };
+
+  const renderList = (option) => {
     let list = [];
     if (option === strings.followerTitleText && data.follower.count > 0) {
       list = [...data.follower.data];
@@ -141,11 +196,18 @@ export default function UserConnections({navigation, route}) {
         <FlatList
           data={list}
           keyExtractor={(item, index) => index.toString()}
-          style={{paddingHorizontal: 15, paddingTop: 15}}
+          style={{paddingHorizontal: 15}}
           renderItem={({item}) => (
             <>
               <View style={[styles.row, {justifyContent: 'space-between'}]}>
-                <View style={styles.row}>
+                <TouchableOpacity
+                  style={styles.row}
+                  onPress={() => {
+                    navigation.navigate('HomeScreen', {
+                      uid: item.user_id ?? item.group_id,
+                      role: item.entity_type,
+                    });
+                  }}>
                   <GroupIcon
                     imageUrl={item.full_image}
                     entityType={Verbs.entityTypePlayer}
@@ -159,22 +221,14 @@ export default function UserConnections({navigation, route}) {
                       {displayLocation(item)}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.buttonContainer}
                   onPress={() => {
                     if (item.is_following) {
-                      unfollowUser(
-                        {entity_type: entityType},
-                        userId,
-                        authContext,
-                      );
+                      handleUnfollow(item);
                     } else {
-                      followUser(
-                        {entity_type: entityType},
-                        userId,
-                        authContext,
-                      );
+                      handleFollow(item);
                     }
                   }}>
                   <Text
@@ -182,7 +236,7 @@ export default function UserConnections({navigation, route}) {
                       styles.buttonText,
                       item.is_following ? {color: colors.lightBlackColor} : {},
                     ]}>
-                    {strings.following}
+                    {item.is_following ? strings.following : strings.follow}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -235,6 +289,12 @@ export default function UserConnections({navigation, route}) {
         ))}
       </View>
       <View style={{flex: 1}}>
+        <TextInput
+          placeholder={strings.searchText}
+          placeholderTextColor={colors.placeHolderColor}
+          style={styles.input}
+        />
+
         {loading ? <UserListShimmer /> : renderList(selectedTab)}
       </View>
     </SafeAreaView>
@@ -300,5 +360,16 @@ const styles = StyleSheet.create({
     height: 1,
     marginVertical: 15,
     backgroundColor: colors.grayBackgroundColor,
+  },
+  input: {
+    height: 40,
+    fontSize: 16,
+    borderRadius: 5,
+    marginVertical: 15,
+    marginHorizontal: 15,
+    paddingHorizontal: 10,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+    backgroundColor: colors.textFieldBackground,
   },
 });

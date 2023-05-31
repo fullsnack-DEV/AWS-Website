@@ -250,7 +250,6 @@ export default function WelcomeScreen({navigation}) {
         authEntity.role = 'user';
         dummyAuthContext.entity = authEntity;
         dummyAuthContext.user = createdUser?.payload;
-        signUpWithQB(createdUser?.payload, dummyAuthContext);
       })
       .catch((e) => {
         setloading(false);
@@ -289,6 +288,7 @@ export default function WelcomeScreen({navigation}) {
     });
 
   const socialSignInSignUp = (authResult, message, extraData = {}) => {
+    setloading(false);
     const dummyAuthContext = {...authContext};
     const socialSignInSignUpOnAuthChanged = auth().onAuthStateChanged(
       (user) => {
@@ -296,6 +296,7 @@ export default function WelcomeScreen({navigation}) {
           user
             .getIdTokenResult()
             .then(async (idTokenResult) => {
+              setloading(false);
               const token = {
                 token: idTokenResult.token,
                 expirationTime: idTokenResult.expirationTime,
@@ -303,6 +304,7 @@ export default function WelcomeScreen({navigation}) {
               dummyAuthContext.tokenData = token;
               checkUserIsRegistratedOrNotWithTownscup(user?.email)
                 .then((userExist) => {
+                  setloading(false);
                   const userConfig = {
                     method: 'get',
                     url: `${Config.BASE_URL}/users/${user?.uid}`,
@@ -311,6 +313,7 @@ export default function WelcomeScreen({navigation}) {
                   if (userExist) {
                     apiCall(userConfig)
                       .then(async (response) => {
+                        setloading(false);
                         dummyAuthContext.entity = {
                           uid: user.uid,
                           role: 'user',
@@ -320,10 +323,13 @@ export default function WelcomeScreen({navigation}) {
                             user: response.payload,
                           },
                         };
-                        QBInitialLogin(dummyAuthContext, response?.payload);
+
+                        await loginFinalRedirection(
+                          response?.payload,
+                          dummyAuthContext,
+                        );
                       })
                       .catch((error) => {
-                        console.log('Login Error', error);
                         setTimeout(() => {
                           Alert.alert(error);
                         }, 10);
@@ -360,7 +366,7 @@ export default function WelcomeScreen({navigation}) {
                       };
                       userDetail.uploadedProfilePic = uploadedProfilePic;
                     }
-                    // signUpToTownsCup(userDetail, dummyAuthContext);
+
                     navigateToAddBirthdayScreen(userDetail, dummyAuthContext);
                   }
                 })
@@ -391,18 +397,19 @@ export default function WelcomeScreen({navigation}) {
     auth()
       .signInWithCredential(credential)
       .then(async (authResult) => {
+        setloading(false);
+
         socialSignInSignUp(authResult, provider, extraData);
       })
       .catch(async (error) => {
-        // console.log('error lors de l\'authentification firebase : ', error);
-        //   console.log('codeError : ', error.code);
-        //  // error.email is undefined
-        //   console.log('emailError : ', error.email);
-        //   const codeError = error.code;
-        // if (codeError === 'auth/account-exists-with-different-credential') {
-        //   const providers = await auth().fetchSignInMethodsForEmail(error.email);
-        //  console.log('providersproviders',providers);
-        // }
+        // error.email is undefined
+
+        const codeError = error.code;
+        if (codeError === 'auth/account-exists-with-different-credential') {
+          const providers = await auth().fetchSignInMethodsForEmail(
+            error.email,
+          );
+        }
         setloading(false);
         let message = '';
         if (error.code === 'auth/user-not-found') {
@@ -431,13 +438,14 @@ export default function WelcomeScreen({navigation}) {
 
   // Login With Facebook manage function
   const onFacebookButtonPress = async () => {
+    // LoginManager.setLoginBehavior('WEB_ONLY');
     try {
-      setloading(true);
       const result = await LoginManager.logInWithPermissions([
         'public_profile',
         'email',
         'user_birthday',
       ]);
+
       if (result.isCancelled) {
         setloading(false);
         throw new Error(strings.cancelLoginProcess);
@@ -451,6 +459,8 @@ export default function WelcomeScreen({navigation}) {
       const facebookCredential = await auth.FacebookAuthProvider.credential(
         data.accessToken,
       );
+
+      setloading(false);
 
       await signInSignUpWithSocialCredential(facebookCredential, 'FACEBOOK | ');
     } catch (error) {
@@ -481,7 +491,8 @@ export default function WelcomeScreen({navigation}) {
         idToken,
         accessToken,
       );
-      await signInSignUpWithSocialCredential(googleCredential, 'GOOGLE | ');
+
+      await signInSignUpWithSocialCredential(googleCredential, 'GOOGLE');
     } catch (error) {
       setloading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -535,7 +546,7 @@ export default function WelcomeScreen({navigation}) {
       })
       .catch(async (error) => {
         console.log(error);
-        successCallback();
+        // successCallback();
       });
   };
 
@@ -586,7 +597,7 @@ export default function WelcomeScreen({navigation}) {
   async function handleAndroidAppleLogin() {
     try {
       if (!appleAuthAndroid?.isSupported) {
-        alert(strings.appleLoginNotSupported);
+        Alert.alert(strings.appleLoginNotSupported);
         setloading(false);
       } else {
         // Generate secure, random values for state and nonce
@@ -612,7 +623,9 @@ export default function WelcomeScreen({navigation}) {
         const response = await appleAuthAndroid.signIn();
         setloading(false);
         const {email} = await jwtDecode(response.id_token);
+
         const {id_token, nonce} = response;
+
         setloading(true);
         commonCheckEmailVerification({
           email,
@@ -620,12 +633,13 @@ export default function WelcomeScreen({navigation}) {
           successCallback: async () => {
             const appleAndroidCredential =
               await auth.AppleAuthProvider.credential(id_token, nonce);
+
             await signInSignUpWithSocialCredential(
               appleAndroidCredential,
-              'APPLE Android| ',
+              'APPLE iOS| ',
               {
-                first_name: response.user.name?.firstName,
-                last_name: response.user.name?.lastName,
+                first_name: response.fullName,
+                last_name: response.fullName,
               },
             );
           },

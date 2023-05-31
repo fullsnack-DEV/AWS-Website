@@ -300,7 +300,9 @@ const RegisterPlayer = ({navigation, route}) => {
         closeModal={() => {
           setShowCongratulationsModal(true);
           if (route.params?.comeFrom) {
-            navigation.navigate(route.params.comeFrom);
+            navigation.navigate(route.params.comeFrom, {
+              ...route.params.routeParams,
+            });
           } else {
             navigation.navigate('AccountScreen', {
               createdSportName: selectedSport?.sport_name,

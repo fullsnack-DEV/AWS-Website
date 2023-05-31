@@ -7,13 +7,10 @@ import {
   ImageBackground,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
-
-
 
 function EventBackgroundPhoto({
   imageURL,
@@ -21,18 +18,21 @@ function EventBackgroundPhoto({
   onPress,
   isPreview = false,
   isImage = true,
+  containerStyle = {},
 }) {
   return (
     <ImageBackground
       source={imageURL}
       imageStyle={styles.imageBorder}
-      resizeMode='cover'
-      style={[styles.bgStyle, {height: isImage ? 200 : 150}]}>
+      resizeMode="cover"
+      style={[styles.bgStyle, {height: isImage ? 168 : 150}, containerStyle]}>
       {!isPreview && (
         <View>
           {!isEdit && (
             <View style={{marginBottom: 15}}>
-              <Text style={styles.featuredImageStyle}>{strings.eventFeaturePhoto}</Text>
+              <Text style={styles.featuredImageStyle}>
+                {strings.eventFeaturePhoto}
+              </Text>
               <Text style={styles.imageStyleText}>
                 {strings.eventPhotoRatio}
               </Text>
@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 16,
     color: colors.lightBlackColor,
- 
   },
   uploadPhoto: {
     height: 25,
@@ -74,7 +73,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     paddingTop: 5,
-   
   },
 
   imageStyleText: {
@@ -87,21 +85,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.lightBlackColor,
     marginLeft: 5,
-   
   },
   bgStyle: {
-    // resizeMode: 'contain',
     height: 200,
-    width: wp('95%'),
+    marginTop: 10,
+    borderRadius: 5,
+    marginBottom: 15,
     alignItems: 'center',
+    marginHorizontal: 10,
     justifyContent: 'center',
     backgroundColor: colors.textFieldBackground,
-    marginBottom: 20,
-    borderRadius:5,
   },
-  imageBorder: { 
-       borderRadius: 5
-   },
+  imageBorder: {
+    borderRadius: 5,
+  },
 });
 
 export default EventBackgroundPhoto;

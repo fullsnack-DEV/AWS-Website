@@ -19,7 +19,6 @@ import {
 
 import {format} from 'react-string-format';
 import moment from 'moment';
-import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
@@ -37,6 +36,7 @@ import AddRecipientsInBatchModal from './AddRecipientsInBatchModal';
 import {InvoiceActionType} from '../../../Constants/GeneralConstants';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {getBatchInvoices} from '../../../api/Invoice';
+import InvoiceProgressBar from './InvoiceProgressBar';
 
 export default function BatchDetailScreen({navigation, route}) {
   const [from] = useState(route.params.from);
@@ -105,8 +105,8 @@ export default function BatchDetailScreen({navigation, route}) {
     setLoading(true);
     getBatchInvoices(batchid, auth)
       .then((response) => {
-        setBatchData(response.payload);
         setLoading(false);
+        setBatchData(response.payload);
       })
       .catch((e) => {
         setLoading(false);
@@ -174,318 +174,274 @@ export default function BatchDetailScreen({navigation, route}) {
         rightIcon2={images.vertical3Dot}
         rightIcon2Press={() => batchActionsheet.current.show()}
       />
-      <ScrollView>
-        {batchData && (
-          <View style={styles.mainContainer}>
-            <ActivityLoader visible={loading} />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        stickyHeaderIndices={[1]}>
+        <View style={styles.mainContainer}>
+          <ActivityLoader visible={loading} />
+          <View
+            style={{
+              backgroundColor: colors.lightGrayBackground,
+              flex: 1,
+            }}>
             <View
               style={{
-                backgroundColor: colors.lightGrayBackground,
-                flex: 1,
+                marginHorizontal: 15,
+                marginTop: 15,
               }}>
+              {/* invoivw title */}
+
+              <Text
+                style={{
+                  fontSize: 16,
+                  lineHeight: 24,
+                  fontFamily: fonts.RBold,
+                }}>
+                {batchData.invoice_title}
+              </Text>
+
+              {/* Recepints */}
               <View
                 style={{
-                  marginHorizontal: 15,
-                  marginTop: 15,
+                  marginTop: 20,
                 }}>
-                {/* invoivw title */}
-
-                <Text
-                  style={{
-                    fontSize: 16,
-                    lineHeight: 24,
-                    fontFamily: fonts.RBold,
-                  }}>
-                  {batchData.invoice_title}
-                </Text>
-
-                {/* Recepints */}
-                <View
-                  style={{
-                    marginTop: 20,
-                  }}>
-                  <Text>
-                    <Text style={styles.titleTextStyle}>
-                      {batchData.invoices?.length}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        lineHeight: 30,
-                      }}>
-                      {' '}
-                      {strings.recipients}
-                    </Text>
+                <Text>
+                  <Text style={styles.titleTextStyle}>
+                    {batchData.invoices?.length}
                   </Text>
-                </View>
-
-                <Text style={styles.issuedBystyle}>{`${strings.issuedBy} ${
-                  authContext.entity.obj.full_name ??
-                  authContext.entity.obj.group_name
-                }`}</Text>
-
-                {/* Issues At */}
-
-                <Text style={styles.issuedAt}>
-                  {format(
-                    strings.issuedAt,
-                    moment(getJSDate(batchData.created_date)).format(
-                      Verbs.DATE_FORMAT,
-                    ),
-                  )}
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      lineHeight: 30,
+                    }}>
+                    {' '}
+                    {strings.recipients}
+                  </Text>
                 </Text>
+              </View>
+
+              <Text style={styles.issuedBystyle}>{`${strings.issuedBy} ${
+                authContext.entity.obj.full_name ??
+                authContext.entity.obj.group_name
+              }`}</Text>
+
+              {/* Issues At */}
+
+              <Text style={styles.issuedAt}>
+                {format(
+                  strings.issuedAt,
+                  moment(getJSDate(batchData.created_date)).format(
+                    Verbs.DATE_FORMAT,
+                  ),
+                )}
+              </Text>
+              <Text style={styles.dueatStyle}>
+                {format(
+                  strings.dueAtNText,
+                  moment(getJSDate(batchData.due_date)).format(
+                    Verbs.DATE_FORMAT,
+                  ),
+                )}
+              </Text>
+
+              {/* Amount invoives / Copy */}
+              <View style={styles.amountRowStyle}>
                 <Text style={styles.dueatStyle}>
-                  {format(
-                    strings.dueAtNText,
-                    moment(getJSDate(batchData.due_date)).format(
-                      Verbs.DATE_FORMAT,
-                    ),
-                  )}
+                  {strings.amountInvoicedCopy}
                 </Text>
+                <Text style={[styles.dueatStyle, {fontFamily: fonts.RMedium}]}>
+                  {` ${batchData.invoice_open_total.toFixed(2)} ${currency}`}
+                </Text>
+              </View>
+              {/* Total Amount invoices section */}
+              <View style={styles.amountRowStyle}>
+                <Text style={styles.dueatStyle}>
+                  {strings.totalAmountInvoice}
+                </Text>
+                <Text style={[styles.dueatStyle, {fontFamily: fonts.RMedium}]}>
+                  {` ${batchData.invoice_total.toFixed(2)} ${currency}`}
+                </Text>
+              </View>
 
-                {/* Amount invoives / Copy */}
-                <View style={styles.amountRowStyle}>
-                  <Text style={styles.dueatStyle}>
-                    {strings.amountInvoicedCopy}
-                  </Text>
+              {/* Progress Bar */}
+              <InvoiceProgressBar
+                paidamount={batchData.invoice_paid_total}
+                dueamount={batchData.invoice_total}
+                Containerstyles={{
+                  marginTop: 15,
+                  marginBottom: 20,
+                }}
+                barStyle={{marginHorizontal: 0}}
+              />
+
+              {/* status container */}
+
+              <View style={{marginBottom: 15}}>
+                <View style={[styles.statusRows, {marginTop: 0}]}>
+                  <Text style={styles.statusText}>{strings.status}</Text>
                   <Text
-                    style={[styles.dueatStyle, {fontFamily: fonts.RMedium}]}>
-                    {` ${batchData.invoice_open_total} ${currency}`}
-                  </Text>
-                </View>
-                {/* Total Amount invoices section */}
-                <View style={styles.amountRowStyle}>
-                  <Text style={styles.dueatStyle}>
-                    {strings.totalAmountInvoice}
-                  </Text>
-                  <Text
-                    style={[styles.dueatStyle, {fontFamily: fonts.RMedium}]}>
-                    {` ${batchData.invoice_total} ${currency}`}
-                  </Text>
-                </View>
-
-                {/* Progress Bar */}
-
-                <LinearGradient
-                  colors={[colors.progressBarColor, colors.progressBarColor]}
-                  style={styles.paymentProgressView}>
-                  {/* this need to show conditionally when there is 0% amount paid */}
-
-                  {batchData.amount_due === batchData.amount_remaining && (
-                    <Text style={styles.percentTextstyle}>
-                      {`${
-                        (
-                          batchData.invoice_paid_total /
-                          batchData.invoice_open_total
-                        ).toFixed(2) * 100
-                      }%`}
-                    </Text>
-                  )}
-
-                  <LinearGradient
-                    colors={[
-                      colors.progressBarBgColor,
-                      colors.progressBarBgColor,
-                    ]}
                     style={[
-                      styles.innerGradientstle,
+                      styles.amountTextStyle,
                       {
-                        width: `${
-                          (batchData.invoice_paid_total /
-                            batchData.invoice_open_total) *
-                          100
-                        }%`,
-
-                        borderWidth:
+                        color:
                           batchData.amount_due === batchData.amount_remaining
-                            ? 0
-                            : 1.5,
+                            ? colors.darkThemeColor
+                            : colors.gameDetailColor,
                       },
                     ]}>
-                    <Text style={styles.percentTextStyle2}>
-                      {`${
-                        (
-                          batchData.invoice_paid_total /
-                          batchData.invoice_open_total
-                        ).toFixed(2) * 100
-                      }%`}
-                    </Text>
-                  </LinearGradient>
-                </LinearGradient>
-
-                {/* status container */}
-
-                <View style={{marginBottom: 15}}>
-                  <View style={[styles.statusRows, {marginTop: 0}]}>
-                    <Text style={styles.statusText}>{strings.status}</Text>
-                    <Text
-                      style={[
-                        styles.amountTextStyle,
-                        {
-                          color:
-                            batchData.amount_due === batchData.amount_remaining
-                              ? colors.darkThemeColor
-                              : colors.gameDetailColor,
-                        },
-                      ]}>
-                      {getStatus()}
-                    </Text>
-                  </View>
-                  <View style={styles.statusRows}>
-                    <Text style={styles.statusText}>
-                      {strings.toalnumberOfInvoices}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.amountTextStyle,
-                        {color: colors.lightBlackColor},
-                      ]}>
-                      {`${batchData.invoices.length}`}
-                    </Text>
-                  </View>
-                  <View style={styles.statusRows}>
-                    <Text style={styles.statusText}>{strings.paidText} </Text>
-                    <Text
-                      style={[
-                        styles.amountTextStyle,
-                        {color: colors.neonBlue},
-                      ]}>
-                      {getPaidInvoices()}
-                      {/* {`${batchData.invoice_paid_total}`} */}
-                    </Text>
-                  </View>
-                  <View style={styles.statusRows}>
-                    <Text style={styles.statusText}>{strings.openText}</Text>
-                    <Text
-                      style={[
-                        styles.amountTextStyle,
-                        {color: colors.darkThemeColor},
-                      ]}>
-                      {`${batchData.invoices.length}` -
-                        `${getPaidInvoices()}   `}
-                    </Text>
-                  </View>
+                    {getStatus()}
+                  </Text>
+                </View>
+                <View style={styles.statusRows}>
+                  <Text style={styles.statusText}>
+                    {strings.toalnumberOfInvoices}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.amountTextStyle,
+                      {color: colors.lightBlackColor},
+                    ]}>
+                    {`${batchData.invoices.length}`}
+                  </Text>
+                </View>
+                <View style={styles.statusRows}>
+                  <Text style={styles.statusText}>{strings.paidText} </Text>
+                  <Text
+                    style={[styles.amountTextStyle, {color: colors.neonBlue}]}>
+                    {getPaidInvoices()}
+                    {/* {`${batchData.invoice_paid_total}`} */}
+                  </Text>
+                </View>
+                <View style={styles.statusRows}>
+                  <Text style={styles.statusText}>{strings.openText}</Text>
+                  <Text
+                    style={[
+                      styles.amountTextStyle,
+                      {color: colors.darkThemeColor},
+                    ]}>
+                    {`${batchData.invoices.length}` - `${getPaidInvoices()}   `}
+                  </Text>
                 </View>
               </View>
-
-              <View style={{backgroundColor: colors.whiteColor}}>
-                <TCScrollableProfileTabs
-                  tabItem={tabs}
-                  tabVerticalScroll={false}
-                  onChangeTab={(Tab) => setTabNumber(Tab.i)}
-                  currentTab={tabNumber}
-                  customStyle={{
-                    marginTop: 15,
-                  }}
-                  bounces={false}
-                  tabStyle={{
-                    marginTop: -15,
-                  }}
-                />
-              </View>
-
-              <View
-                style={{
-                  flex: 1,
-                }}>
-                <FlatList
-                  bounces={false}
-                  showsVerticalScrollIndicator={false}
-                  style={{
-                    backgroundColor: colors.whiteColor,
-                    flex: 1,
-                  }}
-                  ListEmptyComponent={() => (
-                    <Text
-                      style={{
-                        marginTop: 50,
-                        alignSelf: 'center',
-                        color: colors.userPostTimeColor,
-                        fontSize: 16,
-                        fontFamily: fonts.RMedium,
-                        lineHeight: 24,
-                      }}>
-                      {strings.noinvoice}
-                    </Text>
-                  )}
-                  data={
-                    (tabNumber === 0 && batchListByFilter(Verbs.allStatus)) ||
-                    (tabNumber === 1 && batchListByFilter(Verbs.paid)) ||
-                    (tabNumber === 2 && batchListByFilter(Verbs.open))
-                  }
-                  renderItem={renderRecipientView}
-                  keyExtractor={(item, index) => index.toString()}
-                />
-              </View>
             </View>
-
-            <ActionSheet
-              ref={batchActionsheet}
-              options={[
-                strings.resendInvoiceText,
-                strings.addRecipientToBatch,
-                strings.cancelInvoicesInBatch,
-                strings.cancel,
-              ]}
-              cancelButtonIndex={3}
-              destructiveButtonIndex={2}
-              onPress={(index) => {
-                if (index === ActionsheetPress.ResendInvoice) {
-                  setShowResendInvoicesModal(true);
-                }
-                if (index === ActionsheetPress.Addrecipients) {
-                  setShowAddRecipientsModal(true);
-                }
-                if (index === ActionsheetPress.CancelInvoice) {
-                  setShowCancelInvoices(true);
-                }
-              }}
-            />
-
-            {/* cancel Invoice Modal */}
-            <CancelInvoivebybatchModal
-              visible={showCancelInvoices}
-              batchData={batchData}
-              onCancelInvoice={() => {
-                setTimeout(() => {
-                  setIsApiCalled(true);
-                }, 10);
-                setShowCancelInvoices(false);
-              }}
-              closeModal={() => setShowCancelInvoices(false)}
-            />
-
-            {/* Resend Bybatch Modal */}
-            <AddRecipientsInBatchModal
-              visible={showResendInvoicesModal}
-              batchData={batchData}
-              title={strings.resendInvoiceText}
-              invoiceAction={InvoiceActionType.ResendBatch}
-              onDonePressForResend={() => {
-                setTimeout(() => {
-                  setIsApiCalled(true);
-                }, 10);
-                setShowResendInvoicesModal(false);
-              }}
-              closeModal={() => setShowResendInvoicesModal(false)}
-            />
-
-            {/* Add recepints Modal */}
-            <AddRecipientsInBatchModal
-              visible={showAddRecipientsModal}
-              batchData={batchData}
-              title={strings.addRecipientText}
-              invoiceAction={InvoiceActionType.AddRecipient}
-              onDonePressForAddRecipients={() => {
-                setShowAddRecipientsModal(false);
-                setTimeout(() => {
-                  setIsApiCalled(true);
-                }, 10);
-              }}
-              closeModal={() => setShowAddRecipientsModal(false)}
-            />
           </View>
-        )}
+
+          <ActionSheet
+            ref={batchActionsheet}
+            options={[
+              strings.resendInvoiceText,
+              strings.addRecipientToBatch,
+              strings.cancelInvoicesInBatch,
+              strings.cancel,
+            ]}
+            cancelButtonIndex={3}
+            destructiveButtonIndex={2}
+            onPress={(index) => {
+              if (index === ActionsheetPress.ResendInvoice) {
+                setShowResendInvoicesModal(true);
+              }
+              if (index === ActionsheetPress.Addrecipients) {
+                setShowAddRecipientsModal(true);
+              }
+              if (index === ActionsheetPress.CancelInvoice) {
+                setShowCancelInvoices(true);
+              }
+            }}
+          />
+
+          {/* cancel Invoice Modal */}
+          <CancelInvoivebybatchModal
+            visible={showCancelInvoices}
+            batchData={batchData}
+            onCancelInvoice={() => {
+              setTimeout(() => {
+                setIsApiCalled(true);
+              }, 10);
+              setShowCancelInvoices(false);
+            }}
+            closeModal={() => setShowCancelInvoices(false)}
+          />
+
+          {/* Resend Bybatch Modal */}
+          <AddRecipientsInBatchModal
+            visible={showResendInvoicesModal}
+            batchData={batchData}
+            title={strings.resendInvoiceText}
+            invoiceAction={InvoiceActionType.ResendBatch}
+            onDonePressForResend={() => {
+              setTimeout(() => {
+                setIsApiCalled(true);
+              }, 10);
+              setShowResendInvoicesModal(false);
+            }}
+            closeModal={() => setShowResendInvoicesModal(false)}
+          />
+
+          {/* Add recepints Modal */}
+          <AddRecipientsInBatchModal
+            visible={showAddRecipientsModal}
+            batchData={batchData}
+            title={strings.addRecipientText}
+            invoiceAction={InvoiceActionType.AddRecipient}
+            onDonePressForAddRecipients={() => {
+              setShowAddRecipientsModal(false);
+              setTimeout(() => {
+                setIsApiCalled(true);
+              }, 10);
+            }}
+            closeModal={() => setShowAddRecipientsModal(false)}
+          />
+        </View>
+
+        <View style={{backgroundColor: colors.whiteColor}}>
+          <TCScrollableProfileTabs
+            tabItem={tabs}
+            tabVerticalScroll={false}
+            onChangeTab={(Tab) => setTabNumber(Tab.i)}
+            currentTab={tabNumber}
+            customStyle={{
+              marginTop: 15,
+            }}
+            bounces={false}
+            tabStyle={{
+              marginTop: -15,
+            }}
+          />
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+          }}>
+          <FlatList
+            bounces={false}
+            showsVerticalScrollIndicator={false}
+            style={{
+              backgroundColor: colors.whiteColor,
+              flex: 1,
+            }}
+            ListEmptyComponent={() => (
+              <Text
+                style={{
+                  marginTop: 50,
+                  alignSelf: 'center',
+                  color: colors.userPostTimeColor,
+                  fontSize: 16,
+                  fontFamily: fonts.RMedium,
+                  lineHeight: 24,
+                }}>
+                {strings.noinvoice}
+              </Text>
+            )}
+            data={
+              (tabNumber === 0 && batchListByFilter(Verbs.allStatus)) ||
+              (tabNumber === 1 && batchListByFilter(Verbs.paid)) ||
+              (tabNumber === 2 && batchListByFilter(Verbs.open))
+            }
+            renderItem={renderRecipientView}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -526,16 +482,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
-  paymentProgressView: {
-    height: 20,
-    backgroundColor: colors.thinDividerColor,
-
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: colors.darkThemeColor,
-    marginTop: 15,
-    marginBottom: 20,
-  },
   statusText: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
@@ -553,31 +499,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 5,
-  },
-  percentTextstyle: {
-    color: colors.neonBlue,
-    fontFamily: fonts.RBold,
-    fontSize: 12,
-    marginLeft: 5,
-    marginTop: 10,
-    height: 20,
-
-    position: 'absolute',
-    top: -9,
-  },
-  innerGradientstle: {
-    borderWidth: 1.5,
-    height: 18,
-    borderColor: colors.neonBlue,
-    justifyContent: 'center',
-    borderRadius: 4,
-  },
-  percentTextStyle2: {
-    color: colors.neonBlue,
-    fontFamily: fonts.RBold,
-    fontSize: 12,
-    marginRight: 12,
-    marginTop: -1,
-    alignSelf: 'flex-end',
   },
 });

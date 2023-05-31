@@ -29,6 +29,7 @@ import {
 } from '../../api/Groups';
 import Verbs from '../../Constants/Verbs';
 import SwitchAccountShimmer from './SwitchAccountShimmer';
+import ScreenHeader from '../ScreenHeader';
 
 const SwitchAccountModal = ({
   isVisible = false,
@@ -70,9 +71,21 @@ const SwitchAccountModal = ({
   }, [isVisible, authContext]);
 
   const handleSwitchAccount = async (entity) => {
-    setShowLoader(true);
-    setSelectedAccount(entity);
-    await onSwitchProfile(entity);
+    if (entity.request_id) {
+      Alert.alert(
+        Platform.OS === 'android' ? '' : strings.requestSwitchModalAlertMessage,
+        Platform.OS === 'android' ? strings.requestSwitchModalAlertMessage : '',
+        [
+          {
+            text: strings.okTitleText,
+          },
+        ],
+      );
+    } else {
+      setShowLoader(true);
+      setSelectedAccount(entity);
+      await onSwitchProfile(entity);
+    }
     // closeModal();
   };
 
@@ -170,18 +183,20 @@ const SwitchAccountModal = ({
 
   return (
     <CustomModalWrapper
-      modalType={ModalTypes.style1}
+      modalType={ModalTypes.default}
       isVisible={isVisible}
       closeModal={closeModal}
       title={strings.switchAccount}
       containerStyle={styles.modalContainer}>
+      <ScreenHeader title={strings.switchAccount} />
       {isFetchingList ? (
         <SwitchAccountShimmer />
       ) : (
         <FlatList
           data={accountList}
-          keyExtractor={(item) => item.user_id ?? item.group_id}
+          keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{padding: 20}}
           renderItem={({item}) => (
             <>
               <Pressable
@@ -198,11 +213,7 @@ const SwitchAccountModal = ({
                     authContext,
                   )}
                   onPress={() => {
-                    if (item.request_id) {
-                      Alert.alert(strings.appName);
-                    } else {
-                      handleSwitchAccount(item);
-                    }
+                    handleSwitchAccount(item);
                   }}
                   onPressCancelRequest={() => {
                     handleCancelRequest(item);
@@ -264,7 +275,10 @@ const SwitchAccountModal = ({
         entityType={selectedAccount.entity_type}
         entityImage={selectedAccount.thumbnail}
         stopLoading={() => {
-          closeModal();
+          closeModal({
+            uid: selectedAccount.group_id ?? selectedAccount.user_id,
+            role: selectedAccount.entity_type,
+          });
           setShowLoader(false);
         }}
       />
@@ -274,8 +288,8 @@ const SwitchAccountModal = ({
 
 const styles = StyleSheet.create({
   modalContainer: {
-    paddingHorizontal: 15,
-    height: '95%',
+    height: '98%',
+    padding: 0,
   },
   row: {
     flexDirection: 'row',

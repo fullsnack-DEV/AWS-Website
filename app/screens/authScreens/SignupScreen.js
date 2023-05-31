@@ -127,7 +127,8 @@ export default function SignupScreen({navigation}) {
         <TouchableOpacity
           onPress={() => {
             navigation.pop();
-          }}>
+          }}
+          hitSlop={getHitSlop(20)}>
           <Image
             source={images.backArrow}
             style={{
@@ -135,6 +136,7 @@ export default function SignupScreen({navigation}) {
               width: 15,
               marginLeft: 20,
               tintColor: colors.whiteColor,
+              backgroundColor: 'red',
             }}
           />
         </TouchableOpacity>
@@ -560,6 +562,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
     color: colors.whiteColor,
+    // backgroundColor: 'red',
+    paddingLeft: 20,
+    paddingVertical: 10,
   },
   checkEmailText: {
     color: colors.whiteColor,

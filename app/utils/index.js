@@ -75,10 +75,10 @@ export const languageList = [
 ];
 
 export const groupMembershipFeeTypes = [
-  {label: 'Weekly', value: 'weekly'},
-  {label: 'Biweekly', value: 'biweekly'},
-  {label: 'Monthly', value: 'monthly'},
-  {label: 'Yearly', value: 'yearly'},
+  {label: 'Weekly', value: 'week'},
+  {label: 'Biweekly', value: 'biweek'},
+  {label: 'Monthly', value: 'month'},
+  {label: 'Yearly', value: 'year'},
 ];
 
 export const countryCode = [
@@ -2041,11 +2041,7 @@ export const getCalendar = async (
   }
 };
 
-export const getEventsSlots = async (
-  participants,
-  fromDate,
-  toDate,
-) => {
+export const getEventsSlots = async (participants) => {
   try {
     return getStorage('scheduleSetting').then(async (ids) => {
       const IDs = ids ?? [];
@@ -2072,13 +2068,18 @@ export const getEventsSlots = async (
           },
         },
       };
-      body.query.bool.must.push({
-        range: {start_datetime: {gt: fromDate}},
-      });
-      body.query.bool.must.push({
-        range: {actual_enddatetime: {lt: toDate}},
-      });
-      console.log('calender elastic search :=>', JSON.stringify(body));
+      // if (fromDate) {
+      //   body.query.bool.must.push({
+      //     range: {end_datetime: {gt: fromDate}},
+      //   });
+      // }
+
+      // if (toDate) {
+      //   body.query.bool.must.push({
+      //     range: {actual_enddatetime: {lt: toDate}},
+      //   });
+      // }
+      // console.log('calender elastic search :=>', JSON.stringify(body));
       return getCalendarIndex(body);
     });
   } catch (error) {
@@ -2561,6 +2562,7 @@ export const getRatingsOptions = (
       const option = {
         name: item.name,
         title: item.title,
+        details: item.details,
       };
       return option;
     });
@@ -2570,14 +2572,12 @@ export const getRatingsOptions = (
   return [];
 };
 
-export const groupBy = (
-  array,
-  key,
-) => array.reduce((result, currentValue) => {
+export const groupBy = (array, key) =>
+  array.reduce((result, currentValue) => {
     (result[currentValue[key]] = result[currentValue[key]] || []).push(
-      currentValue
-    )
-    return result
+      currentValue,
+    );
+    return result;
   }, {});
 export const getPrivacyValue = (option, authContext) => {
   const entity = authContext.entity.obj;

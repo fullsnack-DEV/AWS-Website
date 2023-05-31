@@ -389,6 +389,7 @@ const LoginScreen = ({navigation}) => {
           onPress={onLogin}
         />
         <TouchableOpacity
+          hitSlop={getHitSlop(15)}
           onPress={() => navigation.navigate('ForgotPasswordScreen')}>
           <Text style={styles.forgotPasswordText}>
             {strings.forgotPassword}
@@ -402,6 +403,7 @@ const LoginScreen = ({navigation}) => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
+          hitSlop={getHitSlop(15)}
           onPress={() => {
             // navigation.navigate('LoginScreen');
             // navigation.dispatch(StackActions.popToTop());

@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
   },
+
   subTitleTextStyle: {
     paddingLeft: 12,
     fontSize: 12,

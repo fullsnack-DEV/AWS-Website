@@ -1,12 +1,7 @@
 // @flow
 /* eslint-disable no-param-reassign */
 import React, {useState, useCallback, useContext, useEffect} from 'react';
-import {
-  FlatList,
-  Text,
-  View,
-  StyleSheet,
-} from 'react-native';
+import {FlatList, Text, View, StyleSheet} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -56,6 +51,8 @@ const SelectedRecipientsModal = ({
   }, []);
 
   useEffect(() => {
+    console.log(peopleRecipient.length);
+
     if (isVisible) {
       setSelectedPeopleRecipient(peopleRecipient);
       setSelectedTeamsRecipient(teamsRecipient);

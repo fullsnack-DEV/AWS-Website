@@ -14,7 +14,6 @@ import {
   SafeAreaView,
   Pressable,
 } from 'react-native';
-import {useIsFocused} from '@react-navigation/native';
 
 import {format} from 'react-string-format';
 import fonts from '../../Constants/Fonts';
@@ -31,11 +30,9 @@ import ScreenHeader from '../../components/ScreenHeader';
 
 export default function SportAccountSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
   const {sport, type} = route.params;
 
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
+  const [pointEvent] = useState('auto');
   const [userSetting, setUserSetting] = useState();
   const [sportObj, setSportObj] = useState({});
 
@@ -44,20 +41,6 @@ export default function SportAccountSettingScreen({navigation, route}) {
       headerShown: false,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (isFocused) {
-      if (
-        authContext.entity.obj?.is_pause === true ||
-        authContext.entity.obj?.is_deactivate === true
-      ) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-    }
-  }, [authContext, isFocused]);
 
   useEffect(() => {
     const sportDetails = getSportDetails(
@@ -140,13 +123,13 @@ export default function SportAccountSettingScreen({navigation, route}) {
         style={[
           styles.row,
           styles.menuItem,
-          {opacity: isAccountDeactivated && index <= 3 ? 0.5 : 1},
+          {opacity: authContext.isAccountDeactivated && index <= 3 ? 0.5 : 1},
         ]}
         onPress={() => {
           handleOptions(item);
         }}
         pointerEvents={
-          isAccountDeactivated && index <= 3 ? pointEvent : 'auto'
+          authContext.isAccountDeactivated && index <= 3 ? pointEvent : 'auto'
         }>
         <View style={{flex: 1}}>
           <Text style={styles.label}>{item}</Text>

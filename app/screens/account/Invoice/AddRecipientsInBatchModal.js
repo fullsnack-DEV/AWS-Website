@@ -47,7 +47,7 @@ export default function AddRecipientsInBatchModal({
   invoiceAction,
   title,
   onDonePressForAddRecipients = () => {},
-  onDonePressForResend = () => {}
+  onDonePressForResend = () => {},
 }) {
   const [newMembers, setNewMembers] = useState([]);
   const [newTeams, setNewTeams] = useState([]);
@@ -62,6 +62,8 @@ export default function AddRecipientsInBatchModal({
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
+    console.log(currentInvoice, 'from Current Inovice');
+
     if (visible) {
       setResendMessage();
       if (invoiceAction === InvoiceActionType.AddRecipient) {
@@ -116,6 +118,17 @@ export default function AddRecipientsInBatchModal({
       onSelectCancel={removeRecipient}
     />
   );
+
+  const getModalTitle = () => {
+    if (invoiceAction === InvoiceActionType.ResendBatch) {
+      return strings.resendInvoiceModalTitle;
+    }
+    if (invoiceAction === InvoiceActionType.Resend) {
+      return strings.resendInvoiceSingleTitle;
+    }
+
+    return strings.chooseReciepientModaltitle;
+  };
 
   /* eslint-disable no-unused-vars */
   const removeRecipient = ({item, index}) => {
@@ -172,7 +185,7 @@ export default function AddRecipientsInBatchModal({
         .then(() => {
           setMLoading(false);
           setSelectedRecipients([]);
-          onDonePressForAddRecipients()
+          onDonePressForAddRecipients();
         })
         .catch((e) => {
           setMLoading(false);
@@ -217,6 +230,7 @@ export default function AddRecipientsInBatchModal({
         setMLoading(false);
         setSelectedRecipients([]);
         closeModal();
+        onDonePressForResend();
       })
       .catch((e) => {
         setMLoading(false);
@@ -242,10 +256,20 @@ export default function AddRecipientsInBatchModal({
     </View>
   );
 
+  const onCloseModal = () => {
+    setResendMessage('');
+
+    setSelectedRecipients([]);
+    setShowRecipientsModal([]);
+    setNewMembers([]);
+    setNewTeams([]);
+    closeModal();
+  };
+
   return (
     <CustomModalWrapper
       isVisible={visible}
-      closeModal={closeModal}
+      closeModal={() => onCloseModal()}
       modalType={ModalTypes.style1}
       headerRightButtonText={strings.send}
       title={title}
@@ -256,11 +280,9 @@ export default function AddRecipientsInBatchModal({
         height: '100%',
       }}>
       <ActivityLoader visible={mLoading} />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
         <View style={styles.headertitle}>
-          <Text style={styles.headerTextstyle}>
-            {strings.resendInvoiceModalTitle}
-          </Text>
+          <Text style={styles.headerTextstyle}>{getModalTitle()}</Text>
         </View>
         {/* Detail fields */}
         <View style={styles.detailfielsstyle}>
@@ -280,7 +302,9 @@ export default function AddRecipientsInBatchModal({
               {strings.amountTitle.toUpperCase()}
             </Text>
             <Text style={styles.invoicetitletext}>
-              {`${currentInvoice.amount_due} ${currentInvoice.currency_type}`}
+              {`${currentInvoice.amount_due.toFixed(2)} ${
+                currentInvoice.currency_type
+              }`}
             </Text>
           </View>
 
@@ -319,7 +343,7 @@ export default function AddRecipientsInBatchModal({
                   color: colors.userPostTimeColor,
                 },
               ]}>
-              {currentInvoice.invoice_desc}
+              {currentInvoice.invoice_description}
             </ReadMore>
           </View>
 
@@ -368,7 +392,7 @@ export default function AddRecipientsInBatchModal({
                 }}
                 onPress={() => showRecipientsClicked()}>
                 <Text style={styles.addTextStyle}>{strings.addText}</Text>
-                <Image source={images.rightArrow} style={styles.ArrowStyle} />
+                <Image source={images.nextArrow} style={styles.ArrowStyle} />
               </TouchableOpacity>
             </View>
           )}
@@ -397,7 +421,7 @@ export default function AddRecipientsInBatchModal({
                 }}
                 onPress={() => onChooseRecipientsClicked()}>
                 <Text style={styles.addTextStyle}>{strings.choose}</Text>
-                <Image source={images.rightArrow} style={styles.ArrowStyle} />
+                <Image source={images.nextArrow} style={styles.ArrowStyle} />
               </TouchableOpacity>
             </View>
           )}
@@ -438,14 +462,13 @@ export default function AddRecipientsInBatchModal({
 
         {invoiceAction === InvoiceActionType.ResendBatch && (
           <FlatList
-            showsVerticalScrollIndicator={false}
             style={{marginTop: 10}}
             data={selectedRecipients}
             keyExtractor={(item, index) => index.toString()}
             ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
             renderItem={renderResendRecipient}
             ListEmptyComponent={listEmptyComponent}
-            ListFooterComponent={() => <View style={{marginBottom: 100}} />}
+            nestedScrollEnabled
           />
         )}
 
@@ -457,6 +480,7 @@ export default function AddRecipientsInBatchModal({
           recipientTeams={newTeams}
           selectedRecipients={selectedRecipients}
           invoiceType={currentInvoice.invoice_type}
+          rightbuttonText={strings.addText}
         />
 
         {invoiceAction === InvoiceActionType.ResendBatch && (
@@ -466,6 +490,7 @@ export default function AddRecipientsInBatchModal({
             onClose={() => setShowChooseRecipientsModal(false)}
             invoices={batchData.invoices ?? []}
             selectedRecipients={selectedRecipients}
+            ModalTitle={strings.addresendRecipintModaltitle}
           />
         )}
       </ScrollView>
@@ -491,13 +516,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 5,
   },
   ListEmptyTextstyle: {
     marginTop: 25,
     fontFamily: fonts.RRegular,
     color: colors.grayColor,
     fontSize: 26,
+    padding: 5,
     lineHeight: 24,
   },
   headerTextstyle: {
@@ -553,13 +578,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     lineHeight: 24,
+    marginRight: 5,
     color: colors.orangeColorCard,
   },
   ArrowStyle: {
-    width: 11,
-    height: 10,
     tintColor: colors.orangeColorCard,
-    marginLeft: 7,
-    marginTop: 8,
+    marginTop: 2,
+    alignSelf: 'center',
+    height: 15,
+    width: 15,
+
+    resizeMode: 'contain',
   },
 });

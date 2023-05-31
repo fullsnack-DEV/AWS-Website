@@ -32,6 +32,23 @@ const AccountCard = ({
     }
   }, [entityData, sportList]);
 
+  const renderDeactivateFlag = () => {
+    let label = '';
+    if (entityData.under_terminate) {
+      label = strings.terminated;
+    } else if (entityData.is_pause) {
+      label = strings.paused;
+    } else if (entityData.is_deactivate) {
+      label = strings.deactivated;
+    }
+
+    return label ? (
+      <View style={styles.buttonView}>
+        <Text style={styles.textStyle}>{label}</Text>
+      </View>
+    ) : null;
+  };
+
   return (
     <Pressable style={[styles.parent, containerStyle]} onPress={onPress}>
       <GroupIcon
@@ -39,6 +56,7 @@ const AccountCard = ({
         groupName={entityData.group_name}
         imageUrl={entityData.thumbnail}
         containerStyle={styles.profileIcon}
+        textstyle={{fontSize: 12}}
       />
       <View style={{marginLeft: 15}}>
         <Text style={styles.entityName} numberOfLines={1}>
@@ -74,6 +92,7 @@ const AccountCard = ({
             )}
           </Pressable>
         )}
+        {renderDeactivateFlag()}
       </View>
     </Pressable>
   );

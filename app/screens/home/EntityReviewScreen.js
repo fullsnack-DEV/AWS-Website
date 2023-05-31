@@ -12,7 +12,7 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 
-import ReviewSection from '../../components/Home/ReviewSection';
+// import ReviewSection from '../../components/Home/ReviewSection';
 import RefereeReviewerList from './RefereeReviewerList';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -20,12 +20,14 @@ import Header from '../../components/Home/Header';
 import ReviewRecentMatch from '../../components/Home/ReviewRecentMatch';
 import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
+import ScreenHeader from '../../components/ScreenHeader';
+// import ReviewsContentScreen from './SportActivity/contentScreens/ReviewsContentScreen';
 // import { useIsFocused } from '@react-navigation/native';
 
 // const entity = {};
 export default function EntityReviewScreen({navigation, route}) {
-  const [averageTeamReview] = useState(route?.params?.averageTeamReview);
-  const [teamReviewData] = useState(route?.params?.teamReviewData);
+  // const [averageTeamReview] = useState(route?.params?.averageTeamReview);
+  // const [teamReviewData] = useState(route?.params?.teamReviewData);
   const [userID] = useState(route?.params?.userID);
 
   const [reviewerDetailModalVisible, setReviewerDetailModalVisible] =
@@ -33,8 +35,19 @@ export default function EntityReviewScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.reviewTitle}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        rightIcon2={images.searchUser}
+        containerStyle={{
+          paddingHorizontal: 10,
+          paddingTop: 6,
+          paddingBottom: 14,
+        }}
+      />
       <View style={{flex: 1}}>
-        <ReviewSection
+        {/* <ReviewSection
           isTeamReviewSection={true}
           reviewsData={averageTeamReview}
           reviewsFeed={teamReviewData}
@@ -42,7 +55,7 @@ export default function EntityReviewScreen({navigation, route}) {
           onReadMorePress={() => {
             setReviewerDetailModalVisible(!reviewerDetailModalVisible);
           }}
-        />
+        /> */}
         {/* <TeamHomeReview
                   navigation={navigation}
                   teamID={route?.params?.uid || authContext.entity.uid}

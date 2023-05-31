@@ -279,11 +279,15 @@ const OrderedSporList = ({
               }}
               onColor={colors.greenColorCard}
               offColor={colors.userPostTimeColor}
+              trackOnStyle={styles.toggleTrackStyle}
+              trackOffStyle={styles.toggleTrackStyle}
             />
           ) : null}
+
           {!isAdmin &&
           isAvailable &&
           isUserWithSameSport &&
+          !showToggleButton &&
           authContext.entity.role !== Verbs.entityTypeClub ? (
             <Pressable style={styles.button}>
               <Text style={styles.btnText}>
@@ -323,7 +327,7 @@ const OrderedSporList = ({
                         styles.listContainer,
                         index === 0 ? {marginTop: 34} : {},
                       ]}>
-                      <Text style={styles.listTitle}>{item}</Text>
+                      <Text style={styles.listTitle}>{item.toUpperCase()}</Text>
                       {list
                         .sort((a, b) => a.sport.localeCompare(b.sport))
                         .map((ele, idx) =>
@@ -498,8 +502,8 @@ const styles = StyleSheet.create({
   },
   sportView: {
     justifyContent: 'space-between',
-    borderRadius: 8,
-    backgroundColor: colors.whiteColor,
+    borderRadius: 5,
+    backgroundColor: colors.offwhite,
     shadowColor: colors.googleColor,
     shadowOffset: {
       width: 0,
@@ -509,8 +513,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     elevation: 5,
     marginBottom: 20,
-    borderLeftWidth: 8,
-    paddingVertical: 5,
+    borderLeftWidth: 5,
+    // paddingVertical: 5,
+    height: 50,
   },
   horizontalCard: {
     width: 90,
@@ -563,8 +568,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   listTitle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 20,
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     marginBottom: 15,
   },
@@ -604,6 +610,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.RBold,
     color: colors.whiteColor,
+  },
+  toggleTrackStyle: {
+    // width: 40,
+    height: 23,
+    borderRadius: 12,
   },
 });
 export default OrderedSporList;

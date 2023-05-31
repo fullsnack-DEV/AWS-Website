@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
 
 import React, {
@@ -28,7 +29,6 @@ import ActionSheet from '@alessiocancian/react-native-actionsheet';
 
 import AuthContext from '../../../auth/context';
 import TCSearchBox from '../../../components/TCSearchBox';
-import TCNoDataView from '../../../components/TCNoDataView';
 
 import {
   getGroupDetails,
@@ -50,6 +50,7 @@ import {followUser, unfollowUser} from '../../../api/Users';
 import TCFollowUnfollwButton from '../../../components/TCFollowUnfollwButton';
 import Verbs from '../../../Constants/Verbs';
 import Header from '../../../components/Home/Header';
+import GroupMemberShimmer from './GroupMemberShimmer';
 
 export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -57,15 +58,14 @@ export default function GroupMembersScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   // For activity indigator
-  const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(true);
   const [searchMember, setSearchMember] = useState();
 
   const [members, setMembers] = useState([]);
 
   const [switchUser] = useState(authContext.entity);
-  const [groupObj] = useState(route.params?.groupObj);
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
+
+  const [pointEvent] = useState('auto');
   const [active, setActive] = useState(true);
 
   const [groupObjNew, setGroupObjNew] = useState({});
@@ -80,12 +80,11 @@ export default function GroupMembersScreen({navigation, route}) {
 
     setGroupObjNew(response.payload);
   };
-
-  const getGroupsLoggedInUser = () => {
+  const getGroupsLoggedInUser = useCallback(() => {
     getJoinedGroups(Verbs.entityTypeClub, authContext).then((response) => {
       setUserJoinedGrpList(response.payload);
     });
-  };
+  }, [authContext]);
 
   useEffect(() => {
     getMembers();
@@ -173,26 +172,7 @@ export default function GroupMembersScreen({navigation, route}) {
   useEffect(() => {
     callGroup(groupID, authContext);
     getGroupsLoggedInUser();
-
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (isFocused) {
-      if (authContext?.entity?.obj?.is_pause === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-      if (authContext?.entity?.obj?.is_deactivate === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-    }
-  }, [
-    authContext.entity?.obj.entity_type,
-    authContext.entity?.obj?.is_deactivate,
-    authContext.entity?.obj?.is_pause,
-    authContext.entity.role,
-    isFocused,
-  ]);
+  }, [authContext, getGroupsLoggedInUser, groupID]);
 
   const searchFilterFunction = (text) => {
     const filteredData = members.filter((item) => {
@@ -349,7 +329,7 @@ export default function GroupMembersScreen({navigation, route}) {
                 groupObjNew?.parent_groups?.length > 0 && (
                   <>
                     {/* 3 for Club member */}
-                    {groupObjNew?.who_can_see_member_profile ===
+                    {/* {groupObjNew?.who_can_see_member_profile ===
                       Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS &&
                       userJoinedGrpList?.some((el) =>
                         groupObjNew?.parent_groups?.includes(el.group_id),
@@ -363,7 +343,7 @@ export default function GroupMembersScreen({navigation, route}) {
                             style={styles.arrowStyle}
                           />
                         </TouchableOpacity>
-                      )}
+                      )} */}
 
                     {/* 2 for Team member with club selected */}
 
@@ -389,7 +369,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
                     {/* Team member */}
 
-                    {groupObjNew?.who_can_see_member_profile ===
+                    {/* {groupObjNew?.who_can_see_member_profile ===
                       Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS &&
                       members.some(
                         (el) => el.user_id === authContext.user.user_id,
@@ -403,7 +383,7 @@ export default function GroupMembersScreen({navigation, route}) {
                             style={styles.arrowStyle}
                           />
                         </TouchableOpacity>
-                      )}
+                      )} */}
 
                     {/* Team admin only */}
                     {groupObjNew?.who_can_see_member_profile ===
@@ -436,7 +416,7 @@ export default function GroupMembersScreen({navigation, route}) {
                         </TouchableOpacity>
                       )}
 
-                    {groupObjNew?.who_can_see_member_profile ===
+                    {/* {groupObjNew?.who_can_see_member_profile ===
                       Verbs.PRIVACY_GROUP_MEMBER_TEAMCLUB &&
                       groupObjNew?.am_i_admin && (
                         <TouchableOpacity
@@ -448,7 +428,7 @@ export default function GroupMembersScreen({navigation, route}) {
                             style={styles.arrowStyle}
                           />
                         </TouchableOpacity>
-                      )}
+                      )} */}
 
                     {/* to find club admin get the club deta */}
                   </>
@@ -456,7 +436,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
               {groupObjNew?.entity_type === Verbs.entityTypeClub && (
                 <>
-                  {groupObjNew?.who_can_see_member_profile ===
+                  {/* {groupObjNew?.who_can_see_member_profile ===
                     Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS &&
                     members.some(
                       (el) => el.user_id === authContext.user.user_id,
@@ -470,10 +450,10 @@ export default function GroupMembersScreen({navigation, route}) {
                           style={styles.arrowStyle}
                         />
                       </TouchableOpacity>
-                    )}
+                    )} */}
 
                   {/* club admin */}
-                  {groupObjNew?.who_can_see_member_profile ===
+                  {/* {groupObjNew?.who_can_see_member_profile ===
                     Verbs.PRIVACY_GROUP_MEMBER_CLUB &&
                     groupObjNew?.am_i_admin && (
                       <TouchableOpacity
@@ -485,14 +465,14 @@ export default function GroupMembersScreen({navigation, route}) {
                           style={styles.arrowStyle}
                         />
                       </TouchableOpacity>
-                    )}
+                    )} */}
                 </>
               )}
 
               {groupObjNew?.entity_type === Verbs.entityTypeTeam &&
                 !groupObjNew?.parent_groups?.length > 0 && (
                   <>
-                    {groupObjNew?.who_can_see_member_profile ===
+                    {/* {groupObjNew?.who_can_see_member_profile ===
                       Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS &&
                       members.some(
                         (el) => el.user_id === authContext.user.user_id,
@@ -506,9 +486,9 @@ export default function GroupMembersScreen({navigation, route}) {
                             style={styles.arrowStyle}
                           />
                         </TouchableOpacity>
-                      )}
+                      )} */}
 
-                    {groupObjNew?.who_can_see_member_profile ===
+                    {/* {groupObjNew?.who_can_see_member_profile ===
                       Verbs.PRIVACY_GROUP_MEMBER_TEAM &&
                       groupObjNew?.am_i_admin && (
                         <TouchableOpacity
@@ -520,7 +500,7 @@ export default function GroupMembersScreen({navigation, route}) {
                             style={styles.arrowStyle}
                           />
                         </TouchableOpacity>
-                      )}
+                      )} */}
                   </>
                 )}
             </View>
@@ -543,7 +523,7 @@ export default function GroupMembersScreen({navigation, route}) {
               }}
             />
 
-            {groupObj?.who_can_see_member_profile ===
+            {/* {groupObj?.who_can_see_member_profile ===
               Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS && (
               <TouchableOpacity
                 style={[styles.buttonContainer, {marginLeft: 15}]}
@@ -554,7 +534,7 @@ export default function GroupMembersScreen({navigation, route}) {
                   style={styles.arrowStyle}
                 />
               </TouchableOpacity>
-            )}
+            )} */}
           </View>
         );
       }
@@ -615,66 +595,70 @@ export default function GroupMembersScreen({navigation, route}) {
                     />
                   )}
                 </TouchableOpacity>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                  }}>
-                  {data?.is_admin && (
-                    <TCUserRoleBadge
-                      title={strings.admin}
-                      titleColor={colors.themeColor}
-                      gradientColor={colors.lightGrayBackground}
-                      gradientColor1={colors.lightGrayBackground}
-                      style={{
-                        marginLeft: 5,
-                      }}
-                    />
-                  )}
-                  {data?.is_coach && (
-                    <TCUserRoleBadge
-                      title={strings.coach}
-                      titleColor={colors.greeColor}
-                      gradientColor={colors.lightGrayBackground}
-                      gradientColor1={colors.lightGrayBackground}
-                      style={{
-                        marginLeft: 5,
-                      }}
-                    />
-                  )}
-                  {data?.is_player && (
-                    <TCUserRoleBadge
-                      title={strings.player}
-                      titleColor={colors.playerBadgeColor}
-                      gradientColor={colors.lightGrayBackground}
-                      gradientColor1={colors.lightGrayBackground}
-                      style={{
-                        marginLeft: 5,
-                      }}
-                    />
-                  )}
-                  {data?.is_parent && (
-                    <TCUserRoleBadge
-                      title={strings.parentBadgeText}
-                      titleColor={colors.yellowColor}
-                      gradientColor={colors.lightGrayBackground}
-                      gradientColor1={colors.lightGrayBackground}
-                      style={{
-                        marginLeft: 5,
-                      }}
-                    />
-                  )}
-                  {data?.is_others && (
-                    <TCUserRoleBadge
-                      title={strings.other}
-                      titleColor={colors.veryLightBlack}
-                      gradientColor={colors.lightGrayBackground}
-                      gradientColor1={colors.lightGrayBackground}
-                      style={{
-                        marginLeft: 5,
-                      }}
-                    />
-                  )}
-                </View>
+                {(authContext.entity.obj.entity_type === Verbs.entityTypeTeam ||
+                  authContext.entity.obj.entity_type ===
+                    Verbs.entityTypeClub) && (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                    }}>
+                    {data?.is_admin && (
+                      <TCUserRoleBadge
+                        title={strings.admin}
+                        titleColor={colors.themeColor}
+                        gradientColor={colors.lightGrayBackground}
+                        gradientColor1={colors.lightGrayBackground}
+                        style={{
+                          marginLeft: 5,
+                        }}
+                      />
+                    )}
+                    {data?.is_coach && (
+                      <TCUserRoleBadge
+                        title={strings.coach}
+                        titleColor={colors.greeColor}
+                        gradientColor={colors.lightGrayBackground}
+                        gradientColor1={colors.lightGrayBackground}
+                        style={{
+                          marginLeft: 5,
+                        }}
+                      />
+                    )}
+                    {data?.is_player && (
+                      <TCUserRoleBadge
+                        title={strings.player}
+                        titleColor={colors.playerBadgeColor}
+                        gradientColor={colors.lightGrayBackground}
+                        gradientColor1={colors.lightGrayBackground}
+                        style={{
+                          marginLeft: 5,
+                        }}
+                      />
+                    )}
+                    {data?.is_parent && (
+                      <TCUserRoleBadge
+                        title={strings.parentBadgeText}
+                        titleColor={colors.yellowColor}
+                        gradientColor={colors.lightGrayBackground}
+                        gradientColor1={colors.lightGrayBackground}
+                        style={{
+                          marginLeft: 5,
+                        }}
+                      />
+                    )}
+                    {data?.is_others && (
+                      <TCUserRoleBadge
+                        title={strings.other}
+                        titleColor={colors.veryLightBlack}
+                        gradientColor={colors.lightGrayBackground}
+                        gradientColor1={colors.lightGrayBackground}
+                        style={{
+                          marginLeft: 5,
+                        }}
+                      />
+                    )}
+                  </View>
+                )}
               </View>
             </View>
           </View>
@@ -702,10 +686,9 @@ export default function GroupMembersScreen({navigation, route}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-
       <View
         style={{
-          opacity: isAccountDeactivated ? 0.5 : 1,
+          opacity: authContext.isAccountDeactivated ? 0.5 : 1,
         }}
         pointerEvents={pointEvent}>
         {currentRoute === 'GroupMembersScreen' && (
@@ -756,10 +739,9 @@ export default function GroupMembersScreen({navigation, route}) {
             keyExtractor={(item, index) => `${item.first_name}/${index}`}
           />
         ) : (
-          <TCNoDataView title={strings.noMebersFoundText} />
+          <GroupMemberShimmer />
         )}
       </View>
-
       <ActionSheet
         ref={actionSheet}
         options={[
@@ -777,7 +759,6 @@ export default function GroupMembersScreen({navigation, route}) {
           }
         }}
       />
-
       <ActionSheet
         ref={actionSheetPlus}
         options={[
@@ -790,7 +771,9 @@ export default function GroupMembersScreen({navigation, route}) {
         cancelButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
-            navigation.navigate('RequestMultipleBasicInfoScreen', {groupID});
+            navigation.navigate('RequestMultipleBasicInfoScreen', {
+              groupID,
+            });
           } else if (index === 1) {
             Alert.alert(strings.underDevelopment);
           } else if (index === 2) {

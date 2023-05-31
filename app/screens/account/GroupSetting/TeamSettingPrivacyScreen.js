@@ -24,14 +24,14 @@ import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function TeamSettingPrivacyScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
-  const [teamSetting] = useState([{key: strings.whatTeamJoinClub, id: 0}]);
+  const [pointEvent] = useState('auto');
+  const [teamSetting] = useState([{key: strings.WhatTeamCanJoinClub, id: 0}]);
   const [teamCanJoinClub, setTeamCanJoinClub] = useState(
     route?.params?.teamCanJoinClub
       ? route?.params?.teamCanJoinClub
@@ -39,7 +39,8 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
   );
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <Text style={styles.headerTitle}>{strings.team}</Text>,
+      headerShown: false,
+      // headerTitle: () => <, style={styles.headerTitle}>{strings.team}</,>,
     });
   }, [navigation]);
 
@@ -64,28 +65,6 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
       });
     }
   };
-
-  useEffect(() => {
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (isFocused) {
-      if (authContext?.entity?.obj?.is_pause === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-      if (authContext?.entity?.obj?.is_deactivate === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-    }
-  }, [
-    authContext.entity?.obj.entity_type,
-    authContext.entity?.obj?.is_deactivate,
-    authContext.entity?.obj?.is_pause,
-    authContext.entity.role,
-    isFocused,
-    pointEvent,
-  ]);
 
   const getSettingValue = useCallback(
     (item) => {
@@ -113,10 +92,10 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
       <View
         style={{
           flexDirection: 'row',
-          opacity: isAccountDeactivated && index <= 1 ? 0.5 : 1,
+          opacity: authContext.isAccountDeactivated && index <= 1 ? 0.5 : 1,
         }}
         pointerEvents={
-          isAccountDeactivated && index <= 1 ? pointEvent : 'auto'
+          authContext.isAccountDeactivated && index <= 1 ? pointEvent : 'auto'
         }>
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === teamSetting[0].key && (
@@ -130,6 +109,12 @@ export default function TeamSettingPrivacyScreen({navigation, route}) {
   );
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.team}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
+
       <ScrollView style={styles.mainContainer}>
         <FlatList
           data={teamSetting}
@@ -179,11 +164,11 @@ const styles = StyleSheet.create({
     width: wp('90%'),
   },
 
-  headerTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
+  // headerTitle: {
+  //   fontFamily: fonts.RBold,
+  //   fontSize: 16,
+  //   color: colors.lightBlackColor,
+  // },
   currencyTypeStyle: {
     marginRight: 10,
     fontSize: 16,

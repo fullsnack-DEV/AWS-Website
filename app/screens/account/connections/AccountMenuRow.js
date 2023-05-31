@@ -51,7 +51,9 @@ const AccountMenuRow = ({
             containerStyle={[
               styles.iconContainer,
               item.option.group_name ? {borderWidth: 2} : {borderWidth: 0},
+              item.icon ? {} : {padding: 4},
             ]}
+            textstyle={{fontSize: 10}}
           />
           <View style={styles.row}>
             <View style={{maxWidth: '65%'}}>
@@ -100,7 +102,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'transparent',
     marginRight: 10,
-    padding: 4,
   },
   listItems: {
     fontSize: 16,

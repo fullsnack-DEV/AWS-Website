@@ -30,8 +30,7 @@ export default function ClubSettingPrivacyScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
+  const [pointEvent] = useState('auto');
   const [clubSetting] = useState([{key: strings.canClubInviteTeamText, id: 0}]);
   const [clubInviteTeam, setClubInviteTeam] = useState(
     route?.params?.clubInviteTeam
@@ -66,28 +65,6 @@ export default function ClubSettingPrivacyScreen({navigation, route}) {
     }
   };
 
-  useEffect(() => {
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (isFocused) {
-      if (authContext?.entity?.obj?.is_pause === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-      if (authContext?.entity?.obj?.is_deactivate === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-    }
-  }, [
-    authContext.entity?.obj.entity_type,
-    authContext.entity?.obj?.is_deactivate,
-    authContext.entity?.obj?.is_pause,
-    authContext.entity.role,
-    isFocused,
-    pointEvent,
-  ]);
-
   const getSettingValue = useCallback(
     (item) => {
       if (item === clubSetting[0].key) {
@@ -111,10 +88,10 @@ export default function ClubSettingPrivacyScreen({navigation, route}) {
       <View
         style={{
           flexDirection: 'row',
-          opacity: isAccountDeactivated && index <= 1 ? 0.5 : 1,
+          opacity: authContext.isAccountDeactivated && index <= 1 ? 0.5 : 1,
         }}
         pointerEvents={
-          isAccountDeactivated && index <= 1 ? pointEvent : 'auto'
+          authContext.isAccountDeactivated && index <= 1 ? pointEvent : 'auto'
         }>
         <Text style={styles.listItems}>{item.key}</Text>
         {item.key === clubSetting[0].key && (

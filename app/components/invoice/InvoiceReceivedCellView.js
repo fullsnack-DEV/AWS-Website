@@ -10,8 +10,8 @@ import {strings} from '../../../Localization/translation';
 
 export default function InvoiceReceivedCellView({invoice, onPressCard}) {
   const getStatus = () => {
-    if (invoice.amount_due === 0) {
-      return strings.allpaid;
+    if (invoice.amount_remaining === 0) {
+      return strings.paidText;
     }
     return strings.openText;
   };
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     lineHeight: 21,
   },
   invoiveAmountContainer: {
-    flex: 0.5,
+    flex: 1,
   },
   invoiceAmountTexStyle: {
     fontSize: 16,

@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
 
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
   },
   matchFeeTxt: {
     alignSelf: 'center',

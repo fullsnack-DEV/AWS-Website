@@ -31,7 +31,7 @@ function TCProfileImageControl({
           imageStyle={[styles.bgImageStyle, bgImageStyle]}
           source={bgImage}
           defaultSource={bgImagePlaceholder}
-          resizeMode={'contain'}
+          resizeMode={'cover'}
         />
 
         {showEditButtons && (
@@ -55,7 +55,6 @@ function TCProfileImageControl({
           imageStyle={[
             styles.profileImageStyle,
             profileImageStyle,
-
             {marginTop: showEditButtons ? 0 : -36},
           ]}
           source={profileImage || profileImagePlaceholder}
@@ -86,7 +85,7 @@ const styles = StyleSheet.create({
   bgImageStyle: {
     flex: 1,
     backgroundColor: colors.grayBackgroundColor,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
   profileImageStyle: {
     height: 60,
@@ -101,14 +100,13 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 1,
     borderColor: colors.greyBorderColor,
-
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.whiteColor,
   },
   bgCameraButtonStyle: {
-    height: 22,
-    width: 22,
+    height: 25,
+    width: 25,
     alignSelf: 'flex-end',
     marginEnd: 16,
     marginTop: -37,

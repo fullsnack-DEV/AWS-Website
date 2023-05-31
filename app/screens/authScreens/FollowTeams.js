@@ -425,16 +425,16 @@ const styles = StyleSheet.create({
   sportText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    fontSize: wp('6%'),
-    marginBottom: hp('4%'),
-    marginTop: hp('12%'),
-    paddingHorizontal: 30,
-    textAlign: 'left',
+    fontSize: 25,
+    marginTop: 60,
+    paddingHorizontal: 25,
+
+    marginBottom: 25,
   },
   teamNameText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBlack,
-    fontSize: wp('4%'),
+    fontSize: 16,
     textAlign: 'left',
     textAlignVertical: 'center',
   },
@@ -446,6 +446,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    // backgroundColor: 'red',
   },
   imageContainer: {
     // margin: 15,

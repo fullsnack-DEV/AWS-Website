@@ -667,7 +667,9 @@ export default function IncomingChallengeSettings({navigation, route}) {
         closeModal={() => {
           setCongratulationsModal(false);
           if (route.params?.comeFrom) {
-            navigation.navigate(route.params.comeFrom);
+            navigation.navigate(route.params.comeFrom, {
+              ...route.params.routeParams,
+            });
           } else {
             navigation.navigate('AccountScreen', {
               createdSportName: sportName,

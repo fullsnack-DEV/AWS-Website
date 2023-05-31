@@ -24,6 +24,7 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import {getHitSlop} from '../../utils';
 
 export default function ForgotPasswordScreen({navigation}) {
   const [email, setEmail] = useState('');
@@ -31,18 +32,21 @@ export default function ForgotPasswordScreen({navigation}) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text
-          style={styles.nextButtonStyle}
-          onPress={() => {
-            if (checkValidation()) {
-              forgotPassword(email);
-            }
-          }}>
-          {strings.next}
-        </Text>
+        <TouchableOpacity hitSlop={getHitSlop(19)}>
+          <Text
+            style={styles.nextButtonStyle}
+            onPress={() => {
+              if (checkValidation()) {
+                forgotPassword(email);
+              }
+            }}>
+            {strings.next}
+          </Text>
+        </TouchableOpacity>
       ),
       headerLeft: () => (
         <TouchableOpacity
+          hitSlop={getHitSlop(15)}
           onPress={() => {
             navigation.pop();
           }}>

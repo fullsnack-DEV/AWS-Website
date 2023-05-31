@@ -377,10 +377,12 @@ export default function CreateTeamForm1({navigation, route}) {
   };
 
   const onApplyPress = () => {
-    setTimeout(() => {
-      setGender(getGender?.label);
-      setVisibleGendersModal(false);
-    }, 300);
+    if (gendersSelection) {
+      setTimeout(() => {
+        setGender(getGender?.label);
+        setVisibleGendersModal(false);
+      }, 300);
+    }
   };
 
   const toggleModal = () => {
@@ -392,10 +394,6 @@ export default function CreateTeamForm1({navigation, route}) {
       onPress={() => {
         setGendersSelection(item?.value);
         setGetGender(item);
-        // setTimeout(() => {
-        //   setGender(item?.label);
-        //   setVisibleGendersModal(false);
-        // }, 300);
       }}>
       <View
         style={{
@@ -405,7 +403,18 @@ export default function CreateTeamForm1({navigation, route}) {
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.label}</Text>
+        <Text
+          style={[
+            styles.languageList,
+            {
+              color:
+                gendersSelection === item?.value
+                  ? colors.orangeColor
+                  : colors.lightBlackColor,
+            },
+          ]}>
+          {item.label}
+        </Text>
         <View style={styles.checkbox}>
           {gendersSelection === item?.value ? (
             <Image
@@ -946,6 +955,9 @@ export default function CreateTeamForm1({navigation, route}) {
                       fontFamily: fonts.RMedium,
                       lineHeight: 24,
                       marginBottom: 12,
+                      color: gendersSelection
+                        ? colors.lightBlackColor
+                        : colors.userPostTimeColor,
                     }}>
                     {strings.apply}
                   </Text>

@@ -38,8 +38,6 @@ import {setStorage, widthPercentageToDP as wp} from '../../utils';
 import {strings} from '../../../Localization/translation';
 import {getShortsList, getSportsList} from '../../api/Games'; // getRecentGameDetails
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import {userActivate} from '../../api/Users';
-import {groupUnpaused} from '../../api/Groups';
 import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
 import Verbs from '../../Constants/Verbs';
 
@@ -61,31 +59,7 @@ const FeedsScreen = ({navigation}) => {
   const [isAdmin, setIsAdmin] = useState(true);
   const [sports, setSports] = useState([]);
   const [sportArr, setSportArr] = useState([]);
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
-
-  useEffect(() => {
-    setIsAccountDeactivated(false);
-    setPointEvent('auto');
-    if (isFocused) {
-      console.log('its called....', authContext.entity.role);
-      if (authContext?.entity?.obj?.is_pause === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-      if (authContext?.entity?.obj?.is_deactivate === true) {
-        setIsAccountDeactivated(true);
-        setPointEvent('none');
-      }
-    }
-  }, [
-    authContext.entity?.obj.entity_type,
-    authContext.entity?.obj?.is_deactivate,
-    authContext.entity?.obj?.is_pause,
-    authContext.entity.role,
-    isFocused,
-    pointEvent,
-  ]);
+  const [pointEvent] = useState('auto');
 
   useEffect(() => {
     setFirstTimeLoading(true);
@@ -505,120 +479,18 @@ const FeedsScreen = ({navigation}) => {
     ),
     [topRightButton],
   );
-  const unPauseGroup = () => {
-    setloading(true);
-    groupUnpaused(authContext)
-      .then((response) => {
-        setIsAccountDeactivated(false);
-        console.log('deactivate account ', response);
-
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-            setloading(false);
-          });
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
-  const reActivateUser = () => {
-    setloading(true);
-    userActivate(authContext)
-      .then((response) => {
-        console.log('deactivate account ', response);
-
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-            setloading(false);
-          });
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
 
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <View
-        style={{opacity: isAccountDeactivated ? 0.5 : 1}}
+        style={{opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
         {renderTopHeader}
       </View>
-      {isAccountDeactivated && (
-        <TCAccountDeactivate
-          type={
-            authContext?.entity?.obj?.is_pause === true
-              ? 'pause'
-              : authContext?.entity?.obj?.under_terminate === true
-              ? 'terminate'
-              : 'deactivate'
-          }
-          onPress={() => {
-            Alert.alert(
-              format(
-                strings.pauseUnpauseAccountText,
-                authContext?.entity?.obj?.is_pause === true
-                  ? strings.unpausesmall
-                  : strings.reactivatesmall,
-              ),
-              '',
-              [
-                {
-                  text: strings.cancel,
-                  style: 'cancel',
-                },
-                {
-                  text:
-                    authContext?.entity?.obj?.is_pause === true
-                      ? strings.unpause
-                      : strings.reactivate,
-                  style: 'destructive',
-                  onPress: () => {
-                    if (authContext?.entity?.obj?.is_pause === true) {
-                      unPauseGroup();
-                    } else {
-                      reActivateUser();
-                    }
-                  },
-                },
-              ],
-              {cancelable: false},
-            );
-          }}
-        />
-      )}
+      {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       <View
-        style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
+        style={{flex: 1, opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
         {firstTimeLoading ? <NewsFeedShimmer /> : renderNewsFeedList}
         {renderImageProgress}

@@ -10,13 +10,18 @@ const MemberList = ({
   isAdmin = false,
   onPressMember = () => {},
   onPressMore = () => {},
+  addMember = () => {},
   containerStyle = {},
 }) => {
   const [members, setMembers] = useState([]);
 
   useEffect(() => {
-    const newList = [...list];
-    setMembers(newList.splice(0, 9));
+    if (list.length > 0) {
+      const newList = [...list];
+      const slicedList =
+        newList.length > 9 ? newList.splice(0, 9) : [...newList];
+      setMembers(slicedList);
+    }
   }, [list]);
 
   if (list?.length > 0) {
@@ -51,14 +56,14 @@ const MemberList = ({
           </Pressable>
         ))}
         {isAdmin && list.length < 9 && (
-          <View style={styles.addIcon}>
+          <Pressable style={styles.addIcon} onPress={addMember}>
             <Image source={images.plus} style={styles.image} />
-          </View>
+          </Pressable>
         )}
       </View>
     );
   }
-  return null;
+  return <View style={{marginBottom: 25}} />;
 };
 
 const styles = StyleSheet.create({

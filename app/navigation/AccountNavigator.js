@@ -184,6 +184,7 @@ import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteCh
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 import InvoiceSentScreen from '../screens/account/Invoice/InvoiceSentScreen';
+import PayInvoiceScreen from '../screens/account/Invoice/PayInvoiceScreen';
 import RecipientDetailScreen from '../screens/account/Invoice/RecipientDetailScreen';
 import InviteToMemberScreen from '../screens/account/groupConnections/createMemberProfile/InviteToMemberScreen';
 import InvoiceReceivedScreen from '../screens/account/Invoice/InvoiceReceivedScreen';
@@ -269,6 +270,8 @@ import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScre
 import ReplyScreen from '../screens/home/SportActivity/contentScreens/ReplyScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
+import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
+import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
 
 // Scorekeeper Review Screen
 
@@ -528,6 +531,11 @@ const AccountNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+      component={GroupFollowersScreen}
+      name="GroupFollowersScreen"
+      options={{headerShown: false}}
+    />
 
     {/* Accounts screens */}
 
@@ -569,16 +577,7 @@ const AccountNavigator = () => (
       name="EntityReviewScreen"
       component={EntityReviewScreen}
       options={{
-        title: strings.reviewTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
@@ -586,32 +585,14 @@ const AccountNavigator = () => (
       name="EntityStatScreen"
       component={EntityStatScreen}
       options={{
-        title: strings.statsTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
       name="EntityScoreboardScreen"
       component={EntityScoreboardScreen}
       options={{
-        title: strings.scoreboard,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -650,16 +631,7 @@ const AccountNavigator = () => (
       name="EventScreen"
       component={EventScreen}
       options={{
-        title: strings.event,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -2011,6 +1983,12 @@ const AccountNavigator = () => (
     />
 
     <Stack.Screen
+      name="MembershipFeeScreen"
+      component={MembershipFeeScreen}
+      options={{headerShown: false}}
+    />
+
+    <Stack.Screen
       name="PaymentMethodsScreen"
       component={PaymentMethodsScreen}
       options={{
@@ -3071,6 +3049,15 @@ const AccountNavigator = () => (
         },
       }}
     />
+
+    <Stack.Screen
+      name="PayInvoiceScreen"
+      component={PayInvoiceScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+
     <Stack.Screen
       name="RecipientDetailScreen"
       component={RecipientDetailScreen}
@@ -3119,6 +3106,7 @@ const AccountNavigator = () => (
       name="CanceledInvoicesScreen"
       component={CanceledInvoicesScreen}
       options={{
+        headerShown: false,
         title: strings.cancelledInvoiceText,
         headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
@@ -3692,7 +3680,6 @@ const AccountNavigator = () => (
         },
       }}
     />
-
     <Stack.Screen
       name="LanguageSettingScreen"
       component={LanguageSettingScreen}
@@ -3702,7 +3689,6 @@ const AccountNavigator = () => (
         headerTitleStyle: {
           fontWeight: '500',
         },
-
         headerShown: true,
         headerStyle: {
           backgroundColor: colors.whiteColor,

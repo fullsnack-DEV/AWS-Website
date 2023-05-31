@@ -31,6 +31,7 @@ import MemberProfile from '../../../components/groupConnections/MemberProfile';
 import {getHitSlop, getStorage, setStorage, showAlert} from '../../../utils';
 import TCProfileTag from '../../../components/TCProfileTag';
 import images from '../../../Constants/ImagePath';
+import InviteListShimmer from './InviteListShimmer';
 
 export default function RequestMultipleBasicInfoScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
@@ -107,8 +108,6 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
       return obj;
     });
 
-    console.log(selectedList.length, 'from arragy');
-
     setSelectedList(selectedPlayers);
   };
 
@@ -143,13 +142,14 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
 
   const handleTagPress = ({index}) => {
     players[index].isChecked = false;
-    setPlayers([...players]);
     players.map((obj) => {
       if (obj.isChecked) {
         selectedPlayers.push(obj.user_id);
       }
       return obj;
     });
+
+    setSelectedList(selectedPlayers);
   };
 
   const listEmptyComponent = () => (
@@ -248,7 +248,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         )}
       </>
     ),
-    [selectedList],
+    [selectedList, players],
   );
 
   return (
@@ -271,20 +271,24 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
         />
       </View>
 
-      <View style={{marginTop: 5}}>
-        <FlatList
-          extraData={players}
-          showsVerticalScrollIndicator={false}
-          data={players}
-          keyExtractor={(item, index) => index.toString()}
-          ItemSeparatorComponent={ItemSeparatorComponent}
-          ListHeaderComponent={ListHeaderComponent()}
-          renderItem={renderPlayer}
-          ListEmptyComponent={listEmptyComponent}
-          stickyHeaderIndices={[0]}
-          ListFooterComponent={() => <View style={{marginBottom: 180}} />}
-        />
-      </View>
+      {players.length === 0 ? (
+        <InviteListShimmer />
+      ) : (
+        <View style={{marginTop: 5}}>
+          <FlatList
+            extraData={players}
+            showsVerticalScrollIndicator={false}
+            data={players}
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={ItemSeparatorComponent}
+            ListHeaderComponent={ListHeaderComponent()}
+            renderItem={renderPlayer}
+            ListEmptyComponent={listEmptyComponent}
+            stickyHeaderIndices={[0]}
+            ListFooterComponent={() => <View style={{marginBottom: 180}} />}
+          />
+        </View>
+      )}
 
       <Modal
         isVisible={isInfoModalVisible}

@@ -8,7 +8,6 @@ import {
   SafeAreaView,
   Pressable,
 } from 'react-native';
-import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
@@ -24,12 +23,10 @@ import {
 import {getPrivacyValue} from '../../../utils';
 
 export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
-  const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
-  const [pointEvent, setPointEvent] = useState('auto');
+  const [pointEvent] = useState('auto');
   const [settingOptions, setSettingOptions] = useState([]);
 
   const {type} = route.params;
-  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
 
   useLayoutEffect(() => {
@@ -37,17 +34,6 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
       headerShown: false,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    if (
-      isFocused &&
-      (authContext.entity.obj?.is_pause === true ||
-        authContext.entity.obj?.is_deactivate === true)
-    ) {
-      setIsAccountDeactivated(true);
-      setPointEvent('none');
-    }
-  }, [authContext.entity?.obj, isFocused]);
 
   useEffect(() => {
     let options = [];
@@ -85,10 +71,12 @@ export default function GroupInviteSettingPrivacyScreen({navigation, route}) {
       <Pressable
         style={[
           styles.listContainer,
-          {opacity: isAccountDeactivated && index <= 1 ? 0.5 : 1},
+          {opacity: authContext.isAccountDeactivated && index <= 1 ? 0.5 : 1},
         ]}
-        pointerEvents={isAccountDeactivated && index <= 1 ? pointEvent : 'auto'}
-        disabled={isAccountDeactivated}
+        pointerEvents={
+          authContext.isAccountDeactivated && index <= 1 ? pointEvent : 'auto'
+        }
+        disabled={authContext.isAccountDeactivated}
         onPress={() => {
           navigation.navigate('GroupInviteYouScreen', {
             groupInviteYou: getPrivacyValue(item, authContext),

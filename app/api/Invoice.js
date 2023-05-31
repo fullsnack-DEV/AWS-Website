@@ -79,13 +79,8 @@ export const getRecieverInvoices = (
   authContext,
   invoiceDate,
   invoiceEndDate,
-  receiverId,
 ) => {
   let str = '';
-
-  if (receiverId) {
-    str = `receiver_id=${receiverId}`;
-  }
 
   if (invoiceDate) {
     if (str.length > 1) {
@@ -99,8 +94,6 @@ export const getRecieverInvoices = (
       str = `${str}&invoice_enddate=${invoiceEndDate}`;
     }
   }
-
-  // `${Config.BASE_URL}/invoices/receiver?receiver_id=jjkiuiiki&invoice_date=kjkjkk&invoice_enddate="lklklklklk"`
 
   return makeAPIRequest({
     method: 'get',
@@ -116,12 +109,33 @@ export const getBatchInvoices = (bacthID, authContext) =>
     authContext,
   });
 
-export const getCancelledInvoice = (type, authContext) =>
-  makeAPIRequest({
+export const getCancelledInvoice = (
+  type,
+  authContext,
+  invoiceDate,
+  invoiceEndDate,
+) => {
+  let str = '';
+
+  if (invoiceDate) {
+    if (str.length > 1) {
+      str = `${str}&invoice_date=${invoiceDate}`;
+    } else {
+      str = `invoice_date=${invoiceDate}`;
+    }
+  }
+  if (invoiceEndDate) {
+    if (str.length > 0) {
+      str = `${str}&invoice_enddate=${invoiceEndDate}`;
+    }
+  }
+
+  return makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/invoices/${type}?cancel_invoice=true`,
+    url: `${Config.BASE_URL}/invoices/${type}?cancel_invoice=true&${str}`,
     authContext,
   });
+};
 
 export const getInvoiceDetail = (invoiceID, authContext) =>
   makeAPIRequest({

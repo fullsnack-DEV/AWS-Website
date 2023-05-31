@@ -15,6 +15,7 @@ import EditCertificateScreen from './contentScreens/EditCertificateScreen';
 import {getEntitySportList} from '../../../utils/sportsActivityUtils';
 import Verbs from '../../../Constants/Verbs';
 import {DEFAULT_NTRP} from '../../../Constants/GeneralConstants';
+import AvailableServiceAreas from './contentScreens/AvailableServiceAreas';
 
 const EditWrapperScreen = ({navigation, route}) => {
   const [userData, setUserData] = useState({});
@@ -90,6 +91,7 @@ const EditWrapperScreen = ({navigation, route}) => {
       case strings.homeFacility:
         return (
           <EditHomeFacilityScreen
+            place={userData.homePlace}
             setData={(data) => {
               setUserData({...userData, ...data});
             }}
@@ -113,7 +115,25 @@ const EditWrapperScreen = ({navigation, route}) => {
         );
 
       case strings.servicableAreas:
-        return null;
+        return (
+          <AvailableServiceAreas
+            areas={sportObj.setting?.available_area?.address_list}
+            setData={(addresses) => {
+              const obj = {
+                ...updatedSportObj,
+                setting: {
+                  ...updatedSportObj.setting,
+                  available_area: {
+                    ...updatedSportObj.setting.available_area,
+                    address_list: addresses,
+                  },
+                },
+              };
+
+              setUpdatedSportObj(obj);
+            }}
+          />
+        );
 
       default:
         return null;

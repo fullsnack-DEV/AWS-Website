@@ -7,8 +7,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 30,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
-    marginBottom: 25,
+    fontFamily: fonts.RRegular,
+    marginBottom: 10,
   },
   row: {
     flexDirection: 'row',
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    lineHeight: 24,
+
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
   },
@@ -39,10 +39,9 @@ const styles = StyleSheet.create({
   },
   greyContainer: {
     paddingHorizontal: 10,
-    paddingVertical: 14,
+
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    marginTop: 34,
   },
   bottomContainer: {
     flex: 1,
@@ -111,15 +110,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 32,
     borderRadius: 5,
-    backgroundColor: colors.whiteColor,
-    shadowColor: colors.blackColor,
-    shadowOpacity: 0.16,
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowRadius: 3,
-    elevation: 4,
+    backgroundColor: colors.lightGrey,
   },
   addVenueButtonText: {
     fontSize: 12,
@@ -143,6 +134,44 @@ const styles = StyleSheet.create({
     height: 10,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  matchHostTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    lineHeight: 24,
+    color: colors.googleColor,
+  },
+  matchfeeTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    lineHeight: 24,
+    color: colors.googleColor,
+    marginTop: 5,
+  },
+  rowContainerStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  bulletContainerView: {
+    height: 5,
+    width: 5,
+    backgroundColor: colors.googleColor,
+    borderRadius: 50,
+    marginRight: 10,
+  },
+  bulletText: {
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    lineHeight: 24,
+    color: colors.googleColor,
+  },
+  matchFeeModalInfoText: {
+    fontSize: 12,
+    fontFamily: fonts.RRegular,
+    lineHeight: 18,
+    color: colors.googleColor,
+    marginBottom: 25,
   },
 });
 

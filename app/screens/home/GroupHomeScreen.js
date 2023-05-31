@@ -149,6 +149,8 @@ const GroupHomeScreen = ({
         navigation.navigate('EntityScoreboardScreen', {
           uid: groupId,
           isAdmin,
+          entityType: groupData.entity_type,
+          groupData,
         });
         break;
       case strings.stats:
@@ -157,8 +159,10 @@ const GroupHomeScreen = ({
         });
         break;
       case strings.reviews:
+        navigation.navigate('EntityReviewScreen', {
+          entityData: currentUserData,
+        });
         break;
-
       case strings.galleryTitle:
         navigation.navigate('EntityGallaryScreen', {
           currentUserData,
@@ -181,6 +185,16 @@ const GroupHomeScreen = ({
         groupData={currentUserData}
         sportList={authContext.sports}
         isAdmin={isAdmin}
+        onClickMembers={() => {
+          navigation.navigate('GroupMembersScreen', {
+            groupObj: groupData,
+            groupID: groupId,
+            fromProfile: true,
+          });
+        }}
+        onClickFollowers={() => {
+          navigation.navigate('GroupFollowersScreen', {groupId});
+        }}
       />
       <MemberList
         list={currentUserData.joined_members}
@@ -220,13 +234,7 @@ const GroupHomeScreen = ({
                 strings.stats,
                 strings.reviews,
               ]
-            : [
-                strings.infoTitle,
-                strings.scheduleTitle,
-                strings.scoreboard,
-                strings.stats,
-                strings.galleryTitle,
-              ]
+            : [strings.infoTitle, strings.galleryTitle]
         }
         onPress={(option) => {
           handleTabOptions(option);
