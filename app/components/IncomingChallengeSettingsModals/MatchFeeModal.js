@@ -61,7 +61,7 @@ const MatchFeeModal = ({
           value={`${gameFee.fee ?? 0}`}
           style={[
             styles.label,
-            {marginRight: 5, flex: 1, textAlign: 'center', padding: 0},
+            {marginRight: 15, flex: 1, textAlign: 'right', padding: 0},
           ]}
           onChangeText={(text) => {
             onChange(text);

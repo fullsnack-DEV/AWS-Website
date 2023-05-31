@@ -60,9 +60,14 @@ const MatchFeeReminder = ({
       containerStyle={{width: '100%', height: '100%'}}>
       <View style={{flex: 1}}>
         {entityType === Verbs.entityTypePlayer ? (
-          <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            style={{
+              backgroundColor: 'red',
+            }}>
             <Text style={styles.title}>
-              {strings.warningTextForFee}{' '}
+              {strings.warningTextForFee}
               <Text style={[styles.title, {color: colors.themeColor}]}>
                 {getTitle()}
               </Text>

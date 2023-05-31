@@ -8,7 +8,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Image,
 } from 'react-native';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
@@ -19,7 +18,7 @@ import {
   LATITUDE_DELTA,
   LONGITUDE_DELTA,
 } from '../../Constants/GeneralConstants';
-import images from '../../Constants/ImagePath';
+
 import AddressWithMapModal from '../AddressWithMap/AddressWithMapModal';
 import EventMapView from '../Schedule/EventMapView';
 
@@ -60,16 +59,6 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
               ]}>
               {strings.venueInfo}
             </Text>
-            <Image
-              source={images.infoIcon}
-              style={{
-                height: 15,
-                width: 15,
-                position: 'absolute',
-                bottom: 20,
-                left: 139,
-              }}
-            />
           </View>
         )}
         renderItem={({item, index}) => (
