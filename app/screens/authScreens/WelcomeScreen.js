@@ -288,7 +288,6 @@ export default function WelcomeScreen({navigation}) {
     });
 
   const socialSignInSignUp = (authResult, message, extraData = {}) => {
-    setloading(false);
     const dummyAuthContext = {...authContext};
     const socialSignInSignUpOnAuthChanged = auth().onAuthStateChanged(
       (user) => {
@@ -296,7 +295,6 @@ export default function WelcomeScreen({navigation}) {
           user
             .getIdTokenResult()
             .then(async (idTokenResult) => {
-              setloading(false);
               const token = {
                 token: idTokenResult.token,
                 expirationTime: idTokenResult.expirationTime,
@@ -304,7 +302,6 @@ export default function WelcomeScreen({navigation}) {
               dummyAuthContext.tokenData = token;
               checkUserIsRegistratedOrNotWithTownscup(user?.email)
                 .then((userExist) => {
-                  setloading(false);
                   const userConfig = {
                     method: 'get',
                     url: `${Config.BASE_URL}/users/${user?.uid}`,
@@ -313,7 +310,6 @@ export default function WelcomeScreen({navigation}) {
                   if (userExist) {
                     apiCall(userConfig)
                       .then(async (response) => {
-                        setloading(false);
                         dummyAuthContext.entity = {
                           uid: user.uid,
                           role: 'user',
@@ -394,16 +390,13 @@ export default function WelcomeScreen({navigation}) {
     provider,
     extraData = {},
   ) => {
+    setloading(true);
     auth()
       .signInWithCredential(credential)
       .then(async (authResult) => {
-        setloading(false);
-
         socialSignInSignUp(authResult, provider, extraData);
       })
       .catch(async (error) => {
-        // error.email is undefined
-
         const codeError = error.code;
         if (codeError === 'auth/account-exists-with-different-credential') {
           const providers = await auth().fetchSignInMethodsForEmail(
@@ -483,16 +476,15 @@ export default function WelcomeScreen({navigation}) {
   const onGoogleButtonPress = async () => {
     try {
       setloading(true);
-
       await GoogleSignin.hasPlayServices();
       const {idToken} = await GoogleSignin.signIn();
-      const accessToken = await (await GoogleSignin.getTokens()).accessToken;
-      const googleCredential = await auth.GoogleAuthProvider.credential(
+      const accessToken = (await GoogleSignin.getTokens()).accessToken;
+      const googleCredential = auth.GoogleAuthProvider.credential(
         idToken,
         accessToken,
       );
 
-      await signInSignUpWithSocialCredential(googleCredential, 'GOOGLE');
+      signInSignUpWithSocialCredential(googleCredential, 'GOOGLE | ');
     } catch (error) {
       setloading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {

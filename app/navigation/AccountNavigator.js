@@ -3021,7 +3021,8 @@ const AccountNavigator = () => (
         headerTintColor: colors.blackColor,
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

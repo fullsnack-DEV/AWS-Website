@@ -11,7 +11,7 @@ import {
   Alert,
   SafeAreaView,
 } from 'react-native';
-import QB from 'quickblox-react-native-sdk';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -33,12 +33,6 @@ import {strings} from '../../../Localization/translation';
 import TCProfileImage from '../../components/TCProfileImage';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import apiCall from '../../utils/apiCall';
-import {
-  QBconnectAndSubscribe,
-  QBcreateUser,
-  QBlogin,
-  QB_ACCOUNT_TYPE,
-} from '../../utils/QuickBlox';
 
 export default function FollowTeams({route, navigation}) {
   const [teams, setTeams] = useState(['1']);
@@ -272,7 +266,7 @@ export default function FollowTeams({route, navigation}) {
           authEntity.role = 'user';
           setDummyAuthContext('entity', authEntity);
           setDummyAuthContext('user', createdUser?.payload);
-          signUpWithQB(createdUser?.payload);
+          wholeSignUpProcessComplete(createdUser?.payload);
         })
         .catch((e) => {
           setloading(false);
@@ -282,39 +276,7 @@ export default function FollowTeams({route, navigation}) {
         });
     }
   };
-  const signUpWithQB = async (response) => {
-    let qbEntity = {...dummyAuthContext.entity};
 
-    const setting = await Utility.getStorage('appSetting');
-
-    authContext.setQBCredential(setting);
-    QB.settings.enableAutoReconnect({enable: true});
-    QBlogin(qbEntity.uid, response)
-      .then(async (res) => {
-        qbEntity = {
-          ...qbEntity,
-          QB: {...res.user, connected: true, token: res?.session?.token},
-        };
-        QBconnectAndSubscribe(qbEntity);
-        setDummyAuthContext('entity', qbEntity);
-        await wholeSignUpProcessComplete(response);
-      })
-      .catch(async (error) => {
-        console.log('QB Login Error : ', error.message);
-        qbEntity = {...qbEntity, QB: {connected: false}};
-        setDummyAuthContext('entity', qbEntity);
-        QBcreateUser(qbEntity.uid, response, QB_ACCOUNT_TYPE.USER)
-          .then(() => {
-            QBlogin(qbEntity.uid).then((loginRes) => {
-              console.log('QB loginRes', loginRes);
-            });
-          })
-          .catch((e) => {
-            console.log('QB error', e);
-          });
-        await wholeSignUpProcessComplete(response);
-      });
-  };
   const wholeSignUpProcessComplete = async (userData) => {
     const entity = dummyAuthContext?.entity;
     const tokenData = dummyAuthContext?.tokenData;

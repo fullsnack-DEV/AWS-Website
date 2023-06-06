@@ -136,7 +136,6 @@ export default function SignupScreen({navigation}) {
               width: 15,
               marginLeft: 20,
               tintColor: colors.whiteColor,
-              backgroundColor: 'red',
             }}
           />
         </TouchableOpacity>

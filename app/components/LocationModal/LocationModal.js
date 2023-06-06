@@ -158,6 +158,7 @@ function LocationModal({
       .catch((e) => {
         setLoading(false);
         handleNearByCityData([]);
+
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
@@ -176,6 +177,7 @@ function LocationModal({
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
         setLocationFetch(true);
+
         if (location.position) {
           setCurrentLocation(location);
           getNearbyCityData(
@@ -187,7 +189,7 @@ function LocationModal({
           setLoading(false);
           setCurrentLocation(null);
 
-          handleVisibleModal();
+          // handleVisibleModal();
         }
       })
       .catch((e) => {
