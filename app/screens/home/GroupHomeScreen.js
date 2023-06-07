@@ -241,6 +241,13 @@ const GroupHomeScreen = ({
             fromProfile: true,
           });
         }}
+        addMember={() => {
+          navigation.navigate('GroupMembersScreen', {
+            groupObj: groupData,
+            groupID: groupId,
+            fromProfile: true,
+          });
+        }}
       />
       <GroupHomeButton
         groupData={currentUserData}

@@ -95,7 +95,11 @@ const MembershipFeeScreen = ({navigation, route}) => {
           <Pressable
             style={[
               styles.inputContainer,
-              {flexDirection: 'row', alignItems: 'center'},
+              {
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingVertical: 6,
+              },
             ]}>
             <View style={{flex: 1, marginRight: 5}}>
               <TextInput

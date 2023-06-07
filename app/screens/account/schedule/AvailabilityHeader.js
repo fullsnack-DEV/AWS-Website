@@ -43,7 +43,10 @@ const AvailabilityHeader = ({
         <TouchableOpacity
           style={styles.arrowContainer}
           onPress={() => onNext(endDate)}>
-          <Image source={images.rightArrow} style={styles.arrowIcon} />
+          <Image
+            source={images.leftArrow}
+            style={[styles.arrowIcon, {transform: [{rotate: '180deg'}]}]}
+          />
         </TouchableOpacity>
       </View>
     ) : (

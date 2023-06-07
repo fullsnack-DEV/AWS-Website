@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   row: {
     flexDirection: 'row',
@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
   },
@@ -39,6 +38,7 @@ const styles = StyleSheet.create({
   },
   greyContainer: {
     paddingHorizontal: 10,
+    marginVertical: 35,
 
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,

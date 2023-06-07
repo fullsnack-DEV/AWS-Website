@@ -906,15 +906,18 @@ export default {
     'en_• If your team isn’t reserving the following number of scorekeepers 5 days after the challenge is accepted, the confirmed game may be canceled.',
   gameDurationTitle1: 'en_Set the Game duration.',
   gameDurationTitle2:
-    'en_If the scores are tied at the end of the periods above,',
+    'en_If the scores are tied after the final scheduled period,',
   detailsTitleText: 'en_Please add more details if needed.',
-
+  Tiebreakers: 'en_TIEBREAKERS',
+  TiebreakersPlaceholder:
+    'en_Explain what you will do when the scores are tied after the last period.',
+  PeriodsAndIntermissions: 'en_Periods & Intermissions',
   firstPeriodText: 'en_1st Period',
   intervalText: 'en_Interval',
   secondPeriodText: 'en_2nd Period',
 
-  withoutOverTimeText: 'en_the game ends without over time.',
-  withOverTimeText: 'en_the game goes into over time.',
+  withoutOverTimeText: 'en_the match ends without going into overtime.',
+  withOverTimeText: 'en_the match goes into overtime.',
 
   addAreaText: 'en_Add areas where you can referee a game.',
   setRangeText: 'en_Set the range where you can referee a game',
@@ -925,6 +928,7 @@ export default {
   firstOverTimeText: 'en_1st overtime',
   minuteText: 'en_min.',
   totalTimeTitle: 'en_Total time :',
+  totalDuration: 'en_Total Duration',
   selectRecipientValidation: 'en_Please select recipients.',
   selectInvoiceTypeValidation: 'en_Please select invoice type.',
   payInvoiceFirstValidation:
@@ -1758,7 +1762,8 @@ export default {
   changeCurrency: 'en_Change currency',
   currencySetting: 'en_Currency Setting',
   nOverTime: 'en_{0} Overtime',
-  addIntervalPeriod: 'en_+ Add Interval & Period',
+  Overtime: 'en_OVERTIME',
+  addIntervalPeriod: 'en_+ Add Intermission & Period',
   hmTime: 'en_{0}h {1}m',
   canNotCgangesetting: 'en_You can not change availibility setting.',
   hasBeenDeclined: 'en_ has been declined.',
@@ -2382,7 +2387,7 @@ export default {
   refundPolicies: 'en_Refund Policies',
   gameRules: 'en_Game Rules',
   availability: 'en_Availibility',
-  gameDuration: 'en_Game Duration',
+  // gameDuration: 'en_Game Duration',
   setPointDuration: 'en_Sets, points & Duration',
   logText: 'en_log',
   deactivateActivity: 'en_Deactivate Activity',
@@ -2970,4 +2975,9 @@ export default {
   areYouSureToRemove: 'en_Are you sure want to remove {0}?',
   removeGoingModalText:
     'en_The event fee should be refunded when an attendee is removed.',
+  otherDetails: 'en_OTHER DETAILS',
+  otherDetailsPlaceholder:
+    'en_Details about sets, games, points, tiebreakers and the maximum match duration',
+  min: 'en_Min',
+  max: 'en_Max',
 };

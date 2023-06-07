@@ -576,9 +576,7 @@ export default function EventScreen({navigation, route}) {
         {activeTab === strings.infoTitle ? (
           <>
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>
-                {strings.organizerTitle}
-              </Text>
+              <Text style={styles.headerTextStyle}>{strings.description}</Text>
               <ReadMore
                 numberOfLines={3}
                 style={styles.longTextStyle}

@@ -103,7 +103,7 @@ export default function ManageChallengeScreen({navigation, route}) {
     if (settingObject) {
       switch (option) {
         case strings.availability:
-          return settingObject.availability ?? Verbs.on;
+          return settingObject.availibility ?? Verbs.on;
 
         case strings.gameTypeTitle:
           return settingObject.game_type ?? Verbs.friendly;
@@ -217,8 +217,15 @@ export default function ManageChallengeScreen({navigation, route}) {
           setShowModal(true);
           break;
 
-        case strings.setGamesDuration:
         case strings.gameDuration:
+          navigation.navigate('GameDuration', {
+            settingObj: settingObject,
+            comeFrom: 'ManageChallengeScreen',
+            sportName,
+          });
+          break;
+
+        case strings.setGamesDuration:
           setModalObj({
             title: option,
             settingsObj: settingObject,
@@ -258,8 +265,8 @@ export default function ManageChallengeScreen({navigation, route}) {
         <View style={{flex: 1}}>
           <Text style={styles.label}>{item.key}</Text>
         </View>
-        <View style={[styles.row, {flex: 1}]}>
-          <View style={{flex: 1, alignItems: 'flex-end'}}>
+        <View style={[styles.row, {flex: 1, justifyContent: 'flex-end'}]}>
+          <View style={{alignItems: 'flex-end'}}>
             <Text
               style={[
                 styles.label,

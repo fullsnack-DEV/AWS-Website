@@ -295,7 +295,7 @@ export default function CreateEventScreen({navigation, route}) {
           justifyContent: 'space-between',
           marginBottom: 15,
         }}>
-        <Text style={styles.languageList}>{item}</Text>
+        <Text style={styles.languageList}>{item.text}</Text>
         <View style={styles.checkbox}>
           {(whoOption === see && whoCanSeeOption.value === item?.value) ||
           (whoOption === join && whoCanJoinOption.value === item?.value) ||
@@ -709,25 +709,66 @@ export default function CreateEventScreen({navigation, route}) {
     ) {
       if (whoOption === see) {
         return [
-          strings.everyoneTitleText,
-          strings.followingAndFollowers,
-          strings.following,
-          strings.onlymeTitleText,
+          {
+            text: strings.everyoneTitleText,
+            value: 0,
+          },
+          {
+            text: strings.followingAndFollowers,
+            value: 2,
+          },
+          {
+            text: strings.following,
+            value: 3,
+          },
+          {
+            text: strings.onlymeTitleText,
+            value: 1,
+          },
         ];
       }
 
       if (whoOption === join) {
         return [
-          strings.everyoneTitleText,
-          strings.followingAndFollowers,
-          strings.following,
-          strings.inviteOnly,
-          strings.onlymeTitleText,
+          {
+            text: strings.everyoneTitleText,
+            value: 0,
+          },
+          {
+            text: strings.followingAndFollowers,
+            value: 2,
+          },
+          {
+            text: strings.following,
+            value: 3,
+          },
+          {
+            text: strings.inviteOnly,
+            value: 1,
+          },
+          {
+            text: strings.onlymeTitleText,
+            value: 1,
+          },
+          // strings.everyoneTitleText,
+          // strings.followingAndFollowers,
+          // strings.following,
+          // strings.inviteOnly,
+          // strings.onlymeTitleText,
         ];
       }
 
       if (whoOption === invite) {
-        return [strings.attendeeRadioText, strings.onlymeTitleText];
+        return [
+          {
+            text: strings.attendeeRadioText,
+            value: 0,
+          },
+          {
+            text: strings.onlymeTitleText,
+            value: 1,
+          },
+        ];
       }
     }
     if (

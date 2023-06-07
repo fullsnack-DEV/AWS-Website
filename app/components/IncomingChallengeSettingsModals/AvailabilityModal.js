@@ -31,19 +31,20 @@ const AvailabilityModal = ({
     switch (entityType) {
       case Verbs.entityTypePlayer:
         return strings.availabilityModalTitle;
-
       case Verbs.entityTypeReferee:
         return strings.availibilityRefereeTitle;
-
       case Verbs.entityTypeScorekeeper:
         return strings.availibilityScorekeeperTitle;
-
       default:
         return '';
     }
   };
   return (
-    <View style={{flex: 1, justifyContent: 'space-between'}}>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'space-between',
+      }}>
       <View>
         <Text style={styles.title}>{getTitle()}</Text>
         {RadioButtonList.map((item, index) => (

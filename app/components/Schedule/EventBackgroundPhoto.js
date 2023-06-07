@@ -24,7 +24,7 @@ function EventBackgroundPhoto({
     <ImageBackground
       source={imageURL}
       imageStyle={styles.imageBorder}
-      resizeMode="cover"
+      resizeMode="contain"
       style={[styles.bgStyle, {height: isImage ? 168 : 150}, containerStyle]}>
       {!isPreview && (
         <View>

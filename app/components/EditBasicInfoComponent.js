@@ -74,7 +74,7 @@ const EditBasicInfoComponent = ({
   const renderPhoneNumber = () => {
     if (userInfo?.phone_numbers?.length > 0) {
       return userInfo.phone_numbers.map((item, index) => (
-        <View style={styles.row} key={index}>
+        <View style={[styles.row, {marginBottom: 15}]} key={index}>
           <Pressable
             style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]}
             onPress={() => setCountryCodeVisible(true)}>
@@ -211,7 +211,7 @@ const EditBasicInfoComponent = ({
             <View style={{flex: 1, marginRight: 7}}>
               <TextInput
                 placeholder={strings.height}
-                style={styles.inputField}
+                style={[styles.inputField, {textAlign: 'center'}]}
                 onChangeText={(text) => {
                   setUserInfo({
                     ...userInfo,
@@ -246,7 +246,7 @@ const EditBasicInfoComponent = ({
                 useNativeAndroidPickerStyle={false}
                 style={{
                   inputIOS: styles.inputField,
-                  inputAndroid: styles.inputField,
+                  inputAndroid: [styles.inputField, {textAlign: 'center'}],
                 }}
                 Icon={() => (
                   <Image
@@ -265,7 +265,7 @@ const EditBasicInfoComponent = ({
             <View style={{flex: 1, marginRight: 7}}>
               <TextInput
                 placeholder={strings.weight}
-                style={styles.inputField}
+                style={[styles.inputField, {textAlign: 'center'}]}
                 onChangeText={(text) => {
                   setUserInfo({
                     ...userInfo,
@@ -300,7 +300,7 @@ const EditBasicInfoComponent = ({
                 useNativeAndroidPickerStyle={false}
                 style={{
                   inputIOS: styles.inputField,
-                  inputAndroid: styles.inputField,
+                  inputAndroid: [styles.inputField, {textAlign: 'center'}],
                 }}
                 Icon={() => (
                   <Image
@@ -332,6 +332,33 @@ const EditBasicInfoComponent = ({
           <Text style={styles.titleText}>{strings.phone.toUpperCase()}</Text>
           {renderPhoneNumber()}
         </View>
+
+        <Pressable
+          style={{marginBottom: 23}}
+          onPress={() => {
+            const list = [...userInfo.phone_numbers];
+            const obj = {
+              country_code: 1,
+              phone_number: '',
+            };
+            list.push(obj);
+            setUserInfo({
+              ...userInfo,
+              phone_numbers: list,
+            });
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              backgroundColor: colors.textFieldBackground,
+              paddingVertical: 3,
+              paddingHorizontal: 10,
+              marginBottom: 33,
+              alignSelf: 'center',
+            }}>
+            + Add Phone
+          </Text>
+        </Pressable>
 
         <View style={{marginBottom: 35}}>
           <Text style={styles.titleText}>
@@ -418,7 +445,7 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
-    marginBottom: 6,
+    marginBottom: 10,
   },
   inputField: {
     height: 40,

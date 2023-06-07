@@ -27,10 +27,11 @@ import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import TCLabel from '../../../../components/TCLabel';
-import TCMessageButton from '../../../../components/TCMessageButton';
+// import TCMessageButton from '../../../../components/TCMessageButton';
 import TCTextInputClear from '../../../../components/TCTextInputClear';
 import images from '../../../../Constants/ImagePath';
 import {getNumberSuffix} from '../../../../utils/gameUtils';
+import ScreenHeader from '../../../../components/ScreenHeader';
 
 const MAX_HOUR_LIMIT = 100;
 // const entity = {};
@@ -80,27 +81,7 @@ export default function GameDuration({navigation, route}) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <Text
-          style={styles.saveButtonStyle}
-          onPress={() => {
-            const resultPeriod = period.filter(
-              (obj) => obj.interval === 0 || obj.period === 0,
-            );
-            const resultOvertime = overTime.filter(
-              (obj) => obj.interval === 0 || obj.overTime === 0,
-            );
-            if (resultPeriod.length > 0 || firstPeriod === 0) {
-              Alert.alert(strings.fillAllFields);
-            } else if (withOverTime && resultOvertime.length > 0) {
-              Alert.alert(strings.fillAllFields);
-            } else {
-              onSavePressed();
-            }
-          }}>
-          {strings.save}
-        </Text>
-      ),
+      headerShown: false,
     });
   }, [navigation, firstPeriod, details, withOverTime, period, overTime]);
 
@@ -484,33 +465,49 @@ export default function GameDuration({navigation, route}) {
   };
   return (
     <TCKeyboardView>
-      <SafeAreaView>
+      <SafeAreaView style={{flex: 1}}>
+        <ScreenHeader
+          title={strings.gameDuration}
+          leftIcon={images.backArrow}
+          isRightIconText
+          rightButtonText={strings.save}
+          onRightButtonPress={() => {
+            onSavePressed();
+          }}
+          leftIconPress={() => navigation.goBack()}
+        />
         <ActivityLoader visible={loading} />
 
         <View>
           <TCLabel
-            title={strings.gameDurationTitle1}
-            style={{marginRight: 15}}
+            title={strings.PeriodsAndIntermissions}
+            style={{marginRight: 15, marginTop: 20}}
           />
-          <View
-            style={[
-              styles.textTitle,
-              {marginLeft: 15, marginRight: 15, marginBottom: -10},
-            ]}>
-            <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
-              {strings.firstPeriodText}
-            </Text>
-            <View style={styles.textInputContainer}>
-              <TextInput
-                keyboardType="number-pad"
-                numeric
-                style={styles.textInput}
-                onChangeText={(text) => {
-                  setFirstPeriod(text);
-                }}
-                value={firstPeriod}
-              />
-              <Text style={styles.minText}>{strings.minuteText}</Text>
+          <View style={[styles.viewContainer, {marginTop: 10}]}>
+            <View style={styles.textTitle}>
+              <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
+                {strings.firstPeriodText}
+              </Text>
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  keyboardType="number-pad"
+                  numeric
+                  style={styles.textInput}
+                  onChangeText={(text) => {
+                    setFirstPeriod(text);
+                  }}
+                  value={firstPeriod}
+                />
+                <Text
+                  style={[
+                    styles.minText,
+                    {
+                      marginRight: 15,
+                    },
+                  ]}>
+                  {strings.minuteText}
+                </Text>
+              </View>
             </View>
           </View>
           <FlatList
@@ -519,32 +516,53 @@ export default function GameDuration({navigation, route}) {
             keyExtractor={(item, index) => index.toString()}
             style={{marginBottom: 15}}
           />
-          <TCMessageButton
+          {/* <TCMessageButton
             title={strings.addIntervalPeriod}
-            width={150}
+            width={180}
             alignSelf={'center'}
-            marginTop={15}
-            marginBottom={40}
+            // marginTop={15}
+            // marginBottom={40}
+            color="#000"
             onPress={() => addPeriod()}
+          /> */}
+          <TouchableOpacity onPress={() => addPeriod()}>
+            <Text
+              style={{
+                textAlign: 'center',
+                // marginBottom: 40,
+                color: colors.lightBlackColor,
+                fontSize: 14,
+                fontFamily: fonts.RMedium,
+                backgroundColor: colors.textFieldBackground,
+                marginHorizontal: 80,
+              }}>
+              {strings.addIntervalPeriod}
+            </Text>
+          </TouchableOpacity>
+
+          <TCLabel
+            title={strings.Overtime}
+            style={{marginHorizontal: 15, marginTop: 40}}
           />
           <TCLabel
             title={strings.gameDurationTitle2}
-            style={{marginRight: 15}}
+            style={{
+              marginHorizontal: 25,
+              fontFamily: fonts.RRegular,
+              marginTop: 15,
+            }}
           />
           <View
             style={{
               justifyContent: 'center',
-              marginBottom: 5,
-              marginTop: 10,
+              // marginBottom: 5,
+              marginTop: 20,
             }}>
             <TouchableOpacity
               style={styles.checkBoxContainer}
               onPress={() => {
                 setWithOverTime(!withOverTime);
               }}>
-              <Text style={[styles.minText, {marginLeft: 10}]}>
-                {strings.withoutOverTimeText}
-              </Text>
               <View>
                 {withOverTime === false ? (
                   <Image
@@ -554,10 +572,13 @@ export default function GameDuration({navigation, route}) {
                 ) : (
                   <Image
                     source={images.radioUnselect}
-                    style={styles.checkboxImg}
+                    style={[styles.checkboxImg, {marginLeft: 20}]}
                   />
                 )}
               </View>
+              <Text style={[styles.minText, {marginLeft: 10}]}>
+                {strings.withoutOverTimeText}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -571,14 +592,11 @@ export default function GameDuration({navigation, route}) {
               onPress={() => {
                 setWithOverTime(!withOverTime);
               }}>
-              <Text style={[styles.minText, {marginLeft: 10}]}>
-                {strings.withOverTimeText}
-              </Text>
               <View>
                 {withOverTime === true ? (
                   <Image
                     source={images.radioCheckYellow}
-                    style={styles.checkboxImg}
+                    style={[styles.checkboxImg, {marginLeft: 20}]}
                   />
                 ) : (
                   <Image
@@ -587,6 +605,9 @@ export default function GameDuration({navigation, route}) {
                   />
                 )}
               </View>
+              <Text style={[styles.minText, {marginLeft: 10}]}>
+                {strings.withOverTimeText}
+              </Text>
             </TouchableOpacity>
           </View>
           {withOverTime ? (
@@ -597,21 +618,40 @@ export default function GameDuration({navigation, route}) {
                 keyExtractor={(item, index) => index.toString()}
                 style={{marginBottom: 15}}
               />
-              <TCMessageButton
-                title={strings.addIntervalPeriod}
-                width={160}
+              {/* <TCMessageButton
+                title={strings.addIntervalPeriod}lightBlackColor
+                width={180}
                 alignSelf={'center'}
                 marginTop={15}
                 marginBottom={40}
+                color="#000"
                 onPress={() => addOverTime()}
-              />
+              /> */}
+              <TouchableOpacity onPress={() => addOverTime()}>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    marginBottom: 40,
+                    color: colors.lightBlackColor,
+                    fontSize: 14,
+                    fontFamily: fonts.RMedium,
+                    backgroundColor: colors.textFieldBackground,
+                    marginHorizontal: 80,
+                  }}>
+                  {strings.addIntervalPeriod}
+                </Text>
+              </TouchableOpacity>
             </View>
           ) : (
             <View style={{marginBottom: 40}} />
           )}
           <View style={styles.totalTimeContainer}>
-            <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
-              {strings.totalTimeTitle}
+            <Text
+              style={[
+                styles.minText,
+                {marginLeft: 10, fontFamily: fonts.RMedium},
+              ]}>
+              {strings.totalDuration}
             </Text>
 
             <Text style={styles.totalTimeText}>
@@ -623,9 +663,24 @@ export default function GameDuration({navigation, route}) {
               )}
             </Text>
           </View>
-          <TCLabel title={strings.detailsTitleText} style={{marginRight: 15}} />
+          <TCLabel title={strings.Tiebreakers} style={{marginRight: 15}} />
           <TCTextInputClear
-            placeholder={strings.venueDetailsPlaceholder}
+            placeholder={strings.TiebreakersPlaceholder}
+            onChangeText={(text) => {
+              setDetails(text);
+            }}
+            value={details}
+            onPressClear={() => {
+              setDetails('');
+            }}
+            multiline={true}
+          />
+          <TCLabel
+            title={strings.otherDetails}
+            style={{marginRight: 15, marginTop: 35}}
+          />
+          <TCTextInputClear
+            placeholder={strings.otherDetailsPlaceholder}
             onChangeText={(text) => {
               setDetails(text);
             }}
@@ -642,8 +697,8 @@ export default function GameDuration({navigation, route}) {
 }
 const styles = StyleSheet.create({
   viewContainer: {
-    marginLeft: 15,
-    marginRight: 15,
+    marginHorizontal: 15,
+    // marginBottom: 5,
   },
 
   deleteButton: {
@@ -658,23 +713,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  saveButtonStyle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginRight: 10,
-  },
   textInputContainer: {
     flex: 0.6,
     flexDirection: 'row',
-    height: 40,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    // width: '70%',
     alignItems: 'center',
-    marginBottom: 2,
-    paddingHorizontal: 15,
     color: colors.lightBlackColor,
-    paddingRight: 15,
     backgroundColor: colors.offwhite,
     borderRadius: 5,
     shadowColor: colors.googleColor,
@@ -682,15 +727,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 1,
     elevation: 3,
-    marginLeft: 25,
-    marginRight: 25,
+    marginHorizontal: 25,
     justifyContent: 'space-between',
   },
   textInput: {
     height: 40,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    width: '76%',
+
     alignSelf: 'center',
     color: colors.lightBlackColor,
   },
@@ -698,6 +742,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+    marginRight: 15,
   },
   textTitle: {
     flexDirection: 'row',
@@ -715,7 +760,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 15,
     marginRight: 35,
-
     justifyContent: 'space-between',
   },
   totalTimeContainer: {
@@ -727,7 +771,7 @@ const styles = StyleSheet.create({
   },
   totalTimeText: {
     fontSize: 16,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RThin,
     color: colors.lightBlackColor,
   },
 });

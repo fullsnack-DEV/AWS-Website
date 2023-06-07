@@ -73,6 +73,7 @@ import SportsListModal from '../registerPlayer/modals/SportsListModal';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import {ModalTypes} from '../../../Constants/GeneralConstants';
 import {getSportList} from '../../../utils/sportsActivityUtils';
+import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
 
 export default function EditEventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -90,6 +91,10 @@ export default function EditEventScreen({navigation, route}) {
   const [minAttendees, setMinAttendees] = useState(eventData.min_attendees);
   const [maxAttendees, setMaxAttendees] = useState(eventData.max_attendees);
   const [eventFee, setEventFee] = useState(eventData.event_fee.value);
+  const [showCurrencyModal, setShowCurrencyModal] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState(
+    strings.defaultCurrency,
+  );
   const [refundPolicy, setRefundPolicy] = useState(
     eventData.refund_policy ?? '',
   );
@@ -260,7 +265,7 @@ export default function EditEventScreen({navigation, route}) {
           justifyContent: 'space-between',
           marginBottom: 15,
         }}>
-        <Text style={styles.languageList}>{item}</Text>
+        <Text style={styles.languageList}>{item.text}</Text>
         <View style={styles.checkbox}>
           {(whoOption === see && whoCanSeeOption.value === item?.value) ||
           (whoOption === join && whoCanJoinOption.value === item?.value) ||
@@ -674,25 +679,68 @@ export default function EditEventScreen({navigation, route}) {
     ) {
       if (whoOption === see) {
         return [
-          strings.everyoneTitleText,
-          strings.followingAndFollowers,
-          strings.following,
-          strings.onlymeTitleText,
+          {
+            text: strings.everyoneTitleText,
+            value: 0,
+          },
+          {
+            text: strings.followingAndFollowers,
+            value: 2,
+          },
+          {
+            text: strings.following,
+            value: 3,
+          },
+          {
+            text: strings.onlymeTitleText,
+            value: 1,
+          },
         ];
       }
 
       if (whoOption === join) {
         return [
-          strings.everyoneTitleText,
-          strings.followingAndFollowers,
-          strings.following,
-          strings.inviteOnly,
-          strings.onlymeTitleText,
+          {
+            text: strings.everyoneTitleText,
+            value: 0,
+          },
+          {
+            text: strings.followingAndFollowers,
+            value: 2,
+          },
+          {
+            text: strings.following,
+            value: 3,
+          },
+          {
+            text: strings.inviteOnly,
+            value: 1,
+          },
+          {
+            text: strings.onlymeTitleText,
+            value: 1,
+          },
+          // strings.everyoneTitleText,
+          // strings.followingAndFollowers,
+          // strings.following,
+          // strings.,
+          // strings.onlymeTitleText,
         ];
       }
 
       if (whoOption === invite) {
-        return [strings.attendeeRadioText, strings.onlymeTitleText];
+        return [
+          {
+            text: strings.attendeeRadioText,
+            value: 0,
+          },
+          {
+            text: strings.onlymeTitleText,
+            value: 1,
+          },
+          // strings.attendeeRadioText,
+          // strings.onlymeTitleText
+        ];
       }
     }
     if (
@@ -840,6 +888,7 @@ export default function EditEventScreen({navigation, route}) {
                   placeholder={strings.sportPlaceholder}
                   style={styles.textInputStyle}
                   pointerEvents={'none'}
+                  editable={false}
                   // onChangeText={onChangeText}
                   value={selectedSport.sport_name}
                   textAlignVertical={'center'}
@@ -847,6 +896,7 @@ export default function EditEventScreen({navigation, route}) {
                 />
               </TouchableOpacity>
             </View>
+
             <EventTextInputItem
               title={strings.description}
               isRequired={true}
@@ -1139,22 +1189,32 @@ export default function EditEventScreen({navigation, route}) {
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />
-                <Text style={styles.currencyStyle}>
-                  {strings.defaultCurrency}
-                </Text>
+                <Text style={styles.currencyStyle}>{selectedCurrency}</Text>
               </View>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: fonts.RRegular,
-                  textDecorationLine: 'underline',
-                  textAlign: 'right',
-                  paddingHorizontal: 5,
-                  marginTop: 5,
-                  color: colors.lightBlackColor,
-                }}>
-                {strings.changeCurrency}
-              </Text>
+              <TouchableOpacity onPress={() => setShowCurrencyModal(true)}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: fonts.RRegular,
+                    textDecorationLine: 'underline',
+                    textAlign: 'right',
+                    paddingHorizontal: 5,
+                    marginTop: 5,
+                    color: colors.lightBlackColor,
+                  }}>
+                  {strings.changeCurrency}
+                </Text>
+              </TouchableOpacity>
+              <CurrencyModal
+                isVisible={showCurrencyModal}
+                closeList={() => setShowCurrencyModal(false)}
+                currency={selectedCurrency}
+                onNext={(item) => {
+                  console.log(item);
+                  setSelectedCurrency(item);
+                  setShowCurrencyModal(false);
+                }}
+              />
             </View>
 
             <View style={styles.containerStyle}>
@@ -1221,41 +1281,40 @@ export default function EditEventScreen({navigation, route}) {
                 </View>
               </TouchableOpacity>
             </View>
-            {whoCanSeeOption.value === 2 &&
-              authContext.entity.role === 'user' && (
-                <View>
-                  <View style={styles.allStyle}>
-                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setIsAll(!isAll);
-                        const groups = groupsSeeList.map((obj) => ({
-                          ...obj,
-                          isSelected: !isAll,
-                        }));
-                        setGroupsSeeList([...groups]);
-                      }}>
-                      <Image
-                        source={
-                          isAll ? images.orangeCheckBox : images.uncheckWhite
-                        }
-                        style={styles.imageStyle}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <FlatList
-                    scrollEnabled={false}
-                    data={[...groupsSeeList]}
-                    showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={() => (
-                      <View style={{height: wp('4%')}} />
-                    )}
-                    renderItem={renderSeeGroups}
-                    keyExtractor={(item, index) => index.toString()}
-                    style={styles.listStyle}
-                  />
+            {whoCanSeeOption.value === 2 && authContext.entity.role === 'user' && (
+              <View>
+                <View style={styles.allStyle}>
+                  <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsAll(!isAll);
+                      const groups = groupsSeeList.map((obj) => ({
+                        ...obj,
+                        isSelected: !isAll,
+                      }));
+                      setGroupsSeeList([...groups]);
+                    }}>
+                    <Image
+                      source={
+                        isAll ? images.orangeCheckBox : images.uncheckWhite
+                      }
+                      style={styles.imageStyle}
+                    />
+                  </TouchableOpacity>
                 </View>
-              )}
+                <FlatList
+                  scrollEnabled={false}
+                  data={[...groupsSeeList]}
+                  showsVerticalScrollIndicator={false}
+                  ItemSeparatorComponent={() => (
+                    <View style={{height: wp('4%')}} />
+                  )}
+                  renderItem={renderSeeGroups}
+                  keyExtractor={(item, index) => index.toString()}
+                  style={styles.listStyle}
+                />
+              </View>
+            )}
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>

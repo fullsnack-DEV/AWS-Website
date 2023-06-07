@@ -163,7 +163,10 @@ export default function SportAccountSettingScreen({navigation, route}) {
       <FlatList
         data={userSetting}
         keyExtractor={(index) => index.toString()}
-        contentContainerStyle={{paddingHorizontal: 15, paddingTop: 25}}
+        contentContainerStyle={{
+          paddingHorizontal: 15,
+          paddingTop: 25,
+        }}
         renderItem={renderMenu}
         showsVerticalScrollIndicator={false}
         bounces={false}
