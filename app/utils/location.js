@@ -5,6 +5,7 @@ import {
   checkMultiple,
 } from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
+
 import {
   getLocationNameWithLatLong,
   searchLocationPlaceDetail,
@@ -14,12 +15,15 @@ import Verbs from '../Constants/Verbs';
 
 const checkPermAndGetGeoCoordinates = async (platform) => {
   let permKeys = []; // Define permission array in preference order only
+
   if (platform === 'android') {
     permKeys = [
       PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
       PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
     ];
   } else {
+    Geolocation.requestAuthorization('whenInUse');
+
     permKeys = [
       PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
       PERMISSIONS.IOS.LOCATION_ALWAYS,

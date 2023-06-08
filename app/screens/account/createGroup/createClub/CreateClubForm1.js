@@ -83,7 +83,12 @@ export default function CreateClubForm1({navigation, route}) {
 
   useEffect(() => {
     if (route.params?.length > 0) {
-      setSelectedSports([...route.params]);
+      const newSportArray = route.params.map(({sport, sport_type}) => ({
+        sport,
+        sport_type,
+      }));
+
+      setSelectedSports(newSportArray);
     }
   }, [route.params]);
 
@@ -215,6 +220,7 @@ export default function CreateClubForm1({navigation, route}) {
         });
     } else {
       onANimate(100);
+
       createGroup(
         bodyParams,
         // entity.uid,
@@ -745,7 +751,11 @@ export default function CreateClubForm1({navigation, route}) {
         title={strings.createClubText}
         selectedSports={selectedSports}
         onNext={(sports) => {
-          setSelectedSports([...sports]);
+          const newSportArray = sports.map(({sport, sport_type}) => ({
+            sport,
+            sport_type,
+          }));
+          setSelectedSports(newSportArray);
           setVisibleSportsModalForClub(false);
         }}
       />

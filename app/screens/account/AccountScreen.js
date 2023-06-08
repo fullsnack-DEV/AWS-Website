@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
+
 import {useIsFocused} from '@react-navigation/native';
 import AccountHeader from './components/AccountHeader';
 import AuthContext from '../../auth/context';
@@ -283,7 +284,6 @@ const AccountScreen = ({navigation, route}) => {
         break;
 
       case strings.createClubText:
-        // setCreateEntity(Verbs.entityTypeClub);
         setVisibleSportsModalForClub(true);
         setSelectedMenuOptionType(Verbs.entityTypeClub);
         setNavigationOptions({
@@ -760,7 +760,21 @@ const AccountScreen = ({navigation, route}) => {
         isVisible={showSwitchAccountModal}
         closeModal={() => setShowSwitchAccountModal(false)}
         onCreate={(option) => {
-          console.log({option});
+          setShowSwitchAccountModal(false);
+
+          if (option === strings.team) {
+            setNavigationOptions({
+              screenName: 'CreateTeamForm1',
+            });
+            setTimeout(() => setVisibleSportsModalForTeam(true), 500);
+          } else if (option === strings.club) {
+            setNavigationOptions({
+              screenName: 'CreateClubForm1',
+            });
+            setTimeout(() => setVisibleSportsModalForClub(true), 500);
+          } else {
+            console.log({option});
+          }
         }}
       />
 

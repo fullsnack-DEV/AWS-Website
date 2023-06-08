@@ -49,7 +49,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   const [birthday, setBirthday] = useState();
   const [showDate, setShowDate] = useState(false);
   const [postalCode, setPostalCode] = useState('');
-  // const [minDateValue, setMinDateValue] = useState(new Date());
+
   const [maxDateValue, setMaxDateValue] = useState(new Date());
 
   const [memberInfo, setMemberInfo] = useState({
@@ -91,9 +91,6 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     mindate.setFullYear(mindate.getFullYear() - 13);
     maxdate.setFullYear(maxdate.getFullYear() - 123);
     setMaxDateValue(new Date());
-    // setDateValue(mindate);
-    // setMinDateValue(mindate);
-    // setMaxDateValue(maxdate);
   }, []);
 
   useEffect(() => {
@@ -149,11 +146,11 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       group_id: entity.uid,
       is_member: true,
       gender,
-      street_address: location,
-      city,
-      state_abbr: state,
-      country,
-      postal_code: postalCode,
+      mail_street_address: location,
+      mail_city: city,
+      mail_state_abbr: state,
+      mail_country: country,
+      mail_postal_code: postalCode,
       birthday,
     };
 

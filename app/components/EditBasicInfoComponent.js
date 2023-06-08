@@ -62,11 +62,11 @@ const EditBasicInfoComponent = ({
 
   const handleLocation = (_location) => {
     const obj = {...userInfo};
-    obj.state_full = _location.state_full;
-    obj.city = _location.city;
-    obj.state = _location.state;
-    obj.country = _location.country;
-    obj.formattedAddress = _location.formattedAddress;
+    obj.mail_state_full = _location.state_full;
+    obj.mail_city = _location.city;
+    obj.mail_state = _location.state;
+    obj.mail_country = _location.country;
+    obj.mail_street_address = _location.formattedAddress;
 
     setUserInfo(obj);
   };
@@ -372,12 +372,12 @@ const EditBasicInfoComponent = ({
             <Text
               style={[
                 styles.mailingText,
-                userInfo.formattedAddress || userInfo.street_address
+                userInfo.mail_formattedAddress || userInfo.mail_street_address
                   ? {color: colors.lightBlackColor}
                   : {color: colors.userPostTimeColor},
               ]}>
-              {userInfo.formattedAddress || userInfo.street_address
-                ? userInfo.formattedAddress || userInfo.street_address
+              {userInfo.mail_formattedAddress || userInfo.mail_street_address
+                ? userInfo.mail_formattedAddress || userInfo.mail_street_address
                 : strings.address}
             </Text>
           </Pressable>
@@ -418,12 +418,12 @@ const EditBasicInfoComponent = ({
           handleSetLocationOptions={handleLocation}
           onDonePress={(street, code) => {
             const obj = {...userInfo};
-            obj.address_postal_code = code;
-            obj.street_address = [
+            obj.mail_postal_code = code;
+            obj.mail_street_address = [
               street,
-              userInfo.city,
-              userInfo.state,
-              userInfo.country,
+              userInfo.mail_city,
+              userInfo.mail_state,
+              userInfo.mail_country,
               code,
             ]
               .filter((w) => w)

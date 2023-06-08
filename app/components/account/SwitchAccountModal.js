@@ -263,7 +263,7 @@ const SwitchAccountModal = ({
         isVisible={showBottomSheet}
         closeModal={() => setBottomSheet(false)}
         onSelect={(option) => {
-          closeModal();
+          setBottomSheet(false);
           onCreate(option);
         }}
         type="ios"

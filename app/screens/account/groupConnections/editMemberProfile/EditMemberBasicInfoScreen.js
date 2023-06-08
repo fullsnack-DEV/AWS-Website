@@ -21,7 +21,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import LinearGradient from 'react-native-linear-gradient';
-import {useIsFocused} from '@react-navigation/native';
+
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import {patchMember, sendBasicInfoRequest} from '../../../../api/Groups';
 import {strings} from '../../../../../Localization/translation';
@@ -54,7 +54,6 @@ let entity = {};
 
 export default function EditMemberBasicInfoScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
 
   const [loading, setloading] = useState(false);
 
@@ -97,7 +96,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     const maxdate = new Date();
     mindate.setFullYear(mindate.getFullYear() - 13);
     maxdate.setFullYear(maxdate.getFullYear() - 123);
-    // setDateValue(mindate);
   }, []);
 
   useEffect(() => {
@@ -110,6 +108,11 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         },
       ],
     );
+
+    const getAuthEntity = async () => {
+      entity = authContext.entity;
+      setRole(entity.role);
+    };
     setMemberInfo(route.params.memberInfo);
 
     if (route.params.memberInfo.birthday === undefined) {
@@ -121,29 +124,10 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     setCity(route.params.memberInfo?.city);
     setCountry(route.params.memberInfo?.coutry);
     setState(route.params.memberInfo?.state);
-    setLocation(route.params.memberInfo?.street_address);
+    setLocation(route.params.memberInfo?.mail_street_address);
 
     getAuthEntity();
-  }, []);
-
-  useEffect(() => {
-    if (isFocused) {
-      if (
-        route?.params?.city &&
-        route?.params?.state &&
-        route?.params?.country
-      ) {
-        setLocation(
-          `${route?.params?.city}, ${route?.params?.state}, ${route?.params?.country}`,
-        );
-      }
-    }
-  }, [
-    isFocused,
-    route?.params?.city,
-    route?.params?.country,
-    route?.params?.state,
-  ]);
+  }, [route.params.memberInfo, authContext]);
 
   const addPhoneNumber = () => {
     const obj = {
@@ -154,10 +138,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     setPhoneNumber([...phoneNumber, obj]);
   };
 
-  const getAuthEntity = async () => {
-    entity = authContext.entity;
-    setRole(entity.role);
-  };
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -246,7 +226,8 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     setloading(true);
 
     const bodyParams = {...memberInfo};
-    bodyParams.last_updatedBy = `${authContext.user.full_name}`;
+    console.log(authContext.user, 'From user');
+    bodyParams.last_updatedBy = `${authContext.user?.full_name}`;
     delete bodyParams.group;
 
     patchMember(entity?.uid, memberInfo?.user_id, bodyParams, authContext)
@@ -561,10 +542,10 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
 
     setMemberInfo({
       ...memberInfo,
-      city: _location.city,
-      state_abbr: _location.state,
-      country: _location.country,
-      street_address: _location.formattedAddress,
+      mail_city: _location.city,
+      mail_state_abbr: _location.state,
+      mail_country: _location.country,
+      mail_street_address: _location.formattedAddress,
     });
   };
 
@@ -572,19 +553,13 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     setLocation(`${street} ${city} ${state} ${country} ${code}`);
     setMemberInfo({
       ...memberInfo,
-      street_address: `${street} ${city} ${state} ${country} ${code}`,
+      mail_street_address: `${street} ${city} ${state} ${country} ${code}`,
     });
 
     if (code === '') {
-      setMemberInfo({...memberInfo, postal_code: code});
+      setMemberInfo({...memberInfo, mail_postal_code: code});
     }
   };
-
-  // const locationString = () =>
-  //   [location, city, state, country, postalCode].filter((v) => v).join(', ');
-
-  // const addressManualString = () =>
-  //   [city, state, country, location, postalCode].filter((w) => w).join(', ');
 
   return (
     <TCKeyboardView>
@@ -594,7 +569,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         <View>
           <TouchableOpacity
             onPress={() => {
-              // navigation.navigate('RequestBasicInfoScreen', {memberInfo});
               sendRequestForBasicInfo();
             }}
             style={styles.outerContainerStyle}>
@@ -627,7 +601,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           }}
         />
         <TCPicker
-          // disabled={!!memberInfo.gender}
           dataSource={DataSource.Gender}
           color={colors.userPostTimeColor}
           placeholder={strings.selectGenderPlaceholder}
@@ -729,7 +702,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
           data={phoneNumber}
           renderItem={renderPhoneNumber}
           keyExtractor={(item, index) => index.toString()}
-          // style={styles.flateListStyle}
         />
       </View>
       <TCMessageButton
@@ -781,7 +753,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
             onDone={handleDonePress}
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
-            // minimumDate={minDateValue}
             maximumDate={maxDateValue}
             mode={'date'}
           />
