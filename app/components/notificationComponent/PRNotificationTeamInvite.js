@@ -3,10 +3,9 @@ import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import {strings} from '../../../Localization/translation';
-import TCProfileImage from '../TCProfileImage';
-import TCGradientButton from '../TCGradientButton';
 import {parseInviteRequest} from '../../screens/notificationsScreen/PRNotificationParser';
 import NotificationType from '../../Constants/NotificationType';
+import GroupIcon from '../GroupIcon';
 
 function PRNotificationTeamInvite({
   item,
@@ -16,7 +15,6 @@ function PRNotificationTeamInvite({
   onPress,
   onRespond,
   disabled = false,
-  accessibilityLabel,
 }) {
   const [dataDictionary, setDataDictionary] = useState();
 
@@ -31,69 +29,65 @@ function PRNotificationTeamInvite({
   return (
     <View style={{backgroundColor: colors.whiteColor, flex: 1}}>
       {dataDictionary && (
-        <TouchableOpacity onPress={onPress}>
-          <View style={styles.viewFirstStyle}>
-            <TCProfileImage
+        <TouchableOpacity onPress={onPress} style={styles.viewFirstStyle}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <GroupIcon
+              imageUrl={dataDictionary.imgName}
               entityType={dataDictionary.entityType}
-              source={{uri: dataDictionary.imgName}}
+              groupName={dataDictionary.firstTitle}
+              textstyle={{fontSize: 12}}
               containerStyle={styles.imageContainer}
-              intialChar={dataDictionary.firstTitle.charAt(0).toUpperCase()}
             />
-            <View style={styles.textContentStyle}>
-              <View style={{flex: 0.7}}>
+            <View style={{flex: 1}}>
               <Text style={styles.boldTextStyle}>
-                    {`${dataDictionary.firstTitle}`}
-                  </Text>
-                <Text style={styles.textContainerStyle}>
-                  {/* <Text style={styles.boldTextStyle}>
+                {`${dataDictionary.firstTitle}`}
+              </Text>
+              <Text style={styles.textContainerStyle}>
+                {/* <Text style={styles.boldTextStyle}>
                     {`${dataDictionary.firstTitle} `}
                   </Text> */}
-                  <Text>{`${dataDictionary.text} `}</Text>
-                  {!isTrash && (
-                    <Text style={styles.timeStyle}>
+                <Text>{`${dataDictionary.text} `}</Text>
+                {!isTrash && (
+                  <Text style={styles.timeStyle}>
+                    {dataDictionary.notificationTime}
+                  </Text>
+                )}
+              </Text>
+
+              {isTrash && (
+                <Text style={styles.timeStyle}>
+                  {(NotificationType.deleted && 'Deleted') ||
+                    (NotificationType.accepted && 'Accepted') ||
+                    (NotificationType.declined && 'Declined')}
+                  {entityType === 'group' && (
+                    <Text>
+                      {' '}
+                      by {item.activities[0].remove_by?.data?.full_name}{' '}
                       {dataDictionary.notificationTime}
                     </Text>
                   )}
                 </Text>
-
-                {isTrash && (
-                  <Text style={styles.timeStyle}>
-                    {(NotificationType.deleted && 'Deleted') ||
-                      (NotificationType.accepted && 'Accepted') ||
-                      (NotificationType.declined && 'Declined')}
-                    {entityType === 'group' && (
-                      <Text>
-                        {' '}
-                        by {item.activities[0].remove_by?.data?.full_name}{' '}
-                        {dataDictionary.notificationTime}
-                      </Text>
-                    )}
-                  </Text>
-                )}
-              </View>
-              <View
-                style={
-                  disabled
-                    ? [styles.viewSecondStyle, {opacity: 0.5}]
-                    : styles.viewSecondStyle
-                }>
-                <TCGradientButton
-                  accessibilityLabel={`${accessibilityLabel}`}
-                  textStyle={
-                    isTrash
-                      ? [styles.btnTextStyle, {color: colors.lightBlackColor}]
-                      : styles.btnTextStyle
-                  }
-                  style={styles.acceptButtonInnerStyle}
-                  title={strings.venueDetailsPlaceholder}
-                  disabled={disabled}
-                  onPress={onRespond}
-                  startGradientColor = {colors.textFieldBackground}
-                  endGradientColor = {colors.textFieldBackground}
-                />
-              </View>
+              )}
             </View>
           </View>
+
+          <TouchableOpacity
+            style={
+              disabled
+                ? [styles.buttonContainer, {opacity: 0.5}]
+                : styles.buttonContainer
+            }
+            disabled={disabled}
+            onPress={onRespond}>
+            <Text style={styles.buttonText}>
+              {strings.venueDetailsPlaceholder}
+            </Text>
+          </TouchableOpacity>
         </TouchableOpacity>
       )}
     </View>
@@ -102,19 +96,16 @@ function PRNotificationTeamInvite({
 
 const styles = StyleSheet.create({
   imageContainer: {
-    margin: 15,
-  },
-  textContentStyle: {
-    flex: 1,
-    marginVertical: 15,
+    width: 40,
+    height: 40,
     marginRight: 15,
-    flexDirection: 'row',
-    // backgroundColor:'red'
   },
   viewFirstStyle: {
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems:'center'
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    marginVertical: 15,
   },
   textContainerStyle: {
     fontFamily: fonts.RLight,
@@ -131,22 +122,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.userPostTimeColor,
   },
-
-  viewSecondStyle: {
-    flex: 0.3,
-    // marginTop: 5,
-    justifyContent:'center'
-  },
-
-  acceptButtonInnerStyle: {
-    height: 25,
+  buttonContainer: {
+    padding: 5,
     borderRadius: 5,
+    backgroundColor: colors.grayBackgroundColor,
   },
-  btnTextStyle: {
+  buttonText: {
     fontSize: 12,
+    lineHeight: 15,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
-    color: colors.darkGrayColor,
-    textAlign: 'center',
   },
 });
 

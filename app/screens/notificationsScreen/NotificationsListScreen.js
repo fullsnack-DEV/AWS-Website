@@ -454,7 +454,7 @@ function NotificationsListScreen({navigation}) {
               .then((qbRes) => {
                 setloading(false);
                 if (qbRes?.error) {
-                  console.log(strings.appName, qbRes?.error);
+                  //
                 }
               })
               .catch(() => {
@@ -496,7 +496,6 @@ function NotificationsListScreen({navigation}) {
       [
         {
           text: strings.cancel,
-          onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
         {text: strings.yes, onPress: () => onSwitchProfile(selectedEntity)},
@@ -848,17 +847,14 @@ function NotificationsListScreen({navigation}) {
     );
   };
 
-  const renderPendingRequestComponent = ({item}) => {
-    console.log('ITEm:,', item);
-    return (
-      <AppleStyleSwipeableRow
-        onPress={() => onDelete({item})}
-        color={colors.darkThemeColor}
-        image={images.deleteIcon}>
-        {notificationComponentType(item)}
-      </AppleStyleSwipeableRow>
-    );
-  };
+  const renderPendingRequestComponent = ({item}) => (
+    <AppleStyleSwipeableRow
+      onPress={() => onDelete({item})}
+      color={colors.darkThemeColor}
+      image={images.deleteIcon}>
+      {notificationComponentType(item)}
+    </AppleStyleSwipeableRow>
+  );
 
   const renderNotificationComponent = ({item}) => {
     if (item.activities[0].is_request) {
@@ -1351,9 +1347,7 @@ const styles = StyleSheet.create({
   },
 
   listItemSeparatorStyle: {
-    height: 0.5,
-    width: '92%',
-    alignSelf: 'center',
+    height: 1,
     backgroundColor: colors.grayBackgroundColor,
   },
   thinDivider: {
