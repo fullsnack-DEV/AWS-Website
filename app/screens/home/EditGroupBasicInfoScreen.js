@@ -186,10 +186,10 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
 
   const handleSelectLocationOptions = (currentLocation) => {
     const obj = {
-      city: currentLocation.city,
-      state: currentLocation.state_full,
-      state_abbr: currentLocation.state,
-      country: currentLocation.country,
+      mail_city: currentLocation.city,
+      mail_state: currentLocation.state_full,
+      mail_state_abbr: currentLocation.state,
+      mail_country: currentLocation.country,
     };
     setGroupData({...groupData, ...obj});
   };
@@ -203,7 +203,7 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
   };
 
   const handleOfficeAddresOptions = (address = {}) => {
-    setGroupData({...groupData, office_address: address.formattedAddress});
+    setGroupData({...groupData, mail_street_address: address.formattedAddress});
     setCity(address.city);
     setState(address.state);
     setCountry(address.country);
@@ -211,7 +211,7 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
 
   const setCityandPostal = (street, code) => {
     const address = `${street} ${city} ${state} ${country} ${code}`;
-    setGroupData({...groupData, office_address: address});
+    setGroupData({...groupData, mail_street_address: address});
   };
 
   return (

@@ -1,6 +1,8 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import {Alert, StatusBar} from 'react-native';
+import {enableFreeze} from 'react-native-screens';
+
 import {decode, encode} from 'base-64';
 import messaging from '@react-native-firebase/messaging';
 import Orientation from 'react-native-orientation';
@@ -13,6 +15,7 @@ import {ImageUploadProvider} from './app/context/GetContexts';
 import CommonAlert from './app/screens/account/commonScreen/CommonAlert';
 
 console.disableYellowBox = true;
+enableFreeze(true);
 
 export default function App() {
   const [networkConnected, setNetworkConntected] = useState(true);

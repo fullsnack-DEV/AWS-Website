@@ -53,11 +53,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   placeHolderImage: {
-    width: 36,
-    height: 36,
+    width: 31,
+    height: 40,
     borderRadius: 72,
     alignSelf: 'center',
     resizeMode: 'contain',
+    marginTop: 5,
   },
   placeholderTextContainer: {
     width: 40,
@@ -81,12 +82,9 @@ const styles = StyleSheet.create({
   containerImageStyle: {
     width: 40,
     height: 40,
-    borderRadius: 80,
+    borderRadius: 100,
     justifyContent: 'center',
     backgroundColor: colors.whiteColor,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
+    alignItems: 'center',
   },
 });

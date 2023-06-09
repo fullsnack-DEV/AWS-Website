@@ -113,8 +113,10 @@ export default function AddBirthdayScreen({navigation, route}) {
         source={images.loginBg}
       />
       <View style={{flex: 1}}>
-        <Text style={styles.checkEmailText}>{strings.addBirthdayText}</Text>
-        <Text style={styles.resetText}>{strings.notDisplayText}</Text>
+        <View style={styles.addBirthdayTextContainer}>
+          <Text style={styles.checkEmailText}>{strings.addBirthdayText}</Text>
+          <Text style={styles.resetText}>{strings.notDisplayText}</Text>
+        </View>
 
         <Tooltip
           popover={
@@ -123,14 +125,14 @@ export default function AddBirthdayScreen({navigation, route}) {
                 color: colors.themeColor,
                 fontSize: 14,
                 fontFamily: fonts.RRegular,
-                padding: 15,
+                paddingHorizontal: 15,
               }}>
               {strings.birthdatText}
             </Text>
           }
           backgroundColor={colors.parrotColor}
-          height={hp('43%')}
-          width={wp('84.3%')}
+          height={305}
+          width={305}
           overlayColor={'transparent'}
           skipAndroidStatusBar={true}
           containerStyle={{
@@ -249,5 +251,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
     color: colors.whiteColor,
+  },
+  addBirthdayTextContainer: {
+    marginTop: 25,
   },
 });

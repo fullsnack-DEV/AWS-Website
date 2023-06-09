@@ -493,7 +493,9 @@ export default function MembersProfileScreen({navigation, route}) {
         if (toaccount) {
           await onSwitchProfile(authContext.user);
 
-          navigation.navigate('AccountScreen', {
+          navigation.navigate('Account', {
+            screen: 'AccountScreen',
+            initial: false,
             params: {
               switchToUser: true,
               grpName: switchUser.obj.group_name,
@@ -1307,7 +1309,7 @@ export default function MembersProfileScreen({navigation, route}) {
     <SafeAreaView>
       <SwitchAccountLoader
         isVisible={showSwitchScreen}
-        entityName={authContext.user.full_name}
+        entityName={authContext.user?.full_name}
         entityType={Verbs.entityTypePlayer}
         entityImage={
           authContext.user.thumbnail || ''

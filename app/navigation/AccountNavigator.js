@@ -306,6 +306,7 @@ const AccountNavigator = () => (
         animationEnabled: true,
         ...TransitionPresets.ModalSlideFromBottomIOS,
       }}
+      initialParams={{switchToUser: false}}
     />
 
     <Stack.Screen

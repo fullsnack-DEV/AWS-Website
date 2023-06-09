@@ -118,8 +118,10 @@ export default function ChooseGenderScreen({navigation, route}) {
       style={styles.mainContainer}>
       <FastImage style={styles.background} source={images.loginBg} />
       <View style={{flex: 1}}>
-        <Text style={styles.checkEmailText}>{strings.addGenderText}</Text>
-        <Text style={styles.resetText}>{strings.notDisplayGenderText}</Text>
+        <View style={styles.genderTextContainer}>
+          <Text style={styles.checkEmailText}>{strings.addGenderText}</Text>
+          <Text style={styles.resetText}>{strings.notDisplayGenderText}</Text>
+        </View>
 
         <Tooltip
           popover={
@@ -135,8 +137,8 @@ export default function ChooseGenderScreen({navigation, route}) {
             </Text>
           }
           backgroundColor={colors.parrotColor}
-          height={hp('19%')}
-          width={wp('84.3%')}
+          height={153}
+          width={305}
           overlayColor={'transparent'}
           skipAndroidStatusBar={true}
           containerStyle={{
@@ -254,5 +256,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
     color: colors.whiteColor,
+  },
+  genderTextContainer: {
+    marginTop: 25,
   },
 });

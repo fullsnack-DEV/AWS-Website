@@ -407,7 +407,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
     <SafeAreaView style={styles.parent}>
       <SwitchAccountLoader
         isVisible={showSwitchScreen}
-        entityName={groupData.group_name}
+        entityName={groupData?.group_name}
         entityType={Verbs.entityTypeTeam}
         entityImage={placeHolder}
         stopLoading={() => {}}

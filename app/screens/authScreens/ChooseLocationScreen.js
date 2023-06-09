@@ -289,10 +289,12 @@ export default function ChooseLocationScreen({navigation, route}) {
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <FastImage style={styles.background} source={images.loginBg} />
-      <Text style={styles.LocationText}>{strings.locationText}</Text>
-      <Text style={styles.LocationDescription}>
-        {strings.locationDescription}
-      </Text>
+      <View style={styles.locationTextContainer}>
+        <Text style={styles.LocationText}>{strings.locationText}</Text>
+        <Text style={styles.LocationDescription}>
+          {strings.locationDescription}
+        </Text>
+      </View>
 
       <View style={styles.sectionStyle}>
         <Image source={images.searchLocation} style={styles.searchImg} />
@@ -317,25 +319,23 @@ export default function ChooseLocationScreen({navigation, route}) {
         </Text>
       )}
       {noData && searchText.length === 0 && nearbyCities.length > 0 && (
-        <SafeAreaView style={{flex: 1}}>
-          <FlatList
-            data={nearbyCities}
-            renderItem={({item}) => (
-              <TouchableWithoutFeedback
-                style={styles.listItem}
-                onPress={() => onSelectNearByLocation(item)}>
-                <Text style={styles.cityList}>
-                  {[item.city, item.state, item.country]
-                    .filter((v) => v)
-                    .join(', ')}
-                </Text>
-                <Separator />
-              </TouchableWithoutFeedback>
-            )}
-            ListHeaderComponent={renderCurrentLocation}
-            keyExtractor={(index) => index.toString()}
-          />
-        </SafeAreaView>
+        <FlatList
+          data={nearbyCities}
+          renderItem={({item}) => (
+            <TouchableWithoutFeedback
+              style={styles.listItem}
+              onPress={() => onSelectNearByLocation(item)}>
+              <Text style={styles.cityList}>
+                {[item.city, item.state, item.country]
+                  .filter((v) => v)
+                  .join(', ')}
+              </Text>
+              <Separator />
+            </TouchableWithoutFeedback>
+          )}
+          ListHeaderComponent={renderCurrentLocation}
+          keyExtractor={(index) => index.toString()}
+        />
       )}
       {noData &&
         searchText.length === 0 &&
@@ -410,8 +410,7 @@ const styles = StyleSheet.create({
   },
   listItem: {
     flexDirection: 'row',
-    marginLeft: 35,
-    marginRight: 35,
+    marginHorizontal: 30,
   },
   mainContainer: {
     flex: 1,
@@ -431,14 +430,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 40,
     justifyContent: 'center',
-    margin: 25,
-    marginBottom: 10,
+    marginHorizontal: 25,
+
     paddingLeft: 17,
     paddingRight: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
+    marginTop: 25,
   },
   textInput: {
     color: colors.darkYellowColor,
@@ -460,5 +456,8 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
     marginBottom: 16,
     marginTop: 21,
+  },
+  locationTextContainer: {
+    marginTop: 25,
   },
 });

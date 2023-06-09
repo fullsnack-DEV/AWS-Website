@@ -82,7 +82,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   const [postalCode, setPostalCode] = useState('');
 
-  const [setting, setSetting] = useState();
+  const [setting, setSetting] = useState({});
   const [location, setLocation] = useState('');
   const [city, setCity] = useState();
   const [state, setState] = useState();

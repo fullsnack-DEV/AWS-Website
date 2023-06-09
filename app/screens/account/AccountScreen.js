@@ -9,6 +9,8 @@ import {
   View,
 } from 'react-native';
 
+import {format} from 'react-string-format';
+
 import {useIsFocused} from '@react-navigation/native';
 import AccountHeader from './components/AccountHeader';
 import AuthContext from '../../auth/context';
@@ -16,6 +18,7 @@ import AccountEntity from './components/AccountEntity';
 import {getStorage, onLogout} from '../../utils';
 import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 import AccountMenuList from './components/AccountMenuList';
+
 import {
   getJoinedGroups,
   getTeamsOfClub,
@@ -131,6 +134,27 @@ const AccountScreen = ({navigation, route}) => {
   );
 
   useEffect(() => {
+    if (route.params?.switchToUser) {
+      Alert.alert(
+        Platform.OS === 'android'
+          ? ''
+          : format(strings.adminremoved, route.params?.grpName),
+        Platform.OS === 'android'
+          ? format(strings.adminremoved, route.params?.grpName)
+          : '',
+        [
+          {
+            text: strings.OkText,
+            onPress: () => console.log('Pressed'),
+          },
+        ],
+        {cancelable: false},
+      );
+      setLoading(false);
+    }
+  }, [route.params?.switchToUser, route.params?.grpName, navigation]);
+
+  useEffect(() => {
     if (
       isFocused &&
       route.params?.isSearchPlayerForDoubles &&
@@ -230,6 +254,7 @@ const AccountScreen = ({navigation, route}) => {
         setUnreadNotificationCount(count);
       })
       .catch((e) => {
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -445,6 +470,7 @@ const AccountScreen = ({navigation, route}) => {
     groupUnpaused(context, headers)
       .then(() => {})
       .catch((e) => {
+        setLoading(false);
         Alert.alert(
           e.message,
           '',

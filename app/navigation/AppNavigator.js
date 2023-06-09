@@ -507,6 +507,7 @@ const AppNavigator = ({navigation}) => {
         showLabel: false,
         activeTintColor: colors.tabFontColor,
         inactiveTintColor: colors.userPostTimeColor,
+
         style: {
           backgroundColor: colors.offwhite,
           shadowColor: '#000',
@@ -533,6 +534,7 @@ const AppNavigator = ({navigation}) => {
         options={({route}) => ({
           tabBarTestID: 'localhome-tab',
           headerShown: false,
+
           // tabBarVisible: getTabBarVisibility(routes),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: ({focused}) => {
@@ -558,6 +560,7 @@ const AppNavigator = ({navigation}) => {
           tabBarTestID: 'newsfeed-tab',
           headerShown: false,
           unmountOnBlur: true,
+
           // tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: ({focused}) => {
@@ -611,7 +614,7 @@ const AppNavigator = ({navigation}) => {
         options={({route}) => ({
           tabBarTestID: 'message-tab',
           headerShown: false,
-          unmountOnBlur: true,
+
           ...(unreadCount > 0 && {
             tabBarBadge: unreadCount > 300 ? '300+' : unreadCount,
           }),
@@ -634,6 +637,15 @@ const AppNavigator = ({navigation}) => {
         name="Account"
         navigation={navigation}
         component={AccountNavigator}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+
+            navigation.navigate('Account', {
+              screen: 'AccountScreen',
+            });
+          },
+        }}
         options={({route}) => ({
           ...(authContext.totalNotificationCount > 0 && {
             tabBarBadge:
@@ -641,9 +653,11 @@ const AppNavigator = ({navigation}) => {
                 ? '300+'
                 : authContext.totalNotificationCount,
           }),
-          unmountOnBlur: true,
+          unmountOnBlur: false,
+          freezeOnBlur: false,
+
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
-          // tabBarVisible: getTabBarVisibility(route),
+          tabBarVisible: getTabBarVisibility(route),
           tabBarStyle: {display: getTabBarVisibility(routes) ? 'flex' : 'none'},
           tabBarIcon: renderTabIcon,
           headerShown: false,
