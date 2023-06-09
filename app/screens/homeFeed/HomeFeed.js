@@ -9,7 +9,6 @@ import React, {
 import {Alert, View} from 'react-native';
 import _ from 'lodash';
 import {
-  createPost,
   createReaction,
   deletePost,
   getTimeline,
@@ -21,7 +20,6 @@ import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getGallery} from '../../api/Users';
 import WritePost from '../../components/newsFeed/WritePost';
-import {strings} from '../../../Localization/translation';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import Verbs from '../../Constants/Verbs';
 
@@ -233,92 +231,6 @@ const HomeFeed = ({
     [authContext, postData],
   );
 
-  const createPostAfterUpload = useCallback(
-    (dataParams) => {
-      let body = dataParams;
-
-      if (
-        authContext.entity.role === Verbs.entityTypeClub ||
-        authContext.entity.role === Verbs.entityTypeTeam
-      ) {
-        body = {
-          ...dataParams,
-          group_id: authContext.entity.uid,
-        };
-      }
-      createPost(body, authContext)
-        .then((response) => {
-          setTotalUserPostCount((cnt) => cnt + 1);
-          setPostData((pData) => [response.payload, ...pData]);
-        })
-        .catch((error) => {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, error.message);
-          }, 10);
-        });
-    },
-    [authContext],
-  );
-
-  const onPressDone = useCallback(
-    (data, postDesc, tagsOfEntity, format_tagged_data, whoCanSee) => {
-      let dataParams = {};
-      const entityID = currentUserData?.group_id ?? currentUserData?.user_id;
-      if (entityID !== authContext.entity.uid) {
-        if (
-          currentUserData?.entity_type === Verbs.entityTypeTeam ||
-          currentUserData?.entity_type === Verbs.entityTypeClub
-        ) {
-          dataParams.group_id = currentUserData?.group_id;
-          dataParams.feed_type = currentUserData?.entity_type;
-        }
-        if (
-          currentUserData?.entity_type === Verbs.entityTypeUser ||
-          currentUserData?.entity_type === Verbs.entityTypePlayer
-        ) {
-          dataParams.user_id = currentUserData?.user_id;
-        }
-      }
-      if (postDesc.trim().length > 0 && data?.length === 0) {
-        dataParams = {
-          ...dataParams,
-          text: postDesc,
-          tagged: tagsOfEntity ?? [],
-          format_tagged_data,
-          who_can_see: {...whoCanSee},
-        };
-
-        createPostAfterUpload(dataParams);
-      } else if (data) {
-        console.log('asasasasas else', data);
-        const imageArray = data.map((dataItem) => dataItem);
-        dataParams = {
-          ...dataParams,
-          text: postDesc && postDesc,
-          attachments: [],
-          tagged: tagsOfEntity ?? [],
-          format_tagged_data,
-          who_can_see: {...whoCanSee},
-        };
-
-        imageUploadContext.uploadData(
-          authContext,
-          dataParams,
-          imageArray,
-          createPostAfterUpload,
-        );
-      }
-    },
-    [
-      authContext,
-      createPostAfterUpload,
-      currentUserData?.entity_type,
-      currentUserData?.group_id,
-      currentUserData?.user_id,
-      imageUploadContext,
-    ],
-  );
-
   const onEndReached = () => {
     if (!onEndReachedCalledDuringMomentum) {
       setFooterLoading(true);
@@ -346,15 +258,17 @@ const HomeFeed = ({
         navigation={navigation}
         postDataItem={currentUserData}
         onWritePostPress={() => {
-          navigation.navigate('WritePostScreen', {
-            postData: currentUserData,
-            onPressDone,
-            selectedImageList: [],
+          navigation.navigate('LoneStack', {
+            screen: 'WritePostScreen',
+            params: {
+              postData: currentUserData,
+              selectedImageList: [],
+            },
           });
         }}
       />
     ),
-    [currentUserData, navigation, onPressDone],
+    [currentUserData, navigation],
   );
 
   const ListHeaderComponent = useMemo(
@@ -408,6 +322,7 @@ const HomeFeed = ({
         }}
         footerLoading={footerLoading && isNextDataLoading}
         openProfilId={userID}
+        entityDetails={currentUserData}
       />
     </View>
   );

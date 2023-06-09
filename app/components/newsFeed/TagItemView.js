@@ -1,61 +1,108 @@
-import React from 'react';
-import {StyleSheet, View, Text, Image} from 'react-native';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import images from '../../Constants/ImagePath';
+import Verbs from '../../Constants/Verbs';
+import GroupIcon from '../GroupIcon';
 
-function TagItemView({
-  source,
-  userName,
-  userLocation,
-  onItemPress,
-  checkUncheckSource,
-}) {
+const TagItemView = ({
+  source = '',
+  entityName = '',
+  userLocation = '',
+  onSelect = () => {},
+  onClickProfile = () => {},
+  entityType = Verbs.entityTypePlayer,
+  selectedList = [],
+  entityId = '',
+  sportName = '',
+}) => {
+  const [isSelected, setIsSelected] = useState(false);
+
+  useEffect(() => {
+    if (selectedList.length > 0) {
+      const obj = selectedList.find(
+        (item) => item.user_id === entityId || item.group_id === entityId,
+      );
+
+      if (obj) {
+        setIsSelected(true);
+      } else {
+        setIsSelected(false);
+      }
+    }
+  }, [selectedList, entityId]);
+
   return (
-    <TouchableWithoutFeedback
-      style={styles.mainContainerStyle}
-      onPress={onItemPress}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <Image source={source} style={styles.imageStyle} resizeMode={'cover'} />
+    <View style={styles.mainContainerStyle}>
+      <TouchableOpacity
+        style={{flexDirection: 'row', alignItems: 'center'}}
+        onPress={onClickProfile}>
+        <GroupIcon
+          imageUrl={source}
+          groupName={entityName}
+          entityType={entityType}
+          containerStyle={styles.imageStyle}
+          textstyle={{fontSize: 12}}
+        />
         <View style={styles.textViewStyle}>
-          <Text style={styles.userNameTextStyle}>{userName}</Text>
-          <Text style={styles.userLocationTextStyle}>{userLocation}</Text>
+          <Text style={styles.userNameTextStyle}>{entityName}</Text>
+          {entityType === Verbs.entityTypePlayer ||
+          entityType === Verbs.entityTypeUser ? (
+            <Text style={styles.userLocationTextStyle}>{userLocation}</Text>
+          ) : (
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text style={styles.userLocationTextStyle}>{userLocation}</Text>
+              <View
+                style={{
+                  width: StyleSheet.hairlineWidth,
+                  height: 12,
+                  marginHorizontal: 10,
+                  backgroundColor: colors.placeHolderColor,
+                }}
+              />
+              <Text style={styles.userLocationTextStyle}>{sportName}</Text>
+            </View>
+          )}
         </View>
-      </View>
-      <Image
-        source={checkUncheckSource}
-        style={styles.imageCheckBoxStyle}
-        resizeMode={'cover'}
-      />
-    </TouchableWithoutFeedback>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.imageCheckBoxStyle} onPress={onSelect}>
+        <Image
+          source={isSelected ? images.checkWhiteLanguage : images.uncheckWhite}
+          style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+        />
+      </TouchableOpacity>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   mainContainerStyle: {
+    paddingHorizontal: 5,
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
   },
   imageStyle: {
-    height: 45,
-    width: 45,
-    borderRadius: 45 / 2,
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    borderWidth: 1,
   },
   textViewStyle: {
     marginLeft: 12,
   },
   userNameTextStyle: {
     fontSize: 16,
-    fontFamily: fonts.RBold,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
   userLocationTextStyle: {
     fontSize: 14,
+    lineHeight: 21,
     fontFamily: fonts.RLight,
-    color: colors.userPostTimeColor,
-    top: 2,
+    color: colors.lightBlackColor,
   },
   imageCheckBoxStyle: {
     height: 22,

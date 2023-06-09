@@ -306,10 +306,14 @@ const GameFeed = (
         navigation={navigation}
         postDataItem={currentUserData}
         onWritePostPress={() => {
-          navigation.navigate('WritePostScreen', {
-            postData: currentUserData,
-            onPressDone,
-            selectedImageList: [],
+          navigation.navigate('LoneStack', {
+            screen: 'WritePostScreen',
+            params: {
+              postData: currentUserData,
+              onPressDone,
+              selectedImageList: [],
+              sendCallBack: true,
+            },
           });
         }}
       />
@@ -342,6 +346,7 @@ const GameFeed = (
         onLikePress={onLikePress}
         scrollEnabled={false}
         footerLoading={footerLoading && isNextDataLoading}
+        entityDetails={currentUserData}
       />
     </View>
   );

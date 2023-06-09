@@ -11,22 +11,22 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 
-export default function SelectedTagList({
-  dataSource,
-
-  onTagCancelPress,
-}) {
+export default function SelectedTagList({dataSource, onTagCancelPress}) {
   const renderTags = ({item, index}) => (
     <>
       <View
-        style={styles.textContainer}
+        style={[styles.textContainer, index !== 0 ? {marginLeft: 15} : {}]}
         onPress={() => onTagCancelPress({item, index})}>
-        <Text style={styles.tagTitleText}>{item.full_name}</Text>
-        <Image source={images.tagDivider} style={styles.dividerImage} />
+        <View>
+          <Text style={styles.tagTitleText}>
+            {item.full_name ?? item.group_name}
+          </Text>
+        </View>
+        <View style={styles.dividerImage} />
         <TouchableOpacity
           style={styles.closeButton}
           onPress={() => onTagCancelPress({item, index})}>
-          <Image source={images.cancelImage} style={styles.closeButton} />
+          <Image source={images.cancelImage} style={styles.image} />
         </TouchableOpacity>
       </View>
     </>
@@ -47,47 +47,41 @@ export default function SelectedTagList({
 
 const styles = StyleSheet.create({
   textContainer: {
-    flexDirection: 'row',
     height: 25,
-    marginBottom: 10,
-    marginRight: 5,
-    marginLeft: 5,
-    backgroundColor: colors.offwhite,
-    borderRadius: 13,
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.16,
-    shadowRadius: 1,
-    elevation: 3,
-    flex: 1,
+    borderRadius: 5,
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingLeft: 10,
+    paddingRight: 5,
+    backgroundColor: colors.textFieldBackground,
   },
-
   closeButton: {
-    alignSelf: 'center',
     width: 8,
     height: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
-    marginLeft: 5,
-    marginRight: 10,
   },
   dividerImage: {
-    alignSelf: 'center',
     width: 1,
     height: 25,
-    resizeMode: 'contain',
-    marginLeft: 5,
+    backgroundColor: colors.bgColor,
+    marginLeft: 10,
     marginRight: 5,
   },
   tagListStyle: {
-    marginLeft: 20,
-    marginTop: 20,
-    marginBottom: 10,
+    marginLeft: 15,
+    marginBottom: 15,
   },
   tagTitleText: {
-    alignSelf: 'center',
-    marginLeft: 10,
-    marginRight: 5,
-    fontFamily: fonts.RRegular,
     fontSize: 12,
+    lineHeight: 21,
+    textAlign: 'center',
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
 });

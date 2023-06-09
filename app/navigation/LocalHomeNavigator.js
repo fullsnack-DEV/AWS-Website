@@ -24,7 +24,6 @@ import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import AddOrDeleteSport from '../screens/localhome/AddOrDeleteSport';
 import RecruitingPlayerScreen from '../screens/localhome/RecruitingPlayerScreen';
 import EntitySearchScreen from '../screens/EntitySearchScreen';
-import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import ClubCreatedScreen from '../screens/account/createGroup/createClub/ClubCreatedScreen';
 import TeamCreatedScreen from '../screens/account/createGroup/createTeam/TeamCreatedScreen';
 import CreateClubForm3 from '../screens/account/createGroup/createClub/CreateClubForm3';
@@ -631,22 +630,6 @@ const LocalHomeNavigator = () => (
           fontWeight: '500',
         },
         // headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-    <Stack.Screen
-      name="WritePostScreen"
-      component={WritePostScreen}
-      options={{
-        title: 'Write Post',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,

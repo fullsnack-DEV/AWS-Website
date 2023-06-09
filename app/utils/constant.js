@@ -1360,24 +1360,27 @@ export const gameData = {
 };
 
 export const whoCanDataSourceUser = [
-  {text: strings.everyoneTitleText, value: 0},
-  {text: strings.onlymeTitleText, value: 1},
+  {text: strings.everyoneTitleText, value: 0, icon: images.privacyEveryoneIcon},
   {
     text: strings.followerTitleText,
     value: 3,
+    icon: images.privacyFollowersIcon,
   },
+  {text: strings.onlymeTitleText, value: 1, icon: images.lock},
 ];
 export const whoCanDataSourceGroup = [
-  {text: strings.everyoneTitleText, value: 0},
-  {text: strings.onlymeTitleText, value: 1},
+  {text: strings.everyoneTitleText, value: 0, icon: images.privacyEveryoneIcon},
+  {
+    text: strings.followerTitleText,
+    value: 3,
+    icon: images.privacyFollowersIcon,
+  },
   {
     text: strings.memberInGroupText,
     value: 2,
+    icon: images.pricacyMembersIcon,
   },
-  {
-    text: strings.followerTitleText,
-    value: 3,
-  },
+  {text: strings.onlymeTitleText, value: 1, icon: images.lock},
 ];
 
 export const userSettingOption = {

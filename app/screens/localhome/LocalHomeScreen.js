@@ -63,8 +63,6 @@ import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import TCShortsPlaceholder from '../../components/TCShortsPlaceholder';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import {ImageUploadContext} from '../../context/ImageUploadContext';
-import {createPost} from '../../api/NewsFeeds';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import Header from '../../components/Home/Header';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -81,7 +79,6 @@ export default function LocalHomeScreen({navigation, route}) {
 
   const authContext = useContext(AuthContext);
   const locationContext = useContext(LocationContext);
-  const imageUploadContext = useContext(ImageUploadContext);
 
   const [loading, setloading] = useState(false);
   const [sports, setSports] = useState([]);
@@ -1092,79 +1089,6 @@ export default function LocalHomeScreen({navigation, route}) {
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
-  const createPostAfterUpload = useCallback(
-    (dataParams) => {
-      let body = dataParams;
-
-      if (
-        authContext.entity.role === Verbs.entityTypeClub ||
-        authContext.entity.role === Verbs.entityTypeTeam
-      ) {
-        body = {
-          ...dataParams,
-          group_id: authContext.entity.uid,
-        };
-      }
-      createPost(body, authContext)
-        .then((response) => {
-          console.log(response.payload);
-        })
-        .catch((e) => {
-          Alert.alert('', e.messages);
-        });
-    },
-    [authContext],
-  );
-
-  const onPressDone = useCallback(
-    (data, postDesc, tagsOfEntity, format_tagged_data = []) => {
-      const currentUserDetail = authContext.entity.obj;
-      let dataParams = {};
-      const entityID = authContext.entity.uid;
-      if (entityID !== authContext.entity.uid) {
-        if (
-          currentUserDetail?.entity_type === 'team' ||
-          currentUserDetail?.entity_type === 'club'
-        ) {
-          dataParams.group_id = currentUserDetail?.group_id;
-          dataParams.feed_type = currentUserDetail?.entity_type;
-        }
-        if (
-          currentUserDetail?.entity_type === 'user' ||
-          currentUserDetail?.entity_type === 'player'
-        ) {
-          dataParams.user_id = currentUserDetail?.user_id;
-        }
-      }
-      if (postDesc.trim().length > 0 && data?.length === 0) {
-        dataParams = {
-          ...dataParams,
-          text: postDesc,
-          tagged: tagsOfEntity ?? [],
-          format_tagged_data,
-        };
-
-        createPostAfterUpload(dataParams);
-      } else if (data) {
-        const imageArray = data.map((dataItem) => dataItem);
-        dataParams = {
-          ...dataParams,
-          text: postDesc && postDesc,
-          attachments: [],
-          tagged: tagsOfEntity ?? [],
-          format_tagged_data,
-        };
-        imageUploadContext.uploadData(
-          authContext,
-          dataParams,
-          imageArray,
-          createPostAfterUpload,
-        );
-      }
-    },
-    [authContext, createPostAfterUpload, imageUploadContext],
-  );
-
   const renderSportsView = useCallback(
     ({item}) =>
       item.sport !== strings.allType && (
@@ -1433,11 +1357,13 @@ export default function LocalHomeScreen({navigation, route}) {
                 ListEmptyComponent={() => (
                   <TCShortsPlaceholder
                     onPress={() => {
-                      navigation.navigate('WritePostScreen', {
-                        comeFrom: 'LocalHomeScreen',
-                        postData: authContext.entity.obj,
-                        onPressDone,
-                        selectedImageList: [],
+                      navigation.navigate('LoneStack', {
+                        screen: 'WritePostScreen',
+                        params: {
+                          comeFrom: 'LocalHomeScreen',
+                          postData: authContext.entity.obj,
+                          selectedImageList: [],
+                        },
                       });
                     }}
                   />

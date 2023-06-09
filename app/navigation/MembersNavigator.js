@@ -36,7 +36,6 @@ import EditGroupProfileScreen from '../screens/home/EditGroupProfileScreen';
 import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
 import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
 
-import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
 import UserBasicInfoScreen from '../screens/home/user/UserBasicInfoScreen';
@@ -622,15 +621,6 @@ const MembersNavigator = () => (
       component={EditGroupProfileScreen}
       options={{
         title: 'Edit Profile',
-        headerTintColor: colors.blackColor,
-      }}
-    />
-
-    <Stack.Screen
-      name="WritePostScreen"
-      component={WritePostScreen}
-      options={{
-        title: 'Write Post',
         headerTintColor: colors.blackColor,
       }}
     />

@@ -500,6 +500,11 @@ const images = {
   arrows: require('../assets/images/arrows.png'),
   recruitingMemberClubNoImg: require('../assets/images/recruitingMemberClubNo.png'),
   recruitingMemberClubYesImg: require('../assets/images/recruitingMemberClubYes.png'),
+  pollIcon: require('../assets/images/poll.png'),
+  privacyEveryoneIcon: require('../assets/images/privacyEveryoneIcon.png'),
+  privacyFollowersIcon: require('../assets/images/privacyFollowersIcon.png'),
+  pricacyMembersIcon: require('../assets/images/pricacyMembersIcon.png'),
+  tagIcon: require('../assets/images/tagIcon.png'),
   mappin: require('../assets/images/MapPin.png'),
 };
 

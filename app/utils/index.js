@@ -24,6 +24,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {format} from 'react-string-format';
 import {strings} from '../../Localization/translation';
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
@@ -1851,37 +1852,56 @@ export const getTaggedEntityData = (
   return entity;
 };
 
-export const getTaggedText = (format_tagged_data) => {
-  const gameTagList = format_tagged_data?.filter(
-    (item) => item?.entity_type === 'game',
+export const getTaggedText = (format_tagged_data = []) => {
+  const gameTagList = format_tagged_data.filter(
+    (item) => item.entity_type === Verbs.entityTypeGame,
   );
   const entityTagList = format_tagged_data?.filter(
-    (item) => item?.entity_type !== 'game',
+    (item) => item.entity_type !== Verbs.entityTypeGame,
   );
-  const entityTagsListLength = entityTagList?.length ?? 0;
-  const gameTagsListLength = gameTagList?.length ?? 0;
-  let matchText = '',
-    entityText = '',
-    betweenText = '',
-    lastText = '',
-    entityLengthText = '',
-    matchLengthText = '';
-  if (entityTagsListLength > 0) entityLengthText = `${entityTagsListLength} `;
-  if (gameTagsListLength > 0) matchLengthText = `${gameTagsListLength} `;
-  if (gameTagsListLength > 0) {
-    matchText = gameTagsListLength > 1 ? 'matches ' : 'match ';
+
+  let entityCountText = '';
+  let matchCountText = '';
+
+  if (entityTagList.length > 0) {
+    const userList = entityTagList.filter(
+      (item) =>
+        item.entity_type === Verbs.entityTypeUser ||
+        item.entity_type === Verbs.entityTypePlayer,
+    );
+    const groupList = entityTagList.filter(
+      (item) =>
+        item.entity_type !== Verbs.entityTypeUser ||
+        item.entity_type !== Verbs.entityTypePlayer,
+    );
+    if (userList.length > 0) {
+      entityCountText =
+        userList.length > 1
+          ? `${format(strings.peopleCount, userList.length)}`
+          : `${format(strings.personCount, userList.length)}`;
+    }
+    if (groupList.length > 0) {
+      if (userList.length) {
+        entityCountText += ', ';
+      }
+      entityCountText +=
+        groupList.length > 1
+          ? `${format(strings.groupsCount, groupList.length)}`
+          : `${format(strings.groupCount, groupList.length)}`;
+    }
   }
-  if (entityTagsListLength > 0) {
-    entityText = entityTagsListLength > 1 ? 'people  ' : 'person ';
+
+  if (gameTagList.length > 0) {
+    if (entityCountText) {
+      matchCountText += ` ${strings.and} `;
+    }
+    matchCountText +=
+      gameTagList.length > 1
+        ? `${format(strings.matchesCount, gameTagList.length)}`
+        : `${format(strings.matchCount, gameTagList.length)}`;
   }
-  if (gameTagsListLength > 0 && entityTagsListLength > 0) betweenText = 'and ';
-  if (entityTagsListLength + gameTagsListLength > 0) {
-    lastText =
-      entityTagsListLength + gameTagsListLength > 1
-        ? 'were tagged'
-        : 'was tagged';
-  }
-  return `${entityLengthText}${entityText}${betweenText}${matchLengthText}${matchText}${lastText}`;
+
+  return `${entityCountText}${matchCountText}`;
 };
 
 export const getScreenWidth = ({
@@ -2608,4 +2628,12 @@ export const onLogout = async (authContext) => {
   } catch (error) {
     console.log('error==>', error);
   }
+};
+
+export const getPostData = (post = {}) => {
+  if (typeof post.object === 'string') {
+    const obj = JSON.parse(post.object);
+    return {...obj};
+  }
+  return {};
 };

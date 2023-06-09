@@ -237,14 +237,14 @@ const AccountScreen = ({navigation, route}) => {
           const obj = clubs.find(
             (item) => item.group_id === authContext.entity.uid,
           );
-          count = obj.unread ?? 0;
+          count = obj ? obj.unread : 0;
         } else if (
           authContext.entity.obj.entity_type === Verbs.entityTypeTeam
         ) {
           const obj = teams.find(
             (item) => item.group_id === authContext.entity.uid,
           );
-          count = obj.unread ?? 0;
+          count = obj ? obj.unread : 0;
         } else {
           count = user.unread ?? 0;
         }

@@ -23,10 +23,11 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {widthPercentageToDP as wp} from '../../utils';
-import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
+
 import AuthContext from '../../auth/context';
 import {createReaction} from '../../api/NewsFeeds';
-import { strings } from '../../../Localization/translation';
+import {strings} from '../../../Localization/translation';
+import NewsFeedPostItems from '../../components/newsFeed/feed/NewsFeedPostItems';
 
 function SingleNotificationScreen({route, navigation}) {
   const postItem = route.params?.notificationItem?.activities?.[0];

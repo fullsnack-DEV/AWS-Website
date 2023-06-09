@@ -173,6 +173,9 @@ const Verbs = {
 
   THOUSAND_SECOND: '1000',
   AVAILABILITY_DATE_FORMATE: 'YYYY-MM-DD',
+  mediaTypeImage: 'image',
+  mediaTypeVideo: 'video',
+  repostVerb: 'repost',
 };
 
 export default Verbs;

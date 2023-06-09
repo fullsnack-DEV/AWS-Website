@@ -14,6 +14,7 @@ import TagView from './TagView';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import {getTaggedText} from '../../utils';
 import TaggedModal from '../modals/TaggedModal';
+import {strings} from '../../../Localization/translation';
 
 const urlRegex =
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
@@ -121,13 +122,14 @@ const NewsFeedDescription = ({
         matchData?.input?.substr(matchData?.index, descriptions?.length),
       );
       let color = colors.black;
-      let isTagName = false
-      if(tagData && tagData.length > 0){
-        
-        isTagName = tagData.filter(
-          (item) => item.entity_data.tagged_formatted_name === match,
-        ).length > 0;
-        if (isTagName) color = colors.greeColor;
+      let isTagName = false;
+
+      if (tagData && tagData.length > 0) {
+        isTagName =
+          tagData.filter(
+            (item) => item.entity_data.tagged_formatted_name === match,
+          ).length > 0;
+        if (isTagName) color = colors.tagColor;
       }
 
       return (
@@ -143,7 +145,7 @@ const NewsFeedDescription = ({
 
   const renderURLText = useCallback((matchingString) => {
     const match = matchingString.match(urlRegex);
-    const color = colors.eventBlueColor;
+    const color = colors.tagColor;
     return <Text style={{color}}>{match?.[0]}</Text>;
   }, []);
 
@@ -167,13 +169,9 @@ const NewsFeedDescription = ({
   const renderGameTags = useMemo(
     () =>
       tagData?.length > 0 && (
-        <View style={{marginVertical: 15}}>
+        <View style={{marginTop: 10}}>
           <TouchableOpacity onPress={() => setShowTaggedModal(true)}>
-            <TagView
-              tagTextStyle={{color: colors.greeColor}}
-              source={images.tagGreenImage}
-              tagText={getTaggedText(tagData)}
-            />
+            <TagView source={images.tagIcon} tagText={getTaggedText(tagData)} />
           </TouchableOpacity>
           <FlatList
             bounces={false}
@@ -193,16 +191,16 @@ const NewsFeedDescription = ({
   const renderDescriptions = useMemo(
     () =>
       descriptions?.length > 0 && (
-        <View style={{paddingHorizontal: 10}}>
+        <View>
           <ReadMore
             style={[styles.text, descText]}
             numberOfLines={numberOfLineDisplay}
-            seeMoreText={'more'}
-            seeLessText={'less'}
+            seeMoreText={strings.moreText}
+            seeLessText={strings.lessText}
             seeMoreOverlapCount={0}
             allowFontScaling={false}
-            seeLessStyle={[styles.lessText, 'less']}
-            seeMoreStyle={[styles.moreText, 'more']}
+            seeLessStyle={styles.moreText}
+            seeMoreStyle={styles.moreText}
             onExpand={() => {
               console.log('called expand function');
             }}>
@@ -252,19 +250,14 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    // paddingVertical: '2%',
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
   moreText: {
-    color: 'gray',
-    fontFamily: fonts.RRegular,
     fontSize: 12,
-    top: 3,
-  },
-  lessText: {
-    color: 'gray',
-    fontSize: 12,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RLight,
   },
 });
 
