@@ -103,7 +103,7 @@ const RegisterReferee = ({navigation, route}) => {
               entity_type: Verbs.entityTypeReferee,
               game_fee: {
                 currency_type: Verbs.cad,
-                fee: 0,
+                fee: '',
               },
               referee_availibility: Verbs.on,
               refund_policy: Verbs.flexibleText,

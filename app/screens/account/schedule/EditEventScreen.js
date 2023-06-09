@@ -88,9 +88,13 @@ export default function EditEventScreen({navigation, route}) {
   const [eventPosted, setEventPosted] = useState({
     ...eventData?.event_posted_at,
   });
-  const [minAttendees, setMinAttendees] = useState(eventData.min_attendees);
-  const [maxAttendees, setMaxAttendees] = useState(eventData.max_attendees);
-  const [eventFee, setEventFee] = useState(eventData.event_fee.value);
+  const [minAttendees, setMinAttendees] = useState(
+    eventData.min_attendees ?? '',
+  );
+  const [maxAttendees, setMaxAttendees] = useState(
+    eventData.max_attendees ?? '',
+  );
+  const [eventFee, setEventFee] = useState(eventData.event_fee.value ?? '');
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState(
     strings.defaultCurrency,
@@ -620,7 +624,6 @@ export default function EditEventScreen({navigation, route}) {
             data.background_thumbnail = bgInfo.thumbnail;
             data.background_full_image = bgInfo.url;
             setBackgroundImageChanged(false);
-
             createEventDone(data, recurrringOption);
           })
           .catch((e) => {

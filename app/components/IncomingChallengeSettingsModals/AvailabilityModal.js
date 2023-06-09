@@ -46,7 +46,9 @@ const AvailabilityModal = ({
         justifyContent: 'space-between',
       }}>
       <View>
-        <Text style={styles.title}>{getTitle()}</Text>
+        <Text style={[styles.title, {fontFamily: fonts.RMedium}]}>
+          {getTitle()}
+        </Text>
         {RadioButtonList.map((item, index) => (
           <View
             style={[
@@ -95,7 +97,17 @@ const AvailabilityModal = ({
         </View>
       </View>
       <View style={styles.bottomContainer}>
-        <Text style={styles.smallText}>{strings.changeAvailabilityText}</Text>
+        <Text style={styles.smallText}>
+          {strings.changeAvailabilityText}
+          {'  '}
+          <Text
+            style={[
+              styles.smallText,
+              {textDecorationLine: 'underline', fontFamily: fonts.RMedium},
+            ]}>
+            {strings.scheduleText}
+          </Text>
+        </Text>
       </View>
     </View>
   );

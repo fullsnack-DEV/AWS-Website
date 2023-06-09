@@ -87,9 +87,9 @@ export default function CreateEventScreen({navigation, route}) {
     value: 1,
     text: strings.scheduleAndPostText,
   });
-  const [minAttendees, setMinAttendees] = useState();
-  const [maxAttendees, setMaxAttendees] = useState();
-  const [eventFee, setEventFee] = useState(0);
+  const [minAttendees, setMinAttendees] = useState('');
+  const [maxAttendees, setMaxAttendees] = useState('');
+  const [eventFee, setEventFee] = useState('');
   const [refundPolicy, setRefundPolicy] = useState('');
   const [toggle] = useState(false);
   const [eventStartDateTime, setEventStartdateTime] = useState(
@@ -641,6 +641,7 @@ export default function CreateEventScreen({navigation, route}) {
 
       if (backgroundImageChanged) {
         const imageArray = [];
+        console.log('#######', imageArray);
         imageArray.push({path: backgroundThumbnail});
         uploadImages(imageArray, authContext)
           .then((responses) => {
@@ -1154,7 +1155,7 @@ export default function CreateEventScreen({navigation, route}) {
               <View style={[styles.feeContainer, {marginTop: 10}]}>
                 <TextInput
                   style={styles.eventFeeStyle}
-                  placeholder={'0'}
+                  // placeholder={'0'}
                   keyboardType={'decimal-pad'}
                   onChangeText={(value) => setEventFee(value)}
                   value={`${eventFee}`}

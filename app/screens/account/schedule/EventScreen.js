@@ -824,7 +824,7 @@ export default function EventScreen({navigation, route}) {
                   <View
                     style={{
                       flexDirection: 'row',
-                      alignItems: 'center',
+                      alignItems: 'flex-start',
                       justifyContent: 'space-between',
                     }}>
                     <Text
@@ -837,7 +837,7 @@ export default function EventScreen({navigation, route}) {
                     <Text
                       style={[
                         styles.textValueStyle,
-                        {fontFamily: fonts.RRegular},
+                        {fontFamily: fonts.RRegular, textAlign: 'right'},
                       ]}>
                       {repeatString}
                     </Text>

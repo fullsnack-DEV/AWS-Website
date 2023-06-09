@@ -2265,7 +2265,8 @@ export default {
   availabilityInfoForNo:
     'en_Other players can’t challenge you to play a match in ',
   changeAvailabilityText:
-    'en_You can change availability of a specific period on your schedule.',
+    'en_You can change availability of a specific period on your',
+  scheduleText: 'en_schedule.',
   chooseMatchType: 'en_Choose a match type that you want.',
   gameTypeOfficalInfo:
     'en_The match result has an effect on TC points and TC rankings of the challenger and you.',
