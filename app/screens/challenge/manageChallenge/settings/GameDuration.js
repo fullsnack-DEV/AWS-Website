@@ -114,7 +114,6 @@ export default function GameDuration({navigation, route}) {
     ({index}) => (
       <View>
         <View style={styles.viewTitleContainer}>
-          <Text></Text>
           {index !== 0 && (
             <Text
               style={styles.deleteButton}
@@ -481,6 +480,7 @@ export default function GameDuration({navigation, route}) {
         <View>
           <TCLabel
             title={strings.PeriodsAndIntermissions}
+            required
             style={{marginRight: 15, marginTop: 20}}
           />
           <View style={[styles.viewContainer, {marginTop: 10}]}>
@@ -498,15 +498,9 @@ export default function GameDuration({navigation, route}) {
                   }}
                   value={firstPeriod}
                 />
-                <Text
-                  style={[
-                    styles.minText,
-                    {
-                      marginRight: 15,
-                    },
-                  ]}>
-                  {strings.minuteText}
-                </Text>
+                <View>
+                  <Text style={styles.minText}>{strings.minuteText}</Text>
+                </View>
               </View>
             </View>
           </View>
@@ -528,13 +522,16 @@ export default function GameDuration({navigation, route}) {
           <TouchableOpacity onPress={() => addPeriod()}>
             <Text
               style={{
-                textAlign: 'center',
-                // marginBottom: 40,
+                alignSelf: 'center',
+                marginTop: 30,
                 color: colors.lightBlackColor,
                 fontSize: 14,
+                paddingHorizontal: 10,
+                paddingVertical: 5,
                 fontFamily: fonts.RMedium,
                 backgroundColor: colors.textFieldBackground,
-                marginHorizontal: 80,
+                borderRadius: 5,
+                textAlign: 'center',
               }}>
               {strings.addIntervalPeriod}
             </Text>
@@ -630,20 +627,24 @@ export default function GameDuration({navigation, route}) {
               <TouchableOpacity onPress={() => addOverTime()}>
                 <Text
                   style={{
+                    paddingHorizontal: 10,
+                    paddingVertical: 5,
                     textAlign: 'center',
                     marginBottom: 40,
+                    marginTop: 25,
                     color: colors.lightBlackColor,
                     fontSize: 14,
                     fontFamily: fonts.RMedium,
                     backgroundColor: colors.textFieldBackground,
-                    marginHorizontal: 80,
+                    alignSelf: 'center',
+                    borderRadius: 5,
                   }}>
                   {strings.addIntervalPeriod}
                 </Text>
               </TouchableOpacity>
             </View>
           ) : (
-            <View style={{marginBottom: 40}} />
+            <View style={{}} />
           )}
           <View style={styles.totalTimeContainer}>
             <Text
@@ -716,33 +717,30 @@ const styles = StyleSheet.create({
   textInputContainer: {
     flex: 0.6,
     flexDirection: 'row',
+    alignItems: 'center',
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    alignItems: 'center',
     color: colors.lightBlackColor,
-    backgroundColor: colors.offwhite,
+    backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 1,
-    elevation: 3,
-    marginHorizontal: 25,
-    justifyContent: 'space-between',
   },
   textInput: {
     height: 40,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-
-    alignSelf: 'center',
+    // alignSelf: 'center',
     color: colors.lightBlackColor,
+    padding: 0,
+    flex: 1,
+    textAlign: 'right',
+    paddingRight: 16,
   },
   minText: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    marginRight: 15,
+
+    // marginRight: 15,
   },
   textTitle: {
     flexDirection: 'row',
@@ -771,7 +769,7 @@ const styles = StyleSheet.create({
   },
   totalTimeText: {
     fontSize: 16,
-    fontFamily: fonts.RThin,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
 });

@@ -351,10 +351,11 @@ const EditBasicInfoComponent = ({
             style={{
               textAlign: 'center',
               backgroundColor: colors.textFieldBackground,
-              paddingVertical: 3,
+              paddingVertical: 4,
               paddingHorizontal: 10,
-              marginBottom: 33,
+              marginBottom: 23,
               alignSelf: 'center',
+              borderRadius: 5,
             }}>
             + Add Phone
           </Text>
@@ -438,7 +439,7 @@ const EditBasicInfoComponent = ({
 
 const styles = StyleSheet.create({
   parent: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 14,
   },
   titleText: {
     fontSize: 16,
@@ -459,13 +460,12 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   miniDownArrow: {
-    alignSelf: 'center',
-    height: 12,
+    height: 10,
     resizeMode: 'contain',
     right: 15,
     tintColor: colors.lightBlackColor,
     top: 15,
-    width: 12,
+    width: 10,
   },
   row: {
     flexDirection: 'row',

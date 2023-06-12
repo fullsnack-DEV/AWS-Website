@@ -718,13 +718,7 @@ export default function EventScreen({navigation, route}) {
                   marginBottom: 15,
                 }}>
                 <View>
-                  <Text
-                    style={[
-                      styles.textValueStyle,
-                      {color: colors.veryLightBlack},
-                    ]}>
-                    {strings.starts}
-                  </Text>
+                  <Text style={styles.textValueStyle}>{strings.starts}</Text>
                 </View>
                 <View
                   style={{
@@ -754,13 +748,7 @@ export default function EventScreen({navigation, route}) {
                   marginBottom: 15,
                 }}>
                 <View>
-                  <Text
-                    style={[
-                      styles.textValueStyle,
-                      {color: colors.veryLightBlack},
-                    ]}>
-                    {strings.ends}
-                  </Text>
+                  <Text style={styles.textValueStyle}>{strings.ends}</Text>
                 </View>
                 <View
                   style={{
@@ -827,13 +815,7 @@ export default function EventScreen({navigation, route}) {
                       alignItems: 'flex-start',
                       justifyContent: 'space-between',
                     }}>
-                    <Text
-                      style={[
-                        styles.textValueStyle,
-                        {color: colors.veryLightBlack},
-                      ]}>
-                      {strings.repeat}
-                    </Text>
+                    <Text style={styles.textValueStyle}>{strings.repeat}</Text>
                     <Text
                       style={[
                         styles.textValueStyle,
@@ -1117,7 +1099,7 @@ const styles = StyleSheet.create({
   textValueStyle: {
     fontSize: 16,
     lineHeight: 24,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
   eventTitleStyle: {

@@ -911,7 +911,7 @@ export default {
   Tiebreakers: 'en_TIEBREAKERS',
   TiebreakersPlaceholder:
     'en_Explain what you will do when the scores are tied after the last period.',
-  PeriodsAndIntermissions: 'en_Periods & Intermissions',
+  PeriodsAndIntermissions: 'en_PERIODS & INTERMISSIONS',
   firstPeriodText: 'en_1st Period',
   intervalText: 'en_Interval',
   secondPeriodText: 'en_2nd Period',

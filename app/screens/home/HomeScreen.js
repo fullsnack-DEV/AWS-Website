@@ -329,8 +329,8 @@ const HomeScreen = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <View style={styles.headerRow}>
-        <View style={styles.row}>
+      <View style={[styles.headerRow, {width: '100%'}]}>
+        <View style={[styles.row, {flex: 1}]}>
           <Pressable
             style={styles.imageContainer}
             onPress={() => {
@@ -344,20 +344,20 @@ const HomeScreen = ({navigation, route}) => {
             }}>
             <Image source={images.backArrow} style={styles.image} />
           </Pressable>
-          <View style={{}}>
-            <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>
+          <View style={{flex: 1}}>
+            <Text style={styles.title} numberOfLines={1}>
               {currentUserData.full_name ?? currentUserData.group_name}
             </Text>
           </View>
           {isAdmin ? (
             <Pressable
-              style={styles.dropDownImage}
+              style={[styles.dropDownImage, {marginLeft: 5}]}
               onPress={() => setShowSwitchAccountModal(true)}>
               <Image source={images.path} style={styles.image} />
             </Pressable>
           ) : null}
         </View>
-        <View style={styles.row}>
+        <View style={[styles.row, {marginLeft: 22}]}>
           {!isAdmin ? (
             <Pressable
               style={styles.imageContainer}
@@ -378,7 +378,7 @@ const HomeScreen = ({navigation, route}) => {
             onPress={() => {
               setKebabButtonOptions();
             }}>
-            <Image source={images.chat3Dot} style={[styles.image, {}]} />
+            <Image source={images.chat3Dot} style={styles.image} />
           </Pressable>
         </View>
       </View>
