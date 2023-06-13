@@ -6,7 +6,7 @@ import React, {
   useState,
   useContext,
 } from 'react';
-import {View} from 'react-native';
+import {Alert, View} from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import Share from 'react-native-share';
 import Clipboard from '@react-native-community/clipboard';
@@ -21,6 +21,7 @@ import FeedFooter from './FeedFooter';
 import Post from './Post';
 import PostForEvent from './PostForEvent';
 import {getPostData} from '../../../utils';
+import {followUser, unfollowUser} from '../../../api/Users';
 
 const NewsFeedPostItems = memo(
   ({
@@ -37,8 +38,8 @@ const NewsFeedPostItems = memo(
     isNewsFeedScreen,
     openProfilId,
     entityDetails = {},
+    fetchFeeds = () => {},
   }) => {
-    const likersModalRef = useRef(null);
     const commentModalRef = useRef(null);
     const authContext = useContext(AuthContext);
     const [childIndex, setChildIndex] = useState(0);
@@ -151,6 +152,37 @@ const NewsFeedPostItems = memo(
       setShowCommentModal(true);
     }, []);
 
+    const handleFollowUnfollow = (
+      userId,
+      isFollowing = false,
+      entityType = Verbs.entityTypePlayer,
+    ) => {
+      const params = {
+        entity_type: entityType,
+      };
+      if (!isFollowing) {
+        followUser(params, userId, authContext)
+          .then(() => {
+            fetchFeeds();
+          })
+          .catch((error) => {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, error.message);
+            }, 10);
+          });
+      } else {
+        unfollowUser(params, userId, authContext)
+          .then(() => {
+            fetchFeeds();
+          })
+          .catch((error) => {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, error.message);
+            }, 10);
+          });
+      }
+    };
+
     return (
       <View style={{paddingHorizontal: 15, paddingTop: 17, paddingBottom: 20}}>
         {postType === Verbs.eventVerb ? (
@@ -200,11 +232,16 @@ const NewsFeedPostItems = memo(
         />
 
         <LikersModal
-          likersModalRef={likersModalRef}
-          navigation={navigation}
           data={item}
           showLikeModal={showLikeModal}
-          onBackdropPress={() => setShowLikeModal(false)}
+          closeModal={() => setShowLikeModal(false)}
+          onClickProfile={(obj = {}) => {
+            navigation.push('HomeScreen', {
+              uid: obj?.user_id,
+              role: obj.user.data.entity_type,
+            });
+          }}
+          handleFollowUnfollow={handleFollowUnfollow}
         />
         <CommentModal
           navigation={navigation}

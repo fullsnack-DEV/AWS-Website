@@ -40,6 +40,7 @@ const NewsFeedList = ({
   isNewsFeedScreen = false,
   openProfilId,
   entityDetails = {},
+  fetchFeeds = () => {},
 }) => {
   const [userID, setUserID] = useState('');
 
@@ -88,6 +89,7 @@ const NewsFeedList = ({
           isNewsFeedScreen={isNewsFeedScreen}
           openProfilId={openProfilId}
           entityDetails={entityDetails}
+          fetchFeeds={fetchFeeds}
         />
         <View
           style={{backgroundColor: colors.grayBackgroundColor, height: 7}}

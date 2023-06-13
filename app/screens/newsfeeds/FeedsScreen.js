@@ -48,9 +48,11 @@ const FeedsScreen = ({navigation}) => {
   const [sportArr, setSportArr] = useState([]);
   const [pointEvent] = useState('auto');
 
-  useEffect(() => {
-    if (isFocused) {
-      setFirstTimeLoading(true);
+  const getFeeds = useCallback(
+    (showLoader = true) => {
+      if (showLoader) {
+        setFirstTimeLoading(true);
+      }
       const entity = authContext.entity;
       setCurrentUserDetail(entity.obj || entity.auth.user);
       getNewsFeed(authContext)
@@ -63,8 +65,15 @@ const FeedsScreen = ({navigation}) => {
           setFirstTimeLoading(false);
           setTimeout(() => Alert.alert('', e.message), 100);
         });
+    },
+    [authContext],
+  );
+
+  useEffect(() => {
+    if (isFocused) {
+      getFeeds();
     }
-  }, [authContext, isFocused]);
+  }, [getFeeds, isFocused]);
 
   useEffect(() => {
     getSportsList(authContext).then((res) => {
@@ -209,7 +218,6 @@ const FeedsScreen = ({navigation}) => {
 
   const onLikePress = useCallback(
     (item) => {
-      console.log('onLikePress clap', item);
       const bodyParams = {
         reaction_type: 'clap',
         activity_id: item.id,
@@ -312,6 +320,7 @@ const FeedsScreen = ({navigation}) => {
       feedAPI={feedCalled}
       isNewsFeedScreen={true}
       entityDetails={currentUserDetail}
+      fetchFeeds={() => getFeeds(false)}
     />
   );
 

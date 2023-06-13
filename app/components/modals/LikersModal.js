@@ -1,171 +1,104 @@
 import React, {useContext} from 'react';
-import {
-  Alert,
-  Dimensions,
-  FlatList,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import Modal from 'react-native-modal';
-import {Portal} from 'react-native-portalize';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCUserList from '../../screens/account/connections/TCUserList';
 import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
-import {followUser, unfollowUser} from '../../api/Users';
+import CustomModalWrapper from '../CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 
-const LikersModal = ({data, showLikeModal, onBackdropPress, navigation}) => {
+const LikersModal = ({
+  data = {},
+  showLikeModal = false,
+  closeModal = () => {},
+  onClickProfile = () => {},
+  handleFollowUnfollow = () => {},
+}) => {
   const authContext = useContext(AuthContext);
-  const userRole = authContext?.entity?.role;
+  const userRole = authContext.entity.role;
 
-  const ModalHeader = () => (
-    <View style={styles.headerStyle}>
-      <View style={styles.handleStyle} />
-      <Text style={styles.titleText}>{strings.likesTitle}</Text>
-      <View style={styles.headerSeparator} />
-    </View>
-  );
   const listEmptyComponent = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyText}>{strings.noLikesYet}</Text>
     </View>
   );
-  const renderLikers = ({item}) => {
-    console.log('likers item', item);
+
+  const renderEntity = ({item}) => {
+    const user = {...item.user.data};
     return (
       <TCUserList
-        onProfilePress={() => {
-          navigation.push('HomeScreen', {
-            uid: item?.entity_id,
-            role: [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
-              item?.entity_type,
-            )
-              ? Verbs.entityTypeUser
-              : item?.entity_type,
-            backButtonVisible: true,
-            menuBtnVisible: false,
-          });
-        }}
-        title={item?.user?.data?.full_name}
-        subTitle={item?.user?.data?.city ?? ''}
-        entityType={item?.user?.data?.entity_type}
-        profileImage={item?.user?.data?.thumbnail}
-        followUnfollowPress={(value) => {
-          const params = {
-            entity_type: Verbs.entityTypePlayer,
-          };
-          if (value === true) {
-            followUser(params, item?.user?.id, authContext)
-              .then(() => {})
-              .catch((error) => {
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, error.message);
-                }, 10);
-              });
-          } else {
-            unfollowUser(params, item?.user?.id, authContext)
-              .then(() => {})
-              .catch((error) => {
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, error.message);
-                }, 10);
-              });
-          }
+        user={user}
+        onClickProfile={() => {
+          closeModal();
+          onClickProfile(item);
         }}
         showFollowUnfollowButton={
           userRole === Verbs.entityTypeUser &&
-          item?.user_id !== authContext.entity.uid
+          item.user_id !== authContext.entity.uid
         }
-        is_following={item?.user?.data?.is_follow}
+        isFollowing={user.is_follow}
+        handleFollowUnfollow={() => {
+          closeModal();
+          handleFollowUnfollow(item.user_id, user.is_follow, user.entity_type);
+        }}
       />
     );
   };
 
   return (
-    <View>
-      <Portal>
-        <Modal
-          onBackdropPress={onBackdropPress}
-          isVisible={showLikeModal}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
-          style={{
-            margin: 0,
-          }}>
-          <View
-            style={[
-              styles.bottomPopupContainer,
-              {
-                height:
-                  Dimensions.get('window').height -
-                  Dimensions.get('window').height / 2.5,
-              },
-            ]}>
-            {ModalHeader()}
-            <View style={styles.likersHeaderContainer}>
-              <Text style={styles.likedByText}>Liked by</Text>
-              <Text style={styles.likesCountText}>
-                {data?.latest_reactions?.clap?.length} likes
-              </Text>
-            </View>
-            <FlatList
-              data={data?.latest_reactions?.clap ?? []}
-              keyExtractor={(index) => index.toString()}
-              renderItem={renderLikers}
-              ListEmptyComponent={listEmptyComponent}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-        </Modal>
-      </Portal>
-    </View>
+    <CustomModalWrapper
+      isVisible={showLikeModal}
+      closeModal={closeModal}
+      modalType={ModalTypes.style2}
+      containerStyle={{padding: 0}}>
+      <View style={styles.headerStyle}>
+        <Text style={styles.titleText}>{strings.likesTitle}</Text>
+      </View>
+      <View style={styles.likersHeaderContainer}>
+        <Text style={styles.likedByText}>Liked by</Text>
+        <Text style={styles.likesCountText}>
+          {data.latest_reactions?.clap?.length}
+          {data.latest_reactions?.clap?.length > 1
+            ? strings.likesTitle
+            : strings.likeTitle}
+        </Text>
+      </View>
+      <FlatList
+        data={data.latest_reactions?.clap ?? []}
+        keyExtractor={(index) => index.toString()}
+        renderItem={renderEntity}
+        contentContainerStyle={{paddingHorizontal: 15}}
+        ListEmptyComponent={listEmptyComponent}
+        showsVerticalScrollIndicator={false}
+      />
+    </CustomModalWrapper>
   );
 };
 
 const styles = StyleSheet.create({
   headerStyle: {
-    borderTopRightRadius: 25,
-    borderTopLeftRadius: 25,
-    backgroundColor: colors.whiteColor,
-  },
-  handleStyle: {
-    marginTop: 15,
-    alignSelf: 'center',
-    height: 5,
-    width: 40,
-    borderRadius: 15,
-    backgroundColor: '#DADBDA',
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.grayBackgroundColor,
   },
   titleText: {
     color: colors.extraLightBlackColor,
     fontFamily: fonts.RBold,
     textAlign: 'center',
-    marginVertical: 15,
     fontSize: 16,
   },
-  headerSeparator: {
-    width: '100%',
-    backgroundColor: colors.grayBackgroundColor,
-    height: 2,
-    marginBottom: 15,
-  },
-
   likersHeaderContainer: {
     flexDirection: 'row',
-
-    paddingLeft: 15,
-    paddingRight: 15,
-    paddingBottom: 10,
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: colors.whiteColor,
+    paddingHorizontal: 15,
+    paddingTop: 20,
+    marginBottom: 25,
   },
   likedByText: {
     color: colors.extraLightBlackColor,
@@ -187,27 +120,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-  },
-  bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
   },
 });
 
