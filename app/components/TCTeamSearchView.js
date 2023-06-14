@@ -43,7 +43,6 @@ function TCTeamSearchView({
       });
     }
   };
-
   if (data.entity_type === Verbs.entityTypeTeam) {
     teamIcon = images.newTeamIcon;
     teamImagePH = images.teamBcgPlaceholder;
@@ -128,7 +127,8 @@ function TCTeamSearchView({
               {data.sport_name?.charAt(0).toUpperCase() +
                 data.sport_name?.slice(1)}
             </Text> */
-            <View style={{flex: 1, flexDirection: 'row'}}>
+
+            <View style={{flexDirection: 'row'}}>
               <Text
                 style={styles.locationText}
                 numberOfLines={1}
@@ -139,7 +139,7 @@ function TCTeamSearchView({
                 style={styles.locationText}
                 numberOfLines={1}
                 ellipsizeMode={'tail'}>
-                {'·' +
+                {' · ' +
                   ` ${data.sport_name
                     ?.charAt(0)
                     .toUpperCase()}${data.sport_name?.slice(1)}`}
