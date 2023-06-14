@@ -21,6 +21,7 @@ function TCPlayerView({
   showLevel = false,
   data = {},
   showSport = false,
+  isUniversalSearch = false,
   subTab,
   sportFilter,
   authContext,
@@ -38,10 +39,7 @@ function TCPlayerView({
     if (sportFilter.sport !== strings.allSport) {
       sports = sports.filter((value) => {
         if (subTab === strings.playerTitle) {
-          if (
-            value.sport_name === sportFilter.sport_name &&
-            value.is_active === true
-          ) {
+          if (value.sport === sportFilter.sport && value.is_active === true) {
             return value;
           }
           return false;
@@ -90,8 +88,9 @@ function TCPlayerView({
     ) {
       isChallengeButtonShow = true;
     } else if (
-      authContext.entity.role === Verbs.entityTypeTeam ||
-      authContext.entity.role === Verbs.entityTypeClub
+      isUniversalSearch === false &&
+      (authContext.entity.role === Verbs.entityTypeTeam ||
+        authContext.entity.role === Verbs.entityTypeClub)
     ) {
       isInviteButtonShow = true;
     }

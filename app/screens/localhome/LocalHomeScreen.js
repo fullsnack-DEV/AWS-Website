@@ -845,7 +845,6 @@ export default function LocalHomeScreen({navigation, route}) {
           data={item}
           cardWidth={'92%'}
           onPress={() => {
-            console.log('Data sport obj:=>', item);
             const sportName = Utility.getSportName(item, authContext);
             const routeName = getGameHomeScreen(sportName);
             if (routeName) navigation.push(routeName, {gameId: item?.game_id});
@@ -1543,10 +1542,7 @@ export default function LocalHomeScreen({navigation, route}) {
                   showArrow={true}
                   viewStyle={{marginTop: 20, marginBottom: 15}}
                   onPress={() => {
-                    console.log('selected sport', selectedSport);
                     const data = getNextScreenPlayerData();
-                    console.log('data==>', data);
-                    console.log('sports==>', sports);
 
                     navigation.navigate('LookingForChallengeScreen', {
                       filters: data,
@@ -1585,10 +1581,7 @@ export default function LocalHomeScreen({navigation, route}) {
                   showArrow={true}
                   viewStyle={{marginTop: 20, marginBottom: 15}}
                   onPress={() => {
-                    console.log('selected sport', selectedSport);
                     const data = getNextScreenTeamData();
-                    console.log('data==>', data);
-                    console.log('sports==>', data.teamSportData);
 
                     navigation.navigate('LookingForChallengeScreen', {
                       filters: {
@@ -1750,10 +1743,21 @@ export default function LocalHomeScreen({navigation, route}) {
                   showArrow={true}
                   viewStyle={{marginTop: 20, marginBottom: 15}}
                   onPress={() => {
-                    const data = getSortDataForNextScreen();
-                    navigation.navigate('LookingTeamScreen', {
-                      filters: data,
-                    });
+                    if (authContext.entity.role === Verbs.entityTypeTeam) {
+                      const data = getNextScreenTeamData();
+                      navigation.navigate('LookingTeamScreen', {
+                        filters: {
+                          location: data.location,
+                          locationOption: data.locationOption,
+                        },
+                        teamSportData: data.teamSportData,
+                      });
+                    } else {
+                      const data = getSortDataForNextScreen();
+                      navigation.navigate('LookingTeamScreen', {
+                        filters: data,
+                      });
+                    }
                   }}
                 />
                 <FlatList

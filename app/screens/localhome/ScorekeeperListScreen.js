@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
   sportView: {
     justifyContent: 'space-between',
     borderRadius: 8,
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.lightGrayBackground,
     shadowColor: colors.googleColor,
     shadowOffset: {
       width: 0,

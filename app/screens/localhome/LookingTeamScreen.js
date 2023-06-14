@@ -12,6 +12,7 @@ import {
   Alert,
   TextInput,
   SafeAreaView,
+  Pressable,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
@@ -20,7 +21,7 @@ import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import {widthPercentageToDP} from '../../utils';
+import {widthPercentageToDP, getStorage} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
@@ -35,6 +36,8 @@ import {inviteUser} from '../../api/Users';
 import Verbs from '../../Constants/Verbs';
 import {getSportList} from '../../utils/sportsActivityUtils';
 import SearchModal from '../../components/Filter/SearchModal';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 
 let stopFetchMore = true;
 
@@ -65,27 +68,14 @@ export default function LookingTeamScreen({navigation, route}) {
   const [myGroupDetail] = useState(
     authContext.entity.role === Verbs.entityTypeTeam && authContext.entity.obj,
   );
-  /*
-  useEffect(() => {
-    if (settingPopup) {
-      setLastSelection(locationFilterOpetion);
-    }
-  }, [settingPopup]);
+  const [imageBaseUrl, setImageBaseUrl] = useState('');
+  const [playerDetailPopup, setPlayerDetailPopup] = useState();
+  const [playerDetail, setPlayerDetail] = useState();
 
   useEffect(() => {
-    if (route.params?.locationText) {
-      setSettingPopup(true);
-      setLocation(route.params?.locationText);
-      setTimeout(() => {
-        setLocation(route.params?.locationText);
-      }, 10);
-    }
-  }, [route.params?.locationText]);
-
- 
-*/
-
-  useEffect(() => {
+    getStorage('appSetting').then((setting) => {
+      setImageBaseUrl(setting.base_url_sporticon);
+    });
     const defaultSport = [
       {
         sport: strings.allSport,
@@ -94,10 +84,14 @@ export default function LookingTeamScreen({navigation, route}) {
       },
     ];
 
-    setSports([
-      ...defaultSport,
-      ...getSportList(authContext.sports, Verbs.entityTypePlayer),
-    ]);
+    if (authContext.entity.role === Verbs.entityTypeClub) {
+      setSports([...defaultSport, ...authContext.entity.obj.sports]);
+    } else {
+      setSports([
+        ...defaultSport,
+        ...getSportList(authContext.sports, Verbs.entityTypePlayer),
+      ]);
+    }
   }, [authContext]);
 
   useEffect(() => {
@@ -153,15 +147,32 @@ export default function LookingTeamScreen({navigation, route}) {
           },
         });
       }
-      if (filerLookingEntity?.sport !== strings.allSport) {
-        lookingQuery.query.bool.must[0].nested.query.bool.must.push({
-          term: {
-            'registered_sports.sport_name.keyword': {
-              value: filerLookingEntity?.sport?.toLowerCase(),
-              case_insensitive: true,
+
+      if (
+        authContext.entity.role === Verbs.entityTypeLeague ||
+        authContext.entity.role === Verbs.entityTypeClub
+      ) {
+        if (filerLookingEntity.sport !== strings.allSport) {
+          lookingQuery.query.bool.must[0].nested.query.bool.must.push({
+            term: {
+              'registered_sports.sport_name.keyword': {
+                value: `${filerLookingEntity.sport.toLowerCase()}`,
+                case_insensitive: true,
+              },
             },
-          },
-        });
+          });
+        }
+      } else if (authContext.entity.role === Verbs.entityTypeTeam) {
+        if (route.params.teamSportData?.sport) {
+          lookingQuery.query.bool.must[0].nested.query.bool.must.push({
+            term: {
+              'registered_sports.sport_name.keyword': {
+                value: `${route.params.teamSportData.sport.toLowerCase()}`,
+                case_insensitive: true,
+              },
+            },
+          });
+        }
       }
       if (filerLookingEntity?.searchText?.length > 0) {
         lookingQuery.query.bool.must.push({
@@ -201,18 +212,35 @@ export default function LookingTeamScreen({navigation, route}) {
           showStar={filters.sport !== strings.allSport && true}
           showSport={true}
           subTab={strings.playerTitle}
-          sportFilter={filters}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
+          // sportFilter={filters}
+          sportFilter={
+            (authContext.entity.role === Verbs.entityTypeTeam && {
+              ...filters,
+              sport: route.params.teamSportData?.sport,
+              sport_name: route.params.teamSportData?.sport_name,
+              sport_type: route.params.teamSportData?.sport_type,
+            }) ||
+            filters
+          }
+          onPress={(sportsObj) => {
+            if (sportsObj.length > 1) {
+              const data = {
+                sports: sportsObj,
+                uid: item?.user_id,
+                entityType: item?.entity_type,
+              };
+              setPlayerDetail(data);
+              setPlayerDetailPopup(true);
+            } else {
+              navigation.navigate('SportActivityHome', {
+                sport: sportsObj[0].sport,
+                sportType: sportsObj[0]?.sport_type,
+                uid: item?.user_id,
+                entityType: item?.entity_type,
+                showPreview: true,
+                backScreen: 'LookingTeamScreen',
+              });
+            }
           }}
           onPressChallengButton={(dataObj, sportsObj) => {
             setChallengePopup(true);
@@ -225,7 +253,7 @@ export default function LookingTeamScreen({navigation, route}) {
         />
       </View>
     ),
-    [navigation],
+    [navigation, filters],
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
@@ -311,87 +339,7 @@ export default function LookingTeamScreen({navigation, route}) {
       applyFilter(tempFilter);
     }, 10);
   };
-  /*
-  const onPressReset = () => {
-    setFilters({
-      location: strings.worldTitleText,
-      sport: strings.allSport,
-      sport_type: strings.allSport,
-    });
-    setSelectedSport({
-      sport: strings.allSport,
-      sport_type: strings.allSport,
-      sport_name: strings.allSport,
-    });
-    setIsSearchPlaceholder(true);
-    setSelectedLocation(location);
-  };
 
-  const renderSports = ({item}) => (
-    <Pressable
-      style={styles.listItem}
-      onPress={() => {
-        if (item.sport === strings.allSport) {
-          setSelectedSport({
-            sport: strings.allSport,
-            sport_type: strings.allSport,
-            sport_name: strings.allSport,
-          });
-        } else {
-          // setSelectedSport(
-          //   Utility.getSportObjectByName(item.value, authContext),
-          // );
-          setSelectedSport(item);
-        }
-        setVisibleSportsModal(false);
-      }}>
-      <View
-        style={{
-          width: '100%',
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <Text style={styles.languageList}>{item.sport_name}</Text>
-        <View style={styles.checkbox}>
-          {selectedSport?.sport.toLowerCase() === item.sport.toLowerCase() ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </Pressable>
-  );
- 
-  const ModalHeader = () => (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-      <View style={styles.handleStyle} />
-    </View>
-  );
-
-  const handleSetLocationOptions = (locationObj) => {
-    setIsSearchPlaceholder(false);
-
-    // eslint-disable-next-line no-prototype-builtins
-    if (locationObj.hasOwnProperty('address')) {
-      // setLocation(location?.formattedAddress);
-      setSelectedLocation(locationObj?.formattedAddress);
-    } else {
-      // setLocation(location?.city);
-      setSelectedLocation(locationObj?.city);
-    }
-  };
-   */
   const groupInviteUser = async (dataObj) => {
     setloading(true);
     const params = {
@@ -417,654 +365,42 @@ export default function LookingTeamScreen({navigation, route}) {
         }, 10);
       });
   };
-  // return (
-  //   <SafeAreaView style={{flex: 1}}>
-  //     <ActivityLoader visible={loading} />
-  //     <View style={styles.searchView}>
-  //       <View style={styles.searchViewContainer}>
-  //         <TextInput
-  //           clearButtonMode={Platform.OS === 'ios' ? 'while-editing' : 'never'}
-  //           clearButtonVisible={Platform.OS === 'android'}
-  //           placeholder={strings.searchText}
-  //           style={styles.searchTxt}
-  //           autoCorrect={false}
-  //           onChangeText={(text) => {
-  //             const tempFilter = {...filters};
 
-  //             if (text?.length > 0) {
-  //               tempFilter.searchText = text;
-  //             } else {
-  //               delete tempFilter.searchText;
-  //             }
-  //             setFilters({
-  //               ...tempFilter,
-  //             });
-  //             setPageFrom(0);
-  //             setLookingEntity([]);
-  //             applyFilter(tempFilter);
-  //           }}
-  //           // value={search}
-  //         />
-  //         <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
-  //           <Image source={images.homeSetting} style={styles.settingImage} />
-  //         </TouchableWithoutFeedback>
-  //       </View>
-  //     </View>
-  //     <TCTagsFilter
-  //       filter={filters}
-  //       authContext={authContext}
-  //       dataSource={Utility.getFiltersOpetions(filters)}
-  //       onTagCancelPress={handleTagPress}
-  //     />
-  //     <FlatList
-  //       extraData={location}
-  //       showsHorizontalScrollIndicator={false}
-  //       data={lookingEntity}
-  //       ItemSeparatorComponent={renderSeparator}
-  //       keyExtractor={keyExtractor}
-  //       renderItem={renderLookingEntityListView}
-  //       style={styles.listStyle}
-  //       // contentContainerStyle={{ paddingBottom: 1 }}
-  //       onScroll={onScrollHandler}
-  //       onEndReachedThreshold={0.01}
-  //       onScrollBeginDrag={() => {
-  //         stopFetchMore = false;
-  //       }}
-  //       ListEmptyComponent={listEmptyComponent}
-  //     />
-  //     <Modal
-  //       onBackdropPress={() => setChallengePopup(false)}
-  //       backdropOpacity={1}
-  //       animationType="slide"
-  //       hasBackdrop
-  //       style={{
-  //         margin: 0,
-  //         backgroundColor: colors.blackOpacityColor,
-  //       }}
-  //       visible={challengePopup}>
-  //       <View style={styles.bottomPopupContainer}>
-  //         <View style={styles.viewsContainer}>
-  //           <Text
-  //             onPress={() => setChallengePopup(false)}
-  //             style={styles.cancelText}>
-  //             {strings.cancel}
-  //           </Text>
-  //           <Text style={styles.challengeText}>{strings.challenge}</Text>
-  //           <Text style={styles.challengeText}> </Text>
-  //         </View>
-  //         <TCThinDivider width={'100%'} />
-  //         <TouchableWithoutFeedback
-  //           onPress={() => {
-  //             setSelectedChallengeOption(0);
-  //             const obj = settingObject;
-  //             if (obj?.availibility === Verbs.on) {
-  //               if (
-  //                 currentUserData.sport_type === Verbs.doubleSport &&
-  //                 (!('player_deactivated' in currentUserData) ||
-  //                   !currentUserData?.player_deactivated) &&
-  //                 (!('player_leaved' in currentUserData) ||
-  //                   !currentUserData?.player_leaved) &&
-  //                 (!('player_leaved' in myGroupDetail) ||
-  //                   !myGroupDetail?.player_leaved)
-  //               ) {
-  //                 if (
-  //                   (obj?.game_duration || obj?.score_rules) &&
-  //                   obj?.availibility &&
-  //                   obj?.special_rules !== undefined &&
-  //                   obj?.general_rules !== undefined &&
-  //                   obj?.responsible_for_referee &&
-  //                   obj?.responsible_for_scorekeeper &&
-  //                   obj?.game_fee &&
-  //                   obj?.venue &&
-  //                   obj?.refund_policy &&
-  //                   obj?.home_away &&
-  //                   obj?.game_type
-  //                 ) {
-  //                   setChallengePopup(false);
-
-  //                   navigation.navigate('ChallengeScreen', {
-  //                     setting: obj,
-  //                     sportName: currentUserData?.sport,
-  //                     sportType: currentUserData?.sport_type,
-  //                     groupObj: currentUserData,
-  //                   });
-  //                 } else {
-  //                   Alert.alert(strings.teamHaveNoCompletedSetting);
-  //                 }
-  //               } else {
-  //                 console.log('in else continue :', currentUserData);
-  //                 if (currentUserData.sport_type === Verbs.doubleSport) {
-  //                   if (
-  //                     'player_deactivated' in currentUserData &&
-  //                     currentUserData?.player_deactivated
-  //                   ) {
-  //                     Alert.alert(strings.playerDeactivatedSport);
-  //                   } else if (
-  //                     'player_leaved' in currentUserData &&
-  //                     currentUserData?.player_leaved
-  //                   ) {
-  //                     Alert.alert(
-  //                       format(
-  //                         strings.groupHaveNo2Player,
-  //                         currentUserData?.group_name,
-  //                       ),
-  //                     );
-  //                   } else if (
-  //                     'player_leaved' in myGroupDetail &&
-  //                     myGroupDetail?.player_leaved
-  //                   ) {
-  //                     Alert.alert(strings.youHaveNo2Player);
-  //                   }
-  //                 } else {
-  //                   setChallengePopup(false);
-
-  //                   navigation.navigate('ChallengeScreen', {
-  //                     setting: obj,
-  //                     sportName: obj?.sport,
-  //                     sportType: obj?.sport_type,
-  //                     groupObj: currentUserData,
-  //                   });
-  //                 }
-  //               }
-  //             } else {
-  //               Alert.alert(strings.oppTeamNotForChallenge);
-  //             }
-  //           }}>
-  //           {selectedChallengeOption === 0 ? (
-  //             <LinearGradient
-  //               colors={[colors.yellowColor, colors.orangeGradientColor]}
-  //               style={styles.backgroundView}>
-  //               <Text
-  //                 style={[
-  //                   styles.curruentLocationText,
-  //                   {color: colors.whiteColor},
-  //                 ]}>
-  //                 {strings.continueToChallenge}
-  //               </Text>
-  //             </LinearGradient>
-  //           ) : (
-  //             <View style={styles.backgroundView}>
-  //               <Text style={styles.curruentLocationText}>
-  //                 {strings.continueToChallenge}
-  //               </Text>
-  //             </View>
-  //           )}
-  //         </TouchableWithoutFeedback>
-  //         <TouchableWithoutFeedback
-  //           onPress={() => {
-  //             setSelectedChallengeOption(1);
-
-  //             const obj = mySettingObject;
-  //             if (obj?.availibility === Verbs.on) {
-  //               if (
-  //                 myGroupDetail.sport_type === Verbs.doubleSport &&
-  //                 (!('player_deactivated' in myGroupDetail) ||
-  //                   !myGroupDetail?.player_deactivated) &&
-  //                 (!('player_leaved' in currentUserData) ||
-  //                   !currentUserData?.player_leaved) &&
-  //                 (!('player_leaved' in myGroupDetail) ||
-  //                   !myGroupDetail?.player_leaved)
-  //               ) {
-  //                 if (
-  //                   (obj?.game_duration || obj?.score_rules) &&
-  //                   obj?.availibility &&
-  //                   obj?.special_rules !== undefined &&
-  //                   obj?.general_rules !== undefined &&
-  //                   obj?.responsible_for_referee &&
-  //                   obj?.responsible_for_scorekeeper &&
-  //                   obj?.game_fee &&
-  //                   obj?.venue &&
-  //                   obj?.refund_policy &&
-  //                   obj?.home_away &&
-  //                   obj?.game_type
-  //                 ) {
-  //                   setChallengePopup(false);
-  //                   if (myGroupDetail.is_pause === true) {
-  //                     Alert.alert(
-  //                       format(strings.groupPaused, myGroupDetail.group_name),
-  //                     );
-  //                   } else {
-  //                     navigation.navigate('InviteChallengeScreen', {
-  //                       setting: obj,
-  //                       sportName: currentUserData?.sport,
-  //                       sportType: currentUserData?.sport_type,
-  //                       groupObj: currentUserData,
-  //                     });
-  //                   }
-  //                 } else {
-  //                   setTimeout(() => {
-  //                     Alert.alert(
-  //                       strings.completeSettingBeforeInvite,
-  //                       '',
-  //                       [
-  //                         {
-  //                           text: strings.cancel,
-  //                           onPress: () => console.log('Cancel Pressed!'),
-  //                         },
-  //                         {
-  //                           text: strings.okTitleText,
-  //                           onPress: () => {
-  //                             if (currentUserData?.is_pause === true) {
-  //                               Alert.alert(strings.yourTeamPaused);
-  //                             } else {
-  //                               navigation.navigate('ManageChallengeScreen', {
-  //                                 groupObj: currentUserData,
-  //                                 sportName: currentUserData.sport,
-  //                                 sportType: currentUserData?.sport_type,
-  //                               });
-  //                             }
-  //                           },
-  //                         },
-  //                       ],
-  //                       {cancelable: false},
-  //                     );
-  //                   }, 1000);
-  //                 }
-  //               } else if (myGroupDetail.sport_type === Verbs.doubleSport) {
-  //                 if (
-  //                   'player_deactivated' in myGroupDetail &&
-  //                   myGroupDetail?.player_deactivated
-  //                 ) {
-  //                   Alert.alert(strings.playerDeactivatedSport);
-  //                 } else if (
-  //                   'player_leaved' in currentUserData ||
-  //                   currentUserData?.player_leaved
-  //                 ) {
-  //                   Alert.alert(
-  //                     format(
-  //                       strings.groupHaveNo2Player,
-  //                       currentUserData?.group_name,
-  //                     ),
-  //                   );
-  //                 } else if (
-  //                   'player_leaved' in myGroupDetail ||
-  //                   myGroupDetail?.player_leaved
-  //                 ) {
-  //                   Alert.alert(strings.youHaveNo2Player);
-  //                 }
-  //               } else {
-  //                 setChallengePopup(false);
-  //                 if (myGroupDetail.is_pause === true) {
-  //                   Alert.alert(strings.yourTeamPaused);
-  //                 } else {
-  //                   setChallengePopup(false);
-  //                   navigation.navigate('InviteChallengeScreen', {
-  //                     setting: obj,
-  //                     sportName: currentUserData?.sport,
-  //                     sportType: currentUserData?.sport_type,
-  //                     groupObj: currentUserData,
-  //                   });
-  //                 }
-  //               }
-  //             } else {
-  //               Alert.alert(strings.availibilityOff);
-  //             }
-  //           }}>
-  //           {selectedChallengeOption === 1 ? (
-  //             <LinearGradient
-  //               colors={[colors.yellowColor, colors.orangeGradientColor]}
-  //               style={styles.backgroundView}>
-  //               <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
-  //                 {strings.inviteToChallenge}
-  //               </Text>
-  //             </LinearGradient>
-  //           ) : (
-  //             <View style={styles.backgroundView}>
-  //               <Text style={styles.myCityText}>
-  //                 {strings.inviteToChallenge}
-  //               </Text>
-  //             </View>
-  //           )}
-  //         </TouchableWithoutFeedback>
-  //       </View>
-  //     </Modal>
-  //     <Modal
-  //       onBackdropPress={() => setSettingPopup(false)}
-  //       style={{
-  //         margin: 0,
-  //       }}
-  //       isVisible={settingPopup}
-  //       animationInTiming={300}
-  //       animationOutTiming={800}
-  //       backdropTransitionInTiming={300}
-  //       backdropTransitionOutTiming={800}>
-  //       <View
-  //         style={[
-  //           styles.bottomPopupContainer,
-  //           {height: Dimensions.get('window').height - 50},
-  //         ]}>
-  //         <KeyboardAvoidingView
-  //           style={{flex: 1}}
-  //           keyboardVerticalOffset={keyboardVerticalOffset}
-  //           behavior={Platform.OS === 'ios' ? 'padding' : null}>
-  //           <ScrollView style={{flex: 1}}>
-  //             <View style={styles.viewsContainer}>
-  //               <Text
-  //                 onPress={() => {
-  //                   setLocationFilterOpetion(lastSelection);
-  //                   setSettingPopup(false);
-  //                   if (lastSelection !== locationType.SEARCH_CITY) {
-  //                     setIsSearchPlaceholder(true);
-  //                     setSelectedLocation('');
-  //                   } else {
-  //                     setIsSearchPlaceholder(false);
-  //                     setSelectedLocation(location);
-  //                   }
-  //                 }}
-  //                 style={styles.cancelText}>
-  //                 {strings.cancel}
-  //               </Text>
-  //               <Text style={styles.locationText}>{strings.filter}</Text>
-  //               <Text
-  //                 style={styles.doneText}
-  //                 onPress={() => {
-  //                   const tempFilter = {...filters};
-  //                   tempFilter.sport = selectedSport.sport;
-  //                   tempFilter.sport_type = selectedSport?.sport_type;
-  //                   tempFilter.sport_name = selectedSport?.sport_name;
-  //                   // setTimeout(() => {
-  //                   if (locationFilterOpetion === 0) {
-  //                     setLocation(strings.worldTitleText);
-  //                     tempFilter.location = location;
-  //                   } else if (locationFilterOpetion === 1) {
-  //                     setLocation(
-  //                       authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
-  //                         authContext?.entity?.obj?.city.slice(1),
-  //                     );
-  //                     tempFilter.location = location;
-  //                   } else if (locationFilterOpetion === 2) {
-  //                     getLocation();
-  //                     tempFilter.location = location;
-  //                   } else if (locationFilterOpetion === 3) {
-  //                     setLocation(selectedLocation);
-  //                   }
-
-  //                   // await setFilters({
-  //                   //   ...tempFilter,
-  //                   // });
-  //                   filters.sport = tempFilter.sport;
-  //                   filters.sport_type = tempFilter.sport_type;
-  //                   filters.sport_name = tempFilter.sport_name;
-  //                   filters.location = tempFilter.location;
-  //                   setPageFrom(0);
-  //                   setLookingEntity([]);
-  //                   applyFilter(tempFilter);
-  //                   setSettingPopup(false);
-  //                 }}>
-  //                 {strings.apply}
-  //               </Text>
-  //             </View>
-  //             <TCThinDivider width={'100%'} marginBottom={15} />
-  //             <View>
-  //               <View style={{flexDirection: 'column', margin: 15}}>
-  //                 <View>
-  //                   <Text style={styles.filterTitleBold}>Location</Text>
-  //                 </View>
-  //                 <View style={{marginTop: 10}}>
-  //                   <View
-  //                     style={{
-  //                       flexDirection: 'row',
-  //                       marginBottom: 10,
-  //                       justifyContent: 'space-between',
-  //                     }}>
-  //                     <Text style={styles.filterTitle}>
-  //                       {strings.currrentCityTitle}
-  //                     </Text>
-  //                     <TouchableWithoutFeedback
-  //                       onPress={() => {
-  //                         setLocationFilterOpetion(
-  //                           locationType.CURRENT_LOCATION,
-  //                         );
-  //                         setIsSearchPlaceholder(true);
-  //                       }}>
-  //                       <Image
-  //                         source={
-  //                           locationFilterOpetion === 2
-  //                             ? images.checkRoundOrange
-  //                             : images.radioUnselect
-  //                         }
-  //                         style={styles.radioButtonStyle}
-  //                       />
-  //                     </TouchableWithoutFeedback>
-  //                   </View>
-  //                   <View
-  //                     style={{
-  //                       flexDirection: 'row',
-  //                       marginBottom: 10,
-  //                       justifyContent: 'space-between',
-  //                     }}>
-  //                     <Text style={styles.filterTitle}>
-  //                       {strings.currentCity}
-  //                     </Text>
-  //                     <TouchableWithoutFeedback
-  //                       onPress={() => {
-  //                         setLocationFilterOpetion(locationType.HOME_CITY);
-  //                         setIsSearchPlaceholder(true);
-  //                       }}>
-  //                       <Image
-  //                         source={
-  //                           locationFilterOpetion === 1
-  //                             ? images.checkRoundOrange
-  //                             : images.radioUnselect
-  //                         }
-  //                         style={styles.radioButtonStyle}
-  //                       />
-  //                     </TouchableWithoutFeedback>
-  //                   </View>
-  //                   <View
-  //                     style={{
-  //                       flexDirection: 'row',
-  //                       marginBottom: 10,
-  //                       justifyContent: 'space-between',
-  //                     }}>
-  //                     <Text style={styles.filterTitle}>{strings.world}</Text>
-  //                     <TouchableWithoutFeedback
-  //                       onPress={() => {
-  //                         setLocationFilterOpetion(locationType.WORLD);
-  //                         setIsSearchPlaceholder(true);
-  //                       }}>
-  //                       <Image
-  //                         source={
-  //                           locationFilterOpetion === 0
-  //                             ? images.checkRoundOrange
-  //                             : images.radioUnselect
-  //                         }
-  //                         style={styles.radioButtonStyle}
-  //                       />
-  //                     </TouchableWithoutFeedback>
-  //                   </View>
-  //                   <TouchableWithoutFeedback
-  //                     onPress={() => {
-  //                       setLocationFilterOpetion(locationType.SEARCH_CITY);
-  //                       setVisibleLocationModal(true);
-  //                     }}>
-  //                     <View
-  //                       style={{
-  //                         flexDirection: 'row',
-  //                         justifyContent: 'space-between',
-  //                       }}>
-  //                       <View style={styles.searchCityContainer}>
-  //                         {/* <Text style={styles.searchCityText}>
-  //                           {isSearchPlaceholder === true
-  //                             ? strings.searchCityText
-  //                             : selectedLocation}
-  //                         </Text> */}
-  //                         <Text
-  //                           style={[
-  //                             styles.searchCityText,
-  //                             {
-  //                               color:
-  //                                 isSearchPlaceholder === true
-  //                                   ? colors.placeHolderColor
-  //                                   : colors.lightBlackColor,
-  //                             },
-  //                           ]}>
-  //                           {isSearchPlaceholder === true
-  //                             ? strings.searchTitle
-  //                             : selectedLocation}
-  //                         </Text>
-  //                       </View>
-  //                       <View
-  //                         style={{
-  //                           alignSelf: 'center',
-  //                         }}>
-  //                         <Image
-  //                           source={
-  //                             locationFilterOpetion === 3
-  //                               ? images.checkRoundOrange
-  //                               : images.radioUnselect
-  //                           }
-  //                           style={styles.radioButtonStyle}
-  //                         />
-  //                       </View>
-  //                     </View>
-  //                   </TouchableWithoutFeedback>
-  //                 </View>
-  //               </View>
-  //               <View>
-  //                 <View
-  //                   style={{
-  //                     flexDirection: 'column',
-  //                     margin: 15,
-  //                     justifyContent: 'space-between',
-  //                   }}>
-  //                   <View style={{}}>
-  //                     <Text style={styles.filterTitleBold}>
-  //                       {strings.sportsEventsTitle}
-  //                     </Text>
-  //                   </View>
-  //                   <View style={{marginTop: 10}}>
-  //                     <View
-  //                       style={[
-  //                         {
-  //                           marginBottom: 10,
-  //                           justifyContent: 'flex-start',
-  //                         },
-  //                         styles.sportsContainer,
-  //                       ]}>
-  //                       <TouchableWithoutFeedback
-  //                         onPress={() => {
-  //                           setVisibleSportsModal(true);
-  //                         }}>
-  //                         <View
-  //                           style={{
-  //                             flexDirection: 'row',
-  //                             justifyContent: 'flex-start',
-  //                           }}>
-  //                           <View>
-  //                             <Text style={styles.searchCityText}>
-  //                               {selectedSport?.sport_name ?? strings.allSport}
-  //                             </Text>
-  //                           </View>
-  //                           <View
-  //                             style={{
-  //                               position: 'absolute',
-  //                               right: 0,
-  //                               alignItems: 'center',
-  //                               justifyContent: 'center',
-  //                             }}>
-  //                             <Icon
-  //                               size={24}
-  //                               color="black"
-  //                               name="chevron-down"
-  //                             />
-  //                           </View>
-  //                         </View>
-  //                       </TouchableWithoutFeedback>
-  //                     </View>
-  //                   </View>
-  //                 </View>
-  //               </View>
-  //             </View>
-  //             <View style={{flex: 1}} />
-  //           </ScrollView>
-  //         </KeyboardAvoidingView>
-
-  //         <TouchableOpacity
-  //           style={styles.resetButton}
-  //           onPress={() => {
-  //             Alert.alert(
-  //               strings.areYouSureRemoveFilterText,
-  //               '',
-  //               [
-  //                 {
-  //                   text: strings.cancel,
-  //                   onPress: () => console.log('Cancel Pressed'),
-  //                   style: 'cancel',
-  //                 },
-  //                 {
-  //                   text: strings.okTitleText,
-  //                   onPress: () => onPressReset(),
-  //                 },
-  //               ],
-  //               {cancelable: false},
-  //             );
-  //           }}>
-  //           <Text style={styles.resetTitle}>{strings.resetTitleText}</Text>
-  //         </TouchableOpacity>
-
-  //         <LocationModal
-  //           visibleLocationModal={visibleLocationModal}
-  //           title={strings.cityStateOrCountryTitle}
-  //           setVisibleLocationModalhandler={() =>
-  //             setVisibleLocationModal(false)
-  //           }
-  //           onLocationSelect={handleSetLocationOptions}
-  //           placeholder={strings.searchTitle}
-  //           type={'country'}
-  //         />
-
-  //         <Modal
-  //           isVisible={visibleSportsModal}
-  //           onBackdropPress={() => setVisibleSportsModal(false)}
-  //           onRequestClose={() => setVisibleSportsModal(false)}
-  //           animationInTiming={300}
-  //           animationOutTiming={800}
-  //           backdropTransitionInTiming={300}
-  //           backdropTransitionOutTiming={800}
-  //           style={{
-  //             margin: 0,
-  //           }}>
-  //           <View
-  //             behavior="position"
-  //             style={{
-  //               width: '100%',
-  //               height: Dimensions.get('window').height - 75,
-  //               maxHeight: Dimensions.get('window').height - 75,
-  //               backgroundColor: 'white',
-  //               position: 'absolute',
-  //               bottom: 0,
-  //               left: 0,
-  //               borderTopLeftRadius: 30,
-  //               borderTopRightRadius: 30,
-  //               shadowColor: '#000',
-  //               shadowOffset: {width: 0, height: 1},
-  //               shadowOpacity: 0.5,
-  //               shadowRadius: 5,
-  //               elevation: 15,
-  //             }}>
-  //             {ModalHeader()}
-  //             <View
-  //               style={{
-  //                 flexDirection: 'row',
-  //                 paddingHorizontal: 15,
-  //                 justifyContent: 'space-between',
-  //                 alignItems: 'center',
-  //               }}></View>
-  //             <View style={styles.separatorLine} />
-  //             <FlatList
-  //               ItemSeparatorComponent={() => <TCThinDivider />}
-  //               data={sports}
-  //               keyExtractor={(item, index) => index.toString()}
-  //               renderItem={renderSports}
-  //             />
-  //           </View>
-  //         </Modal>
-  //       </View>
-  //     </Modal>
-
-  //   </SafeAreaView>
-  // );
+  const sportsView = (item) => (
+    <Pressable
+      style={[
+        styles.sportView,
+        styles.row,
+        {borderLeftColor: colors.redColorCard},
+      ]}
+      onPress={() => {
+        setPlayerDetailPopup(false);
+        navigation.navigate('SportActivityHome', {
+          sport: item.sport,
+          sportType: item?.sport_type,
+          uid: playerDetail.uid,
+          entityType: playerDetail.entity_type,
+          showPreview: true,
+          backScreen: 'LookingTeamScreen',
+        });
+      }}
+      disabled={item.is_hide}>
+      <View style={styles.innerViewContainer}>
+        <View style={styles.row}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={{uri: `${imageBaseUrl}${item.player_image}`}}
+              style={styles.sportIcon}
+            />
+          </View>
+          <View>
+            <Text style={styles.sportName}>{item.sport_name}</Text>
+            <Text style={styles.matchCount}>0 match</Text>
+          </View>
+        </View>
+      </View>
+    </Pressable>
+  );
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -1119,6 +455,7 @@ export default function LookingTeamScreen({navigation, route}) {
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
+        ListFooterComponent={() => <View style={{height: 30}} />}
       />
       <Modal
         onBackdropPress={() => setChallengePopup(false)}
@@ -1369,9 +706,14 @@ export default function LookingTeamScreen({navigation, route}) {
       <SearchModal
         // enityType={Verbs.entityTypeReferee}
         sports={sports}
-        fType={filterType.SCOREKEEPERS}
+        fType={filterType.LOOKINGFORTEAMCLUB}
         filterObject={filters}
         isVisible={settingPopup}
+        showSportOption={
+          (authContext.entity.role === Verbs.entityTypeTeam && false) ||
+          (authContext.entity.role === Verbs.entityTypeClub && true) ||
+          (authContext.entity.role === Verbs.entityTypeLeague && true)
+        }
         onPressApply={(filterData) => {
           setloading(false);
           let tempFilter = {};
@@ -1405,6 +747,21 @@ export default function LookingTeamScreen({navigation, route}) {
         onPressCancel={() => {
           setSettingPopup(false);
         }}></SearchModal>
+      <CustomModalWrapper
+        isVisible={playerDetailPopup}
+        closeModal={() => {
+          setPlayerDetailPopup(false);
+        }}
+        modalType={ModalTypes.style2}>
+        <View style={{paddingTop: 0, paddingHorizontal: 0}}>
+          <FlatList
+            data={playerDetail?.sports}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item, index}) => sportsView(item, item.type, index)}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      </CustomModalWrapper>
     </SafeAreaView>
   );
 }
@@ -1412,11 +769,6 @@ const styles = StyleSheet.create({
   listStyle: {
     padding: 15,
   },
-
-  // separator: {
-  //   borderRightWidth: 20,
-  //   borderColor: colors.whiteColor,
-  // },
 
   searchViewContainer: {
     flexDirection: 'row',
@@ -1436,7 +788,6 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   searchView: {
-    // backgroundColor: colors.grayBackgroundColor,
     height: 55,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1516,5 +867,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+  },
+  sportView: {
+    justifyContent: 'space-between',
+    borderRadius: 8,
+    backgroundColor: colors.lightGrayBackground,
+    shadowColor: colors.googleColor,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowRadius: 3,
+    shadowOpacity: 0.2,
+    elevation: 5,
+    marginBottom: 20,
+    borderLeftWidth: 8,
+    paddingVertical: 5,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  innerViewContainer: {
+    flex: 1,
+    marginRight: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sportName: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  matchCount: {
+    fontSize: 12,
+    lineHeight: 14,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+  },
+  sportIcon: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  imageContainer: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
   },
 });

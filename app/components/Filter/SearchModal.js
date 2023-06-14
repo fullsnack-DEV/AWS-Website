@@ -59,6 +59,7 @@ const SearchModal = ({
   const [filterOptions, setFilterOptions] = useState([]);
   const [datePickerShow, setDatePickerShow] = useState(false);
   const [tag, setTag] = useState();
+  // const [groups, setGroups] = useState(groupsType);
   const [groups, setGroups] = useState(groupsType);
   const [showTimeComponent, setShowTimeComponent] = useState(false);
   const [showFeeComponent, setShowFeeComponent] = useState(false);
@@ -120,7 +121,8 @@ const SearchModal = ({
           fType === filterType.SCOREKEEPERS ||
           fType === filterType.PLAYERAVAILABLECHALLENGE ||
           fType === filterType.UPCOMINGMATCHES ||
-          fType === filterType.RECRUIITINGMEMBERS,
+          fType === filterType.RECRUIITINGMEMBERS ||
+          fType === filterType.LOOKINGFORTEAMCLUB,
       );
 
       setShowFeeComponent(
@@ -147,7 +149,7 @@ const SearchModal = ({
         setGroups([...temp]);
       });
     }
-  }, [fType, filterObject, groups, isVisible]);
+  }, [fType, filterObject, isVisible]);
 
   const isIconCheckedOrNot = useCallback(
     ({item, index}) => {
@@ -221,19 +223,28 @@ const SearchModal = ({
       style={styles.listItem}
       onPress={() => {
         if (item.sport === strings.allSport) {
-          setFilters({
+          const tempObject = {
             ...filters,
             sport: strings.allSport,
             sport_name: strings.allSport,
             sport_type: strings.allSport,
-          });
+          };
+          setFilters({...tempObject});
+          const temp = [...groupsType];
+          setGroups([...temp]);
         } else {
-          setFilters({
+          const tempObject = {
             ...filters,
             sport: item.sport,
             sport_name: item.sport_name,
             sport_type: item.sport_type,
-          });
+          };
+          setFilters({...tempObject});
+          const temp = [
+            {type: strings.clubstitle, isChecked: false},
+            {type: strings.leaguesTitle, isChecked: false},
+          ];
+          setGroups([...temp]);
         }
         setVisibleSportsModal(false);
       }}>
@@ -311,19 +322,18 @@ const SearchModal = ({
 
   const renderGroupsTypeItem = ({item, index}) => (
     <TouchableOpacity
-      style={styles.listItem}
+      // style={styles.listItem}
       onPress={() => isIconCheckedOrNot({item, index})}>
       <View
         style={{
           width: '100%',
           flexDirection: 'row',
           justifyContent: 'space-between',
-          marginRight: 15,
           alignSelf: 'flex-end',
-          height: 50,
+          marginBottom: 15,
         }}>
         <Text style={styles.sportList}>{item?.type}</Text>
-        <View style={styles.checkbox}>
+        <View style={styles.groupCheckbox}>
           {item?.isChecked ? (
             <FastImage
               resizeMode={'contain'}
@@ -412,6 +422,15 @@ const SearchModal = ({
               ) {
                 tempFilter.groupLeague = strings.leaguesTitle;
               } else {
+                delete tempFilter.groupLeague;
+              }
+              if (groups.filter((obj) => obj.isChecked).length === 3) {
+                delete tempFilter.groupTeam;
+                delete tempFilter.groupClub;
+                delete tempFilter.groupLeague;
+              }
+              if (groups.filter((obj) => obj.isChecked).length === 2) {
+                delete tempFilter.groupClub;
                 delete tempFilter.groupLeague;
               }
             }
@@ -538,7 +557,7 @@ const SearchModal = ({
                         justifyContent: 'space-between',
                       }}>
                       <Text style={styles.filterTitle}>
-                        {strings.currentCity}
+                        {strings.homeCityTitleText}
                       </Text>
                       <TouchableWithoutFeedback
                         onPress={() => {
@@ -1046,10 +1065,7 @@ const SearchModal = ({
                 59,
                 59,
               ); // End of the month
-              console.log(
-                'toDate for this month =>',
-                Number(parseFloat(toDate / 1000).toFixed(0)),
-              );
+
               setTag(0);
               const temp = {...filters};
               // temp.fromDateTime = Number(
@@ -1080,14 +1096,7 @@ const SearchModal = ({
                 59,
                 59,
               ); // End of the previous month
-              console.log(
-                'From date  last m=>',
-                Number(parseFloat(fromDate / 1000).toFixed(0)),
-              );
-              console.log(
-                'toDate date last m =>',
-                Number(parseFloat(toDate / 1000).toFixed(0)),
-              );
+
               setTag(0);
               const temp = {...filters};
               temp.fromDateTime = Number(
@@ -1337,7 +1346,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     textAlign: 'left',
     fontFamily: fonts.RRegular,
-    margin: 15,
     textAlignVertical: 'center',
     fontSize: 16,
   },
@@ -1362,5 +1370,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     height: 1,
+  },
+  groupCheckbox: {
+    alignSelf: 'center',
   },
 });

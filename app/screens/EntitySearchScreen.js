@@ -18,9 +18,7 @@ import {
   TouchableWithoutFeedback,
   Image,
   Alert,
-  KeyboardAvoidingView,
   Platform,
-  Dimensions,
   ScrollView,
   Pressable,
 } from 'react-native';
@@ -29,7 +27,7 @@ import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'react-string-format';
 import AuthContext from '../auth/context';
-import {widthPercentageToDP} from '../utils';
+import {getStorage} from '../utils';
 import TCScrollableProfileTabs from '../components/TCScrollableProfileTabs';
 import colors from '../Constants/Colors';
 import Verbs from '../Constants/Verbs';
@@ -50,9 +48,12 @@ import {joinTeam} from '../api/Groups';
 import {inviteUser} from '../api/Users';
 import {acceptRequest, declineRequest} from '../api/Notificaitons';
 import {getGeocoordinatesWithPlaceName} from '../utils/location';
-import LocationModal from '../components/LocationModal/LocationModal';
-import {ErrorCodes} from '../utils/constant';
-import {getSportList} from '../utils/sportsActivityUtils';
+// import LocationModal from '../components/LocationModal/LocationModal';
+import {ErrorCodes, filterType, locationType} from '../utils/constant';
+import {getSportDetails, getSportList} from '../utils/sportsActivityUtils';
+import SearchModal from '../components/Filter/SearchModal';
+import {ModalTypes} from '../Constants/GeneralConstants';
+import CustomModalWrapper from '../components/CustomModalWrapper';
 
 let stopFetchMore = true;
 
@@ -111,70 +112,78 @@ export default function EntitySearchScreen({navigation, route}) {
   const [clubsPageFrom, setClubsPageFrom] = useState(0);
   const [completedGamePageFrom, setCompletedGamePageFrom] = useState(0);
   const [upcomingGamePageFrom, setUpcomingGamePageFrom] = useState(0);
-  const [visibleLocationModal, setVisibleLocationModal] = useState(false);
+  // const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   const [location, setLocation] = useState(strings.worldTitleText);
 
-  const [selectedSport, setSelectedSport] = useState({
-    sport: strings.allSport,
-    sport_type: strings.allSport,
-    sport_name: strings.allSport,
-  });
+  // const [selectedSport, setSelectedSport] = useState({
+  //   sport: strings.allSport,
+  //   sport_type: strings.allSport,
+  //   sport_name: strings.allSport,
+  // });
   const [generalFilter, setGeneralFilter] = useState({
     location: strings.worldTitleText,
+    locationOption: locationType.WORLD,
     sport: strings.allSport,
     sport_type: strings.allSport,
     sport_name: strings.allSport,
   });
   const [playerFilter, setPlayerFilter] = useState({
     location: strings.worldTitleText,
+    locationOption: locationType.WORLD,
     sport: strings.allSport,
     sport_type: strings.allSport,
     sport_name: strings.allSport,
   });
   const [refereeFilters, setrRefereeFilters] = useState({
     location: strings.worldTitleText,
+    locationOption: locationType.WORLD,
     sport: strings.allSport,
     sport_type: strings.allSport,
     sport_name: strings.allSport,
   });
   const [scoreKeeperFilters, setScoreKeeperFilters] = useState({
     location: strings.worldTitleText,
+    locationOption: locationType.WORLD,
     sport: strings.allSport,
     sport_type: strings.allSport,
     sport_name: strings.allSport,
   });
   const [teamFilters, setTeamFilters] = useState({
     location: strings.worldTitleText,
+    locationOption: locationType.WORLD,
     sport: strings.allSport,
     sport_type: strings.allSport,
     sport_name: strings.allSport,
   });
   const [clubFilters, setClubFilters] = useState({
     location: strings.worldTitleText,
+    locationOption: locationType.WORLD,
     sport: strings.allSport,
     sport_type: strings.allSport,
     sport_name: strings.allSport,
   });
   const [completedGameFilters, setCompletedGameFilters] = useState({
     location: strings.worldTitleText,
+    locationOption: locationType.WORLD,
     sport: strings.allSport,
     sport_type: strings.allSport,
     sport_name: strings.allSport,
   });
   const [upcomingGameFilters, setUpcomingGameFilters] = useState({
     location: strings.worldTitleText,
+    locationOption: locationType.WORLD,
     sport: strings.allSport,
     sport_type: strings.allSport,
     sport_name: strings.allSport,
   });
 
-  const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
-  const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
-  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  // const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
+  // const [locationFilterOpetion, setLocationFilterOpetion] = useState(0);
+  // const [visibleSportsModal, setVisibleSportsModal] = useState(false);
 
-  const [searchLocation, setSearchLocation] = useState(
-    route.params.locationText ?? strings.searchTitle,
-  );
+  // const [searchLocation, setSearchLocation] = useState(
+  //   route.params.locationText ?? strings.searchTitle,
+  // );
   const searchBoxRef = useRef();
   const [challengePopup, setChallengePopup] = useState(false);
   const [selectedChallengeOption, setSelectedChallengeOption] = useState();
@@ -195,12 +204,18 @@ export default function EntitySearchScreen({navigation, route}) {
       sport_type: strings.allSport,
     },
   ];
+  const [imageBaseUrl, setImageBaseUrl] = useState('');
+  const [playerDetailPopup, setPlayerDetailPopup] = useState();
+  const [playerDetail, setPlayerDetail] = useState();
 
   useEffect(() => {
+    getStorage('appSetting').then((setting) => {
+      setImageBaseUrl(setting.base_url_sporticon);
+    });
     if (route.params.locationText) {
       setSettingPopup(true);
       setLocation(route.params.locationText);
-      setSearchLocation(route.params.locationText);
+      // setSearchLocation(route.params.locationText);
     }
   }, [route.params.locationText]);
 
@@ -1117,44 +1132,44 @@ export default function EntitySearchScreen({navigation, route}) {
     });
   }, [pageSize, upcomingGamePageFrom, upcomingGame, upcomingGameFilters]);
 
-  const renderSports = ({item}) => (
-    <Pressable
-      style={styles.listItem}
-      onPress={() => {
-        if (item.sport === strings.allSport) {
-          setSelectedSport({
-            sport: strings.allSport,
-            sport_type: strings.allSport,
-            sport_name: strings.allSport,
-          });
-        } else {
-          setSelectedSport(item);
-        }
-        setVisibleSportsModal(false);
-      }}>
-      <View
-        style={{
-          width: '100%',
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <Text style={styles.languageList}>{item.sport_name}</Text>
-        <View style={styles.checkbox}>
-          {selectedSport?.sport_name.toLowerCase() ===
-          item.sport_name.toLowerCase() ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </Pressable>
-  );
+  // const renderSports = ({item}) => (
+  //   <Pressable
+  //     style={styles.listItem}
+  //     onPress={() => {
+  //       if (item.sport === strings.allSport) {
+  //         setSelectedSport({
+  //           sport: strings.allSport,
+  //           sport_type: strings.allSport,
+  //           sport_name: strings.allSport,
+  //         });
+  //       } else {
+  //         setSelectedSport(item);
+  //       }
+  //       setVisibleSportsModal(false);
+  //     }}>
+  //     <View
+  //       style={{
+  //         width: '100%',
+  //         padding: 20,
+  //         alignItems: 'center',
+  //         flexDirection: 'row',
+  //         justifyContent: 'space-between',
+  //       }}>
+  //       <Text style={styles.languageList}>{item.sport_name}</Text>
+  //       <View style={styles.checkbox}>
+  //         {selectedSport?.sport_name.toLowerCase() ===
+  //         item.sport_name.toLowerCase() ? (
+  //           <Image
+  //             source={images.radioCheckYellow}
+  //             style={styles.checkboxImg}
+  //           />
+  //         ) : (
+  //           <Image source={images.radioUnselect} style={styles.checkboxImg} />
+  //         )}
+  //       </View>
+  //     </View>
+  //   </Pressable>
+  // );
 
   const renderSeparator = () =>
     currentTab !== 2 && (
@@ -1190,14 +1205,16 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = strings.allSport;
               tempFilter.sport_type = strings.allSport;
               tempFilter.sport_name = strings.allSport;
-              setSelectedSport({
-                sport: strings.allSport,
-                sport_type: strings.allSport,
-                sport_name: strings.allSport,
-              });
+              // setSelectedSport({
+              //   sport: strings.allSport,
+              //   sport_type: strings.allSport,
+              //   sport_name: strings.allSport,
+              // });
             }
             if (Object.keys(item)[0] === 'location') {
               tempFilter.location = strings.worldTitleText;
+              tempFilter.locationOption = locationType.WORLD;
+              tempFilter.isSearchPlaceholder = true;
             }
           }
         });
@@ -1219,14 +1236,16 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = strings.allSport;
               tempFilter.sport_type = strings.allSport;
               tempFilter.sport_name = strings.allSport;
-              setSelectedSport({
-                sport: strings.allSport,
-                sport_type: strings.allSport,
-                sport_name: strings.allSport,
-              });
+              // setSelectedSport({
+              //   sport: strings.allSport,
+              //   sport_type: strings.allSport,
+              //   sport_name: strings.allSport,
+              // });
             }
             if (Object.keys(item)[0] === 'location') {
               tempFilter.location = strings.worldTitleText;
+              tempFilter.locationOption = locationType.WORLD;
+              tempFilter.isSearchPlaceholder = true;
             }
           }
         });
@@ -1245,14 +1264,16 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = strings.allSport;
               tempFilter.sport_type = strings.allSport;
               tempFilter.sport_name = strings.allSport;
-              setSelectedSport({
-                sport: strings.allSport,
-                sport_type: strings.allSport,
-                sport_name: strings.allSport,
-              });
+              // setSelectedSport({
+              //   sport: strings.allSport,
+              //   sport_type: strings.allSport,
+              //   sport_name: strings.allSport,
+              // });
             }
             if (Object.keys(item)[0] === 'location') {
               tempFilter.location = strings.worldTitleText;
+              tempFilter.locationOption = locationType.WORLD;
+              tempFilter.isSearchPlaceholder = true;
             }
           }
         });
@@ -1273,14 +1294,16 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = strings.allSport;
               tempFilter.sport_type = strings.allSport;
               tempFilter.sport_name = strings.allSport;
-              setSelectedSport({
-                sport: strings.allSport,
-                sport_type: strings.allSport,
-                sport_name: strings.allSport,
-              });
+              // setSelectedSport({
+              //   sport: strings.allSport,
+              //   sport_type: strings.allSport,
+              //   sport_name: strings.allSport,
+              // });
             }
             if (Object.keys(item)[0] === 'location') {
               tempFilter.location = strings.worldTitleText;
+              tempFilter.locationOption = locationType.WORLD;
+              tempFilter.isSearchPlaceholder = true;
             }
           }
         });
@@ -1302,14 +1325,16 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = strings.allSport;
               tempFilter.sport_type = strings.allSport;
               tempFilter.sport_name = strings.allSport;
-              setSelectedSport({
-                sport: strings.allSport,
-                sport_type: strings.allSport,
-                sport_name: strings.allSport,
-              });
+              // setSelectedSport({
+              //   sport: strings.allSport,
+              //   sport_type: strings.allSport,
+              //   sport_name: strings.allSport,
+              // });
             }
             if (Object.keys(item)[0] === 'location') {
               tempFilter.location = strings.worldTitleText;
+              tempFilter.locationOption = locationType.WORLD;
+              tempFilter.isSearchPlaceholder = true;
             }
           }
         });
@@ -1331,14 +1356,16 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = strings.allSport;
               tempFilter.sport_type = strings.allSport;
               tempFilter.sport_name = strings.allSport;
-              setSelectedSport({
-                sport: strings.allSport,
-                sport_type: strings.allSport,
-                sport_name: strings.allSport,
-              });
+              // setSelectedSport({
+              //   sport: strings.allSport,
+              //   sport_type: strings.allSport,
+              //   sport_name: strings.allSport,
+              // });
             }
             if (Object.keys(item)[0] === 'location') {
               tempFilter.location = strings.worldTitleText;
+              tempFilter.locationOption = locationType.WORLD;
+              tempFilter.isSearchPlaceholder = true;
             }
           }
         });
@@ -1358,14 +1385,16 @@ export default function EntitySearchScreen({navigation, route}) {
               tempFilter.sport = strings.allSport;
               tempFilter.sport_type = strings.allSport;
               tempFilter.sport_name = strings.allSport;
-              setSelectedSport({
-                sport: strings.allSport,
-                sport_type: strings.allSport,
-                sport_name: strings.allSport,
-              });
+              // setSelectedSport({
+              //   sport: strings.allSport,
+              //   sport_type: strings.allSport,
+              //   sport_name: strings.allSport,
+              // });
             }
             if (Object.keys(item)[0] === 'location') {
               tempFilter.location = strings.worldTitleText;
+              tempFilter.locationOption = locationType.WORLD;
+              tempFilter.isSearchPlaceholder = true;
             }
           }
         });
@@ -1382,7 +1411,7 @@ export default function EntitySearchScreen({navigation, route}) {
   };
 
   const getLocation = () => {
-    setloading(true);
+    // setloading(true);
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
         setloading(false);
@@ -1391,7 +1420,44 @@ export default function EntitySearchScreen({navigation, route}) {
             currentLocation.city?.charAt(0).toUpperCase() +
               currentLocation.city?.slice(1),
           );
-          setLocationFilterOpetion(2);
+          switch (currentTab) {
+            case 0:
+              if (currentSubTab === strings.generalText) {
+                setGeneralFilter({...generalFilter, locationOption: 2});
+              } else if (currentSubTab === strings.playerTitle) {
+                setPlayerFilter({...playerFilter, locationOption: 2});
+              } else if (currentSubTab === strings.refereesTitle) {
+                setrRefereeFilters({...refereeFilters, locationOption: 2});
+              } else if (currentSubTab === strings.scorekeeperTitle) {
+                setScoreKeeperFilters({
+                  ...scoreKeeperFilters,
+                  locationOption: 2,
+                });
+              }
+              break;
+            case 1:
+              if (currentSubTab === strings.teamsTitleText) {
+                setTeamFilters({...teamFilters, locationOption: 2});
+              } else if (currentSubTab === strings.clubsTitleText) {
+                setClubFilters({...clubFilters, locationOption: 2});
+              }
+              break;
+            case 2:
+              if (currentSubTab === strings.completedTitleText) {
+                setCompletedGameFilters({
+                  ...completedGameFilters,
+                  locationOption: 2,
+                });
+              } else if (currentSubTab === strings.upcomingTitleText) {
+                setUpcomingGameFilters({
+                  ...upcomingGameFilters,
+                  locationOption: 2,
+                });
+              }
+              break;
+            default:
+              break;
+          }
         }
       })
       .catch((e) => {
@@ -1530,6 +1596,7 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
     }
   };
+  /*
   const onPressReset = () => {
     switch (currentSubTab) {
       case strings.generalText:
@@ -1664,7 +1731,7 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
     }
   };
-
+*/
   const tabChangePress = useCallback((changeTab) => {
     searchFilterFunction('');
     searchBoxRef.current.clear();
@@ -1928,94 +1995,94 @@ export default function EntitySearchScreen({navigation, route}) {
                 switch (currentSubTab) {
                   case strings.playerTitle: {
                     setLocation(playerFilter.location);
-                    setSelectedSport({
-                      sport: playerFilter.sport,
-                      sport_type: playerFilter.sport_type,
-                      sport_name: playerFilter.sport_name,
-                    });
-                    setLocationFilterOpetion(
-                      playerFilter.locationType ? playerFilter.locationType : 0,
-                    );
+                    // setSelectedSport({
+                    //   sport: playerFilter.sport,
+                    //   sport_type: playerFilter.sport_type,
+                    //   sport_name: playerFilter.sport_name,
+                    // });
+                    // setLocationFilterOpetion(
+                    //   playerFilter.locationType ? playerFilter.locationType : 0,
+                    // );
                     break;
                   }
                   case strings.refereesTitle: {
                     setLocation(refereeFilters.location);
-                    setSelectedSport({
-                      sport: refereeFilters.sport,
-                      sport_type: refereeFilters.sport_type,
-                      sport_name: refereeFilters.sport_name,
-                    });
-                    setLocationFilterOpetion(
-                      refereeFilters.locationType
-                        ? refereeFilters.locationType
-                        : 0,
-                    );
+                    // setSelectedSport({
+                    //   sport: refereeFilters.sport,
+                    //   sport_type: refereeFilters.sport_type,
+                    //   sport_name: refereeFilters.sport_name,
+                    // });
+                    // setLocationFilterOpetion(
+                    //   refereeFilters.locationType
+                    //     ? refereeFilters.locationType
+                    //     : 0,
+                    // );
                     break;
                   }
                   case strings.scorekeeperTitle: {
                     setLocation(scoreKeeperFilters.location);
-                    setSelectedSport({
-                      sport: scoreKeeperFilters.sport,
-                      sport_type: scoreKeeperFilters.sport_type,
-                      sport_name: scoreKeeperFilters.sport_name,
-                    });
-                    setLocationFilterOpetion(
-                      scoreKeeperFilters.locationType
-                        ? scoreKeeperFilters.locationType
-                        : 0,
-                    );
+                    // setSelectedSport({
+                    //   sport: scoreKeeperFilters.sport,
+                    //   sport_type: scoreKeeperFilters.sport_type,
+                    //   sport_name: scoreKeeperFilters.sport_name,
+                    // });
+                    // setLocationFilterOpetion(
+                    //   scoreKeeperFilters.locationType
+                    //     ? scoreKeeperFilters.locationType
+                    //     : 0,
+                    // );
                     break;
                   }
                   case strings.teamsTitleText: {
                     setLocation(teamFilters.location);
-                    setSelectedSport({
-                      sport: teamFilters.sport,
-                      sport_type: teamFilters.sport_type,
-                      sport_name: teamFilters.sport_name,
-                    });
-                    setLocationFilterOpetion(
-                      teamFilters.locationType ? teamFilters.locationType : 0,
-                    );
+                    // setSelectedSport({
+                    //   sport: teamFilters.sport,
+                    //   sport_type: teamFilters.sport_type,
+                    //   sport_name: teamFilters.sport_name,
+                    // });
+                    // setLocationFilterOpetion(
+                    //   teamFilters.locationType ? teamFilters.locationType : 0,
+                    // );
                     break;
                   }
                   case strings.clubsTitleText: {
                     setLocation(clubFilters.location);
-                    setSelectedSport({
-                      sport: clubFilters.sport,
-                      sport_type: clubFilters.sport_type,
-                      sport_name: clubFilters.sport_name,
-                    });
-                    setLocationFilterOpetion(
-                      clubFilters.locationType ? clubFilters.locationType : 0,
-                    );
+                    // setSelectedSport({
+                    //   sport: clubFilters.sport,
+                    //   sport_type: clubFilters.sport_type,
+                    //   sport_name: clubFilters.sport_name,
+                    // });
+                    // setLocationFilterOpetion(
+                    //   clubFilters.locationType ? clubFilters.locationType : 0,
+                    // );
                     break;
                   }
                   case strings.completedTitleText: {
                     setLocation(completedGameFilters.location);
-                    setSelectedSport({
-                      sport: completedGameFilters.sport,
-                      sport_type: completedGameFilters.sport_type,
-                      sport_name: completedGameFilters.sport_name,
-                    });
-                    setLocationFilterOpetion(
-                      completedGameFilters.locationType
-                        ? completedGameFilters.locationType
-                        : 0,
-                    );
+                    // setSelectedSport({
+                    //   sport: completedGameFilters.sport,
+                    //   sport_type: completedGameFilters.sport_type,
+                    //   sport_name: completedGameFilters.sport_name,
+                    // });
+                    // setLocationFilterOpetion(
+                    //   completedGameFilters.locationType
+                    //     ? completedGameFilters.locationType
+                    //     : 0,
+                    // );
                     break;
                   }
                   case strings.upcomingTitleText: {
                     setLocation(upcomingGameFilters.location);
-                    setSelectedSport({
-                      sport: upcomingGameFilters.sport,
-                      sport_type: upcomingGameFilters.sport_type,
-                      sport_name: upcomingGameFilters.sport_name,
-                    });
-                    setLocationFilterOpetion(
-                      upcomingGameFilters.locationType
-                        ? upcomingGameFilters.locationType
-                        : 0,
-                    );
+                    // setSelectedSport({
+                    //   sport: upcomingGameFilters.sport,
+                    //   sport_type: upcomingGameFilters.sport_type,
+                    //   sport_name: upcomingGameFilters.sport_name,
+                    // });
+                    // setLocationFilterOpetion(
+                    //   upcomingGameFilters.locationType
+                    //     ? upcomingGameFilters.locationType
+                    //     : 0,
+                    // );
                     break;
                   }
                   default:
@@ -2079,23 +2146,44 @@ export default function EntitySearchScreen({navigation, route}) {
                 }
                 showSport={currentSubTab !== strings.generalText}
                 subTab={currentSubTab}
+                isUniversalSearch={true}
                 sportFilter={
                   (currentSubTab === strings.playerTitle && playerFilter) ||
                   (currentSubTab === strings.refereesTitle && refereeFilters) ||
                   (currentSubTab === strings.scorekeeperTitle &&
                     scoreKeeperFilters)
                 }
-                onPress={() => {
-                  navigation.navigate('HomeScreen', {
-                    uid: ['user', 'player']?.includes(item?.entity_type)
-                      ? item?.user_id
-                      : item?.group_id,
-                    role: ['user', 'player']?.includes(item?.entity_type)
-                      ? 'user'
-                      : item.entity_type,
-                    backButtonVisible: true,
-                    menuBtnVisible: false,
-                  });
+                // onPress={() => {
+                //   navigation.navigate('HomeScreen', {
+                //     uid: ['user', 'player']?.includes(item?.entity_type)
+                //       ? item?.user_id
+                //       : item?.group_id,
+                //     role: ['user', 'player']?.includes(item?.entity_type)
+                //       ? 'user'
+                //       : item.entity_type,
+                //     backButtonVisible: true,
+                //     menuBtnVisible: false,
+                //   });
+                // }}
+                onPress={(sportsObj) => {
+                  if (sportsObj.length > 1) {
+                    const data = {
+                      sports: sportsObj,
+                      uid: item?.user_id,
+                      entityType: item?.entity_type,
+                    };
+                    setPlayerDetail(data);
+                    setPlayerDetailPopup(true);
+                  } else {
+                    navigation.navigate('SportActivityHome', {
+                      sport: sportsObj[0]?.sport,
+                      sportType: sportsObj[0]?.sport_type,
+                      uid: item?.user_id,
+                      entityType: item?.entity_type,
+                      showPreview: true,
+                      backScreen: 'EntitySearchScreen',
+                    });
+                  }
                 }}
                 onPressChallengButton={(dataObj, sportsObj) => {
                   setChallengePopup(true);
@@ -2157,6 +2245,7 @@ export default function EntitySearchScreen({navigation, route}) {
                 authContext={authContext}
                 isClub={currentSubTab !== strings.teamsTitleText}
                 showStar={currentSubTab === strings.teamsTitleText}
+                // showLevelOnly={currentSubTab === strings.teamsTitleText}
                 sportFilter={
                   (currentSubTab === strings.teamsTitleText && teamFilters) ||
                   (currentSubTab === strings.clubsTitleText && clubFilters)
@@ -2235,6 +2324,7 @@ export default function EntitySearchScreen({navigation, route}) {
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
+  /*
   const ModalHeader = () => (
     <View
       style={{
@@ -2255,6 +2345,51 @@ export default function EntitySearchScreen({navigation, route}) {
       setSearchLocation(locations?.city);
     }
   };
+  */
+  const sportsView = (item) => (
+    <Pressable
+      style={[
+        styles.sportView,
+        styles.row,
+        {borderLeftColor: colors.redColorCard},
+      ]}
+      onPress={() => {
+        setPlayerDetailPopup(false);
+        navigation.navigate('SportActivityHome', {
+          sport: item.sport,
+          sportType: item?.sport_type,
+          uid: playerDetail.uid,
+          entityType: playerDetail.entity_type,
+          showPreview: true,
+          backScreen: 'EntitySearchScreen',
+        });
+      }}
+      disabled={item.is_hide}>
+      <View style={styles.innerViewContainer}>
+        <View style={styles.row}>
+          <View style={styles.imageContainer}>
+            <Image
+              // source={{uri: `${imageBaseUrl}${item.player_image}`}}
+              source={{
+                uri: `${imageBaseUrl}${
+                  getSportDetails(
+                    item.sport,
+                    item.sport_type,
+                    authContext.sports,
+                  ).sport_image
+                }`,
+              }}
+              style={styles.sportIcon}
+            />
+          </View>
+          <View>
+            <Text style={styles.sportName}>{item.sport_name}</Text>
+            <Text style={styles.matchCount}>0 match</Text>
+          </View>
+        </View>
+      </View>
+    </Pressable>
+  );
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -2334,7 +2469,6 @@ export default function EntitySearchScreen({navigation, route}) {
           backgroundColor: '#FCFCFC',
           flex: 1,
           padding: 15,
-          marginBottom: 2,
           marginTop: 0,
         }}
         onEndReachedThreshold={0.01}
@@ -2343,6 +2477,7 @@ export default function EntitySearchScreen({navigation, route}) {
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
+        ListFooterComponent={() => <View style={{height: 15}} />}
       />
       <ActionSheet
         ref={actionSheet}
@@ -2368,7 +2503,8 @@ export default function EntitySearchScreen({navigation, route}) {
           }
         }}
       />
-      <Modal
+
+      {/* <Modal
         onBackdropPress={() => setSettingPopup(false)}
         isVisible={settingPopup}
         animationInTiming={300}
@@ -2614,7 +2750,6 @@ export default function EntitySearchScreen({navigation, route}) {
                         />
                       </TouchableWithoutFeedback>
                     </View>
-                    {/* note */}
                     <TouchableWithoutFeedback
                       onPress={() => {
                         setLocationFilterOpetion(3);
@@ -2853,7 +2988,155 @@ export default function EntitySearchScreen({navigation, route}) {
           placeholder={strings.searchTitle}
           type={'country'}
         />
-      </Modal>
+      </Modal> */}
+      <SearchModal
+        sports={
+          (currentSubTab === strings.playerTitle && [
+            ...defaultSport,
+            ...getSportList(authContext.sports, Verbs.entityTypePlayer),
+          ]) ||
+          (currentSubTab === strings.refereesTitle && [
+            ...defaultSport,
+            ...getSportList(authContext.sports, Verbs.entityTypeReferee),
+          ]) ||
+          (currentSubTab === strings.scorekeeperTitle && [
+            ...defaultSport,
+            ...getSportList(authContext.sports, Verbs.entityTypeScorekeeper),
+          ]) ||
+          (currentSubTab === strings.teamsTitleText && [
+            ...defaultSport,
+            ...getSportList(authContext.sports, Verbs.entityTypeTeam),
+          ]) ||
+          (currentSubTab === strings.clubsTitleText && [
+            ...defaultSport,
+            ...getSportList(authContext.sports, Verbs.entityTypeClub),
+          ]) ||
+          (currentSubTab === strings.completedTitleText && [
+            ...defaultSport,
+            ...getSportList(authContext.sports, Verbs.entityTypePlayer),
+          ]) ||
+          (currentSubTab === strings.upcomingTitleText && [
+            ...defaultSport,
+            ...getSportList(authContext.sports, Verbs.entityTypePlayer),
+          ])
+        }
+        fType={filterType.LOOKINGFORTEAMCLUB}
+        filterObject={
+          (currentSubTab === strings.playerTitle && playerFilter) ||
+          (currentSubTab === strings.refereesTitle && refereeFilters) ||
+          (currentSubTab === strings.scorekeeperTitle && scoreKeeperFilters) ||
+          (currentSubTab === strings.teamsTitleText && teamFilters) ||
+          (currentSubTab === strings.clubsTitleText && clubFilters) ||
+          (currentSubTab === strings.completedTitleText &&
+            completedGameFilters) ||
+          (currentSubTab === strings.upcomingTitleText && upcomingGameFilters)
+        }
+        isVisible={settingPopup}
+        showSportOption={true}
+        onPressApply={(filterData) => {
+          setloading(false);
+          let tempFilter = {};
+          tempFilter = {...filterData};
+          setSettingPopup(false);
+          setPageFrom(0);
+          if (filterData.locationOption === locationType.WORLD) {
+            setLocation(strings.worldTitleText);
+            tempFilter.location = strings.worldTitleText;
+          } else if (filterData.locationOption === locationType.HOME_CITY) {
+            setLocation(
+              authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+                authContext?.entity?.obj?.city.slice(1),
+            );
+            tempFilter.location =
+              authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+              authContext?.entity?.obj?.city.slice(1);
+          } else if (
+            filterData.locationOption === locationType.CURRENT_LOCATION
+          ) {
+            getLocation();
+            tempFilter.location = location;
+          } else if (filterData.locationOption === locationType.SEARCH_CITY) {
+            setLocation(filterData.searchCityLoc);
+            tempFilter.location = filterData.searchCityLoc;
+          }
+          switch (currentSubTab) {
+            case strings.generalText: {
+              setGeneralList([]);
+              setGeneralPageFrom(0);
+              setGeneralFilter({
+                ...tempFilter,
+              });
+              break;
+            }
+            case strings.playerTitle: {
+              setplayerList([]);
+              setPageFrom(0);
+              setPlayerFilter({
+                ...tempFilter,
+              });
+              break;
+            }
+            case strings.refereesTitle: {
+              setReferees([]);
+              setRefereesPageFrom(0);
+              setrRefereeFilters({
+                ...tempFilter,
+              });
+              break;
+            }
+            case strings.scorekeeperTitle: {
+              setScorekeepers([]);
+              setScorekeeperPageFrom(0);
+              setScoreKeeperFilters({
+                ...tempFilter,
+              });
+              break;
+            }
+            case strings.teamsTitleText: {
+              setTeams([]);
+              setTeamsPageFrom(0);
+              setTeamFilters({
+                ...tempFilter,
+              });
+
+              break;
+            }
+            case strings.clubsTitleText: {
+              setClubs([]);
+              setClubsPageFrom(0);
+              setClubFilters({
+                ...tempFilter,
+              });
+              break;
+            }
+            case strings.completedTitleText: {
+              setCompletedGame([]);
+              setCompletedGamePageFrom(0);
+              setCompletedGameFilters({
+                ...tempFilter,
+              });
+              break;
+            }
+            case strings.upcomingTitleText: {
+              setUpcomingGame([]);
+              setUpcomingGamePageFrom(0);
+              setUpcomingGameFilters({
+                ...tempFilter,
+              });
+              break;
+            }
+            default:
+              break;
+          }
+
+          // setLookingEntity([]);
+
+          // setFilters({...tempFilter});
+          // applyFilter(tempFilter);
+        }}
+        onPressCancel={() => {
+          setSettingPopup(false);
+        }}></SearchModal>
       <Modal
         onBackdropPress={() => setChallengePopup(false)}
         backdropOpacity={1}
@@ -3100,6 +3383,21 @@ export default function EntitySearchScreen({navigation, route}) {
           </TouchableWithoutFeedback>
         </View>
       </Modal>
+      <CustomModalWrapper
+        isVisible={playerDetailPopup}
+        closeModal={() => {
+          setPlayerDetailPopup(false);
+        }}
+        modalType={ModalTypes.style2}>
+        <View style={{paddingTop: 0, paddingHorizontal: 0}}>
+          <FlatList
+            data={playerDetail?.sports}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item, index}) => sportsView(item, item.type, index)}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      </CustomModalWrapper>
     </SafeAreaView>
   );
 }
@@ -3129,20 +3427,6 @@ const styles = StyleSheet.create({
     borderRightWidth: 0,
     borderColor: colors.whiteColor,
   },
-
-  radioButtonStyle: {
-    height: 22,
-    width: 22,
-    resizeMode: 'cover',
-    alignSelf: 'center',
-  },
-
-  filterTitle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
-
   bottomPopupContainer: {
     flex: 1,
     paddingBottom: Platform.OS === 'ios' ? 34 : 0,
@@ -3166,18 +3450,6 @@ const styles = StyleSheet.create({
     }),
   },
 
-  doneText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-  locationText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    left: 20,
-  },
-
   viewsContainer: {
     height: 60,
     justifyContent: 'space-between',
@@ -3186,94 +3458,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  resetButton: {
-    alignSelf: 'center',
-    backgroundColor: '#FCFCFC',
-    borderRadius: 5,
-    elevation: 5,
-    height: 25,
-    width: 130,
-    shadowOpacity: 0.16,
-    flexDirection: 'row',
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 0,
-  },
-  resetTitle: {
-    fontSize: 12,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
-    alignSelf: 'center',
-    // margin: 15,
-  },
 
-  searchCityContainer: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 5,
-    height: 40,
-    paddingLeft: 10,
-    paddingRight: 15,
-    marginRight: 22,
-    justifyContent: 'center',
-    flex: 1,
-  },
-  searchCityText: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
-  listItem: {},
-
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: widthPercentageToDP('4%'),
-  },
-  checkboxImg: {
-    width: 22,
-    height: 22,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-  sportsContainer: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 5,
-    height: 40,
-    paddingLeft: 15,
-    // paddingRight: 15,
-    justifyContent: 'center',
-  },
-  downArrowImage: {
-    width: 12,
-    height: 12,
-    resizeMode: 'contain',
-    tintColor: colors.lightBlackColor,
-    alignSelf: 'center',
-    marginRight: 10,
-  },
-  handleStyle: {
-    marginVertical: 15,
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 5,
-    width: 40,
-    borderRadius: 15,
-    backgroundColor: '#DADBDA',
-  },
-  cancelImageStyle: {
-    height: 15,
-    width: 15,
-    tintColor: colors.lightBlackColor,
-  },
-  sportTitle: {
-    fontSize: 18,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
-  },
   backgroundView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
@@ -3310,5 +3495,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+  },
+  sportView: {
+    justifyContent: 'space-between',
+    borderRadius: 8,
+    backgroundColor: colors.lightGrayBackground,
+    shadowColor: colors.googleColor,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowRadius: 3,
+    shadowOpacity: 0.2,
+    elevation: 5,
+    marginBottom: 20,
+    borderLeftWidth: 8,
+    paddingVertical: 5,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  innerViewContainer: {
+    flex: 1,
+    marginRight: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sportName: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  matchCount: {
+    fontSize: 12,
+    lineHeight: 14,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+  },
+  sportIcon: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  imageContainer: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
   },
 });

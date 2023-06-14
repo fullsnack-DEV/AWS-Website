@@ -853,6 +853,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
+        ListFooterComponent={() => <View style={{height: 30}} />}
       />
       <ActionSheet
         ref={actionSheet}
@@ -1300,7 +1301,7 @@ const styles = StyleSheet.create({
   sportView: {
     justifyContent: 'space-between',
     borderRadius: 8,
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.lightGrayBackground,
     shadowColor: colors.googleColor,
     shadowOffset: {
       width: 0,
