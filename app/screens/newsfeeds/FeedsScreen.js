@@ -351,7 +351,7 @@ const FeedsScreen = ({navigation}) => {
             });
           }}
           style={styles.headerIconContainer}>
-          <Image source={images.messageSearchButton2} style={styles.icon} />
+          <Image source={images.searchIcon} style={styles.icon} />
         </TouchableOpacity>
       </View>
     </View>

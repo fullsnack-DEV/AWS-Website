@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -18,6 +18,13 @@ const LikersModal = ({
 }) => {
   const authContext = useContext(AuthContext);
   const userRole = authContext.entity.role;
+  const [list, setList] = useState([]);
+
+  useEffect(() => {
+    if (showLikeModal) {
+      setList(data.latest_reactions?.clap ?? data.latest_children?.like ?? []);
+    }
+  }, [showLikeModal, data]);
 
   const listEmptyComponent = () => (
     <View style={styles.emptyContainer}>
@@ -59,15 +66,13 @@ const LikersModal = ({
       <View style={styles.likersHeaderContainer}>
         <Text style={styles.likedByText}>Liked by</Text>
         <Text style={styles.likesCountText}>
-          {data.latest_reactions?.clap?.length}
-          {data.latest_reactions?.clap?.length > 1
-            ? strings.likesTitle
-            : strings.likeTitle}
+          {list.length}{' '}
+          {list.length > 1 ? strings.likesTitle : strings.likeTitle}
         </Text>
       </View>
       <FlatList
-        data={data.latest_reactions?.clap ?? []}
-        keyExtractor={(index) => index.toString()}
+        data={list}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={renderEntity}
         contentContainerStyle={{paddingHorizontal: 15}}
         ListEmptyComponent={listEmptyComponent}
@@ -116,7 +121,7 @@ const styles = StyleSheet.create({
     color: colors.grayColor,
   },
   emptyContainer: {
-    flex: 1,
+    minHeight: 200,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',

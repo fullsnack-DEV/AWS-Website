@@ -1,6 +1,6 @@
 import React from 'react';
-import {Dimensions, StyleSheet} from 'react-native';
-import RNUrlPreview from 'react-native-url-preview';
+import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
+import {LinkPreview} from '@flyerhq/react-native-link-preview';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -17,33 +17,49 @@ const CustomURLPreview = ({text}) => {
   if (position !== -1 && desc?.substring(position)?.startsWith('www')) {
     desc = addStr(text, position, 'http://');
   }
-
+  if (position === -1) {
+    return null;
+  }
   return (
-    <RNUrlPreview
+    <LinkPreview
       text={desc}
-      containerStyle={styles.previewContainerStyle}
-      imageProps={styles.previewImageStyle}
-      textContainerStyle={styles.previewTextContainerStyle}
-      titleStyle={styles.previewTitleStyle}
-      descriptionStyle={styles.previewDescription}
-      descriptionNumberOfLines={2}
+      containerStyle={{marginTop: 15}}
+      renderLinkPreview={({previewData}) => (
+        <View>
+          {previewData?.image?.url && (
+            <View style={styles.previewImageStyle}>
+              <Image
+                source={{uri: previewData.image.url}}
+                style={styles.previewImage}
+              />
+            </View>
+          )}
+          <View style={styles.previewTextContainerStyle}>
+            <Text style={styles.previewTitleStyle} numberOfLines={2}>
+              {previewData?.title}
+            </Text>
+            <Text style={styles.previewDescription} numberOfLines={1}>
+              {previewData?.description}
+            </Text>
+            <Text style={styles.previewLink} numberOfLines={1}>
+              {previewData?.image?.url}
+            </Text>
+          </View>
+        </View>
+      )}
     />
   );
 };
 
 const styles = StyleSheet.create({
-  previewContainerStyle: {
-    flex: 1,
-    flexDirection: 'column',
-    marginBottom: 15,
-  },
   previewImageStyle: {
-    width: Dimensions.get('screen').width - 35,
-    borderRadius: 10,
     height: 175,
+    borderRadius: 10,
+    marginBottom: 15,
+    width: Dimensions.get('screen').width - 30,
   },
   previewTextContainerStyle: {
-    marginTop: 15,
+    // marginBottom: 15,
     paddingHorizontal: 10,
   },
   previewTitleStyle: {
@@ -57,6 +73,19 @@ const styles = StyleSheet.create({
     lineHeight: 17,
     color: colors.placeHolderColor,
     fontFamily: fonts.RRegular,
+  },
+  previewLink: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: fonts.RRegular,
+    color: colors.linkGrey,
+    marginTop: 5,
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderRadius: 10,
   },
 });
 

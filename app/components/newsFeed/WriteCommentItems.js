@@ -1,10 +1,6 @@
-import React, {useContext} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import FastImage from 'react-native-fast-image';
+import React, {useCallback, useContext} from 'react';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
+import ParsedText from 'react-native-parsed-text';
 import images from '../../Constants/ImagePath';
 import {formatTimestampForDisplay} from '../../utils/formatTimestampForDisplay';
 
@@ -12,130 +8,150 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
+import GroupIcon from '../GroupIcon';
+import {tagRegex} from '../../Constants/GeneralConstants';
 
-function WriteCommentItems({data, onProfilePress, onLikePress}) {
+function WriteCommentItems({
+  data = {},
+  onProfilePress = () => {},
+  onLikePress = () => {},
+  onReply = () => {},
+  showLikesModal = () => {},
+  containerStyle = {},
+}) {
   const authContext = useContext(AuthContext);
 
-  let commentTime = '';
-  if (data && data.created_at) {
-    commentTime = data.created_at;
-  }
-
-  let commentText = '';
-  if (data && data.data && data.data.text) {
-    commentText = data.data.text;
-  }
-  let userName = '';
-  let userProfile = '';
-  if (data && data.user && data.user.data) {
-    userName = data.user.data.full_name;
-    userProfile = data.user.data.full_image;
-  }
+  const renderTagText = useCallback(
+    (matchingString) => (
+      <Text style={styles.tagText}>{`${matchingString}`}</Text>
+    ),
+    [],
+  );
 
   return (
-    <View style={styles.mainContainer}>
-      <TouchableOpacity onPress={() => onProfilePress(data)}>
-        <FastImage
-          style={styles.background}
-          source={!userProfile ? images.profilePlaceHolder : {uri: userProfile}}
-          resizeMode={'cover'}
+    <View style={[styles.mainContainer, containerStyle]}>
+      <TouchableOpacity
+        onPress={() =>
+          onProfilePress({
+            userId: data.user.id,
+            entityType: data.user.data.entity_type,
+          })
+        }>
+        <GroupIcon
+          imageUrl={data.user.data.full_image}
+          entityType={data.user.data.entity_type}
+          groupName={data.user.data.full_name}
+          containerStyle={styles.background}
         />
       </TouchableOpacity>
-      <View style={styles.userNameView}>
-        <View style={styles.userCommentTextStyle}>
-          <Text style={styles.userNameTxt}>
-            {userName}{' '}
-            <Text style={styles.commentTextStyle}>{commentText} </Text>
+      <View style={styles.commentView}>
+        <Text style={styles.userNameTxt}>
+          {data.user.data.full_name}{' '}
+          <Text style={[styles.userNameTxt, {fontFamily: fonts.RRegular}]}>
+            <ParsedText
+              parse={[{pattern: tagRegex, renderText: renderTagText}]}
+              childrenProps={{allowFontScaling: false}}>
+              {data.data.text}
+            </ParsedText>
           </Text>
-          <TouchableOpacity
-            style={{flex: 0.1, alignSelf: 'flex-start'}}
-            onPress={onLikePress}>
-            <FastImage
-              style={styles.commentImage}
-              source={
-                data?.latest_children?.like?.some(
-                  (obj) => obj.user_id === authContext.entity.uid,
-                )
-                  ? images.likeImage
-                  : images.unlikeImage
-              }
-              resizeMode={'contain'}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={{flexDirection: 'row'}}>
-          <Text style={styles.activeTimeAgoTxt}>
-            {formatTimestampForDisplay(commentTime, 0)}
-          </Text>
-          <TouchableOpacity>
-            <Text
-              style={{
-                ...styles.activeTimeAgoTxt,
-                marginLeft: 10,
-                fontFamily: fonts.RBold,
-              }}>
-              {data?.latest_children?.like?.length ?? 0} {strings.likesTitle}
+        </Text>
+
+        <View style={styles.row}>
+          <View>
+            <Text style={styles.activeTimeAgoTxt}>
+              {formatTimestampForDisplay(data.created_at, 0)}
+            </Text>
+          </View>
+
+          <TouchableOpacity style={{marginLeft: 15}} onPress={showLikesModal}>
+            <Text style={[styles.activeTimeAgoTxt, {fontFamily: fonts.RBold}]}>
+              {data.latest_children?.like?.length ?? 0}{' '}
+              {data.latest_children?.like?.length > 1
+                ? strings.likesTitle
+                : strings.likeTitle}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Text
-              style={{
-                ...styles.activeTimeAgoTxt,
-                marginLeft: 10,
-                fontFamily: fonts.RBold,
-              }}>
-              {''}
+
+          <TouchableOpacity style={{marginLeft: 15}} onPress={onReply}>
+            <Text style={[styles.activeTimeAgoTxt, {fontFamily: fonts.RBold}]}>
+              {strings.reply}
             </Text>
           </TouchableOpacity>
         </View>
       </View>
+
+      <TouchableOpacity style={styles.iconContainer} onPress={onLikePress}>
+        <Image
+          source={
+            data.latest_children?.like?.some(
+              (obj) => obj.user_id === authContext.entity.uid,
+            )
+              ? images.likeImage
+              : images.unlikeImage
+          }
+          style={styles.icon}
+        />
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  activeTimeAgoTxt: {
-    color: colors.userPostTimeColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 14,
-    top: 2,
-  },
-  background: {
-    borderRadius: hp('2.5%'),
-    height: hp('5%'),
-    width: hp('5%'),
-  },
-  commentTextStyle: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-  },
   mainContainer: {
     flexDirection: 'row',
-    padding: wp('3%'),
-    paddingHorizontal: wp('4%'),
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    marginBottom: 15,
     backgroundColor: colors.whiteColor,
   },
-  userCommentTextStyle: {
-    alignItems: 'center',
-    flexDirection: 'row',
+  background: {
+    width: 35,
+    height: 35,
   },
+
   userNameTxt: {
-    flex: 0.9,
-    color: colors.extraLightBlackColor,
-    fontFamily: fonts.RBold,
     fontSize: 16,
+    lineHeight: 20,
+    fontFamily: fonts.RBold,
+    color: colors.extraLightBlackColor,
+    marginBottom: 5,
   },
-  userNameView: {
-    flexDirection: 'column',
-    marginLeft: wp('4%'),
-    flex: 1,
-  },
-  commentImage: {
+  iconContainer: {
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginLeft: 15,
-    height: 15,
-    width: 15,
-    alignSelf: 'flex-end',
+  },
+  icon: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  commentView: {
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    marginLeft: 7,
+  },
+  activeTimeAgoTxt: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: fonts.RRegular,
+    color: colors.userPostTimeColor,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  tagText: {
+    fontSize: 16,
+    lineHeight: 20,
+    color: colors.tagColor,
+    fontFamily: fonts.RRegular,
+    marginBottom: 5,
   },
 });
 

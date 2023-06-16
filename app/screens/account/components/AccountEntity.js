@@ -48,7 +48,7 @@ const AccountEntity = ({
           containerStyle={styles.iconContainer}
         />
         <View style={{flex: 1}}>
-          <View style={styles.row}>
+          <View style={[styles.row, {paddingRight: 15}]}>
             <Text
               style={[
                 styles.entityName,

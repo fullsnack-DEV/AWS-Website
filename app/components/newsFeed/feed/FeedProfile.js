@@ -13,9 +13,9 @@ const FeedProfile = ({
   data = {},
   onImageProfilePress = () => {},
   isRepost = false,
-  showThreeDot = false,
   onThreeDotPress = () => {},
   isEvent = false,
+  showMoreOptions = false,
 }) => (
   <View style={styles.mainContainer}>
     <TouchableOpacity
@@ -44,7 +44,7 @@ const FeedProfile = ({
         </Text>
       </View>
     </TouchableOpacity>
-    {!isRepost && showThreeDot && (
+    {!isRepost && showMoreOptions && (
       <TouchableOpacity
         style={styles.dotImageTouchStyle}
         onPress={() => {

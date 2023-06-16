@@ -19,9 +19,9 @@ import FeedProfile from './FeedProfile';
 
 const PostForEvent = ({
   postData = {},
-  showThreeDot = false,
   onThreeDotPress = () => {},
   onImageProfilePress = () => {},
+  showMoreOptions = false,
 }) => {
   const [eventData, setEventData] = useState({});
 
@@ -39,9 +39,9 @@ const PostForEvent = ({
         time={postData.time}
         onImageProfilePress={onImageProfilePress}
         isRepost={false}
-        showThreeDot={showThreeDot}
         onThreeDotPress={onThreeDotPress}
         isEvent
+        showMoreOptions={showMoreOptions}
       />
       <View style={styles.card}>
         <View style={styles.bacgroundImageContainer}>

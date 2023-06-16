@@ -8,7 +8,10 @@ import {
   Animated,
   Pressable,
 } from 'react-native';
-import {PanGestureHandler} from 'react-native-gesture-handler';
+import {
+  gestureHandlerRootHOC,
+  PanGestureHandler,
+} from 'react-native-gesture-handler';
 import colors from '../Constants/Colors';
 import {ModalTypes} from '../Constants/GeneralConstants';
 import images from '../Constants/ImagePath';
@@ -130,50 +133,19 @@ const CustomModalWrapper = ({
     }
   };
 
-  return (
-    <Modal
-      visible={isVisible}
-      transparent
-      animationType="fade"
-      onRequestClose={() => handleCloseModal()}>
-      <Pressable
-        style={[styles.parent, {paddingTop: Top}]}
-        onPress={() => {
-          handleCloseModal();
-        }}>
-        {(modalType === ModalTypes.style7 ||
-          modalType === ModalTypes.style2 ||
-          modalType === ModalTypes.default) &&
-        showModal ? (
-          <PanGestureHandler
-            onGestureEvent={onPanGestureEvent}
-            onEnded={() => handleCloseModal()}>
-            <Animated.View
-              style={[
-                getCardStyle(),
-                {
-                  transform: [
-                    {
-                      translateY,
-                    },
-                  ],
-                },
-              ]}>
-              <Pressable onPress={() => {}}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignSelf: 'stretch',
-                    justifyContent: 'center',
-                  }}>
-                  {getModalHeader()}
-                </View>
-
-                <View style={[{padding: 25}, containerStyle]}>{children}</View>
-              </Pressable>
-            </Animated.View>
-          </PanGestureHandler>
-        ) : (
+  const ModalChildWithHoc = gestureHandlerRootHOC(() => (
+    <Pressable
+      style={[styles.parent, {paddingTop: Top}]}
+      onPress={() => {
+        handleCloseModal();
+      }}>
+      {(modalType === ModalTypes.style7 ||
+        modalType === ModalTypes.style2 ||
+        modalType === ModalTypes.default) &&
+      showModal ? (
+        <PanGestureHandler
+          onGestureEvent={onPanGestureEvent}
+          onEnded={() => handleCloseModal()}>
           <Animated.View
             style={[
               getCardStyle(),
@@ -185,15 +157,50 @@ const CustomModalWrapper = ({
                 ],
               },
             ]}>
-            <Pressable onPress={() => {}} style={{}}>
-              <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
+            <Pressable onPress={() => {}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignSelf: 'stretch',
+                  justifyContent: 'center',
+                }}>
                 {getModalHeader()}
               </View>
+
               <View style={[{padding: 25}, containerStyle]}>{children}</View>
             </Pressable>
           </Animated.View>
-        )}
-      </Pressable>
+        </PanGestureHandler>
+      ) : (
+        <Animated.View
+          style={[
+            getCardStyle(),
+            {
+              transform: [
+                {
+                  translateY,
+                },
+              ],
+            },
+          ]}>
+          <Pressable onPress={() => {}} style={{}}>
+            <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
+              {getModalHeader()}
+            </View>
+            <View style={[{padding: 25}, containerStyle]}>{children}</View>
+          </Pressable>
+        </Animated.View>
+      )}
+    </Pressable>
+  ));
+
+  return (
+    <Modal
+      visible={isVisible}
+      transparent
+      animationType="fade"
+      onRequestClose={() => handleCloseModal()}>
+      <ModalChildWithHoc />
     </Modal>
   );
 };

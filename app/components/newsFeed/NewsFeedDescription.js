@@ -1,6 +1,5 @@
-/* eslint-disable no-useless-escape */
 import React, {useContext, useCallback, useMemo, useRef, useState} from 'react';
-import {StyleSheet, View, Text, FlatList} from 'react-native';
+import {StyleSheet, View, Text, FlatList, Dimensions} from 'react-native';
 import ReadMore from '@fawazahmed/react-native-read-more';
 
 import ParsedText from 'react-native-parsed-text';
@@ -8,18 +7,15 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
-import TCGameCard from '../TCGameCard';
 import images from '../../Constants/ImagePath';
 import TagView from './TagView';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import {getTaggedText} from '../../utils';
 import TaggedModal from '../modals/TaggedModal';
 import {strings} from '../../../Localization/translation';
-
-const urlRegex =
-  /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
-// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
-const tagRegex = /(?!\w)@\w+/gim;
+import Verbs from '../../Constants/Verbs';
+import MatchCard from '../../screens/newsfeeds/MatchCard';
+import {tagRegex, urlRegex} from '../../Constants/GeneralConstants';
 
 const NewsFeedDescription = ({
   descriptions,
@@ -36,7 +32,7 @@ const NewsFeedDescription = ({
   const taggedModalRef = useRef(null);
   const authContext = useContext(AuthContext);
   const [showTaggedModal, setShowTaggedModal] = useState(false);
-
+  console.log({tagData});
   const getIndicesOf = useCallback(
     (searchStr, str = descriptions) => {
       const searchStrLen = searchStr.length;
@@ -127,7 +123,7 @@ const NewsFeedDescription = ({
       if (tagData && tagData.length > 0) {
         isTagName =
           tagData.filter(
-            (item) => item.entity_data.tagged_formatted_name === match,
+            (item) => item.entity_data?.tagged_formatted_name === match,
           ).length > 0;
         if (isTagName) color = colors.tagColor;
       }
@@ -148,45 +144,6 @@ const NewsFeedDescription = ({
     const color = colors.tagColor;
     return <Text style={{color}}>{match?.[0]}</Text>;
   }, []);
-
-  const renderSelectedGame = useCallback(
-    ({item}) => (
-      <View style={{marginLeft: 15}}>
-        <TCGameCard
-          data={item?.entity_data}
-          onPress={() => {
-            const routeName = getGameHomeScreen(item?.entity_data?.sport);
-            navigation.push(routeName, {gameId: item?.entity_id});
-          }}
-
-          // cardWidth={'92%'}
-        />
-      </View>
-    ),
-    [navigation],
-  );
-
-  const renderGameTags = useMemo(
-    () =>
-      tagData?.length > 0 && (
-        <View style={{marginTop: 10}}>
-          <TouchableOpacity onPress={() => setShowTaggedModal(true)}>
-            <TagView source={images.tagIcon} tagText={getTaggedText(tagData)} />
-          </TouchableOpacity>
-          <FlatList
-            bounces={false}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            pagingEnabled={true}
-            horizontal={true}
-            data={tagData?.filter((item) => item?.entity_type === 'game')}
-            renderItem={renderSelectedGame}
-            keyExtractor={(item) => item?.entity_id}
-          />
-        </View>
-      ),
-    [renderSelectedGame, tagData],
-  );
 
   const renderDescriptions = useMemo(
     () =>
@@ -230,15 +187,51 @@ const NewsFeedDescription = ({
     <View style={containerStyle}>
       <View pointerEvents={disableTouch ? 'none' : 'auto'}>
         {renderDescriptions}
-        <TaggedModal
-          navigation={navigation}
-          taggedModalRef={taggedModalRef}
-          taggedData={tagData}
-          showTaggedModal={showTaggedModal}
-          onBackdropPress={() => setShowTaggedModal(false)}
-        />
+        {tagData.length > 0 && (
+          <>
+            <TouchableOpacity
+              onPress={() => setShowTaggedModal(true)}
+              style={{marginVertical: 10}}>
+              <TagView
+                source={images.tagIcon}
+                tagText={getTaggedText(tagData)}
+              />
+            </TouchableOpacity>
+            <FlatList
+              bounces={false}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              pagingEnabled={true}
+              horizontal={true}
+              data={tagData.filter(
+                (item) => item.entity_type === Verbs.entityTypeGame,
+              )}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  style={{
+                    width: Dimensions.get('window').width - 30,
+                    flex: 1,
+                    marginRight: 15,
+                  }}
+                  onPress={() => {
+                    const routeName = getGameHomeScreen(item.matchData.sport);
+                    navigation.push(routeName, {gameId: item.game_id});
+                  }}>
+                  <MatchCard item={item.matchData} />
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item?.entity_id}
+            />
+          </>
+        )}
       </View>
-      {renderGameTags}
+      <TaggedModal
+        navigation={navigation}
+        taggedModalRef={taggedModalRef}
+        taggedData={tagData}
+        showTaggedModal={showTaggedModal}
+        onBackdropPress={() => setShowTaggedModal(false)}
+      />
     </View>
   );
 };

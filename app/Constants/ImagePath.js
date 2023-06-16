@@ -506,6 +506,9 @@ const images = {
   pricacyMembersIcon: require('../assets/images/pricacyMembersIcon.png'),
   tagIcon: require('../assets/images/tagIcon.png'),
   mappin: require('../assets/images/MapPin.png'),
+  replyIcon: require('../assets/images/replyIcon.png'),
+  reportIcon: require('../assets/images/reportIcon.png'),
+  searchIcon: require('../assets/images/searchIcon.png'),
 };
 
 export default images;

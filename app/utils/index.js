@@ -1871,8 +1871,8 @@ export const getTaggedText = (format_tagged_data = []) => {
     );
     const groupList = entityTagList.filter(
       (item) =>
-        item.entity_type !== Verbs.entityTypeUser ||
-        item.entity_type !== Verbs.entityTypePlayer,
+        item.entity_type === Verbs.entityTypeClub ||
+        item.entity_type === Verbs.entityTypeTeam,
     );
     if (userList.length > 0) {
       entityCountText =

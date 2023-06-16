@@ -27,7 +27,7 @@ import ActionSheet from 'react-native-actionsheet';
 
 import Share from 'react-native-share';
 import Clipboard from '@react-native-community/clipboard';
-import RNUrlPreview from 'react-native-url-preview';
+// import RNUrlPreview from 'react-native-url-preview';
 import Carousel from 'react-native-snap-carousel';
 import ActivityLoader from '../../../../../loader/ActivityLoader';
 import AuthContext from '../../../../../../auth/context';
@@ -331,7 +331,7 @@ function RefereeFeedPostItems({
             itemWidth={wp(94)}
           />
         )}
-        {(descriptions?.toLowerCase()?.indexOf('http://') === 0 ||
+        {/* {(descriptions?.toLowerCase()?.indexOf('http://') === 0 ||
           descriptions?.toLowerCase()?.indexOf('https://') === 0) && (
           <RNUrlPreview
             text={descriptions}
@@ -339,7 +339,7 @@ function RefereeFeedPostItems({
             imageProps={{resizeMode: 'cover'}}
             imageStyle={styles.previewImageStyle}
           />
-        )}
+        )} */}
 
         <View style={styles.commentShareLikeView}>
           <View
@@ -579,19 +579,19 @@ const styles = StyleSheet.create({
     marginLeft: wp('4%'),
     width: wp('70%'),
   },
-  urlPreviewContainerStyle: {
-    flexDirection: 'column',
-    margin: 5,
-    borderWidth: 1,
-    borderColor: colors.grayBackgroundColor,
-    padding: 8,
-    borderRadius: 10,
-  },
-  previewImageStyle: {
-    alignSelf: 'center',
-    height: 100,
-    width: wp('90%'),
-  },
+  // urlPreviewContainerStyle: {
+  //   flexDirection: 'column',
+  //   margin: 5,
+  //   borderWidth: 1,
+  //   borderColor: colors.grayBackgroundColor,
+  //   padding: 8,
+  //   borderRadius: 10,
+  // },
+  // previewImageStyle: {
+  //   alignSelf: 'center',
+  //   height: 100,
+  //   width: wp('90%'),
+  // },
   textContainer: {
     flexDirection: 'row',
     alignSelf: 'stretch',

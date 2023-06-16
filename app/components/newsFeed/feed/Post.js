@@ -12,7 +12,6 @@ import FeedProfile from './FeedProfile';
 const Post = ({
   item = {},
   onImageProfilePress = () => {},
-  showThreeDot = false,
   onThreeDotPress = () => {},
   updateCommentCount,
   caller_id,
@@ -25,6 +24,7 @@ const Post = ({
   isNewsFeedScreen = false,
   openProfilId,
   isRepost = false,
+  showMoreOptions = false,
 }) => {
   const postData = getPostData(item);
   const repostActivity = {...postData.activity};
@@ -45,9 +45,9 @@ const Post = ({
         time={item.time}
         data={item.actor.data}
         onImageProfilePress={onImageProfilePress}
-        isRepost={isRepost}
-        showThreeDot={showThreeDot}
+        isRepost={false}
         onThreeDotPress={onThreeDotPress}
+        showMoreOptions={showMoreOptions}
       />
       {isRepost && (
         <>
@@ -83,7 +83,6 @@ const Post = ({
             data={repostActivity.actor.data}
             onImageProfilePress={onImageProfilePress}
             isRepost
-            showThreeDot={showThreeDot}
             onThreeDotPress={onThreeDotPress}
           />
         ) : (
@@ -102,7 +101,6 @@ const Post = ({
           />
         )}
 
-        {renderURLPreview()}
         <NewsFeedDescription
           descriptions={data.text}
           numberOfLineDisplay={data.attachments?.length > 0 ? 3 : 14}
@@ -113,6 +111,8 @@ const Post = ({
           descText={isRepost ? styles.repostText : {}}
           descriptionTxt={isRepost ? styles.repostText : {}}
         />
+
+        {!isRepost && renderURLPreview()}
       </View>
     </View>
   );

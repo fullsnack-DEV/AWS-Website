@@ -253,22 +253,23 @@ const HomeFeed = ({
   };
 
   const StickyHeaderComponent = useMemo(
-    () => (
-      <WritePost
-        navigation={navigation}
-        postDataItem={currentUserData}
-        onWritePostPress={() => {
-          navigation.navigate('LoneStack', {
-            screen: 'WritePostScreen',
-            params: {
-              postData: currentUserData,
-              selectedImageList: [],
-            },
-          });
-        }}
-      />
-    ),
-    [currentUserData, navigation],
+    () =>
+      isAdmin && (
+        <WritePost
+          navigation={navigation}
+          postDataItem={currentUserData}
+          onWritePostPress={() => {
+            navigation.navigate('LoneStack', {
+              screen: 'WritePostScreen',
+              params: {
+                postData: currentUserData,
+                selectedImageList: [],
+              },
+            });
+          }}
+        />
+      ),
+    [isAdmin, currentUserData, navigation],
   );
 
   const ListHeaderComponent = useMemo(

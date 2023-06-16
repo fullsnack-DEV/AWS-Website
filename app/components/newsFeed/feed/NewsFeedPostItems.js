@@ -1,18 +1,9 @@
-import React, {
-  useCallback,
-  memo,
-  useEffect,
-  useRef,
-  useState,
-  useContext,
-} from 'react';
+import React, {useCallback, memo, useEffect, useState, useContext} from 'react';
 import {Alert, View} from 'react-native';
-import ActionSheet from 'react-native-actionsheet';
 import Share from 'react-native-share';
 import Clipboard from '@react-native-community/clipboard';
 import CommentModal from '../CommentModal';
 import LikersModal from '../../modals/LikersModal';
-// import {createRePost} from '../../../api/NewsFeeds';
 import AuthContext from '../../../auth/context';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
@@ -40,18 +31,18 @@ const NewsFeedPostItems = memo(
     entityDetails = {},
     fetchFeeds = () => {},
   }) => {
-    const commentModalRef = useRef(null);
     const authContext = useContext(AuthContext);
     const [childIndex, setChildIndex] = useState(0);
     const [like, setLike] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
     const [repostCount] = useState(0);
-    const [showThreeDot, setShowThreeDot] = useState(false);
     const [showCommentModal, setShowCommentModal] = useState(false);
     const [showLikeModal, setShowLikeModal] = useState(false);
     const [showShareOptionsModal, setShowShareOptionsModal] = useState(false);
     const [postType, setPostType] = useState('');
+    const [showMoreOptions, setShowMoreOptions] = useState(false);
+    const [moreOptions, setMoreOptions] = useState([]);
 
     useEffect(() => {
       let filterLike = [];
@@ -73,9 +64,6 @@ const NewsFeedPostItems = memo(
       } else {
         setLike(false);
       }
-      setShowThreeDot(
-        item?.ownerId === caller_id || item?.foreign_id === caller_id,
-      );
 
       if (typeof item.object === 'string') {
         const obj = JSON.parse(item.object);
@@ -85,8 +73,6 @@ const NewsFeedPostItems = memo(
       }
     }, [caller_id, item]);
 
-    const actionSheet = useRef();
-
     const onNewsFeedLikePress = useCallback(() => {
       if (like) setLikeCount((likeCnt) => likeCnt - 1);
       else setLikeCount((likeCnt) => likeCnt + 1);
@@ -94,19 +80,31 @@ const NewsFeedPostItems = memo(
       onLikePress();
     }, [like, onLikePress]);
 
-    const onActionSheetItemPress = useCallback(
-      (index) => {
-        if (index === 0) {
+    const onActionSheetItemPress = (selectedOption) => {
+      console.log({selectedOption});
+      switch (selectedOption) {
+        case strings.edit:
           navigation.navigate('EditPostScreen', {
             data: item,
             onPressDone: onEditPressDone,
           });
-        } else if (index === 1) {
+          break;
+
+        case strings.delete:
+        case strings.deleteFromPost:
           onDeletePost();
-        }
-      },
-      [item, navigation, onDeletePost, onEditPressDone],
-    );
+          break;
+
+        case strings.report:
+        case strings.blockUser:
+        case strings.blockAccount:
+        case strings.removeMyTagFromPost:
+          break;
+
+        default:
+          break;
+      }
+    };
 
     const onShareActionSheetItemPress = (option) => {
       const options = {
@@ -189,18 +187,44 @@ const NewsFeedPostItems = memo(
           <PostForEvent
             postData={item}
             onImageProfilePress={onImageProfilePress}
-            showThreeDot={showThreeDot}
             onThreeDotPress={() => {
-              actionSheet.current.show();
+              let option = [];
+              if (item.actor.id === authContext.entity.uid) {
+                option = [strings.deleteFromPost];
+              } else {
+                option = [strings.report, strings.blockAccount];
+              }
+              setMoreOptions(option);
+              setShowMoreOptions(true);
             }}
+            showMoreOptions={
+              authContext.entity.role === Verbs.entityTypePlayer ||
+              authContext.entity.role === Verbs.entityTypeUser
+            }
           />
         ) : (
           <Post
             item={item}
             onImageProfilePress={onImageProfilePress}
-            showThreeDot={showThreeDot}
             onThreeDotPress={() => {
-              actionSheet.current.show();
+              const tagUser = item.tagged.find(
+                (ele) => ele.id === authContext.entity.uid,
+              );
+
+              let option = [];
+              if (item.actor.id === authContext.entity.uid) {
+                option = [strings.edit, strings.delete];
+              } else if (tagUser?.id) {
+                option = [
+                  strings.removeMyTagFromPost,
+                  strings.report,
+                  strings.blockUser,
+                ];
+              } else {
+                option = [strings.report, strings.blockUser];
+              }
+              setMoreOptions(option);
+              setShowMoreOptions(true);
             }}
             updateCommentCount={updateCommentCount}
             caller_id={caller_id}
@@ -213,6 +237,10 @@ const NewsFeedPostItems = memo(
             isNewsFeedScreen={isNewsFeedScreen}
             openProfilId={openProfilId}
             isRepost={postType === Verbs.repostVerb}
+            showMoreOptions={
+              authContext.entity.role === Verbs.entityTypePlayer ||
+              authContext.entity.role === Verbs.entityTypeUser
+            }
           />
         )}
 
@@ -244,23 +272,27 @@ const NewsFeedPostItems = memo(
           handleFollowUnfollow={handleFollowUnfollow}
         />
         <CommentModal
-          navigation={navigation}
-          commentModalRef={commentModalRef}
+          postId={item.id}
           showCommentModal={showCommentModal}
-          item={item}
           updateCommentCount={(updatedCommentData) => {
             updateCommentCount(updatedCommentData);
             setCommentCount(updatedCommentData?.count);
           }}
-          onBackdropPress={() => setShowCommentModal(false)}
+          closeModal={() => setShowCommentModal(false)}
+          onProfilePress={(data = {}) => {
+            setShowCommentModal(false);
+            navigation.navigate('HomeScreen', {
+              uid: data.userId,
+              role: data.entityType,
+            });
+          }}
         />
-        <ActionSheet
-          ref={actionSheet}
-          title={'News Feed Post'}
-          options={['Edit Post', 'Delete Post', strings.cancel]}
-          cancelButtonIndex={2}
-          destructiveButtonIndex={1}
-          onPress={onActionSheetItemPress}
+        <BottomSheet
+          type="ios"
+          isVisible={showMoreOptions}
+          closeModal={() => setShowMoreOptions(false)}
+          optionList={moreOptions}
+          onSelect={(value) => onActionSheetItemPress(value)}
         />
 
         <BottomSheet

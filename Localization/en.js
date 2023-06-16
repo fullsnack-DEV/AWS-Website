@@ -2998,4 +2998,12 @@ export default {
     'en_Details about sets, games, points, tiebreakers and the maximum match duration',
   min: 'en_Min',
   max: 'en_Max',
+  leaveComment: 'en_Leave a comment',
+  nTimeAgo: 'en_{0}{1} ago',
+  report: 'en_Report',
+  blockUser: 'en_Block User',
+  removeMyTagFromPost: 'en_Remove my tag from post',
+  deleteFromPost: 'en_Delete from my posts',
+  blockAccount: 'en_Block Account',
+  viewMoreReplies: 'en_View {0} more replies',
 };

@@ -33,7 +33,7 @@ import Modal from 'react-native-modal';
 import ImagePicker from 'react-native-image-crop-picker';
 import ParsedText from 'react-native-parsed-text';
 import _ from 'lodash';
-import UrlPreview from 'react-native-url-preview';
+// import UrlPreview from 'react-native-url-preview';
 import ImageButton from '../../components/WritePost/ImageButton';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
@@ -359,9 +359,10 @@ const EditPostScreen = ({navigation, route}) => {
       const position = desc.search(urlRegex);
       if (position !== -1 && desc.substring(position)?.startsWith('www'))
         desc = addStr(desc, position, 'http://');
-      return (
-        <UrlPreview text={desc} containerStyle={styles.previewContainerStyle} />
-      );
+      return null;
+      // return (
+      //   <UrlPreview text={desc} containerStyle={styles.previewContainerStyle} />
+      // );
     }
     return null;
   }, [searchText]);
@@ -949,13 +950,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     paddingVertical: hp(1),
   },
-  previewContainerStyle: {
-    margin: 5,
-    borderWidth: 1,
-    borderColor: colors.grayBackgroundColor,
-    padding: 8,
-    borderRadius: 10,
-  },
+  // previewContainerStyle: {
+  //   margin: 5,
+  //   borderWidth: 1,
+  //   borderColor: colors.grayBackgroundColor,
+  //   padding: 8,
+  //   borderRadius: 10,
+  // },
 
   checkboxImg: {
     width: wp('5.5%'),

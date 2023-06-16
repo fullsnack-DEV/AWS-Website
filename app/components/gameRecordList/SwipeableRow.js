@@ -1,21 +1,14 @@
 import React, {useRef} from 'react';
-import {
-  Animated,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  View,
-  Image,
-} from 'react-native';
+import {StyleSheet, TouchableOpacity, Text, View, Image} from 'react-native';
+import Animated from 'react-native-reanimated';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import LinearGradient from 'react-native-linear-gradient';
-import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
 const SwipeableRow = ({
   onPress = () => {},
-  buttons = [{key: 'delete', fillColor: '#E63E3F', image: images.deleteIcon}],
+  buttons = [],
   enabled = true,
   children,
   showLabel = true,
@@ -28,46 +21,36 @@ const SwipeableRow = ({
       inputRange: [-100, 0],
       outputRange: [0.7, 0],
     });
-    let buttonSize = 30;
-    if (buttons?.length >= 2 && scaleEnabled) buttonSize = 25;
-    return (
-      <>
-        {buttons?.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            activeOpacity={1}
-            onPress={() => onItemPress(item?.key)}
-            style={{justifyContent: 'center', alignItems: 'center', width: 57}}>
-            <LinearGradient
-              colors={
-                Array.isArray(item.fillColor)
-                  ? item.fillColor
-                  : [item.fillColor, item.fillColor]
-              }
-              style={{justifyContent: 'center', alignItems: 'center'}}>
-              <Animated.View
-                style={{
-                  paddingHorizontal: 10,
-                  minWidth: 57,
-                  ...(scaleEnabled && {transform: [{scale}]}),
-                }}>
-                <View style={styles.rightAction}>
-                  <Image
-                    source={item?.image}
-                    style={{
-                      ...styles.deleteImgContainer,
-                      height: buttonSize,
-                      width: buttonSize,
-                    }}
-                  />
-                  {showLabel && <Text style={styles.label}>{item?.label}</Text>}
-                </View>
-              </Animated.View>
-            </LinearGradient>
-          </TouchableOpacity>
-        ))}
-      </>
-    );
+
+    return buttons.map((item, index) => (
+      <Animated.View
+        key={index}
+        style={{
+          ...(scaleEnabled && {transform: [{scale}]}),
+        }}>
+        <TouchableOpacity
+          onPress={() => onItemPress(item.key)}
+          style={styles.parent}>
+          <LinearGradient
+            colors={
+              Array.isArray(item.fillColor)
+                ? item.fillColor
+                : [item.fillColor, item.fillColor]
+            }
+            style={{width: '100%', height: '100%'}}>
+            <View style={styles.container}>
+              <View style={styles.imageContainer}>
+                <Image source={item.image} style={styles.image} />
+              </View>
+
+              {showLabel ? (
+                <Text style={styles.label}>{item.label}</Text>
+              ) : null}
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
+    ));
   };
 
   const onItemPress = (key) => {
@@ -92,15 +75,25 @@ const SwipeableRow = ({
 };
 
 const styles = StyleSheet.create({
-  rightAction: {
-    alignItems: 'center',
+  parent: {
+    width: 57,
+    marginBottom: 15,
+  },
+  container: {
     flex: 1,
     justifyContent: 'center',
-  },
-  deleteImgContainer: {
-    justifyContent: 'center',
     alignItems: 'center',
-    resizeMode: 'contain',
+  },
+  imageContainer: {
+    height: 20,
+    width: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   label: {
     marginTop: 5,

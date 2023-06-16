@@ -16,16 +16,19 @@ import {
   TextInput,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
-// import _ from 'lodash';
+import _ from 'lodash';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TagItemView from '../../components/newsFeed/TagItemView';
 import SelectedTagList from '../../components/newsFeed/SelectedTagList';
-// import TagMatches from './TagMatches';
-import {getAllGames} from '../../api/NewsFeeds';
-import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
+import TagMatches from './TagMatches';
+import {
+  getGameIndex,
+  getGroupIndex,
+  getUserIndex,
+} from '../../api/elasticSearch';
 import {strings} from '../../../Localization/translation';
 import ScreenHeader from '../../components/ScreenHeader';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
@@ -47,7 +50,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   const [userData, setUserData] = useState([]);
   const [groupData, setGroupData] = useState([]);
   const [seletedEntity, setSeletedEntity] = useState([]);
-  // const [selectedMatch, setSelectedMatch] = useState([]);
+  const [selectedMatch, setSelectedMatch] = useState([]);
   const [gamesData, setGamesData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -65,19 +68,65 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         },
       },
     };
-    const promiseArr = [getUserIndex(query), getGroupIndex(query)];
+
+    const gamesquery = {
+      size: 1000,
+      query: {
+        bool: {
+          should: [
+            {
+              match: {
+                city: {query: authContext.entity.obj.city, boost: 4},
+              },
+            },
+            {
+              match: {
+                country: {
+                  query: authContext.entity.obj.country,
+                  boost: 1,
+                },
+              },
+            },
+          ],
+        },
+      },
+      sort: [{actual_enddatetime: 'desc'}],
+    };
+
+    if (authContext.entity.obj.state) {
+      gamesquery.query.bool.should.push({
+        match: {
+          state: {query: authContext.entity.obj.state, boost: 3},
+        },
+      });
+    } else {
+      gamesquery.query.bool.should.push({
+        match: {
+          state_abbr: {
+            query: authContext.entity.obj.state_abbr,
+            boost: 2,
+          },
+        },
+      });
+    }
+    const promiseArr = [
+      getUserIndex(query),
+      getGroupIndex(query),
+      getGameIndex(gamesquery),
+    ];
     setLoading(true);
     Promise.all(promiseArr)
       .then((response) => {
         setUserData(response[0]);
         setGroupData(response[1]);
+        setGamesData(response[2]);
         setLoading(false);
       })
       .catch((err) => {
         Alert.alert(strings.alertmessagetitle, err.message);
         setLoading(false);
       });
-  }, []);
+  }, [authContext.entity.obj]);
 
   useEffect(() => {
     if (isFocused) {
@@ -86,14 +135,11 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   }, [isFocused, fetchData]);
 
   useEffect(() => {
-    getAllGames(authContext.entity.uid, authContext)
-      .then((res) => {
-        setGamesData([...res?.payload]);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [authContext]);
+    if (isFocused && route.params.gameTags && route.params.tagsOfEntity) {
+      setSeletedEntity([...route.params.tagsOfEntity]);
+      setSelectedMatch([...route.params.gameTags]);
+    }
+  }, [isFocused, route.params]);
 
   const filterData = (searchValue = '') => {
     if (!searchValue) {
@@ -111,18 +157,21 @@ export default function UserTagSelectionListScreen({navigation, route}) {
     }
   };
 
-  // const onSelectMatch = useCallback(
-  //   (gameItem) => {
-  //     const gData = _.cloneDeep(selectedMatch);
-  //     const gIndex = gData?.findIndex(
-  //       (item) => item?.game_id === gameItem?.game_id,
-  //     );
-  //     if (gIndex === -1) gData.push(gameItem);
-  //     else gData.splice(gIndex, 1);
-  //     setSelectedMatch([...gData]);
-  //   },
-  //   [selectedMatch],
-  // );
+  const onSelectMatch = useCallback(
+    (gameItem) => {
+      const gData = _.cloneDeep(selectedMatch);
+      const gIndex = gData?.findIndex(
+        (item) => item.game_id === gameItem.game_id,
+      );
+      if (gIndex === -1) {
+        gData.push(gameItem);
+      } else {
+        gData.splice(gIndex, 1);
+      }
+      setSelectedMatch([...gData]);
+    },
+    [selectedMatch],
+  );
 
   const renderTopTabView = () => (
     <>
@@ -239,10 +288,20 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       return <Text style={styles.noDataText}>{strings.noRecordFoundText}</Text>;
     }
 
+    if (currentTab === strings.matchesTitleText) {
+      return (
+        <TagMatches
+          gamesData={list}
+          selectedMatch={selectedMatch}
+          onSelectMatch={onSelectMatch}
+        />
+      );
+    }
+
     return (
       <FlatList
         data={list}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={{paddingHorizontal: 17, paddingTop: 20}}
         showsHorizontalScrollIndicator={false}
         renderItem={({item}) => (
@@ -270,16 +329,6 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         )}
       />
     );
-
-    // if (currentTab === strings.matchesTitleText) {
-    //   return (
-    //     <TagMatches
-    //       gamesData={gamesData}
-    //       selectedMatch={selectedMatch}
-    //       onSelectMatch={onSelectMatch}
-    //     />
-    //   );
-    // }
   };
 
   const renderSelectedEntity = () =>
@@ -307,6 +356,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
               postData,
               selectedImageList: [],
               selectedTagList: seletedEntity,
+              selectedMatchTags: selectedMatch,
               ...route.params.routeParams,
             },
           })

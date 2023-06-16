@@ -176,6 +176,8 @@ const Verbs = {
   mediaTypeImage: 'image',
   mediaTypeVideo: 'video',
   repostVerb: 'repost',
+  delete: 'delete',
+  report: 'report',
 };
 
 export default Verbs;

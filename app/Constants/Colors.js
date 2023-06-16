@@ -157,5 +157,6 @@ const colors = {
   tagColor: '#1D8BDB',
   privacyBgColor: 'rgba(0,0,0,0.05)',
   maskColor: 'rgba(0,0,0,0.1)',
+  linkGrey: '#727272',
 };
 export default colors;

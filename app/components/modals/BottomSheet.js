@@ -56,7 +56,13 @@ const BottomSheet = ({
                   <Pressable
                     style={[styles.modalButtonContainer, itemStyle]}
                     onPress={() => onSelect(item)}>
-                    <Text style={styles.modalButtonText}>{item}</Text>
+                    <Text
+                      style={[
+                        styles.modalButtonText,
+                        item.includes('Delete') ? {color: colors.redColor} : {},
+                      ]}>
+                      {item}
+                    </Text>
                   </Pressable>
                   <View
                     style={[styles.modalLineSeparator, separatorLineStyle]}

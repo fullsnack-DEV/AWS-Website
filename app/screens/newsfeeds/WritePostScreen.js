@@ -22,7 +22,6 @@ import {
 } from 'react-native';
 import Video from 'react-native-video';
 import ImagePicker from 'react-native-image-crop-picker';
-import UrlPreview from 'react-native-url-preview';
 import _ from 'lodash';
 import ParsedText from 'react-native-parsed-text';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -31,7 +30,6 @@ import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import {displayLocation, getPostData, getTaggedEntityData} from '../../utils';
 import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
-import TCGameCard from '../../components/TCGameCard';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
@@ -43,18 +41,20 @@ import ScreenHeader from '../../components/ScreenHeader';
 import GroupIcon from '../../components/GroupIcon';
 import Verbs from '../../Constants/Verbs';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
-import {ModalTypes} from '../../Constants/GeneralConstants';
+import {
+  hashTagRegex,
+  ModalTypes,
+  tagRegex,
+  urlRegex,
+} from '../../Constants/GeneralConstants';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import {createPost, createRePost} from '../../api/NewsFeeds';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import FeedMedia from '../../components/newsFeed/feed/FeedMedia';
 import FeedProfile from '../../components/newsFeed/feed/FeedProfile';
 import NewsFeedDescription from '../../components/newsFeed/NewsFeedDescription';
-
-const urlRegex =
-  /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/gim;
-const tagRegex = /(?!\w)@\w+/gim;
-const hashTagRegex = /\B(#[a-zA-Z]+\b)(?!;)/;
+import CustomURLPreview from '../../components/account/CustomURLPreview';
+import MatchCard from './MatchCard';
 
 const WritePostScreen = ({navigation, route}) => {
   const textInputRef = useRef();
@@ -67,6 +67,7 @@ const WritePostScreen = ({navigation, route}) => {
   const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
   const [searchFieldHeight, setSearchFieldHeight] = useState();
   const [tagsOfEntity, setTagsOfEntity] = useState([]);
+  const [tagsOfGame, setTagsOfGame] = useState([]);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
 
   const [searchTag, setSearchTag] = useState();
@@ -100,6 +101,7 @@ const WritePostScreen = ({navigation, route}) => {
       body = {
         ...dataParams,
         group_id: authContext.entity.uid,
+        showPreviewForUrl,
       };
     }
 
@@ -155,7 +157,8 @@ const WritePostScreen = ({navigation, route}) => {
         entity_type: 'publictimeline',
       }));
 
-      const format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity)) ?? [];
+      let format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity)) ?? [];
+      format_tagged_data = [...format_tagged_data, ...tagsOfGame];
       format_tagged_data.map(async (item, index) => {
         const isThere =
           item?.entity_type !== Verbs.entityTypeGame
@@ -322,6 +325,17 @@ const WritePostScreen = ({navigation, route}) => {
   }, [route.params]);
 
   useEffect(() => {
+    if (route.params?.selectedMatchTags?.length > 0) {
+      const matchList = route.params.selectedMatchTags.map((match) => ({
+        matchData: {...match},
+        game_id: match.game_id,
+        entity_type: Verbs.entityTypeGame,
+      }));
+      setTagsOfGame(matchList);
+    }
+  }, [route.params?.selectedMatchTags]);
+
+  useEffect(() => {
     if (searchText.length > 0) {
       if (searchText[currentTextInputIndex - 1] === '@') {
         setLetModalVisible(true);
@@ -339,8 +353,6 @@ const WritePostScreen = ({navigation, route}) => {
       }
     } else {
       setTagsOfEntity([]);
-      // setUsers([]);
-      // setGroups([]);
       setLetModalVisible(false);
     }
   }, [currentTextInputIndex, searchText]);
@@ -490,6 +502,7 @@ const WritePostScreen = ({navigation, route}) => {
   const renderTagUsersAndGroups = ({item}) => (
     <TouchableOpacity
       onPress={() => {
+        console.log(JSON.stringify(item));
         onTagPress(item);
       }}
       style={styles.userListStyle}>
@@ -578,20 +591,12 @@ const WritePostScreen = ({navigation, route}) => {
         desc = addStr(desc, position, 'http://');
       }
 
-      return desc && showPreviewForUrl && selectImage.length === 0 ? (
+      return desc &&
+        showPreviewForUrl &&
+        selectImage.length === 0 &&
+        position !== -1 ? (
         <View style={{flex: 1, paddingHorizontal: 15}}>
-          <UrlPreview
-            text={desc}
-            containerStyle={styles.previewContainerStyle}
-            imageProps={styles.previewImageStyle}
-            textContainerStyle={styles.previewTextContainerStyle}
-            titleStyle={styles.previewTitleStyle}
-            descriptionStyle={styles.previewDescription}
-            descriptionNumberOfLines={2}
-            onError={() => {
-              setShowPreviewForUrl(false);
-            }}
-          />
+          <CustomURLPreview text={desc} />
           <TouchableOpacity
             style={styles.closeIcon}
             onPress={() => setShowPreviewForUrl(false)}>
@@ -708,90 +713,6 @@ const WritePostScreen = ({navigation, route}) => {
         console.log(error);
       });
   };
-
-  // const onSelectMatch = useCallback(
-  //   (selectedMatch) => {
-  //     const tagsArray = [];
-  //     if (selectedMatch?.length > 0) {
-  //       selectedMatch.map((gameTagItem) => {
-  //         const entity_data = {};
-  //         const jsonData = {
-  //           entity_type: 'game',
-  //           entity_id: gameTagItem?.game_id,
-  //         };
-  //         jsonData.entity_data = getTaggedEntityData(
-  //           entity_data,
-  //           gameTagItem,
-  //           'game',
-  //         );
-
-  //         const isExist = tagsOfEntity.some(
-  //           (item) => item?.entity_id === gameTagItem?.game_id,
-  //         );
-  //         if (!isExist) tagsArray.push(jsonData);
-  //         textInputRef.current.focus();
-  //         return null;
-  //       });
-  //       setLetModalVisible(false);
-  //       setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
-  //     }
-  //   },
-  //   [tagsOfEntity],
-  // );
-
-  // const onSelectTagButtonPress = useCallback(() => {
-  //   // {
-  //   //   comeFrom: 'WritePostScreen',
-  //   //   onSelectMatch,
-  //   //   taggedData: JSON.parse(JSON.stringify(tagsOfEntity)).map((obj) => ({
-  //   //     city: obj.entity_data.city,
-  //   //     full_name: obj.entity_data.full_name,
-  //   //     entity_id: obj.entity_id,
-  //   //     entity_type: obj.entity_type,
-  //   //   })),
-  //   // }
-  //   navigation.navigate('UserTagSelectionListScreen');
-  // }, [navigation]);
-
-  const removeTaggedGame = useCallback(
-    (taggedGame) => {
-      const gData = _.cloneDeep(tagsOfEntity);
-      const filterData = gData?.filter(
-        (item) => item?.entity_id !== taggedGame?.entity_id,
-      );
-      setTagsOfEntity([...filterData]);
-    },
-    [tagsOfEntity],
-  );
-
-  const renderSelectedGame = useCallback(
-    ({item}) => (
-      <View style={{marginRight: 15}}>
-        <TCGameCard
-          onPress={() => removeTaggedGame(item)}
-          isSelected={true}
-          data={item?.entity_data}
-          showSelectionCheckBox={true}
-        />
-      </View>
-    ),
-    [removeTaggedGame],
-  );
-
-  const renderGameTags = () => (
-    <FlatList
-      style={{paddingVertical: 15}}
-      bounces={false}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{paddingHorizontal: 15}}
-      pagingEnabled={true}
-      horizontal={true}
-      data={tagsOfEntity?.filter((item) => item?.entity_type === 'game')}
-      renderItem={renderSelectedGame}
-      keyExtractor={(item) => item?.entity_id}
-    />
-  );
 
   const renderWhoCan = ({item}) => (
     <>
@@ -948,7 +869,28 @@ const WritePostScreen = ({navigation, route}) => {
             <>
               {renderUrlPreview()}
               {renderSelectedImageList()}
-              {renderGameTags()}
+              <View>
+                {tagsOfGame.length > 0 ? (
+                  <FlatList
+                    data={tagsOfGame}
+                    keyExtractor={(item, index) => index.toString()}
+                    bounces={false}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{paddingHorizontal: 15}}
+                    horizontal
+                    renderItem={({item}) => (
+                      <View
+                        style={{
+                          width: Dimensions.get('window').width - 30,
+                          flex: 1,
+                          marginRight: 15,
+                        }}>
+                        <MatchCard item={item.matchData} />
+                      </View>
+                    )}
+                  />
+                ) : null}
+              </View>
             </>
           )}
         </View>
@@ -976,6 +918,8 @@ const WritePostScreen = ({navigation, route}) => {
                 navigation.navigate('UserTagSelectionListScreen', {
                   postData,
                   routeParams: route.params.isRepost ? {...route.params} : {},
+                  gameTags: tagsOfGame,
+                  tagsOfEntity,
                 });
               }}>
               <Image source={images.tagImage} style={styles.image} />
@@ -1142,38 +1086,12 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
   },
-  previewContainerStyle: {
-    flex: 1,
-    flexDirection: 'column',
-    marginBottom: 15,
-  },
-  previewImageStyle: {
-    width: Dimensions.get('screen').width - 30,
-    borderRadius: 10,
-    height: 175,
-  },
-  previewTextContainerStyle: {
-    marginTop: 15,
-    paddingHorizontal: 10,
-  },
-  previewTitleStyle: {
-    fontSize: 14,
-    lineHeight: 19,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-  },
-  previewDescription: {
-    fontSize: 12,
-    lineHeight: 17,
-    color: colors.placeHolderColor,
-    fontFamily: fonts.RRegular,
-  },
   closeIcon: {
     width: 17,
     height: 17,
     position: 'absolute',
     right: 25,
-    top: 25,
+    top: 10,
   },
   selectImage: {
     width: 111,
