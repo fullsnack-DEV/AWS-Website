@@ -328,13 +328,17 @@ const EditBasicInfoComponent = ({
           </Pressable>
         </View>
 
-        <View style={{marginBottom: 35}}>
+        <View style={{marginBottom: 24}}>
           <Text style={styles.titleText}>{strings.phone.toUpperCase()}</Text>
           {renderPhoneNumber()}
         </View>
 
         <Pressable
-          style={{marginBottom: 23}}
+          style={{backgroundColor: colors.textFieldBackground,
+              paddingVertical: 5,
+              paddingHorizontal: 10,
+              alignSelf: 'center',
+              borderRadius: 5,marginBottom:50}}
           onPress={() => {
             const list = [...userInfo.phone_numbers];
             const obj = {
@@ -350,12 +354,10 @@ const EditBasicInfoComponent = ({
           <Text
             style={{
               textAlign: 'center',
-              backgroundColor: colors.textFieldBackground,
-              paddingVertical: 4,
-              paddingHorizontal: 10,
-              marginBottom: 23,
-              alignSelf: 'center',
-              borderRadius: 5,
+              fontFamily:fonts.RBold,
+              fontSize:12,
+              lineHeight:18,
+              color:colors.lightBlackColor
             }}>
             + Add Phone
           </Text>

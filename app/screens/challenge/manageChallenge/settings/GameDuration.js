@@ -189,9 +189,11 @@ export default function GameDuration({navigation, route}) {
 
         <View style={styles.viewContainer}>
           <View style={styles.textTitle}>
-            <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
-              {strings.intervalText}
+          <View style={{ flex: 1}}>
+            <Text style={styles.minText}>
+              {strings.intermission}
             </Text>
+          </View>
             <View style={styles.textInputContainer}>
               <TextInput
                 keyboardType="number-pad"
@@ -203,15 +205,17 @@ export default function GameDuration({navigation, route}) {
                 }}
                 value={overTime[index].interval}
               />
-              <Text style={styles.minText}> {strings.minuteText}</Text>
+              <Text style={[styles.minText,{marginRight: 15,}]}> {strings.minuteText}</Text>
             </View>
           </View>
 
           <View style={styles.textTitle}>
-            <Text style={[styles.minText, {marginLeft: 10, flex: 0.4}]}>
+          <View style={{flex:1}}>
+            <Text style={styles.minText}>
               {/* {strings.firstOverTimeText} */}
-              {format(strings.nOverTime, getNumberSuffix(index + 1))}
+              {format(strings.FirstPeriodOfOverTime, getNumberSuffix(index + 1))}
             </Text>
+            </View>
             <View style={styles.textInputContainer}>
               <TextInput
                 keyboardType="number-pad"
@@ -223,7 +227,7 @@ export default function GameDuration({navigation, route}) {
                 }}
                 value={overTime[index].overTime}
               />
-              <Text style={styles.minText}> {strings.minuteText}</Text>
+              <Text style={[styles.minText,{marginRight: 15,}]}> {strings.minuteText}</Text>
             </View>
           </View>
         </View>
@@ -528,7 +532,7 @@ export default function GameDuration({navigation, route}) {
                 fontSize: 14,
                 paddingHorizontal: 10,
                 paddingVertical: 5,
-                fontFamily: fonts.RMedium,
+                fontFamily: fonts.RBold,
                 backgroundColor: colors.textFieldBackground,
                 borderRadius: 5,
                 textAlign: 'center',
@@ -608,22 +612,14 @@ export default function GameDuration({navigation, route}) {
             </TouchableOpacity>
           </View>
           {withOverTime ? (
-            <View>
+            <View style={{marginLeft:74}}>
               <FlatList
                 data={overTime}
                 renderItem={renderOverTime}
                 keyExtractor={(item, index) => index.toString()}
                 style={{marginBottom: 15}}
               />
-              {/* <TCMessageButton
-                title={strings.addIntervalPeriod}lightBlackColor
-                width={180}
-                alignSelf={'center'}
-                marginTop={15}
-                marginBottom={40}
-                color="#000"
-                onPress={() => addOverTime()}
-              /> */}
+              
               <TouchableOpacity onPress={() => addOverTime()}>
                 <Text
                   style={{
@@ -634,18 +630,16 @@ export default function GameDuration({navigation, route}) {
                     marginTop: 25,
                     color: colors.lightBlackColor,
                     fontSize: 14,
-                    fontFamily: fonts.RMedium,
+                    fontFamily: fonts.RBold,
                     backgroundColor: colors.textFieldBackground,
                     alignSelf: 'center',
                     borderRadius: 5,
                   }}>
-                  {strings.addIntervalPeriod}
+                  {strings.addIntervalOverTime}
                 </Text>
               </TouchableOpacity>
             </View>
-          ) : (
-            <View style={{}} />
-          )}
+          ) : null}
           <View style={styles.totalTimeContainer}>
             <Text
               style={[
@@ -715,7 +709,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   textInputContainer: {
-    flex: 0.6,
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     fontSize: 16,
@@ -733,16 +727,16 @@ const styles = StyleSheet.create({
     padding: 0,
     flex: 1,
     textAlign: 'right',
-    paddingRight: 16,
+     marginRight:16
   },
   minText: {
     fontSize: 16,
-    fontFamily: fonts.RRegular,
+    lineHeight:24,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-
-    // marginRight: 15,
   },
   textTitle: {
+    flex:1,
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 10,
