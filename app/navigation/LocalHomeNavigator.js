@@ -12,7 +12,6 @@ import RefereesListScreen from '../screens/localhome/RefereesListScreen';
 import ScorekeeperListScreen from '../screens/localhome/ScorekeeperListScreen';
 import SearchCityScreen from '../screens/localhome/SearchCityScreen';
 import ShortsPlayScreen from '../screens/localhome/shorts/ShortsPlayScreen';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import ScorekeeperAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperAgreementScreen';
 import RefereeAgreementScreen from '../screens/challenge/createChallenge/RefereeAgreementScreen';
 import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperInviteAgreementScreen';
@@ -534,11 +533,7 @@ const LocalHomeNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
-      options={{headerShown: false}}
-    />
+
     <Stack.Screen
       name="HomeScreen"
       component={HomeScreen}

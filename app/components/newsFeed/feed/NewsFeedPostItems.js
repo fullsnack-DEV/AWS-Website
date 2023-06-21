@@ -36,7 +36,7 @@ const NewsFeedPostItems = memo(
     const [like, setLike] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
-    const [repostCount] = useState(0);
+    const [repostCount, setRepostCount] = useState(0);
     const [showCommentModal, setShowCommentModal] = useState(false);
     const [showLikeModal, setShowLikeModal] = useState(false);
     const [showShareOptionsModal, setShowShareOptionsModal] = useState(false);
@@ -52,6 +52,9 @@ const NewsFeedPostItems = memo(
       if (item.reaction_counts?.comment) {
         setCommentCount(item.reaction_counts.comment ?? 0);
       }
+
+      setRepostCount(item?.repost_count);
+
       if (item.own_reactions?.clap) {
         filterLike = (item.own_reactions.clap ?? []).filter(
           (clapItem) => clapItem?.user_id === caller_id,
@@ -81,7 +84,6 @@ const NewsFeedPostItems = memo(
     }, [like, onLikePress]);
 
     const onActionSheetItemPress = (selectedOption) => {
-      console.log({selectedOption});
       switch (selectedOption) {
         case strings.edit:
           navigation.navigate('EditPostScreen', {

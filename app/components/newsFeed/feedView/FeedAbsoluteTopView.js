@@ -1,19 +1,6 @@
-import React, {memo, useCallback, Fragment, useContext, useMemo} from 'react';
-import _ from 'lodash';
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity as ReactNativeTouchableOpacity,
-} from 'react-native';
+import React, {memo, useCallback, Fragment, useContext} from 'react';
+import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import Orientation from 'react-native-orientation';
-import {
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
@@ -22,23 +9,25 @@ import {formatTimestampForDisplay} from '../../../utils/formatTimestampForDispla
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
 import FeedDescriptionSection from './FeedDescriptionSection';
+import GroupIcon from '../../GroupIcon';
+import Verbs from '../../../Constants/Verbs';
 
 const FeedAbsoluteTopView = memo(
   ({
     videoMetaData,
-    showParent,
+    showParent = false,
     screenInsets,
     feedItem = {},
     isLandscape,
     readMore,
     setReadMore,
     navigation,
-    feedSubItem,
+    feedSubItem = {},
     isFullScreen,
     setIsFullScreen,
     setIsLandscape,
-    isMute,
-    setIsMute,
+    // isMute,
+    // setIsMute,
     currentViewIndex,
     onThreeDotPress,
   }) => {
@@ -47,7 +36,6 @@ const FeedAbsoluteTopView = memo(
       : images?.profilePlaceHolder;
     const authContext = useContext(AuthContext);
 
-    // When user press profile pic / profile name
     const onProfilePress = useCallback(() => {
       if (feedItem?.actor?.id) {
         if (feedItem?.actor?.id !== authContext?.entity?.uid) {
@@ -69,7 +57,6 @@ const FeedAbsoluteTopView = memo(
       navigation,
     ]);
 
-    // When user press full screen icon
     const onFullScreen = useCallback(() => {
       if (isFullScreen) {
         Orientation.lockToPortrait();
@@ -93,214 +80,124 @@ const FeedAbsoluteTopView = memo(
       videoMetaData?.naturalSize?.orientation,
     ]);
 
-    // Render Top Description with read More functionality
-    const renderDescriptionSection = useMemo(
-      () => (
-        <Fragment>
-          {!readMore && isLandscape && (
-            <FeedDescriptionSection
-              readMore={readMore}
-              setReadMore={setReadMore}
-              navigation={navigation}
-              tagData={feedSubItem?.format_tagged_data}
-              descriptions={feedSubItem?.text}
-              isLandscape={isLandscape}
-              descriptionTxt={{color: colors.whiteColor}}
-            />
-          )}
-
-          {readMore && (
-            <View style={{flex: 1, paddingVertical: 15, marginHorizontal: 15}}>
-              <ScrollView
-                indicatorStyle={'white'}
-                style={{zIndex: 10}}
-                showsVerticalScrollIndicator={true}>
-                <ReactNativeTouchableOpacity
-                  activeOpacity={1}
-                  onPress={() => setReadMore(!readMore)}>
-                  <FeedDescriptionSection
-                    readMore={readMore}
-                    setReadMore={setReadMore}
-                    navigation={navigation}
-                    tagData={feedSubItem?.format_tagged_data}
-                    descriptions={feedSubItem?.text}
-                    isLandscape={isLandscape}
-                    descriptionTxt={{color: colors.whiteColor}}
-                  />
-                </ReactNativeTouchableOpacity>
-              </ScrollView>
-            </View>
-          )}
-        </Fragment>
-      ),
-      [
-        feedSubItem?.format_tagged_data,
-        feedSubItem?.text,
-        isLandscape,
-        navigation,
-        readMore,
-        setReadMore,
-      ],
-    );
-
-    // Render right buttons contain full screen, three dots, mute/unmute
-    const renderTopRightButtons = useMemo(
-      () => (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-          }}>
-          {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' && (
-            <Fragment>
-              {/*  Mute Unmute Button */}
-              <TouchableOpacity
-                hitSlop={getHitSlop(10)}
-                onPress={() => setIsMute((val) => !val)}>
-                <FastImage
-                  source={
-                    isMute ? images.videoMuteSound : images.videoUnMuteSound
-                  }
-                  resizeMode={'contain'}
-                  style={{
-                    height: 22,
-                    width: 22,
-                    tintColor: colors.whiteColor,
-                  }}
-                />
-              </TouchableOpacity>
-
-              {/*  Full Screen Button */}
-              <TouchableOpacity
-                hitSlop={getHitSlop(10)}
-                onPress={onFullScreen}
-                style={{marginLeft: 20}}>
-                <FastImage
-                  source={
-                    isFullScreen
-                      ? images.videoNormalScreen
-                      : images.videoFullScreen
-                  }
-                  resizeMode={'contain'}
-                  style={{
-                    height: 22,
-                    width: 22,
-                    tintColor: colors.whiteColor,
-                  }}
-                />
-              </TouchableOpacity>
-            </Fragment>
-          )}
-
-          <TouchableOpacity onPress={onThreeDotPress} style={{marginLeft: 20}}>
-            <Image
-              source={images.vertical3Dot}
-              resizeMode={'contain'}
-              style={{
-                height: 22,
-                width: 22,
-                tintColor: colors.whiteColor,
-                marginHorizontal: 5,
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-      ),
-      [
-        currentViewIndex,
-        feedSubItem?.attachments,
-        isFullScreen,
-        isMute,
-        onFullScreen,
-        onThreeDotPress,
-        setIsMute,
-      ],
-    );
-
-    // Render top profile image and name with back button
-    const renderProfileDisplay = useMemo(
-      () => (
-        <View style={styles.profileContainer}>
-          <TouchableOpacity
-            hitSlop={getHitSlop(15)}
-            onPress={() => {
-              Orientation.lockToPortrait();
-              navigation.goBack();
-            }}>
-            <FastImage
-              tintColor={colors.whiteColor}
-              source={images.backArrow}
-              resizeMode={'contain'}
-              style={{height: 20, width: 20}}
-            />
-          </TouchableOpacity>
-
-          <View style={styles.mainContainer}>
-            <TouchableWithoutFeedback onPress={onProfilePress}>
-              <View style={styles.profileImageContainer}>
-                <Image
-                  style={styles.background}
-                  source={userImage}
-                  resizeMode={'cover'}
-                />
-              </View>
-            </TouchableWithoutFeedback>
-            <View style={styles.userNameView}>
-              <Text
-                numberOfLines={1}
-                style={{
-                  ...styles.userNameTxt,
-                  maxWidth: getScreenWidth({
-                    isLandscape,
-                    screenInsets,
-                    portraitWidth: 35,
-                  }),
-                }}
-                onPress={() => {}}>
-                {_.startCase(feedItem?.actor?.data?.full_name?.toLowerCase())}
-              </Text>
-              <Text style={styles.activeTimeAgoTxt}>
-                {formatTimestampForDisplay(feedItem?.time)}
-              </Text>
-            </View>
-          </View>
-        </View>
-      ),
-      [
-        feedItem?.actor?.data?.full_name,
-        feedItem?.time,
-        isLandscape,
-        navigation,
-        onProfilePress,
-        screenInsets,
-        userImage,
-      ],
-    );
-
     return (
       <View
         pointerEvents={showParent ? 'auto' : 'none'}
-        style={{
-          ...styles.topMainContainer,
-          opacity: showParent ? 1 : 0,
-          ...(readMore && {bottom: 0}),
-          backgroundColor: readMore ? 'rgba(0,0,0,0.7)' : 'transparent',
-        }}>
+        style={[
+          styles.topMainContainer,
+          {opacity: showParent ? 1 : 0},
+          readMore
+            ? {backgroundColor: colors.modalBackgroundColor, height: '100%'}
+            : {},
+        ]}>
         <View
           style={{
             ...styles.topSubContainer,
             width: getScreenWidth({isLandscape, screenInsets}),
           }}>
-          {/* Render top profile image and name with back button */}
-          {renderProfileDisplay}
+          <View style={styles.profileContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                Orientation.lockToPortrait();
+                navigation.goBack();
+              }}>
+              <FastImage
+                tintColor={colors.whiteColor}
+                source={images.backArrow}
+                resizeMode={'contain'}
+                style={{height: 20, width: 20}}
+              />
+            </TouchableOpacity>
 
-          {/* Render right buttons contain full screen, three dots, mute/unmute */}
-          {renderTopRightButtons}
+            <View style={styles.mainContainer}>
+              <TouchableOpacity
+                onPress={onProfilePress}
+                style={{marginLeft: 10, marginRight: 15}}>
+                <GroupIcon
+                  imageUrl={userImage}
+                  containerStyle={styles.profileImageContainer}
+                  entityType={Verbs.entityTypePlayer}
+                />
+              </TouchableOpacity>
+              <View style={styles.userNameView}>
+                <Text
+                  numberOfLines={1}
+                  style={styles.userNameTxt}
+                  onPress={() => {}}>
+                  {feedItem.actor?.data?.full_name}
+                </Text>
+                <Text style={styles.activeTimeAgoTxt}>
+                  {formatTimestampForDisplay(feedItem?.time)}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            {feedSubItem?.attachments?.length > 1 && (
+              <View style={styles.lengthViewStyle}>
+                <Text style={styles.lengthTextStyle}>
+                  {currentViewIndex + 1}
+                  {'/'}
+                  {feedSubItem.attachments.length}
+                </Text>
+              </View>
+            )}
+
+            {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' && (
+              <>
+                {/*  Mute Unmute Button */}
+                {/* <TouchableOpacity
+                  hitSlop={getHitSlop(10)}
+                  onPress={() => setIsMute((val) => !val)}>
+                  <FastImage
+                    source={
+                      isMute ? images.videoMuteSound : images.videoUnMuteSound
+                    }
+                    resizeMode={'contain'}
+                    style={{
+                      height: 22,
+                      width: 22,
+                      tintColor: colors.whiteColor,
+                    }}
+                  />
+                </TouchableOpacity> */}
+
+                {/*  Full Screen Button */}
+                <TouchableOpacity
+                  hitSlop={getHitSlop(10)}
+                  onPress={onFullScreen}
+                  style={{marginLeft: 20}}>
+                  <FastImage
+                    source={
+                      isFullScreen
+                        ? images.videoNormalScreen
+                        : images.videoFullScreen
+                    }
+                    resizeMode={'contain'}
+                    style={{
+                      height: 22,
+                      width: 22,
+                      tintColor: colors.whiteColor,
+                    }}
+                  />
+                </TouchableOpacity>
+              </>
+            )}
+
+            <TouchableOpacity onPress={onThreeDotPress} style={styles.moreIcon}>
+              <Image source={images.threeDotIcon} style={styles.icon} />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Render Top Description with read More functionality */}
-        {renderDescriptionSection}
+        <FeedDescriptionSection
+          readMore={readMore}
+          descriptions={feedSubItem?.text}
+          setReadMore={setReadMore}
+          tagData={feedSubItem?.format_tagged_data ?? []}
+          navigation={navigation}
+        />
       </View>
     );
   },
@@ -309,7 +206,8 @@ const FeedAbsoluteTopView = memo(
 const styles = StyleSheet.create({
   topMainContainer: {
     position: 'absolute',
-    top: 0,
+    top: 10,
+    zIndex: 99,
   },
   topSubContainer: {
     zIndex: 100,
@@ -322,38 +220,61 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    flex: 1,
   },
   mainContainer: {
+    flex: 1,
     flexDirection: 'row',
-    padding: wp('3%'),
+    alignItems: 'center',
   },
   userNameTxt: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
     fontSize: 16,
+    lineHeight: 19,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
   },
   userNameView: {
-    flexDirection: 'column',
-    marginLeft: wp('4%'),
+    flex: 1,
   },
   activeTimeAgoTxt: {
+    fontSize: 14,
+    lineHeight: 17,
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
-    fontSize: 14,
-    top: 2,
-  },
-  background: {
-    borderRadius: 50,
-    height: 36,
-    width: 36,
   },
   profileImageContainer: {
     height: 40,
     width: 40,
-    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  lengthTextStyle: {
+    fontSize: 15,
+    color: colors.whiteColor,
+    fontFamily: fonts.RRegular,
+  },
+  lengthViewStyle: {
+    width: 40,
+    height: 25,
+    borderRadius: 20,
     alignItems: 'center',
-    borderRadius: 50,
-    backgroundColor: colors.whiteColor,
+    justifyContent: 'center',
+    backgroundColor: colors.pagingBgColor,
+    marginRight: 15,
+  },
+  moreIcon: {
+    height: 25,
+    width: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icon: {
+    height: '100%',
+    width: '100%',
+    resizeMode: 'contain',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 

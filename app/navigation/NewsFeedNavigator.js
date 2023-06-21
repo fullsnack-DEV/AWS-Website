@@ -39,7 +39,6 @@ import BookReferee from '../screens/game/bookReferee/refereeList/BookReferee';
 import BookScorekeeper from '../screens/game/bookScorekeeper/scorekeeperList/BookScorekeeper';
 import ScorekeeperBookingDateAndTime from '../screens/game/bookScorekeeper/scorekeeperBookDateTime/ScorekeeperBookingDateAndTime';
 import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekeeperSuccess';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
 import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteChallengeScreen';
 import ChooseVenueScreen from '../screens/challenge/manageChallenge/ChooseVenueScreen';
@@ -756,12 +755,6 @@ const NewsFeedNavigator = () => (
       options={{
         headerShown: false,
       }}
-    />
-
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
-      options={{headerShown: false}}
     />
 
     <Stack.Screen

@@ -9,7 +9,7 @@ import FeedVideoView from './FeedVideoView';
 const FeedPostView = ({
   screenInsets,
   showParent,
-  setShowParent,
+  setShowParent = () => {},
   isLandscape,
   feedSubItem,
   setIsFullScreen,

@@ -158,5 +158,6 @@ const colors = {
   privacyBgColor: 'rgba(0,0,0,0.05)',
   maskColor: 'rgba(0,0,0,0.1)',
   linkGrey: '#727272',
+  pagingBgColor: 'rgba(153, 153, 153, 0.6)',
 };
 export default colors;

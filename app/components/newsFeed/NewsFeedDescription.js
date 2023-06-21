@@ -1,4 +1,4 @@
-import React, {useContext, useCallback, useMemo, useRef, useState} from 'react';
+import React, {useContext, useCallback, useRef, useState} from 'react';
 import {StyleSheet, View, Text, FlatList, Dimensions} from 'react-native';
 import ReadMore from '@fawazahmed/react-native-read-more';
 
@@ -28,11 +28,15 @@ const NewsFeedDescription = ({
   numberOfLineDisplay,
   isNewsFeedScreen,
   openProfilId,
+  moreTextStyle = {},
+  onExpand = () => {},
+  onCollapse = () => {},
+  tagStyle = {},
 }) => {
   const taggedModalRef = useRef(null);
   const authContext = useContext(AuthContext);
   const [showTaggedModal, setShowTaggedModal] = useState(false);
-  console.log({tagData});
+
   const getIndicesOf = useCallback(
     (searchStr, str = descriptions) => {
       const searchStrLen = searchStr.length;
@@ -131,62 +135,55 @@ const NewsFeedDescription = ({
       return (
         <Text
           onPress={() => isTagName && handleNamePress(match, startTagIndex)}
-          style={{...styles.username, color}}>
+          style={{...styles.username, color, ...tagStyle}}>
           {match}
         </Text>
       );
     },
-    [descriptions, handleNamePress, tagData],
+    [descriptions, handleNamePress, tagData, tagStyle],
   );
 
-  const renderURLText = useCallback((matchingString) => {
-    const match = matchingString.match(urlRegex);
-    const color = colors.tagColor;
-    return <Text style={{color}}>{match?.[0]}</Text>;
-  }, []);
-
-  const renderDescriptions = useMemo(
-    () =>
-      descriptions?.length > 0 && (
-        <View>
-          <ReadMore
-            style={[styles.text, descText]}
-            numberOfLines={numberOfLineDisplay}
-            seeMoreText={strings.moreText}
-            seeLessText={strings.lessText}
-            seeMoreOverlapCount={0}
-            allowFontScaling={false}
-            seeLessStyle={styles.moreText}
-            seeMoreStyle={styles.moreText}
-            onExpand={() => {
-              console.log('called expand function');
-            }}>
-            <ParsedText
-              style={[styles.text, descriptionTxt]}
-              parse={[
-                {pattern: tagRegex, renderText: renderTagText},
-                {pattern: urlRegex, renderText: renderURLText},
-              ]}
-              childrenProps={{allowFontScaling: false}}>
-              {descriptions}
-            </ParsedText>
-          </ReadMore>
-        </View>
-      ),
-    [
-      descText,
-      descriptionTxt,
-      descriptions,
-      renderTagText,
-      renderURLText,
-      numberOfLineDisplay,
-    ],
+  const renderURLText = useCallback(
+    (matchingString) => {
+      const match = matchingString.match(urlRegex);
+      const color = colors.tagColor;
+      return (
+        <Text style={{...styles.username, color, ...tagStyle}}>
+          {match?.[0]}
+        </Text>
+      );
+    },
+    [tagStyle],
   );
 
   return (
     <View style={containerStyle}>
       <View pointerEvents={disableTouch ? 'none' : 'auto'}>
-        {renderDescriptions}
+        {descriptions?.length > 0 && (
+          <View>
+            <ReadMore
+              style={[styles.text, descText]}
+              numberOfLines={numberOfLineDisplay}
+              seeMoreText={strings.moreText}
+              seeLessText={strings.lessText}
+              seeMoreOverlapCount={0}
+              allowFontScaling={false}
+              seeLessStyle={[styles.moreText, moreTextStyle]}
+              seeMoreStyle={[styles.moreText, moreTextStyle]}
+              onExpand={onExpand}
+              onCollapse={onCollapse}>
+              <ParsedText
+                style={[styles.text, descriptionTxt]}
+                parse={[
+                  {pattern: tagRegex, renderText: renderTagText},
+                  {pattern: urlRegex, renderText: renderURLText},
+                ]}
+                childrenProps={{allowFontScaling: false}}>
+                {descriptions}
+              </ParsedText>
+            </ReadMore>
+          </View>
+        )}
         {tagData.length > 0 && (
           <>
             <TouchableOpacity

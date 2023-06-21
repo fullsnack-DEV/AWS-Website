@@ -171,7 +171,6 @@ import Availibility from '../screens/challenge/manageChallenge/settings/Availibi
 import RefereesSetting from '../screens/challenge/manageChallenge/settings/RefereesSetting';
 import ScorekeepersSetting from '../screens/challenge/manageChallenge/settings/ScorekeepersSetting';
 import GameDuration from '../screens/challenge/manageChallenge/settings/GameDuration';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import UserGalleryScreen from '../screens/home/user/UserGalleryScreen';
 import UserScoreboardScreen from '../screens/home/user/UserScoreboardScreen';
 import InviteToChallengeSentScreen from '../screens/challenge/createChallenge/InviteToChallengeSentScreen';
@@ -2780,11 +2779,7 @@ const AccountNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
-      options={{headerShown: false}}
-    />
+
     <Stack.Screen
       name="UserGalleryScreen"
       component={UserGalleryScreen}

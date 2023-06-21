@@ -7,7 +7,7 @@ import {getScreenHeight, getScreenWidth} from '../../../utils';
 
 const FeedImageView = ({
   screenInsets,
-  setShowParent,
+  setShowParent = () => {},
   sourceData,
   isLandscape,
 }) => (

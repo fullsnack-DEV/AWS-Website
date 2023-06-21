@@ -12,7 +12,6 @@ import HomeScreen from '../screens/home/HomeScreen';
 import MessageEditGroupScreen from '../screens/message/MessageEditGroupScreen';
 import MessageSearchScreen from '../screens/message/MessageSearchScreen';
 import MessageEditInviteeScreen from '../screens/message/MessageEditInviteeScreen';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import SearchScreen from '../screens/search/SearchScreen';
 import MessageChat from '../components/message/MessageChat';
 
@@ -118,11 +117,6 @@ const MessageNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
-    />
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
-      options={{headerShown: false}}
     />
     <Stack.Screen
       name="MessageEditInviteeScreen"

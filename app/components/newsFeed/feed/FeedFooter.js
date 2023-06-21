@@ -45,7 +45,7 @@ const FeedFooter = ({
       </TouchableOpacity>
     </View>
 
-    {likeCount > 0 || commentCount > 0 ? (
+    {likeCount > 0 || commentCount > 0 || repostCount > 0 ? (
       <>
         <View
           style={{

@@ -163,7 +163,6 @@ import NotificationNavigator from './NotificationNavigator';
 import ReservationNavigator from './ReservationNavigator';
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
 import ManageChallengeScreen from '../screens/challenge/manageChallenge/ManageChallengeScreen';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 import RefereeReservationSetting from '../screens/game/bookReferee/RefereeReservationSetting';
 import ScorekeeperReservationSetting from '../screens/game/bookScorekeeper/ScorekeeperReservationSetting';
@@ -2067,11 +2066,6 @@ const HomeNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
-    />
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
-      options={{headerShown: false}}
     />
     <Stack.Screen
       name="AlterRefereeScreen"

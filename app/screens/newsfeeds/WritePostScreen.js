@@ -124,11 +124,7 @@ const WritePostScreen = ({navigation, route}) => {
     const item = {...route.params.repostData};
 
     if (typeof item.object === 'string') {
-      const temp = {
-        ...JSON.parse(item.object),
-      };
       const body = {
-        ...temp,
         activity_id: item.id,
         post_type: Verbs.repostVerb,
         text: searchText,
