@@ -5,14 +5,7 @@ import {strings} from '../../../../../../Localization/translation';
 import images from '../../../../../Constants/ImagePath';
 import styles from './styles';
 
-const SportsListModal = ({
-  isVisible = false,
-  closeList = () => {},
-  sportsList = [],
-  onNext = () => {},
-  sport = null,
-  title = '',
-}) => {
+const SportsListModal = ({isVisible = false, closeList = () => {}, sportsList = [], onNext = () => {}, sport = null, title = ''}) => {
   const [selectedSport, setSelectedSport] = useState(null);
 
   useEffect(() => {
@@ -64,9 +57,7 @@ const SportsListModal = ({
               </Pressable>
             </View>
             <View style={styles.headerTitleContainer}>
-              <Text style={styles.headerTitle}>
-                {sport?.sport ? strings.sportTextTitle : title}
-              </Text>
+              <Text style={styles.headerTitle}>{sport?.sport ? strings.sportTextTitle : title}</Text>
             </View>
             <Pressable
               style={styles.buttonContainer}
@@ -76,47 +67,23 @@ const SportsListModal = ({
                 }
                 onNext(selectedSport);
               }}>
-              <Text
-                style={[
-                  styles.buttonText,
-                  selectedSport?.sport_name ? {} : {opacity: 0.5},
-                ]}>
-                {sport?.sport ? strings.apply : strings.next}
-              </Text>
+              <Text style={[styles.buttonText, selectedSport?.sport_name ? {} : {opacity: 0.5}]}>{sport?.sport ? strings.apply : strings.next}</Text>
             </Pressable>
           </View>
           <View style={styles.divider} />
           <View style={styles.container}>
-            <Text style={styles.title}>
-              {getQuestionAndDescription().question}
-            </Text>
-            <Text style={styles.description}>
-              {getQuestionAndDescription().description}
-            </Text>
+            {getQuestionAndDescription().question ? <Text style={styles.title}>{getQuestionAndDescription().question}</Text> : null}
+            {getQuestionAndDescription().description ? <Text style={styles.description}>{getQuestionAndDescription().description}</Text> : null}
+
             <FlatList
               data={sportsList}
               keyExtractor={(item, index) => `${item?.sport_type}/${index}`}
               showsVerticalScrollIndicator={false}
               renderItem={({item}) => (
                 <>
-                  <Pressable
-                    style={styles.listItem}
-                    onPress={() => setSelectedSport(item)}>
+                  <Pressable style={styles.listItem} onPress={() => setSelectedSport(item)}>
                     <Text style={styles.listLabel}>{item.sport_name}</Text>
-                    <View style={styles.listIconContainer}>
-                      {selectedSport?.sport_name === item?.sport_name &&
-                      selectedSport?.sport_type === item?.sport_type ? (
-                        <Image
-                          source={images.radioCheckYellow}
-                          style={styles.image}
-                        />
-                      ) : (
-                        <Image
-                          source={images.radioUnselect}
-                          style={styles.image}
-                        />
-                      )}
-                    </View>
+                    <View style={styles.listIconContainer}>{selectedSport?.sport_name === item?.sport_name && selectedSport?.sport_type === item?.sport_type ? <Image source={images.radioCheckYellow} style={styles.image} /> : <Image source={images.radioUnselect} style={styles.image} />}</View>
                   </Pressable>
                   <View style={styles.lineSeparator} />
                 </>
