@@ -80,52 +80,34 @@ export default function EditEventScreen({navigation, route}) {
   const actionSheetWithDelete = useRef();
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
-  const [eventData] = useState(route?.params?.data);
-  const [eventTitle, setEventTitle] = useState(eventData.title);
-  const [eventDescription, setEventDescription] = useState(
-    eventData.descriptions,
-  );
-  const [eventPosted, setEventPosted] = useState({
-    ...eventData?.event_posted_at,
-  });
-  const [minAttendees, setMinAttendees] = useState(
-    eventData.min_attendees ?? '',
-  );
-  const [maxAttendees, setMaxAttendees] = useState(
-    eventData.max_attendees ?? '',
-  );
-  const [eventFee, setEventFee] = useState(eventData.event_fee.value ?? '');
+  const [eventData, setEventData] = useState({});
+  const [eventTitle, setEventTitle] = useState('');
+  const [eventDescription, setEventDescription] = useState('');
+  const [eventPosted, setEventPosted] = useState({});
+  const [minAttendees, setMinAttendees] = useState('');
+  const [maxAttendees, setMaxAttendees] = useState('');
+  const [eventFee, setEventFee] = useState('');
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState(
     strings.defaultCurrency,
   );
-  const [refundPolicy, setRefundPolicy] = useState(
-    eventData.refund_policy ?? '',
-  );
-  const [toggle] = useState(eventData.allDay);
-  const eventOldStartDateTime = eventData.start_datetime;
-  const eventOldEndDateTime = eventData.end_datetime;
-  const eventOldUntilDateTime = eventData.untilDate;
-  const [eventStartDateTime, setEventStartdateTime] = useState(
-    getJSDate(eventData.start_datetime),
-  );
-  const [eventEndDateTime, setEventEnddateTime] = useState(
-    getJSDate(eventData.end_datetime),
-  );
-  const [eventUntilDateTime, setEventUntildateTime] = useState(
-    getJSDate(eventData.untilDate),
-  );
-  const [searchLocation, setSearchLocation] = useState(
-    eventData.location.location_name,
-  );
-  const [locationDetail, setLocationDetail] = useState(eventData.location);
-  const [is_Blocked, setIsBlocked] = useState(eventData.blocked);
+  const [refundPolicy, setRefundPolicy] = useState('');
+  const [toggle] = useState(route.params?.data?.allDay);
+  const eventOldStartDateTime = route.params?.data?.start_datetime;
+  const eventOldEndDateTime = route.params?.data?.end_datetime;
+  const eventOldUntilDateTime = route.params?.data?.untilDate;
+  const [eventStartDateTime, setEventStartdateTime] = useState(new Date());
+  const [eventEndDateTime, setEventEnddateTime] = useState(new Date());
+  const [eventUntilDateTime, setEventUntildateTime] = useState(new Date());
+  const [searchLocation, setSearchLocation] = useState('');
+  const [locationDetail, setLocationDetail] = useState({});
+  const [is_Blocked, setIsBlocked] = useState(false);
   const [loading, setloading] = useState(false);
-  const [is_Offline, setIsOffline] = useState(eventData.is_offline);
-  const [onlineUrl, setOnlineUrl] = useState(eventData?.online_url);
+  const [is_Offline, setIsOffline] = useState(false);
+  const [onlineUrl, setOnlineUrl] = useState('');
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
-  const [selectedSport, setSelectedSport] = useState(eventData?.selected_sport);
+  const [selectedSport, setSelectedSport] = useState({});
   const [recurringEditModal, setRecurringEditModal] = useState(false);
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   const THISEVENT = 0;
@@ -142,17 +124,11 @@ export default function EditEventScreen({navigation, route}) {
   ];
 
   const [whoOption, setWhoOption] = useState();
-  const [whoCanJoinOption, setWhoCanJoinOption] = useState({
-    ...eventData?.who_can_join,
-  });
+  const [whoCanJoinOption, setWhoCanJoinOption] = useState({});
 
-  const [whoCanSeeOption, setWhoCanSeeOption] = useState({
-    ...eventData?.who_can_see,
-  });
+  const [whoCanSeeOption, setWhoCanSeeOption] = useState({});
 
-  const [whoCanInviteOption, setWhoCanInviteOption] = useState({
-    ...eventData?.who_can_invite,
-  });
+  const [whoCanInviteOption, setWhoCanInviteOption] = useState({});
 
   const [sportsData, setSportsData] = useState([]);
   const [groupsSeeList, setGroupsSeeList] = useState([]);
@@ -161,13 +137,41 @@ export default function EditEventScreen({navigation, route}) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
-  const [selectWeekMonth, setSelectWeekMonth] = useState(eventData.repeat);
-  const [backgroundThumbnail, setBackgroundThumbnail] = useState(
-    eventData.background_thumbnail,
-  );
+  const [selectWeekMonth, setSelectWeekMonth] = useState('');
+  const [backgroundThumbnail, setBackgroundThumbnail] = useState('');
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
   const venueInputRef = useRef();
   const refundPolicyInputRef = useRef();
+
+  useEffect(() => {
+    if (isFocused) {
+      if (route.params?.data) {
+        const data = {...route.params.data};
+        setEventData(data);
+        setEventTitle(data.title);
+        setEventDescription(data.descriptions);
+        setEventPosted({...data.event_posted_at});
+        setMinAttendees(data.min_attendees ?? '');
+        setMaxAttendees(data.max_attendees ?? '');
+        setEventFee(data.event_fee.value ?? '');
+        setRefundPolicy(data.refund_policy ?? '');
+        setEventStartdateTime(getJSDate(data.start_datetime));
+        setEventEnddateTime(getJSDate(data.end_datetime));
+        setEventUntildateTime(getJSDate(data.untilDate));
+        setSearchLocation(data.location.location_name);
+        setLocationDetail({...data.location});
+        setIsBlocked(data.blocked);
+        setIsOffline(data.is_offline);
+        setOnlineUrl(data?.online_url);
+        setSelectedSport(data?.selected_sport);
+        setWhoCanJoinOption({...data?.who_can_join});
+        setWhoCanSeeOption({...data?.who_can_see});
+        setWhoCanInviteOption({...data?.who_can_invite});
+        setSelectWeekMonth(data.repeat);
+        setBackgroundThumbnail(data.background_thumbnail);
+      }
+    }
+  }, [isFocused, route.params?.data]);
 
   const handleStartDatePress = (date) => {
     const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date;
@@ -505,6 +509,7 @@ export default function EditEventScreen({navigation, route}) {
       obj.untilDate = getTCDate(eventUntilDateTime);
       obj.rrule = rule;
       if (recurrringOption === '') {
+        setEventData({...obj});
         setRecurringEditModal(true);
         setloading(false);
         return true;
@@ -1284,40 +1289,41 @@ export default function EditEventScreen({navigation, route}) {
                 </View>
               </TouchableOpacity>
             </View>
-            {whoCanSeeOption.value === 2 && authContext.entity.role === 'user' && (
-              <View>
-                <View style={styles.allStyle}>
-                  <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsAll(!isAll);
-                      const groups = groupsSeeList.map((obj) => ({
-                        ...obj,
-                        isSelected: !isAll,
-                      }));
-                      setGroupsSeeList([...groups]);
-                    }}>
-                    <Image
-                      source={
-                        isAll ? images.orangeCheckBox : images.uncheckWhite
-                      }
-                      style={styles.imageStyle}
-                    />
-                  </TouchableOpacity>
+            {whoCanSeeOption.value === 2 &&
+              authContext.entity.role === 'user' && (
+                <View>
+                  <View style={styles.allStyle}>
+                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsAll(!isAll);
+                        const groups = groupsSeeList.map((obj) => ({
+                          ...obj,
+                          isSelected: !isAll,
+                        }));
+                        setGroupsSeeList([...groups]);
+                      }}>
+                      <Image
+                        source={
+                          isAll ? images.orangeCheckBox : images.uncheckWhite
+                        }
+                        style={styles.imageStyle}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <FlatList
+                    scrollEnabled={false}
+                    data={[...groupsSeeList]}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => (
+                      <View style={{height: wp('4%')}} />
+                    )}
+                    renderItem={renderSeeGroups}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.listStyle}
+                  />
                 </View>
-                <FlatList
-                  scrollEnabled={false}
-                  data={[...groupsSeeList]}
-                  showsVerticalScrollIndicator={false}
-                  ItemSeparatorComponent={() => (
-                    <View style={{height: wp('4%')}} />
-                  )}
-                  renderItem={renderSeeGroups}
-                  keyExtractor={(item, index) => index.toString()}
-                  style={styles.listStyle}
-                />
-              </View>
-            )}
+              )}
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>
