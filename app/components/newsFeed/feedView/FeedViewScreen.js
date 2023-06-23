@@ -179,22 +179,16 @@ const FeedViewScreen = ({navigation, route}) => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.blackColor}}>
       <FeedAbsoluteTopView
-        videoMetaData={videoMetaData}
-        screenInsets={screenInsets}
-        onThreeDotPress={onThreeDotPress}
-        currentViewIndex={currentViewIndex}
-        feedSubItem={feedSubItem}
-        isMute={isMute}
-        setIsMute={setIsMute}
-        isFullScreen={isFullScreen}
-        setIsFullScreen={setIsFullScreen}
-        setIsLandscape={setIsLandscape}
         showParent={showParent}
-        navigation={navigation}
+        screenInsets={screenInsets}
         feedItem={feedItem}
         isLandscape={isLandscape}
         readMore={readMore}
         setReadMore={setReadMore}
+        navigation={navigation}
+        feedSubItem={feedSubItem}
+        currentViewIndex={currentViewIndex}
+        onThreeDotPress={onThreeDotPress}
       />
 
       <FeedPostView
@@ -245,6 +239,10 @@ const FeedViewScreen = ({navigation, route}) => {
         openLikeModal={() => {
           setShowLikeModal(true);
         }}
+        isMute={isMute}
+        setIsMute={setIsMute}
+        setIsFullScreen={setIsFullScreen}
+        setIsLandscape={setIsLandscape}
       />
 
       <LikersModal

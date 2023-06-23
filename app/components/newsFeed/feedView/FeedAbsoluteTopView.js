@@ -1,10 +1,10 @@
-import React, {memo, useCallback, Fragment, useContext} from 'react';
+import React, {memo, useCallback, useContext} from 'react';
 import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import Orientation from 'react-native-orientation';
 import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
-import {getHitSlop, getScreenWidth} from '../../../utils';
+import {getScreenWidth} from '../../../utils';
 import {formatTimestampForDisplay} from '../../../utils/formatTimestampForDisplay';
 import fonts from '../../../Constants/Fonts';
 import AuthContext from '../../../auth/context';
@@ -14,22 +14,16 @@ import Verbs from '../../../Constants/Verbs';
 
 const FeedAbsoluteTopView = memo(
   ({
-    videoMetaData,
     showParent = false,
     screenInsets,
     feedItem = {},
-    isLandscape,
-    readMore,
-    setReadMore,
+    isLandscape = false,
+    readMore = false,
+    setReadMore = () => {},
     navigation,
     feedSubItem = {},
-    isFullScreen,
-    setIsFullScreen,
-    setIsLandscape,
-    // isMute,
-    // setIsMute,
     currentViewIndex,
-    onThreeDotPress,
+    onThreeDotPress = () => {},
   }) => {
     const userImage = feedItem?.actor?.data?.thumbnail
       ? {uri: feedItem?.actor?.data?.thumbnail}
@@ -55,29 +49,6 @@ const FeedAbsoluteTopView = memo(
       feedItem?.actor?.data?.entity_type,
       feedItem?.actor?.id,
       navigation,
-    ]);
-
-    const onFullScreen = useCallback(() => {
-      if (isFullScreen) {
-        Orientation.lockToPortrait();
-        setIsLandscape(false);
-        setIsFullScreen(false);
-        setTimeout(() => Orientation.unlockAllOrientations(), 1500);
-      } else if (videoMetaData?.naturalSize?.orientation === 'landscape') {
-        Orientation.lockToLandscape();
-        setIsLandscape(true);
-        setIsFullScreen(false);
-      } else {
-        Orientation.lockToPortrait();
-        setIsLandscape(false);
-        setIsFullScreen(true);
-      }
-      setTimeout(() => Orientation.unlockAllOrientations(), 1500);
-    }, [
-      isFullScreen,
-      setIsFullScreen,
-      setIsLandscape,
-      videoMetaData?.naturalSize?.orientation,
     ]);
 
     return (
@@ -142,47 +113,6 @@ const FeedAbsoluteTopView = memo(
                   {feedSubItem.attachments.length}
                 </Text>
               </View>
-            )}
-
-            {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' && (
-              <>
-                {/*  Mute Unmute Button */}
-                {/* <TouchableOpacity
-                  hitSlop={getHitSlop(10)}
-                  onPress={() => setIsMute((val) => !val)}>
-                  <FastImage
-                    source={
-                      isMute ? images.videoMuteSound : images.videoUnMuteSound
-                    }
-                    resizeMode={'contain'}
-                    style={{
-                      height: 22,
-                      width: 22,
-                      tintColor: colors.whiteColor,
-                    }}
-                  />
-                </TouchableOpacity> */}
-
-                {/*  Full Screen Button */}
-                <TouchableOpacity
-                  hitSlop={getHitSlop(10)}
-                  onPress={onFullScreen}
-                  style={{marginLeft: 20}}>
-                  <FastImage
-                    source={
-                      isFullScreen
-                        ? images.videoNormalScreen
-                        : images.videoFullScreen
-                    }
-                    resizeMode={'contain'}
-                    style={{
-                      height: 22,
-                      width: 22,
-                      tintColor: colors.whiteColor,
-                    }}
-                  />
-                </TouchableOpacity>
-              </>
             )}
 
             <TouchableOpacity onPress={onThreeDotPress} style={styles.moreIcon}>

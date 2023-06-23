@@ -650,17 +650,34 @@ const WritePostScreen = ({navigation, route}) => {
           }
           if (mediaType === Verbs.mediaTypeVideo) {
             return (
-              <Video
-                ref={videoPlayerRef}
-                paused
-                muted
-                source={{uri: item.path || item.thumbnail}}
-                style={styles.uploadedImage}
-                resizeMode={'cover'}
-                onLoad={() => {
-                  videoPlayerRef.current.seek(0);
-                }}
-              />
+              <View
+                style={[
+                  styles.selectImage,
+                  index === 0 ? {marginLeft: 15} : {},
+                ]}>
+                <Video
+                  ref={videoPlayerRef}
+                  paused
+                  muted
+                  source={{uri: item.path || item.thumbnail}}
+                  style={[
+                    styles.image,
+                    {resizeMode: 'cover', borderRadius: 10},
+                  ]}
+                  resizeMode={'cover'}
+                  onLoad={() => {
+                    videoPlayerRef.current.seek(0);
+                  }}
+                />
+                <TouchableOpacity
+                  style={[styles.closeIcon, {top: 5, right: 5}]}
+                  onPress={() => onImageItemPress(item)}>
+                  <Image source={images.roundCross} style={styles.image} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.playPauseBtn}>
+                  <Image source={images.videoPlayIcon} style={styles.image} />
+                </TouchableOpacity>
+              </View>
             );
           }
           return null;
@@ -1108,6 +1125,13 @@ const styles = StyleSheet.create({
     lineHeight: 17,
     color: colors.userPostTimeColor,
     fontFamily: fonts.RRegular,
+  },
+  playPauseBtn: {
+    width: 25,
+    height: 25,
+    position: 'absolute',
+    top: 40,
+    alignSelf: 'center',
   },
 });
 export default WritePostScreen;

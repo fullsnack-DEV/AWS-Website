@@ -1,11 +1,6 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  useMemo,
-} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
+import Orientation from 'react-native-orientation';
 import {format} from 'react-string-format';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
@@ -15,6 +10,7 @@ import {getScreenWidth} from '../../../utils';
 import AuthContext from '../../../auth/context';
 import fonts from '../../../Constants/Fonts';
 import {strings} from '../../../../Localization/translation';
+import Verbs from '../../../Constants/Verbs';
 
 const FeedAbsoluteBottomView = ({
   videoMetaData,
@@ -34,6 +30,11 @@ const FeedAbsoluteBottomView = ({
   screenInsets,
   openCommentModal = () => {},
   openLikeModal = () => {},
+  isMute = true,
+  setIsMute = () => {},
+  isFullScreen = false,
+  setIsFullScreen = () => {},
+  setIsLandscape = () => {},
 }) => {
   const [slidingStatus, setSlidingStatus] = useState(false);
   const authContext = useContext(AuthContext);
@@ -106,32 +107,46 @@ const FeedAbsoluteBottomView = ({
     return `${hDisplay}${hDisplay ? ':' : ''}${mDisplay}:${sDisplay}`;
   };
 
-  const renderSeekBar = useMemo(
-    () =>
-      videoDuration ? (
+  const onFullScreen = () => {
+    if (isFullScreen) {
+      Orientation.lockToPortrait();
+      setIsLandscape(false);
+      setIsFullScreen(false);
+      setTimeout(() => Orientation.unlockAllOrientations(), 1500);
+    } else if (videoMetaData?.naturalSize?.orientation === 'landscape') {
+      Orientation.lockToLandscape();
+      setIsLandscape(true);
+      setIsFullScreen(false);
+    } else {
+      Orientation.lockToPortrait();
+      setIsLandscape(false);
+      setIsFullScreen(true);
+    }
+    setTimeout(() => Orientation.unlockAllOrientations(), 1500);
+  };
+
+  const renderSeekBar = () =>
+    videoDuration ? (
+      <View
+        pointerEvents={showParent && !readMore ? 'auto' : 'none'}
+        style={{
+          opacity: showParent ? 1 : 0,
+          paddingHorizontal: 15,
+          width: getScreenWidth({isLandscape, screenInsets}),
+          zIndex: 10,
+        }}>
+        <Text style={styles.time}>
+          {currentTime > videoDuration
+            ? secondsToHms(videoDuration?.toFixed(0))
+            : secondsToHms(Math.ceil(currentTime?.toFixed(0)))}{' '}
+          / {secondsToHms(videoDuration)}
+        </Text>
         <View
-          pointerEvents={showParent && !readMore ? 'auto' : 'none'}
           style={{
-            opacity: showParent && !readMore ? 1 : 0,
-            paddingHorizontal: 25,
-            height: 50,
-            width: getScreenWidth({isLandscape, screenInsets}),
-            justifyContent: 'center',
-            alignItems: 'center',
             flexDirection: 'row',
-            zIndex: 10,
+            alignItems: 'center',
+            marginBottom: 25,
           }}>
-          <Text
-            style={{
-              textAlign: 'left',
-              fontSize: 12,
-              marginRight: 15,
-              color: colors.whiteColor,
-            }}>
-            {currentTime > videoDuration
-              ? secondsToHms(videoDuration?.toFixed(0))
-              : secondsToHms(Math.ceil(currentTime?.toFixed(0)))}
-          </Text>
           <MultiSlider
             smoothSnapped={true}
             markerOffsetX={3}
@@ -161,57 +176,43 @@ const FeedAbsoluteBottomView = ({
                 videoPlayerRef.current.seek(values?.[0]);
             }}
           />
-          <Text
-            style={{
-              fontSize: 12,
-              marginLeft: 15,
-              color: colors.whiteColor,
-              textAlign: 'right',
-            }}>
-            {videoDuration ? secondsToHms(videoDuration) : null}
-          </Text>
-        </View>
-      ) : null,
-    [
-      currentTime,
-      isLandscape,
-      paused,
-      readMore,
-      renderThumb,
-      screenInsets,
-      setCurrentTime,
-      setPaused,
-      showParent,
-      videoDuration,
-      videoPlayerRef,
-    ],
-  );
 
-  return (
-    <>
-      <View
-        pointerEvents={showParent ? 'auto' : 'none'}
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          width: getScreenWidth({isLandscape, screenInsets}),
-          opacity: showParent ? 1 : 0,
-        }}>
-        <View style={{justifyContent: 'flex-end'}}>
-          {feedSubItem?.attachments?.[currentViewIndex]?.type === 'video' &&
-            renderSeekBar}
-        </View>
+          <TouchableOpacity
+            onPress={onFullScreen}
+            style={[styles.iconContainer, {marginLeft: 25}]}>
+            <Image
+              source={
+                isFullScreen ? images.videoNormalScreen : images.videoFullScreen
+              }
+              style={styles.icon}
+            />
+          </TouchableOpacity>
 
-        {!readMore && (
-          <View
-            style={[
-              styles.commentShareLikeView,
-              {width: getScreenWidth({isLandscape, screenInsets})},
-            ]}>
-            <View style={[styles.row, {justifyContent: 'space-between'}]}>
-              <View style={styles.row}>
+          <TouchableOpacity
+            onPress={() => setIsMute((val) => !val)}
+            style={[styles.iconContainer, {marginLeft: 25}]}>
+            <Image
+              source={isMute ? images.videoMuteSound : images.videoUnMuteSound}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    ) : null;
+
+  const renderContent = () => {
+    if (isLandscape) {
+      return (
+        <View
+          style={[
+            styles.commentShareLikeView,
+            {width: getScreenWidth({isLandscape, screenInsets})},
+          ]}>
+          <View style={[styles.row, {justifyContent: 'space-between'}]}>
+            <View style={styles.row}>
+              <View style={[styles.row, {marginRight: 35}]}>
                 <TouchableOpacity
-                  style={[styles.iconContainer, {marginRight: 24}]}
+                  style={[styles.iconContainer, {marginRight: 15}]}
                   onPress={() => {
                     setLike(!like);
                     if (like) setLikeCount((val) => val - 1);
@@ -225,31 +226,6 @@ const FeedAbsoluteBottomView = ({
                     style={styles.icon}
                   />
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.iconContainer}
-                  onPress={openCommentModal}>
-                  <Image
-                    source={images.feedViewCommentButton}
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={() => {
-                  shareActionSheetRef.current.show();
-                }}>
-                <Image
-                  source={images.feedViewShareButton}
-                  style={styles.icon}
-                />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.row}>
-              <View style={styles.row}>
                 <TouchableOpacity
                   onPress={() => {
                     if (likeCount > 0) {
@@ -263,7 +239,17 @@ const FeedAbsoluteBottomView = ({
                       : format(strings.likeTitle, likeCount)}
                   </Text>
                 </TouchableOpacity>
-                <View style={styles.vrLine} />
+              </View>
+
+              <View style={styles.row}>
+                <TouchableOpacity
+                  style={[styles.iconContainer, {marginRight: 15}]}
+                  onPress={openCommentModal}>
+                  <Image
+                    source={images.feedViewCommentButton}
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
                     if (commentCount > 0) {
@@ -278,6 +264,8 @@ const FeedAbsoluteBottomView = ({
                   </Text>
                 </TouchableOpacity>
               </View>
+            </View>
+            <View style={styles.row}>
               <TouchableOpacity>
                 <Text style={styles.countText}>
                   {repostCount}{' '}
@@ -286,9 +274,123 @@ const FeedAbsoluteBottomView = ({
                     : format(strings.repost, repostCount)}
                 </Text>
               </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.iconContainer, {marginLeft: 15}]}
+                onPress={() => {
+                  shareActionSheetRef.current.show();
+                }}>
+                <Image
+                  source={images.feedViewShareButton}
+                  style={styles.icon}
+                />
+              </TouchableOpacity>
             </View>
           </View>
-        )}
+        </View>
+      );
+    }
+    return (
+      <View
+        style={[
+          styles.commentShareLikeView,
+          {width: getScreenWidth({isLandscape, screenInsets})},
+        ]}>
+        <View style={[styles.row, {justifyContent: 'space-between'}]}>
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={[styles.iconContainer, {marginRight: 24}]}
+              onPress={() => {
+                setLike(!like);
+                if (like) setLikeCount((val) => val - 1);
+                else setLikeCount((val) => val + 1);
+                onLikePress();
+              }}>
+              <Image
+                source={
+                  like ? images.feedViewLikeButton : images.feedViewUnLike
+                }
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={openCommentModal}>
+              <Image
+                source={images.feedViewCommentButton}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={() => {
+              shareActionSheetRef.current.show();
+            }}>
+            <Image source={images.feedViewShareButton} style={styles.icon} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.divider} />
+        <View style={styles.row}>
+          <View style={[styles.row, {flex: 1}]}>
+            <TouchableOpacity
+              onPress={() => {
+                if (likeCount > 0) {
+                  openLikeModal();
+                }
+              }}>
+              <Text style={styles.countText}>
+                {likeCount}{' '}
+                {likeCount > 1
+                  ? format(strings.likesTitle, likeCount)
+                  : format(strings.likeTitle, likeCount)}
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.vrLine} />
+            <TouchableOpacity
+              onPress={() => {
+                if (commentCount > 0) {
+                  openCommentModal();
+                }
+              }}>
+              <Text style={styles.countText}>
+                {commentCount}{' '}
+                {commentCount > 1
+                  ? format(strings.comments, commentCount)
+                  : format(strings.comment, commentCount)}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity>
+            <Text style={styles.countText}>
+              {repostCount}{' '}
+              {repostCount > 1
+                ? format(strings.reposts, repostCount)
+                : format(strings.repost, repostCount)}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  return (
+    <>
+      <View
+        pointerEvents={showParent ? 'auto' : 'none'}
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          width: getScreenWidth({isLandscape, screenInsets}),
+          opacity: showParent ? 1 : 0,
+        }}>
+        <View style={{justifyContent: 'flex-end'}}>
+          {feedSubItem?.attachments?.[currentViewIndex]?.type ===
+            Verbs.mediaTypeVideo && renderSeekBar()}
+        </View>
+
+        {renderContent()}
       </View>
     </>
   );
@@ -300,7 +402,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   row: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -332,6 +433,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
     height: 14,
     marginHorizontal: 10,
+  },
+  time: {
+    fontSize: 12,
+    marginRight: 24,
+    color: colors.whiteColor,
+    fontFamily: fonts.RRegular,
   },
 });
 
