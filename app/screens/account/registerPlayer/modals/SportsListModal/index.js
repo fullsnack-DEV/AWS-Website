@@ -1,13 +1,27 @@
 // @flow
+import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {FlatList, Image, Modal, Pressable, Text, View} from 'react-native';
 import {strings} from '../../../../../../Localization/translation';
 import images from '../../../../../Constants/ImagePath';
+import Verbs from '../../../../../Constants/Verbs';
 import styles from './styles';
 import ScreenHeader from '../../../../../components/ScreenHeader';
 
-const SportsListModal = ({isVisible = false, closeList = () => {}, sportsList = [], onNext = () => {}, sport = null, title = ''}) => {
+const SportsListModal = ({
+  isVisible = false,
+  closeList = () => {},
+  sportsList = [],
+  onNext = () => {},
+  sport = null,
+  title = '',
+  forTeam = false,
+  authContext,
+  setdoubleSportHandler = () => {},
+  setMemberListModalHandler = () => {},
+}) => {
   const [selectedSport, setSelectedSport] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     setSelectedSport(sport);
@@ -47,6 +61,37 @@ const SportsListModal = ({isVisible = false, closeList = () => {}, sportsList = 
     }
   };
 
+  // only for Create Team Call
+
+  const onNextPress = (sport_data) => {
+    if (
+      sport_data.sport_type === Verbs.doubleSport &&
+      authContext?.entity?.role ===
+        (Verbs.entityTypeUser || Verbs.entityTypePlayer)
+    ) {
+      closeList();
+      setdoubleSportHandler(sport_data);
+
+      setMemberListModalHandler(true);
+    } else if (authContext.entity.role !== Verbs.entityTypeUser) {
+      closeList();
+
+      const obj = {...sport_data};
+      obj.grp_id = authContext.entity.obj.group_id;
+
+      navigation.navigate('Account', {
+        screen: 'CreateTeamForm1',
+        params: sport_data,
+      });
+    } else {
+      closeList();
+      navigation.navigate('Account', {
+        screen: 'CreateTeamForm1',
+        params: sport_data,
+      });
+    }
+  };
+
   return (
     <Modal visible={isVisible} transparent animationType="slide">
       <View style={styles.parent}>
@@ -66,7 +111,11 @@ const SportsListModal = ({isVisible = false, closeList = () => {}, sportsList = 
                 if (!selectedSport?.sport_name) {
                   return;
                 }
-                onNext(selectedSport);
+                if (forTeam) {
+                  onNextPress(selectedSport);
+                } else {
+                  onNext(selectedSport);
+                }
               }}>
               <Text style={[styles.buttonText, selectedSport?.sport_name ? {} : {opacity: 0.5}]}>{sport?.sport ? strings.next : strings.apply}</Text>
             </Pressable>
@@ -77,19 +126,35 @@ const SportsListModal = ({isVisible = false, closeList = () => {}, sportsList = 
             leftIconPress={closeList}
             containerStyle={{paddingBottom: 14}}
             isRightIconText
-            rightButtonTextStyle={[styles.buttonText, selectedSport?.sport_name ? {} : {opacity: 0.5}]}
+            rightButtonTextStyle={[
+              styles.buttonText,
+              selectedSport?.sport_name ? {} : {opacity: 0.5},
+            ]}
             rightButtonText={sport?.sport ? strings.apply : strings.next}
             onRightButtonPress={() => {
               if (!selectedSport?.sport_name) {
                 return;
               }
-              onNext(selectedSport);
+
+              if (forTeam) {
+                onNextPress(selectedSport);
+              } else {
+                onNext(selectedSport);
+              }
             }}
           />
           <View style={styles.divider} />
           <View style={styles.container}>
-            {getQuestionAndDescription().question ? <Text style={styles.title}>{getQuestionAndDescription().question}</Text> : null}
-            {getQuestionAndDescription().description ? <Text style={styles.description}>{getQuestionAndDescription().description}</Text> : null}
+            {getQuestionAndDescription().question ? (
+              <Text style={styles.title}>
+                {getQuestionAndDescription().question}
+              </Text>
+            ) : null}
+            {getQuestionAndDescription().description ? (
+              <Text style={styles.description}>
+                {getQuestionAndDescription().description}
+              </Text>
+            ) : null}
 
             <FlatList
               data={sportsList}
@@ -97,9 +162,24 @@ const SportsListModal = ({isVisible = false, closeList = () => {}, sportsList = 
               showsVerticalScrollIndicator={false}
               renderItem={({item}) => (
                 <>
-                  <Pressable style={styles.listItem} onPress={() => setSelectedSport(item)}>
+                  <Pressable
+                    style={styles.listItem}
+                    onPress={() => setSelectedSport(item)}>
                     <Text style={styles.listLabel}>{item.sport_name}</Text>
-                    <View style={styles.listIconContainer}>{selectedSport?.sport_name === item?.sport_name && selectedSport?.sport_type === item?.sport_type ? <Image source={images.radioCheckYellow} style={styles.image} /> : <Image source={images.radioUnselect} style={styles.image} />}</View>
+                    <View style={styles.listIconContainer}>
+                      {selectedSport?.sport_name === item?.sport_name &&
+                      selectedSport?.sport_type === item?.sport_type ? (
+                        <Image
+                          source={images.radioCheckYellow}
+                          style={styles.image}
+                        />
+                      ) : (
+                        <Image
+                          source={images.radioUnselect}
+                          style={styles.image}
+                        />
+                      )}
+                    </View>
                   </Pressable>
                   <View style={styles.lineSeparator} />
                 </>

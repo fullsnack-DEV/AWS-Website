@@ -197,7 +197,7 @@ function LocationModal({
             );
           }, 10);
         }
-        handleVisibleModal();
+        //  handleVisibleModal();
       });
   };
 

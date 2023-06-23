@@ -262,6 +262,7 @@ const getSportDetails = (
   };
   if (sport) {
     const sportObj = sportList.find((item) => item.sport === sport);
+
     if (!sportObj) {
       return obj;
     }
@@ -292,7 +293,16 @@ const getSportDetails = (
       role === Verbs.entityTypeUser ||
       role === Verbs.entityTypeClub
     ) {
-      obj.sport_image = sportObj.player_image;
+      if (sportObj.format.length > 1 && sportType === Verbs.sportTypeDouble) {
+        obj.sport_image = sportObj.format[1].player_image;
+      } else if (
+        sportObj.format.length > 1 &&
+        sportType === Verbs.sportTypeSingle
+      ) {
+        obj.sport_image = sportObj.format[0].player_image;
+      } else {
+        obj.sport_image = sportObj.player_image;
+      }
     }
   }
 

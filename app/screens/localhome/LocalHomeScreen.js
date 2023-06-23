@@ -1,35 +1,23 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-promise-executor-return */
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-return-assign */
-/* eslint-disable array-callback-return */
-/* eslint-disable no-underscore-dangle */
 import React, {
   useCallback,
   useState,
   useContext,
   useEffect,
   useRef,
-  useMemo,
 } from 'react';
 import {
   View,
   StyleSheet,
   FlatList,
   Text,
-  Image,
-  ScrollView,
   TouchableWithoutFeedback,
   Platform,
   Alert,
-  Dimensions,
   Pressable,
+  SafeAreaView,
 } from 'react-native';
 
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
-import Carousel from 'react-native-snap-carousel';
 import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../auth/context';
@@ -37,41 +25,41 @@ import LocationContext from '../../context/LocationContext';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
-import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import {strings} from '../../../Localization/translation';
-import {getShortsList, getSportsList} from '../../api/Games'; // getRecentGameDetails
 import * as Utility from '../../utils';
-import {
-  getGameIndex,
-  getGroupIndex,
-  getUserIndex,
-} from '../../api/elasticSearch';
-import {gameData, locationType} from '../../utils/constant';
-import ShortsCard from '../../components/ShortsCard';
-import {getHitSlop, widthPercentageToDP} from '../../utils';
-import TCChallengerCard from '../../components/TCChallengerCard';
-import TCHiringPlayersCard from '../../components/TCHiringPlayersCard';
-import TCEntityView from '../../components/TCEntityView';
-import TCRecentMatchCard from '../../components/TCRecentMatchCard';
+import {widthPercentageToDP} from '../../utils';
 import TCThinDivider from '../../components/TCThinDivider';
-import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
-import TCTeamsCardPlaceholder from '../../components/TCTeamsCardPlaceholder';
-import TCEntityListPlaceholder from '../../components/TCEntityListPlaceholder';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
 import {getUserSettings} from '../../api/Users';
-import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
-import {getGameHomeScreen} from '../../utils/gameUtils';
-import TCShortsPlaceholder from '../../components/TCShortsPlaceholder';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import ImageProgress from '../../components/newsFeed/ImageProgress';
-import Header from '../../components/Home/Header';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import LocationModal from '../../components/LocationModal/LocationModal';
-import {getSingleSportList} from '../../utils/sportsActivityUtils';
+import {
+  getExcludedSportsList,
+  getSportDetails,
+  getTitleForRegister,
+} from '../../utils/sportsActivityUtils';
+import {getSportsList} from '../../api/Games';
+import EditFilterModal from './EditFilterModal';
+import SportsListModal from '../account/registerPlayer/modals/SportsListModal';
+import LocalHomeHeader from './LocalHomeHeader';
+import TopTileSection from './TopTileSection';
+import {
+  getDataForNextScreen,
+  getEventsAndSlotsList,
+  getNotificationCountHome,
+  getSportsForHome,
+  LocalHomeQuery,
+} from './LocalHomeUtils';
+import LocalHomeMenuItems from './LocalHomeMenuItems';
+import SwitchAccountModal from '../../components/account/SwitchAccountModal';
+
+import BottomSheet from '../../components/modals/BottomSheet';
 
 const defaultPageSize = 10;
+
 export default function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
 
@@ -94,7 +82,7 @@ export default function LocalHomeScreen({navigation, route}) {
   const [selectedSport, setSelectedSport] = useState(strings.allType);
   const [sportType, setSportType] = useState(strings.allType);
   const [settingPopup, setSettingPopup] = useState(false);
-  const [shortsList, setShortsList] = useState([]);
+
   const [recentMatch, setRecentMatch] = useState([]);
   const [upcomingMatch, setUpcomingMatch] = useState([]);
   const [challengeeMatch, setChallengeeMatch] = useState([]);
@@ -113,8 +101,162 @@ export default function LocalHomeScreen({navigation, route}) {
     location,
   });
 
+  const [showBottomSheet, setBottomSheet] = useState(false);
+  const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
+  const [notificationCount, setNotificationCount] = useState();
+
+  const [visibleSportsModal, setVisibleSportsModal] = useState(false);
+  const [selectedMenuOptionType, setSelectedMenuOptionType] = useState(
+    Verbs.entityTypePlayer,
+  );
+  const [sportsData, setSportsData] = useState([]);
+
+  const [navigationOptions, setNavigationOptions] = useState({});
+
+  const [visibleSportsModalForClub, setVisibleSportsModalForClub] =
+    useState(false);
+  const [visibleSportsModalForTeam, setVisibleSportsModalForTeam] =
+    useState(false);
+
+  const [filterData, setFilterData] = useState([]);
+
+  const [filterSetting] = useState({
+    sort: 1,
+    time: 0,
+  });
+  const [selectedOptions] = useState({
+    option: 0,
+    title: strings.all,
+  });
+
+  const [allUserData, setAllUserData] = useState([]);
+
+  const [owners, setOwners] = useState([]);
+
+  useEffect(() => {
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      setSelectedSport(authContext.entity.obj.sport);
+    }
+  }, [
+    authContext.entity.obj.sport,
+    authContext.entity.role,
+    showSwitchAccountModal,
+  ]);
+
+  useEffect(() => {
+    const getEventdata = async () => {
+      await getEventsAndSlotsList(
+        authContext,
+        setAllUserData,
+        setOwners,
+
+        filterSetting,
+        selectedOptions,
+        setFilterData,
+        allUserData,
+      );
+    };
+    getEventdata();
+  }, [authContext]);
+
+  const getqury = useCallback(async () => {
+    await LocalHomeQuery(
+      location,
+      defaultPageSize,
+      selectedSport,
+      sportType,
+      authContext,
+      setRecentMatch,
+      setUpcomingMatch,
+      setChallengeeMatch,
+      setHiringPlayers,
+      setLookingTeam,
+      setReferees,
+      setScorekeepers,
+    );
+  }, [authContext, selectedSport, location, sportType]);
+
   useEffect(() => {
     if (isFocused) {
+      locationContext.setSelectedLoaction(location);
+
+      getqury();
+    }
+  }, [
+    authContext,
+    isFocused,
+    location,
+    selectedSport,
+    sportType,
+    locationContext,
+    selectedOptions,
+    filterSetting,
+    allUserData,
+    getqury,
+  ]);
+
+  const ITEM_HEIGHT = 178;
+
+  const localHomeMenu = [
+    {
+      key: strings.rankingInWorld,
+      data: [],
+      index: 0,
+    },
+    {
+      key: strings.completedMatches,
+      data: recentMatch,
+      index: 1,
+    },
+    {
+      key: strings.upcomingMatchesTitle,
+      data: upcomingMatch,
+      index: 2,
+    },
+    {
+      key: strings.eventHometitle,
+      data: filterData,
+      index: 3,
+    },
+    {
+      key: strings.teamAvailableforChallenge,
+      data: challengeeMatch,
+      index: 4,
+    },
+    {
+      key: strings.playersAvailableforChallenge,
+      data: challengeeMatch,
+      index: 5,
+    },
+    {
+      key: strings.refreesAvailable,
+      data: referees,
+      index: 6,
+    },
+    {
+      key: strings.scorekeepersAvailable,
+      data: scorekeepers,
+      index: 7,
+    },
+    {
+      key: strings.hiringPlayerTitle,
+      data: hiringPlayers,
+      index: 8,
+    },
+    {
+      key: strings.lookingForTeamTitle,
+      data: lookingTeam,
+      index: 9,
+    },
+  ];
+
+  useEffect(() => {
+    if (isFocused) {
+      const handleSetNotificationCount = (count) => {
+        setNotificationCount(count);
+      };
+
+      getNotificationCountHome(authContext, handleSetNotificationCount);
       getUserSettings(authContext)
         .then(async (response) => {
           await Utility.setStorage('appSetting', response.payload.app);
@@ -129,7 +271,6 @@ export default function LocalHomeScreen({navigation, route}) {
 
   useEffect(() => {
     getSportsList(authContext).then(async (res) => {
-      await authContext.setSports([...res.payload]);
       const sport = [];
       res.payload.map((item) =>
         sport.push({
@@ -137,9 +278,10 @@ export default function LocalHomeScreen({navigation, route}) {
           value: item.sport_name.toLowerCase(),
         }),
       );
+
       setCustomSports([...sport]);
     });
-  }, []);
+  }, [authContext]);
 
   useEffect(() => {
     if (route.params?.locationText) {
@@ -151,648 +293,190 @@ export default function LocalHomeScreen({navigation, route}) {
     }
   }, [route.params?.locationText]);
 
+  const setSportHandler = (data) => {
+    setSports(data);
+  };
+
   useEffect(() => {
     if (isFocused) {
       Utility.getStorage('appSetting').then((setting) => {
         setImageBaseUrl(setting.base_url_sporticon);
       });
 
-      Utility.getStorage('sportSetting')
-        .then((setting) => {
-          if (setting === null) {
-            const playerSport =
-              authContext?.entity?.auth?.user?.registered_sports || [];
-            const followedSport = authContext?.entity?.obj?.sports;
-            const res = ([...playerSport, ...followedSport] || []).map(
-              (obj) => ({
-                sport: obj.sport,
-                sport_type: obj.sport_type,
-                sport_name: obj.sport_name,
-                player_image: obj.player_image,
-              }),
-            );
-            const result = res.reduce((unique, o) => {
-              if (
-                !unique.some(
-                  (obj) =>
-                    obj.sport === o.sport && obj.sport_type === o.sport_type,
-                )
-              ) {
-                unique.push(o);
-              }
-              return unique;
-            }, []);
-            setSports(result);
-          } else {
-            const arr = [];
-            for (const sport of sports) {
-              const isFound = setting.filter(
-                (obj) => obj.sport === sport.sport,
-              );
-              if (isFound.length > 0) {
-                arr.push(sport);
-              }
-            }
-
-            const allSport = [
-              ...arr,
-              ...setting,
-              ...authContext?.entity?.auth?.user?.registered_sports,
-            ];
-            const uniqSports = {};
-            const uniqueSports = allSport.filter(
-              (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
-            );
-            setSports([...uniqueSports]);
-          }
-        })
-        // eslint-disable-next-line no-unused-vars
-        .catch((e) => {
-          const playerSport =
-            authContext?.entity?.auth?.user?.registered_sports || [];
-          const followedSport = authContext?.entity?.obj?.sports;
-          const res = ([...playerSport, ...followedSport] || []).map((obj) => ({
-            sport: obj.sport,
-            sport_type: obj.sport_type,
-            sport_name: obj.sport_name,
-            player_image: obj.player_image,
-          }));
-          const result = res.reduce((unique, o) => {
-            if (
-              !unique.some(
-                (obj) =>
-                  obj.sport === o.sport &&
-                  obj.sport_type === o.sport_type &&
-                  obj.sport_name === o.sport_name &&
-                  obj.player_image === o.player_image,
-              )
-            ) {
-              unique.push(o);
-            }
-            return unique;
-          }, []);
-
-          setSports(result);
-        });
+      getSportsForHome(authContext, setSportHandler, sports);
     }
   }, [authContext, isFocused]);
 
   useEffect(() => {
-    locationContext.setSelectedLoaction(location);
-    getShortsList(
-      location === strings.worldTitleText ? '_world_' : location,
-      authContext,
-    )
-      .then((res) => {
-        setloading(false);
-        if (res.payload) {
-          setShortsList(res.payload.results);
-        }
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  }, [authContext, isFocused, location]);
+    const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
+    sportArr.sort((a, b) =>
+      a.sport_name.normalize().localeCompare(b.sport_name.normalize()),
+    );
+    setSportsData([...sportArr]);
+  }, [authContext, selectedMenuOptionType, visibleSportsModal]);
 
-  useEffect(() => {
-    if (isFocused) {
-      // Recent match query
-
-      const recentMatchQuery = {
-        size: defaultPageSize,
-        query: {
-          bool: {
-            must: [
-              {match: {status: 'accepted'}},
-              {
-                range: {
-                  start_datetime: {
-                    lt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-                  },
-                },
-              },
-            ],
-          },
-        },
-        sort: [{actual_enddatetime: 'desc'}],
-      };
-
-      if (location !== strings.worldTitleText) {
-        recentMatchQuery.query.bool.must.push({
-          multi_match: {
-            query: location,
-            fields: ['city', 'country', 'state', 'venue.address'],
-          },
-        });
-      }
-      if (selectedSport !== strings.allType) {
-        recentMatchQuery.query.bool.must.push({
-          term: {
-            'sport.keyword': {
-              value: selectedSport,
-            },
-          },
-        });
-        recentMatchQuery.query.bool.must.push({
-          term: {
-            'sport_type.keyword': {
-              value: sportType,
-            },
-          },
-        });
-      }
-      // Recent match query
-      // Upcoming match query
-      const upcomingMatchQuery = {
-        size: defaultPageSize,
-        query: {
-          bool: {
-            must: [
-              {
-                range: {
-                  start_datetime: {
-                    gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
-                  },
-                },
-              },
-            ],
-          },
-        },
-        sort: [{actual_enddatetime: 'desc'}],
-      };
-
-      if (location !== strings.worldTitleText) {
-        upcomingMatchQuery.query.bool.must.push({
-          multi_match: {
-            query: location,
-            fields: ['city', 'country', 'state', 'venue.address'],
-          },
-        });
-      }
-      if (selectedSport !== strings.allType) {
-        upcomingMatchQuery.query.bool.must.push({
-          term: {
-            'sport.keyword': {
-              value: selectedSport,
-            },
-          },
-        });
-        upcomingMatchQuery.query.bool.must.push({
-          term: {
-            'sport_type.keyword': {
-              value: sportType,
-            },
-          },
-        });
-      }
-      // Player available for challenge
-      const playerAvailableForchallengeQuery = {
-        size: defaultPageSize,
-        query: {
-          bool: {
-            must: [
-              {match: {entity_type: 'player'}},
-              {
-                nested: {
-                  path: 'registered_sports',
-                  query: {
-                    bool: {
-                      must: [
-                        {
-                          term: {
-                            'registered_sports.setting.availibility.keyword':
-                              Verbs.on,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        },
-      };
-
-      // Sport filter
-      if (selectedSport !== strings.allType) {
-        playerAvailableForchallengeQuery.query.bool.must[1].nested.query.bool.must.push(
-          {
-            term: {
-              'registered_sports.sport.keyword': `${selectedSport.toLowerCase()}`,
-            },
-          },
-        );
-        playerAvailableForchallengeQuery.query.bool.must[1].nested.query.bool.must.push(
-          {
-            term: {
-              'registered_sports.sport_type.keyword': `${sportType.toLowerCase()}`,
-            },
-          },
-        );
-      }
-
-      // World filter
-      if (location !== strings.worldTitleText) {
-        playerAvailableForchallengeQuery.query.bool.must.push({
-          multi_match: {
-            query: `${location.toLowerCase()}`,
-            fields: ['city', 'country', 'state', 'state_abbr', 'venue.address'],
-          },
-        });
-      }
-
-      // console.log(
-      //   '11111 ==>',
-      //   JSON.stringify(playerAvailableForchallengeQuery),
-      // );
-
-      // Team available for challenge
-      const teamAvailableForchallengeQuery = {
-        size: defaultPageSize,
-        query: {
-          bool: {
-            must: [
-              {term: {'setting.availibility.keyword': Verbs.on}},
-              {term: {entity_type: 'team'}},
-              {term: {is_pause: false}},
-            ],
-          },
-        },
-      };
-
-      if (location !== strings.worldTitleText) {
-        teamAvailableForchallengeQuery.query.bool.must.push({
-          multi_match: {
-            query: location,
-            fields: ['city', 'country', 'state_abbr', 'venue.address'],
-          },
-        });
-      }
-      if (selectedSport !== strings.allSport) {
-        teamAvailableForchallengeQuery.query.bool.must.push({
-          term: {
-            'sport.keyword': {
-              value: `${selectedSport.toLowerCase()}`,
-            },
-          },
-        });
-
-        teamAvailableForchallengeQuery.query.bool.must.push({
-          term: {
-            'sport_type.keyword': {
-              value: `${sportType.toLowerCase()}`,
-            },
-          },
-        });
-      }
-
-      // console.log('2222 ==>', JSON.stringify(teamAvailableForchallengeQuery));
-      /*
-      // Looking Challengee query
-      const availableForchallengeQuery = {
-        size: defaultPageSize,
-        query: {
-          bool: {
-            should: [
-              {
-                bool: {
-                  must: [
-                    {match: {'setting.availibility': Verbs.on}},
-                    {term: {entity_type: 'team'}},
-                    {term: {is_pause: false}},
-                    {term: {player_deactivated: false}},
-                  ],
-                },
-              },
-              {
-                bool: {
-                  must: [
-                    {match: {entity_type: 'player'}},
-                    {
-                      nested: {
-                        path: 'registered_sports',
-                        query: {
-                          bool: {
-                            must: [
-                              {
-                                match: {
-                                  'registered_sports.setting.availibility':
-                                    Verbs.on,
-                                },
-                              },
-                            ],
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        },
-      };
-
-      if (location !== strings.worldTitleText) {
-        availableForchallengeQuery.query.bool.should[0].bool.must.push({
-          multi_match: {
-            query: location,
-            fields: ['city', 'country', 'state', 'venue.address'],
-          },
-        });
-
-        availableForchallengeQuery.query.bool.should[1].bool.must.push({
-          multi_match: {
-            query: location,
-            fields: ['city', 'country', 'state', 'venue.address'],
-          },
-        });
-      }
-
-      if (sportType === 'double') {
-        availableForchallengeQuery.query.bool.should[0].bool.must.push({
-          term: {player_deactivated: false},
-        });
-      }
-
-      if (selectedSport !== strings.allType) {
-        availableForchallengeQuery.query.bool.should[0].bool.must.push({
-          term: {
-            'sport.keyword': {
-              value: selectedSport,
-            },
-          },
-        });
-        availableForchallengeQuery.query.bool.should[0].bool.must.push({
-          term: {
-            'sport_type.keyword': {
-              value: sportType,
-            },
-          },
-        });
-        availableForchallengeQuery.query.bool.should[1].bool.must[1].nested.query.bool.must.push(
-          {
-            term: {
-              'registered_sports.sport.keyword': {
-                value: selectedSport,
-              },
-            },
-          },
-        );
-        availableForchallengeQuery.query.bool.should[1].bool.must[1].nested.query.bool.must.push(
-          {
-            term: {
-              'registered_sports.sport_type.keyword': {
-                value: sportType,
-              },
-            },
-          },
-        );
-      }
-*/
-      // Looking Challengee query
-
-      // Hiring player query
-
-      const recruitingPlayersQuery = {
-        size: defaultPageSize,
-        query: {
-          bool: {
-            must: [{match: {hiringPlayers: 1}}],
-          },
-        },
-      };
-
-      if (location !== strings.worldTitleText) {
-        recruitingPlayersQuery.query.bool.must.push({
-          multi_match: {
-            query: location,
-            fields: ['city', 'country', 'state', 'venue.address'],
-          },
-        });
-      }
-      if (selectedSport !== strings.allType) {
-        recruitingPlayersQuery.query.bool.must.push({
-          term: {
-            'sport.keyword': {
-              value: selectedSport,
-            },
-          },
-        });
-        recruitingPlayersQuery.query.bool.must.push({
-          term: {
-            'sport_type.keyword': {
-              value: sportType,
-            },
-          },
-        });
-      }
-      // Hiring player query
-
-      // Looking team query
-      const lookingQuery = {
-        size: defaultPageSize,
-        query: {
-          bool: {
-            must: [
-              {
-                nested: {
-                  path: 'registered_sports',
-                  query: {
-                    bool: {
-                      must: [
-                        {
-                          match: {
-                            'registered_sports.lookingForTeamClub': true,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        },
-      };
-
-      if (location !== strings.worldTitleText) {
-        lookingQuery.query.bool.must.push({
-          multi_match: {
-            query: `${location}`,
-            fields: ['city', 'country', 'state'],
-          },
-        });
-      }
-      if (selectedSport !== strings.allType) {
-        lookingQuery.query.bool.must[0].nested.query.bool.must.push({
-          term: {
-            'registered_sports.sport.keyword': {
-              value: selectedSport,
-            },
-          },
-        });
-        lookingQuery.query.bool.must[0].nested.query.bool.must.push({
-          term: {
-            'registered_sports.sport_type.keyword': {
-              value: sportType,
-            },
-          },
-        });
-      }
-
-      // Referee query
-      const refereeQuery = {
-        size: defaultPageSize,
-        query: {
-          bool: {
-            must: [
-              {
-                nested: {
-                  path: 'referee_data',
-                  query: {
-                    bool: {must: [{term: {'referee_data.is_published': true}}]},
-                  },
-                },
-              },
-            ],
-          },
-        },
-      };
-
-      if (location !== strings.worldTitleText) {
-        refereeQuery.query.bool.must.push({
-          multi_match: {
-            query: `${location}`,
-            fields: ['city', 'country', 'state'],
-          },
-        });
-      }
-      if (selectedSport !== strings.allType) {
-        refereeQuery.query.bool.must[0].nested.query.bool.must.push({
-          term: {
-            'referee_data.sport.keyword': {
-              value: selectedSport,
-            },
-          },
-        });
-      }
-      // Scorekeeper query
-      const scorekeeperQuery = {
-        size: defaultPageSize,
-        query: {
-          bool: {
-            must: [
-              {
-                nested: {
-                  path: 'scorekeeper_data',
-                  query: {
-                    bool: {
-                      must: [{term: {'scorekeeper_data.is_published': true}}],
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        },
-      };
-      if (location !== strings.worldTitleText) {
-        scorekeeperQuery.query.bool.must.push({
-          multi_match: {
-            query: `${location.toLowerCase()}`,
-            fields: ['city', 'country', 'state'],
-          },
-        });
-      }
-      if (selectedSport !== strings.allType) {
-        scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
-          term: {
-            'scorekeeper_data.sport.keyword': {
-              value: selectedSport,
-            },
-          },
-        });
-      }
-      getGameIndex(recentMatchQuery).then((games) => {
-        Utility.getGamesList(games).then((gamedata) => {
-          if (games?.length > 0) {
-            setRecentMatch(gamedata);
-          } else {
-            setRecentMatch([]);
-          }
-        });
-      });
-
-      getGameIndex(upcomingMatchQuery).then((games) => {
-        Utility.getGamesList(games).then((gamedata) => {
-          if (games?.length > 0) {
-            setUpcomingMatch(gamedata);
-          } else {
-            setUpcomingMatch([]);
-          }
-        });
-      });
-
-      // getEntityIndex(availableForchallengeQuery).then((entity) => {
-      //   setChallengeeMatch(entity);
-      // });
-      if (authContext.entity.role === Verbs.entityTypeUser) {
-        getUserIndex(playerAvailableForchallengeQuery).then((players) => {
-          setChallengeeMatch(players);
-        });
-      } else if (authContext.entity.role === Verbs.entityTypeTeam) {
-        getGroupIndex(teamAvailableForchallengeQuery).then((teams) => {
-          setChallengeeMatch(teams);
-        });
-      }
-
-      getGroupIndex(recruitingPlayersQuery).then((teams) => {
-        setHiringPlayers(teams);
-      });
-
-      getUserIndex(lookingQuery).then((players) => {
-        setLookingTeam(players);
-      });
-      getUserIndex(refereeQuery).then((res) => {
-        setReferees([...res]);
-      });
-      getUserIndex(scorekeeperQuery).then((res) => {
-        setScorekeepers([...res]);
-      });
-
-      // });
+  const editSportName = (line) => {
+    const words = line?.split(' ');
+    if (words?.length >= 2) {
+      const secondWord = words[1];
+      const truncatedSecondWord = secondWord.substring(0, 3);
+      const modifiedSecondWord = `${truncatedSecondWord}...`;
+      words[1] = modifiedSecondWord;
     }
-  }, [authContext, isFocused, location, selectedSport, sportType]);
+    return words?.join(' ');
+  };
 
-  const sportsListView = useCallback(
+  const renderSportName = useCallback(
+    (item) => {
+      let sportName = '';
+
+      if (item.sport === strings.allType) {
+        sportName = strings.allType;
+      } else if (item.sport === strings.orText) {
+        sportName = strings.orText;
+      } else if (item.sport === strings.editType) {
+        sportName = strings.editType;
+      } else {
+        sportName = editSportName(Utility.getSportName(item, authContext));
+      }
+      return sportName;
+    },
+    [authContext],
+  );
+
+  const renderImageforSport = useCallback(
+    (item) => {
+      if (item.sport === strings.allType) {
+        return (
+          <FastImage
+            source={images.allSportIcon}
+            style={{height: 25, width: 25, marginBottom: 10, marginTop: 5}}
+          />
+        );
+      }
+      if (item.sport === strings.editType) {
+        return (
+          <FastImage
+            source={images.editIconHome}
+            style={{height: 40, width: 40}}
+          />
+        );
+      }
+      return (
+        <FastImage
+          source={{
+            uri: `${image_base_url}${
+              getSportDetails(item.sport, item.sport_type, authContext.sports)
+                .sport_image
+            }`,
+          }}
+          style={{
+            height: 40,
+            width: 40,
+          }}
+        />
+      );
+    },
+    [authContext.sports, image_base_url],
+  );
+
+  const navigateToRefreeScreen = () => {
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      const data = getDataForNextScreen(
+        'teamData',
+        filters,
+        location,
+        selectedLocationOption,
+        authContext,
+      );
+
+      navigation.navigate('RefereesListScreen', {
+        filters: {
+          location: data.location,
+          locationOption: data.locationOption,
+        },
+        teamSportData: data.teamSportData,
+      });
+    } else {
+      const data = getDataForNextScreen(
+        'sportData',
+        filters,
+        location,
+        selectedLocationOption,
+        authContext,
+      );
+      navigation.navigate('RefereesListScreen', {
+        filters: data,
+      });
+    }
+  };
+
+  const navigateToScoreKeeper = () => {
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      const data = getDataForNextScreen(
+        Verbs.TEAM_DATA,
+        filters,
+        location,
+        selectedLocationOption,
+        authContext,
+      );
+      navigation.navigate('ScorekeeperListScreen', {
+        filters: {
+          location: data.location,
+          locationOption: data.locationOption,
+        },
+        teamSportData: data.teamSportData,
+      });
+    } else {
+      const data = getDataForNextScreen(
+        Verbs.SPORT_DATA,
+        filters,
+        location,
+        selectedLocationOption,
+        authContext,
+      );
+      navigation.navigate('ScorekeeperListScreen', {
+        filters: data,
+      });
+    }
+  };
+
+  const handleTileClick = (item) => {
+    if (item.title === strings.bookRefreesHomeTile) {
+      navigateToRefreeScreen();
+    }
+    if (item.title === strings.bookSckorekeeperHomeTile) {
+      navigateToScoreKeeper();
+    }
+    if (item.title === strings.addTeamClub) {
+      setBottomSheet(true);
+    }
+    if (item.title === strings.createevents) {
+      navigation.navigate('Schedule', {
+        screen: 'CreateEventScreen',
+        params: {
+          comeName: 'HomeScreen',
+        },
+      });
+    }
+    if (item.title === strings.inviteMemberClub) {
+      navigation.navigate('InviteMembersBySearchScreen');
+    }
+  };
+
+  const SportsListView = useCallback(
     ({item, index}) => (
-      <Text
-        style={
-          selectedSport === item.sport && sportType === item.sport_type
-            ? [
-                styles.sportName,
-                {color: colors.themeColor, fontFamily: fonts.RBlack},
-              ]
-            : styles.sportName
-        }
+      <Pressable
         onPress={() => {
           refContainer.current.scrollToIndex({
             animated: true,
             index,
-            viewPosition: 0.8,
+            viewPosition: 0.3,
           });
-          if (item.sport === strings.moreText) {
-            setTimeout(() => {
-              setSettingPopup(true);
-            }, 100);
-            // navigation.navigate('SportSettingScreen', {
-            //   sports,
-            // });
+          if (item.sport === strings.editType) {
+            // setTimeout(() => {
+            //   setSettingPopup(true);
+            // }, 100);
           } else {
             setSelectedSport(item.sport);
             setSportType(item.sport_type);
@@ -802,260 +486,43 @@ export default function LocalHomeScreen({navigation, route}) {
               sport_type: item.sport_type,
             });
           }
+        }}
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.whiteColor,
+          borderBottomWidth:
+            selectedSport === item.sport && sportType === item.sport_type
+              ? 3
+              : 3,
+          borderBottomColor:
+            selectedSport === item.sport && sportType === item.sport_type
+              ? colors.themeColor
+              : colors.whiteColor,
+          marginHorizontal: 3,
         }}>
-        {item.sport === strings.allType
-          ? strings.allType
-          : item.sport === strings.moreText
-          ? strings.moreText
-          : Utility.getSportName(item, authContext)}
-      </Text>
-    ),
-    [authContext, filters, selectedSport, sportType],
-  );
+        {renderImageforSport(item)}
 
-  const onShortPress = useCallback(
-    ({index}) => {
-      navigation.navigate('ShortsPlayScreen', {
-        currentPage: index + 1,
-        shorts: shortsList,
-        caller_id: authContext?.entity?.uid,
-      });
-    },
-    [authContext?.entity?.uid, navigation, shortsList],
-  );
-
-  const shortsListView = useCallback(
-    ({item, index}) => (
-      <ShortsCard
-        cardItem={item}
-        onPress={({cardItem}) => onShortPress({index, cardItem})}
-      />
+        <Text
+          style={
+            selectedSport === item.sport && sportType === item.sport_type
+              ? [
+                  styles.sportName,
+                  {
+                    color: colors.themeColor,
+                    fontFamily: fonts.RBold,
+                  },
+                ]
+              : styles.sportName
+          }>
+          {renderSportName(item)}
+        </Text>
+      </Pressable>
     ),
-    [onShortPress],
+    [selectedSport, filters, renderImageforSport, renderSportName, sportType],
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
-  const renderRecentMatchItems = useCallback(
-    ({item}) => (
-      <View style={{marginBottom: 15}}>
-        <TCRecentMatchCard
-          data={item}
-          cardWidth={'92%'}
-          onPress={() => {
-            const sportName = Utility.getSportName(item, authContext);
-            const routeName = getGameHomeScreen(sportName);
-            if (routeName) navigation.push(routeName, {gameId: item?.game_id});
-          }}
-        />
-      </View>
-    ),
-    [],
-  );
-
-  const renderGameItems = useCallback(
-    ({item}) => (
-      <View style={{marginBottom: 15}}>
-        <TCUpcomingMatchCard
-          data={item}
-          cardWidth={'92%'}
-          onPress={() => {
-            console.log('Data sport obj:=>', item);
-            const sportName = Utility.getSportName(item, authContext);
-            const routeName = getGameHomeScreen(sportName);
-            if (routeName) navigation.push(routeName, {gameId: item?.game_id});
-          }}
-        />
-      </View>
-    ),
-    [],
-  );
-
-  const renderChallengerItems = useCallback(
-    ({item}) => (
-      <View
-        style={{
-          marginBottom: 15,
-          flex: 1,
-          backgroundColor: colors.whiteColor,
-        }}>
-        <TCChallengerCard
-          data={item}
-          entityType={item.entity_type}
-          selectedSport={selectedSport}
-          sportType={sportType}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
-          }}
-        />
-      </View>
-    ),
-    [navigation, selectedSport, sportType],
-  );
-
-  const renderHiringPlayersItems = useCallback(
-    ({item}) => (
-      <View style={{marginBottom: 15, backgroundColor: colors.whiteColor}}>
-        <TCHiringPlayersCard
-          data={item}
-          entityType={item.entity_type}
-          selectedSport={selectedSport}
-          sportType={sportType}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
-          }}
-        />
-      </View>
-    ),
-    [navigation, selectedSport, sportType],
-  );
-
-  const renderEntityListView = useCallback(
-    ({item}) => (
-      <View style={{marginBottom: 15}}>
-        <TCEntityView
-          sportIcon={getSportIcon(Verbs.entityTypePlayer, item)}
-          data={item}
-          showStar={true}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
-          }}
-        />
-      </View>
-    ),
-    [],
-  );
-
-  const renderRefereeListView = useCallback(
-    ({item}) => (
-      <View style={{marginBottom: 15}}>
-        <TCEntityView
-          sportIcon={getSportIcon(Verbs.entityTypeReferee, item)}
-          data={item}
-          showStar={true}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
-          }}
-        />
-      </View>
-    ),
-    [],
-  );
-
-  const renderScorekeeperListView = useCallback(
-    ({item}) => (
-      <View style={{marginBottom: 15}}>
-        <TCEntityView
-          sportIcon={getSportIcon(Verbs.entityTypeScorekeeper, item)}
-          data={item}
-          showStar={true}
-          onPress={() => {
-            navigation.navigate('HomeScreen', {
-              uid: ['user', 'player']?.includes(item?.entity_type)
-                ? item?.user_id
-                : item?.group_id,
-              role: ['user', 'player']?.includes(item?.entity_type)
-                ? 'user'
-                : item.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
-            });
-          }}
-        />
-      </View>
-    ),
-    [],
-  );
-
-  const getSportIcon = useCallback(
-    (type, data) => {
-      if (type === Verbs.entityTypePlayer) {
-        if (selectedSport !== strings.all) {
-          const pSport = data.registered_sports.filter(
-            (obj) =>
-              obj.sport === selectedSport && obj.sport_type === sportType,
-          );
-          if (pSport.length > 0) {
-            return {uri: global.sport_icon_baseurl + pSport?.[0]?.sport_image};
-          }
-
-          return images.soccerImage;
-        }
-      }
-      if (type === Verbs.entityTypeReferee) {
-        if (selectedSport !== strings.all) {
-          const pSport = data.referee_data.filter(
-            (obj) =>
-              obj.sport === selectedSport && obj.sport_type === sportType,
-          );
-          if (pSport.length > 0) {
-            return {uri: global.sport_icon_baseurl + pSport?.[0]?.sport_image};
-          }
-
-          return images.soccerImage;
-        }
-      }
-      if (type === Verbs.entityTypeScorekeeper) {
-        if (selectedSport !== strings.all) {
-          const pSport = data.scorekeeper_data.filter(
-            (obj) =>
-              obj.sport === selectedSport && obj.sport_type === sportType,
-          );
-
-          if (pSport.length > 0) {
-            return {uri: global.sport_icon_baseurl + pSport?.[0]?.sport_image};
-          }
-
-          return images.soccerImage;
-        }
-      }
-    },
-    [selectedSport, sportType],
-  );
-
-  const renderSeparator = () => (
-    <View
-      style={{
-        height: 50,
-        width: 15,
-      }}
-    />
-  );
 
   const getLocation = () => {
     setloading(true);
@@ -1086,54 +553,6 @@ export default function LocalHomeScreen({navigation, route}) {
       });
   };
 
-  const renderImageProgress = useMemo(() => <ImageProgress />, []);
-
-  const renderSportsView = useCallback(
-    ({item}) =>
-      item.sport !== strings.allType && (
-        <TouchableOpacity
-          onPress={() => {
-            const array = sports.filter((obj) => {
-              if (obj.sport === item.sport) {
-                return false;
-              }
-              return true;
-            });
-            const newArray = [item, ...array];
-            setSports([...newArray]);
-            Utility.setStorage('sportSetting', sports).then(() => {
-              console.log('data save');
-              setSettingPopup(false);
-              setSelectedSport(item.sport);
-              setSportType(item.sport_type);
-              refContainer.current.scrollToIndex({
-                animated: true,
-                index: 1,
-                viewPosition: 0.8,
-              });
-            });
-          }}>
-          <View style={styles.sportsBackgroundView}>
-            <View style={{flexDirection: 'row'}}>
-              <FastImage
-                resizeMode={'contain'}
-                source={{uri: `${image_base_url}${item.player_image}`}}
-                style={styles.sportsIcon}
-              />
-              <Text style={styles.sportNameTitle}>
-                {Utility.convertFirstCharacterAllWordsToUppercase(item.sport)}
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-      ),
-    [authContext, image_base_url, sports],
-  );
-  const getBack = () => {
-    console.log('called getback');
-    setSettingPopup(true);
-  };
-
   const handleSetLocationOptions = (locations) => {
     if ('address' in locations) {
       setLocation(locations?.address);
@@ -1143,191 +562,117 @@ export default function LocalHomeScreen({navigation, route}) {
     setLocationSelectedViaModal(true);
     setLocationPopup(false);
   };
-  const getLocationOption = () => {
-    if (selectedLocationOption === locationType.WORLD) {
-      return 2;
-    }
-    if (selectedLocationOption === locationType.HOME_CITY) {
-      return 1;
-    }
-    if (selectedLocationOption === locationType.CURRENT_LOCATION) {
-      return 0;
-    }
-    if (selectedLocationOption === locationType.SEARCH_CITY) {
-      return 3;
-    }
-  };
-  const getSortDataForNextScreen = () => {
-    const data = {
-      sport: filters.sport === strings.all ? strings.allSport : filters.sport,
-      sport_type:
-        filters.sport_type === strings.all
-          ? strings.allSport
-          : filters.sport_type,
-      sport_name: Utility.getSportName(filters, authContext),
-      location,
-      locationOption: getLocationOption(),
-    };
-    return data;
-  };
-  const getNextScreenTeamData = () => {
-    if (authContext.entity.role === Verbs.entityTypeTeam) {
-      const data = {
-        teamSportData: {
-          sport:
-            filters.sport === strings.all
-              ? authContext.entity.obj.sport
-              : filters.sport,
-          sport_type:
-            filters.sport_type === strings.all
-              ? authContext.entity.obj.sport_type
-              : filters.sport_type,
-          sport_name:
-            filters.sport_type === strings.all
-              ? Utility.getSportName(authContext.entity.obj, authContext)
-              : filters.sport_name,
+
+  const SportList = () => (
+    <FlatList
+      ref={refContainer}
+      style={{
+        height: 74,
+        backgroundColor: colors.whiteColor,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: colors.veryLightGray,
+      }}
+      maxToRenderPerBatch={10}
+      initialNumToRender={10}
+      windowSize={21}
+      horizontal={true}
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+      data={[
+        ...[
+          {
+            sport: strings.allType,
+            sport_type: strings.allType,
+            icon: images.allSportIcon,
+          },
+        ],
+        ...sports.slice(0, 12),
+        {
+          sport: strings.editType,
+          sport_type: strings.editType,
         },
-        location,
-        locationOption: getLocationOption(),
-      };
-      return data;
+      ]}
+      keyExtractor={keyExtractor}
+      renderItem={({item, index}) => (
+        <SportsListView item={item} index={index} />
+      )}
+      onScrollToIndexFailed={(info) => {
+        // eslint-disable-next-line no-promise-executor-return
+        const wait = new Promise((resolve) => setTimeout(resolve, 500));
+        wait.then(() => {
+          refContainer.current.scrollToIndex({
+            animated: true,
+            index: info.index,
+          });
+        });
+      }}
+    />
+  );
+
+  const RenderSportsListView = () => {
+    if (authContext.entity.role === Verbs.entityTypeGame) {
+      return SportList();
     }
-    const data = {
-      sport: filters.sport === strings.all ? strings.allSport : filters.sport,
-      sport_type:
-        filters.sport_type === strings.all
-          ? strings.allSport
-          : filters.sport_type,
-      sport_name:
-        filters.sport_type === strings.all
-          ? Utility.getSportName(authContext.entity.obj, authContext)
-          : filters.sport_name,
-      location,
-      locationOption: getLocationOption(),
-    };
-    console.log('data1', data);
-    return data;
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam ||
+      (authContext.entity.role === Verbs.entityTypeClub &&
+        authContext.entity.obj.sports.length === 1)
+    ) {
+      return null;
+    }
+
+    return SportList();
   };
-  const getNextScreenPlayerData = () => {
-    const data = {
-      sport: filters.sport === strings.all ? strings.allSport : filters.sport,
-      sport_type:
-        filters.sport_type === strings.all
-          ? strings.allSport
-          : filters.sport_type,
-      sport_name:
-        filters.sport_type === strings.all
-          ? Utility.getSportName(authContext.entity.obj, authContext)
-          : filters.sport_name,
-      location,
-      locationOption: getLocationOption(),
-    };
-    return data;
+
+  const onRegisterAsTilePress = (item) => {
+    setVisibleSportsModal(true);
+    setSelectedMenuOptionType(item?.enityType);
+    setNavigationOptions({
+      screenName: item?.screenName,
+      data: null,
+    });
   };
+
+  const getItemLayout = (d, index) => ({
+    length: ITEM_HEIGHT,
+    offset: ITEM_HEIGHT * index,
+    index,
+  });
+
+  const setTeamModal = (val) => {
+    setVisibleSportsModalForTeam(val);
+  };
+
+  const setClubModal = (val) => {
+    setVisibleSportsModalForClub(val);
+  };
+
   return (
-    <View style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
       <View
         pointerEvents={pointEvent}
-        style={{opacity: authContext.isAccountDeactivated ? 0.5 : 1}}>
-        <Header
-          leftComponent={
-            <View>
-              <FastImage
-                source={images.tc_message_top_icon}
-                resizeMode={'contain'}
-                style={styles.backImageStyle}
-              />
-            </View>
-          }
-          showBackgroundColor={true}
-          centerComponent={
-            <TouchableOpacity
-              style={styles.titleHeaderView}
-              onPress={() => {
-                setLocationPopup(true);
-              }}
-              hitSlop={getHitSlop(15)}>
-              <Text style={styles.headerTitle}>
-                {location?.charAt?.(0)?.toUpperCase() + location?.slice(1)}
-              </Text>
-              <Image source={images.home_gps} style={styles.gpsIconStyle} />
-            </TouchableOpacity>
-          }
-          rightComponent={
-            <View style={styles.rightHeaderView}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('EntitySearchScreen', {
-                    sportsList: customSports,
-                    sportsArray: customSports,
-                  });
-                }}>
-                <Image
-                  source={images.home_search}
-                  style={styles.townsCupIcon}
-                />
-              </TouchableOpacity>
-            </View>
-          }
+        style={{
+          opacity: authContext.isAccountDeactivated ? 0.5 : 1,
+        }}>
+        {/* screen Header */}
+
+        <LocalHomeHeader
+          setShowSwitchAccountModal={() => setShowSwitchAccountModal(true)}
+          setLocationpopup={() => setLocationPopup(true)}
+          location={location}
+          notificationCount={notificationCount}
+          customSports={customSports}
         />
+
         <View style={styles.separateLine} testID="local-home-screen" />
-        <View style={styles.sportsListView}>
-          <FlatList
-            ref={refContainer}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            data={[
-              ...[
-                {
-                  sport: strings.allType,
-                  sport_type: strings.allType,
-                },
-              ],
-              ...sports.slice(0, 12),
-            ]}
-            keyExtractor={keyExtractor}
-            renderItem={sportsListView}
-            initialNumToRender={sports?.length}
-            onScrollToIndexFailed={(info) => {
-              const wait = new Promise((resolve) => setTimeout(resolve, 500));
-              wait.then(() => {
-                refContainer.current.scrollToIndex({
-                  animated: true,
-                  index: info.index,
-                });
-              });
-            }}
-            style={{
-              width: '90%',
-            }}
-          />
-          {sports.length > 12 && (
-            <Text
-              style={
-                selectedSport === strings.moreText
-                  ? [
-                      styles.sportName,
-                      {
-                        color: colors.themeColor,
-                        fontFamily: fonts.RBlack,
-                        marginLeft: 0,
-                      },
-                    ]
-                  : [styles.sportName, {marginLeft: 0}]
-              }
-              onPress={() => {
-                setTimeout(() => {
-                  setSettingPopup(true);
-                }, 100);
-              }}>
-              {strings.moreText}
-            </Text>
-          )}
-        </View>
+
+        {/* sport list  */}
+        {RenderSportsListView()}
       </View>
 
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
+
       {loading ? (
         <LocalHomeScreenShimmer />
       ) : (
@@ -1337,374 +682,49 @@ export default function LocalHomeScreen({navigation, route}) {
             flex: 1,
             opacity: authContext.isAccountDeactivated ? 0.8 : 1,
           }}>
-          <ScrollView>
-            <View>
-              <TCTitleWithArrow
-                isDisabled={!(shortsList?.length > 0)}
-                title={strings.shortsTitle}
-                showArrow={true}
-                viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() => onShortPress(0, shortsList[0])}
-              />
-              <FlatList
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                data={shortsList}
-                scrollEnabled={shortsList.length > 0}
-                keyExtractor={keyExtractor}
-                renderItem={shortsListView}
-                ListEmptyComponent={() => (
-                  <TCShortsPlaceholder
-                    onPress={() => {
-                      navigation.navigate('LoneStack', {
-                        screen: 'WritePostScreen',
-                        params: {
-                          comeFrom: 'LocalHomeScreen',
-                          postData: authContext.entity.obj,
-                          selectedImageList: [],
-                        },
-                      });
-                    }}
-                  />
-                )}
-              />
-            </View>
+          {/* Flatlist  */}
 
-            <View>
-              <TCTitleWithArrow
-                isDisabled={!(recentMatch?.length > 0)}
-                title={strings.recentMatchesTitle}
-                showArrow={true}
-                viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() => {
-                  if (authContext.entity.role === Verbs.entityTypeTeam) {
-                    const data = getNextScreenTeamData();
-                    navigation.navigate('RecentMatchScreen', {
-                      filters: {
-                        location: data.location,
-                        locationOption: data.locationOption,
-                      },
-                      teamSportData: data.teamSportData,
-                    });
-                  } else {
-                    const data = getSortDataForNextScreen();
-                    navigation.navigate('RecentMatchScreen', {
-                      filters: data,
-                    });
-                  }
-                }}
+          <FlatList
+            data={localHomeMenu}
+            keyExtractor={(item) => item.index.toString()}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled
+            maxToRenderPerBatch={10}
+            initialNumToRender={10}
+            windowSize={21}
+            ListHeaderComponent={({index}) => (
+              <TopTileSection
+                key={index}
+                handleTileClick={handleTileClick}
+                visibleSportsModalForClub={visibleSportsModalForClub}
+                visibleSportsModalForTeam={visibleSportsModalForTeam}
+                onRegisterAsTilePress={onRegisterAsTilePress}
+                setSelectedMenuOptionType={(val) =>
+                  setSelectedMenuOptionType(val)
+                }
+                setTeamModal={setTeamModal}
+                setClubModal={setClubModal}
+                setNavigationOptions={(obj) => setNavigationOptions(obj)}
               />
-              <Carousel
-                data={recentMatch} // recentMatch
-                scrollEnabled={recentMatch?.length > 0}
-                renderItem={renderRecentMatchItems}
-                inactiveSlideScale={1}
-                inactiveSlideOpacity={1}
-                sliderWidth={widthPercentageToDP(100)}
-                itemWidth={widthPercentageToDP(94)}
-                ListEmptyComponent={() => (
-                  <TCGameCardPlaceholder
-                    data={gameData}
-                    cardWidth={'94%'}
-                    placeholderText={strings.recentMatchPlaceholderText}
-                    onStartPress={async () => {
-                      console.log('Query');
-                    }}
-                  />
-                )}
-              />
-            </View>
-
-            <View>
-              <TCTitleWithArrow
-                isDisabled={!(upcomingMatch?.length > 0)}
-                title={strings.upcomingMatchesTitle}
-                showArrow={true}
-                viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() => {
-                  if (authContext.entity.role === Verbs.entityTypeTeam) {
-                    const data = getNextScreenTeamData();
-                    navigation.navigate('UpcomingMatchScreen', {
-                      filters: {
-                        location: data.location,
-                        locationOption: data.locationOption,
-                      },
-                      teamSportData: data.teamSportData,
-                    });
-                  } else {
-                    const data = getSortDataForNextScreen();
-                    navigation.navigate('UpcomingMatchScreen', {
-                      filters: data,
-                    });
-                  }
-                }}
-              />
-              <Carousel
-                data={upcomingMatch}
-                scrollEnabled={upcomingMatch?.length > 0}
-                renderItem={renderGameItems}
-                inactiveSlideScale={1}
-                inactiveSlideOpacity={1}
-                sliderWidth={widthPercentageToDP(100)}
-                itemWidth={widthPercentageToDP(94)}
-                ListEmptyComponent={() => (
-                  <TCGameCardPlaceholder
-                    data={gameData}
-                    cardWidth={'94%'}
-                    placeholderText={strings.upcomingMatchPlaceholderText}
-                    onStartPress={() => Alert.alert(strings.okTitleText)}
-                  />
-                )}
-              />
-            </View>
-            {((authContext.entity.role === Verbs.entityTypeUser &&
-              selectedSport === strings.all) ||
-              (authContext.entity.role === Verbs.entityTypeUser &&
-                sportType === Verbs.singleSport)) && (
-              <View>
-                <TCTitleWithArrow
-                  isDisabled={!(challengeeMatch?.length > 0)}
-                  title={strings.playersAvailableforChallenge}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() => {
-                    const data = getNextScreenPlayerData();
-
-                    navigation.navigate('LookingForChallengeScreen', {
-                      filters: data,
-                      registerFavSports: getSingleSportList(sports),
-                    });
-                  }}
-                />
-
-                <FlatList
-                  horizontal={true}
-                  scrollEnabled={challengeeMatch?.length > 0}
-                  showsHorizontalScrollIndicator={false}
-                  data={challengeeMatch}
-                  ItemSeparatorComponent={renderSeparator}
-                  keyExtractor={keyExtractor}
-                  renderItem={renderChallengerItems}
-                  style={{paddingLeft: 15}}
-                  ListEmptyComponent={() => (
-                    <TCTeamsCardPlaceholder
-                      data={gameData}
-                      cardWidth={'94%'}
-                      placeholderText={strings.noPlayerTeamText}
-                    />
-                  )}
-                />
-              </View>
             )}
-            {((authContext.entity.role === Verbs.entityTypeTeam &&
-              selectedSport === strings.all) ||
-              (authContext.entity.role === Verbs.entityTypeTeam &&
-                sportType !== Verbs.singleSport)) && (
-              <View>
-                <TCTitleWithArrow
-                  isDisabled={!(challengeeMatch?.length > 0)}
-                  title={strings.teamAvailableforChallenge}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() => {
-                    const data = getNextScreenTeamData();
-
-                    navigation.navigate('LookingForChallengeScreen', {
-                      filters: {
-                        location: data.location,
-                        locationOption: data.locationOption,
-                      },
-                      teamSportData: data.teamSportData,
-                      registerFavSports: sports,
-                    });
-                  }}
-                />
-
-                <FlatList
-                  horizontal={true}
-                  scrollEnabled={challengeeMatch?.length > 0}
-                  showsHorizontalScrollIndicator={false}
-                  data={challengeeMatch}
-                  ItemSeparatorComponent={renderSeparator}
-                  keyExtractor={keyExtractor}
-                  renderItem={renderChallengerItems}
-                  style={{paddingLeft: 15}}
-                  ListEmptyComponent={() => (
-                    <TCTeamsCardPlaceholder
-                      data={gameData}
-                      cardWidth={'94%'}
-                      placeholderText={strings.noPlayerTeamText}
-                    />
-                  )}
-                />
-              </View>
+            renderItem={({item, index}) => (
+              <LocalHomeMenuItems
+                key={index}
+                item={item}
+                sports={sports}
+                location={location}
+                filter={filters}
+                selectedLocationOption={selectedLocationOption}
+                navigateToRefreeScreen={navigateToRefreeScreen}
+                navigateToScoreKeeper={navigateToScoreKeeper}
+                selectedSport={selectedSport}
+                sportType={sportType}
+                owners={owners}
+                allUserData={allUserData}
+              />
             )}
-
-            <View>
-              <TCTitleWithArrow
-                title={strings.refereesTitle}
-                showArrow={true}
-                viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() => {
-                  if (authContext.entity.role === Verbs.entityTypeTeam) {
-                    const data = getNextScreenTeamData();
-                    navigation.navigate('RefereesListScreen', {
-                      filters: {
-                        location: data.location,
-                        locationOption: data.locationOption,
-                      },
-                      teamSportData: data.teamSportData,
-                    });
-                  } else {
-                    const data = getSortDataForNextScreen();
-                    navigation.navigate('RefereesListScreen', {
-                      filters: data,
-                    });
-                  }
-                }}
-              />
-              <FlatList
-                horizontal={true}
-                scrollEnabled={referees?.length > 0}
-                showsHorizontalScrollIndicator={false}
-                data={referees}
-                ItemSeparatorComponent={renderSeparator}
-                keyExtractor={keyExtractor}
-                renderItem={renderRefereeListView}
-                style={{marginLeft: 15}}
-                ListEmptyComponent={() => (
-                  <TCEntityListPlaceholder
-                    cardWidth={'94%'}
-                    placeholderText={strings.refereesPlaceholderText}
-                  />
-                )}
-              />
-            </View>
-
-            <View>
-              <TCTitleWithArrow
-                title={strings.scorekeeperTitle}
-                showArrow={true}
-                viewStyle={{marginTop: 20, marginBottom: 15}}
-                onPress={() => {
-                  if (authContext.entity.role === Verbs.entityTypeTeam) {
-                    const data = getNextScreenTeamData();
-                    navigation.navigate('ScorekeeperListScreen', {
-                      filters: {
-                        location: data.location,
-                        locationOption: data.locationOption,
-                      },
-                      teamSportData: data.teamSportData,
-                    });
-                  } else {
-                    const data = getSortDataForNextScreen();
-                    navigation.navigate('ScorekeeperListScreen', {
-                      filters: data,
-                    });
-                  }
-                }}
-              />
-              <FlatList
-                horizontal={true}
-                scrollEnabled={scorekeepers?.length > 0}
-                showsHorizontalScrollIndicator={false}
-                data={scorekeepers}
-                ItemSeparatorComponent={renderSeparator}
-                keyExtractor={keyExtractor}
-                renderItem={renderScorekeeperListView}
-                style={{marginLeft: 15}}
-                ListEmptyComponent={() => (
-                  <TCEntityListPlaceholder
-                    cardWidth={'94%'}
-                    placeholderText={strings.scorekeepersPlaceholderText}
-                  />
-                )}
-              />
-            </View>
-            {authContext.entity.role === Verbs.entityTypeUser && (
-              <View>
-                <TCTitleWithArrow
-                  isDisabled={!(hiringPlayers?.length > 0)}
-                  title={strings.hiringPlayerTitle}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() => {
-                    const data = getSortDataForNextScreen();
-                    navigation.navigate('RecruitingPlayerScreen', {
-                      filters: {
-                        ...data,
-                        // groupTeam: strings.teamstitle,
-                        // groupClub: strings.clubstitle,
-                        // groupLeague: strings.leaguesTitle,
-                      },
-                    });
-                  }}
-                />
-
-                <FlatList
-                  horizontal={true}
-                  scrollEnabled={hiringPlayers?.length > 0}
-                  showsHorizontalScrollIndicator={false}
-                  data={hiringPlayers}
-                  ItemSeparatorComponent={renderSeparator}
-                  keyExtractor={keyExtractor}
-                  renderItem={renderHiringPlayersItems}
-                  style={{paddingLeft: 15}}
-                  ListEmptyComponent={() => (
-                    <TCTeamsCardPlaceholder
-                      data={gameData}
-                      cardWidth={'94%'}
-                      placeholderText={strings.hiringPlayersPlaceholderText}
-                    />
-                  )}
-                />
-              </View>
-            )}
-            {(authContext.entity.role === Verbs.entityTypeTeam ||
-              authContext.entity.role === Verbs.entityTypeClub) && (
-              <View>
-                <TCTitleWithArrow
-                  isDisabled={!(lookingTeam?.length > 0)}
-                  title={strings.lookingForTeamTitle}
-                  showArrow={true}
-                  viewStyle={{marginTop: 20, marginBottom: 15}}
-                  onPress={() => {
-                    if (authContext.entity.role === Verbs.entityTypeTeam) {
-                      const data = getNextScreenTeamData();
-                      navigation.navigate('LookingTeamScreen', {
-                        filters: {
-                          location: data.location,
-                          locationOption: data.locationOption,
-                        },
-                        teamSportData: data.teamSportData,
-                      });
-                    } else {
-                      const data = getSortDataForNextScreen();
-                      navigation.navigate('LookingTeamScreen', {
-                        filters: data,
-                      });
-                    }
-                  }}
-                />
-                <FlatList
-                  horizontal={true}
-                  scrollEnabled={lookingTeam?.length > 0}
-                  showsHorizontalScrollIndicator={false}
-                  data={lookingTeam}
-                  ItemSeparatorComponent={renderSeparator}
-                  keyExtractor={keyExtractor}
-                  renderItem={renderEntityListView}
-                  style={{marginLeft: 15}}
-                  ListEmptyComponent={() => (
-                    <TCEntityListPlaceholder
-                      cardWidth={'94%'}
-                      placeholderText={strings.lookingTeamsPlaceholderText}
-                    />
-                  )}
-                />
-              </View>
-            )}
-          </ScrollView>
+            getItemLayout={getItemLayout}
+          />
         </View>
       )}
       <Modal
@@ -1790,12 +810,12 @@ export default function LocalHomeScreen({navigation, route}) {
                     styles.myCityText,
                     {color: colors.orangeGradientColor},
                   ]}>
-                  {strings.homeCityText}
+                  {strings.cityText}
                 </Text>
               </View>
             ) : (
               <View style={styles.backgroundView}>
-                <Text style={styles.myCityText}>{strings.homeCityText}</Text>
+                <Text style={styles.myCityText}>{strings.cityText}</Text>
               </View>
             )}
           </TouchableWithoutFeedback>
@@ -1881,119 +901,83 @@ export default function LocalHomeScreen({navigation, route}) {
               </Pressable>
             </>
           )}
-
-          {/* <Pressable
-            style={styles.sectionStyle}
-            onPress={() => {
-              setVisibleLocationModal(true);
-            }}>
-            <Text style={styles.searchText}>{strings.searchTitle}</Text>
-          </Pressable> */}
-        </View>
-      </Modal>
-      <Modal
-        onBackdropPress={() => setSettingPopup(false)}
-        isVisible={settingPopup}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={[
-            styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 50},
-          ]}>
-          <View style={styles.topHeaderContainer}>
-            <Pressable
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => {
-                setSettingPopup(false);
-              }}>
-              <Image source={images.crossImage} style={styles.closeButton} />
-            </Pressable>
-            <Text style={styles.moreText}>{strings.more}</Text>
-          </View>
-          <TCThinDivider width={'100%'} marginBottom={15} />
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={sports}
-            keyExtractor={keyExtractor}
-            renderItem={renderSportsView}
-            style={{
-              width: '100%',
-              alignContent: 'center',
-              marginBottom: 0,
-              paddingVertical: 0,
-            }}
-            ListFooterComponent={() => (
-              <TouchableOpacity
-                style={styles.addSportsView}
-                onPress={() => {
-                  // setSportsListPopup(true);
-                  setSettingPopup(false);
-                  navigation.navigate('AddOrDeleteSport', {
-                    sports: [...sports],
-                    pressBack: getBack,
-                  });
-                }}>
-                <Text style={styles.addSportsTitle}>
-                  {strings.addDeleteSports}
-                </Text>
-              </TouchableOpacity>
-            )}
-          />
         </View>
       </Modal>
 
-      {renderImageProgress}
-    </View>
+      {/* Edit Filter Modal */}
+
+      <EditFilterModal
+        visible={settingPopup}
+        onClose={() => setSettingPopup(false)}
+      />
+
+      {/* Sport List Modal */}
+
+      <SportsListModal
+        isVisible={visibleSportsModal}
+        closeList={() => setVisibleSportsModal(false)}
+        title={getTitleForRegister(selectedMenuOptionType)}
+        sportsList={sportsData}
+        onNext={(sport) => {
+          setVisibleSportsModal(false);
+
+          navigation.navigate('Account', {
+            screen: navigationOptions.screenName,
+            params: sport,
+          });
+        }}
+      />
+
+      {/* Switch Account Modal */}
+
+      <SwitchAccountModal
+        isVisible={showSwitchAccountModal}
+        closeModal={() => setShowSwitchAccountModal(false)}
+        onCreate={(option) => {
+          setShowSwitchAccountModal(false);
+          if (option === strings.team) {
+            setSelectedMenuOptionType(Verbs.entityTypeTeam);
+            setTimeout(() => setVisibleSportsModalForTeam(true), 1000);
+
+            setNavigationOptions({
+              screenName: 'CreateTeamForm1',
+            });
+          } else if (option === strings.club) {
+            setNavigationOptions({
+              screenName: 'CreateClubForm1',
+            });
+            setTimeout(() => setVisibleSportsModalForClub(true), 1000);
+          } else {
+            console.log({option});
+          }
+        }}
+      />
+
+      <BottomSheet
+        optionList={[strings.createTeamText, strings.addTeamClub]}
+        isVisible={showBottomSheet}
+        closeModal={() => setBottomSheet(false)}
+        onSelect={(option) => {
+          setBottomSheet(false);
+          if (option === strings.createTeamText) {
+            setTimeout(() => setVisibleSportsModalForTeam(true), 200);
+          }
+        }}
+        title={strings.create}
+      />
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  townsCupIcon: {
-    resizeMode: 'cover',
-    height: 25,
-    width: 25,
-    marginLeft: 10,
-  },
-  gpsIconStyle: {
-    resizeMode: 'cover',
-    height: 15,
-    width: 15,
-  },
-  titleHeaderView: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  rightHeaderView: {
-    flexDirection: 'row',
-  },
-  headerTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-  },
   sportName: {
-    fontSize: 16,
+    fontSize: 12,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     alignSelf: 'center',
     marginLeft: 15,
     marginRight: 15,
   },
-  sportsListView: {
-    flexDirection: 'row',
-    backgroundColor: colors.whiteColor,
-    borderBottomColor: colors.veryLightGray,
-    borderBottomWidth: 0.5,
-    alignItems: 'center',
-    height: 45,
-  },
+
   bottomPopupContainer: {
     paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     backgroundColor: colors.whiteColor,
@@ -2080,21 +1064,6 @@ const styles = StyleSheet.create({
     color: colors.userPostTimeColor,
   },
 
-  moreText: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: widthPercentageToDP('40%'),
-  },
-  closeButton: {
-    alignSelf: 'center',
-    width: 25,
-    height: 25,
-    resizeMode: 'contain',
-    left: 5,
-  },
   viewsContainer: {
     height: 60,
     justifyContent: 'space-between',
@@ -2127,68 +1096,10 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
   },
-  backImageStyle: {
-    height: 35,
-    width: 35,
-  },
+
   separateLine: {
     borderColor: colors.veryLightGray,
     borderWidth: 0.5,
-  },
-  // setting pop styles
-  sportsIcon: {
-    resizeMode: 'cover',
-    height: 40,
-    width: 40,
-    alignSelf: 'center',
-    marginLeft: 5,
-    marginRight: 15,
-  },
-
-  sportNameTitle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    alignSelf: 'center',
-    // margin: 15,
-  },
-  addSportsTitle: {
-    fontSize: 12,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
-    alignSelf: 'center',
-    // margin: 15,
-    paddingHorizontal: 10,
-  },
-  sportsBackgroundView: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 8,
-    elevation: 5,
-    flexDirection: 'row',
-    height: 40,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    width: widthPercentageToDP('86%'),
-    // alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 15,
-  },
-  addSportsView: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 5,
-    elevation: 5,
-    flexDirection: 'row',
-    height: 25,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 5},
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    marginTop: 10,
-    marginBottom: 10,
   },
 
   locationText: {
@@ -2200,10 +1111,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.veryLightGray,
-  },
-  topHeaderContainer: {
-    height: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
   },
 });

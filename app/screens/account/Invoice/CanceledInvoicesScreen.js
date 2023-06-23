@@ -1,6 +1,6 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable consistent-return */
-import React, {useState, useContext, useEffect, useCallback} from 'react';
+import React, {useState, useContext, useEffect, useCallback, memo} from 'react';
 import {
   View,
   StyleSheet,
@@ -11,6 +11,7 @@ import {
   Image,
   SafeAreaView,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 
 import moment from 'moment';
@@ -23,7 +24,6 @@ import {strings} from '../../../../Localization/translation';
 import CancelledInvoiceView from '../../../components/invoice/CancelledInvoiceView';
 import Verbs from '../../../Constants/Verbs';
 import colors from '../../../Constants/Colors';
-import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import {MonthData} from '../../../Constants/GeneralConstants';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import images from '../../../Constants/ImagePath';
@@ -33,7 +33,7 @@ import DateFilterModal from './DatefilterModal';
 import ScreenHeader from '../../../components/ScreenHeader';
 import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
 
-export default function CanceledInvoicesScreen({navigation, route}) {
+function CanceledInvoicesScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [from] = useState(route.params.from);
   const authContext = useContext(AuthContext);
@@ -67,6 +67,7 @@ export default function CanceledInvoicesScreen({navigation, route}) {
   const [totalInvoice, setTotalInvoice] = useState(0);
   const [selectedCurrency, setSelectedCurrency] = useState();
   const [visibleCurrencySheet, setVisibleCurrencySheet] = useState();
+  const [activeTab, setActiveTab] = useState(0);
 
   const tabChangePress = useCallback((changeTab) => {
     setTabNumber(changeTab.i);
@@ -207,6 +208,33 @@ export default function CanceledInvoicesScreen({navigation, route}) {
     },
     [currentRecordSet],
   );
+
+  const handleTabPress = (index) => {
+    setActiveTab(index);
+  };
+
+  // eslint-disable-next-line no-shadow
+  const ScrollableTabs = ({tabs}) => (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {tabs.map((tab, index) => (
+          <TouchableOpacity
+            key={index}
+            style={index === activeTab ? styles.activeTab : styles.tab}
+            onPress={() => handleTabPress(index)}>
+            <Text
+              style={index === activeTab ? styles.boldText : styles.tabText}>
+              {tab}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
+
+  const handleTabSelection = (index) => {
+    tabChangePress(index);
+  };
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -388,19 +416,7 @@ export default function CanceledInvoicesScreen({navigation, route}) {
           <View style={{flex: 1}}>
             {from === Verbs.INVOICERECEVIED ? (
               <View style={{backgroundColor: colors.whiteColor}}>
-                <TCScrollableProfileTabs
-                  tabItem={tabs}
-                  tabVerticalScroll={false}
-                  onChangeTab={tabChangePress}
-                  currentTab={tabNumber}
-                  bounces={false}
-                  customStyle={{
-                    paddingVertical: 0,
-                  }}
-                  tabStyle={{
-                    marginTop: -4,
-                  }}
-                />
+                <ScrollableTabs tabs={tabs} onSelectTab={handleTabSelection} />
               </View>
             ) : null}
             <FlatList
@@ -476,4 +492,26 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
+  tab: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  activeTab: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderBottomWidth: 3.5,
+    borderBottomColor: colors.orangeColorCard,
+  },
+  tabText: {
+    fontSize: 16,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  boldText: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.orangeColorCard,
+  },
 });
+
+export default memo(CanceledInvoicesScreen);

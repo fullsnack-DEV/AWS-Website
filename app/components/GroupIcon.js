@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
-import {View, StyleSheet, Image, Text} from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
@@ -40,13 +41,18 @@ const GroupIcon = ({
 
   return imageUrl ? (
     <View style={[styles.parent, containerStyle]}>
-      <Image
+      <FastImage
         source={typeof imageUrl === 'string' ? {uri: imageUrl} : imageUrl}
         style={styles.image}
+        resizeMode="contain"
       />
       {getPlaceholder().placeHolder ? (
         <View style={styles.placeHolder}>
-          <Image source={getPlaceholder().placeHolder} style={styles.image} />
+          <FastImage
+            source={getPlaceholder().placeHolder}
+            style={styles.image}
+            resizeMode="contain"
+          />
         </View>
       ) : null}
     </View>
@@ -63,7 +69,7 @@ const GroupIcon = ({
         },
         containerStyle,
       ]}>
-      <Image
+      <FastImage
         source={getPlaceholder().background}
         style={[
           styles.image,
@@ -72,6 +78,7 @@ const GroupIcon = ({
             ? grpImageStyle
             : {},
         ]}
+        resizeMode="contain"
       />
       {(entityType === Verbs.entityTypeClub ||
         entityType === Verbs.entityTypeTeam) &&
@@ -82,10 +89,13 @@ const GroupIcon = ({
           </Text>
         </View>
       ) : null}
-
       {getPlaceholder().placeHolder ? (
         <View style={[styles.placeHolder, placeHolderStyle]}>
-          <Image source={getPlaceholder().placeHolder} style={styles.image} />
+          <FastImage
+            source={getPlaceholder().placeHolder}
+            style={styles.image}
+            resizeMode="contain"
+          />
         </View>
       ) : null}
     </View>
@@ -106,7 +116,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
+
     borderRadius: 30,
   },
   name: {

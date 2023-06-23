@@ -27,7 +27,9 @@ function TCTitleWithArrow({
           {isNew && <Text style={styles.newText}> {strings.newText} </Text>}
         </Text>
         {showArrow && (
-          <Image source={images.nextArrow} style={styles.arrowStyle} />
+          <View style={styles.arrowContainerStyle}>
+            <Image source={images.nextArrow} style={styles.arrowStyle} />
+          </View>
         )}
       </View>
     </TouchableWithoutFeedback>
@@ -39,8 +41,9 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontSize: 20,
     textAlign: 'left',
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     marginRight: 10,
+    lineHeight: 25,
   },
   mendatory: {
     color: 'red',
@@ -53,14 +56,23 @@ const styles = StyleSheet.create({
   },
   arrowStyle: {
     resizeMode: 'cover',
-    width: 9,
-    height: 16,
+    width: 4,
+    height: 8,
+    tintColor: colors.lightBlackColor,
   },
   viewContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 15,
     marginRight: 15,
+  },
+  arrowContainerStyle: {
+    height: 16,
+    width: 16,
+    backgroundColor: '#F2F2F2',
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
