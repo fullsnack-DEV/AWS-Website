@@ -1,16 +1,6 @@
 // @flow
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  SafeAreaView,
-  Pressable,
-  TextInput,
-  Keyboard,
-  Alert,
-  Platform,
-} from 'react-native';
+import {View, StyleSheet, Text, SafeAreaView, Pressable, TextInput, Keyboard, Alert, Platform} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import {groupValidate} from '../../../api/Groups';
 import {patchPlayer} from '../../../api/Users';
@@ -30,8 +20,7 @@ import SportsListModal from './modals/SportsListModal';
 const RegisterPlayer = ({navigation, route}) => {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   // const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const [showCongratulationsModal, setShowCongratulationsModal] =
-    useState(false);
+  const [showCongratulationsModal, setShowCongratulationsModal] = useState(false);
   // const [languages, setLanguages] = useState([]);
   // const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [sportsData, setSportsData] = useState([]);
@@ -102,10 +91,7 @@ const RegisterPlayer = ({navigation, route}) => {
         created_at: getTCDate(new Date()),
       };
 
-      const registerdPlayerData = [
-        ...(authContext.entity.obj.registered_sports || []),
-        bodyParams,
-      ];
+      const registerdPlayerData = [...(authContext.entity.obj.registered_sports || []), bodyParams];
 
       const body = {
         ...authContext.entity.obj,
@@ -202,28 +188,17 @@ const RegisterPlayer = ({navigation, route}) => {
           }
         }}
         isRightIconText
-        rightButtonText={
-          selectedSport?.sport_type === Verbs.singleSport
-            ? strings.next
-            : strings.done
-        }
+        rightButtonText={selectedSport?.sport_type === Verbs.singleSport ? strings.next : strings.done}
         onRightButtonPress={handleNextOrApply}
         loading={loading}
         containerStyle={styles.headerRow}
       />
-      {selectedSport?.sport_type === Verbs.singleSport ? (
-        <TCFormProgress totalSteps={2} curruentStep={1} />
-      ) : (
-        <View
-          style={{height: 1, backgroundColor: colors.writePostSepratorColor}}
-        />
-      )}
+      {selectedSport?.sport_type === Verbs.singleSport ? <TCFormProgress totalSteps={2} curruentStep={1} /> : <View style={{height: 1, backgroundColor: colors.writePostSepratorColor}} />}
 
       <View style={styles.container}>
         <View style={{marginBottom: 35}}>
           <Text style={styles.inputLabel}>
-            {strings.whichSport}{' '}
-            <Text style={[styles.inputLabel, {color: colors.redColor}]}>*</Text>
+            {strings.whichSport} <Text style={[styles.inputLabel, {color: colors.redColor}]}>*</Text>
           </Text>
 
           <TextInput
@@ -349,14 +324,8 @@ const RegisterPlayer = ({navigation, route}) => {
         onUserClick={(userData) => {
           if (!userData) return;
           navigation.navigate('HomeScreen', {
-            uid:
-              userData.entity_type === Verbs.entityTypePlayer ||
-              userData.entity_type === Verbs.entityTypeUser
-                ? userData.user_id
-                : userData.group_id,
-            role: ['user', 'player']?.includes(userData.entity_type)
-              ? 'user'
-              : userData.entity_type,
+            uid: userData.entity_type === Verbs.entityTypePlayer || userData.entity_type === Verbs.entityTypeUser ? userData.user_id : userData.group_id,
+            role: ['user', 'player']?.includes(userData.entity_type) ? 'user' : userData.entity_type,
             backButtonVisible: true,
             menuBtnVisible: false,
           });
@@ -393,11 +362,7 @@ const RegisterPlayer = ({navigation, route}) => {
         }}
         onLoad={loading}
         onChoose={(player2) => {
-          handleDoubleTeamCreate(
-            authContext.entity.obj.user_id,
-            player2,
-            selectedSport,
-          );
+          handleDoubleTeamCreate(authContext.entity.obj.user_id, player2, selectedSport);
         }}
       />
     </SafeAreaView>

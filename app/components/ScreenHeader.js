@@ -1,34 +1,11 @@
 // @flow
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from 'react-native';
+import {View, StyleSheet, Text, TouchableOpacity, Image, ActivityIndicator} from 'react-native';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 
-const ScreenHeader = ({
-  leftIcon,
-  sportIcon,
-  showSportIcon = false,
-  title,
-  rightIcon1,
-  rightIcon2,
-  loading = false,
-  isRightIconText = false,
-  rightButtonText = '',
-  onRightButtonPress = () => {},
-  leftIconPress = () => {},
-  rightIcon1Press = () => {},
-  rightIcon2Press = () => {},
-  containerStyle = {},
-  labelStyle = {},
-}) => (
+const ScreenHeader = ({leftIcon, sportIcon, showSportIcon = false, title, rightIcon1, rightIcon2, loading = false, isRightIconText = false, rightButtonText = '', onRightButtonPress = () => {}, leftIconPress = () => {}, rightIcon1Press = () => {}, rightIcon2Press = () => {}, containerStyle = {}, labelStyle = {}, rightButtonTextStyle = {}}) => (
   <View style={[styles.headerRow, containerStyle]}>
     <View style={{width: 80}}>
       {leftIcon ? (
@@ -61,35 +38,21 @@ const ScreenHeader = ({
     <View style={{width: 80}}>
       {isRightIconText ? (
         <View style={{alignItems: 'flex-end'}}>
-          <TouchableOpacity onPress={onRightButtonPress}>
-            {loading ? (
-              <ActivityIndicator size={'small'} />
-            ) : (
-              <Text style={styles.buttonText}>{rightButtonText}</Text>
-            )}
-          </TouchableOpacity>
+          <TouchableOpacity onPress={onRightButtonPress}>{loading ? <ActivityIndicator size={'small'} /> : <Text style={[styles.buttonText, rightButtonTextStyle]}>{rightButtonText}</Text>}</TouchableOpacity>
         </View>
       ) : null}
 
       {!isRightIconText ? (
         <View style={styles.rightButtonContainer}>
           {rightIcon1 ? (
-            <TouchableOpacity
-              style={styles.iconContainer}
-              onPress={rightIcon1Press}>
+            <TouchableOpacity style={styles.iconContainer} onPress={rightIcon1Press}>
               <Image source={rightIcon1} style={styles.image} />
             </TouchableOpacity>
           ) : null}
 
           {rightIcon2 ? (
-            <TouchableOpacity
-              style={styles.iconContainer}
-              onPress={rightIcon2Press}>
-              {loading ? (
-                <ActivityIndicator size={'small'} />
-              ) : (
-                <Image source={rightIcon2} style={styles.image} />
-              )}
+            <TouchableOpacity style={styles.iconContainer} onPress={rightIcon2Press}>
+              {loading ? <ActivityIndicator size={'small'} /> : <Image source={rightIcon2} style={styles.image} />}
             </TouchableOpacity>
           ) : null}
         </View>

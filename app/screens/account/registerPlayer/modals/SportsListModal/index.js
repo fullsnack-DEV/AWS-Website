@@ -4,6 +4,7 @@ import {FlatList, Image, Modal, Pressable, Text, View} from 'react-native';
 import {strings} from '../../../../../../Localization/translation';
 import images from '../../../../../Constants/ImagePath';
 import styles from './styles';
+import ScreenHeader from '../../../../../components/ScreenHeader';
 
 const SportsListModal = ({isVisible = false, closeList = () => {}, sportsList = [], onNext = () => {}, sport = null, title = ''}) => {
   const [selectedSport, setSelectedSport] = useState(null);
@@ -50,10 +51,10 @@ const SportsListModal = ({isVisible = false, closeList = () => {}, sportsList = 
     <Modal visible={isVisible} transparent animationType="slide">
       <View style={styles.parent}>
         <View style={styles.card}>
-          <View style={styles.headerRow}>
+          {/* <View style={styles.headerRow}>
             <View style={{flex: 1}}>
               <Pressable style={{width: 26, height: 26}} onPress={closeList}>
-                <Image source={images.backArrow} style={styles.image} />
+                <Image source={images.crossImage} style={styles.image} />
               </Pressable>
             </View>
             <View style={styles.headerTitleContainer}>
@@ -67,9 +68,24 @@ const SportsListModal = ({isVisible = false, closeList = () => {}, sportsList = 
                 }
                 onNext(selectedSport);
               }}>
-              <Text style={[styles.buttonText, selectedSport?.sport_name ? {} : {opacity: 0.5}]}>{sport?.sport ? strings.apply : strings.next}</Text>
+              <Text style={[styles.buttonText, selectedSport?.sport_name ? {} : {opacity: 0.5}]}>{sport?.sport ? strings.next : strings.apply}</Text>
             </Pressable>
-          </View>
+          </View> */}
+          <ScreenHeader
+            title={sport?.sport ? strings.sportTextTitle : title}
+            leftIcon={images.crossImage}
+            leftIconPress={closeList}
+            containerStyle={{paddingBottom: 14}}
+            isRightIconText
+            rightButtonTextStyle={[styles.buttonText, selectedSport?.sport_name ? {} : {opacity: 0.5}]}
+            rightButtonText={sport?.sport ? strings.apply : strings.next}
+            onRightButtonPress={() => {
+              if (!selectedSport?.sport_name) {
+                return;
+              }
+              onNext(selectedSport);
+            }}
+          />
           <View style={styles.divider} />
           <View style={styles.container}>
             {getQuestionAndDescription().question ? <Text style={styles.title}>{getQuestionAndDescription().question}</Text> : null}
