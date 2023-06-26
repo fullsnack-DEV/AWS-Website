@@ -361,10 +361,13 @@ const MemberListModal = ({
       onRightButtonPress={() => {
         if (!doubleExist) {
           closeList();
-          navigation.navigate('CreateTeamForm1', {
-            sports: doubleSport,
-            double_Player: follower,
-            showDouble: true,
+          navigation.navigate('Account', {
+            screen: 'CreateTeamForm1',
+            params: {
+              sports: doubleSport,
+              double_Player: follower,
+              showDouble: true,
+            },
           });
         }
       }}

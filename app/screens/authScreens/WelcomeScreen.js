@@ -112,34 +112,47 @@ export default function WelcomeScreen({navigation}) {
   );
 
   const loginFinalRedirection = useCallback(
-    async (townscupUser, dummyAuthContext) => {
-      let entity = {...dummyAuthContext?.entity};
-      entity = {
-        ...entity,
-        auth: {...entity?.auth, user: townscupUser},
-        obj: {...entity?.obj, ...townscupUser},
+    (townscupUser, dummyAuthContext) => {
+      const entity = {
+        ...dummyAuthContext?.entity,
+        auth: {...dummyAuthContext?.entity?.auth, user: townscupUser},
+        obj: {...dummyAuthContext?.entity?.obj, ...townscupUser},
       };
-      await authContext.setTokenData(dummyAuthContext?.tokenData);
-      await Utility.setStorage('authContextUser', {...townscupUser});
-      await Utility.setStorage('authContextEntity', {...entity});
-      await Utility.setStorage('loggedInEntity', entity);
-      await authContext.setUser({...townscupUser});
-      await authContext.setEntity({...entity});
-      // eslint-disable-next-line no-underscore-dangle
-      getRedirectionScreenName(townscupUser)
-        .then((responseScreen) => {
-          setloading(false);
-          navigation.replace(responseScreen?.screen, {
-            ...responseScreen?.params,
-          });
+
+      Promise.all([
+        authContext.setTokenData(dummyAuthContext?.tokenData),
+        Utility.setStorage('authContextUser', {...townscupUser}),
+        Utility.setStorage('authContextEntity', {...entity}),
+        Utility.setStorage('loggedInEntity', entity),
+        authContext.setUser({...townscupUser}),
+        authContext.setEntity({...entity}),
+      ])
+        .then(() => {
+          getRedirectionScreenName(townscupUser)
+            .then((responseScreen) => {
+              setloading(false);
+              navigation.replace(responseScreen?.screen, {
+                ...responseScreen?.params,
+              });
+            })
+            .catch(() => {
+              entity.isLoggedIn = true;
+              Promise.all([
+                Utility.setStorage('authContextEntity', {...entity}),
+                Utility.setStorage('loggedInEntity', {...entity}),
+                authContext.setEntity({...entity}),
+              ])
+                .then(() => {
+                  setloading(false);
+                  updateFBToken(dummyAuthContext);
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            });
         })
-        .catch(async () => {
-          entity.isLoggedIn = true;
-          await Utility.setStorage('authContextEntity', {...entity});
-          await Utility.setStorage('loggedInEntity', {...entity});
-          setloading(false);
-          await authContext.setEntity({...entity});
-          updateFBToken(dummyAuthContext);
+        .catch((error) => {
+          console.error(error);
         });
     },
     [authContext, getRedirectionScreenName, navigation],
@@ -478,13 +491,13 @@ export default function WelcomeScreen({navigation}) {
       setloading(true);
       await GoogleSignin.hasPlayServices();
       const {idToken} = await GoogleSignin.signIn();
-      const accessToken = (await GoogleSignin.getTokens()).accessToken;
-      const googleCredential = auth.GoogleAuthProvider.credential(
+      const accessToken = await (await GoogleSignin.getTokens()).accessToken;
+      const googleCredential = await auth.GoogleAuthProvider.credential(
         idToken,
         accessToken,
       );
 
-      signInSignUpWithSocialCredential(googleCredential, 'GOOGLE | ');
+      signInSignUpWithSocialCredential(googleCredential);
     } catch (error) {
       setloading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {

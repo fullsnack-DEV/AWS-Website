@@ -15,6 +15,7 @@ import {
   Alert,
   Pressable,
   SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
 
 import Modal from 'react-native-modal';
@@ -159,40 +160,39 @@ export default function LocalHomeScreen({navigation, route}) {
     getEventdata();
   }, [authContext]);
 
-  const getqury = useCallback(async () => {
-    await LocalHomeQuery(
-      location,
-      defaultPageSize,
-      selectedSport,
-      sportType,
-      authContext,
-      setRecentMatch,
-      setUpcomingMatch,
-      setChallengeeMatch,
-      setHiringPlayers,
-      setLookingTeam,
-      setReferees,
-      setScorekeepers,
-    );
-  }, [authContext, selectedSport, location, sportType]);
-
   useEffect(() => {
     if (isFocused) {
       locationContext.setSelectedLoaction(location);
 
-      getqury();
+      LocalHomeQuery(
+        location,
+        defaultPageSize,
+        selectedSport,
+        sportType,
+        authContext,
+        setRecentMatch,
+        setUpcomingMatch,
+        setChallengeeMatch,
+        setHiringPlayers,
+        setLookingTeam,
+        setReferees,
+        setScorekeepers,
+      );
     }
   }, [
     authContext,
-    isFocused,
-    location,
     selectedSport,
+    location,
     sportType,
+    setRecentMatch,
+    setUpcomingMatch,
+    setChallengeeMatch,
+    setHiringPlayers,
+    setLookingTeam,
+    setReferees,
+    setScorekeepers,
+    isFocused,
     locationContext,
-    selectedOptions,
-    filterSetting,
-    allUserData,
-    getqury,
   ]);
 
   const ITEM_HEIGHT = 178;
@@ -362,18 +362,17 @@ export default function LocalHomeScreen({navigation, route}) {
           />
         );
       }
+      const sportDetails = getSportDetails(
+        item.sport,
+        item.sport_type,
+        authContext.sports,
+      );
+      const sportImage = sportDetails?.sport_image || '';
+
       return (
         <FastImage
-          source={{
-            uri: `${image_base_url}${
-              getSportDetails(item.sport, item.sport_type, authContext.sports)
-                .sport_image
-            }`,
-          }}
-          style={{
-            height: 40,
-            width: 40,
-          }}
+          source={{uri: `${image_base_url}${sportImage}`}}
+          style={{height: 40, width: 40}}
         />
       );
     },
@@ -464,62 +463,64 @@ export default function LocalHomeScreen({navigation, route}) {
     }
   };
 
-  const SportsListView = useCallback(
-    ({item, index}) => (
-      <Pressable
-        onPress={() => {
-          refContainer.current.scrollToIndex({
-            animated: true,
-            index,
-            viewPosition: 0.3,
-          });
-          if (item.sport === strings.editType) {
-            // setTimeout(() => {
-            //   setSettingPopup(true);
-            // }, 100);
-          } else {
-            setSelectedSport(item.sport);
-            setSportType(item.sport_type);
-            setFilters({
-              ...filters,
-              sport: item.sport,
-              sport_type: item.sport_type,
-            });
-          }
-        }}
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: colors.whiteColor,
-          borderBottomWidth:
-            selectedSport === item.sport && sportType === item.sport_type
-              ? 3
-              : 3,
-          borderBottomColor:
-            selectedSport === item.sport && sportType === item.sport_type
-              ? colors.themeColor
-              : colors.whiteColor,
-          marginHorizontal: 3,
-        }}>
-        {renderImageforSport(item)}
+  const handlePress = useCallback(
+    (item, index) => {
+      refContainer.current.scrollToIndex({
+        animated: true,
+        index,
+        viewPosition: 0.3,
+      });
 
-        <Text
-          style={
-            selectedSport === item.sport && sportType === item.sport_type
-              ? [
-                  styles.sportName,
-                  {
-                    color: colors.themeColor,
-                    fontFamily: fonts.RBold,
-                  },
-                ]
-              : styles.sportName
-          }>
-          {renderSportName(item)}
-        </Text>
-      </Pressable>
-    ),
-    [selectedSport, filters, renderImageforSport, renderSportName, sportType],
+      if (item.sport === strings.editType) {
+        // Handle editType logic
+      } else {
+        console.log('Pressed');
+        setSelectedSport(item.sport);
+        setSportType(item.sport_type);
+        setFilters((prevState) => ({
+          ...prevState,
+          sport: item.sport,
+          sport_type: item.sport_type,
+        }));
+      }
+    },
+    [setSelectedSport, setSportType, setFilters],
+  );
+
+  const SportsListView = ({item, index}) => (
+    <TouchableOpacity
+      onPress={() => handlePress(item, index)}
+      style={{
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors.whiteColor,
+        borderBottomWidth:
+          selectedSport === item.sport && sportType === item.sport_type
+            ? 3
+            : StyleSheet.hairlineWidth,
+        borderBottomColor:
+          selectedSport === item.sport && sportType === item.sport_type
+            ? colors.themeColor
+            : colors.whiteColor,
+        marginHorizontal: 3,
+      }}>
+      {renderImageforSport(item)}
+
+      <Text
+        style={
+          selectedSport === item.sport && sportType === item.sport_type
+            ? [
+                styles.sportName,
+                {
+                  color: colors.themeColor,
+                  fontFamily: fonts.RBold,
+                },
+              ]
+            : styles.sportName
+        }>
+        {renderSportName(item)}
+      </Text>
+    </TouchableOpacity>
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
@@ -563,6 +564,12 @@ export default function LocalHomeScreen({navigation, route}) {
     setLocationPopup(false);
   };
 
+  const getLayout = (_, index) => ({
+    length: 25, // Replace with the actual height of each item
+    offset: 25 * index,
+    index,
+  });
+
   const SportList = () => (
     <FlatList
       ref={refContainer}
@@ -593,9 +600,8 @@ export default function LocalHomeScreen({navigation, route}) {
         },
       ]}
       keyExtractor={keyExtractor}
-      renderItem={({item, index}) => (
-        <SportsListView item={item} index={index} />
-      )}
+      renderItem={SportsListView}
+      getItemLayout={getLayout}
       onScrollToIndexFailed={(info) => {
         // eslint-disable-next-line no-promise-executor-return
         const wait = new Promise((resolve) => setTimeout(resolve, 500));

@@ -6,9 +6,8 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from 'react-native';
-import React, {useCallback, useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import {strings} from '../../../Localization/translation';
@@ -42,40 +41,39 @@ export default function TopTileSection({
     setScreenWidth(Dimensions.get('window').width);
   };
   const [doubleSport, setDoubleSport] = useState();
-  const [memberListModal, setMemberListModal] = useState();
+  const [memberListModal, setMemberListModal] = useState(false);
   const [loading, setloading] = useState(false);
   const [players, setPlayers] = useState([]);
   const [teamSport, setTeamSport] = useState([]);
 
-  const getUsers = useCallback(() => {
-    const generalsQuery = {
-      size: 100,
-      query: {bool: {must: [{bool: {should: []}}]}},
+  useEffect(() => {
+    const getUsers = async () => {
+      const generalsQuery = {
+        size: 100,
+        query: {bool: {must: [{bool: {should: []}}]}},
+      };
+
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const response = await getUserIndex(generalsQuery);
+      setloading(false);
+      if (response.length > 0) {
+        const result = response.map((obj) => ({
+          ...obj,
+          isChecked: false,
+        }));
+
+        const filteredResult = result.filter(
+          (e) => e.user_id !== authContext.entity.auth.user.user_id,
+        );
+
+        setPlayers([...filteredResult]);
+      }
     };
 
-    getUserIndex(generalsQuery)
-      .then((response) => {
-        setloading(false);
-        if (response.length > 0) {
-          const result = response.map((obj) => {
-            const newObj = {
-              ...obj,
-              isChecked: false,
-            };
-            return newObj;
-          });
-
-          const filteredResult = result.filter(
-            (e) => e.user_id !== authContext.entity.auth.user.user_id,
-          );
-          setPlayers([...filteredResult]);
-        }
-      })
-      .catch((error) => {
-        setloading(false);
-        Alert.alert(error.message);
-      });
-  }, [authContext]);
+    getUsers();
+  }, [authContext.entity.auth.user.user_id]);
 
   useEffect(() => {
     const TeamSportList = getTeamSportOnlyList(
@@ -84,16 +82,17 @@ export default function TopTileSection({
     );
     setTeamSport(TeamSportList);
 
-    getUsers();
     const subscription = Dimensions.addEventListener('change', updateWidth);
     return () => {
       subscription.remove();
       setTeamSport([]);
     };
-  }, [screenWidth, getUsers, authContext]);
+  }, [screenWidth, authContext]);
 
-  const setMemberListModalHandler = () => {
-    setMemberListModal(true);
+  const setMemberListModalHandler = (val) => {
+    setTeamModal(true);
+
+    setMemberListModal(val);
   };
 
   const setdoubleSportHandler = (sport) => {
@@ -279,16 +278,17 @@ export default function TopTileSection({
         isVisible={memberListModal}
         title={strings.createTeamText}
         loading={loading}
-        closeList={() => setMemberListModal(false)}
+        closeList={() => {
+          setTeamModal(false);
+          setMemberListModal(false);
+        }}
         doubleSport={doubleSport}
         sportsList={players}
       />
 
       <SportsListModal
         isVisible={visibleSportsModalForTeam}
-        closeList={() => {
-          setTeamModal(false);
-        }}
+        closeList={() => setTeamModal(false)}
         title={strings.createTeamText}
         sportsList={teamSport}
         forTeam={true}

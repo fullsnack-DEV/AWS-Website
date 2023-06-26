@@ -70,8 +70,8 @@ const LocalHomeMenuItems = memo(
       }
     };
 
-    const onTitlePress = ({item}) => {
-      switch (item.key) {
+    const onTitlePress = (item) => {
+      switch (item?.key) {
         case strings.playersAvailableforChallenge:
           {
             const data = getDataForNextScreen(

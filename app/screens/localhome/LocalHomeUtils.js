@@ -542,30 +542,28 @@ const LocalHomeQuery = async (
 };
 
 const getNotificationCountHome = (authContext, handleSetNotificationCount) => {
+  const {entity, setTotalNotificationCount} = authContext;
+
   getUnreadCount(authContext)
     .then((response) => {
-      const {teams, clubs, user} = response.payload;
+      const {teams, clubs, user, totalUnread} = response.payload;
       let count = 0;
-      if (authContext.entity.obj.entity_type === Verbs.entityTypeClub) {
-        const obj = clubs.find(
-          (item) => item.group_id === authContext.entity.uid,
-        );
-        count = obj ? obj.unread : 0;
-      } else if (authContext.entity.obj.entity_type === Verbs.entityTypeTeam) {
-        const obj = teams.find(
-          (item) => item.group_id === authContext.entity.uid,
-        );
-        count = obj ? obj.unread : 0;
+
+      if (entity.obj.entity_type === Verbs.entityTypeClub) {
+        const obj = clubs.find((item) => item.group_id === entity.uid);
+        count = obj?.unread ?? 0;
+      } else if (entity.obj.entity_type === Verbs.entityTypeTeam) {
+        const obj = teams.find((item) => item.group_id === entity.uid);
+        count = obj?.unread ?? 0;
       } else {
-        count = user.unread ?? 0;
+        count = user?.unread ?? 0;
       }
-      authContext.setTotalNotificationCount(response.payload.totalUnread ?? 0);
+
+      setTotalNotificationCount(totalUnread ?? 0);
       handleSetNotificationCount(count);
     })
-    .catch((e) => {
-      setTimeout(() => {
-        Alert.alert(strings.alertmessagetitle, e.message);
-      }, 10);
+    .catch((error) => {
+      Alert.alert(strings.alertmessagetitle, error.message);
     });
 };
 
