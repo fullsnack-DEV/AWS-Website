@@ -75,6 +75,14 @@ export default function GroupMembersScreen({navigation, route}) {
   const [userJoinedGrpList, setUserJoinedGrpList] = useState();
   const [clubToCheckAdmin, setClubToCheckAdmin] = useState(false);
 
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: isFocused ? 'flex' : 'none',
+      },
+    });
+  }, [navigation, isFocused]);
+
   const callGroup = async (groupIDs, authContexts) => {
     const response = await getGroupDetails(groupIDs, authContexts);
 

@@ -135,6 +135,14 @@ export default function LocalHomeScreen({navigation, route}) {
   const [owners, setOwners] = useState([]);
 
   useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: isFocused ? 'flex' : 'none',
+      },
+    });
+  }, [navigation, isFocused]);
+
+  useEffect(() => {
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       setSelectedSport(authContext.entity.obj.sport);
     }

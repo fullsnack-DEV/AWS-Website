@@ -24,14 +24,11 @@ function PostImageSet({
 
   const toggleModal = () => {
     // setModalVisible(!isModalVisible);
-    navigation.navigate('LoneStack', {
-      screen: 'FeedViewScreen',
-      params: {
-        feedItem: item,
-        currentPage: itemNumber,
-        updateCommentCount,
-        onLikePress,
-      },
+    navigation.navigate('FeedViewScreen', {
+      feedItem: item,
+      currentPage: itemNumber,
+      updateCommentCount,
+      onLikePress,
     });
   };
 

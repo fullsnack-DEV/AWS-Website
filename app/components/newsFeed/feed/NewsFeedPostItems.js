@@ -117,14 +117,11 @@ const NewsFeedPostItems = memo(
 
       switch (option) {
         case strings.repost:
-          navigation.navigate('LoneStack', {
-            screen: 'WritePostScreen',
-            params: {
-              postData: entityDetails,
-              selectedImageList: [],
-              isRepost: true,
-              repostData: {...item},
-            },
+          navigation.navigate('WritePostScreen', {
+            postData: entityDetails,
+            selectedImageList: [],
+            isRepost: true,
+            repostData: {...item},
           });
           break;
 

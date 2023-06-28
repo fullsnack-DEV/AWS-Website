@@ -259,7 +259,7 @@ const HomeFeed = ({
           navigation={navigation}
           postDataItem={currentUserData}
           onWritePostPress={() => {
-            navigation.navigate('LoneStack', {
+            navigation.navigate('News Feed', {
               screen: 'WritePostScreen',
               params: {
                 postData: currentUserData,

@@ -26,7 +26,7 @@ export default function UserGalleryScreen({navigation, route}) {
         }
         entity_id={entityID}
         onAddPhotoPress={(pickImages) => {
-          navigation.navigate('LoneStack', {
+          navigation.navigate('News Feed', {
             screen: 'WritePostScreen',
             params: {
               comeFrom: 'HomeScreen',

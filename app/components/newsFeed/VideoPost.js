@@ -69,13 +69,10 @@ const VideoPost = memo(
       }
     };
     const toggleModal = useCallback(() => {
-      navigation.navigate('LoneStack', {
-        screen: 'FeedViewScreen',
-        params: {
-          feedItem: item,
-          updateCommentCount,
-          onLikePress,
-        },
+      navigation.navigate('FeedViewScreen', {
+        feedItem: item,
+        updateCommentCount,
+        onLikePress,
       });
     }, [item, navigation, onLikePress, updateCommentCount]);
 

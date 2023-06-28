@@ -350,15 +350,12 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         isRightIconText
         rightButtonText={strings.done}
         onRightButtonPress={() =>
-          navigation.navigate('LoneStack', {
-            screen: 'WritePostScreen',
-            params: {
-              postData,
-              selectedImageList: [],
-              selectedTagList: seletedEntity,
-              selectedMatchTags: selectedMatch,
-              ...route.params.routeParams,
-            },
+          navigation.navigate('WritePostScreen', {
+            postData,
+            selectedImageList: [],
+            selectedTagList: seletedEntity,
+            selectedMatchTags: selectedMatch,
+            ...route.params.routeParams,
           })
         }
       />

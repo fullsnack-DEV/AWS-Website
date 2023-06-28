@@ -18,7 +18,7 @@ export default function EntityGallaryScreen({navigation, route}) {
         entity_type={currentUserData?.entity_type ?? authContext.entity?.role}
         entity_id={route?.params?.uid ?? authContext.entity?.uid}
         onAddPhotoPress={(pickImages) => {
-          navigation.navigate('LoneStack', {
+          navigation.navigate('News Feed', {
             screen: 'WritePostScreen',
             params: {
               comeFrom: 'HomeScreen',

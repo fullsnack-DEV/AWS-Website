@@ -80,6 +80,14 @@ const AccountScreen = ({navigation, route}) => {
   const [players, setPlayers] = useState([]);
   const [onLoad, setOnLoad] = useState(false);
 
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: isFocused ? 'flex' : 'none',
+      },
+    });
+  }, [navigation, isFocused]);
+
   const getUsers = useCallback(() => {
     const generalsQuery = {
       size: 100,

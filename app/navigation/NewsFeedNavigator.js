@@ -91,6 +91,8 @@ import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
+import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
+import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 
 const Stack = createStackNavigator();
 
@@ -106,20 +108,19 @@ const NewsFeedNavigator = () => (
       options={{headerShown: false}}
     />
     <Stack.Screen
+      name="WritePostScreen"
+      component={WritePostScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
       name="UserTagSelectionListScreen"
       component={UserTagSelectionListScreen}
-      options={{
-        title: 'Tag',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name={'FeedViewScreen'}
+      component={FeedViewScreen}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="AlterRequestAccept"

@@ -48,6 +48,14 @@ const FeedsScreen = ({navigation}) => {
   const [sportArr, setSportArr] = useState([]);
   const [pointEvent] = useState('auto');
 
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: isFocused ? 'flex' : 'none',
+      },
+    });
+  }, [navigation, isFocused]);
+
   const getFeeds = useCallback(
     (showLoader = true) => {
       if (showLoader) {
@@ -333,12 +341,9 @@ const FeedsScreen = ({navigation}) => {
         <TouchableOpacity
           style={[styles.headerIconContainer, {marginRight: 10}]}
           onPress={() => {
-            navigation.navigate('LoneStack', {
-              screen: 'WritePostScreen',
-              params: {
-                postData: currentUserDetail,
-                selectedImageList: [],
-              },
+            navigation.navigate('WritePostScreen', {
+              postData: currentUserDetail,
+              selectedImageList: [],
             });
           }}>
           <Image source={images.feedPlusIcon} style={styles.icon} />
