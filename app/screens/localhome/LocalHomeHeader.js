@@ -42,7 +42,7 @@ export default function LocalHomeHeader({
             <TouchableOpacity
               onPress={() => setShowSwitchAccountModal()}
               style={styles.headerNameStyle}>
-              <Text style={styles.headerUserName}>
+              <Text style={styles.headerUserName} numberOfLines={1}>
                 {authContext.entity.obj.full_name ??
                   authContext.entity.obj.group_name}
               </Text>

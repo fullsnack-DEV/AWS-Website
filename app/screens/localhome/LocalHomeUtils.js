@@ -585,10 +585,17 @@ const getTeamSportOnlyList = (authContext, selectedMenuOptionType) => {
   return TeamSportList;
 };
 
-const getSportsForHome = (authContext, setSportHandler, sports) => {
+const getSportsForHome = (
+  authContext,
+  setSportHandler,
+  sports,
+  setSportIconLoader,
+) => {
+  setSportIconLoader(true);
   getStorage('sportSetting')
     .then((setting) => {
       if (setting === null) {
+        setSportIconLoader(false);
         const playerSport =
           authContext?.entity?.auth?.user?.registered_sports || [];
         const followedSport = authContext?.entity?.obj?.sports;

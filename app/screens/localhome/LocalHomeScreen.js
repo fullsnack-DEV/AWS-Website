@@ -15,6 +15,7 @@ import {
   Alert,
   Pressable,
   SafeAreaView,
+  ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
 
@@ -63,17 +64,12 @@ const defaultPageSize = 10;
 
 export default function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
-
   const isFocused = useIsFocused();
-
   const authContext = useContext(AuthContext);
   const locationContext = useContext(LocationContext);
-
   const [loading, setloading] = useState(false);
   const [sports, setSports] = useState([]);
-
   const [customSports, setCustomSports] = useState([]);
-
   const [locationPopup, setLocationPopup] = useState(false);
   const [selectedLocationOption, setSelectedLocationOption] = useState();
   const [location, setLocation] = useState(
@@ -83,7 +79,6 @@ export default function LocalHomeScreen({navigation, route}) {
   const [selectedSport, setSelectedSport] = useState(strings.allType);
   const [sportType, setSportType] = useState(strings.allType);
   const [settingPopup, setSettingPopup] = useState(false);
-
   const [recentMatch, setRecentMatch] = useState([]);
   const [upcomingMatch, setUpcomingMatch] = useState([]);
   const [challengeeMatch, setChallengeeMatch] = useState([]);
@@ -101,26 +96,20 @@ export default function LocalHomeScreen({navigation, route}) {
     sport_type: sportType,
     location,
   });
-
   const [showBottomSheet, setBottomSheet] = useState(false);
   const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
   const [notificationCount, setNotificationCount] = useState();
-
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [selectedMenuOptionType, setSelectedMenuOptionType] = useState(
     Verbs.entityTypePlayer,
   );
   const [sportsData, setSportsData] = useState([]);
-
   const [navigationOptions, setNavigationOptions] = useState({});
-
   const [visibleSportsModalForClub, setVisibleSportsModalForClub] =
     useState(false);
   const [visibleSportsModalForTeam, setVisibleSportsModalForTeam] =
     useState(false);
-
   const [filterData, setFilterData] = useState([]);
-
   const [filterSetting] = useState({
     sort: 1,
     time: 0,
@@ -129,10 +118,9 @@ export default function LocalHomeScreen({navigation, route}) {
     option: 0,
     title: strings.all,
   });
-
   const [allUserData, setAllUserData] = useState([]);
-
   const [owners, setOwners] = useState([]);
+  const [sportIconLoader, setSportIconLoader] = useState(false);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -171,6 +159,9 @@ export default function LocalHomeScreen({navigation, route}) {
   useEffect(() => {
     if (isFocused) {
       locationContext.setSelectedLoaction(location);
+      Utility.getStorage('appSetting').then((setting) => {
+        setImageBaseUrl(setting.base_url_sporticon);
+      });
 
       LocalHomeQuery(
         location,
@@ -306,14 +297,9 @@ export default function LocalHomeScreen({navigation, route}) {
   };
 
   useEffect(() => {
-    if (isFocused) {
-      Utility.getStorage('appSetting').then((setting) => {
-        setImageBaseUrl(setting.base_url_sporticon);
-      });
-
-      getSportsForHome(authContext, setSportHandler, sports);
-    }
-  }, [authContext, isFocused]);
+    getSportsForHome(authContext, setSportHandler, sports, setSportIconLoader);
+    setSelectedSport(strings.allType);
+  }, [authContext]);
 
   useEffect(() => {
     const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
@@ -482,7 +468,6 @@ export default function LocalHomeScreen({navigation, route}) {
       if (item.sport === strings.editType) {
         // Handle editType logic
       } else {
-        console.log('Pressed');
         setSelectedSport(item.sport);
         setSportType(item.sport_type);
         setFilters((prevState) => ({
@@ -512,7 +497,15 @@ export default function LocalHomeScreen({navigation, route}) {
             : colors.whiteColor,
         marginHorizontal: 3,
       }}>
-      {renderImageforSport(item)}
+      {sportIconLoader ? (
+        <ActivityIndicator
+          style={styles.imgloaderStyle}
+          size="small"
+          color="#000000"
+        />
+      ) : (
+        renderImageforSport(item)
+      )}
 
       <Text
         style={
@@ -1125,5 +1118,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.veryLightGray,
+  },
+  imgloaderStyle: {
+    height: 25,
+    width: 25,
+    marginBottom: 10,
+    marginTop: 5,
   },
 });

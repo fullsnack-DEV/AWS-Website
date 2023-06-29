@@ -693,7 +693,6 @@ export default function GroupMembersScreen({navigation, route}) {
 
   return (
     <View style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
       <View
         style={{
           opacity: authContext.isAccountDeactivated ? 0.5 : 1,
