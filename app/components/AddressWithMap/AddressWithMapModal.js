@@ -9,7 +9,7 @@ import {
   Keyboard,
   Alert,
 } from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
+import MapView from 'react-native-maps';
 import React, {useState, useEffect, useContext, useRef} from 'react';
 import Modal from 'react-native-modal';
 import locationModalStyles from '../../Constants/LocationModalStyle';
@@ -443,19 +443,17 @@ const AddressWithMapModal = ({
                           latitudeDelta: 0.01,
                           longitudeDelta: 0.01,
                         });
-                      }}>
-                      <Marker coordinate={coordinate} />
-                    </MapView>
+                      }}></MapView>
                     <Image
-                      source={images.plusInvoice}
+                      source={images.mappin}
                       style={{
                         width: 24,
                         height: 30,
                         zIndex: 3,
                         position: 'absolute',
 
-                        left: '43%',
-                        top: '45%',
+                        left: '47%',
+                        top: '45.5%',
                       }}
                     />
                   </View>

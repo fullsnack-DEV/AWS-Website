@@ -1,39 +1,26 @@
-/* eslint-disable no-useless-escape */
 import React, {
   useCallback,
   useEffect,
   useState,
   useContext,
   useRef,
-  useMemo,
 } from 'react';
 import {
   StyleSheet,
   View,
-  Image,
   Alert,
   TouchableOpacity,
-  SafeAreaView,
   TextInput,
-  Dimensions,
-  Platform,
   FlatList,
+  Text,
+  Platform,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {Text} from 'react-native-elements';
-
-import Modal from 'react-native-modal';
-import {Portal} from 'react-native-portalize';
-
-import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
+import ParsedText from 'react-native-parsed-text';
 import {
   createReaction,
   getReactions,
   deleteReactions,
-  EditReaction,
   createCommentReaction,
 } from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
@@ -45,214 +32,164 @@ import WriteCommentItems from './WriteCommentItems';
 import SwipeableRow from '../gameRecordList/SwipeableRow';
 import ReportCommentModal from './ReportCommentModal';
 import Verbs from '../../Constants/Verbs';
+import CustomModalWrapper from '../CustomModalWrapper';
+import {strings} from '../../../Localization/translation';
+import GroupIcon from '../GroupIcon';
 import ActivityLoader from '../loader/ActivityLoader';
+import LikersModal from '../modals/LikersModal';
+import {tagRegex} from '../../Constants/GeneralConstants';
+
+const SwipeOptions = [
+  {
+    key: Verbs.reply,
+    fillColor: [colors.greenGradientEnd, colors.greenGradientStart],
+    image: images.replyIcon,
+  },
+  {
+    key: Verbs.report,
+    fillColor: [colors.userPostTimeColor, colors.veryLightBlack],
+    image: images.reportIcon,
+  },
+  {
+    key: Verbs.delete,
+    fillColor: [colors.themeColor, colors.darkThemeColor],
+    image: images.deleteIcon,
+  },
+];
 
 const CommentModal = ({
-  item,
-  updateCommentCount,
-  commentModalRef,
-  navigation,
-  showCommentModal,
-  onBackdropPress,
+  postId,
+  showCommentModal = false,
+  closeModal = () => {},
+  onProfilePress = () => {},
+  updateCommentCount = () => {},
+  handleFollowUnfollow = () => {},
 }) => {
   const reportCommentModalRef = useRef(null);
   const authContext = useContext(AuthContext);
-  const isMyPost = useMemo(
-    () => item?.actor?.id === authContext?.entity?.uid,
-    [authContext?.entity?.uid, item?.actor?.id],
-  );
-  const isFocused = useIsFocused();
-  const writeCommentTextInputRef = useRef(null);
-
   const [commentTxt, setCommentText] = useState('');
   const [commentData, setCommentData] = useState([]);
-  const [editData, setEditData] = useState();
-
-  const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const [selectedCommentData, setSelectedCommentData] = useState(null);
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showLikeModal, setShowLikeModal] = useState(false);
+  const [replyParams, setReplyParams] = useState({});
+  const [showAllReplies, setShowAllReplies] = useState(false);
 
-  useEffect(() => {
-    const entity = authContext.entity;
-    setCurrentUserDetail(entity.obj || entity.auth.user);
-  }, [authContext.entity]);
+  const fetchReactions = useCallback(() => {
+    const params = {
+      activity_id: postId,
+      reaction_type: Verbs.comment,
+    };
 
-  useEffect(() => {
-    if (isFocused) {
-      const entity = authContext.entity;
-      setCurrentUserDetail(entity.obj || entity.auth.user);
-      const params = {
-        activity_id: item?.id,
-        reaction_type: Verbs.comment,
-      };
-      getReactions(params, authContext)
-        .then((response) => {
-          setCommentData(response?.payload?.reverse());
-        })
-        .catch((e) => {
-          Alert.alert('', e.messages);
-        });
-    }
-  }, [isFocused, authContext, item?.id]);
-
-  let userImage = '';
-  if (currentUserDetail && currentUserDetail.thumbnail) {
-    userImage = currentUserDetail.thumbnail;
-  }
-  const onProfilePress = useCallback(
-    (data) => {
-      if (commentModalRef?.current?.close()) commentModalRef.current.close();
-      navigation.navigate('HomeScreen', {
-        uid: data?.user?.id,
-        backButtonVisible: true,
-        role:
-          data?.user?.entity_type === Verbs.entityTypePlayer
-            ? Verbs.entityTypeUser
-            : data?.user?.entity_type,
+    getReactions(params, authContext)
+      .then((response) => {
+        setCommentData(response.payload.reverse());
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages);
       });
-    },
-    [commentModalRef, navigation],
-  );
+  }, [authContext, postId]);
 
-  const onLikePress = useCallback(
-    ({data}) => {
-      const bodyParams = {
-        reaction_type: Verbs.like,
-        activity_id: data?.activity_id,
-        reaction_id: data?.id,
-      };
-      setloading(true);
-      setCommentText('');
-      createCommentReaction(bodyParams, authContext)
-        .then(() => {
-          const params = {
-            activity_id: item?.id,
-          };
-          getReactions(params, authContext)
-            .then((response) => {
-              setCommentData(response?.payload?.reverse());
-              setloading(false);
-            })
-            .catch((e) => {
-              Alert.alert('', e.messages);
-              setloading(false);
-            });
-        })
-        .catch((e) => {
-          Alert.alert('', e.messages);
-          setloading(false);
-        });
-    },
-    [authContext, item?.id],
-  );
+  useEffect(() => {
+    if (showCommentModal) {
+      setShowAllReplies(false);
+      fetchReactions();
+    }
+  }, [showCommentModal, fetchReactions]);
 
-  const getButtons = useCallback(
-    (data) => {
-      const isMyComment = data.user_id === authContext.entity.uid;
-      const buttons = [];
-      if (isMyComment || isMyPost) {
-        buttons.push({
-          key: 'edit',
-          label: 'Edit',
-          fillColor: [colors.themeColor, colors.darkThemeColor],
-          image: images.editPencil,
-        });
-      }
-      if (isMyComment || isMyPost) {
-        buttons.push({
-          key: 'delete',
-          label: 'Delete',
-          fillColor: [colors.themeColor, colors.darkThemeColor],
-          image: images.commentDeleteIcon,
-        });
-      }
-      if (!isMyComment) {
-        buttons.push({
-          key: 'report',
-          label: 'Report',
-          fillColor: [colors.userPostTimeColor, colors.googleColor],
-          image: images.commentReportIcon,
-        });
-      }
-
-      return buttons;
-    },
-    [authContext.entity.uid, isMyPost],
-  );
-
-  const onCommentOptionsPress = useCallback(
-    (key, data) => {
-      if (key === 'report') {
-        setSelectedCommentData(data);
-        reportCommentModalRef.current.open();
-      } else if (key === 'edit') {
-        setCommentText(data.data.text);
-        setEditData(data);
-      } else {
-        setloading(true);
-        deleteReactions(data.id, authContext)
-          .then(() => {
-            const filtered = commentData.filter((e) => e.id !== data.id);
-            setCommentData(filtered);
-            updateCommentCount({
-              id: item?.id,
-              count: filtered?.length,
-              data: filtered,
-            });
-            setloading(false);
+  const onLikePress = ({data}) => {
+    const bodyParams = {
+      reaction_type: Verbs.like,
+      activity_id: data?.activity_id,
+      reaction_id: data?.id,
+    };
+    setLoading(true);
+    setCommentText('');
+    createCommentReaction(bodyParams, authContext)
+      .then(() => {
+        const params = {
+          activity_id: postId,
+        };
+        getReactions(params, authContext)
+          .then((response) => {
+            setLoading(false);
+            setCommentData(response.payload.reverse());
           })
           .catch((e) => {
-            setloading(false);
             Alert.alert('', e.messages);
+            setLoading(false);
           });
-        // alert(key);
-      }
-    },
-    [authContext, commentData, item?.id, updateCommentCount],
-  );
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages);
+        setLoading(false);
+      });
+  };
 
-  const renderComments = useCallback(
-    ({item: data}) => (
-      <SwipeableRow
-        scaleEnabled={false}
-        showLabel={true}
-        buttons={getButtons(data)}
-        onPress={(key) => onCommentOptionsPress(key, data)}>
-        <WriteCommentItems
-          data={data}
-          onProfilePress={onProfilePress}
-          onLikePress={() => onLikePress({data})}
-        />
-      </SwipeableRow>
-    ),
-    [
-      getButtons,
-      onCommentOptionsPress,
-      onLikePress,
-      onProfilePress,
-      commentData,
-    ],
-  );
+  const handleReply = (data = {}) => {
+    const bodyParams = {
+      reaction_type: Verbs.reply,
+      activity_id: data.activity_id,
+      reaction_id: data.id,
+    };
+
+    setReplyParams(bodyParams);
+    setCommentText(`@${data.user.data.full_name.replace(/ /g, '')}`);
+  };
+
+  const deleteComment = (data = {}) => {
+    setLoading(true);
+    deleteReactions(data.id, authContext)
+      .then(() => {
+        const filtered = commentData.filter((e) => e.id !== data.id);
+        setCommentData(filtered);
+        updateCommentCount({
+          id: postId,
+          count: filtered?.length,
+          data: filtered,
+        });
+        setLoading(false);
+      })
+      .catch((e) => {
+        setLoading(false);
+        Alert.alert('', e.messages);
+      });
+  };
+
+  const onCommentOptionsPress = (key, data) => {
+    switch (key) {
+      case Verbs.reply:
+        handleReply(data);
+        break;
+
+      case Verbs.report:
+        reportCommentModalRef.current.open();
+        break;
+
+      case Verbs.delete:
+        deleteComment(data);
+        break;
+
+      default:
+        break;
+    }
+  };
+
   const listEmptyComponent = () => (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyText}>No Comments Yet</Text>
     </View>
   );
 
-  const ModalHeader = () => (
-    <View style={styles.headerStyle}>
-      <View style={styles.handleStyle} />
-    </View>
-  );
-
-  const onSendPress = () => {
+  const handleComment = () => {
     const bodyParams = {
       reaction_type: Verbs.comment,
-      activity_id: item?.id,
+      activity_id: postId,
       data: {
         text: commentTxt,
       },
     };
+    setLoading(true);
     setCommentText('');
     createReaction(bodyParams, authContext)
       .then((response) => {
@@ -260,172 +197,236 @@ const CommentModal = ({
         dataOfComment.unshift(response.payload);
         setCommentData([...dataOfComment]);
         updateCommentCount({
-          id: item?.id,
+          id: postId,
           count: dataOfComment?.length,
           data: response?.payload,
         });
+        setLoading(false);
       })
       .catch((e) => {
         Alert.alert('', e.messages);
+        setLoading(false);
       });
   };
 
-  const onSavePress = () => {
-    const bodyParams = {
-      reaction_type: Verbs.comment,
-      activity_id: editData?.id,
+  const handleCommentReply = () => {
+    const body = {
+      ...replyParams,
       data: {
         text: commentTxt,
       },
     };
+
+    setLoading(true);
     setCommentText('');
-    EditReaction(editData?.id, bodyParams, authContext)
-      .then((response) => {
-        setEditData();
-        const arr = commentData;
-        const foundIndex = arr.findIndex((x) => x.id === response?.payload?.id);
-        arr[foundIndex] = response?.payload;
-        setCommentData(arr);
+    createCommentReaction(body, authContext)
+      .then(() => {
+        const params = {
+          activity_id: postId,
+        };
+        getReactions(params, authContext)
+          .then((response) => {
+            setLoading(false);
+            setCommentData(response.payload.reverse());
+          })
+          .catch((e) => {
+            Alert.alert('', e.messages);
+            setLoading(false);
+          });
       })
       .catch((e) => {
         Alert.alert('', e.messages);
+        setLoading(false);
       });
   };
 
-  const FooterComponent = () => (
-    <SafeAreaView
-      // pointerEvents={showBottomWriteCommentSection ? 'none' : 'auto'}
-      style={styles.bottomSafeAreaStyle}>
-      <View style={styles.bottomImgView}>
-        <ActivityLoader visible={loading} />
+  const renderTagText = useCallback(
+    (matchingString) => (
+      <Text style={styles.tagText}>{`${matchingString}`}</Text>
+    ),
+    [],
+  );
 
-        <View style={styles.commentReportView}>
-          <Image
-            source={userImage ? {uri: userImage} : images.profilePlaceHolder}
-            resizeMode={'cover'}
-            style={{width: 36, height: 36, borderRadius: 40 / 2}}
-          />
+  const getOptions = (data = {}) => {
+    const options = [...SwipeOptions];
+    const optionList =
+      data.user_id === authContext.entity.uid
+        ? options.filter((option) => option.key !== Verbs.report)
+        : [...options];
+    return optionList.reverse();
+  };
+
+  const renderReplies = (list = []) => {
+    let repliesList = [];
+    if (showAllReplies) {
+      repliesList = [...list];
+    } else if (list.length > 0) {
+      repliesList.push(list[0]);
+    }
+
+    return (
+      <>
+        <View
+          style={[
+            styles.repliesContainer,
+            list.length > 1 ? {marginBottom: 10} : {},
+          ]}>
+          {repliesList.map((reply, index) => (
+            <SwipeableRow
+              key={index}
+              scaleEnabled={false}
+              showLabel={false}
+              buttons={getOptions(reply)}
+              onPress={(key) => onCommentOptionsPress(key, reply)}>
+              <WriteCommentItems
+                data={reply}
+                containerStyle={[
+                  {paddingLeft: 10},
+                  index === repliesList.length - 1 ? {marginBottom: 0} : {},
+                ]}
+                onProfilePress={onProfilePress}
+                onLikePress={() => onLikePress({data: reply})}
+                onReply={() => {
+                  handleReply(reply);
+                }}
+                showLikesModal={() => {
+                  setSelectedCommentData(reply);
+                  setShowLikeModal(true);
+                }}
+              />
+            </SwipeableRow>
+          ))}
         </View>
-        <View style={styles.onlyMeViewStyle}>
-          <TextInput
-            ref={writeCommentTextInputRef}
-            placeholder={'Write a comment'}
-            placeholderTextColor={colors.userPostTimeColor}
-            multiline={true}
-            autoCorrect={false}
-            spellCheck={false}
-            autoComplete="off"
-            autoCapitalize="none"
-            value={commentTxt}
-            keyboardType="visible-password"
-            onChangeText={(text) => setCommentText(text)}
-            style={styles.writeCommectStyle}
-          />
-          {commentTxt.trim().length > 0 &&
-            (!editData ? (
-              <TouchableOpacity onPress={onSendPress}>
-                <Text style={styles.sendTextStyle}>SEND</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={onSavePress}>
-                <Text style={styles.sendTextStyle}>SAVE</Text>
-              </TouchableOpacity>
-            ))}
-        </View>
-      </View>
-    </SafeAreaView>
+        {list.length > 1 && !showAllReplies && (
+          <View style={styles.replyBottomView}>
+            <View style={styles.hrBar} />
+            <TouchableOpacity
+              onPress={() => {
+                setShowAllReplies(true);
+              }}>
+              <Text style={styles.viewMoreText}>
+                {format(strings.viewMoreReplies, list.length - 1)}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </>
+    );
+  };
+
+  const renderComments = ({item: data}) => (
+    <View>
+      <SwipeableRow
+        scaleEnabled={false}
+        showLabel={false}
+        buttons={getOptions(data)}
+        onPress={(key) => onCommentOptionsPress(key, data)}>
+        <WriteCommentItems
+          data={data}
+          onProfilePress={onProfilePress}
+          onLikePress={() => onLikePress({data})}
+          onReply={() => {
+            handleReply(data);
+          }}
+          showLikesModal={() => {
+            setSelectedCommentData(data);
+            setShowLikeModal(true);
+          }}
+        />
+      </SwipeableRow>
+      {data.latest_children?.reply?.length > 0
+        ? renderReplies(data.latest_children.reply)
+        : null}
+    </View>
   );
 
   return (
-    <View>
-      <Portal>
-        <Modal
-          onBackdropPress={onBackdropPress}
-          isVisible={showCommentModal}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
-          avoidKeyboard={true}
-          style={{
-            margin: 0,
-          }}>
-          <View
-            style={[
-              styles.bottomPopupContainer,
-              {
-                height:
-                  Dimensions.get('window').height -
-                  Dimensions.get('window').height / 10,
-              },
-            ]}>
-            {ModalHeader()}
-            <FlatList
-              data={commentData}
-              keyExtractor={(index) => index.toString()}
-              renderItem={renderComments}
-              ListEmptyComponent={listEmptyComponent}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-            />
-            {FooterComponent()}
-          </View>
-        </Modal>
-      </Portal>
+    <CustomModalWrapper
+      isVisible={showCommentModal}
+      closeModal={closeModal}
+      containerStyle={{padding: 0, height: '97.5%'}}>
+      <View style={styles.headerStyle}>
+        <Text style={styles.headerTitle}>{strings.comments}</Text>
+      </View>
+
+      <ActivityLoader visible={loading} />
+
+      <FlatList
+        data={commentData}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderComments}
+        ListEmptyComponent={listEmptyComponent}
+        showsVerticalScrollIndicator={false}
+      />
+
+      <View
+        style={[
+          styles.bottomContainer,
+          Platform.OS === 'ios' ? {paddingBottom: 20} : {},
+        ]}>
+        <GroupIcon
+          imageUrl={authContext.entity.obj.thumbnail}
+          groupName={authContext.entity.obj.group_name}
+          entityType={authContext.entity.obj.entity_type}
+          containerStyle={styles.profileIcon}
+        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder={strings.leaveComment}
+            placeholderTextColor={colors.userPostTimeColor}
+            multiline
+            onChangeText={(text) => {
+              setCommentText(text);
+            }}
+            style={styles.writeCommectStyle}>
+            <ParsedText
+              parse={[{pattern: tagRegex, renderText: renderTagText}]}
+              childrenProps={{allowFontScaling: false}}>
+              {commentTxt}
+            </ParsedText>
+          </TextInput>
+          {commentTxt.trim().length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                if (replyParams.activity_id) {
+                  handleCommentReply();
+                } else {
+                  handleComment();
+                }
+              }}>
+              <Text style={styles.sendTextStyle}>
+                {strings.send.toUpperCase()}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
       <ReportCommentModal
         commentData={selectedCommentData}
         reportCommentModalRef={reportCommentModalRef}
       />
-    </View>
+      <LikersModal
+        data={selectedCommentData}
+        showLikeModal={showLikeModal}
+        closeModal={() => setShowLikeModal(false)}
+        onClickProfile={(obj = {}) => {
+          onProfilePress({
+            userId: obj.user_id,
+            entityType: obj.user.data.entity_type,
+          });
+        }}
+        handleFollowUnfollow={handleFollowUnfollow}
+      />
+    </CustomModalWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  bottomImgView: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    paddingVertical: hp('1.5%'),
-    width: wp('92%'),
-  },
-  commentReportView: {
-    backgroundColor: colors.whiteColor,
-    height: 40,
-    width: 40,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1.5},
-    shadowOpacity: 0.16,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  onlyMeViewStyle: {
-    alignItems: 'center',
-    backgroundColor: colors.offwhite,
-    borderRadius: 6,
-    flexDirection: 'row',
-    marginHorizontal: wp('2%'),
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 0.5},
-    shadowOpacity: 0.16,
-    shadowRadius: 1,
-    elevation: 1,
-    width: wp('80%'),
-  },
   sendTextStyle: {
+    fontSize: 16,
+    lineHeight: 24,
     color: colors.themeColor,
-    fontFamily: fonts.RBold,
-    fontSize: 11,
-  },
-  bottomSafeAreaStyle: {
-    backgroundColor: colors.whiteColor,
-    shadowOpacity: 0.16,
-    shadowOffset: {height: 0, width: 0},
-    shadowRadius: 3,
-    shadowColor: colors.blackColor,
-    width: '100%',
-    elevation: 10,
+    fontFamily: fonts.RRegular,
   },
   emptyText: {
     fontSize: 18,
@@ -440,53 +441,84 @@ const styles = StyleSheet.create({
     marginTop: '20%',
   },
   headerStyle: {
-    borderTopRightRadius: 25,
-    borderTopLeftRadius: 25,
-    backgroundColor: colors.whiteColor,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.grayBackgroundColor,
+    marginBottom: 25,
   },
-  handleStyle: {
-    marginVertical: 15,
-    alignSelf: 'center',
-    height: 5,
-    width: 40,
-    borderRadius: 15,
-    backgroundColor: '#DADBDA',
-  },
-  bottomPopupContainer: {
-    marginTop: Platform.OS === 'ios' ? hp(12) : 80,
-    flex: 1,
-    // paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    // position: 'absolute',
-    bottom: 0,
-    width: '100%',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
+  headerTitle: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
   },
   writeCommectStyle: {
-    textAlignVertical: 'center',
-    fontSize: 14,
-    lineHeight: 20,
-    width: wp('66%'),
-    marginHorizontal: '2%',
+    flex: 1,
+    fontSize: 16,
+    lineHeight: 18,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    paddingVertical: 0,
-    paddingLeft: 8,
-    alignSelf: 'center',
-    maxHeight: hp(10),
+    padding: 0,
+  },
+  profileIcon: {
+    width: 40,
+    height: 40,
+  },
+  bottomContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.blackColor,
+    shadowOffset: {
+      width: 0,
+      height: -5,
+    },
+    shadowOpacity: 0.1608,
+    shadowRadius: 10,
+    elevation: 9,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginLeft: 15,
+    backgroundColor: colors.textFieldBackground,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  tagText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.tagColor,
+    fontFamily: fonts.RRegular,
+  },
+  repliesContainer: {
+    marginLeft: 30,
+    marginBottom: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.grayBackgroundColor,
+  },
+  viewMoreText: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: fonts.RBold,
+    color: colors.userPostTimeColor,
+  },
+  hrBar: {
+    width: 25,
+    height: 1,
+    marginHorizontal: 10,
+    backgroundColor: colors.userPostTimeColor,
+  },
+  replyBottomView: {
+    marginLeft: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 25,
   },
 });
 

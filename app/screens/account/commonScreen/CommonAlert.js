@@ -45,7 +45,7 @@ const CommonAlert = ({alertData}) => (
           style={{
             fontSize: 16,
             fontFamily: fonts.RMedium,
-            color: colors.darkYellowColor,
+            color: colors.neonBlue,
             marginTop: 5,
           }}>
           {alertData?.message ?? strings.linkedCopied}

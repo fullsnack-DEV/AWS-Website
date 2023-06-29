@@ -5,7 +5,9 @@ import fonts from '../../Constants/Fonts';
 
 const TagView = ({source, tagText, tagTextStyle}) => (
   <View style={styles.mainContainerStyle}>
-    <Image source={source} style={styles.imageStyle} resizeMode={'contain'} />
+    <View style={styles.imageStyle}>
+      <Image source={source} style={styles.image} resizeMode={'contain'} />
+    </View>
     <Text style={{...styles.tagTextStyle, ...tagTextStyle}}>{tagText}</Text>
   </View>
 );
@@ -14,18 +16,22 @@ const styles = StyleSheet.create({
   mainContainerStyle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 10,
-    marginBottom: 10,
   },
   imageStyle: {
-    height: 15,
-    width: 15,
-    marginRight: 7.5,
+    height: 20,
+    width: 20,
+    marginRight: 5,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
   tagTextStyle: {
     fontSize: 12,
+    lineHeight: 18,
     fontFamily: fonts.RRegular,
-    color: colors.greeColor,
+    color: colors.userPostTimeColor,
   },
 });
 

@@ -8,6 +8,9 @@ import {
   Text,
   View,
 } from 'react-native';
+
+import {format} from 'react-string-format';
+
 import {useIsFocused} from '@react-navigation/native';
 import AccountHeader from './components/AccountHeader';
 import AuthContext from '../../auth/context';
@@ -15,15 +18,12 @@ import AccountEntity from './components/AccountEntity';
 import {getStorage, onLogout} from '../../utils';
 import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 import AccountMenuList from './components/AccountMenuList';
+
 import {
   getJoinedGroups,
   getTeamsOfClub,
   actionOnGroupRequest,
   getTeamPendingRequest,
-  groupUnpaused,
-  groupValidate,
-  joinTeam,
-  getGroupDetails,
 } from '../../api/Groups';
 import Verbs from '../../Constants/Verbs';
 import {strings} from '../../../Localization/translation';
@@ -49,6 +49,7 @@ import {ModalTypes} from '../../Constants/GeneralConstants';
 import AccountShimmer from '../../components/shimmer/account/AccountShimmer';
 import {getUnreadCount} from '../../api/Notificaitons';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import {onResendRequest} from '../../utils/accountUtils';
 
 const AccountScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -75,12 +76,17 @@ const AccountScreen = ({navigation, route}) => {
   const [onlyteamSport, setOnlyTeamSport] = useState();
   const [doubleSport, setDoubleSport] = useState();
   const [memberListModal, setMemberListModal] = useState(false);
-  const [doubleExist, setDoubleExist] = useState(true);
-  const [Visiblealert, setVisibleAlert] = useState(false);
-  const [CustomeAlertTitle, setCustomeAlertTitle] = useState();
-  const [grpIdforTermination, setGrpIdForTermination] = useState();
+
   const [players, setPlayers] = useState([]);
   const [onLoad, setOnLoad] = useState(false);
+
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: isFocused ? 'flex' : 'none',
+      },
+    });
+  }, [navigation, isFocused]);
 
   const getUsers = useCallback(() => {
     const generalsQuery = {
@@ -103,7 +109,6 @@ const AccountScreen = ({navigation, route}) => {
           const filteredResult = result.filter(
             (e) => e.user_id !== authContext.entity.auth.user.user_id,
           );
-
           setPlayers([...filteredResult]);
         }
       })
@@ -128,6 +133,27 @@ const AccountScreen = ({navigation, route}) => {
     },
     [authContext],
   );
+
+  useEffect(() => {
+    if (route.params?.switchToUser) {
+      Alert.alert(
+        Platform.OS === 'android'
+          ? ''
+          : format(strings.adminremoved, route.params?.grpName),
+        Platform.OS === 'android'
+          ? format(strings.adminremoved, route.params?.grpName)
+          : '',
+        [
+          {
+            text: strings.OkText,
+            onPress: () => console.log('Pressed'),
+          },
+        ],
+        {cancelable: false},
+      );
+      setLoading(false);
+    }
+  }, [route.params?.switchToUser, route.params?.grpName, getUsers]);
 
   useEffect(() => {
     if (
@@ -212,14 +238,14 @@ const AccountScreen = ({navigation, route}) => {
           const obj = clubs.find(
             (item) => item.group_id === authContext.entity.uid,
           );
-          count = obj.unread ?? 0;
+          count = obj ? obj.unread : 0;
         } else if (
           authContext.entity.obj.entity_type === Verbs.entityTypeTeam
         ) {
           const obj = teams.find(
             (item) => item.group_id === authContext.entity.uid,
           );
-          count = obj.unread ?? 0;
+          count = obj ? obj.unread : 0;
         } else {
           count = user.unread ?? 0;
         }
@@ -229,6 +255,7 @@ const AccountScreen = ({navigation, route}) => {
         setUnreadNotificationCount(count);
       })
       .catch((e) => {
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -283,7 +310,6 @@ const AccountScreen = ({navigation, route}) => {
         break;
 
       case strings.createClubText:
-        // setCreateEntity(Verbs.entityTypeClub);
         setVisibleSportsModalForClub(true);
         setSelectedMenuOptionType(Verbs.entityTypeClub);
         setNavigationOptions({
@@ -294,6 +320,7 @@ const AccountScreen = ({navigation, route}) => {
         break;
 
       case strings.addSportsTitle:
+        console.log(rowObj, 'From add sport');
         setNavigationOptions({
           screenName: rowObj.navigateTo.screenName,
           data: rowObj.navigateTo.data,
@@ -332,10 +359,12 @@ const AccountScreen = ({navigation, route}) => {
     sportArr.sort((a, b) =>
       a.sport_name.normalize().localeCompare(b.sport_name.normalize()),
     );
+
     setSportsData([...sportArr]);
     const OnlyTeamSport = sportArr.filter(
       (item) => item.sport === item.sport_type,
     );
+
     setOnlyTeamSport(OnlyTeamSport);
   }, [
     authContext,
@@ -343,121 +372,6 @@ const AccountScreen = ({navigation, route}) => {
     showOnlyTeamSport,
     visibleSportsModalForClub,
   ]);
-
-  const onResendRequest = (player1, player2, sport, sport_type, request_id) => {
-    const obj = {
-      player1,
-      player2,
-      sport,
-      sport_type,
-      entity_type: Verbs.entityTypeTeam,
-      request_id,
-    };
-    setLoading(true);
-
-    groupValidate(obj, authContext)
-      .then(() => {
-        setLoading(false);
-
-        Alert.alert(
-          Platform.OS === 'android' ? '' : strings.requestSent,
-          Platform.OS === 'android' ? strings.requestSent : '',
-
-          [
-            {
-              text: strings.OkText,
-              onPress: () => setMemberListModal(false),
-            },
-          ],
-          {cancelable: false},
-        );
-      })
-      .catch((e) => {
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
-  };
-
-  const onJoinTeamPress = (grp_id) => {
-    setLoading(true);
-    const params = {};
-
-    joinTeam(params, grp_id, authContext)
-      .then(() => {
-        setLoading(false);
-
-        setMemberListModal(false);
-        getGroupDetails(grp_id, authContext)
-          .then((response) => {
-            setLoading(false);
-
-            navigation.push('HomeScreen', {
-              uid: response.payload.group_id,
-              role: response.payload.entity_type,
-              backButtonVisible: false,
-              menuBtnVisible: false,
-              isEntityCreated: true,
-
-              groupName: response.payload.group_name,
-              entityObj: response.payload,
-              userJoinTeam: true,
-            });
-          })
-          .catch((e) => {
-            setLoading(false);
-            Alert.alert(
-              e.message,
-              '',
-              [
-                {
-                  text: strings.OkText,
-                  onPress: () => console.log('PRessed'),
-                },
-              ],
-              {cancelable: false},
-            );
-          });
-      })
-      .catch((e) => {
-        setLoading(false);
-        Alert.alert(
-          e.message,
-          '',
-          [
-            {
-              text: strings.OkText,
-              onPress: () => console.log('PRessed'),
-            },
-          ],
-          {cancelable: false},
-        );
-      });
-  };
-
-  const onCancelTermination = (context, group_id) => {
-    const caller_id = group_id;
-    const caller = Verbs.entityTypeTeam;
-
-    const headers = [caller_id, caller];
-
-    groupUnpaused(context, headers)
-      .then(() => {})
-      .catch((e) => {
-        Alert.alert(
-          e.message,
-          '',
-          [
-            {
-              text: strings.OkText,
-              onPress: () => console.log('PRessed'),
-            },
-          ],
-          {cancelable: false},
-        );
-      });
-  };
 
   const actionOnTeamRequest = (type, requestID) => {
     setLoading(true);
@@ -504,141 +418,23 @@ const AccountScreen = ({navigation, route}) => {
       });
   };
 
-  const validateIfDoubleExist = (p1, p2, _sport) => {
-    const obj = {
-      player1: p1,
-      player2: p2.user_id,
-      sport: _sport.sport,
-      sport_type: _sport.sport_type,
-      entity_type: Verbs.entityTypeTeam,
-    };
+  // Valdate Dobule Team Functions
 
-    setLoading(true);
-    groupValidate(obj, authContext)
-      .then((response) => {
-        if (typeof response.payload === 'boolean' && response.payload) {
-          setDoubleExist(false);
-          setLoading(false);
-        } else if (
-          response.payload.error_code === Verbs.REQUESTALREADYEXIST &&
-          'action' in response.payload
-        ) {
-          setLoading(false);
+  const seLoaderHandler = (val) => {
+    setLoading(val);
+  };
+  const handleMemberModal = (val) => {
+    setMemberListModal(val);
+  };
 
-          const {player1, player2, sport, sport_type, request_id} =
-            response.payload.data;
+  const setdoubleSportHandler = (sport) => {
+    setDoubleSport(sport);
+  };
 
-          Alert.alert(
-            Platform.OS === 'android' ? '' : response.payload.user_message,
-            Platform.OS === 'android' ? response.payload.user_message : '',
-
-            [
-              {
-                text: strings.resendRequest,
-                onPress: () => {
-                  onResendRequest(
-                    player1,
-                    player2,
-                    sport,
-                    sport_type,
-                    request_id,
-                  );
-                },
-              },
-              {
-                text: strings.goBack,
-                onPress: () => console.log('Pressed'),
-              },
-            ],
-            {cancelable: false},
-          );
-        } else if (response.payload.error_code === Verbs.REQUESTALREADYEXIST) {
-          setLoading(false);
-
-          // show custom Alert
-          Alert.alert(
-            Platform.OS === 'android' ? '' : response.payload.user_message,
-            Platform.OS === 'android' ? response.payload.user_message : '',
-            [
-              {
-                text: strings.respondToRequest,
-                onPress: () => {
-                  setMemberListModal(false);
-                  const teamObject = response.payload.data;
-
-                  delete teamObject.player1;
-                  delete teamObject.player2;
-
-                  teamObject.player1 = {
-                    full_name: p2.full_name,
-
-                    thumbnail: p2.thumbnail,
-                  };
-
-                  teamObject.player2 = {
-                    full_name: authContext.entity.obj.full_name,
-                    thumbnail: authContext.entity.obj.thumbnail,
-                  };
-                  teamObject.group_id = response.payload.data.request_id;
-
-                  navigation.navigate('RespondToInviteScreen', {
-                    teamObject,
-                  });
-                },
-              },
-
-              {
-                text: strings.cancel,
-                onPress: () => console.log('PRessed'),
-              },
-            ],
-            {cancelable: false},
-          );
-        } else if (response.payload.error_code === Verbs.GROUPTERMINATION) {
-          setLoading(false);
-          setCustomeAlertTitle(response.payload.user_message);
-
-          setGrpIdForTermination(response.payload.data.group_id);
-          setVisibleAlert(true);
-        } else if (
-          response.payload?.data.player_leaved === true &&
-          response.payload.error_code === 102
-        ) {
-          setLoading(false);
-          Alert.alert(
-            Platform.OS === 'android' ? '' : response.payload.user_message,
-            Platform.OS === 'android' ? response.payload.user_message : '',
-            [
-              {
-                text: strings.cancel,
-                onPress: () => console.log('PRessed'),
-                style: 'destructive',
-              },
-              {
-                text: strings.rejoin,
-                onPress: () => onJoinTeamPress(response.payload?.data.group_id),
-              },
-            ],
-            {cancelable: false},
-          );
-        }
-      })
-      .catch((e) => {
-        Alert.alert(
-          Platform.OS === 'android' ? '' : e.message,
-          Platform.OS === 'android' ? e.message : '',
-
-          [
-            {
-              text: strings.OkText,
-              onPress: () => console.log('PRessed'),
-            },
-          ],
-          {cancelable: false},
-        );
-
-        setLoading(false);
-      });
+  const setMemberListModalHandler = () => {
+    setTimeout(() => {
+      setMemberListModal(true);
+    });
   };
 
   const onWithdrawRequest = (rowItem) => {
@@ -675,6 +471,9 @@ const AccountScreen = ({navigation, route}) => {
               rowItem.option.sport,
               rowItem.option.sport_type,
               rowItem.option.request_id,
+              seLoaderHandler,
+              handleMemberModal,
+              authContext,
             ),
         },
         {
@@ -700,7 +499,8 @@ const AccountScreen = ({navigation, route}) => {
           navigation.navigate('NotificationsListScreen')
         }
       />
-      <ActivityLoader visible={onLoad} />
+      <ActivityLoader visible={onLoad || loading} />
+
       {accountMenu.length === 0 ? (
         <AccountShimmer />
       ) : (
@@ -760,7 +560,23 @@ const AccountScreen = ({navigation, route}) => {
         isVisible={showSwitchAccountModal}
         closeModal={() => setShowSwitchAccountModal(false)}
         onCreate={(option) => {
-          console.log({option});
+          setShowSwitchAccountModal(false);
+
+          if (option === strings.team) {
+            setNavigationOptions({
+              screenName: 'CreateTeamForm1',
+            });
+
+            setTimeout(() => setVisibleSportsModalForTeam(true), 500);
+            setSelectedMenuOptionType(Verbs.entityTypeTeam);
+          } else if (option === strings.club) {
+            setNavigationOptions({
+              screenName: 'CreateClubForm1',
+            });
+            setTimeout(() => setVisibleSportsModalForClub(true), 500);
+          } else {
+            console.log({option});
+          }
         }}
       />
 
@@ -840,30 +656,10 @@ const AccountScreen = ({navigation, route}) => {
         closeList={() => setVisibleSportsModalForTeam(false)}
         title={strings.createTeamText}
         sportsList={showOnlyTeamSport ? onlyteamSport : sportsData}
-        onNext={(sport) => {
-          if (
-            sport.sport_type === Verbs.doubleSport &&
-            authContext?.entity?.role ===
-              (Verbs.entityTypeUser || Verbs.entityTypePlayer)
-          ) {
-            setVisibleSportsModalForTeam(false);
-            setDoubleSport(sport);
-
-            setTimeout(() => {
-              setMemberListModal(true);
-            }, 10);
-          } else if (authContext.entity.role !== Verbs.entityTypeUser) {
-            setVisibleSportsModalForTeam(false);
-            // also have to pass the club id to it
-            const obj = {...sport};
-            obj.grp_id = authContext.entity.obj.group_id;
-
-            navigation.navigate('CreateTeamForm1', sport);
-          } else {
-            setVisibleSportsModalForTeam(false);
-            navigation.navigate(navigationOptions.screenName, sport);
-          }
-        }}
+        forTeam={true}
+        authContext={authContext}
+        setdoubleSportHandler={setdoubleSportHandler}
+        setMemberListModalHandler={setMemberListModalHandler}
       />
 
       {/* sport, group */}
@@ -882,29 +678,7 @@ const AccountScreen = ({navigation, route}) => {
         title={strings.createTeamText}
         loading={loading}
         closeList={() => setMemberListModal(false)}
-        onNext={(doublePlayer) => {
-          if (!doubleExist) {
-            setMemberListModal(false);
-            navigation.navigate(navigationOptions.screenName, {
-              sports: doubleSport,
-              double_Player: doublePlayer,
-              showDouble: true,
-            });
-          }
-        }}
-        onGoBack={() => setVisibleAlert(false)}
-        titleAlert={CustomeAlertTitle}
-        visibleAlert={Visiblealert}
-        onCancetTerminationPress={() =>
-          onCancelTermination(authContext, grpIdforTermination)
-        }
-        onItemPress={(item) => {
-          validateIfDoubleExist(
-            authContext.entity.auth.user.user_id,
-            item,
-            doubleSport,
-          );
-        }}
+        doubleSport={doubleSport}
         sportsList={players}
       />
 

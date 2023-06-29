@@ -1,9 +1,12 @@
 // @flow
+import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {FlatList, Image, Modal, Pressable, Text, View} from 'react-native';
 import {strings} from '../../../../../../Localization/translation';
 import images from '../../../../../Constants/ImagePath';
+import Verbs from '../../../../../Constants/Verbs';
 import styles from './styles';
+import ScreenHeader from '../../../../../components/ScreenHeader';
 
 const SportsListModal = ({
   isVisible = false,
@@ -12,8 +15,13 @@ const SportsListModal = ({
   onNext = () => {},
   sport = null,
   title = '',
+  forTeam = false,
+  authContext,
+  setdoubleSportHandler = () => {},
+  setMemberListModalHandler = () => {},
 }) => {
   const [selectedSport, setSelectedSport] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     setSelectedSport(sport);
@@ -53,20 +61,49 @@ const SportsListModal = ({
     }
   };
 
+  // only for Create Team Call
+
+  const onNextPress = (sport_data) => {
+    if (
+      sport_data.sport_type === Verbs.doubleSport &&
+      authContext?.entity?.role ===
+        (Verbs.entityTypeUser || Verbs.entityTypePlayer)
+    ) {
+      closeList();
+      setdoubleSportHandler(sport_data);
+
+      setMemberListModalHandler(true);
+    } else if (authContext.entity.role !== Verbs.entityTypeUser) {
+      closeList();
+
+      const obj = {...sport_data};
+      obj.grp_id = authContext.entity.obj.group_id;
+
+      navigation.navigate('Account', {
+        screen: 'CreateTeamForm1',
+        params: sport_data,
+      });
+    } else {
+      closeList();
+      navigation.navigate('Account', {
+        screen: 'CreateTeamForm1',
+        params: sport_data,
+      });
+    }
+  };
+
   return (
     <Modal visible={isVisible} transparent animationType="slide">
       <View style={styles.parent}>
         <View style={styles.card}>
-          <View style={styles.headerRow}>
+          {/* <View style={styles.headerRow}>
             <View style={{flex: 1}}>
               <Pressable style={{width: 26, height: 26}} onPress={closeList}>
-                <Image source={images.backArrow} style={styles.image} />
+                <Image source={images.crossImage} style={styles.image} />
               </Pressable>
             </View>
             <View style={styles.headerTitleContainer}>
-              <Text style={styles.headerTitle}>
-                {sport?.sport ? strings.sportTextTitle : title}
-              </Text>
+              <Text style={styles.headerTitle}>{sport?.sport ? strings.sportTextTitle : title}</Text>
             </View>
             <Pressable
               style={styles.buttonContainer}
@@ -74,25 +111,51 @@ const SportsListModal = ({
                 if (!selectedSport?.sport_name) {
                   return;
                 }
-                onNext(selectedSport);
+                if (forTeam) {
+                  onNextPress(selectedSport);
+                } else {
+                  onNext(selectedSport);
+                }
               }}>
-              <Text
-                style={[
-                  styles.buttonText,
-                  selectedSport?.sport_name ? {} : {opacity: 0.5},
-                ]}>
-                {sport?.sport ? strings.apply : strings.next}
-              </Text>
+              <Text style={[styles.buttonText, selectedSport?.sport_name ? {} : {opacity: 0.5}]}>{sport?.sport ? strings.next : strings.apply}</Text>
             </Pressable>
-          </View>
+          </View> */}
+          <ScreenHeader
+            title={sport?.sport ? strings.sportTextTitle : title}
+            leftIcon={images.crossImage}
+            leftIconPress={closeList}
+            containerStyle={{paddingBottom: 14}}
+            isRightIconText
+            rightButtonTextStyle={[
+              styles.buttonText,
+              selectedSport?.sport_name ? {} : {opacity: 0.5},
+            ]}
+            rightButtonText={sport?.sport ? strings.apply : strings.next}
+            onRightButtonPress={() => {
+              if (!selectedSport?.sport_name) {
+                return;
+              }
+
+              if (forTeam) {
+                onNextPress(selectedSport);
+              } else {
+                onNext(selectedSport);
+              }
+            }}
+          />
           <View style={styles.divider} />
           <View style={styles.container}>
-            <Text style={styles.title}>
-              {getQuestionAndDescription().question}
-            </Text>
-            <Text style={styles.description}>
-              {getQuestionAndDescription().description}
-            </Text>
+            {getQuestionAndDescription().question ? (
+              <Text style={styles.title}>
+                {getQuestionAndDescription().question}
+              </Text>
+            ) : null}
+            {getQuestionAndDescription().description ? (
+              <Text style={styles.description}>
+                {getQuestionAndDescription().description}
+              </Text>
+            ) : null}
+
             <FlatList
               data={sportsList}
               keyExtractor={(item, index) => `${item?.sport_type}/${index}`}

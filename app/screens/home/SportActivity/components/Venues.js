@@ -23,7 +23,9 @@ const Venues = ({list = []}) =>
               ]}>
               {item.name}
             </Text>
-            <Text style={styles.label}>{item.address}</Text>
+            <Text numberOfLines={2} style={styles.label}>
+              {item.address}
+            </Text>
           </View>
           <EventMapView
             coordinate={item.coordinate}

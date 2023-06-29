@@ -1,6 +1,5 @@
-/* eslint-disable no-useless-escape */
-import React, {useContext, useCallback, useMemo, useRef, useState} from 'react';
-import {StyleSheet, View, Text, FlatList} from 'react-native';
+import React, {useContext, useCallback, useRef, useState} from 'react';
+import {StyleSheet, View, Text, FlatList, Dimensions} from 'react-native';
 import ReadMore from '@fawazahmed/react-native-read-more';
 
 import ParsedText from 'react-native-parsed-text';
@@ -8,17 +7,15 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
-import TCGameCard from '../TCGameCard';
 import images from '../../Constants/ImagePath';
 import TagView from './TagView';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import {getTaggedText} from '../../utils';
 import TaggedModal from '../modals/TaggedModal';
-
-const urlRegex =
-  /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
-// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
-const tagRegex = /(?!\w)@\w+/gim;
+import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
+import MatchCard from '../../screens/newsfeeds/MatchCard';
+import {tagRegex, urlRegex} from '../../Constants/GeneralConstants';
 
 const NewsFeedDescription = ({
   descriptions,
@@ -31,6 +28,10 @@ const NewsFeedDescription = ({
   numberOfLineDisplay,
   isNewsFeedScreen,
   openProfilId,
+  moreTextStyle = {},
+  onExpand = () => {},
+  onCollapse = () => {},
+  tagStyle = {},
 }) => {
   const taggedModalRef = useRef(null);
   const authContext = useContext(AuthContext);
@@ -121,126 +122,113 @@ const NewsFeedDescription = ({
         matchData?.input?.substr(matchData?.index, descriptions?.length),
       );
       let color = colors.black;
-      let isTagName = false
-      if(tagData && tagData.length > 0){
-        
-        isTagName = tagData.filter(
-          (item) => item.entity_data.tagged_formatted_name === match,
-        ).length > 0;
-        if (isTagName) color = colors.greeColor;
+      let isTagName = false;
+
+      if (tagData && tagData.length > 0) {
+        isTagName =
+          tagData.filter(
+            (item) => item.entity_data?.tagged_formatted_name === match,
+          ).length > 0;
+        if (isTagName) color = colors.tagColor;
       }
 
       return (
         <Text
           onPress={() => isTagName && handleNamePress(match, startTagIndex)}
-          style={{...styles.username, color}}>
+          style={{...styles.username, color, ...tagStyle}}>
           {match}
         </Text>
       );
     },
-    [descriptions, handleNamePress, tagData],
+    [descriptions, handleNamePress, tagData, tagStyle],
   );
 
-  const renderURLText = useCallback((matchingString) => {
-    const match = matchingString.match(urlRegex);
-    const color = colors.eventBlueColor;
-    return <Text style={{color}}>{match?.[0]}</Text>;
-  }, []);
-
-  const renderSelectedGame = useCallback(
-    ({item}) => (
-      <View style={{marginLeft: 15}}>
-        <TCGameCard
-          data={item?.entity_data}
-          onPress={() => {
-            const routeName = getGameHomeScreen(item?.entity_data?.sport);
-            navigation.push(routeName, {gameId: item?.entity_id});
-          }}
-
-          // cardWidth={'92%'}
-        />
-      </View>
-    ),
-    [navigation],
-  );
-
-  const renderGameTags = useMemo(
-    () =>
-      tagData?.length > 0 && (
-        <View style={{marginVertical: 15}}>
-          <TouchableOpacity onPress={() => setShowTaggedModal(true)}>
-            <TagView
-              tagTextStyle={{color: colors.greeColor}}
-              source={images.tagGreenImage}
-              tagText={getTaggedText(tagData)}
-            />
-          </TouchableOpacity>
-          <FlatList
-            bounces={false}
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-            pagingEnabled={true}
-            horizontal={true}
-            data={tagData?.filter((item) => item?.entity_type === 'game')}
-            renderItem={renderSelectedGame}
-            keyExtractor={(item) => item?.entity_id}
-          />
-        </View>
-      ),
-    [renderSelectedGame, tagData],
-  );
-
-  const renderDescriptions = useMemo(
-    () =>
-      descriptions?.length > 0 && (
-        <View style={{paddingHorizontal: 10}}>
-          <ReadMore
-            style={[styles.text, descText]}
-            numberOfLines={numberOfLineDisplay}
-            seeMoreText={'more'}
-            seeLessText={'less'}
-            seeMoreOverlapCount={0}
-            allowFontScaling={false}
-            seeLessStyle={[styles.lessText, 'less']}
-            seeMoreStyle={[styles.moreText, 'more']}
-            onExpand={() => {
-              console.log('called expand function');
-            }}>
-            <ParsedText
-              style={[styles.text, descriptionTxt]}
-              parse={[
-                {pattern: tagRegex, renderText: renderTagText},
-                {pattern: urlRegex, renderText: renderURLText},
-              ]}
-              childrenProps={{allowFontScaling: false}}>
-              {descriptions}
-            </ParsedText>
-          </ReadMore>
-        </View>
-      ),
-    [
-      descText,
-      descriptionTxt,
-      descriptions,
-      renderTagText,
-      renderURLText,
-      numberOfLineDisplay,
-    ],
+  const renderURLText = useCallback(
+    (matchingString) => {
+      const match = matchingString.match(urlRegex);
+      const color = colors.tagColor;
+      return (
+        <Text style={{...styles.username, color, ...tagStyle}}>
+          {match?.[0]}
+        </Text>
+      );
+    },
+    [tagStyle],
   );
 
   return (
     <View style={containerStyle}>
       <View pointerEvents={disableTouch ? 'none' : 'auto'}>
-        {renderDescriptions}
-        <TaggedModal
-          navigation={navigation}
-          taggedModalRef={taggedModalRef}
-          taggedData={tagData}
-          showTaggedModal={showTaggedModal}
-          onBackdropPress={() => setShowTaggedModal(false)}
-        />
+        {descriptions?.length > 0 && (
+          <View>
+            <ReadMore
+              style={[styles.text, descText]}
+              numberOfLines={numberOfLineDisplay}
+              seeMoreText={strings.moreText}
+              seeLessText={strings.lessText}
+              seeMoreOverlapCount={0}
+              allowFontScaling={false}
+              seeLessStyle={[styles.moreText, moreTextStyle]}
+              seeMoreStyle={[styles.moreText, moreTextStyle]}
+              onExpand={onExpand}
+              onCollapse={onCollapse}>
+              <ParsedText
+                style={[styles.text, descriptionTxt]}
+                parse={[
+                  {pattern: tagRegex, renderText: renderTagText},
+                  {pattern: urlRegex, renderText: renderURLText},
+                ]}
+                childrenProps={{allowFontScaling: false}}>
+                {descriptions}
+              </ParsedText>
+            </ReadMore>
+          </View>
+        )}
+        {tagData.length > 0 && (
+          <>
+            <TouchableOpacity
+              onPress={() => setShowTaggedModal(true)}
+              style={{marginVertical: 10}}>
+              <TagView
+                source={images.tagIcon}
+                tagText={getTaggedText(tagData)}
+              />
+            </TouchableOpacity>
+            <FlatList
+              bounces={false}
+              showsVerticalScrollIndicator={false}
+              showsHorizontalScrollIndicator={false}
+              pagingEnabled={true}
+              horizontal={true}
+              data={tagData.filter(
+                (item) => item.entity_type === Verbs.entityTypeGame,
+              )}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  style={{
+                    width: Dimensions.get('window').width - 30,
+                    flex: 1,
+                    marginRight: 15,
+                  }}
+                  onPress={() => {
+                    const routeName = getGameHomeScreen(item.matchData.sport);
+                    navigation.push(routeName, {gameId: item.game_id});
+                  }}>
+                  <MatchCard item={item.matchData} />
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item?.entity_id}
+            />
+          </>
+        )}
       </View>
-      {renderGameTags}
+      <TaggedModal
+        navigation={navigation}
+        taggedModalRef={taggedModalRef}
+        taggedData={tagData}
+        showTaggedModal={showTaggedModal}
+        onBackdropPress={() => setShowTaggedModal(false)}
+      />
     </View>
   );
 };
@@ -252,19 +240,14 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    // paddingVertical: '2%',
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
   moreText: {
-    color: 'gray',
-    fontFamily: fonts.RRegular,
     fontSize: 12,
-    top: 3,
-  },
-  lessText: {
-    color: 'gray',
-    fontSize: 12,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RLight,
   },
 });
 

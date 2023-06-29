@@ -170,9 +170,22 @@ const Verbs = {
   fromDateTime: 'fromDateTime',
   toDateTime: 'toDateTime',
   DATE_MDY_FORMAT: 'll',
-
   THOUSAND_SECOND: '1000',
   AVAILABILITY_DATE_FORMATE: 'YYYY-MM-DD',
+  mediaTypeImage: 'image',
+  mediaTypeVideo: 'video',
+  repostVerb: 'repost',
+  CREATE_TEAM: 'Create Team',
+  CREATE_CLUB: 'Create Club',
+  CREATE_LEAGUE: 'Create League',
+  JOIN_TEAM: 'Join Team',
+  JOIN_CLUB: 'Join Club',
+  JOIN_LEAGUE: 'Join League',
+  TEAM_DATA: 'teamData',
+  SPORT_DATA: 'sportData',
+  delete: 'delete',
+  report: 'report',
+
 };
 
 export default Verbs;

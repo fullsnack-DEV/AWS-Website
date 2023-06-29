@@ -11,7 +11,6 @@ import SearchLocationScreen from '../screens/account/commonScreen/SearchLocation
 import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
 
 import colors from '../Constants/Colors';
-import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import {strings} from '../../Localization/translation';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
@@ -164,7 +163,6 @@ import NotificationNavigator from './NotificationNavigator';
 import ReservationNavigator from './ReservationNavigator';
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
 import ManageChallengeScreen from '../screens/challenge/manageChallenge/ManageChallengeScreen';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 import RefereeReservationSetting from '../screens/game/bookReferee/RefereeReservationSetting';
 import ScorekeeperReservationSetting from '../screens/game/bookScorekeeper/ScorekeeperReservationSetting';
@@ -305,23 +303,6 @@ const HomeNavigator = () => (
       component={EditGroupProfileScreen}
       options={{
         title: 'Edit Profile',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-
-    <Stack.Screen
-      name="WritePostScreen"
-      component={WritePostScreen}
-      options={{
-        title: 'Write Post',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2085,11 +2066,6 @@ const HomeNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
-    />
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
-      options={{headerShown: false}}
     />
     <Stack.Screen
       name="AlterRefereeScreen"

@@ -3,7 +3,6 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import FeedsScreen from '../screens/newsfeeds/FeedsScreen';
 import NewsFeedVideoPlayer from '../screens/newsfeeds/NewsFeedVideoPlayer';
-import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import FullVideoScreen from '../screens/newsfeeds/FullVideoScreen';
@@ -40,7 +39,6 @@ import BookReferee from '../screens/game/bookReferee/refereeList/BookReferee';
 import BookScorekeeper from '../screens/game/bookScorekeeper/scorekeeperList/BookScorekeeper';
 import ScorekeeperBookingDateAndTime from '../screens/game/bookScorekeeper/scorekeeperBookDateTime/ScorekeeperBookingDateAndTime';
 import BookScorekeeperSuccess from '../screens/game/bookScorekeeper/BookScorekeeperSuccess';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
 import InviteChallengeScreen from '../screens/challenge/createChallenge/InviteChallengeScreen';
 import ChooseVenueScreen from '../screens/challenge/manageChallenge/ChooseVenueScreen';
@@ -93,6 +91,8 @@ import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
+import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
+import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 
 const Stack = createStackNavigator();
 
@@ -110,35 +110,17 @@ const NewsFeedNavigator = () => (
     <Stack.Screen
       name="WritePostScreen"
       component={WritePostScreen}
-      options={{
-        title: 'Write Post',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="UserTagSelectionListScreen"
       component={UserTagSelectionListScreen}
-      options={{
-        title: 'Tag',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name={'FeedViewScreen'}
+      component={FeedViewScreen}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="AlterRequestAccept"
@@ -776,12 +758,6 @@ const NewsFeedNavigator = () => (
       options={{
         headerShown: false,
       }}
-    />
-
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
-      options={{headerShown: false}}
     />
 
     <Stack.Screen

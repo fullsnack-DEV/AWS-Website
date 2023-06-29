@@ -154,5 +154,10 @@ const colors = {
   borderlinecolor: '#dddddd',
   timeZone: 'en_Time Zone',
   transperantBlack: 'rgba(0,0,0,0.3)',
+  tagColor: '#1D8BDB',
+  privacyBgColor: 'rgba(0,0,0,0.05)',
+  maskColor: 'rgba(0,0,0,0.1)',
+  linkGrey: '#727272',
+  pagingBgColor: 'rgba(153, 153, 153, 0.6)',
 };
 export default colors;

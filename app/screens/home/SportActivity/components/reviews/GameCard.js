@@ -48,7 +48,7 @@ const GameCard = ({containerStyle = {}, data = {}, onCardPress = () => {}}) => {
     <Pressable style={[styles.parent, containerStyle]} onPress={onCardPress}>
       <View style={styles.row}>
         <Text style={styles.dateTime}>
-          {moment(getJSDate(data.data.start_time).getTime()).format(
+          {moment(getJSDate(data.data?.start_time).getTime()).format(
             'ddd, MMM DD · HH:mma',
           )}
         </Text>

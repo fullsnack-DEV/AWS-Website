@@ -149,9 +149,9 @@ export default function RespondToInviteScreen({navigation, route}) {
         showsVerticalScrollIndicator={false}>
         <View
           style={{
-            marginLeft: 15,
+            marginHorizontal: 15,
             marginTop: 20,
-            marginRight: 60,
+
             marginBottom: 20,
           }}>
           {teamObject?.status !== TeamStatus.new ? (

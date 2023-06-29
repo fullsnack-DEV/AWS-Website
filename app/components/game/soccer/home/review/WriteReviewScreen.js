@@ -18,7 +18,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import ImagePicker from 'react-native-image-crop-picker';
-import UrlPreview from 'react-native-url-preview';
+// import UrlPreview from 'react-native-url-preview';
 import ImageButton from '../../../../WritePost/ImageButton';
 import SelectedImageList from '../../../../WritePost/SelectedImageList';
 import ActivityLoader from '../../../../loader/ActivityLoader';
@@ -87,9 +87,8 @@ export default function WriteReviewScreen({navigation, route}) {
       const position = desc.search(urlRegex);
       if (position !== -1 && desc.substring(position)?.startsWith('www'))
         desc = addStr(desc, position, 'http://');
-      return (
-        <UrlPreview text={desc} containerStyle={styles.previewContainerStyle} />
-      );
+      return null;
+      // <UrlPreview text={desc} containerStyle={styles.previewContainerStyle} />
     }
     return null;
   }, [comment]);
@@ -173,22 +172,26 @@ export default function WriteReviewScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
       {renderHeader}
       <View style={styles.sperateLine} />
-      <ScrollView
-        bounces={false}
-        style={{flex: 1, overflow: 'visible'}}
-      >
+      <ScrollView bounces={false} style={{flex: 1, overflow: 'visible'}}>
         {/* eslint-disable no-nested-ternary */}
         <TextInput
           ref={textInputRef}
-          placeholder={route.params.comeFrom === 'RefereeReviewScreen' ? strings.writerefereereviewplacholder :
-          route.params.comeFrom === 'ScorekeeperReviewScreen' ? strings.writescorekeeperreviewplacholder :
-          route.params.isPlayer ? strings.writeplayerreviewplacholder : strings.writeteamreviewplacholder}
+          placeholder={
+            route.params.comeFrom === 'RefereeReviewScreen'
+              ? strings.writerefereereviewplacholder
+              : route.params.comeFrom === 'ScorekeeperReviewScreen'
+              ? strings.writescorekeeperreviewplacholder
+              : route.params.isPlayer
+              ? strings.writeplayerreviewplacholder
+              : strings.writeteamreviewplacholder
+          }
           placeholderTextColor={colors.userPostTimeColor}
           onChangeText={setComment}
           style={styles.textInputField}
           multiline={true}
           textAlignVertical={'top'}
-          value={comment}/>        
+          value={comment}
+        />
 
         {renderUrlPreview}
         {renderSelectedImageList}
@@ -252,18 +255,18 @@ const styles = StyleSheet.create({
   },
   textInputField: {
     fontSize: 16,
-    fontFamily:fonts.Roboto,
-    fontWeight:'400',
-    lineheight:21,
-    height :200,
-    marginHorizontal:15,
+    fontFamily: fonts.Roboto,
+    fontWeight: '400',
+    lineheight: 21,
+    height: 200,
+    marginHorizontal: 15,
     marginBottom: 10,
   },
   writePostTextStyle: {
     color: colors.lightBlackColor,
     fontFamily: fonts.Roboto,
     fontSize: 16,
-    fontWeight:'700',
+    fontWeight: '700',
   },
   writePostViewStyle: {
     alignItems: 'center',
@@ -277,11 +280,11 @@ const styles = StyleSheet.create({
       width: 0,
     },
   },
-  previewContainerStyle: {
-    margin: 5,
-    borderWidth: 1,
-    borderColor: colors.grayBackgroundColor,
-    padding: 8,
-    borderRadius: 10,
-  }
+  // previewContainerStyle: {
+  //   margin: 5,
+  //   borderWidth: 1,
+  //   borderColor: colors.grayBackgroundColor,
+  //   padding: 8,
+  //   borderRadius: 10,
+  // },
 });

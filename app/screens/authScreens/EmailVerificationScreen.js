@@ -80,9 +80,9 @@ export default function EmailVerificationScreen({navigation, route}) {
           setLoading(false);
           navigation.navigate('AddNameScreen', {
             signupInfo: {
-              ...route?.params?.signupInfo,
-              emailAddress: route?.params?.signupInfo?.emailAddress,
-              password: route?.params?.signupInfo?.password,
+              ...route.params?.signupInfo,
+              emailAddress: route.params?.signupInfo?.emailAddress,
+              password: route.params?.signupInfo?.password,
             },
           });
         });

@@ -82,7 +82,7 @@ export default function App() {
 
   const showAlert = (alertStuff) => {
     setAlertData(alertStuff);
-    setTimeout(() => setAlertData(null), 1000);
+    setTimeout(() => setAlertData(null), 3000);
   };
 
   const setUnreadNotificationCount = useCallback(

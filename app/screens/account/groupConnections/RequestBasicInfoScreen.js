@@ -82,7 +82,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   const [postalCode, setPostalCode] = useState('');
 
-  const [setting, setSetting] = useState();
+  const [setting, setSetting] = useState({});
   const [location, setLocation] = useState('');
   const [city, setCity] = useState();
   const [state, setState] = useState();
@@ -102,13 +102,13 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       getUserInfo();
       getGroupMemberInfo();
 
-      setLocation(memberInfo?.street_address);
+      setLocation(memberInfo.mail_street_address);
     }
   }, [isFocused]);
 
   useEffect(() => {
     setPhoneNumber(
-      memberInfo?.phone_numbers || [
+      memberInfo.phone_numbers || [
         {
           id: 0,
           phone_number: '',
@@ -122,8 +122,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
   const getGroupMemberInfo = () => {
     getGroupMembersInfo(
-      route?.params?.groupID,
-      route?.params?.memberID,
+      route.params?.groupID,
+      route.params?.memberID,
       authContext,
     )
       .then((response) => {
@@ -142,28 +142,28 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
     getUserDetails(authContext.entity?.uid, authContext)
       .then((response) => {
-        setMemberInfo(response?.payload);
+        setMemberInfo(response.payload);
 
         setSetting({
-          gender: !!response?.payload?.gender,
-          birthday: !!response?.payload?.birthday,
-          height: !!response?.payload?.height,
-          weight: !!response?.payload?.weight,
-          email: !!response?.payload?.email,
-          phone: !!response?.payload?.phone_numbers,
+          gender: !!response.payload.gender,
+          birthday: !!response.payload.birthday,
+          height: !!response.payload.height,
+          weight: !!response.payload.weight,
+          email: !!response.payload.email,
+          phone: !!response.payload.phone_numbers,
 
           address:
-            !!response?.payload?.street_address &&
-            !!response?.payload?.city &&
-            !!response?.payload?.state_abbr &&
-            !!response?.payload?.country &&
-            !!response?.payload?.postal_code,
+            !!response.payload.street_address &&
+            !!response.payload.city &&
+            !!response.payload.state_abbr &&
+            !!response.payload.country &&
+            !!response.payload.postal_code,
         });
-        if (response?.payload?.phone_numbers?.length > 0) {
-          setPhoneNumber(response?.payload?.phone_numbers);
+        if (response.payload.phone_numbers?.length > 0) {
+          setPhoneNumber(response.payload.phone_numbers);
         }
-        if (response?.payload?.street_address) {
-          setLocation(response?.payload?.street_address);
+        if (response.payload.mail_street_address) {
+          setLocation(response.payload.mail_street_address);
         }
         setloading(false);
       })
@@ -208,7 +208,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       return false;
     }
 
-    if (setting?.weight && memberInfo.weight !== null) {
+    if (setting.weight && memberInfo.weight !== null) {
       if (!memberInfo.weight?.weight_type) {
         Alert.alert(strings.appName, strings.weightValidation);
         return false;
@@ -222,7 +222,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       }
     }
 
-    if (setting?.height && memberInfo.height !== null) {
+    if (setting.height && memberInfo.height !== null) {
       if (!memberInfo.height?.height_type) {
         Alert.alert(strings.appName, strings.heightValidation);
         return false;
@@ -237,7 +237,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     }
 
     if (setting.phone) {
-      if (memberInfo?.phone_numbers?.length == null) {
+      if (memberInfo.phone_numbers?.length == null) {
         Alert.alert(strings.appName, strings.phoneNumberValidation);
         return false;
       }
@@ -258,46 +258,43 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
     setloading(true);
 
-    if (setting?.gender === true) {
+    if (setting.gender === true) {
       bodyParams.gender = memberInfo?.gender;
     }
 
-    if (setting?.height === true) {
+    if (setting.height === true) {
       bodyParams.height = memberInfo?.height;
     }
 
-    if (setting?.birthday === true) {
+    if (setting.birthday === true) {
       bodyParams.birthday = memberInfo.birthday;
     }
 
-    if (setting?.weight === true) {
+    if (setting.weight === true) {
       bodyParams.weight = memberInfo?.weight;
     }
     if (
-      setting?.dominant === true &&
+      setting.dominant === true &&
       authContext.entity.obj.sport === 'soccer' &&
       authContext.entity.role === 'team'
     ) {
       bodyParams.dominant = memberInfo?.dominant;
     }
-    // if (setting?.email === true) {
-    //   bodyParams.email = memberInfo?.email;
-    // }
-    if (setting?.phone === true) {
+
+    if (setting.phone === true) {
       bodyParams.phone_numbers = memberInfo?.phone_numbers;
     }
-    if (setting?.address === true) {
-      bodyParams.street_address = memberInfo?.street_address;
-      bodyParams.city = city;
-      bodyParams.state_abbr = state;
-      bodyParams.country = country;
-      bodyParams.postal_code = postalCode;
+    if (setting.address === true) {
+      bodyParams.mail_street_address = memberInfo?.mail_street_address;
+      bodyParams.mail_city = city;
+      bodyParams.mail_state_abbr = state;
+      bodyParams.mail_country = country;
+      bodyParams.mail_postal_code = postalCode;
     }
-    console.log(bodyParams, 'From bosy');
 
     approveBasicInfoRequest(
-      route?.params?.groupID,
-      route?.params?.requestID,
+      route.params?.groupID,
+      route.params?.requestID,
       bodyParams,
       authContext,
     )
@@ -456,7 +453,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const weightView = () => (
     <View>
       <View
-        pointerEvents={setting?.weight ? 'auto' : 'none'}
+        pointerEvents={setting.weight ? 'auto' : 'none'}
         style={{
           flexDirection: 'row',
           align: 'center',
@@ -465,7 +462,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           justifyContent: 'space-between',
           marginTop: 10,
           marginBottom: 27,
-          opacity: setting?.weight ? 1 : 0.5,
+          opacity: setting.weight ? 1 : 0.5,
         }}>
         <View style={{...styles.halfMatchFeeView}}>
           <TextInput
@@ -478,9 +475,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 weight: {
                   weight: text,
                   weight_type:
-                    memberInfo?.weight?.weight === undefined
+                    memberInfo.weight?.weight === undefined
                       ? weightMesurement[1].value
-                      : memberInfo?.weight?.weight_type,
+                      : memberInfo.weight?.weight_type,
                 },
               });
             }}
@@ -558,7 +555,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   };
 
   const setCityandPostal = (street, code) => {
-    // setCity(street);
     setPostalCode(code);
     setLocation(street);
 
@@ -573,7 +569,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           <Text style={styles.basicInfoText}>
             {format(
               strings.basicInfoRequestText,
-              route.params.groupObj?.group_name,
+              route.params.groupObj.group_name,
             )}
           </Text>
           <TCThickDivider />
@@ -589,7 +585,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
                 onPress={() => {
                   setSetting({
                     ...setting,
-                    gender: !setting?.gender,
+                    gender: !setting.gender,
                   });
                 }}>
                 <Image
@@ -615,12 +611,12 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               onPress={() => {
                 setSetting({
                   ...setting,
-                  birthday: !setting?.birthday,
+                  birthday: !setting.birthday,
                 });
               }}>
               <Image
                 source={
-                  setting?.birthday === true
+                  setting.birthday === true
                     ? images.orangeCheckBox
                     : images.uncheckWhite
                 }
@@ -633,7 +629,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           </View>
           <View style={{marginLeft: 50}}>
             <Text style={styles.fixedText}>
-              {moment(getJSDate(memberInfo?.birthday)).format('MMM DD,YYYY')}
+              {moment(getJSDate(memberInfo.birthday)).format('MMM DD,YYYY')}
             </Text>
           </View>
         </View>
@@ -643,12 +639,12 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             onPress={() => {
               setSetting({
                 ...setting,
-                height: !setting?.height,
+                height: !setting.height,
               });
             }}>
             <Image
               source={
-                setting?.height === true
+                setting.height === true
                   ? images.orangeCheckBox
                   : images.uncheckWhite
               }
@@ -664,12 +660,12 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             onPress={() => {
               setSetting({
                 ...setting,
-                weight: !setting?.weight,
+                weight: !setting.weight,
               });
             }}>
             <Image
               source={
-                setting?.weight ? images.orangeCheckBox : images.uncheckWhite
+                setting.weight ? images.orangeCheckBox : images.uncheckWhite
               }
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
@@ -711,43 +707,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             </View>
           )}
 
-        {/* <View style={styles.checkBoxContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              setSetting({
-                ...setting,
-                email: !setting?.email,
-              });
-            }}>
-            <Image
-              source={
-                setting?.email === true
-                  ? images.orangeCheckBox
-                  : images.uncheckWhite
-              }
-              style={{height: 22, width: 22, resizeMode: 'contain'}}
-            />
-          </TouchableOpacity>
-          <Text style={styles.checkBoxText}>{strings.email}</Text>
-        </View>
-        <View
-          style={{
-            opacity: setting?.email ? 1 : 0.5,
-          }}
-          pointerEvents={setting?.email ? 'auto' : 'none'}>
-          <TCTextField
-            value={memberInfo.email}
-            style={{
-              marginTop: 12,
-              marginBottom: 27,
-            }}
-            onChangeText={(text) => setMemberInfo({...memberInfo, email: text})}
-            autoCapitalize="none"
-            autoCorrect={false}
-            placeholder={strings.email}
-          />
-        </View> */}
-
         <View>
           <View style={styles.checkBoxContainer}>
             <TouchableOpacity
@@ -759,7 +718,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
               }}>
               <Image
                 source={
-                  setting?.phone ? images.orangeCheckBox : images.uncheckWhite
+                  setting.phone ? images.orangeCheckBox : images.uncheckWhite
                 }
                 style={{height: 22, width: 22, resizeMode: 'contain'}}
               />
@@ -803,7 +762,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             }}>
             <Image
               source={
-                setting?.address ? images.orangeCheckBox : images.uncheckWhite
+                setting.address ? images.orangeCheckBox : images.uncheckWhite
               }
               style={{height: 22, width: 22, resizeMode: 'contain'}}
             />
@@ -811,9 +770,9 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           <Text style={styles.checkBoxText}>{strings.address}</Text>
         </View>
         <TouchableOpacity
-          disabled={setting?.address ? false : true}
+          disabled={setting.address ? false : true}
           style={{
-            opacity: setting?.address ? 1 : 0.5,
+            opacity: setting.address ? 1 : 0.5,
           }}
           onPress={() => {
             setVisibleLocationModal(true);
@@ -822,7 +781,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             value={
               locationString() ||
               addressManualString() ||
-              memberInfo?.street_address
+              memberInfo.street_address
             }
             autoCapitalize="none"
             autoCorrect={false}

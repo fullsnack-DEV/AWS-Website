@@ -53,11 +53,11 @@ function Header({
 
 const style = StyleSheet.create({
   mainContainerStyle: {
-    width: wp('100%'),
+    width: '100%',
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-    height: 45,
+    height: 46,
   },
   leftContainerStyle: {
     width: wp('25%'),

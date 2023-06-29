@@ -13,12 +13,10 @@ import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
 import {followUser, unfollowUser, inviteUser} from '../../api/Users';
 import {cancelGroupInvite, deleteMember} from '../../api/Groups';
-import {createPost} from '../../api/NewsFeeds';
 import {acceptRequest, declineRequest} from '../../api/Notificaitons';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import {strings} from '../../../Localization/translation';
-import {ImageUploadContext} from '../../context/GetContexts';
 import UserHomeHeader from '../../components/Home/UserHomeHeader';
 import Verbs from '../../Constants/Verbs';
 import OrderedSporList from '../../components/Home/OrderedSporList';
@@ -39,7 +37,6 @@ const UserHomeScreen = ({
 }) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
-  const imageUploadContext = useContext(ImageUploadContext);
   const [currentUserData, setCurrentUserData] = useState({});
   const [loading, setloading] = useState(false);
   const [addSportActivityModal, setAddSportActivityModal] = useState(false);
@@ -52,67 +49,6 @@ const UserHomeScreen = ({
       setCurrentUserData(userData);
     }
   }, [userData]);
-
-  const createPostAfterUpload = useCallback(
-    (dataParams) => {
-      let body = dataParams;
-
-      if (
-        authContext.entity.role === Verbs.entityTypeClub ||
-        authContext.entity.role === Verbs.entityTypeTeam
-      ) {
-        body = {
-          ...dataParams,
-          group_id: authContext.entity.uid,
-        };
-      }
-      createPost({...body, is_gallery: true}, authContext)
-        .then(() => {
-          if (galleryRef?.current?.refreshGallery) {
-            galleryRef.current.refreshGallery();
-          }
-        })
-        .catch((error) => {
-          setloading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, error.message);
-          }, 10);
-        });
-    },
-    [authContext],
-  );
-
-  const callthis = useCallback(
-    (data, postDesc, tagsOfEntity, who_can_see, format_tagged_data = []) => {
-      if (postDesc?.trim()?.length > 0 && data?.length === 0) {
-        const dataParams = {
-          text: postDesc,
-          tagged: tagsOfEntity ?? [],
-          who_can_see,
-          format_tagged_data,
-          user_id: currentUserData.user_id,
-        };
-        createPostAfterUpload(dataParams);
-      } else if (data) {
-        const imageArray = data.map((dataItem) => dataItem);
-        const dataParams = {
-          user_id: currentUserData.user_id,
-          text: postDesc && postDesc,
-          attachments: [],
-          tagged: tagsOfEntity ?? [],
-          who_can_see,
-          format_tagged_data,
-        };
-        imageUploadContext.uploadData(
-          authContext,
-          dataParams,
-          imageArray,
-          createPostAfterUpload,
-        );
-      }
-    },
-    [authContext, createPostAfterUpload, imageUploadContext, currentUserData],
-  );
 
   const callFollowUser = useCallback(async () => {
     setCurrentUserData({...currentUserData});
@@ -505,7 +441,6 @@ const UserHomeScreen = ({
               entityType: route?.params?.role ?? authContext.entity?.role,
               entityID: route?.params?.uid ?? authContext.entity?.uid,
               currentUserData,
-              callFunction: () => callthis,
             });
           } else if (option === strings.event) {
             //

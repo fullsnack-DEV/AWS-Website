@@ -190,6 +190,14 @@ export default function ScheduleScreen({navigation, route}) {
   const [filterTags, setFilterTags] = useState([]);
   const [filterCancelled, setFilterCancelled] = useState(false);
 
+  useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: isFocused ? 'flex' : 'none',
+      },
+    });
+  }, [navigation, isFocused]);
+
   // Get Future Date:
   const getDates = (type, optionsState) => {
     const startDate = new Date();

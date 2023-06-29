@@ -1,13 +1,9 @@
-/* eslint-disable array-callback-return */
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable consistent-return */
 import React, {
   useEffect,
   useState,
   useContext,
-  useMemo,
   useCallback,
-  useLayoutEffect,
+  useRef,
 } from 'react';
 import {
   View,
@@ -17,515 +13,439 @@ import {
   Text,
   FlatList,
   SafeAreaView,
+  TextInput,
 } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 import _ from 'lodash';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import TCSearchBox from '../../components/TCSearchBox';
 import TagItemView from '../../components/newsFeed/TagItemView';
 import SelectedTagList from '../../components/newsFeed/SelectedTagList';
-import ScrollableTabs from '../../components/ScrollableTabs';
 import TagMatches from './TagMatches';
-import {getAllGames} from '../../api/NewsFeeds';
-import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
+import {
+  getGameIndex,
+  getGroupIndex,
+  getUserIndex,
+} from '../../api/elasticSearch';
 import {strings} from '../../../Localization/translation';
+import ScreenHeader from '../../components/ScreenHeader';
+import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
+import {getGroupSportName} from '../../utils/sportsActivityUtils';
+import Verbs from '../../Constants/Verbs';
 
-let stopFetchMore = true;
+const tabList = [
+  strings.peopleTitleText,
+  strings.groupsTitleText,
+  strings.matchesTitleText,
+];
+
+const groupTabList = [strings.team, strings.club, strings.league];
 
 export default function UserTagSelectionListScreen({navigation, route}) {
-  const [searchText, setSearchText] = useState('');
-  const [currentTab, setCurrentTab] = useState(0);
-  const [currentGrpupTab, setCurrentGroupTab] = useState('team');
+  const [searchText, setSearchText] = useState();
+  const [currentTab, setCurrentTab] = useState(strings.peopleTitleText);
+  const [currentGrpupTab, setCurrentGroupTab] = useState(strings.team);
   const [userData, setUserData] = useState([]);
   const [groupData, setGroupData] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState(
-    route?.params?.taggedData ?? [],
-  );
+  const [seletedEntity, setSeletedEntity] = useState([]);
   const [selectedMatch, setSelectedMatch] = useState([]);
   const [gamesData, setGamesData] = useState([]);
-  const [pageSize] = useState(10);
-  const [pageFrom, setPageFrom] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // eslint-disable-next-line no-unused-vars
-  const [loadMore, setLoadMore] = useState(false);
+  const {postData} = route.params;
+  const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
+  const intervalRef = useRef();
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text
-          style={styles.doneTextStyle}
-          onPress={() => {
-            if (route?.params?.comeFrom) {
-              if (selectedMatch?.length > 0 && route?.params?.onSelectMatch) {
-                route.params.onSelectMatch(selectedMatch);
-              }
-              navigation.navigate(route?.params?.comeFrom, {
-                data: route?.params?.data,
-                onPressDone: route?.params?.onPressDone,
-                selectedTagList: selectedUsers.filter((obj) => !obj?.entity_id),
-              });
-            }
-          }}>
-          {strings.done}
-        </Text>
-      ),
-    });
-  }, [
-    navigation,
-    route.params,
-    selectedMatch,
-    selectedUsers,
-    currentGrpupTab,
-    pageFrom,
-    userData,
-    groupData,
-    searchText,
-    loading,
-  ]);
+  const fetchData = useCallback(() => {
+    const query = {
+      size: 1000,
+      query: {
+        bool: {
+          must: [],
+        },
+      },
+    };
 
-  const getUsersData = useCallback(
-    (text = '') => {
-      const userQuery = {
-        size: pageSize,
-        from: pageFrom,
-        query: {
-          bool: {
-            must: [],
+    const gamesquery = {
+      size: 1000,
+      query: {
+        bool: {
+          should: [
+            {
+              match: {
+                city: {query: authContext.entity.obj.city, boost: 4},
+              },
+            },
+            {
+              match: {
+                country: {
+                  query: authContext.entity.obj.country,
+                  boost: 1,
+                },
+              },
+            },
+          ],
+        },
+      },
+      sort: [{actual_enddatetime: 'desc'}],
+    };
+
+    if (authContext.entity.obj.state) {
+      gamesquery.query.bool.should.push({
+        match: {
+          state: {query: authContext.entity.obj.state, boost: 3},
+        },
+      });
+    } else {
+      gamesquery.query.bool.should.push({
+        match: {
+          state_abbr: {
+            query: authContext.entity.obj.state_abbr,
+            boost: 2,
           },
         },
-      };
-
-      if (text !== '') {
-        userQuery.query.bool.must.push({
-          query_string: {
-            query: `*${text}*`,
-            fields: ['full_name'],
-          },
-        });
-      }
-
-      console.log('userQuery:=>', JSON.stringify(userQuery));
-
-      // Referee query
-      const userAddData = [];
-      setLoading(true);
-      getUserIndex(userQuery)
-        .then((response) => {
-          if (response.length > 0) {
-            let fullName = '';
-            response.map((userItem) => {
-              if (userItem.full_name) {
-                fullName = userItem.full_name;
-              } else if (userItem.first_name && userItem.last_name) {
-                fullName = `${userItem.first_name} ${userItem.last_name}`;
-              }
-
-              userAddData.push({
-                ...userItem,
-                id: userItem.user_id,
-                title: fullName,
-              });
-              return null;
-            });
-
-            setUserData([...userData, ...userAddData]);
-            setPageFrom(pageFrom + pageSize);
-            stopFetchMore = true;
-            setLoading(false);
-          }
-        })
-        .catch((e) => {
-          setLoading(false);
-          console.log('eeeee Get Users :-', e.response);
-          Alert.alert('', e.messages);
-        });
-    },
-    [pageFrom, pageSize, searchText, userData],
-  );
-
-  const getGroupsData = useCallback(
-    (text = '') => {
-      const groupQuery = {
-        size: pageSize,
-        from: pageFrom,
-        query: {
-          bool: {
-            must: [{term: {entity_type: currentGrpupTab}}],
-          },
-        },
-      };
-
-      if (text !== '') {
-        groupQuery.query.bool.must.push({
-          query_string: {
-            query: `*${text}*`,
-            fields: ['group_name'],
-          },
-        });
-      }
-
-      console.log('groupQuery:=>', JSON.stringify(groupQuery));
-
-      const userAddData = [];
-      getGroupIndex(groupQuery)
-        .then((response) => {
-          if (response.length > 0) {
-            let fullName = '';
-            response.map((groupItem) => {
-              if (groupItem.group_name) {
-                fullName = groupItem.group_name;
-              }
-              userAddData.push({
-                ...groupItem,
-                id: groupItem.group_id,
-                title: fullName,
-              });
-              return null;
-            });
-            setGroupData([...groupData, ...userAddData]);
-            setPageFrom(pageFrom + pageSize);
-            stopFetchMore = true;
-          }
-        })
-        .catch((e) => {
-          console.log('eeeee Get Group Users :-', e.response);
-          Alert.alert('', e.messages);
-        });
-    },
-    [currentGrpupTab, groupData, pageFrom, pageSize, searchText],
-  );
-
-  useEffect(() => {
-    getUsersData('');
-  }, []);
-
-  useEffect(() => {
-    getGroupsData('');
-  }, [currentGrpupTab]);
-
-  useEffect(() => {
-    getAllGames(authContext.entity.uid, authContext)
-      .then((res) => {
-        console.log('All games:=>', res);
-        setGamesData([...res?.payload]);
-        console.log(res);
+      });
+    }
+    const promiseArr = [
+      getUserIndex(query),
+      getGroupIndex(query),
+      getGameIndex(gamesquery),
+    ];
+    setLoading(true);
+    Promise.all(promiseArr)
+      .then((response) => {
+        setUserData(response[0]);
+        setGroupData(response[1]);
+        setGamesData(response[2]);
+        setLoading(false);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((err) => {
+        Alert.alert(strings.alertmessagetitle, err.message);
+        setLoading(false);
       });
-  }, []);
+  }, [authContext.entity.obj]);
 
-  // useEffect(() => {
-  //   if (searchText !== '') {
-  //     const dataTabList = [userData, groupData]
-  //     const data = dataTabList[currentTab]
+  useEffect(() => {
+    if (isFocused) {
+      fetchData();
+    }
+  }, [isFocused, fetchData]);
 
-  //     const escapeRegExp = (str) => {
-  //       if (!_.isString(str)) {
-  //         return '';
-  //       }
-  //       return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
-  //     };
-  //     const searchStr = escapeRegExp(searchText)
-  //     const answer = data?.filter((a) => (a.title)
-  //       .toLowerCase()
-  //       .toString()
-  //       .match(searchStr.toLowerCase().toString()));
-  //     setSearchData([...answer])
-  //   }
-  // }, [searchText])
+  useEffect(() => {
+    if (isFocused && route.params.gameTags && route.params.tagsOfEntity) {
+      setSeletedEntity([...route.params.tagsOfEntity]);
+      setSelectedMatch([...route.params.gameTags]);
+    }
+  }, [isFocused, route.params]);
 
-  const toggleSelection = useCallback(
-    (isChecked, user) => {
-      console.log('useessees', selectedUsers);
-      const data = selectedUsers;
-      if (isChecked) {
-        const uIndex = data.findIndex(({id}) => user.id === id);
-        if (uIndex !== -1) data.splice(uIndex, 1);
-      } else {
-        data.push(user);
-      }
-      setSelectedUsers([...data]);
-    },
-    [selectedUsers],
-  );
-
-  const renderItem = useCallback(
-    ({item}) => {
-      console.log('Users list :=>', item);
-      let thumbnail = null;
-      let fullName = '';
-      let locationName = '-';
-      if (item) {
-        if (item.thumbnail) {
-          thumbnail = item.thumbnail;
-        }
-        if (item.title) {
-          fullName = item.title ?? item.full_name;
-        }
-        if (item.city) {
-          locationName = item.city;
-        }
-      }
-      const isChecked = selectedUsers.some((val) => {
-        if ([val.entity_id, val.id].includes(item.id)) {
-          return true;
-        }
-        return false;
-      });
-      return (
-        <TagItemView
-          source={thumbnail ? {uri: thumbnail} : images.profilePlaceHolder}
-          userName={fullName}
-          userLocation={locationName}
-          checkUncheckSource={
-            isChecked ? images.checkWhiteLanguage : images.uncheckWhite
-          }
-          onItemPress={() => toggleSelection(isChecked, item)}
-        />
+  const filterData = (searchValue = '') => {
+    if (!searchValue) {
+      fetchData();
+    } else {
+      const userList = userData.filter((item) =>
+        item.full_name.includes(searchValue),
       );
-    },
-    [selectedUsers, toggleSelection],
-  );
+      const groupList = groupData.filter((item) =>
+        item.group_name.includes(searchValue),
+      );
+
+      setUserData([...userList]);
+      setGroupData([...groupList]);
+    }
+  };
 
   const onSelectMatch = useCallback(
     (gameItem) => {
       const gData = _.cloneDeep(selectedMatch);
       const gIndex = gData?.findIndex(
-        (item) => item?.game_id === gameItem?.game_id,
+        (item) => item.game_id === gameItem.game_id,
       );
-      if (gIndex === -1) gData.push(gameItem);
-      else gData.splice(gIndex, 1);
+      if (gIndex === -1) {
+        gData.push(gameItem);
+      } else {
+        gData.splice(gIndex, 1);
+      }
       setSelectedMatch([...gData]);
     },
     [selectedMatch],
   );
 
-  const onScrollUserHandler = useCallback(() => {
-    setLoadMore(true);
-    if (!stopFetchMore) {
-      getUsersData('');
-
-      stopFetchMore = true;
-    }
-    setLoadMore(false);
-  }, [getUsersData]);
-  const onScrollGroupHandler = useCallback(() => {
-    setLoadMore(true);
-    if (!stopFetchMore) {
-      getGroupsData('');
-
-      stopFetchMore = true;
-    }
-    setLoadMore(false);
-  }, [getGroupsData]);
-
-  const renderSingleTab = useCallback(() => {
-    if (currentTab === 0) {
-      return (
-        <View>
-          <FlatList
-            ListEmptyComponent={
-              !loading && (
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    marginTop: hp(2),
-                    color: colors.userPostTimeColor,
-                  }}>
-                  {strings.noRecordFoundText}
-                </Text>
-              )
-            }
-            data={Array.from(new Set(userData))} // Array.from(new Set(userData))
-            ListHeaderComponent={() => <View style={{height: 8}} />}
-            ListFooterComponent={() => (
-              <View style={{height: 8, marginBottom: 50}} />
-            )}
-            ItemSeparatorComponent={() => <View style={styles.sperateLine} />}
-            style={{paddingHorizontal: 15}}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            onScroll={onScrollUserHandler}
-            onEndReachedThreshold={0.01}
-            onScrollBeginDrag={() => {
-              stopFetchMore = false;
-            }}
-          />
-        </View>
-      );
-    }
-    if (currentTab === 1) {
-      return (
-        <View>
-          <View
-            style={{
-              flexDirection: 'row',
-              borderBottomColor: colors.lightgrayColor,
-              borderBottomWidth: 1,
+  const renderTopTabView = () => (
+    <>
+      <View style={[styles.row, {marginTop: 5}]}>
+        {tabList.map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            style={[
+              styles.tabItem,
+              currentTab === tab ? styles.activeTabItem : {},
+            ]}
+            onPress={() => {
+              setCurrentTab(tab);
+              if (searchText) {
+                fetchData();
+              }
+              setSearchText('');
             }}>
-            {['team', 'club', 'league'].map((item) => (
-              <TouchableOpacity
-                key={item}
-                style={{padding: 10}}
-                onPress={() => {
-                  setCurrentGroupTab(item);
-                  setPageFrom(0);
-                  setGroupData([]);
-                  getGroupsData('');
-                }}>
-                <Text
-                  style={{
-                    color:
-                      item === currentGrpupTab
-                        ? colors.themeColor
-                        : colors.lightBlackColor,
-                    fontFamily:
-                      item === currentGrpupTab ? fonts.RBold : fonts.RRegular,
-                  }}>
-                  {_.startCase(item)}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <FlatList
-            ListEmptyComponent={
+            <Text
+              style={[
+                styles.tabItemText,
+                currentTab === tab ? styles.activeTabItemText : {},
+              ]}>
+              {tab}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      {currentTab === strings.groupsTitleText ? (
+        <View style={styles.subTabView}>
+          {groupTabList.map((groupTab) => (
+            <TouchableOpacity
+              key={groupTab}
+              style={{marginLeft: 21}}
+              onPress={() => setCurrentGroupTab(groupTab)}>
               <Text
-                style={{
-                  textAlign: 'center',
-                  marginTop: hp(2),
-                  color: colors.userPostTimeColor,
-                }}>
-                {strings.noRecordFoundText}
+                style={[
+                  styles.subTabText,
+                  currentGrpupTab === groupTab ? styles.activeSubTabText : {},
+                ]}>
+                {groupTab}
               </Text>
-            }
-            data={groupData}
-            ListHeaderComponent={() => <View style={{height: 8}} />}
-            ListFooterComponent={() => (
-              <View style={{height: 8, marginBottom: 50}} />
-            )}
-            ItemSeparatorComponent={() => <View style={styles.sperateLine} />}
-            style={{paddingHorizontal: 15}}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.group_id}
-            onScroll={onScrollGroupHandler}
-            onEndReachedThreshold={0.01}
-            onScrollBeginDrag={() => {
-              stopFetchMore = false;
-            }}
-          />
+            </TouchableOpacity>
+          ))}
         </View>
-      );
+      ) : null}
+    </>
+  );
+
+  const getList = () => {
+    let type = Verbs.entityTypeTeam;
+    switch (currentTab) {
+      case strings.peopleTitleText:
+        return userData;
+
+      case strings.groupsTitleText:
+        if (currentGrpupTab === strings.club) {
+          type = Verbs.entityTypeClub;
+        }
+        if (currentGrpupTab === strings.league) {
+          type = Verbs.entityTypeLeague;
+        }
+        return groupData.filter((item) => item.entity_type === type);
+
+      case strings.matchesTitleText:
+        return gamesData;
+
+      default:
+        return [];
     }
-    if (currentTab === 2) {
+  };
+
+  const handleSelection = (data = {}) => {
+    const list =
+      currentTab === strings.matchesTitleText ? [] : [...seletedEntity];
+
+    let newList = [...list];
+
+    if (list.length > 0) {
+      let obj = null;
+      if (
+        data.entity_type === Verbs.entityTypePlayer ||
+        data.entity_type === Verbs.entityTypeUser
+      ) {
+        obj = list.find((item) => item.user_id === data.user_id);
+      } else {
+        obj = list.find((item) => item.group_id === data.group_id);
+      }
+
+      if (obj) {
+        if (
+          data.entity_type === Verbs.entityTypePlayer ||
+          data.entity_type === Verbs.entityTypeUser
+        ) {
+          newList = newList.filter((item) => item.user_id !== data.user_id);
+        } else {
+          newList = newList.filter((item) => item.group_id !== data.group_id);
+        }
+      } else {
+        newList = [...list, data];
+      }
+    } else {
+      newList.push(data);
+    }
+    setSeletedEntity([...newList]);
+  };
+
+  const renderTabContain = () => {
+    if (loading) {
+      return <UserListShimmer />;
+    }
+    const list = getList();
+    if (list.length === 0) {
+      return <Text style={styles.noDataText}>{strings.noRecordFoundText}</Text>;
+    }
+
+    if (currentTab === strings.matchesTitleText) {
       return (
         <TagMatches
-          gamesData={gamesData}
+          gamesData={list}
           selectedMatch={selectedMatch}
           onSelectMatch={onSelectMatch}
         />
       );
     }
-  }, [
-    currentGrpupTab,
-    currentTab,
-    gamesData,
-    getGroupsData,
-    groupData,
-    onScrollGroupHandler,
-    onScrollUserHandler,
-    onSelectMatch,
-    renderItem,
-    selectedMatch,
-    userData,
-  ]);
 
-  const renderTabContain = useMemo(
-    () => (
-      <SafeAreaView style={{flex: 1}}>
-        <View style={{flex: 1}}>{renderSingleTab()}</View>
-      </SafeAreaView>
-    ),
-    [renderSingleTab],
-  );
+    return (
+      <FlatList
+        data={list}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={{paddingHorizontal: 17, paddingTop: 20}}
+        showsHorizontalScrollIndicator={false}
+        renderItem={({item}) => (
+          <>
+            <TagItemView
+              source={item.thumbnail}
+              entityName={item.full_name ?? item.group_name}
+              userLocation={item.city}
+              entityType={item.entity_type}
+              onSelect={() => {
+                handleSelection(item);
+              }}
+              onClickProfile={() => {
+                navigation.navigate('HomeScreen', {
+                  uid: item.user_id ?? item.group_id,
+                  role: item.entity_type,
+                });
+              }}
+              entityId={item.user_id ?? item.group_id}
+              selectedList={seletedEntity}
+              sportName={getGroupSportName(item, authContext.sports, 1)}
+            />
+            <View style={styles.sperateLine} />
+          </>
+        )}
+      />
+    );
+  };
 
-  const renderSearchBox = useMemo(
-    () =>
-      currentTab !== 2 ? (
-        <TCSearchBox
-          style={{alignSelf: 'center', marginVertical: 5}}
-          value={searchText}
-          onChangeText={(text) => {
-            setSearchText(text);
-            setPageFrom(0);
-            if (currentTab === 0) {
-              setUserData([]);
-              getUsersData(text);
-            } else if (currentTab === 1) {
-              setGroupData([]);
-              getGroupsData(text);
-            }
-          }}
-        />
-      ) : (
-        <View></View>
-      ),
-    [currentTab, getGroupsData, getUsersData, searchText],
-  );
-
-  const renderSelectedEntity = useMemo(
-    () =>
-      selectedUsers.length > 0 && (
-        <SelectedTagList
-          dataSource={selectedUsers}
-          onTagCancelPress={({item}) => {
-            toggleSelection(true, item);
-          }}
-        />
-      ),
-    [selectedUsers, toggleSelection],
-  );
-
-  const onTabPress = useCallback((tab) => {
-    setCurrentTab(tab);
-    setSearchText('');
-  }, []);
+  const renderSelectedEntity = () =>
+    seletedEntity.length > 0 ? (
+      <SelectedTagList
+        dataSource={seletedEntity}
+        onTagCancelPress={({item}) => {
+          handleSelection(item);
+        }}
+      />
+    ) : null;
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      {renderSearchBox}
-      {renderSelectedEntity}
-      <ScrollableTabs
-        tabs={[
-          strings.peopleTitleText,
-          strings.groupsTitleText,
-          strings.matchesTitleText,
-        ]}
-        onTabPress={onTabPress}
-        currentTab={currentTab}
+      <ScreenHeader
+        title={strings.tag}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isRightIconText
+        rightButtonText={strings.done}
+        onRightButtonPress={() =>
+          navigation.navigate('WritePostScreen', {
+            postData,
+            selectedImageList: [],
+            selectedTagList: seletedEntity,
+            selectedMatchTags: selectedMatch,
+            ...route.params.routeParams,
+          })
+        }
       />
-      {renderTabContain}
+
+      <TextInput
+        placeholder={strings.searchText}
+        placeholderTextColor={colors.userPostTimeColor}
+        style={styles.inputField}
+        onChangeText={(text) => {
+          setSearchText(text);
+          clearTimeout(intervalRef.current);
+          intervalRef.current = setTimeout(() => {
+            filterData(text);
+          }, 1500);
+        }}
+        value={searchText}
+      />
+      {renderSelectedEntity()}
+      {renderTopTabView()}
+      <View style={{flex: 1}}>{renderTabContain()}</View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  sperateLine: {
-    borderColor: colors.writePostSepratorColor,
-    borderWidth: 0.5,
-    marginVertical: hp('0.5%'),
-  },
-
-  doneTextStyle: {
+  inputField: {
+    height: 40,
+    margin: 15,
+    fontSize: 16,
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
-    fontSize: 14,
-    marginRight: 15,
+    backgroundColor: colors.textFieldBackground,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.bgColor,
+    paddingBottom: 7,
+  },
+  tabItemText: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  activeTabItem: {
+    borderBottomWidth: 3,
+    borderBottomColor: colors.tabFontColor,
+    paddingBottom: 5,
+  },
+  activeTabItemText: {
+    color: colors.tabFontColor,
+    fontFamily: fonts.RBlack,
+  },
+  sperateLine: {
+    borderWidth: 1,
+    marginVertical: 15,
+    borderColor: colors.grayBackgroundColor,
+  },
+  noDataText: {
+    fontSize: 16,
+    marginTop: 20,
+    lineHeight: 24,
+    textAlign: 'center',
+    fontFamily: fonts.RMedium,
+    color: colors.userPostTimeColor,
+  },
+  subTabView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.bgColor,
+  },
+  subTabText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+  },
+  activeSubTabText: {
+    fontFamily: fonts.RBold,
+    color: colors.tabFontColor,
   },
 });

@@ -329,7 +329,7 @@ const HomeScreen = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <View style={styles.headerRow}>
+      <View style={[styles.headerRow, {width: '100%'}]}>
         <View style={[styles.row, {flex: 1}]}>
           <Pressable
             style={styles.imageContainer}
@@ -344,23 +344,23 @@ const HomeScreen = ({navigation, route}) => {
             }}>
             <Image source={images.backArrow} style={styles.image} />
           </Pressable>
-          <View style={{marginHorizontal: 5}}>
-            <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>
+          <View style={{flex: 1}}>
+            <Text style={styles.title} numberOfLines={1}>
               {currentUserData.full_name ?? currentUserData.group_name}
             </Text>
           </View>
           {isAdmin ? (
             <Pressable
-              style={styles.dropDownImage}
+              style={[styles.dropDownImage, {marginLeft: 5}]}
               onPress={() => setShowSwitchAccountModal(true)}>
               <Image source={images.path} style={styles.image} />
             </Pressable>
           ) : null}
         </View>
-        <View style={styles.row}>
+        <View style={[styles.row, {marginLeft: 22}]}>
           {!isAdmin ? (
             <Pressable
-              style={[styles.imageContainer, {marginRight: 10}]}
+              style={styles.imageContainer}
               onPress={() => {
                 const id =
                   route.params.role === Verbs.entityTypePlayer ||
@@ -391,6 +391,7 @@ const HomeScreen = ({navigation, route}) => {
         closeModal={() => setShowMoreOptionsModal(false)}
         optionList={moreOptions}
         onSelect={handleMoreOptions}
+        type="ios"
       />
 
       {/* Modals */}
@@ -479,11 +480,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingLeft: 10,
     paddingTop: 8,
-    paddingRight: 15,
+    paddingHorizontal: 15,
     paddingBottom: 14,
     borderBottomWidth: 1,
+
     borderBottomColor: colors.writePostSepratorColor,
   },
   row: {
@@ -493,8 +494,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: 25,
     height: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
+    resizeMode: 'contain',
   },
   image: {
     width: '100%',

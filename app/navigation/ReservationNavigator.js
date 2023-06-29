@@ -37,7 +37,6 @@ import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequest
 
 import colors from '../Constants/Colors';
 import SoccerRecordList from '../screens/game/soccer/SoccerRecordList';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import AlterChallengeScreen from '../screens/challenge/alterChallenge/AlterChallengeScreen';
 import RefereeApprovalScreen from '../screens/referee/RefereeApprovalScreen';
 import ScorekeeperApprovalScreen from '../screens/scorekeeper/ScorekeeperApprovalScreen';
@@ -571,11 +570,6 @@ const ReservationNavigator = () => (
     <Stack.Screen
       name="ReviewDetailsScreen"
       component={ReviewDetailsScreen}
-      options={{headerShown: false}}
-    />
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
       options={{headerShown: false}}
     />
   </Stack.Navigator>

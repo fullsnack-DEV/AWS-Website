@@ -36,7 +36,6 @@ import EditGroupProfileScreen from '../screens/home/EditGroupProfileScreen';
 import SearchLocationScreen from '../screens/account/commonScreen/SearchLocationScreen';
 import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
 
-import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
 import UserBasicInfoScreen from '../screens/home/user/UserBasicInfoScreen';
@@ -173,7 +172,6 @@ import NotificationNavigator from './NotificationNavigator';
 import ReservationNavigator from './ReservationNavigator';
 import SingleNotificationScreen from '../screens/notificationsScreen/SingleNotificationScreen';
 import ManageChallengeScreen from '../screens/challenge/manageChallenge/ManageChallengeScreen';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 import RefereeReservationSetting from '../screens/game/bookReferee/RefereeReservationSetting';
 import ScorekeeperReservationSetting from '../screens/game/bookScorekeeper/ScorekeeperReservationSetting';
@@ -622,15 +620,6 @@ const MembersNavigator = () => (
       component={EditGroupProfileScreen}
       options={{
         title: 'Edit Profile',
-        headerTintColor: colors.blackColor,
-      }}
-    />
-
-    <Stack.Screen
-      name="WritePostScreen"
-      component={WritePostScreen}
-      options={{
-        title: 'Write Post',
         headerTintColor: colors.blackColor,
       }}
     />
@@ -1558,11 +1547,7 @@ const MembersNavigator = () => (
         headerTintColor: colors.blackColor,
       }}
     />
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
-      options={{headerShown: false}}
-    />
+
     <Stack.Screen
       name="AlterRefereeScreen"
       component={AlterRefereeScreen}

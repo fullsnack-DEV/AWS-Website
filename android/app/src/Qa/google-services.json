@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "554403942194-glf8eptjinaunf51tq56ujca90h0rear.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.townscup",
+            "certificate_hash": "30742f29fd35310aa0e7e089ad790039abb57969"
+          }
+        },
+        {
           "client_id": "554403942194-hsoj82knt2a8rf87i87loi19mh354n06.apps.googleusercontent.com",
           "client_type": 3
         }

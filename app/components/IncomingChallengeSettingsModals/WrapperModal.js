@@ -132,7 +132,7 @@ const WrapperModal = ({
                 : settings.game_duration
             }
             onChange={(gameDuration) => {
-              if (settings.sport.toLowerCase() === Verbs.tennisSport) {
+              if (settings.sport?.toLowerCase() === Verbs.tennisSport) {
                 if (show_Double) {
                   setSettings({
                     ...settings,

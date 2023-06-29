@@ -10,7 +10,6 @@ import SearchLocationScreen from '../screens/account/commonScreen/SearchLocation
 import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
 
 import colors from '../Constants/Colors';
-import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import {strings} from '../../Localization/translation';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
@@ -172,7 +171,6 @@ import Availibility from '../screens/challenge/manageChallenge/settings/Availibi
 import RefereesSetting from '../screens/challenge/manageChallenge/settings/RefereesSetting';
 import ScorekeepersSetting from '../screens/challenge/manageChallenge/settings/ScorekeepersSetting';
 import GameDuration from '../screens/challenge/manageChallenge/settings/GameDuration';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import UserGalleryScreen from '../screens/home/user/UserGalleryScreen';
 import UserScoreboardScreen from '../screens/home/user/UserScoreboardScreen';
 import InviteToChallengeSentScreen from '../screens/challenge/createChallenge/InviteToChallengeSentScreen';
@@ -306,6 +304,7 @@ const AccountNavigator = () => (
         animationEnabled: true,
         ...TransitionPresets.ModalSlideFromBottomIOS,
       }}
+      initialParams={{switchToUser: false}}
     />
 
     <Stack.Screen
@@ -390,23 +389,6 @@ const AccountNavigator = () => (
       component={EditGroupProfileScreen}
       options={{
         title: strings.editprofiletitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-
-    <Stack.Screen
-      name="WritePostScreen"
-      component={WritePostScreen}
-      options={{
-        title: strings.writePost,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2797,11 +2779,7 @@ const AccountNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
-      options={{headerShown: false}}
-    />
+
     <Stack.Screen
       name="UserGalleryScreen"
       component={UserGalleryScreen}
@@ -3021,7 +2999,8 @@ const AccountNavigator = () => (
         headerTintColor: colors.blackColor,
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

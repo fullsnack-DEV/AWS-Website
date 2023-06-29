@@ -60,6 +60,14 @@ const MessageMainScreen = ({navigation}) => {
   }, [authContext?.entity?.QB, navigation]);
 
   useEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: isFocused ? 'flex' : 'none',
+      },
+    });
+  }, [navigation, isFocused]);
+
+  useEffect(() => {
     if (authContext?.entity?.QB && isFocused) {
       connectAndSubscribe();
       QbMessageEmitter.addListener(

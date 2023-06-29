@@ -1,6 +1,7 @@
-import {Alert} from 'react-native';
+import {Alert, Platform} from 'react-native';
 import {format} from 'react-string-format';
 import {strings} from '../../Localization/translation';
+import {groupValidate} from '../api/Groups';
 import {getUnreadCount} from '../api/Notificaitons';
 import Verbs from '../Constants/Verbs';
 import {getSportDetails} from './sportsActivityUtils';
@@ -64,4 +65,57 @@ const getSportsLabel = ({entityData = {}, sportList = [], maxSports = 1}) => {
   return '';
 };
 
-export {getUnreadNotificationCount, getNotificationCount, getSportsLabel};
+const onResendRequest = (
+  player1,
+  player2,
+  sport,
+  sport_type,
+  request_id,
+  seLoaderHandler,
+  handleMemberModal,
+  authContext,
+) => {
+  const obj = {
+    player1,
+    player2,
+    sport,
+    sport_type,
+    entity_type: Verbs.entityTypeTeam,
+    request_id,
+    seLoaderHandler,
+    handleMemberModal,
+    authContext,
+  };
+  seLoaderHandler(true);
+
+  groupValidate(obj, authContext)
+    .then(() => {
+      seLoaderHandler(false);
+
+      Alert.alert(
+        Platform.OS === 'android' ? '' : strings.requestSent,
+        Platform.OS === 'android' ? strings.requestSent : '',
+
+        [
+          {
+            text: strings.OkText,
+            onPress: () => handleMemberModal(false),
+          },
+        ],
+        {cancelable: false},
+      );
+    })
+    .catch((e) => {
+      seLoaderHandler(false);
+      setTimeout(() => {
+        Alert.alert(strings.alertmessagetitle, e.message);
+      }, 10);
+    });
+};
+
+export {
+  getUnreadNotificationCount,
+  getNotificationCount,
+  getSportsLabel,
+  onResendRequest,
+};

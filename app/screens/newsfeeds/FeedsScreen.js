@@ -1,6 +1,3 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-unused-vars */
 import React, {
   useEffect,
   memo,
@@ -8,19 +5,15 @@ import React, {
   useContext,
   useCallback,
   useMemo,
-  useRef,
 } from 'react';
-import {format} from 'react-string-format';
-import {StyleSheet, View, Alert, Text} from 'react-native';
+import {StyleSheet, View, Alert, Text, SafeAreaView, Image} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
 import {useIsFocused} from '@react-navigation/native';
 import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
 import {
-  createPost,
   createReaction,
   deletePost,
   getNewsFeed,
@@ -32,14 +25,10 @@ import ImageProgress from '../../components/newsFeed/ImageProgress';
 import AuthContext from '../../auth/context';
 import NewsFeedShimmer from '../../components/shimmer/newsFeed/NewsFeedShimmer';
 import {ImageUploadContext} from '../../context/GetContexts';
-import Header from '../../components/Home/Header';
 import fonts from '../../Constants/Fonts';
-import {setStorage, widthPercentageToDP as wp} from '../../utils';
 import {strings} from '../../../Localization/translation';
-import {getShortsList, getSportsList} from '../../api/Games'; // getRecentGameDetails
+import {getSportsList} from '../../api/Games'; // getRecentGameDetails
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import {getQBAccountType, QBupdateUser} from '../../utils/QuickBlox';
-import Verbs from '../../Constants/Verbs';
 
 const FeedsScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
@@ -55,27 +44,45 @@ const FeedsScreen = ({navigation}) => {
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
   const [pullRefresh, setPullRefresh] = useState(false);
   const [feedCalled, setFeedCalled] = useState(false);
-  const galleryRef = useRef();
-  const [isAdmin, setIsAdmin] = useState(true);
   const [sports, setSports] = useState([]);
   const [sportArr, setSportArr] = useState([]);
   const [pointEvent] = useState('auto');
 
   useEffect(() => {
-    setFirstTimeLoading(true);
-    const entity = authContext.entity;
-    setCurrentUserDetail(entity.obj || entity.auth.user);
-    getNewsFeed(authContext)
-      .then((response) => {
-        setFeedCalled(true);
-        setFirstTimeLoading(false);
-        setPostData([...response.payload.results]);
-      })
-      .catch((e) => {
-        setFirstTimeLoading(false);
-        setTimeout(() => Alert.alert('', e.message), 100);
-      });
-  }, [authContext, authContext.entity, isFocused]);
+    navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: isFocused ? 'flex' : 'none',
+      },
+    });
+  }, [navigation, isFocused]);
+
+  const getFeeds = useCallback(
+    (showLoader = true) => {
+      if (showLoader) {
+        setFirstTimeLoading(true);
+      }
+      const entity = authContext.entity;
+      setCurrentUserDetail(entity.obj || entity.auth.user);
+      getNewsFeed(authContext)
+        .then((response) => {
+          setFeedCalled(true);
+          setFirstTimeLoading(false);
+          setPostData([...response.payload.results]);
+        })
+        .catch((e) => {
+          setFirstTimeLoading(false);
+          setTimeout(() => Alert.alert('', e.message), 100);
+        });
+    },
+    [authContext],
+  );
+
+  useEffect(() => {
+    if (isFocused) {
+      getFeeds();
+    }
+  }, [getFeeds, isFocused]);
+
   useEffect(() => {
     getSportsList(authContext).then((res) => {
       let sport = [];
@@ -95,120 +102,6 @@ const FeedsScreen = ({navigation}) => {
       setSports([...sport]);
     });
   }, [authContext]);
-
-  const onThreeDotPress = useCallback(() => {
-    navigation.navigate('EntitySearchScreen', {
-      sportsList: sports,
-      sportsArray: sportArr,
-    });
-  }, [navigation, sports]);
-
-  const createPostAfterUpload = useCallback(
-    (dataParams) => {
-      let body = dataParams;
-
-      if (
-        authContext.entity.role === Verbs.entityTypeClub ||
-        authContext.entity.role === Verbs.entityTypeTeam
-      ) {
-        body = {
-          ...dataParams,
-          group_id: authContext.entity.uid,
-        };
-      }
-      createPost(body, authContext)
-        .then((response) => {
-          setPostData((pData) => [response.payload, ...pData]);
-        })
-        .catch((e) => {
-          Alert.alert('', e.messages);
-        });
-    },
-    [authContext],
-  );
-
-  const onPressDone = useCallback(
-    (data, postDesc, tagsOfEntity, who_can_see, format_tagged_data = []) => {
-      let dataParams = {};
-      const entityID =
-        currentUserDetail?.group_id ?? currentUserDetail?.user_id;
-      if (entityID !== authContext.entity.uid) {
-        if (
-          currentUserDetail?.entity_type === 'team' ||
-          currentUserDetail?.entity_type === 'club'
-        ) {
-          dataParams.group_id = currentUserDetail?.group_id;
-          dataParams.feed_type = currentUserDetail?.entity_type;
-        }
-        if (
-          currentUserDetail?.entity_type === 'user' ||
-          currentUserDetail?.entity_type === 'player'
-        ) {
-          dataParams.user_id = currentUserDetail?.user_id;
-        }
-      }
-      if (postDesc.trim().length > 0 && data?.length === 0) {
-        dataParams = {
-          ...dataParams,
-          text: postDesc,
-          tagged: tagsOfEntity ?? [],
-          who_can_see,
-          format_tagged_data,
-        };
-
-        createPostAfterUpload(dataParams);
-      } else if (data) {
-        const imageArray = data.map((dataItem) => dataItem);
-        dataParams = {
-          ...dataParams,
-          text: postDesc && postDesc,
-          attachments: [],
-          tagged: tagsOfEntity ?? [],
-          who_can_see,
-          format_tagged_data,
-        };
-        imageUploadContext.uploadData(
-          authContext,
-          dataParams,
-          imageArray,
-          createPostAfterUpload,
-        );
-      }
-    },
-    [authContext, createPostAfterUpload, imageUploadContext],
-  );
-
-  const onFeedPlusPress = useCallback(() => {
-    navigation.navigate('WritePostScreen', {
-      postData: currentUserDetail,
-      onPressDone,
-      selectedImageList: [],
-    });
-  }, [currentUserDetail, navigation, onPressDone]);
-
-  const topRightButton = useMemo(
-    () => (
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <TouchableOpacity style={{marginRight: 10}} onPress={onFeedPlusPress}>
-          <FastImage
-            source={images.feedPlusIcon}
-            resizeMode={'contain'}
-            style={styles.rightImageStyle}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          testID="search-entity-button"
-          onPress={onThreeDotPress}>
-          <FastImage
-            source={images.messageSearchButton2}
-            resizeMode={'contain'}
-            style={styles.rightImageStyle}
-          />
-        </TouchableOpacity>
-      </View>
-    ),
-    [onFeedPlusPress, onThreeDotPress],
-  );
 
   const updatePostAfterUpload = useCallback(
     (dataParams) => {
@@ -333,7 +226,6 @@ const FeedsScreen = ({navigation}) => {
 
   const onLikePress = useCallback(
     (item) => {
-      console.log('onLikePress clap', item);
       const bodyParams = {
         reaction_type: 'clap',
         activity_id: item.id,
@@ -421,119 +313,113 @@ const FeedsScreen = ({navigation}) => {
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
-  const renderNewsFeedList = useMemo(
-    () => (
-      <NewsFeedList
-        updateCommentCount={updateCommentCount}
-        pullRefresh={pullRefresh}
-        onDeletePost={onDeletePost}
-        navigation={navigation}
-        postData={postData}
-        onEditPressDone={editPostDoneCall}
-        onRefreshPress={onRefreshPress}
-        footerLoading={footerLoading && isNextDataLoading}
-        onLikePress={onLikePress}
-        onEndReached={onEndReached}
-        feedAPI={feedCalled}
-        isNewsFeedScreen={true}
-      />
-    ),
-    [
-      editPostDoneCall,
-      feedCalled,
-      footerLoading,
-      isNextDataLoading,
-      navigation,
-      onDeletePost,
-      onEndReached,
-      onLikePress,
-      onRefreshPress,
-      postData,
-      pullRefresh,
-      updateCommentCount,
-    ],
+  const renderNewsFeedList = () => (
+    <NewsFeedList
+      navigation={navigation}
+      updateCommentCount={updateCommentCount}
+      pullRefresh={pullRefresh}
+      onDeletePost={onDeletePost}
+      postData={postData}
+      onEditPressDone={editPostDoneCall}
+      onRefreshPress={onRefreshPress}
+      footerLoading={footerLoading && isNextDataLoading}
+      onLikePress={onLikePress}
+      onEndReached={onEndReached}
+      feedAPI={feedCalled}
+      isNewsFeedScreen={true}
+      entityDetails={currentUserDetail}
+      fetchFeeds={() => getFeeds(false)}
+    />
   );
 
-  const renderTopHeader = useMemo(
-    () => (
-      <>
-        <Header
-          showBackgroundColor={true}
-          leftComponent={
-            // <View>
-            //   <FastImage
-            //     source={images.tc_message_top_icon}
-            //     resizeMode={'contain'}
-            //     style={styles.backImageStyle}
-            //   />
-            // </View>
-            <Text style={styles.eventTitleTextStyle}>
-              {strings.feedTitleText}
-            </Text>
-          }
-          // centerComponent={<Text style={styles.eventTitleTextStyle}>Feed</Text>}
-          rightComponent={topRightButton}
-        />
-        <View style={styles.separateLine} />
-      </>
-    ),
-    [topRightButton],
+  const renderTopHeader = () => (
+    <View style={styles.headerRow}>
+      <View>
+        <Text style={styles.headerTitle}>{strings.feedTitleText}</Text>
+      </View>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <TouchableOpacity
+          style={[styles.headerIconContainer, {marginRight: 10}]}
+          onPress={() => {
+            navigation.navigate('WritePostScreen', {
+              postData: currentUserDetail,
+              selectedImageList: [],
+            });
+          }}>
+          <Image source={images.feedPlusIcon} style={styles.icon} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('EntitySearchScreen', {
+              sportsList: sports,
+              sportsArray: sportArr,
+            });
+          }}
+          style={styles.headerIconContainer}>
+          <Image source={images.searchIcon} style={styles.icon} />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <View
         style={{opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
-        {renderTopHeader}
+        {renderTopHeader()}
       </View>
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       <View
         style={{flex: 1, opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
-        {firstTimeLoading ? <NewsFeedShimmer /> : renderNewsFeedList}
+        {firstTimeLoading ? <NewsFeedShimmer /> : renderNewsFeedList()}
         {renderImageProgress}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
-// const SingleSidedShadowBox = ({ children, style }) => (
-//   <View style={[styles.shadowContainer, style]}>
-//     { children }
-//   </View>
-// );
-
 const styles = StyleSheet.create({
-  // shadowContainer: {
-  //   overflow: 'hidden',
-  //   paddingBottom: 5,
-  // },
   mainContainer: {
     flex: 1,
-    flexDirection: 'column',
   },
-  separateLine: {
-    borderColor: colors.veryLightGray,
-    borderWidth: 0.5,
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 10,
+    paddingBottom: 11,
+    paddingRight: 10,
+    paddingLeft: 18,
+    backgroundColor: colors.whiteColor,
+    shadowColor: colors.blackColor,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.1019,
+    shadowRadius: 5,
+    elevation: 5,
   },
-  eventTitleTextStyle: {
+  headerTitle: {
     fontSize: 20,
+    lineHeight: 30,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    alignSelf: 'center',
   },
-  rightImageStyle: {
-    height: 25,
+  headerIconContainer: {
     width: 25,
-    tintColor: colors.blackColor,
+    height: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icon: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
   },
-  // backImageStyle: {
-  //   height: 35,
-  //   width: 35,
-  // },
 });
 
 export default memo(FeedsScreen);

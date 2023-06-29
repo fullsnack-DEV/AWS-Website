@@ -1,17 +1,10 @@
-/* eslint-disable import/named */
-/* eslint-disable consistent-return */
-/* eslint-disable react/jsx-indent */
-/* eslint-disable array-callback-return */
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable no-useless-escape */
 import React, {
   useState,
   useEffect,
   useRef,
-  useMemo,
   useCallback,
-  useLayoutEffect,
   useContext,
+  useMemo,
 } from 'react';
 import {
   View,
@@ -21,58 +14,66 @@ import {
   TextInput,
   StyleSheet,
   SafeAreaView,
-  KeyboardAvoidingView,
   Platform,
   FlatList,
   Alert,
+  KeyboardAvoidingView,
   Dimensions,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import Video from 'react-native-video';
 import ImagePicker from 'react-native-image-crop-picker';
-import UrlPreview from 'react-native-url-preview';
 import _ from 'lodash';
 import ParsedText from 'react-native-parsed-text';
-import Modal from 'react-native-modal';
-import ImageButton from '../../components/WritePost/ImageButton';
-import SelectedImageList from '../../components/WritePost/SelectedImageList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import {getHitSlop, getTaggedEntityData} from '../../utils';
+import {displayLocation, getPostData, getTaggedEntityData} from '../../utils';
 import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
-import TCGameCard from '../../components/TCGameCard';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
-import TCThinDivider from '../../components/TCThinDivider';
 import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
 import {
   whoCanDataSourceGroup,
   whoCanDataSourceUser,
 } from '../../utils/constant';
+import ScreenHeader from '../../components/ScreenHeader';
+import GroupIcon from '../../components/GroupIcon';
+import Verbs from '../../Constants/Verbs';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {
+  hashTagRegex,
+  ModalTypes,
+  tagRegex,
+  urlRegex,
+} from '../../Constants/GeneralConstants';
+import {ImageUploadContext} from '../../context/ImageUploadContext';
+import {createPost, createRePost} from '../../api/NewsFeeds';
+import ImageProgress from '../../components/newsFeed/ImageProgress';
+import FeedMedia from '../../components/newsFeed/feed/FeedMedia';
+import FeedProfile from '../../components/newsFeed/feed/FeedProfile';
+import NewsFeedDescription from '../../components/newsFeed/NewsFeedDescription';
+import CustomURLPreview from '../../components/account/CustomURLPreview';
+import MatchCard from './MatchCard';
 
-const urlRegex =
-  /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
-// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
-const tagRegex = /(?!\w)@\w+/gim;
-
-export default function WritePostScreen({navigation, route}) {
+const WritePostScreen = ({navigation, route}) => {
   const textInputRef = useRef();
+  const videoPlayerRef = useRef();
   const authContext = useContext(AuthContext);
+
+  const {postData} = route.params;
 
   const [currentTextInputIndex, setCurrentTextInputIndex] = useState(0);
   const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
   const [searchFieldHeight, setSearchFieldHeight] = useState();
   const [tagsOfEntity, setTagsOfEntity] = useState([]);
+  const [tagsOfGame, setTagsOfGame] = useState([]);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
 
   const [searchTag, setSearchTag] = useState();
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState(
-    route.params.selectedImageList,
+    route.params.selectedImageList ?? [],
   );
   const [searchUsers, setSearchUsers] = useState([]);
   const [searchGroups, setSearchGroups] = useState([]);
@@ -80,105 +81,168 @@ export default function WritePostScreen({navigation, route}) {
   const [letModalVisible, setLetModalVisible] = useState(false);
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [showPreviewForUrl, setShowPreviewForUrl] = useState(true);
 
   const [privacySetting, setPrivacySetting] = useState({
     text: strings.everyoneTitleText,
     value: 0,
   });
 
-  const [onPressDoneButton] = useState(
-    route?.params?.onPressDone ? () => route?.params?.onPressDone : () => {},
-  );
+  const imageUploadContext = useContext(ImageUploadContext);
 
-  const [postData] = useState(route?.params?.postData);
+  const createPostAfterUpload = (dataParams) => {
+    let body = dataParams;
+    setloading(true);
 
-  let userImage = '';
-  let userName = '';
-  if (postData && postData.thumbnail) {
-    userImage = postData.thumbnail;
-  }
-  if (postData && postData.full_name) {
-    userName = postData.full_name;
-  }
-  if (postData && postData.group_name) {
-    userName = postData.group_name;
-  }
+    if (
+      authContext.entity.role === Verbs.entityTypeClub ||
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
+      body = {
+        ...dataParams,
+        group_id: authContext.entity.uid,
+        showPreviewForUrl,
+      };
+    }
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          style={styles.doneViewStyle}
-          onPress={async () => {
-            const uploadTimeout = selectImage?.length * 300;
-            if (searchText.trim()?.length === 0 && selectImage?.length === 0) {
-              Alert.alert(strings.writeTextOrImage);
-            } else {
-              // setloading(true);
-              let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-              tagData = tagData?.map((tag) => ({
-                ...tag,
-                entity_type: 'publictimeline',
-              }));
+    createPost(body, authContext)
+      .then(() => {
+        if (route.params?.comeFrom) {
+          navigation.pop(2);
+        } else {
+          navigation.goBack();
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages);
+        setloading(false);
+      });
+  };
 
-              const format_tagged_data =
-                JSON.parse(JSON.stringify(tagsOfEntity)) ?? [];
-              format_tagged_data.map(async (item, index) => {
-                const isThere =
-                  item?.entity_type !== 'game'
-                    ? searchText.includes(
-                        item?.entity_data?.tagged_formatted_name?.replace(
-                          / /g,
-                          '',
-                        ),
-                      )
-                    : true;
-                if (!isThere) format_tagged_data.splice(index, 1);
-                return null;
-              });
+  const handleRepost = () => {
+    const item = {...route.params.repostData};
 
-              // eslint-disable-next-line no-param-reassign
-              tagData.forEach((tData) => delete tData.entity_data);
+    if (typeof item.object === 'string') {
+      const body = {
+        activity_id: item.id,
+        post_type: Verbs.repostVerb,
+        text: searchText,
+      };
 
-              const who_can_see = {...privacySetting};
-              if (privacySetting.value === 2) {
-                if (
-                  ['team', 'club', 'league'].includes(authContext.entity.role)
-                ) {
-                  who_can_see.group_ids = [authContext.entity.uid];
-                }
-              }
+      createRePost(body, authContext)
+        .then(() => {
+          navigation.goBack();
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  };
 
-              onPressDoneButton(
-                selectImage,
-                searchText,
-                tagData,
-                who_can_see,
-                format_tagged_data,
-              );
-              if (route?.params?.comeFrom) {
-                navigation.pop(2);
-              } else {
-                navigation.goBack();
-              }
+  const handleDone = async () => {
+    // const uploadTimeout = selectImage.length * 300;
+    if (searchText.trim().length === 0 && selectImage.length === 0) {
+      Alert.alert(strings.writeTextOrImage);
+    } else {
+      let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
+      tagData = tagData?.map((tag) => ({
+        ...tag,
+        entity_type: 'publictimeline',
+      }));
 
-              setTimeout(() => {
-                setloading(false);
-              }, uploadTimeout);
-            }
-          }}>
-          <Text style={styles.doneTextStyle}>{strings.done}</Text>
-        </TouchableOpacity>
-      ),
-    });
-  }, [
-    navigation,
-    onPressDoneButton,
-    route?.params,
-    searchText,
-    selectImage,
-    tagsOfEntity,
-  ]);
+      let format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity)) ?? [];
+      format_tagged_data = [...format_tagged_data, ...tagsOfGame];
+      format_tagged_data.map(async (item, index) => {
+        const isThere =
+          item?.entity_type !== Verbs.entityTypeGame
+            ? searchText.includes(
+                item?.entity_data?.tagged_formatted_name?.replace(/ /g, ''),
+              )
+            : true;
+        if (!isThere) format_tagged_data.splice(index, 1);
+        return null;
+      });
+
+      // eslint-disable-next-line no-param-reassign
+      tagData.forEach((tData) => delete tData.entity_data);
+
+      const who_can_see = {...privacySetting};
+      if (privacySetting.value === 2) {
+        if (
+          [
+            Verbs.entityTypeTeam,
+            Verbs.entityTypeClub,
+            Verbs.entityTypeLeague,
+          ].includes(authContext.entity.role)
+        ) {
+          who_can_see.group_ids = [authContext.entity.uid];
+        }
+      }
+      if (route.params?.sendCallBack) {
+        route.params.onPressDone(
+          selectImage,
+          searchText,
+          tagData,
+          who_can_see,
+          format_tagged_data,
+        );
+        if (route?.params?.comeFrom) {
+          navigation.pop(2);
+        } else {
+          navigation.goBack();
+        }
+      }
+      let dataParams = {};
+      const entityID = postData.group_id ?? postData.user_id;
+      if (entityID !== authContext.entity.uid) {
+        if (
+          postData.entity_type === Verbs.entityTypeTeam ||
+          postData.entity_type === Verbs.entityTypeClub
+        ) {
+          dataParams.group_id = postData.group_id;
+          dataParams.feed_type = postData.entity_type;
+        }
+        if (
+          postData.entity_type === Verbs.entityTypeUser ||
+          postData.entity_type === Verbs.entityTypePlayer
+        ) {
+          dataParams.user_id = postData.user_id;
+        }
+      }
+
+      if (selectImage.length > 0) {
+        const imageArray = selectImage.map((dataItem) => dataItem);
+        dataParams = {
+          ...dataParams,
+          text: searchText,
+          attachments: [],
+          tagged: tagData ?? [],
+          who_can_see,
+          format_tagged_data,
+        };
+        imageUploadContext.uploadData(
+          authContext,
+          dataParams,
+          imageArray,
+          createPostAfterUpload,
+        );
+      } else {
+        dataParams = {
+          ...dataParams,
+          text: searchText,
+          attachments: [],
+          tagged: tagData ?? [],
+          who_can_see,
+          format_tagged_data,
+        };
+
+        createPostAfterUpload(dataParams);
+      }
+    }
+  };
 
   useEffect(() => {
     if (searchText[currentTextInputIndex - 1] === '@') {
@@ -187,108 +251,107 @@ export default function WritePostScreen({navigation, route}) {
     if (searchText[currentTextInputIndex - 1] === ' ') {
       setLastTagStartIndex(null);
     }
-  }, [searchText]);
+  }, [searchText, currentTextInputIndex]);
 
   useEffect(() => {
     let tagName = '';
     const tagsArray = [];
-    if (route.params && route.params.selectedTagList) {
-      if (route.params.selectedTagList?.length > 0) {
-        route.params.selectedTagList.map((tagItem) => {
-          let joinedString = '@';
-          const entity_text = ['player', 'user']?.includes(tagItem.entity_type)
-            ? 'user_id'
-            : 'group_id';
-          let entity_data = {};
-          let entity_name = '';
-          const isExist = tagsOfEntity.some(
-            (item) => item?.entity_id === tagItem[entity_text],
+    if (route.params.selectedTagList?.length > 0) {
+      route.params.selectedTagList.map((tagItem) => {
+        let joinedString = '@';
+        const entity_text = ['player', 'user']?.includes(tagItem.entity_type)
+          ? 'user_id'
+          : 'group_id';
+        let entity_data = {};
+        let entity_name = '';
+        const isExist = tagsOfEntity.some(
+          (item) => item?.entity_id === tagItem[entity_text],
+        );
+
+        const jsonData = {entity_type: '', entity_data, entity_id: ''};
+
+        jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type)
+          ? 'player'
+          : tagItem?.entity_type;
+
+        jsonData.entity_id = tagItem?.[entity_text];
+
+        if (tagItem?.group_name) {
+          entity_name = _.startCase(_.toLower(tagItem?.group_name))?.replace(
+            / /g,
+            '',
           );
+        } else {
+          const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(
+            / /g,
+            '',
+          );
+          const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(
+            / /g,
+            '',
+          );
+          entity_name = `${fName}${lName}`;
+        }
+        joinedString += `${entity_name} `;
+        entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
+        entity_data = getTaggedEntityData(entity_data, tagItem);
+        if (!isExist) {
+          tagsArray.push({
+            entity_data,
+            entity_id: jsonData?.entity_id,
+            entity_type: jsonData?.entity_type,
+          });
+        }
+        tagName = `${tagName} ${joinedString}`;
+        textInputRef.current.focus();
+        return null;
+      });
+      setLetModalVisible(false);
+      setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
 
-          const jsonData = {entity_type: '', entity_data, entity_id: ''};
+      const modifiedSearch = searchText;
+      const output = [
+        modifiedSearch.slice(0, currentTextInputIndex - 1),
+        tagName,
+        modifiedSearch.slice(currentTextInputIndex - 1),
+      ].join('');
 
-          jsonData.entity_type = ['player', 'user']?.includes(
-            tagItem.entity_type,
-          )
-            ? 'player'
-            : tagItem?.entity_type;
-
-          jsonData.entity_id = tagItem?.[entity_text];
-
-          if (tagItem?.group_name) {
-            entity_name = _.startCase(_.toLower(tagItem?.group_name))?.replace(
-              / /g,
-              '',
-            );
-          } else {
-            const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(
-              / /g,
-              '',
-            );
-            const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(
-              / /g,
-              '',
-            );
-            entity_name = `${fName}${lName}`;
-          }
-          joinedString += `${entity_name} `;
-          entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
-          entity_data = getTaggedEntityData(entity_data, tagItem);
-          if (!isExist) {
-            tagsArray.push({
-              entity_data,
-              entity_id: jsonData?.entity_id,
-              entity_type: jsonData?.entity_type,
-            });
-          }
-          tagName = `${tagName} ${joinedString}`;
-          textInputRef.current.focus();
-          return null;
-        });
-        setLetModalVisible(false);
-        setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
-
-        const modifiedSearch = searchText;
-        const output = [
-          modifiedSearch.slice(0, currentTextInputIndex - 1),
-          tagName,
-          modifiedSearch.slice(currentTextInputIndex - 1),
-        ].join('');
-        setSearchText(output);
-      }
+      setSearchText(output);
     }
   }, [route.params]);
 
   useEffect(() => {
-    console.log('searchText', searchText);
-    if (searchText?.length === 0) {
-      setTagsOfEntity([]);
-      setUsers([]);
-      setGroups([]);
-      setLetModalVisible(false);
+    if (route.params?.selectedMatchTags?.length > 0) {
+      const matchList = route.params.selectedMatchTags.map((match) => ({
+        matchData: {...match},
+        game_id: match.game_id,
+        entity_type: Verbs.entityTypeGame,
+      }));
+      setTagsOfGame(matchList);
     }
-    if (searchText) {
-      if (
-        currentTextInputIndex === 1 &&
-        searchText[currentTextInputIndex - 2] === '@' &&
-        searchText[currentTextInputIndex - 1] !== ' '
-      ) {
-        setLetModalVisible(true);
-      } else if (
-        searchText[currentTextInputIndex - 2] === '@' &&
-        searchText[currentTextInputIndex - 1] !== ' '
-      ) {
+  }, [route.params?.selectedMatchTags]);
+
+  useEffect(() => {
+    if (searchText.length > 0) {
+      if (searchText[currentTextInputIndex - 1] === '@') {
         setLetModalVisible(true);
       }
 
       const lastString = searchText.substr(0, currentTextInputIndex);
-      if (lastString) setSearchTag(`@${lastString.split('@')?.reverse()?.[0]}`);
+      if (lastString) {
+        let str = '';
+        if (lastString.includes('#')) {
+          str = `#${lastString.split('#').reverse()?.[0]}`;
+        } else {
+          str = `@${lastString.split('@').reverse()?.[0]}`;
+        }
+        setSearchTag(str);
+      }
+    } else {
+      setTagsOfEntity([]);
+      setLetModalVisible(false);
     }
   }, [currentTextInputIndex, searchText]);
-
-  useEffect(() => {
-    if (letModalVisible) searchFilterFunction(searchTag?.replace('@', ''));
-  }, [letModalVisible, searchTag]);
 
   useEffect(() => {
     if (route?.params?.comeFrom === 'LocalHomeScreen') {
@@ -357,6 +420,14 @@ export default function WritePostScreen({navigation, route}) {
     [searchGroups, searchUsers, tagsOfEntity],
   );
 
+  useEffect(() => {
+    if (letModalVisible) {
+      const txt = searchTag.split('@');
+      const searchValue = txt[txt.length - 1];
+      searchFilterFunction(searchValue);
+    }
+  }, [letModalVisible, searchTag, searchFilterFunction]);
+
   const removeStr = (str, fromIndex, toIndex) =>
     str.substring(0, fromIndex) + str.substring(toIndex, str.length);
 
@@ -369,123 +440,89 @@ export default function WritePostScreen({navigation, route}) {
     [],
   );
 
-  const onTagPress = useCallback(
-    (item) => {
-      console.log(item);
-      const tagsArray = [];
-      let joinedString = '@';
-      let entity_data = {};
-      let entity_name = '';
-      const entity_text = ['player', 'user']?.includes(item.entity_type)
-        ? 'user_id'
-        : 'group_id';
-      const jsonData = {entity_type: '', entity_data, entity_id: ''};
-      jsonData.entity_type = ['player', 'user']?.includes(item.entity_type)
-        ? 'player'
-        : item?.entity_type;
-      jsonData.entity_id = item?.[entity_text];
-      if (item?.group_name) {
-        entity_name = _.startCase(_.toLower(item?.group_name))?.replace(
-          / /g,
-          '',
-        );
-      } else {
-        const fName = _.startCase(_.toLower(item?.first_name))?.replace(
-          / /g,
-          '',
-        );
-        const lName = _.startCase(_.toLower(item?.last_name))?.replace(
-          / /g,
-          '',
-        );
-        entity_name = `${fName}${lName}`;
-      }
-      joinedString += `${entity_name} `;
-      entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
-      entity_data = getTaggedEntityData(entity_data, item);
-      const str = addStringInCurrentText(
-        searchText,
-        lastTagStartIndex,
-        currentTextInputIndex,
-        joinedString,
-      );
-      setSearchText(`${str} `);
-
-      const isExist = tagsOfEntity.some(
-        (tagItem) => tagItem?.entity_id === item[entity_text],
-      );
-      if (!isExist) {
-        tagsArray.push({
-          entity_data,
-          entity_id: item?.[entity_text],
-          entity_type: jsonData?.entity_type,
-        });
-      }
-      console.log('tagsOfEntitytagsOfEntity', tagsOfEntity);
-      console.log('tagsArraytagsArray', tagsArray);
-      setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
-      setLetModalVisible(false);
-      textInputRef.current.focus();
-      setLastTagStartIndex(null);
-    },
-    [
-      addStringInCurrentText,
-      currentTextInputIndex,
-      lastTagStartIndex,
+  const onTagPress = (item = {}) => {
+    const tagsArray = [];
+    let joinedString = '@';
+    let entity_data = {};
+    let entity_name = '';
+    const entity_text = ['player', 'user']?.includes(item.entity_type)
+      ? 'user_id'
+      : 'group_id';
+    const jsonData = {entity_type: '', entity_data, entity_id: ''};
+    jsonData.entity_type = ['player', 'user']?.includes(item.entity_type)
+      ? 'player'
+      : item?.entity_type;
+    jsonData.entity_id = item?.[entity_text];
+    if (item?.group_name) {
+      entity_name = _.startCase(_.toLower(item?.group_name))?.replace(/ /g, '');
+    } else {
+      const fName = _.startCase(_.toLower(item?.first_name))?.replace(/ /g, '');
+      const lName = _.startCase(_.toLower(item?.last_name))?.replace(/ /g, '');
+      entity_name = `${fName}${lName}`;
+    }
+    joinedString += `${entity_name} `;
+    entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
+    entity_data = getTaggedEntityData(entity_data, item);
+    const str = addStringInCurrentText(
       searchText,
-      tagsOfEntity,
-    ],
-  );
+      lastTagStartIndex,
+      currentTextInputIndex,
+      joinedString,
+    );
+    setSearchText(`${str} `);
+
+    const isExist = tagsOfEntity.some(
+      (tagItem) => tagItem?.entity_id === item[entity_text],
+    );
+    if (!isExist) {
+      tagsArray.push({
+        entity_data,
+        entity_id: item?.[entity_text],
+        entity_type: jsonData?.entity_type,
+      });
+    }
+
+    setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
+    setLetModalVisible(false);
+    textInputRef.current.focus();
+    setLastTagStartIndex(null);
+  };
 
   const renderTagText = useCallback(
     (matchingString) => (
-      <Text
-        style={{
-          ...styles.username,
-          color: colors.greeColor,
-        }}>{`${matchingString}`}</Text>
+      <Text style={styles.tagText}>{`${matchingString}`}</Text>
     ),
     [],
   );
 
-  const renderTagUsersAndGroups = useCallback(
-    ({item}) => (
-      <TouchableOpacity
-        onPress={() => onTagPress(item)}
-        style={styles.userListStyle}>
-        <Image
-          source={
-            item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
-          }
-          style={{borderRadius: 13, height: 25, width: 25}}
-        />
-        <Text style={styles.userTextStyle}>
-          {item?.group_name
-            ? item?.group_name
-            : `${item.first_name} ${item.last_name}`}
-        </Text>
-        <Text
-          style={
-            styles.locationTextStyle
-          }>{`${item.city}, ${item.state_abbr}`}</Text>
-      </TouchableOpacity>
-    ),
-    [onTagPress],
-  );
-
-  const renderCurrentUseProfile = useMemo(
-    () => (
-      <View style={styles.userDetailView}>
-        <Image
-          style={styles.background}
-          source={userImage ? {uri: userImage} : images.profilePlaceHolder}
-        />
-        <View style={styles.userTxtView}>
-          <Text style={styles.userTxt}>{userName}</Text>
+  const renderTagUsersAndGroups = ({item}) => (
+    <TouchableOpacity
+      onPress={() => {
+        console.log(JSON.stringify(item));
+        onTagPress(item);
+      }}
+      style={styles.userListStyle}>
+      <Image
+        source={
+          item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
+        }
+        style={{borderRadius: 13, height: 25, width: 25}}
+      />
+      <View style={{flexDirection: 'row', flex: 1}}>
+        <View style={{maxWidth: '80%'}}>
+          <Text style={styles.userTextStyle} numberOfLines={1}>
+            {item?.group_name
+              ? item?.group_name
+              : `${item.first_name} ${item.last_name}`}{' '}
+          </Text>
+        </View>
+        <View style={{flex: 1}}>
+          <Text numberOfLines={1} style={styles.locationTextStyle}>
+            {displayLocation(item)}
+          </Text>
         </View>
       </View>
-    ),
-    [userImage, userName],
+    </TouchableOpacity>
   );
 
   const onKeyPress = useCallback(
@@ -505,63 +542,67 @@ export default function WritePostScreen({navigation, route}) {
     setCurrentTextInputIndex(e?.nativeEvent?.selection?.end);
   }, []);
 
-  const renderModalTagEntity = useMemo(() => {
-    const arr = [...users, ...groups].map((obj) => {
-      if (
-        tagsOfEntity.filter(
-          (temp) =>
-            ![temp?.group_id, temp?.user_id, temp?.entity_id].includes(
-              obj?.group_id || obj?.user_id || obj?.entity_id,
-            ),
-        )
-      ) {
-        return obj;
+  const renderModalTagEntity = () => {
+    const arr = [];
+    const data = [...users, ...groups];
+    data.forEach((obj) => {
+      const item = tagsOfEntity.filter(
+        (temp) =>
+          ![temp?.group_id, temp?.user_id, temp?.entity_id].includes(
+            obj?.group_id || obj?.user_id || obj?.entity_id,
+          ),
+      );
+      if (item) {
+        arr.push(obj);
       }
     });
-    console.log('arrarr', arr);
-    if (letModalVisible && arr?.length > 0) {
+
+    if (letModalVisible && arr.length > 0) {
       return (
         <View
           style={[
             styles.userListContainer,
-            {marginTop: searchFieldHeight + 20},
+            {marginTop: searchFieldHeight + 5},
           ]}>
           <FlatList
-            showsVerticalScrollIndicator={false}
             data={arr}
             keyboardShouldPersistTaps={'always'}
-            style={{paddingTop: hp(1)}}
-            ListFooterComponent={() => <View style={{height: hp(6)}} />}
             renderItem={renderTagUsersAndGroups}
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
       );
     }
-  }, [
-    groups,
-    letModalVisible,
-    renderTagUsersAndGroups,
-    searchFieldHeight,
-    tagsOfEntity,
-    users,
-  ]);
+    return null;
+  };
 
   const addStr = (str, index, stringToAdd) =>
     str.substring(0, index) + stringToAdd + str.substring(index, str.length);
-  const renderUrlPreview = useMemo(() => {
-    if (searchText?.length > 0) {
+
+  const renderUrlPreview = () => {
+    if (searchText.length > 0) {
       let desc = searchText;
       const position = desc.search(urlRegex);
       if (position !== -1 && desc.substring(position)?.startsWith('www')) {
         desc = addStr(desc, position, 'http://');
       }
-      return (
-        <UrlPreview text={desc} containerStyle={styles.previewContainerStyle} />
-      );
+
+      return desc &&
+        showPreviewForUrl &&
+        selectImage.length === 0 &&
+        position !== -1 ? (
+        <View style={{flex: 1, paddingHorizontal: 15}}>
+          <CustomURLPreview text={desc} />
+          <TouchableOpacity
+            style={styles.closeIcon}
+            onPress={() => setShowPreviewForUrl(false)}>
+            <Image source={images.roundCross} style={styles.image} />
+          </TouchableOpacity>
+        </View>
+      ) : null;
     }
     return null;
-  }, [searchText]);
+  };
 
   const onImageItemPress = useCallback(
     (item) => {
@@ -575,44 +616,80 @@ export default function WritePostScreen({navigation, route}) {
     [selectImage],
   );
 
-  const renderSelectedImage = useCallback(
-    ({item, index}) => (
-      <SelectedImageList
-        data={item}
-        itemNumber={index + 1}
-        totalItemNumber={selectImage?.length}
-        onItemPress={() => onImageItemPress(item)}
+  const renderSelectedImageList = () =>
+    selectImage.length > 0 ? (
+      <FlatList
+        data={selectImage}
+        keyExtractor={(item, index) => index.toString()}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={({item, index}) => {
+          const type = item.type ?? item.mime;
+          const mediaType = type.split('/')[0];
+          if (mediaType === Verbs.mediaTypeImage) {
+            return (
+              <View
+                style={[
+                  styles.selectImage,
+                  index === 0 ? {marginLeft: 15} : {},
+                ]}>
+                <Image
+                  style={[
+                    styles.image,
+                    {resizeMode: 'cover', borderRadius: 10},
+                  ]}
+                  source={{uri: item.path ?? item.thumbnail}}
+                />
+                <TouchableOpacity
+                  style={[styles.closeIcon, {top: 5, right: 5}]}
+                  onPress={() => onImageItemPress(item)}>
+                  <Image source={images.roundCross} style={styles.image} />
+                </TouchableOpacity>
+              </View>
+            );
+          }
+          if (mediaType === Verbs.mediaTypeVideo) {
+            return (
+              <View
+                style={[
+                  styles.selectImage,
+                  index === 0 ? {marginLeft: 15} : {},
+                ]}>
+                <Video
+                  ref={videoPlayerRef}
+                  paused
+                  muted
+                  source={{uri: item.path || item.thumbnail}}
+                  style={[
+                    styles.image,
+                    {resizeMode: 'cover', borderRadius: 10},
+                  ]}
+                  resizeMode={'cover'}
+                  onLoad={() => {
+                    videoPlayerRef.current.seek(0);
+                  }}
+                />
+                <TouchableOpacity
+                  style={[styles.closeIcon, {top: 5, right: 5}]}
+                  onPress={() => onImageItemPress(item)}>
+                  <Image source={images.roundCross} style={styles.image} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.playPauseBtn}>
+                  <Image source={images.videoPlayIcon} style={styles.image} />
+                </TouchableOpacity>
+              </View>
+            );
+          }
+          return null;
+        }}
       />
-    ),
-    [onImageItemPress, selectImage?.length],
-  );
-
-  const ItemSeparatorComponent = useCallback(
-    () => <View style={{width: wp('1%')}} />,
-    [],
-  );
-
-  const renderSelectedImageList = useMemo(
-    () =>
-      selectImage?.length > 0 && (
-        <FlatList
-          data={selectImage}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          renderItem={renderSelectedImage}
-          ItemSeparatorComponent={ItemSeparatorComponent}
-          style={{paddingVertical: 10, marginHorizontal: wp('3%')}}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      ),
-    [ItemSeparatorComponent, renderSelectedImage, selectImage],
-  );
+    ) : null;
 
   const onImagePress = () => {
     ImagePicker.openPicker({
       showsSelectedCount: true,
       multiple: true,
-      maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
+      maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage.length ?? 0),
     })
       .then((data) => {
         let temp = [];
@@ -627,12 +704,11 @@ export default function WritePostScreen({navigation, route}) {
           return obj;
         });
 
-        console.log('PICKED DATA:=>', temp);
-        const pickedData = getPickedData(temp, selectImage?.length);
+        const pickedData = getPickedData(temp, selectImage.length);
 
         let allSelectData = [];
         const secondData = [];
-        if (selectImage?.length > 0) {
+        if (selectImage.length > 0) {
           pickedData.map((dataItem) => {
             // const filter_data = selectImage.filter((imageItem) => imageItem?.path === dataItem?.path);
             // if (filter_data?.length === 0) {
@@ -651,411 +727,411 @@ export default function WritePostScreen({navigation, route}) {
       });
   };
 
-  const onSelectMatch = useCallback(
-    (selectedMatch) => {
-      const tagsArray = [];
-      if (selectedMatch?.length > 0) {
-        selectedMatch.map((gameTagItem) => {
-          const entity_data = {};
-          const jsonData = {
-            entity_type: 'game',
-            entity_id: gameTagItem?.game_id,
-          };
-          jsonData.entity_data = getTaggedEntityData(
-            entity_data,
-            gameTagItem,
-            'game',
-          );
-          console.log('PARSE', jsonData.entity_data);
-          const isExist = tagsOfEntity.some(
-            (item) => item?.entity_id === gameTagItem?.game_id,
-          );
-          if (!isExist) tagsArray.push(jsonData);
-          textInputRef.current.focus();
-          return null;
-        });
-        setLetModalVisible(false);
-        setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
-      }
-    },
-    [tagsOfEntity],
-  );
-
-  const onSelectTagButtonPress = useCallback(() => {
-    navigation.navigate('UserTagSelectionListScreen', {
-      comeFrom: 'WritePostScreen',
-      onSelectMatch,
-      taggedData: JSON.parse(JSON.stringify(tagsOfEntity)).map((obj) => ({
-        city: obj.entity_data.city,
-        full_name: obj.entity_data.full_name,
-        entity_id: obj.entity_id,
-        entity_type: obj.entity_type,
-      })),
-    });
-  }, [navigation, onSelectMatch, tagsOfEntity]);
-
-  const removeTaggedGame = useCallback(
-    (taggedGame) => {
-      const gData = _.cloneDeep(tagsOfEntity);
-      const filterData = gData?.filter(
-        (item) => item?.entity_id !== taggedGame?.entity_id,
-      );
-      setTagsOfEntity([...filterData]);
-    },
-    [tagsOfEntity],
-  );
-
-  const renderSelectedGame = useCallback(
-    ({item}) => (
-      <View style={{marginRight: 15}}>
-        <TCGameCard
-          onPress={() => removeTaggedGame(item)}
-          isSelected={true}
-          data={item?.entity_data}
-          showSelectionCheckBox={true}
-        />
-      </View>
-    ),
-    [removeTaggedGame],
-  );
-
-  const renderGameTags = useMemo(
-    () => (
-      <FlatList
-        style={{paddingVertical: 15}}
-        bounces={false}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{paddingHorizontal: 15}}
-        pagingEnabled={true}
-        horizontal={true}
-        data={tagsOfEntity?.filter((item) => item?.entity_type === 'game')}
-        renderItem={renderSelectedGame}
-        keyExtractor={(item) => item?.entity_id}
-      />
-    ),
-    [renderSelectedGame, tagsOfEntity],
-  );
-
   const renderWhoCan = ({item}) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => {
-        setPrivacySetting(item);
-
-        setTimeout(() => {
-          setVisibleWhoModal(false);
-        }, 300);
-      }}>
-      <View
-        style={{
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginRight: 15,
+    <>
+      <TouchableOpacity
+        style={[
+          styles.listItem,
+          privacySetting.value === item.value
+            ? {backgroundColor: colors.privacyBgColor}
+            : {},
+        ]}
+        onPress={() => {
+          setPrivacySetting(item);
+          setTimeout(() => {
+            setVisibleWhoModal(false);
+          }, 300);
         }}>
-        <Text style={styles.languageList}>{item.text}</Text>
-        <View style={styles.checkbox}>
-          {privacySetting.value === item?.value ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
+        <View style={[styles.icon, {marginRight: 10}]}>
+          <Image source={item.icon} style={styles.image} />
         </View>
-      </View>
-    </TouchableOpacity>
+        <Text style={styles.languageList}>{item.text}</Text>
+      </TouchableOpacity>
+      <View style={styles.separator} />
+    </>
   );
 
-  return (
-    <KeyboardAvoidingView
-      style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}>
-      <ActivityLoader visible={loading} />
-      {renderCurrentUseProfile}
+  const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
-      <View
-        style={{flex: 1, overflow: 'visible'}}
-        // onTouchEnd={() => !isKeyboardOpen && textInputFocus.current.focus()}
-      >
-        <TextInput
-          ref={textInputRef}
-          onLayout={(event) =>
-            setSearchFieldHeight(event?.nativeEvent?.layout?.height)
-          }
-          placeholder={strings.whatsGoingText}
-          placeholderTextColor={colors.userPostTimeColor}
-          onSelectionChange={onSelectionChange}
-          onKeyPress={onKeyPress}
-          onChangeText={(text) => setSearchText(text)}
-          style={styles.textInputField}
-          multiline={true}
-          textAlignVertical={'top'}
-          maxLength={4000}>
-          <ParsedText
-            parse={[{pattern: tagRegex, renderText: renderTagText}]}
-            childrenProps={{allowFontScaling: false}}>
-            {searchText}
-          </ParsedText>
-        </TextInput>
+  const handleBackPress = () => {
+    if (route.params.isRepost) {
+      Alert.alert('', strings.discardRepostText, [
+        {
+          text: strings.cancel,
+          style: 'cancel',
+        },
+        {
+          text: strings.remove,
+          style: 'destructive',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } else if (
+      searchText ||
+      selectImage.length > 0 ||
+      tagsOfEntity.length > 0
+    ) {
+      Alert.alert('', strings.discardPost, [
+        {
+          text: strings.goBack,
+          style: 'default',
+        },
+        {
+          text: strings.discardText,
+          style: 'destructive',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } else {
+      navigation.goBack();
+    }
+  };
 
-        {renderUrlPreview}
-        {renderSelectedImageList}
-        {renderGameTags}
-        {renderModalTagEntity}
-      </View>
-      <SafeAreaView style={styles.bottomSafeAreaStyle}>
-        <View style={styles.bottomImgView}>
-          <View style={styles.onlyMeViewStyle}>
-            <ImageButton
-              source={images.lock}
-              imageStyle={{width: 30, height: 30}}
-              onImagePress={() => setVisibleWhoModal(true)}
-            />
-            <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
-          </View>
-          <View
-            style={[
-              styles.onlyMeViewStyle,
-              {flex: 1, justifyContent: 'flex-end'},
-            ]}>
-            {selectImage?.length < MAX_UPLOAD_POST_ASSETS && (
-              <ImageButton
-                source={images.pickImage}
-                imageStyle={{width: 30, height: 30}}
-                onImagePress={onImagePress}
-              />
-            )}
-            {/* <ImageButton */}
-            {/*    source={ images.savedIcon } */}
-            {/*    imageStyle={{ width: 30, height: 30, marginLeft: wp('2%') }} */}
-            {/*    onImagePress={() => {}} */}
-            {/* /> */}
-            <ImageButton
-              source={images.tagImage}
-              imageStyle={{width: 30, height: 30, marginLeft: 10}}
-              onImagePress={onSelectTagButtonPress}
-            />
-          </View>
-        </View>
-      </SafeAreaView>
-      <Modal
-        isVisible={visibleWhoModal}
-        onBackdropPress={() => setVisibleWhoModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={50}
-        backdropTransitionOutTiming={50}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleWhoModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.privacySettingText}
-            </Text>
+  const renderPost = () => {
+    const repostData = route.params.repostData;
+    const objData = getPostData(repostData);
 
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.themeColor,
-              }}></Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
-            showsVerticalScrollIndicator={false}
-            data={
-              ['user', 'player'].includes(authContext.entity.role)
-                ? whoCanDataSourceUser
-                : whoCanDataSourceGroup
-            }
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderWhoCan}
+    return (
+      <View style={{paddingHorizontal: 15}}>
+        <FeedMedia data={objData} item={repostData} navigation={navigation} />
+        <View style={styles.repostContainer}>
+          <FeedProfile
+            time={repostData.time}
+            data={repostData.actor.data}
+            isRepost
+            showThreeDot={false}
+          />
+          <NewsFeedDescription
+            descriptions={objData.text}
+            numberOfLineDisplay={objData.attachments?.length > 0 ? 3 : 14}
+            tagData={objData.format_tagged_data ?? []}
+            navigation={navigation}
+            isNewsFeedScreen
+            descText={styles.repostText}
+            descriptionTxt={styles.repostText}
           />
         </View>
-      </Modal>
-    </KeyboardAvoidingView>
+      </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.postTitle}
+        leftIcon={images.backArrow}
+        leftIconPress={handleBackPress}
+        isRightIconText
+        rightButtonText={strings.done}
+        onRightButtonPress={() =>
+          route.params.isRepost ? handleRepost() : handleDone()
+        }
+      />
+
+      <ActivityLoader visible={loading} />
+      {renderImageProgress}
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{flex: 1}}>
+        <View style={styles.container}>
+          <View style={styles.userDetailView}>
+            <GroupIcon
+              imageUrl={postData.thumbnail}
+              entityType={postData.entity_type}
+              groupName={postData.group_name}
+              textstyle={{fontSize: 12}}
+              containerStyle={styles.profileImage}
+            />
+            <View>
+              <Text style={styles.userTxt}>
+                {postData.full_name ?? postData.group_name}
+              </Text>
+            </View>
+          </View>
+          <View style={{paddingHorizontal: 15, marginBottom: 15}}>
+            <TextInput
+              ref={textInputRef}
+              onLayout={(event) =>
+                setSearchFieldHeight(event?.nativeEvent?.layout?.height)
+              }
+              placeholder={strings.whatsGoingText}
+              placeholderTextColor={colors.userPostTimeColor}
+              onSelectionChange={onSelectionChange}
+              onKeyPress={onKeyPress}
+              onChangeText={(text) => setSearchText(text)}
+              style={styles.textInputField}
+              multiline={true}
+              textAlignVertical={'top'}
+              maxLength={4000}>
+              <ParsedText
+                parse={[
+                  {pattern: tagRegex, renderText: renderTagText},
+                  {pattern: hashTagRegex, renderText: renderTagText},
+                  {pattern: urlRegex, renderText: renderTagText},
+                ]}
+                childrenProps={{allowFontScaling: false}}>
+                {searchText}
+              </ParsedText>
+            </TextInput>
+            {renderModalTagEntity()}
+          </View>
+          {route.params?.isRepost ? (
+            renderPost()
+          ) : (
+            <>
+              {renderUrlPreview()}
+              {renderSelectedImageList()}
+              <View>
+                {tagsOfGame.length > 0 ? (
+                  <FlatList
+                    data={tagsOfGame}
+                    keyExtractor={(item, index) => index.toString()}
+                    bounces={false}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{paddingHorizontal: 15}}
+                    horizontal
+                    renderItem={({item}) => (
+                      <View
+                        style={{
+                          width: Dimensions.get('window').width - 30,
+                          flex: 1,
+                          marginRight: 15,
+                        }}>
+                        <MatchCard item={item.matchData} />
+                      </View>
+                    )}
+                  />
+                ) : null}
+              </View>
+            </>
+          )}
+        </View>
+        <View style={styles.bottomSafeAreaStyle}>
+          <TouchableOpacity
+            style={styles.onlyMeViewStyle}
+            onPress={() => setVisibleWhoModal(true)}>
+            <View style={styles.icon}>
+              <Image source={images.lock} style={styles.image} />
+            </View>
+            <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
+          </TouchableOpacity>
+
+          <View
+            style={[styles.onlyMeViewStyle, {justifyContent: 'space-between'}]}>
+            {route.params.isRepost ? null : (
+              <TouchableOpacity style={styles.icon}>
+                <Image source={images.pollIcon} style={styles.image} />
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity
+              style={[styles.icon, {marginHorizontal: 10}]}
+              onPress={() => {
+                navigation.navigate('UserTagSelectionListScreen', {
+                  postData,
+                  routeParams: route.params.isRepost ? {...route.params} : {},
+                  gameTags: tagsOfGame,
+                  tagsOfEntity,
+                });
+              }}>
+              <Image source={images.tagImage} style={styles.image} />
+            </TouchableOpacity>
+
+            {route.params.isRepost ? null : (
+              <TouchableOpacity style={styles.icon} onPress={onImagePress}>
+                <Image source={images.pickImage} style={styles.image} />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+      <CustomModalWrapper
+        isVisible={visibleWhoModal}
+        closeModal={() => setVisibleWhoModal(false)}
+        modalType={ModalTypes.style2}
+        containerStyle={{paddingTop: 15, paddingHorizontal: 30}}>
+        <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={
+            ['user', 'player'].includes(authContext.entity.role)
+              ? whoCanDataSourceUser
+              : whoCanDataSourceGroup
+          }
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderWhoCan}
+        />
+      </CustomModalWrapper>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  background: {
-    borderRadius: hp('3%'),
-    height: hp('6%'),
-    resizeMode: 'cover',
-    width: hp('6%'),
-  },
-  bottomImgView: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    paddingVertical: hp('1%'),
-    width: wp(100),
-    paddingHorizontal: 10,
-  },
-
-  doneTextStyle: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginRight: 15,
-  },
-  doneViewStyle: {},
-  onlyMeTextStyle: {
-    color: colors.googleColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 15,
-    marginLeft: wp('2%'),
-  },
-  onlyMeViewStyle: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    width: wp('46%'),
-  },
-
-  textInputField: {
-    alignSelf: 'center',
-    fontSize: 16,
-    maxHeight: hp('15%'),
-    width: wp('92%'),
-    marginBottom: 10,
+  container: {
+    flex: 1,
+    paddingTop: 20,
   },
   userDetailView: {
     flexDirection: 'row',
-    margin: wp('3%'),
+    alignItems: 'center',
+    marginBottom: 15,
+    paddingHorizontal: 15,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
   },
   userTxt: {
-    fontFamily: fonts.RBold,
     fontSize: 16,
-    marginLeft: wp('4%'),
+    lineHeight: 24,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RBold,
   },
-  userTxtView: {
+  tagText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.tagColor,
+    fontFamily: fonts.RRegular,
+  },
+  textInputField: {
+    padding: 0,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  onlyMeTextStyle: {
+    fontSize: 15,
+    lineHeight: 18,
+    color: colors.googleColor,
+    fontFamily: fonts.RRegular,
+    marginLeft: 5,
+  },
+  onlyMeViewStyle: {
+    // flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
   },
-
   bottomSafeAreaStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: colors.whiteColor,
-
-    shadowOpacity: 0.2,
+    padding: 10,
+    elevation: 9,
+    shadowColor: colors.blackColor,
+    shadowOpacity: 0.1608,
     shadowOffset: {
       height: -3,
       width: 0,
     },
   },
-  previewContainerStyle: {
-    margin: 5,
-    borderWidth: 1,
-    borderColor: colors.grayBackgroundColor,
-    padding: 8,
-    borderRadius: 10,
+  icon: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-
-  userTextStyle: {
-    fontSize: 16,
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  modalTitile: {
+    fontSize: 20,
+    lineHeight: 30,
+    textAlign: 'center',
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+    marginBottom: 15,
+  },
+  userTextStyle: {
+    fontSize: 16,
+    lineHeight: 24,
     marginLeft: 10,
-    paddingVertical: hp(1),
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
   },
   locationTextStyle: {
     fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.userPostTimeColor,
-    marginLeft: 10,
-    paddingVertical: hp(1),
+    lineHeight: 18,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+    marginTop: 4,
+    marginLeft: 5,
   },
   userListStyle: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 15,
+    flex: 1,
+    marginBottom: 15,
   },
   userListContainer: {
     zIndex: 1,
     backgroundColor: 'white',
-    maxHeight: 300,
+    maxHeight: 280,
     width: 300,
-    alignSelf: 'center',
-    position: 'absolute',
+    // position: 'absolute',
+    // left: 15,
+    top: 0,
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.5,
+    shadowOffset: {width: 0, height: 3},
+    shadowOpacity: 0.1608,
     shadowRadius: 5,
     elevation: 5,
     borderRadius: 5,
+    padding: 9,
   },
-
-  checkboxImg: {
-    width: wp('5.5%'),
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
-  checkbox: {
-    alignSelf: 'center',
-    position: 'absolute',
-    right: wp(0),
-  },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 5,
-    resizeMode: 'contain',
-  },
-
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.grayColor,
-    height: 0.5,
-    marginTop: 14,
-    width: wp('92%'),
-  },
-
   languageList: {
-    color: colors.lightBlackColor,
+    fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
+    color: colors.lightBlackColor,
+  },
+  listItem: {
+    paddingVertical: 15,
+    paddingHorizontal: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.grayBackgroundColor,
+  },
+  closeIcon: {
+    width: 17,
+    height: 17,
+    position: 'absolute',
+    right: 25,
+    top: 10,
+  },
+  selectImage: {
+    width: 111,
+    height: 111,
+    borderRadius: 10,
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    marginLeft: 10,
+  },
+  repostContainer: {
+    marginLeft: 5,
+    paddingLeft: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.grayBackgroundColor,
+  },
+  repostText: {
+    fontSize: 12,
+    lineHeight: 17,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+  },
+  playPauseBtn: {
+    width: 25,
+    height: 25,
+    position: 'absolute',
+    top: 40,
+    alignSelf: 'center',
   },
 });
+export default WritePostScreen;

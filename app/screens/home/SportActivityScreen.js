@@ -137,17 +137,16 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    lineHeight: 24,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     marginLeft: 25,
-    marginBottom: 25,
+    marginBottom: 35,
   },
   separator: {
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
     marginTop: 15,
-    marginBottom: 18,
+    marginBottom: 15,
     marginHorizontal: 15,
   },
   listContainer: {

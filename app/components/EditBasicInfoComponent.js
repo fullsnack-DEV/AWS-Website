@@ -62,11 +62,11 @@ const EditBasicInfoComponent = ({
 
   const handleLocation = (_location) => {
     const obj = {...userInfo};
-    obj.state_full = _location.state_full;
-    obj.city = _location.city;
-    obj.state = _location.state;
-    obj.country = _location.country;
-    obj.formattedAddress = _location.formattedAddress;
+    obj.mail_state_full = _location.state_full;
+    obj.mail_city = _location.city;
+    obj.mail_state = _location.state;
+    obj.mail_country = _location.country;
+    obj.mail_street_address = _location.formattedAddress;
 
     setUserInfo(obj);
   };
@@ -74,7 +74,7 @@ const EditBasicInfoComponent = ({
   const renderPhoneNumber = () => {
     if (userInfo?.phone_numbers?.length > 0) {
       return userInfo.phone_numbers.map((item, index) => (
-        <View style={styles.row} key={index}>
+        <View style={[styles.row, {marginBottom: 15}]} key={index}>
           <Pressable
             style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]}
             onPress={() => setCountryCodeVisible(true)}>
@@ -211,7 +211,7 @@ const EditBasicInfoComponent = ({
             <View style={{flex: 1, marginRight: 7}}>
               <TextInput
                 placeholder={strings.height}
-                style={styles.inputField}
+                style={[styles.inputField, {textAlign: 'center'}]}
                 onChangeText={(text) => {
                   setUserInfo({
                     ...userInfo,
@@ -246,7 +246,7 @@ const EditBasicInfoComponent = ({
                 useNativeAndroidPickerStyle={false}
                 style={{
                   inputIOS: styles.inputField,
-                  inputAndroid: styles.inputField,
+                  inputAndroid: [styles.inputField, {textAlign: 'center'}],
                 }}
                 Icon={() => (
                   <Image
@@ -265,7 +265,7 @@ const EditBasicInfoComponent = ({
             <View style={{flex: 1, marginRight: 7}}>
               <TextInput
                 placeholder={strings.weight}
-                style={styles.inputField}
+                style={[styles.inputField, {textAlign: 'center'}]}
                 onChangeText={(text) => {
                   setUserInfo({
                     ...userInfo,
@@ -300,7 +300,7 @@ const EditBasicInfoComponent = ({
                 useNativeAndroidPickerStyle={false}
                 style={{
                   inputIOS: styles.inputField,
-                  inputAndroid: styles.inputField,
+                  inputAndroid: [styles.inputField, {textAlign: 'center'}],
                 }}
                 Icon={() => (
                   <Image
@@ -328,10 +328,40 @@ const EditBasicInfoComponent = ({
           </Pressable>
         </View>
 
-        <View style={{marginBottom: 35}}>
+        <View style={{marginBottom: 24}}>
           <Text style={styles.titleText}>{strings.phone.toUpperCase()}</Text>
           {renderPhoneNumber()}
         </View>
+
+        <Pressable
+          style={{backgroundColor: colors.textFieldBackground,
+              paddingVertical: 5,
+              paddingHorizontal: 10,
+              alignSelf: 'center',
+              borderRadius: 5,marginBottom:50}}
+          onPress={() => {
+            const list = [...userInfo.phone_numbers];
+            const obj = {
+              country_code: 1,
+              phone_number: '',
+            };
+            list.push(obj);
+            setUserInfo({
+              ...userInfo,
+              phone_numbers: list,
+            });
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              fontFamily:fonts.RBold,
+              fontSize:12,
+              lineHeight:18,
+              color:colors.lightBlackColor
+            }}>
+            + Add Phone
+          </Text>
+        </Pressable>
 
         <View style={{marginBottom: 35}}>
           <Text style={styles.titleText}>
@@ -345,12 +375,12 @@ const EditBasicInfoComponent = ({
             <Text
               style={[
                 styles.mailingText,
-                userInfo.formattedAddress || userInfo.street_address
+                userInfo.mail_formattedAddress || userInfo.mail_street_address
                   ? {color: colors.lightBlackColor}
                   : {color: colors.userPostTimeColor},
               ]}>
-              {userInfo.formattedAddress || userInfo.street_address
-                ? userInfo.formattedAddress || userInfo.street_address
+              {userInfo.mail_formattedAddress || userInfo.mail_street_address
+                ? userInfo.mail_formattedAddress || userInfo.mail_street_address
                 : strings.address}
             </Text>
           </Pressable>
@@ -391,12 +421,12 @@ const EditBasicInfoComponent = ({
           handleSetLocationOptions={handleLocation}
           onDonePress={(street, code) => {
             const obj = {...userInfo};
-            obj.address_postal_code = code;
-            obj.street_address = [
+            obj.mail_postal_code = code;
+            obj.mail_street_address = [
               street,
-              userInfo.city,
-              userInfo.state,
-              userInfo.country,
+              userInfo.mail_city,
+              userInfo.mail_state,
+              userInfo.mail_country,
               code,
             ]
               .filter((w) => w)
@@ -411,14 +441,14 @@ const EditBasicInfoComponent = ({
 
 const styles = StyleSheet.create({
   parent: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 14,
   },
   titleText: {
     fontSize: 16,
     lineHeight: 19,
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
-    marginBottom: 6,
+    marginBottom: 10,
   },
   inputField: {
     height: 40,
@@ -432,13 +462,12 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   miniDownArrow: {
-    alignSelf: 'center',
-    height: 12,
+    height: 10,
     resizeMode: 'contain',
     right: 15,
     tintColor: colors.lightBlackColor,
     top: 15,
-    width: 12,
+    width: 10,
   },
   row: {
     flexDirection: 'row',

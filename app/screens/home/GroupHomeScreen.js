@@ -1,11 +1,21 @@
 // @flow
 import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
-import {View, StyleSheet, Animated, Alert, Text} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Animated,
+  Alert,
+  Text,
+  BackHandler,
+} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {format} from 'react-string-format';
 import {Portal} from 'react-native-portalize';
 import {Modalize} from 'react-native-modalize';
 import {strings} from '../../../Localization/translation';
+
 import {
   cancelGroupInvite,
   followGroup,
@@ -33,6 +43,7 @@ import {getCalendarIndex, getGameIndex} from '../../api/elasticSearch';
 import {getSetting} from '../challenge/manageChallenge/settingUtility';
 import fonts from '../../Constants/Fonts';
 import TCGameCard from '../../components/TCGameCard';
+
 // import BottomSheet from '../../components/modals/BottomSheet';
 
 const GroupHomeScreen = ({
@@ -73,6 +84,20 @@ const GroupHomeScreen = ({
       setCurrentUserData(groupData);
     }
   }, [groupData]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const handleBackButton = () => {
+        navigation.navigate('AccountScreen');
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+    }, [navigation]),
+  );
 
   const createPostAfterUpload = (dataParams) => {
     let body = dataParams;
@@ -210,6 +235,13 @@ const GroupHomeScreen = ({
           });
         }}
         onPressMore={() => {
+          navigation.navigate('GroupMembersScreen', {
+            groupObj: groupData,
+            groupID: groupId,
+            fromProfile: true,
+          });
+        }}
+        addMember={() => {
           navigation.navigate('GroupMembersScreen', {
             groupObj: groupData,
             groupID: groupId,
@@ -1169,7 +1201,10 @@ const GroupHomeScreen = ({
   return (
     <>
       <View
-        style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
+        style={{
+          flex: 1,
+          opacity: isAccountDeactivated ? 0.5 : 1,
+        }}
         pointerEvents={pointEvent}>
         <ActivityLoader visible={loading} />
         <View style={{flex: 1}}>

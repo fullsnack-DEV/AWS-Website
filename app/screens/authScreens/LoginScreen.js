@@ -281,11 +281,7 @@ const LoginScreen = ({navigation}) => {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(() => {
-        console.log('signInWithEmailAndPassword');
-        const loginOnAuthStateChanged = firebase
-          .auth()
-          .onAuthStateChanged(onAuthStateChanged);
-        loginOnAuthStateChanged();
+        firebase.auth().onAuthStateChanged(onAuthStateChanged);
       })
       .catch((error) => {
         setloading(false);

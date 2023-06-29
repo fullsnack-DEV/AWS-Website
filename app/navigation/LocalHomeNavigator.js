@@ -12,7 +12,6 @@ import RefereesListScreen from '../screens/localhome/RefereesListScreen';
 import ScorekeeperListScreen from '../screens/localhome/ScorekeeperListScreen';
 import SearchCityScreen from '../screens/localhome/SearchCityScreen';
 import ShortsPlayScreen from '../screens/localhome/shorts/ShortsPlayScreen';
-import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import ScorekeeperAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperAgreementScreen';
 import RefereeAgreementScreen from '../screens/challenge/createChallenge/RefereeAgreementScreen';
 import ScorekeeperInviteAgreementScreen from '../screens/challenge/createChallenge/ScorekeeperInviteAgreementScreen';
@@ -24,7 +23,6 @@ import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import AddOrDeleteSport from '../screens/localhome/AddOrDeleteSport';
 import RecruitingPlayerScreen from '../screens/localhome/RecruitingPlayerScreen';
 import EntitySearchScreen from '../screens/EntitySearchScreen';
-import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import ClubCreatedScreen from '../screens/account/createGroup/createClub/ClubCreatedScreen';
 import TeamCreatedScreen from '../screens/account/createGroup/createTeam/TeamCreatedScreen';
 import CreateClubForm3 from '../screens/account/createGroup/createClub/CreateClubForm3';
@@ -535,11 +533,7 @@ const LocalHomeNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name={'FeedViewScreen'}
-      component={FeedViewScreen}
-      options={{headerShown: false}}
-    />
+
     <Stack.Screen
       name="HomeScreen"
       component={HomeScreen}
@@ -633,22 +627,6 @@ const LocalHomeNavigator = () => (
           color: colors.lightBlackColor,
         },
         // headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
-    <Stack.Screen
-      name="WritePostScreen"
-      component={WritePostScreen}
-      options={{
-        title: 'Write Post',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,

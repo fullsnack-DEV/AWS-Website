@@ -185,5 +185,17 @@ export const DEFAULT_LONGITUDE = 139.6503;
 export const LATITUDE_DELTA = 0.01;
 export const LONGITUDE_DELTA = 0.01;
 
+export const privacyOptionForWhoCanSee = {
+  0: strings.everyoneTitleText,
+  2: strings.followingAndFollowers,
+  3: strings.following,
+  1: strings.onlymeTitleText,
+};
+
 export default EntityStatus;
 export {privacySettingEnum, privacyKey};
+
+export const urlRegex =
+  /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/gim;
+export const tagRegex = /(?!\w)@\w+/gim;
+export const hashTagRegex = /\B(#[a-zA-Z]+\b)(?!;)/;

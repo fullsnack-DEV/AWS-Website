@@ -14,8 +14,6 @@ export default function UserGalleryScreen({navigation, route}) {
   const [entityID] = useState(route?.params?.entityID);
   const [currentUserData] = useState(route?.params?.currentUserData);
 
-  const [callFunction] = useState(route?.params?.callFunction);
-
   return (
     <ScrollView style={styles.mainContainer}>
       <AllInOneGallery
@@ -28,11 +26,13 @@ export default function UserGalleryScreen({navigation, route}) {
         }
         entity_id={entityID}
         onAddPhotoPress={(pickImages) => {
-          navigation.navigate('WritePostScreen', {
-            comeFrom: 'HomeScreen',
-            postData: currentUserData,
-            onPressDone: callFunction,
-            selectedImageList: pickImages,
+          navigation.navigate('News Feed', {
+            screen: 'WritePostScreen',
+            params: {
+              comeFrom: 'HomeScreen',
+              postData: currentUserData,
+              selectedImageList: pickImages,
+            },
           });
         }}
       />

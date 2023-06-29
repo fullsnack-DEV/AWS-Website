@@ -62,4 +62,3 @@ buck-out/
 *.lock
 
 .env*
-package-lock.json

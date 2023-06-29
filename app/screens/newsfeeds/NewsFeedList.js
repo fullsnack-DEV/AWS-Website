@@ -11,7 +11,7 @@ import React, {
 import {View, ActivityIndicator, FlatList, Text} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
-import NewsFeedPostItems from '../../components/newsFeed/NewsFeedPostItems';
+import NewsFeedPostItems from '../../components/newsFeed/feed/NewsFeedPostItems';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
 import fonts from '../../Constants/Fonts';
@@ -39,12 +39,15 @@ const NewsFeedList = ({
   feedAPI,
   isNewsFeedScreen = false,
   openProfilId,
+  entityDetails = {},
+  fetchFeeds = () => {},
 }) => {
   const [userID, setUserID] = useState('');
 
   const [parentIndex, setParentIndex] = useState(0);
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
+
   useEffect(() => {
     if (isFocused) {
       const entity = authContext.entity;
@@ -52,92 +55,48 @@ const NewsFeedList = ({
         setUserID(entity.uid || entity.auth.user_id);
       }
     }
-  }, [isFocused]);
+  }, [isFocused, authContext.entity]);
 
   const onProfilePress = useCallback(
     (item) => {
-      console.log('item:', item);
-      console.log('News feed screen:', isNewsFeedScreen);
-      console.log('item actor id:', item?.actor?.id);
-      console.log('authContext entity id:', authContext?.entity?.uid);
-      console.log('user id::', userID);
-      console.log('openProfilId:', openProfilId);
-
       if (item?.actor?.id) {
-        // if (
-        //   item?.actor?.id !== authContext?.entity?.uid ||
-        //   (item?.actor?.id === authContext?.entity?.uid &&
-        //     isNewsFeedScreen === true)
-        // ) {
-        //   navigation.push('HomeScreen', {
-        //     uid: item.actor.id,
-        //     backButtonVisible: true,
-        //     role:
-        //       item?.actor?.data?.entity_type === 'player'
-        //         ? 'user'
-        //         : item?.actor?.data?.entity_type,
-        //   });
-        // }
-
-        if (
-          item?.actor?.id !== openProfilId ||
-          (item?.actor?.id === authContext?.entity?.uid &&
-            isNewsFeedScreen === true)
-        ) {
-          navigation.push('HomeScreen', {
-            uid: item.actor.id,
-            backButtonVisible: true,
-            role:
-              item?.actor?.data?.entity_type === 'player'
-                ? 'user'
-                : item?.actor?.data?.entity_type,
-          });
-        }
+        navigation.push('HomeScreen', {
+          uid: item.actor.id,
+          role: item?.actor?.data?.entity_type,
+        });
       }
     },
-    [authContext?.entity?.uid, isNewsFeedScreen, navigation],
+    [navigation],
   );
 
-  const renderNewsFeed = useCallback(
-    ({item, index}) => {
-      const onDeleteButtonPress = () => onDeletePost(item);
-      const onLikeButtonPress = () => onLikePress(item);
-      return (
-        <View>
-          <NewsFeedPostItems
-            currentParentIndex={index}
-            parentIndex={parentIndex}
-            updateCommentCount={updateCommentCount}
-            pullRefresh={pullRefresh}
-            item={item}
-            navigation={navigation}
-            caller_id={userID}
-            onEditPressDone={onEditPressDone}
-            onImageProfilePress={() => onProfilePress(item)}
-            onLikePress={onLikeButtonPress}
-            onDeletePost={onDeleteButtonPress}
-            isNewsFeedScreen={isNewsFeedScreen}
-            openProfilId={openProfilId}
-          />
-          <View
-            style={{backgroundColor: colors.grayBackgroundColor, height: 7}}
-          />
-        </View>
-      );
-    },
-    [
-      parentIndex,
-      updateCommentCount,
-      pullRefresh,
-      navigation,
-      userID,
-      onEditPressDone,
-      isNewsFeedScreen,
-      onDeletePost,
-      onLikePress,
-      onProfilePress,
-    ],
-  );
+  const renderNewsFeed = ({item, index}) => {
+    const onDeleteButtonPress = () => onDeletePost(item);
+    const onLikeButtonPress = () => onLikePress(item);
+    return (
+      <View>
+        <NewsFeedPostItems
+          currentParentIndex={index}
+          parentIndex={parentIndex}
+          updateCommentCount={updateCommentCount}
+          pullRefresh={pullRefresh}
+          item={item}
+          navigation={navigation}
+          caller_id={userID}
+          onEditPressDone={onEditPressDone}
+          onImageProfilePress={() => onProfilePress(item)}
+          onLikePress={onLikeButtonPress}
+          onDeletePost={onDeleteButtonPress}
+          isNewsFeedScreen={isNewsFeedScreen}
+          openProfilId={openProfilId}
+          entityDetails={entityDetails}
+          fetchFeeds={fetchFeeds}
+        />
+        <View
+          style={{backgroundColor: colors.grayBackgroundColor, height: 7}}
+        />
+      </View>
+    );
+  };
 
   const newsFeedListItemSeperator = useCallback(
     () => (

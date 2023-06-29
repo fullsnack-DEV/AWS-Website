@@ -58,10 +58,10 @@ const MatchFeeModal = ({
         ]}>
         <View />
         <TextInput
-          value={`${gameFee.fee ?? 0}`}
+          value={`${gameFee.fee ?? ''}`}
           style={[
             styles.label,
-            {marginRight: 5, flex: 1, textAlign: 'center', padding: 0},
+            {marginRight: 15, flex: 1, textAlign: 'right', padding: 0},
           ]}
           onChangeText={(text) => {
             onChange(text);

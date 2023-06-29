@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 import {StyleSheet, View, Text, TextInput} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import {strings} from '../../../Localization/translation';
 
 function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
   return (
@@ -10,7 +11,6 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
       style={{
         flexDirection: 'row',
         marginTop: 15,
-
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
@@ -30,13 +30,10 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
             fontFamily: fonts.RRegular,
             fontSize: 16,
             color: colors.userPostTimeColor,
-            marginLeft: 10,
-            marginRight: 15,
-          }}>
-          Min
-        </Text>
+            marginHorizontal: 10,
+          }}></Text>
         <TextInput
-          // placeholder={'0'}
+          placeholder={strings.min}
           style={styles.minMaxStyle}
           keyboardType={'number-pad'}
           onChangeText={onChangeMinText}
@@ -45,7 +42,12 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
           placeholderTextColor={colors.userPostTimeColor}
         />
       </View>
-      <Text style={{alignSelf: 'center', flex: 0.16, textAlign: 'center'}}>
+      <Text
+        style={{
+          alignSelf: 'center',
+          flex: 0.16,
+          textAlign: 'center',
+        }}>
         -
       </Text>
       <View
@@ -53,7 +55,6 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
           height: 40,
           backgroundColor: colors.textFieldBackground,
           borderRadius: 5,
-
           flexDirection: 'row',
           alignItems: 'center',
           flex: 0.42,
@@ -63,13 +64,10 @@ function NumberOfAttendees({onChangeMinText, onChangeMaxText, min, max}) {
             fontFamily: fonts.RRegular,
             fontSize: 16,
             color: colors.userPostTimeColor,
-            marginLeft: 10,
-            marginRight: 15,
-          }}>
-          Max
-        </Text>
+            marginHorizontal: 10,
+          }}></Text>
         <TextInput
-          // placeholder="100"
+          placeholder={strings.max}
           style={styles.minMaxStyle}
           keyboardType={'number-pad'}
           onChangeText={onChangeMaxText}

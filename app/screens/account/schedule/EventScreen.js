@@ -576,9 +576,7 @@ export default function EventScreen({navigation, route}) {
         {activeTab === strings.infoTitle ? (
           <>
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>
-                {strings.organizerTitle}
-              </Text>
+              <Text style={styles.headerTextStyle}>{strings.description}</Text>
               <ReadMore
                 numberOfLines={3}
                 style={styles.longTextStyle}
@@ -720,13 +718,7 @@ export default function EventScreen({navigation, route}) {
                   marginBottom: 15,
                 }}>
                 <View>
-                  <Text
-                    style={[
-                      styles.textValueStyle,
-                      {color: colors.veryLightBlack},
-                    ]}>
-                    {strings.starts}
-                  </Text>
+                  <Text style={styles.textValueStyle}>{strings.starts}</Text>
                 </View>
                 <View
                   style={{
@@ -756,13 +748,7 @@ export default function EventScreen({navigation, route}) {
                   marginBottom: 15,
                 }}>
                 <View>
-                  <Text
-                    style={[
-                      styles.textValueStyle,
-                      {color: colors.veryLightBlack},
-                    ]}>
-                    {strings.ends}
-                  </Text>
+                  <Text style={styles.textValueStyle}>{strings.ends}</Text>
                 </View>
                 <View
                   style={{
@@ -826,20 +812,14 @@ export default function EventScreen({navigation, route}) {
                   <View
                     style={{
                       flexDirection: 'row',
-                      alignItems: 'center',
+                      alignItems: 'flex-start',
                       justifyContent: 'space-between',
                     }}>
+                    <Text style={styles.textValueStyle}>{strings.repeat}</Text>
                     <Text
                       style={[
                         styles.textValueStyle,
-                        {color: colors.veryLightBlack},
-                      ]}>
-                      {strings.repeat}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.textValueStyle,
-                        {fontFamily: fonts.RRegular},
+                        {fontFamily: fonts.RRegular, textAlign: 'right'},
                       ]}>
                       {repeatString}
                     </Text>
@@ -1119,7 +1099,7 @@ const styles = StyleSheet.create({
   textValueStyle: {
     fontSize: 16,
     lineHeight: 24,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
   eventTitleStyle: {

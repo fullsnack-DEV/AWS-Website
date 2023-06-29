@@ -19,8 +19,7 @@ export default function InvoiceProgressBar({
           {
             borderColor:
               CalcPercentage !== 100 ? colors.themeColor2 : colors.neonBlue,
-            borderLeftColor:
-              CalcPercentage === 0 ? colors.themeColor2 : colors.neonBlue,
+            borderLeftWidth: CalcPercentage === 0 ? 1 : 0.2,
           },
           {...barStyle},
         ]}>

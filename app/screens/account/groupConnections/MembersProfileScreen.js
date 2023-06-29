@@ -27,10 +27,9 @@ import {
   Pressable,
   Platform,
   Animated,
-  Dimensions,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
+
 import {format} from 'react-string-format';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
@@ -66,6 +65,8 @@ import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCLable from '../../../components/TCLabel';
 import TCTextField from '../../../components/TCTextField';
 import MemberProfileShimmer from './MemberProfileShimmer';
+import SwitchAccountLoader from '../../../components/account/SwitchAccountLoader';
+import useSwitchAccount from '../../../hooks/useSwitchAccount';
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
@@ -75,12 +76,11 @@ export default function MembersProfileScreen({navigation, route}) {
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
   const [firstTimeLoad, setFirstTimeLoad] = useState(true);
-  // const [editable, setEditable] = useState(true);
   const [editProfile, setEditProfile] = useState(false);
   const [editBasicInfo, setEditBasicInfo] = useState(false);
   const [editTeam, setEditTeam] = useState(false);
   const [editMembership, setEditMembership] = useState(false);
-  const [memberDetail, setMemberDetail] = useState();
+  const [memberDetail, setMemberDetail] = useState({});
   const [switchUser, setSwitchUser] = useState({});
   const [from] = useState(route?.params?.from);
   const [groupID] = useState(route?.params?.groupID);
@@ -102,7 +102,7 @@ export default function MembersProfileScreen({navigation, route}) {
   });
   const [textInputHeight, setTextInputHeight] = useState(100);
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
-
+  const {onSwitchProfile} = useSwitchAccount();
   entity = authContext.entity;
 
   useLayoutEffect(() => {
@@ -134,7 +134,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
             {memberDetail?.connected && (
               <TouchableWithoutFeedback
-                onPress={() => actionSheet?.current?.show()}>
+                onPress={() => actionSheet.current?.show()}>
                 <Image
                   source={images.vertical3Dot}
                   style={[styles.navigationRightItem, {marginRight: 10}]}
@@ -275,12 +275,12 @@ export default function MembersProfileScreen({navigation, route}) {
   useEffect(() => {
     setSetting({
       is_member: true,
-      is_admin: memberDetail?.is_admin,
+      is_admin: memberDetail.is_admin,
     });
   }, [isFocused, showAdminPrivillege]);
 
   useEffect(() => {
-    if (memberDetail?.connected) {
+    if (memberDetail.connected) {
       setEditProfile(false);
     }
     const adminCount = members?.filter((item) => item.is_admin === true);
@@ -331,7 +331,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
     getGroupMembersInfo(groupID, memberID, authContext)
       .then((response) => {
-        setMemberDetail(response?.payload);
+        setMemberDetail(response.payload);
 
         if (entity.role === Verbs.entityTypeTeam) {
           setEditProfile(true);
@@ -339,7 +339,7 @@ export default function MembersProfileScreen({navigation, route}) {
           setEditTeam(true);
           setEditMembership(true);
         } else if (entity.role === Verbs.entityTypeClub) {
-          if (response?.payload?.group?.parent_groups?.includes(entity.uid)) {
+          if (response.payload.group?.parent_groups?.includes(entity.uid)) {
             setEditProfile(true);
             setEditBasicInfo(true);
             setEditTeam(false);
@@ -484,22 +484,24 @@ export default function MembersProfileScreen({navigation, route}) {
     }
 
     deleteMember(groupId, memberId, authContext)
-      .then((response) => {
+      .then(async (response) => {
         setloading(false);
         setShowSwitchScreen(false);
 
         const validator = 102;
 
         if (toaccount) {
+          await onSwitchProfile(authContext.user);
+
           navigation.navigate('Account', {
             screen: 'AccountScreen',
+            initial: false,
             params: {
-              switchToUser: 'fromMember',
-              authFromMember: authContext.user,
-              grpname: switchUser,
+              switchToUser: true,
+              grpName: switchUser.obj.group_name,
             },
           });
-        } else if (response?.payload.error_code === validator) {
+        } else if (response.payload.error_code === validator) {
           Alert.alert(
             strings.appName,
             strings.childMemberError,
@@ -526,8 +528,8 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const getMemberPhoneNumber = () => {
     let numbersString;
-    if (memberDetail?.phone_numbers) {
-      const numbers = memberDetail?.phone_numbers.map(
+    if (memberDetail.phone_numbers) {
+      const numbers = memberDetail.phone_numbers.map(
         (e) => `${e.country_code} ${e.phone_number}`,
       );
       numbersString = numbers.join('\n');
@@ -554,31 +556,27 @@ export default function MembersProfileScreen({navigation, route}) {
   const getLocation = () => {
     let locationString = '';
 
-    if (memberDetail?.connected) {
-      if (
-        memberDetail?.city &&
-        memberDetail?.country
-        // memberDetail?.user_state_abbr
-      ) {
-        locationString = `${memberDetail?.user_city}, ${memberDetail?.user_country}`;
+    if (memberDetail.connected) {
+      if (memberDetail.city && memberDetail.country) {
+        locationString = `${memberDetail.city}, ${memberDetail.country}`;
       }
     } else if (
-      memberDetail?.city &&
-      memberDetail?.country &&
-      memberDetail?.state_abbr
+      memberDetail.city &&
+      memberDetail.country &&
+      memberDetail.state_abbr
     ) {
-      locationString = `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`;
+      locationString = `${memberDetail.city}, ${memberDetail.state_abbr}, ${memberDetail.country}`;
     }
     return locationString;
   };
 
   const sendRequestforInfo = () => {
     const ids = [];
-    ids.push(memberDetail?.user_id);
+    ids.push(memberDetail.user_id);
 
     setloading(true);
 
-    sendBasicInfoRequest(route?.params?.groupID, ids, authContext)
+    sendBasicInfoRequest(route.params?.groupID, ids, authContext)
       .then(() => {
         setloading(false);
 
@@ -615,7 +613,7 @@ export default function MembersProfileScreen({navigation, route}) {
     }
 
     patchMember(
-      entity?.obj?.group_id,
+      entity.obj.group_id,
       memberDetail.user_id,
       bodyParams,
       authContext,
@@ -623,7 +621,6 @@ export default function MembersProfileScreen({navigation, route}) {
       .then(() => {
         setloading(false);
         getMemberInformation();
-        // navigation.pop(2);
         setShowAdminPrivillege(false);
       })
       .catch((e) => {
@@ -701,7 +698,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
             <View
               pointerEvents={
-                memberDetail?.connected
+                memberDetail.connected
                   ? hideAdminPrev
                     ? 'none'
                     : 'auto'
@@ -711,7 +708,7 @@ export default function MembersProfileScreen({navigation, route}) {
                 styles.checkBoxContainer,
                 {
                   marginBottom: 35,
-                  opacity: memberDetail?.connected
+                  opacity: memberDetail.connected
                     ? hideAdminPrev
                       ? 0.3
                       : 1
@@ -899,20 +896,20 @@ export default function MembersProfileScreen({navigation, route}) {
                 <TouchableOpacity
                   onPress={() => {
                     if (
-                      groupMemberDetail?.status?.includes(
+                      groupMemberDetail.status.includes(
                         strings.injuredPlaceholder,
                       )
                     ) {
                       setGroupMemberDetail({
                         ...groupMemberDetail,
-                        status: groupMemberDetail?.status?.filter(
+                        status: groupMemberDetail.status.filter(
                           (el) => el !== strings.injuredPlaceholder,
                         ),
                       });
                     } else {
                       setGroupMemberDetail({
                         ...groupMemberDetail,
-                        status: groupMemberDetail?.status?.concat(
+                        status: groupMemberDetail.status.concat(
                           strings.injuredPlaceholder,
                         ),
                       });
@@ -920,7 +917,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   }}>
                   <Image
                     source={
-                      groupMemberDetail?.status?.includes(
+                      groupMemberDetail.status?.includes(
                         strings.injuredPlaceholder,
                       )
                         ? images.orangeCheckBox
@@ -938,20 +935,20 @@ export default function MembersProfileScreen({navigation, route}) {
                 <TouchableOpacity
                   onPress={() => {
                     if (
-                      groupMemberDetail?.status?.includes(
+                      groupMemberDetail.status?.includes(
                         strings.longTermAwayPlaceholder,
                       )
                     ) {
                       setGroupMemberDetail({
                         ...groupMemberDetail,
-                        status: groupMemberDetail?.status?.filter(
+                        status: groupMemberDetail.status.filter(
                           (el) => el !== strings.longTermAwayPlaceholder,
                         ),
                       });
                     } else {
                       setGroupMemberDetail({
                         ...groupMemberDetail,
-                        status: groupMemberDetail?.status?.concat(
+                        status: groupMemberDetail.status.concat(
                           strings.longTermAwayPlaceholder,
                         ),
                       });
@@ -959,7 +956,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   }}>
                   <Image
                     source={
-                      groupMemberDetail?.status?.includes('en_Long-term Away')
+                      groupMemberDetail.status?.includes('en_Long-term Away')
                         ? images.orangeCheckBox
                         : images.uncheckWhite
                     }
@@ -975,20 +972,20 @@ export default function MembersProfileScreen({navigation, route}) {
                 <TouchableOpacity
                   onPress={() => {
                     if (
-                      groupMemberDetail?.status?.includes(
+                      groupMemberDetail.status.includes(
                         strings.suspendedPlaceholder,
                       )
                     ) {
                       setGroupMemberDetail({
                         ...groupMemberDetail,
-                        status: groupMemberDetail?.status?.filter(
+                        status: groupMemberDetail.status.filter(
                           (el) => el !== strings.suspendedPlaceholder,
                         ),
                       });
                     } else {
                       setGroupMemberDetail({
                         ...groupMemberDetail,
-                        status: groupMemberDetail?.status?.concat(
+                        status: groupMemberDetail.status.concat(
                           strings.suspendedPlaceholder,
                         ),
                       });
@@ -996,7 +993,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   }}>
                   <Image
                     source={
-                      groupMemberDetail?.status?.includes(
+                      groupMemberDetail.status?.includes(
                         strings.suspendedPlaceholder,
                       )
                         ? images.orangeCheckBox
@@ -1018,13 +1015,13 @@ export default function MembersProfileScreen({navigation, route}) {
   const editNote = () => {
     setloading(true);
     const bodyParams = {};
-    if (memberInfo?.note && memberInfo?.note !== '') {
-      bodyParams.note = memberInfo?.note;
+    if (memberInfo.note && memberInfo.note !== '') {
+      bodyParams.note = memberInfo.note;
       // bodyParams.is_admin = false;
     }
 
     patchMember(
-      memberInfo?.group?.group_id,
+      memberInfo.group?.group_id,
       memberInfo.user_id,
       bodyParams,
       authContext,
@@ -1306,97 +1303,21 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const animProgress = React.useState(new Animated.Value(0))[0];
 
-  const animWidthPrecent = animProgress.interpolate({
-    inputRange: [0, 50, 100],
-    outputRange: ['0%', '50%', '100%'],
-  });
-
   const placeHolder = images.profilePlaceHolder;
 
   return (
     <SafeAreaView>
-      {showSwitchScreen && (
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: colors.whiteColor,
-
-            justifyContent: 'center',
-            alignItems: 'center',
-            ...StyleSheet.absoluteFillObject,
-
-            zIndex: 1000,
-          }}>
-          <ActivityLoader visible={false} />
-          <TouchableOpacity
-            style={{
-              marginBottom: 89,
-              position: 'absolute',
-              marginTop: 300,
-            }}>
-            <View>
-              <Image
-                source={
-                  authContext.user?.thumbnail || ''
-                    ? {uri: authContext.user?.thumbnail}
-                    : placeHolder
-                }
-                style={styles.profileImg}
-              />
-            </View>
-            <View
-              style={{
-                marginTop: 15,
-              }}>
-              <Text
-                style={{
-                  lineHeight: 24,
-                  fontFamily: fonts.RMedium,
-                  fontSize: 16,
-                  textAlign: 'center',
-                }}>
-                Switching to
-              </Text>
-              <Text
-                style={{
-                  lineHeight: 24,
-                  fontFamily: fonts.RBold,
-                  fontSize: 16,
-                  textAlign: 'center',
-                }}>
-                {authContext.user?.full_name}
-              </Text>
-            </View>
-          </TouchableOpacity>
-
-          <Animated.View
-            style={{
-              width: 135,
-              height: 5,
-              backgroundColor: '#F2F2F2',
-              borderRadius: 20,
-
-              marginTop: Dimensions.get('screen').height * 0.8,
-            }}>
-            <Animated.View
-              style={[
-                styles.progressBar,
-                {
-                  width: animWidthPrecent,
-                },
-              ]}>
-              <LinearGradient
-                style={styles.progressBar}
-                colors={['rgba(255, 187, 1, 0.6)', 'rgba(255, 138, 1, 0.6) ']}
-                start={{x: 0, y: 0.5}}
-                end={{x: 1, y: 0.5}}
-              />
-            </Animated.View>
-          </Animated.View>
-
-          {/* PRogree Bar */}
-        </View>
-      )}
+      <SwitchAccountLoader
+        isVisible={showSwitchScreen}
+        entityName={authContext.user?.full_name}
+        entityType={Verbs.entityTypePlayer}
+        entityImage={
+          authContext.user.thumbnail || ''
+            ? {uri: authContext.user.thumbnail}
+            : placeHolder
+        }
+        stopLoading={() => {}}
+      />
 
       <ActivityLoader visible={loading} />
 
@@ -1421,13 +1342,13 @@ export default function MembersProfileScreen({navigation, route}) {
                         : images.profilePlaceHolder
                     }
                     name={
-                      `${memberDetail?.first_name} ${memberDetail?.last_name}` ??
+                      `${memberDetail.first_name} ${memberDetail.last_name}` ??
                       ''
                     }
-                    location={memberDetail?.home_city || getLocation()}
+                    location={memberDetail.home_city || getLocation()}
                   />
 
-                  {!memberDetail?.connected && (
+                  {!memberDetail.connected && (
                     <TouchableWithoutFeedback
                       onPress={() => {
                         navigation.navigate('EditMemberInfoScreen', {
@@ -1571,22 +1492,21 @@ export default function MembersProfileScreen({navigation, route}) {
                   }}
                   title={strings.gender}
                   value={
-                    memberDetail?.gender ? memberDetail?.gender : strings.NAText
+                    memberDetail.gender ? memberDetail.gender : strings.NAText
                   }
                 />
                 <TCInfoField
                   title={strings.birthDatePlaceholder}
                   value={
-                    // memberDetail.birthday ? memberDetail.birthday : strings.NAText
                     memberDetail.birthday
                       ? `${
                           shortMonthNames[
-                            new Date(memberDetail?.birthday).getMonth()
+                            new Date(memberDetail.birthday).getMonth()
                           ]
                         } ${new Date(
-                          memberDetail?.birthday,
+                          memberDetail.birthday,
                         ).getDate()} ,${new Date(
-                          memberDetail?.birthday,
+                          memberDetail.birthday,
                         ).getFullYear()}`
                       : strings.NAText
                   }
@@ -1595,8 +1515,8 @@ export default function MembersProfileScreen({navigation, route}) {
                 <TCInfoField
                   title={strings.age}
                   value={
-                    memberDetail?.birthday
-                      ? getAge(new Date(memberDetail?.birthday))
+                    memberDetail.birthday
+                      ? getAge(new Date(memberDetail.birthday))
                       : strings.NAText
                   }
                 />
@@ -1604,8 +1524,8 @@ export default function MembersProfileScreen({navigation, route}) {
                 <TCInfoField
                   title={strings.height}
                   value={
-                    memberDetail?.height
-                      ? memberDetail?.height.height === 0
+                    memberDetail.height
+                      ? memberDetail.height.height === 0
                         ? strings.NAText
                         : `${memberDetail.height.height} ${memberDetail.height.height_type}`
                       : strings.NAText
@@ -1615,8 +1535,8 @@ export default function MembersProfileScreen({navigation, route}) {
                 <TCInfoField
                   title={strings.weight}
                   value={
-                    memberDetail?.weight
-                      ? memberDetail?.weight.weight === 0
+                    memberDetail.weight
+                      ? memberDetail.weight.weight === 0
                         ? strings.NAText
                         : `${memberDetail.weight.weight} ${memberDetail.weight.weight_type}`
                       : strings.NAText
@@ -1635,15 +1555,7 @@ export default function MembersProfileScreen({navigation, route}) {
                 />
                 <TCInfoField
                   title={strings.addressPlaceholder}
-                  value={
-                    memberDetail.street_address
-                      ? `${memberDetail?.street_address},`
-                      : memberDetail?.city &&
-                        memberDetail?.state_abbr &&
-                        memberDetail?.country
-                      ? `${memberDetail?.city}, ${memberDetail?.state_abbr}, ${memberDetail?.country}`
-                      : strings.NAText
-                  }
+                  value={memberDetail.mail_street_address}
                 />
               </View>
               <TCThickDivider marginTop={20} />
@@ -1706,7 +1618,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     />
                   </Pressable>
                 )}
-                {memberDetail?.teams?.length > 0 && (
+                {memberDetail.teams?.length > 0 && (
                   <TCThinDivider
                     marginTop={15}
                     width={'95%'}
@@ -1717,22 +1629,22 @@ export default function MembersProfileScreen({navigation, route}) {
                 <FlatList
                   data={
                     entity.role === Verbs.entityTypeClub
-                      ? memberDetail?.teams
+                      ? memberDetail.teams
                       : [
                           {
                             ...memberDetail.group,
-                            positions: memberDetail?.positions,
-                            jersey_number: memberDetail?.jersey_number,
-                            appearance: memberDetail?.appearance,
-                            status: memberDetail?.status,
-                            is_admin: memberDetail?.is_admin,
-                            is_others: memberDetail?.is_others,
-                            is_member: memberDetail?.is_member,
-                            is_coach: memberDetail?.is_coach,
-                            is_parent: memberDetail?.is_parent,
-                            is_player: memberDetail?.is_player,
-                            note: memberDetail?.note,
-                            user_id: memberDetail?.user_id,
+                            positions: memberDetail.positions,
+                            jersey_number: memberDetail.jersey_number,
+                            appearance: memberDetail.appearance,
+                            status: memberDetail.status,
+                            is_admin: memberDetail.is_admin,
+                            is_others: memberDetail.is_others,
+                            is_member: memberDetail.is_member,
+                            is_coach: memberDetail.is_coach,
+                            is_parent: memberDetail.is_parent,
+                            is_player: memberDetail.is_player,
+                            note: memberDetail.note,
+                            user_id: memberDetail.user_id,
                           },
                         ]
                   }
@@ -1798,7 +1710,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   </TouchableWithoutFeedback>
                 </View>
                 <Text style={styles.describeText} numberOfLines={50}>
-                  {memberDetail?.note}
+                  {memberDetail.note}
                 </Text>
                 <TCThickDivider />
                 <Text
@@ -2058,18 +1970,5 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginTop: 35,
     paddingHorizontal: 15,
-  },
-
-  profileImg: {
-    height: 60,
-    width: 60,
-    resizeMode: 'cover',
-    alignSelf: 'center',
-    borderRadius: 100,
-  },
-
-  progressBar: {
-    width: '100%',
-    height: 5,
   },
 });

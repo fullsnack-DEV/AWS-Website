@@ -96,6 +96,7 @@ export default function ChooseSportsScreen({navigation, route}) {
 
         Utility.getStorage('appSetting').then((setting) => {
           setImageBaseUrl(setting.base_url_sporticon);
+          console.log(setting.base_url_sporticon);
         });
 
         const arr = [];
@@ -104,6 +105,7 @@ export default function ChooseSportsScreen({navigation, route}) {
           arr.push(tempData);
         }
         setSports(arr);
+        console.log(arr[0]);
         setTimeout(() => setloading(false), 1000);
       })
       .catch((e) => {
@@ -416,7 +418,7 @@ export default function ChooseSportsScreen({navigation, route}) {
         <FlatList
           showsVerticalScrollIndicator={false}
           data={sports}
-          style={{top: 0, marginBottom: 35}}
+          style={{top: -15, marginBottom: 35}}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
         />
@@ -482,9 +484,9 @@ const styles = StyleSheet.create({
     fontSize: 25,
     lineHeight: 28,
     fontFamily: fonts.RBold,
-    paddingLeft: 30,
-    textAlign: 'left',
-    marginBottom: 35,
+    marginHorizontal: 15,
+
+    marginBottom: 30,
   },
   nextButtonStyle: {
     fontFamily: fonts.RBold,

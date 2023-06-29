@@ -181,12 +181,16 @@ const CustomWeeklyCalender = ({
             {calenderData.data.map((item, key) => (
               <View
                 key={key}
-                style={{flexDirection: 'column', alignItems: 'center'}}>
+                style={{
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}>
                 <View style={{marginBottom: 9}}>
                   <Text
                     style={{
                       fontSize: 12,
                       lineHeight: 18,
+
                       fontFamily: fonts.RMedium,
                       color: colorConstant.lightBlackColor,
                     }}>
