@@ -269,7 +269,7 @@ export default function LocalHomeScreen({navigation, route}) {
         query: {
           bool: {
             must: [
-              {match: {status: 'accepted'}},
+              {match: {status: 'ended'}},
               {
                 range: {
                   start_datetime: {
@@ -744,6 +744,7 @@ export default function LocalHomeScreen({navigation, route}) {
       // getEntityIndex(availableForchallengeQuery).then((entity) => {
       //   setChallengeeMatch(entity);
       // });
+
       if (authContext.entity.role === Verbs.entityTypeUser) {
         getUserIndex(playerAvailableForchallengeQuery).then((players) => {
           setChallengeeMatch(players);

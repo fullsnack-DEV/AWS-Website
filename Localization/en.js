@@ -2563,7 +2563,7 @@ export default {
   createTeamUnderYourClub: 'en_Create A Team Under Your CLub ',
 
   scorekeptMatches: 'en_Scorekept Matches',
-  allSport: 'en_All Sports',
+  allSport: 'en_All',
   challengeScreenBottomText:
     'en_These settings will be applied only to incoming challenges that you will receive.',
   reservationScreenBottomText:

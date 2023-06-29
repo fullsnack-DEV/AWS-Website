@@ -1913,6 +1913,11 @@ const MembersNavigator = () => (
       options={{
         title: 'Search',
         headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontFamily: fonts.Roboto,
+          fontSize: 16,
+          color: colors.lightBlackColor,
+        },
       }}
     />
     <Stack.Screen

@@ -158,14 +158,6 @@ export default function RecentMatchScreen({navigation, route}) {
         });
       }
       if (filerGames.fromDateTime && filerGames.toDateTime) {
-        // recentMatchQuery.query.bool.must.push({
-        //   range: {
-        //     start_datetime: {
-        //       gt: filerGames.fromDate,
-        //       lt: filerGames.toDate,
-        //     },
-        //   },
-        // });
         recentMatchQuery.query.bool.must.push({
           range: {
             start_datetime: {
@@ -208,7 +200,6 @@ export default function RecentMatchScreen({navigation, route}) {
           },
         });
       }
-
       // Recent match query
       getGameIndex(recentMatchQuery)
         .then((games) => {
