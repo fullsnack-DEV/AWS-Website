@@ -217,10 +217,12 @@ const NewsFeedNavigator = () => (
       name="EntitySearchScreen"
       component={EntitySearchScreen}
       options={{
-        title: 'Search',
+        title: strings.searchText,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         // headerShown: false,
         headerStyle: {

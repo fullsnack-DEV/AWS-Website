@@ -169,7 +169,7 @@ function TCPlayerView({
           {showSport ? (
             <Text
               style={styles.locationText}
-              numberOfLines={1}
+              numberOfLines={2}
               ellipsizeMode={'tail'}>
               {data.city} ·{' '}
               {sports.length === 1 &&
@@ -182,7 +182,7 @@ function TCPlayerView({
                 } & ${sports.length - 1} ${strings.moreText}`}
             </Text>
           ) : (
-            <Text style={styles.locationText} numberOfLines={1}>
+            <Text style={styles.locationText} numberOfLines={2}>
               {data.city}
             </Text>
           )}

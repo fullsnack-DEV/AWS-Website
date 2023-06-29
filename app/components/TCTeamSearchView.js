@@ -4,16 +4,15 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
   TouchableWithoutFeedback,
 } from 'react-native';
 
 import {format} from 'react-string-format';
-import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import Verbs from '../Constants/Verbs';
 import {strings} from '../../Localization/translation';
+import GroupIcon from './GroupIcon';
 
 function TCTeamSearchView({
   onPress,
@@ -26,8 +25,6 @@ function TCTeamSearchView({
   onPressJoinButton,
   sportFilter,
 }) {
-  let teamIcon = '';
-  let teamImagePH = '';
   let isChallengeButtonShow = false;
   let isJoinButton = false;
   let sports = [];
@@ -44,9 +41,10 @@ function TCTeamSearchView({
     }
   };
   if (data.entity_type === Verbs.entityTypeTeam) {
-    teamIcon = images.newTeamIcon;
-    teamImagePH = images.teamBcgPlaceholder;
-    if (authContext.entity.role === Verbs.entityTypeUser) {
+    if (
+      authContext.entity.role === Verbs.entityTypeUser &&
+      authContext.user?.teamIds?.includes(data.group_id) === false
+    ) {
       isJoinButton = true;
     } else if (
       authContext.entity.role === Verbs.entityTypeTeam &&
@@ -59,38 +57,21 @@ function TCTeamSearchView({
   } else if (data.entity_type === Verbs.entityTypeClub) {
     data.sports.map((value) => sports.push(value));
     filterSport();
-    teamIcon = images.newClubIcon;
-    teamImagePH = images.clubBcgPlaceholder;
     if (authContext.entity.role === Verbs.entityTypeUser) {
       isJoinButton = true;
     }
-  } else if (data.entity_type === Verbs.entityTypeLeague) {
-    teamIcon = images.myLeagues;
-    teamImagePH = images.leaguePlaceholder;
   }
+
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.viewContainer}>
-        <View style={styles.placeholderView}>
-          <Image
-            source={data.thumbnail ? {uri: data.thumbnail} : teamImagePH}
-            // style={styles.profileImage}
-            style={[
-              styles.placeHolderImg,
-              data.thumbnail ? styles.profileImage : styles.placeHolderImg,
-            ]}
-          />
-
-          {data.thumbnail ? null : (
-            <Text style={styles.oneCharacterText}>
-              {data.group_name?.charAt(0).toUpperCase()}
-            </Text>
-          )}
-        </View>
-        <Image
-          source={teamIcon}
-          style={styles.teamIconStyle}
-          resizeMode={'contain'}
+        <GroupIcon
+          entityType={data.entity_type}
+          imageUrl={data.thumbnail}
+          groupName={data.group_name}
+          grpImageStyle={{height: 29, width: 26}}
+          containerStyle={styles.placeholderView}
+          textstyle={styles.oneCharacterText}
         />
         <View
           style={{
@@ -98,22 +79,11 @@ function TCTeamSearchView({
             marginLeft: 10,
             flex: 1,
           }}>
-          <Text style={styles.entityName} numberOfLines={2}>
+          <Text style={styles.entityName} numberOfLines={1}>
             {data.group_name}
           </Text>
 
           {isClub ? (
-            /* <Text style={styles.locationText} numberOfLines={1}>
-              {data.city} ·{' '}
-              {sports.length === 1 &&
-                sports[0].sport_name?.charAt(0).toUpperCase() +
-                  sports[0].sport_name?.slice(1)}
-              {sports.length > 1 &&
-                `${
-                  sports[0].sport_name?.charAt(0).toUpperCase() +
-                  sports[0].sport_name?.slice(1)
-                } & ${sports.length - 1} ${strings.moreText}`}
-            </Text> */
             <Text style={styles.locationText} numberOfLines={1}>
               {data.city} ·{' '}
               {sports.length === 1 &&
@@ -122,12 +92,6 @@ function TCTeamSearchView({
               {sports.length > 1 && format(strings.sportsText, sports.length)}
             </Text>
           ) : (
-            /* <Text style={styles.locationText} numberOfLines={1}>
-              {data.city} ·{' '}
-              {data.sport_name?.charAt(0).toUpperCase() +
-                data.sport_name?.slice(1)}
-            </Text> */
-
             <View style={{flexDirection: 'row'}}>
               <Text
                 style={styles.locationText}
@@ -173,6 +137,7 @@ function TCTeamSearchView({
                 borderRadius: 5,
                 alignItems: 'center',
                 justifyContent: 'center',
+                marginTop: 5,
               }}>
               <Text style={styles.joinBtn}>{strings.join}</Text>
             </View>
@@ -191,6 +156,7 @@ function TCTeamSearchView({
                 borderRadius: 5,
                 alignItems: 'center',
                 justifyContent: 'center',
+                marginTop: 5,
               }}>
               <Text style={styles.challengeBtn}>{strings.challenge}</Text>
             </View>
@@ -204,24 +170,7 @@ function TCTeamSearchView({
 const styles = StyleSheet.create({
   viewContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
   },
-  profileImage: {
-    resizeMode: 'cover',
-    height: 40,
-    width: 40,
-    borderRadius: 80,
-    backgroundColor: colors.blackColor,
-  },
-  placeHolderImg: {
-    height: 32,
-    width: 26.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    resizeMode: 'cover',
-  },
-
   entityName: {
     fontSize: 16,
     fontFamily: fonts.RBold,
@@ -232,7 +181,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     marginTop: 1.5,
-    // width: 100,
   },
 
   starPoints: {
@@ -241,30 +189,24 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginTop: 1.5,
   },
-  teamIconStyle: {
-    height: 15,
-    width: 15,
-    marginTop: 24.75,
-    marginLeft: -15,
-  },
+
   oneCharacterText: {
     position: 'absolute',
     fontSize: 12,
     fontFamily: fonts.RBlack,
     color: colors.whiteColor,
-    paddingBottom: 5,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   placeholderView: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 5,
     height: 40,
     width: 40,
-    borderRadius: 100,
+    borderRadius: 40,
     backgroundColor: colors.whiteColor,
-    borderWidth: 1,
-    borderColor: colors.borderlinecolor,
+    borderWidth: 0.5,
+    borderColor: colors.greyBorderColor,
   },
   challengeBtn: {
     fontSize: 12,
