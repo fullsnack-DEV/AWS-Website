@@ -2655,7 +2655,7 @@ const HomeNavigator = () => (
 
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontFamily: fonts.Roboto,
+          fontFamily: fonts.RBold,
           fontSize: 16,
           color: colors.lightBlackColor,
         },

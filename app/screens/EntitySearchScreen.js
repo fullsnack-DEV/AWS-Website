@@ -1868,11 +1868,17 @@ export default function EntitySearchScreen({navigation, route}) {
                 onPress={(sportsObj) => {
                   if (currentSubTab === strings.generalText) {
                     navigation.navigate('HomeScreen', {
-                      uid: ['user', 'player']?.includes(item?.entity_type)
+                      uid: [
+                        Verbs.entityTypeUser,
+                        Verbs.entityTypePlayer,
+                      ]?.includes(item?.entity_type)
                         ? item?.user_id
                         : item?.group_id,
-                      role: ['user', 'player']?.includes(item?.entity_type)
-                        ? 'user'
+                      role: [
+                        Verbs.entityTypeUser,
+                        Verbs.entityTypePlayer,
+                      ]?.includes(item?.entity_type)
+                        ? Verbs.entityTypeUser
                         : item.entity_type,
                       backButtonVisible: true,
                       menuBtnVisible: false,
@@ -1963,11 +1969,17 @@ export default function EntitySearchScreen({navigation, route}) {
                 }
                 onPress={() => {
                   navigation.navigate('HomeScreen', {
-                    uid: ['user', 'player']?.includes(item?.entity_type)
+                    uid: [
+                      Verbs.entityTypeUser,
+                      Verbs.entityTypePlayer,
+                    ]?.includes(item?.entity_type)
                       ? item?.user_id
                       : item?.group_id,
-                    role: ['user', 'player']?.includes(item?.entity_type)
-                      ? 'user'
+                    role: [
+                      Verbs.entityTypeUser,
+                      Verbs.entityTypePlayer,
+                    ]?.includes(item?.entity_type)
+                      ? Verbs.entityTypeUser
                       : item.entity_type,
                     backButtonVisible: true,
                     menuBtnVisible: false,
