@@ -35,6 +35,7 @@ export default function GameDuration({navigation, route}) {
 
   const [loading, setloading] = useState(false);
   const [withOverTime, setWithOverTime] = useState(!!route?.params?.settingObj?.game_duration?.overtime);
+  const [tiebreakers, setTiebreakers] = useState(route?.params?.settingObj?.game_duration ? route?.params?.settingObj?.game_duration?.tiebreakers : '');
   const [details, setDetails] = useState(route?.params?.settingObj?.game_duration ? route?.params?.settingObj?.game_duration?.details : '');
   const [period, setPeriod] = useState(
     route?.params?.settingObj?.game_duration?.period
@@ -63,7 +64,7 @@ export default function GameDuration({navigation, route}) {
     navigation.setOptions({
       headerShown: false,
     });
-  }, [navigation, firstPeriod, details, withOverTime, period, overTime]);
+  }, [navigation, firstPeriod, details, tiebreakers, withOverTime, period, overTime]);
 
   const addPeriod = () => {
     if (period.length < 10) {
@@ -250,6 +251,7 @@ export default function GameDuration({navigation, route}) {
             return e;
           }),
           first_period: firstPeriod,
+          tiebreakers,
           details,
         },
       };
@@ -277,6 +279,7 @@ export default function GameDuration({navigation, route}) {
             return e;
           }),
           first_period: firstPeriod,
+          tiebreakers,
           details,
         },
       };
@@ -359,6 +362,7 @@ export default function GameDuration({navigation, route}) {
           return e;
         }),
         first_period: firstPeriod,
+        tiebreakers,
         details,
       },
     };
@@ -419,6 +423,7 @@ export default function GameDuration({navigation, route}) {
           return e;
         }),
         first_period: firstPeriod,
+        tiebreakers,
         details,
       };
       if (withOverTime) {
@@ -556,7 +561,7 @@ export default function GameDuration({navigation, route}) {
             </View>
           ) : null}
           <View style={styles.totalTimeContainer}>
-            <Text style={[styles.minText, {marginLeft: 10, fontFamily: fonts.RMedium}]}>{strings.totalDuration}</Text>
+            <Text style={[styles.minText, {marginLeft: 10, fontFamily: fonts.RBold}]}>{strings.totalDuration}</Text>
 
             <Text style={styles.totalTimeText}>{format(strings.hmTime, calculateDuration().hours !== null && calculateDuration().hours, calculateDuration().minutes !== null && calculateDuration().minutes)}</Text>
           </View>
@@ -564,11 +569,11 @@ export default function GameDuration({navigation, route}) {
           <TCTextInputClear
             placeholder={strings.TiebreakersPlaceholder}
             onChangeText={(text) => {
-              setDetails(text);
+              setTiebreakers(text);
             }}
-            value={details}
+            value={tiebreakers}
             onPressClear={() => {
-              setDetails('');
+              setTiebreakers('');
             }}
             multiline={true}
           />
