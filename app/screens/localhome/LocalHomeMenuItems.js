@@ -1,5 +1,12 @@
 /* eslint-disable no-shadow */
-import {View, FlatList, Alert} from 'react-native';
+import {
+  View,
+  FlatList,
+  Alert,
+  Text,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 import React, {useContext, memo} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
@@ -25,6 +32,7 @@ import PlayersCardPlaceHolder from './PlayersCardPlaceHolder';
 import TCThinDivider from '../../components/TCThinDivider';
 import colors from '../../Constants/Colors';
 import EventsCard from './EventsCard';
+import fonts from '../../Constants/Fonts';
 
 const LocalHomeMenuItems = memo(
   ({
@@ -274,24 +282,34 @@ const LocalHomeMenuItems = memo(
                 onPress={() => onTitlePress(item)}
               />
 
+              {items.data.map((item, index) => (
+                <Text style={styles.titleTextStyle} key={index}>
+                  {item.title}
+                </Text>
+              ))}
+
               {items.data.length > 0 ? (
-                <FlatList
-                  data={items.data}
-                  horizontal
-                  contentContainerStyle={{paddingVertical: 6}}
-                  showsHorizontalScrollIndicator={false}
-                  ListFooterComponent={() => <View style={{width: 15}} />}
-                  renderItem={({item}) => (
-                    <HorizontalsCards
-                      item={item}
-                      onPress={() => onCardPress(items, item)}
-                    />
-                  )}
-                />
+                <>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {items.data.map((section, index) => (
+                      <React.Fragment key={index}>
+                        {section.data.map((item) => (
+                          <View key={item.id} style={{marginRight: 10}}>
+                            <HorizontalsCards
+                              item={item}
+                              onPress={() => onCardPress(items, item)}
+                            />
+                          </View>
+                        ))}
+                      </React.Fragment>
+                    ))}
+                  </ScrollView>
+                </>
               ) : (
                 <TCGameCardPlaceholder
                   data={gameData}
                   placeholderText={strings.noMatch}
+                  upComingMatch={true}
                 />
               )}
             </>
@@ -307,22 +325,37 @@ const LocalHomeMenuItems = memo(
                 isDisabled={!(items.data.length > 0)}
                 onPress={() => onTitlePress(item)}
               />
+
+              {items.data.map((item, index) => (
+                <Text style={styles.titleTextStyle} key={index}>
+                  {item.title}
+                </Text>
+              ))}
+
               {items.data.length > 0 ? (
-                <FlatList
-                  data={items.data}
-                  horizontal
-                  scrollEnabled={items.data.length > 0}
-                  contentContainerStyle={{paddingVertical: 6}}
-                  showsHorizontalScrollIndicator={false}
-                  renderItem={({item}) => (
-                    <HorizontalsCards
-                      item={item}
-                      upComingMatch={true}
-                      onPress={() => onCardPress(items, item)}
-                    />
-                  )}
-                  ListFooterComponent={() => <View style={{width: 15}} />}
-                />
+                <>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {items.data.map((section, index) => (
+                      <React.Fragment key={index}>
+                        {section.data.map((item) => (
+                          <View key={item.id} style={{marginRight: 10}}>
+                            <HorizontalsCards
+                              item={item}
+                              onPress={() => onCardPress(items, item)}
+                            />
+                          </View>
+                        ))}
+                      </React.Fragment>
+                    ))}
+                  </ScrollView>
+
+                  <TCThinDivider
+                    height={7}
+                    backgroundColor={colors.grayBackgroundColor}
+                    width={'100%'}
+                    marginTop={25}
+                  />
+                </>
               ) : (
                 <TCGameCardPlaceholder
                   data={gameData}
@@ -330,12 +363,6 @@ const LocalHomeMenuItems = memo(
                   upComingMatch={true}
                 />
               )}
-              <TCThinDivider
-                height={7}
-                backgroundColor={colors.grayBackgroundColor}
-                width={'100%'}
-                marginTop={25}
-              />
             </>
           );
 
@@ -689,5 +716,15 @@ const LocalHomeMenuItems = memo(
     return <View style={{flex: 1}}>{RenderMenuItem(item)}</View>;
   },
 );
+
+const styles = StyleSheet.create({
+  titleTextStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 14,
+    lineHeight: 21,
+    marginLeft: 15,
+    textTransform: 'uppercase',
+  },
+});
 
 export default LocalHomeMenuItems;

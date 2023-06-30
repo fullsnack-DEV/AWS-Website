@@ -185,7 +185,8 @@ const Verbs = {
   SPORT_DATA: 'sportData',
   delete: 'delete',
   report: 'report',
-
+  ITEM_HEIGHT: 178,
+  ITEM_LENGTH: 25,
 };
 
 export default Verbs;

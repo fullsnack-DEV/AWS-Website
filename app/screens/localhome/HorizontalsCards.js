@@ -26,7 +26,6 @@ export default function HorizontalsCards({
             marginTop: placeholder ? 0 : 5,
           },
         ]}>
-        {/* team 1 */}
         <View style={styles.teamContainer}>
           <FastImage source={images.teamCover} style={styles.teamImg} />
           <Text numberOfLines={1} style={styles.teamNameStyle}>

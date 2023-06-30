@@ -194,7 +194,7 @@ export default function LocalHomeScreen({navigation, route}) {
     locationContext,
   ]);
 
-  const ITEM_HEIGHT = 178;
+  const ITEM_HEIGHT = Verbs.ITEM_HEIGHT;
 
   const localHomeMenu = [
     {
@@ -566,8 +566,8 @@ export default function LocalHomeScreen({navigation, route}) {
   };
 
   const getLayout = (_, index) => ({
-    length: 25, // Replace with the actual height of each item
-    offset: 25 * index,
+    length: Verbs.ITEM_LENGTH,
+    offset: Verbs.ITEM_LENGTH * index,
     index,
   });
 

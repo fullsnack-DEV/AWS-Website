@@ -12,6 +12,7 @@ import {
   getJSDate,
   getTCDate,
   getEventsSlots,
+  groupBy,
 } from '../../utils';
 import {locationType} from '../../utils/constant';
 import {
@@ -490,7 +491,14 @@ const LocalHomeQuery = async (
   getGameIndex(recentMatchQuery).then((games) => {
     getGamesList(games).then((gamedata) => {
       if (games?.length > 0) {
-        setRecentMatch(gamedata);
+        const result = groupBy(gamedata, 'sport');
+
+        const dataArray = Object.keys(result).map((title) => ({
+          title,
+          data: result[title],
+        }));
+
+        setRecentMatch(dataArray);
       } else {
         setRecentMatch([]);
       }
@@ -500,7 +508,14 @@ const LocalHomeQuery = async (
   getGameIndex(upcomingMatchQuery).then((games) => {
     getGamesList(games).then((gamedata) => {
       if (games?.length > 0) {
-        setUpcomingMatch(gamedata);
+        const result = groupBy(gamedata, 'sport');
+
+        const dataArray = Object.keys(result).map((title) => ({
+          title,
+          data: result[title],
+        }));
+
+        setUpcomingMatch(dataArray);
       } else {
         setUpcomingMatch([]);
       }
