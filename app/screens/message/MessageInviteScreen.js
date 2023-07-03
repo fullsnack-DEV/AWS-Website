@@ -17,11 +17,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { StreamChat } from 'stream-chat';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
-import QB from 'quickblox-react-native-sdk';
 import LinearGradient from 'react-native-linear-gradient';
-import Header from '../../components/Home/Header';
+import ScreenHeader from '../../components/ScreenHeader';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -29,24 +29,22 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from '../../utils';
-import {
-  getQBProfilePic,
-  QBcreateDialog,
-  QBgetAllUsers,
-} from '../../utils/QuickBlox';
 import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCGroupNameBadge from '../../components/TCGroupNameBadge';
 import {strings} from '../../../Localization/translation';
+import {upsertUserInstance, allStreamUserData, STREAMCHATKEY} from '../../utils/streamChat';
+import { getGroupIndex } from '../../api/elasticSearch';
+
 
 const MessageInviteScreen = ({navigation}) => {
+  const chatClient = StreamChat.getInstance(STREAMCHATKEY);
   const authContext = useContext(AuthContext);
   const TAB_ITEMS = [
     strings.allType,
     strings.peopleTitleText,
     strings.teamsTitleText,
-    strings.clubsTitleText,
-    strings.leaguesTitleText,
+    strings.clubsTitleText
   ];
   const [currentTab, setCurrentTab] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -55,7 +53,6 @@ const MessageInviteScreen = ({navigation}) => {
   const [peopleData, setPeopleData] = useState([]);
   const [teamsData, setTeamsData] = useState([]);
   const [clubsData, setClubsData] = useState([]);
-  const [leaguesData, setLeaguesData] = useState([]);
   const [searchData, setSearchData] = useState([]);
   const [searchText, setSearchText] = useState('');
 
@@ -63,6 +60,7 @@ const MessageInviteScreen = ({navigation}) => {
     getAllUsers();
   }, []);
 
+  
   useEffect(() => {
     if (searchText !== '') {
       const dataTabList = [
@@ -70,7 +68,6 @@ const MessageInviteScreen = ({navigation}) => {
         peopleData,
         teamsData,
         clubsData,
-        leaguesData,
       ];
       const data = dataTabList[currentTab];
 
@@ -82,8 +79,8 @@ const MessageInviteScreen = ({navigation}) => {
       };
       const searchStr = escapeRegExp(searchText);
       const answer = data?.filter((a) =>
-        a.fullName
-          .toLowerCase()
+        a.user?.name
+          ?.toLowerCase()
           .toString()
           .match(searchStr.toLowerCase().toString()),
       );
@@ -91,56 +88,82 @@ const MessageInviteScreen = ({navigation}) => {
     }
   }, [searchText]);
 
-  const getAllUsers = () => {
-    setLoading(true);
-    QBgetAllUsers(QB)
-      .then((res) => {
-        getAllTypesData(res.users);
-      })
-      .catch(() => {
-        setInviteeData([]);
-        setLoading(false);
-      });
+
+
+  const getAllUsers = async() => {
+    setLoading(false);
+    const users = await allStreamUserData();
+    console.log('Users', users)
+    getAllTypesData(users); 
   };
 
+
+  const getAllGroups = async() => {
+    const teamsQuery = {
+      size: 100,
+      // from: teamsPageFrom,
+      query: {
+        bool: {
+          must: [{term: {is_pause: false}}],
+          // should : [{term: {under_terminate: false}}]
+        },
+      },
+    };
+    const res = await getGroupIndex(teamsQuery);
+    return res;
+  }
+
+
   const getAllTypesData = async (AllUsers) => {
-    const entity = authContext.entity;
-    const myUid = entity.QB.id;
-    const users = AllUsers.filter((user) => user.id !== myUid);
-    setInviteeData(users);
-    const personData = [];
-    const clubData = [];
-    const teamData = [];
-    const leagueData = [];
-    users.map((item) => {
-      const customData =
-        item && item.customData ? JSON.parse(item.customData) : {};
-      const entityType = _.get(customData, ['entity_type'], '');
-      if (entityType === 'player') {
-        personData.push(item);
-      } else if (entityType === 'club') {
-        clubData.push(item);
-      } else if (entityType === 'team') {
-        teamData.push(item);
-      } else if (entityType === 'league') {
-        leagueData.push(item);
+    if(AllUsers) {
+      const entity = authContext.entity;
+      const myUid  = entity.obj.user_id;
+      const users  = AllUsers.filter((item) => item.user.id !== myUid);
+      const groups = await getAllGroups()
+
+      const allData = [];
+      const personData = [];
+      const clubData   = [];
+      const teamData   = [];
+
+
+      users.map((item) => {
+        const entityType = item.user.entityType;
+        if (entityType === 'player' || entityType === 'user') {
+          personData.push(item.user);
+        }
+        allData.push(item.user)
+        return null;
+      });
+
+      if(groups !== undefined) {
+        groups.map((item) => {
+          const entityType = item.entity_type;
+          if (entityType === 'club') {
+            clubData.push(item);
+          } else if (entityType === 'team') {
+            teamData.push(item);
+          } 
+          allData.push(item)
+          return null
+        });
       }
-      return null;
-    });
-    setPeopleData([...personData]);
-    setClubsData([...clubData]);
-    setTeamsData([...teamData]);
-    setLeaguesData([...leagueData]);
-    setLoading(false);
+     
+      setInviteeData([...allData]);
+      setPeopleData([...personData]);
+      setClubsData([...clubData]);
+      setTeamsData([...teamData]);
+      setLoading(false);
+    }
   };
+
+
   const Item = useCallback(({item, onPress, style, isChecked}) => {
-    const customData = item?.customData ? JSON.parse(item.customData) : {};
-    const entityType = _.get(customData, ['entity_type'], '');
-    const fullName = customData?.full_name ?? customData?.group_name;
-    const fullImage = _.get(customData, ['full_image'], '');
-    const city = _.get(customData, ['city'], '');
-    const placeHolderImage =
-      entityType === 'player' ? images.profilePlaceHolder : images.groupUsers;
+    const entityType = item?.entityType;
+    const fullName   = item?.name;
+    const fullImage  = item?.image;
+    const city       = item?.city;
+    const placeHolderImage = entityType === 'player' ? images.profilePlaceHolder : images.groupUsers;
     const finalImage = fullImage ? {uri: fullImage} : placeHolderImage;
     return (
       <TouchableOpacity onPress={onPress} style={[styles.listItems, style]}>
@@ -204,6 +227,8 @@ const MessageInviteScreen = ({navigation}) => {
     );
   }, []);
 
+
+
   const toggleSelection = useCallback(
     (isChecked, user) => {
       if (isChecked) {
@@ -219,18 +244,11 @@ const MessageInviteScreen = ({navigation}) => {
     [selectedInvitees],
   );
 
+  
+
   const renderSelectedContactList = useCallback(
     ({item}) => {
-      const customData =
-        item && item.customData ? JSON.parse(item.customData) : {};
-      const entityType = _.get(customData, ['entity_type'], '');
-      const fullName = _.get(customData, ['full_name'], '');
-      const fullImage = _.get(customData, ['full_image'], '');
-      const type =
-        entityType === 'player'
-          ? QB.chat.DIALOG_TYPE.CHAT
-          : QB.chat.DIALOG_TYPE.GROUP_CHAT;
-
+      const fullName   = item.name;
       return (
         <View style={styles.selectedContactInnerView}>
           <View>
@@ -238,7 +256,7 @@ const MessageInviteScreen = ({navigation}) => {
               <View style={styles.selectedContactImageContainer}>
                 <FastImage
                   resizeMode={'contain'}
-                  source={getQBProfilePic(type, '', fullImage)}
+                  source={images.profilePlaceHolder}
                   style={styles.selectedContactImage}
                 />
               </View>
@@ -270,6 +288,7 @@ const MessageInviteScreen = ({navigation}) => {
     [toggleSelection],
   );
 
+
   const renderItem = useCallback(
     ({item}) => {
       const isChecked = selectedInvitees.some((val) => val.id === item.id);
@@ -284,6 +303,7 @@ const MessageInviteScreen = ({navigation}) => {
     [selectedInvitees, toggleSelection],
   );
 
+
   const ListEmptyComponent = useMemo(
     () => (
       <Text
@@ -297,6 +317,7 @@ const MessageInviteScreen = ({navigation}) => {
     ),
     [],
   );
+
 
   const renderSingleTab = useCallback(
     (data) => (
@@ -323,6 +344,7 @@ const MessageInviteScreen = ({navigation}) => {
     [ListEmptyComponent, renderItem],
   );
 
+
   const renderTabContain = useCallback(
     (tabKey, tabIndex) => {
       const dataTabList = [
@@ -330,8 +352,8 @@ const MessageInviteScreen = ({navigation}) => {
         peopleData,
         teamsData,
         clubsData,
-        leaguesData,
       ];
+      
       return (
         tabIndex === currentTab && (
           <View tabLabel={tabKey} style={{flex: 1}}>
@@ -350,7 +372,6 @@ const MessageInviteScreen = ({navigation}) => {
       clubsData,
       currentTab,
       inviteeData,
-      leaguesData,
       loading,
       peopleData,
       renderSingleTab,
@@ -360,21 +381,36 @@ const MessageInviteScreen = ({navigation}) => {
     ],
   );
 
-  const handlePress = useCallback(() => {
+
+  const getCurrentUserObject = () => {
+    const user = {
+      user : {
+        id          : authContext.entity?.obj?.user_id,
+        name        : authContext.entity?.obj?.first_name,
+        entityType  : authContext.entity?.obj?.entity_type,
+        image       : null
+      }
+    }
+    return user;
+  }
+
+
+  const handlePress = async() => {
     const occupantsIds = [];
+    const members = [...selectedInvitees]
     selectedInvitees.filter((item) => occupantsIds.push(item.id));
+    const currentUser = getCurrentUserObject();
     if (occupantsIds.length > 0) {
       if (occupantsIds.length === 1) {
-        QBcreateDialog(occupantsIds)
-          .then((res) => {
-            setSelectedInvitees([]);
-            navigation.replace('MessageChat', {dialog: res});
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        members.push(currentUser)
+        await upsertUserInstance(authContext);
+        const channel = chatClient.channel('messaging', null, {
+          members,
+        });
+        navigation.replace('MessageChatScreen', {
+          channel
+        });
       } else {
-        setSelectedInvitees([]);
         navigation.replace('MessageNewGroupScreen', {
           selectedInviteesData: selectedInvitees,
         });
@@ -382,43 +418,38 @@ const MessageInviteScreen = ({navigation}) => {
     } else {
       Alert.alert(strings.selectMembers);
     }
-  }, [navigation, selectedInvitees]);
+  }
+
 
   const renderHeader = useMemo(
     () => (
-      <Header
-        leftContainerStyle={{paddingLeft: 10}}
-        leftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <FastImage
-              resizeMode={'contain'}
-              source={images.backArrow}
-              style={styles.backImageStyle}
-            />
-          </TouchableOpacity>
-        }
-        centerComponent={<Text style={styles.eventTitleTextStyle}>Invite</Text>}
-        rightComponent={
-          <TouchableOpacity
-            onPress={handlePress}
-            disabled={selectedInvitees.length < 1}>
-            <Text
-              style={{
-                ...styles.eventTextStyle,
-                fontSize: 14,
-                opacity: selectedInvitees.length < 1 ? 0.5 : 1,
-              }}>
-              {selectedInvitees && selectedInvitees.length > 1
-                ? strings.next
-                : strings.create}
-            </Text>
-          </TouchableOpacity>
-        }
+      <ScreenHeader
+        title={'Invite'}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack()
+        }}
+        isRightIconText
+        rightButtonText={selectedInvitees && selectedInvitees.length > 1
+          ? strings.next
+          : strings.create}
+        onRightButtonPress={() => {
+          handlePress();
+        }}
+        loading={loading}
+        containerStyle={{
+          paddingLeft: 10,
+          paddingRight: 17,
+          paddingTop: 8,
+          paddingBottom: 13,
+          borderBottomWidth: 0,
+        }}
       />
     ),
     [handlePress, navigation, selectedInvitees],
   );
 
+  
   const renderSelectedInvitees = useMemo(
     () =>
       selectedInvitees.length > 0 && (
@@ -438,6 +469,7 @@ const MessageInviteScreen = ({navigation}) => {
     [renderSelectedContactList, selectedInvitees],
   );
 
+  
   const renderTabs = useMemo(
     () => (
       <View style={{flex: 1}}>
@@ -452,7 +484,7 @@ const MessageInviteScreen = ({navigation}) => {
               activeOpacity={1}
               key={index}
               style={{
-                width: wp(100) / 5,
+                width: wp(100) / 4,
                 height: 45,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -507,14 +539,14 @@ const MessageInviteScreen = ({navigation}) => {
     [TAB_ITEMS, currentTab],
   );
 
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       {renderHeader}
       <View style={styles.separateLine} />
-      {renderSelectedInvitees}
       <View
         style={{
-          backgroundColor: colors.grayBackgroundColor,
+          backgroundColor: colors.whiteColor,
           width: '100%',
           padding: 15,
         }}>
@@ -526,11 +558,13 @@ const MessageInviteScreen = ({navigation}) => {
           placeholder={strings.searchText}
         />
       </View>
+      {renderSelectedInvitees}
       <View style={styles.sperateLine} />
       {renderTabs}
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -542,34 +576,11 @@ const styles = StyleSheet.create({
   textInputStyle: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.textFieldBackground,
     padding: 10,
     paddingHorizontal: 15,
     borderRadius: 20,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.16,
-    shadowRadius: 1,
     elevation: 1,
-  },
-  backImageStyle: {
-    height: 25,
-    width: 25,
-    resizeMode: 'contain',
-  },
-  eventTitleTextStyle: {
-    color: colors.lightBlackColor,
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    alignSelf: 'center',
-  },
-  eventTextStyle: {
-    color: colors.lightBlackColor,
-    width: wp(12),
-    fontSize: 10,
-    fontFamily: fonts.RMedium,
-    alignSelf: 'center',
-    textAlign: 'right',
   },
   imageMainContainer: {
     height: 40,
@@ -595,6 +606,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 16,
     color: colors.lightBlackColor,
+    lineHeight: 24
   },
   subTitle: {
     fontFamily: fonts.RLight,
@@ -614,9 +626,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   selectedInviteesMainView: {
-    height: Platform.OS === 'ios' ? hp(12) : hp(14),
+    height: Platform.OS === 'ios' ? hp(10) : hp(14),
     width: wp('100%'),
-    paddingVertical: hp(1),
+    paddingVertical: hp(0.5),
     paddingHorizontal: wp(2),
     backgroundColor: colors.whiteColor,
   },
@@ -656,14 +668,12 @@ const styles = StyleSheet.create({
     height: 41,
     borderRadius: wp(6),
     alignSelf: 'center',
-    // borderWidth: 0.5,
   },
   deSelectedContactImage: {
     width: wp(2),
     height: wp(2),
     alignSelf: 'center',
     justifyContent: 'center',
-    // borderWidth: 0.5,
   },
   separateLine: {
     borderColor: colors.writePostSepratorColor,

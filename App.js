@@ -28,6 +28,7 @@ export default function App() {
   const [unreadNotificationCount, setNotificationCount] = useState({});
   const [totalNotificationCount, setTotalNotificationCount] = useState(0);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  const [streamChatToken, setStreamChatToken] = useState(null);
 
   const setTokenData = useCallback(async (token) => {
     setToken(token);
@@ -40,7 +41,7 @@ export default function App() {
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     if (enabled) {
-      // console.log('Authorization status:', authStatus);
+      console.log('Authorization status:', authStatus);
     }
   }
 
@@ -64,6 +65,7 @@ export default function App() {
       strings.networkConnectivityErrorMessage,
     );
   };
+
   useEffect(() => {
     NetInfo.addEventListener((state) => {
       setNetworkConntected(state.isConnected);
@@ -103,6 +105,7 @@ export default function App() {
     setManagedEntityList([]);
     setNotificationCount({});
     setTotalNotificationCount(0);
+    setStreamChatToken(null);
   }, []);
 
   const authValue = useMemo(
@@ -131,6 +134,8 @@ export default function App() {
       clearAuthContext,
       isAccountDeactivated,
       setIsAccountDeactivated,
+      streamChatToken,
+      setStreamChatToken,
     }),
     [
       role,
@@ -149,6 +154,7 @@ export default function App() {
       setTotalNotificationCount,
       clearAuthContext,
       isAccountDeactivated,
+      streamChatToken,
     ],
   );
 

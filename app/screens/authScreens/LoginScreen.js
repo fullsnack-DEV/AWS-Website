@@ -42,8 +42,9 @@ import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import {eventDefaultColorsData} from '../../Constants/LoaderImages';
 import apiCall from '../../utils/apiCall';
-import {getAppSettingsWithoutAuth, updateFBToken} from '../../api/Users';
+import {getAppSettingsWithoutAuth, updateFBToken, updateUserProfile} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
+import getUserToken from '../../api/StreamChat';
 
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('vineetpatidar@gmail.com');
@@ -168,11 +169,12 @@ const LoginScreen = ({navigation}) => {
     (user) => {
       if (user) {
         console.log('user', user);
-        user.getIdTokenResult().then((idTokenResult) => {
+        user.getIdTokenResult().then(async(idTokenResult) => {
           const token = {
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
           };
+
           dummyAuthContext.tokenData = token;
           Utility.setStorage('eventColor', eventDefaultColorsData);
           Utility.setStorage('groupEventValue', true);
@@ -185,9 +187,9 @@ const LoginScreen = ({navigation}) => {
               url: `${Config.BASE_URL}/users/${user.uid}`,
               headers: {Authorization: `Bearer ${token.token}`},
             };
-            console.log('Login Request:=>', userConfig);
+            
             apiCall(userConfig)
-              .then((response) => {
+              .then(async(response) => {
                 dummyAuthContext.entity = {
                   uid: user.uid,
                   role: 'user',
@@ -197,9 +199,16 @@ const LoginScreen = ({navigation}) => {
                     user: response.payload,
                   },
                 };
-                loginFinalRedirection(user, response.payload);
+
+                // Call Stream chat token api and save in authContex
+                await getUserToken(dummyAuthContext).then(async(responseChat) => {
+                  updateUserProfile({streamChatToken: responseChat.payload}, dummyAuthContext); 
+                  await authContext.setStreamChatToken(responseChat.payload)
+                  loginFinalRedirection(user, response.payload);
+                })
               })
-              .catch(() => {
+              .catch((e) => {
+                console.log('Error', e)
                 navigateToAddNameScreen(user);
               });
           }

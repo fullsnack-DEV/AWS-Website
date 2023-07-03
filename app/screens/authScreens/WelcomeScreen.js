@@ -54,6 +54,7 @@ import {QBconnectAndSubscribe, QBlogin} from '../../utils/QuickBlox';
 import AppleButton from '../../components/AppleButton';
 import {checkTownscupEmail, createUser, updateFBToken} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
+import {generateUserStreamToken} from '../../utils/streamChat';
 
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
 export default function WelcomeScreen({navigation}) {
@@ -256,13 +257,16 @@ export default function WelcomeScreen({navigation}) {
     };
 
     createUser(data, dummyAuthContext)
-      .then((createdUser) => {
+      .then(async (createdUser) => {
         const authEntity = {...dummyAuthContext?.entity};
         authEntity.obj = createdUser?.payload;
         authEntity.auth.user = createdUser?.payload;
         authEntity.role = 'user';
         dummyAuthContext.entity = authEntity;
         dummyAuthContext.user = createdUser?.payload;
+        // signUpWithQB(createdUser?.payload, dummyAuthContext);
+        // Call Stream chat token api and save in authContex
+        await generateUserStreamToken(authEntity);
       })
       .catch((e) => {
         setloading(false);

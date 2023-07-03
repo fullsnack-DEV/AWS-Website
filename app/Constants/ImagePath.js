@@ -15,7 +15,6 @@ const images = {
   profilePlaceHolder: require('../assets/images/profileplaceholder.png'),
   dummyPhoto: require('../assets/images/dummy_photo.png'),
   searchLocation: require('../assets/images/ic_search_orange.png'),
-  chatSearch: require('../assets/images/chatSearch.png'),
 
   archerySport: require('../assets/images/ic_archery.png'),
   bandySport: require('../assets/images/ic_Bandy.png'),
@@ -540,6 +539,17 @@ const images = {
   reportIcon: require('../assets/images/reportIcon.png'),
   searchIcon: require('../assets/images/searchIcon.png'),
 
+  chatCreate: require('../assets/images/create-chat.png'),
+  chatSearch: require('../assets/images/search-chat.png'),
+  chatCamera: require('../assets/images/chat-camera.png'),
+  chatBtn: require('../assets/images/chat-btn.png'),
+  emojiSad : require('../assets/images/emoji-sad.png'),
+  emojiHappy : require('../assets/images/emoji-happy.png'),
+  emojiWow : require('../assets/images/emoji-wow.png'),
+  emojiCorrect : require('../assets/images/emoji-correct.png'),
+  emojiLike : require('../assets/images/emoji-like.png'),
+  emojiLove : require('../assets/images/emoji-love.png'),
+  deleteChat : require('../assets/images/delete-chat.png')
 };
 
 export default images;

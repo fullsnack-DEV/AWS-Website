@@ -16,6 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { StreamChat } from 'stream-chat';
 import FastImage from 'react-native-fast-image';
 import _ from 'lodash';
 import QB from 'quickblox-react-native-sdk';
@@ -33,21 +34,16 @@ import {
 } from '../../utils';
 import {
   getQBProfilePic,
-  QB_DIALOG_TYPE,
-  QBcreateDialog,
-  QBLogout,
-  QBlogin,
-  QB_ACCOUNT_TYPE,
-  QBconnectAndSubscribe,
-  QBupdateDialogNameAndPhoto,
 } from '../../utils/QuickBlox';
 import TCInputBox from '../../components/TCInputBox';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import * as Utility from '../../utils/index';
 import {strings} from '../../../Localization/translation';
 import uploadImages from '../../utils/imageAction';
+import {upsertUserInstance, STREAMCHATKEY} from '../../utils/streamChat';
 
 const MessageNewGroupScreen = ({route, navigation}) => {
+  const chatClient = StreamChat.getInstance(STREAMCHATKEY);
   const authContext = useContext(AuthContext);
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
@@ -142,52 +138,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
     [toggleSelection],
   );
 
-  const switchQBAccount = async (accountData, entity) => {
-    let currentEntity = entity;
-    const entityType = accountData?.entity_type;
-    const uid = entityType === 'player' ? 'user_id' : 'group_id';
-    QBLogout()
-      .then(() => {
-        const {USER, CLUB, TEAM} = QB_ACCOUNT_TYPE;
-        let accountType = USER;
-        if (entityType === 'club') accountType = CLUB;
-        else if (entityType === 'team') accountType = TEAM;
-
-        QBlogin(
-          accountData[uid],
-          {
-            ...accountData,
-            full_name: accountData.group_name,
-          },
-          accountType,
-        )
-          .then(async (res) => {
-            currentEntity = {
-              ...currentEntity,
-              QB: {...res.user, connected: true, token: res?.session?.token},
-            };
-            authContext.setEntity({...currentEntity});
-            await Utility.setStorage('authContextEntity', {...currentEntity});
-            QBconnectAndSubscribe(currentEntity)
-              .then((qbRes) => {
-                setLoading(false);
-                if (qbRes?.error) {
-                  console.log(strings.appName, qbRes?.error);
-                }
-              })
-              .catch(() => {
-                setLoading(false);
-              });
-          })
-          .catch(() => {
-            setLoading(false);
-          });
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  };
-
+  
   const onSaveButtonClicked = () => {
     if (checkValidation()) {
       setLoading(true);
@@ -212,7 +163,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
               groupData.thumbnail = responses[0].fullImage;
             }
 
-            onDonePress(groupData);
+            onDonePress();
           })
           .catch((e) => {
             setTimeout(() => {
@@ -223,68 +174,49 @@ const MessageNewGroupScreen = ({route, navigation}) => {
             setLoading(false);
           });
       } else {
-        onDonePress(groupData);
+        onDonePress();
       }
     }
   };
 
-  const updateDialog = useCallback(
-    (dialogId, photo) => {
-      QBupdateDialogNameAndPhoto(dialogId, groupName, photo, authContext)
-        .then((res) => {
-          console.log('resssss', res);
-          if (res?.status === 'error') {
-            console.log('QB :', res?.error);
-          } else {
-            navigation.replace('MessageChat', {dialog: res});
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    [authContext, groupName, navigation],
-  );
+  
 
-  const onDonePress = useCallback(
-    (data) => {
-      if (checkValidation()) {
-        setLoading(true);
-        const occupantsIds = [];
-        selectedInvitees.filter((item) => occupantsIds.push(item.id));
-        if (occupantsIds.length > 0) {
-          QBcreateDialog(occupantsIds, QB_DIALOG_TYPE.GROUP, groupName)
-            .then((res) => {
-              setLoading(false);
-
-              console.log('rerererererer', res);
-              setSelectedInvitees([]);
-
-              if (res?.id) {
-                const dialogId = res?.id;
-                if (data?.thumbnail && data?.thumbnail !== '') {
-                  updateDialog(dialogId, data?.thumbnail);
-                } else {
-                  updateDialog(dialogId, '');
-                }
-              }
-            })
-            .catch((error) => {
-              setLoading(false);
-              switchQBAccount(authContext.entity, authContext.entity);
-              console.log(error);
-            });
-        }
+  const getCurrentUserObject = () => {
+    const user = {
+      user : {
+        id          : authContext.entity?.obj?.user_id,
+        name        : authContext.entity?.obj?.first_name,
+        entityType  : authContext.entity?.obj?.entity_type,
+        image       : null
       }
-    },
-    [
-      authContext.entity,
-      checkValidation,
-      groupName,
-      selectedInvitees,
-      updateDialog,
-    ],
-  );
+    }
+    return user;
+  }
+
+
+
+  const onDonePress = async() => {
+    if (checkValidation()) {
+      setLoading(true);
+      console.log('Data', groupName)
+      const occupantsIds = [];
+      const members = [...selectedInvitees]
+      selectedInvitees.filter((item) => occupantsIds.push(item.id));
+      const currentUser = getCurrentUserObject();
+      if (occupantsIds.length > 0) {
+        members.push(currentUser)
+        await upsertUserInstance(authContext);
+        const channel = chatClient.channel('messaging', groupName.replace(/\s/g, ''), {
+          name : groupName,
+          members
+        });
+        setLoading(false);
+        navigation.replace('MessageChatScreen', {
+          channel
+        });
+      }
+    }
+  };
 
   const renderHeader = useMemo(
     () => (

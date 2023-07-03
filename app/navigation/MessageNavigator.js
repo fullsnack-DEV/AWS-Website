@@ -13,7 +13,8 @@ import MessageEditGroupScreen from '../screens/message/MessageEditGroupScreen';
 import MessageSearchScreen from '../screens/message/MessageSearchScreen';
 import MessageEditInviteeScreen from '../screens/message/MessageEditInviteeScreen';
 import SearchScreen from '../screens/search/SearchScreen';
-import MessageChat from '../components/message/MessageChat';
+// import MessageChat from '../components/message/MessageChat';
+import MessageChatScreen from '../screens/message/MessageChatScreen';
 
 import fonts from '../Constants/Fonts';
 
@@ -80,8 +81,8 @@ const MessageNavigator = () => (
       }}
     />
     <Stack.Screen
-      name="MessageChat"
-      component={MessageChat}
+      name="MessageChatScreen"
+      component={MessageChatScreen}
       options={{
         title: strings.messageChat,
         headerShown: false,
