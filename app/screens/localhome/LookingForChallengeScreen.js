@@ -285,7 +285,10 @@ export default function LookingForChallengeScreen({navigation, route}) {
           if (res.length > 0) {
             const modifiedResult = modifiedPlayerElasticSearchResult(res);
             const fetchedData = [...availableChallenge, ...modifiedResult];
-            setAvailableChallenge(fetchedData);
+            const filterData = fetchedData.filter(
+              (obj) => obj.user_id !== authContext.entity.uid,
+            );
+            setAvailableChallenge(filterData);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }
@@ -407,7 +410,10 @@ export default function LookingForChallengeScreen({navigation, route}) {
           if (res.length > 0) {
             const modifiedResult = modifiedTeamElasticSearchResult(res);
             const fetchedData = [...availableChallenge, ...modifiedResult];
-            setAvailableChallenge(fetchedData);
+            const filterData = fetchedData.filter(
+              (obj) => obj?.group_id !== authContext.entity.obj?.group_id,
+            );
+            setAvailableChallenge(filterData);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }

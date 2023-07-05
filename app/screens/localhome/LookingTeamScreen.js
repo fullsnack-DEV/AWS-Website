@@ -189,7 +189,11 @@ export default function LookingTeamScreen({navigation, route}) {
       getUserIndex(lookingQuery)
         .then((res) => {
           if (res.length > 0) {
-            setLookingEntity([...lookingEntity, ...res]);
+            const fetchData = [...lookingEntity, ...res];
+            const filterData = fetchData.filter(
+              (obj) => obj?.user_id !== authContext.entity.auth?.user.user_id,
+            );
+            setLookingEntity(filterData);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }
