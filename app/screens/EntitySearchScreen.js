@@ -824,6 +824,7 @@ export default function EntitySearchScreen({navigation, route}) {
         if (res.length > 0) {
           const modifiedResult = modifiedTeamElasticSearchResult(res);
           const fetchedData = [...teams, ...modifiedResult];
+
           setTeams(fetchedData);
           setTeamsPageFrom(teamsPageFrom + pageSize);
           stopFetchMore = true;

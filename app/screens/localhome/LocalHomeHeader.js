@@ -28,7 +28,7 @@ export default function LocalHomeHeader({
     <View>
       <Header
         leftComponent={
-          <Pressable onPress={() => console.log(authContext, 'from auth')}>
+          <Pressable>
             <FastImage
               source={images.newTcLogo}
               resizeMode={'contain'}
@@ -46,6 +46,7 @@ export default function LocalHomeHeader({
                 {authContext.entity.obj.full_name ??
                   authContext.entity.obj.group_name}
               </Text>
+
               <Image source={images.path} style={styles.downArrow} />
             </TouchableOpacity>
 
@@ -123,9 +124,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 12,
     color: colors.lightBlackColor,
+    lineHeight: 14,
   },
   headerUserName: {
     fontSize: 16,
@@ -161,7 +163,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 18,
     resizeMode: 'contain',
-    marginLeft: 5,
+    marginLeft: 6,
     marginTop: 3,
   },
   backImageStyle: {

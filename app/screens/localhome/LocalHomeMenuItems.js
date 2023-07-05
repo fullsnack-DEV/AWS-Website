@@ -33,6 +33,7 @@ import TCThinDivider from '../../components/TCThinDivider';
 import colors from '../../Constants/Colors';
 import EventsCard from './EventsCard';
 import fonts from '../../Constants/Fonts';
+import PlayerShimmerCard from './PlayerShimmerCard';
 
 const LocalHomeMenuItems = memo(
   ({
@@ -47,6 +48,7 @@ const LocalHomeMenuItems = memo(
     navigateToScoreKeeper,
     owners,
     allUserData,
+    cardLoader,
   }) => {
     const navigation = useNavigation();
     const authContext = useContext(AuthContext);
@@ -255,11 +257,17 @@ const LocalHomeMenuItems = memo(
                 showsHorizontalScrollIndicator={false}
                 renderItem={({item}) => <TeamCard item={item} />}
                 ListEmptyComponent={() => (
-                  <PlayersCardPlaceHolder
-                    data={dummyTeamData}
-                    forTeams={true}
-                    placeholdertext={strings.hiringPlayersPlaceholderText}
-                  />
+                  <>
+                    {cardLoader ? (
+                      <PlayerShimmerCard data={dummyPlayerData} />
+                    ) : (
+                      <PlayersCardPlaceHolder
+                        data={dummyTeamData}
+                        forTeams={true}
+                        placeholdertext={strings.hiringPlayersPlaceholderText}
+                      />
+                    )}
+                  </>
                 )}
               />
 
@@ -465,11 +473,17 @@ const LocalHomeMenuItems = memo(
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
                     ListEmptyComponent={() => (
-                      <PlayersCardPlaceHolder
-                        data={dummyTeamData}
-                        forTeams={true}
-                        placeholdertext={strings.noTeams}
-                      />
+                      <>
+                        {cardLoader ? (
+                          <PlayerShimmerCard data={dummyPlayerData} />
+                        ) : (
+                          <PlayersCardPlaceHolder
+                            data={dummyTeamData}
+                            forTeams={true}
+                            placeholdertext={strings.noTeams}
+                          />
+                        )}
+                      </>
                     )}
                   />
                   <TCThinDivider
@@ -509,15 +523,24 @@ const LocalHomeMenuItems = memo(
                         selectedSport={selectedSport}
                         sportType={sportType}
                         item={item}
+                        hiring={true}
                         onPress={() => onCardPress(items, item)}
                       />
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
                     ListEmptyComponent={() => (
-                      <PlayersCardPlaceHolder
-                        data={dummyPlayerData}
-                        placeholdertext={strings.lookingTeamsPlaceholderText}
-                      />
+                      <>
+                        {cardLoader ? (
+                          <PlayerShimmerCard data={dummyPlayerData} />
+                        ) : (
+                          <PlayersCardPlaceHolder
+                            data={dummyPlayerData}
+                            placeholdertext={
+                              strings.lookingTeamsPlaceholderText
+                            }
+                          />
+                        )}
+                      </>
                     )}
                   />
                   <TCThinDivider
@@ -557,10 +580,16 @@ const LocalHomeMenuItems = memo(
                 )}
                 ListFooterComponent={() => <View style={{width: 15}} />}
                 ListEmptyComponent={() => (
-                  <PlayersCardPlaceHolder
-                    data={dummyPlayerData}
-                    placeholdertext={strings.refereesPlaceholderText}
-                  />
+                  <>
+                    {cardLoader ? (
+                      <PlayerShimmerCard data={dummyPlayerData} />
+                    ) : (
+                      <PlayersCardPlaceHolder
+                        data={dummyPlayerData}
+                        placeholdertext={strings.refereesPlaceholderText}
+                      />
+                    )}
+                  </>
                 )}
               />
               <TCThinDivider
@@ -599,10 +628,16 @@ const LocalHomeMenuItems = memo(
                 )}
                 ListFooterComponent={() => <View style={{width: 15}} />}
                 ListEmptyComponent={() => (
-                  <PlayersCardPlaceHolder
-                    data={dummyPlayerData}
-                    placeholdertext={strings.scorekeepersPlaceholderText}
-                  />
+                  <>
+                    {cardLoader ? (
+                      <PlayerShimmerCard data={dummyPlayerData} />
+                    ) : (
+                      <PlayersCardPlaceHolder
+                        data={dummyPlayerData}
+                        placeholdertext={strings.scorekeepersPlaceholderText}
+                      />
+                    )}
+                  </>
                 )}
               />
               <TCThinDivider
@@ -645,10 +680,16 @@ const LocalHomeMenuItems = memo(
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
                     ListEmptyComponent={() => (
-                      <PlayersCardPlaceHolder
-                        data={dummyPlayerData}
-                        placeholdertext={strings.noMembers}
-                      />
+                      <>
+                        {cardLoader ? (
+                          <PlayerShimmerCard data={dummyPlayerData} />
+                        ) : (
+                          <PlayersCardPlaceHolder
+                            data={dummyPlayerData}
+                            placeholdertext={strings.noMembers}
+                          />
+                        )}
+                      </>
                     )}
                   />
                   <TCThinDivider
@@ -691,10 +732,16 @@ const LocalHomeMenuItems = memo(
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
                     ListEmptyComponent={() => (
-                      <PlayersCardPlaceHolder
-                        data={dummyPlayerData}
-                        placeholdertext={strings.noTeamclub}
-                      />
+                      <>
+                        {cardLoader ? (
+                          <PlayerShimmerCard data={dummyPlayerData} />
+                        ) : (
+                          <PlayersCardPlaceHolder
+                            data={dummyPlayerData}
+                            placeholdertext={strings.noTeamclub}
+                          />
+                        )}
+                      </>
                     )}
                   />
                   <TCThinDivider

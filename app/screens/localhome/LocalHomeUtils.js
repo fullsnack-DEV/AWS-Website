@@ -137,7 +137,9 @@ const LocalHomeQuery = async (
   setLookingTeam,
   setReferees,
   setScorekeepers,
+  setCardLoader,
 ) => {
+  setCardLoader(true);
   const recentMatchQuery = {
     size: defaultPageSize,
     query: {
@@ -527,30 +529,38 @@ const LocalHomeQuery = async (
   // });
   if (authContext.entity.role === Verbs.entityTypeUser) {
     getUserIndex(playerAvailableForchallengeQuery).then((players) => {
+      setCardLoader(false);
+
       const playersData = filterCurrentUserFromData(players, authContext);
+
       setChallengeeMatch(playersData);
     });
   } else if (authContext.entity.role === Verbs.entityTypeTeam) {
     getGroupIndex(teamAvailableForchallengeQuery).then((teams) => {
+      setCardLoader(false);
       const filterTeam = filterCurrentTeam(teams, authContext);
       setChallengeeMatch(filterTeam);
     });
   }
 
   getGroupIndex(recruitingPlayersQuery).then((teams) => {
+    setCardLoader(false);
     setHiringPlayers(teams);
   });
 
   getUserIndex(lookingQuery).then((players) => {
+    setCardLoader(false);
     const playersData = filterCurrentUserFromData(players, authContext);
     setLookingTeam(playersData);
   });
   getUserIndex(refereeQuery).then((res) => {
+    setCardLoader(false);
     const filterRefreeData = filterCurrentUserFromData(res, authContext);
 
     setReferees([...filterRefreeData]);
   });
   getUserIndex(scorekeeperQuery).then((res) => {
+    setCardLoader(false);
     const filterScoreKeeperData = filterCurrentUserFromData(res, authContext);
     setScorekeepers([...filterScoreKeeperData]);
   });

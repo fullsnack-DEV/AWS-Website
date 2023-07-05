@@ -64,6 +64,7 @@ const defaultPageSize = 10;
 
 export default function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
+  const listRef = useRef();
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const locationContext = useContext(LocationContext);
@@ -121,6 +122,7 @@ export default function LocalHomeScreen({navigation, route}) {
   const [allUserData, setAllUserData] = useState([]);
   const [owners, setOwners] = useState([]);
   const [sportIconLoader, setSportIconLoader] = useState(false);
+  const [cardLoader, setCardLoader] = useState(false);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -176,6 +178,7 @@ export default function LocalHomeScreen({navigation, route}) {
         setLookingTeam,
         setReferees,
         setScorekeepers,
+        setCardLoader,
       );
     }
   }, [
@@ -299,7 +302,7 @@ export default function LocalHomeScreen({navigation, route}) {
   useEffect(() => {
     getSportsForHome(authContext, setSportHandler, sports, setSportIconLoader);
     setSelectedSport(strings.allType);
-  }, [authContext]);
+  }, [authContext.entity]);
 
   useEffect(() => {
     const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
@@ -444,7 +447,7 @@ export default function LocalHomeScreen({navigation, route}) {
     if (item.title === strings.addTeamClub) {
       setBottomSheet(true);
     }
-    if (item.title === strings.createevents) {
+    if (item.title === strings.createEventhomeTitle) {
       navigation.navigate('Schedule', {
         screen: 'CreateEventScreen',
         params: {
@@ -458,12 +461,8 @@ export default function LocalHomeScreen({navigation, route}) {
   };
 
   const handlePress = useCallback(
-    (item, index) => {
-      refContainer.current.scrollToIndex({
-        animated: true,
-        index,
-        viewPosition: 0.3,
-      });
+    (item) => {
+      listRef.current.scrollToOffset({offset: 0, animated: true});
 
       if (item.sport === strings.editType) {
         // Handle editType logic
@@ -603,16 +602,6 @@ export default function LocalHomeScreen({navigation, route}) {
       keyExtractor={keyExtractor}
       renderItem={SportsListView}
       getItemLayout={getLayout}
-      onScrollToIndexFailed={(info) => {
-        // eslint-disable-next-line no-promise-executor-return
-        const wait = new Promise((resolve) => setTimeout(resolve, 500));
-        wait.then(() => {
-          refContainer.current.scrollToIndex({
-            animated: true,
-            index: info.index,
-          });
-        });
-      }}
     />
   );
 
@@ -693,6 +682,7 @@ export default function LocalHomeScreen({navigation, route}) {
 
           <FlatList
             data={localHomeMenu}
+            ref={listRef}
             keyExtractor={(item) => item.index.toString()}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled
@@ -728,6 +718,7 @@ export default function LocalHomeScreen({navigation, route}) {
                 sportType={sportType}
                 owners={owners}
                 allUserData={allUserData}
+                cardLoader={cardLoader}
               />
             )}
             getItemLayout={getItemLayout}
@@ -978,11 +969,12 @@ export default function LocalHomeScreen({navigation, route}) {
 const styles = StyleSheet.create({
   sportName: {
     fontSize: 12,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     alignSelf: 'center',
     marginLeft: 15,
     marginRight: 15,
+    lineHeight: 14,
   },
 
   bottomPopupContainer: {
@@ -1105,8 +1097,8 @@ const styles = StyleSheet.create({
   },
 
   separateLine: {
-    borderColor: colors.veryLightGray,
-    borderWidth: 0.5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.veryLightGray,
   },
 
   locationText: {
