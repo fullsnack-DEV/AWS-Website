@@ -319,7 +319,9 @@ const LocalHomeNavigator = () => (
         title: strings.completedMatches,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerShown: true,
         headerStyle: {
@@ -336,7 +338,9 @@ const LocalHomeNavigator = () => (
         title: strings.upcomingMatchesTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerShown: true,
         headerStyle: {
@@ -353,7 +357,9 @@ const LocalHomeNavigator = () => (
         title: 'Availble For Challenge',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerShown: true,
         headerStyle: {
@@ -436,7 +442,9 @@ const LocalHomeNavigator = () => (
         title: strings.groupsRecruitingMembers,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerShown: true,
         headerStyle: {
@@ -453,7 +461,9 @@ const LocalHomeNavigator = () => (
         title: strings.individualsLookingforGroups,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerShown: true,
         headerStyle: {
@@ -470,7 +480,9 @@ const LocalHomeNavigator = () => (
         title: strings.refereesAvailable,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerShown: true,
         headerStyle: {
@@ -487,7 +499,9 @@ const LocalHomeNavigator = () => (
         title: strings.scoreKeeperAvailable,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerShown: true,
         headerStyle: {
@@ -3558,7 +3572,9 @@ const LocalHomeNavigator = () => (
         title: strings.hiringPlayerTitle,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerShown: true,
         headerStyle: {

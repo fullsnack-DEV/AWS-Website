@@ -259,7 +259,10 @@ export default function RefereesListScreen({navigation, route}) {
           if (res.length > 0) {
             const modifiedResult = modifiedRefereeElasticSearchResult(res);
             const fetchedData = [...referees, ...modifiedResult];
-            setReferees(fetchedData);
+            const filterData = fetchedData.filter(
+              (obj) => obj.user_id !== authContext.entity.uid,
+            );
+            setReferees(filterData);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }

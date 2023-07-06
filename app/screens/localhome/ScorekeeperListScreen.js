@@ -181,7 +181,11 @@ export default function ScorekeeperListScreen({navigation, route}) {
         .then((res) => {
           if (res.length > 0) {
             const modifiedResult = modifiedScoreKeeperElasticSearchResult(res);
-            setScorekeepers([...scorekeepers, ...modifiedResult]);
+            const fetchedData = [...scorekeepers, ...modifiedResult];
+            const filterData = fetchedData.filter(
+              (obj) => obj.user_id !== authContext.entity.uid,
+            );
+            setScorekeepers(filterData);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }
