@@ -4,6 +4,7 @@ import {Alert, StatusBar} from 'react-native';
 import {decode, encode} from 'base-64';
 import messaging from '@react-native-firebase/messaging';
 import Orientation from 'react-native-orientation';
+import {StreamChat} from 'stream-chat';
 import AuthContext from './app/auth/context';
 import LocationContext from './app/context/LocationContext';
 import NavigationMainContainer from './NavigationMainContainer';
@@ -11,6 +12,7 @@ import * as Utility from './app/utils';
 import {strings} from './Localization/translation';
 import {ImageUploadProvider} from './app/context/GetContexts';
 import CommonAlert from './app/screens/account/commonScreen/CommonAlert';
+import {STREAMCHATKEY} from './app/utils/streamChat';
 
 console.disableYellowBox = true;
 
@@ -29,6 +31,7 @@ export default function App() {
   const [totalNotificationCount, setTotalNotificationCount] = useState(0);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [streamChatToken, setStreamChatToken] = useState(null);
+  const [chatClient] = useState(StreamChat.getInstance(STREAMCHATKEY));
 
   const setTokenData = useCallback(async (token) => {
     setToken(token);
@@ -136,6 +139,7 @@ export default function App() {
       setIsAccountDeactivated,
       streamChatToken,
       setStreamChatToken,
+      chatClient,
     }),
     [
       role,
@@ -155,6 +159,7 @@ export default function App() {
       clearAuthContext,
       isAccountDeactivated,
       streamChatToken,
+      chatClient,
     ],
   );
 

@@ -18,6 +18,8 @@ import * as Utility from './app/utils/index';
 import ActivityLoader from './app/components/loader/ActivityLoader';
 import LoneStackNavigator from './app/navigation/LoneStackNavigator';
 import {getSportsList} from './app/api/Games';
+import getUserToken from './app/api/StreamChat';
+import {getStreamChatIdBasedOnRole} from './app/utils/streamChat';
 // import {getUnreadNotificationCount} from './app/utils/accountUtils';
 
 const Stack = createStackNavigator();
@@ -114,6 +116,38 @@ export default function NavigationMainContainer() {
         authContext?.entity?.obj?.is_deactivate,
     );
   }, [authContext]);
+
+  const handleStreamChatCredentials = useCallback(async () => {
+    await authContext.chatClient.disconnectUser();
+    const userToken = await getUserToken(authContext);
+    if (userToken.payload) {
+      authContext.setStreamChatToken(userToken.payload);
+    }
+  }, [authContext]);
+
+  useEffect(() => {
+    if (!authContext.streamChatToken) {
+      handleStreamChatCredentials();
+    }
+  }, [handleStreamChatCredentials, authContext.streamChatToken]);
+
+  const connectUserToStreamChat = useCallback(async () => {
+    const streamUserId = await getStreamChatIdBasedOnRole(authContext);
+    await authContext.chatClient.connectUser(
+      {id: streamUserId},
+      authContext.streamChatToken,
+    );
+  }, [authContext]);
+
+  useEffect(() => {
+    if (authContext.streamChatToken && !authContext.chatClient.userID) {
+      connectUserToStreamChat();
+    }
+  }, [
+    authContext.streamChatToken,
+    authContext.chatClient.userID,
+    connectUserToStreamChat,
+  ]);
 
   return (
     <Fragment>

@@ -3054,4 +3054,5 @@ export default {
   messageDeletedText: 'en_This mesage was deleted.',
   photoText: 'en_Photo',
   replyTo: 'en_Reply to',
+  participants: 'en_PARTICIPANTS',
 };

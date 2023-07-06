@@ -40,6 +40,8 @@ const useSwitchAccount = () => {
       }
 
       try {
+        authContext.setStreamChatToken('');
+        await authContext.chatClient.disconnectUser();
         authContext.setEntity({...currentEntity});
         await setStorage('authContextEntity', {...currentEntity});
         setLoading(false);

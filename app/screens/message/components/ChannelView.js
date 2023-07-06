@@ -2,9 +2,9 @@ import React, {useContext} from 'react';
 import {View, StyleSheet, Pressable, Text} from 'react-native';
 import {ChannelAvatar} from 'stream-chat-react-native';
 import {useNavigation} from '@react-navigation/native';
-import colors from '../../Constants/Colors';
-import AuthContext from '../../auth/context';
-import {strings} from '../../../Localization/translation';
+import AuthContext from '../../../auth/context';
+import colors from '../../../Constants/Colors';
+import {strings} from '../../../../Localization/translation';
 
 const ChannelView = ({channel, latestMessagePreview}) => {
   const authContext = useContext(AuthContext);

@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import {StreamChat} from 'stream-chat';
 import {
   Chat,
   OverlayProvider as ChatOverlayProvider,
@@ -21,15 +20,10 @@ import AuthContext from '../../auth/context';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {strings} from '../../../Localization/translation';
-import {
-  upsertUserInstance,
-  STREAMCHATKEY,
-  getStreamChatIdBasedOnRole,
-} from '../../utils/streamChat';
-import ChannelView from './ChannelView';
+import {getStreamChatIdBasedOnRole} from '../../utils/streamChat';
+import ChannelView from './components/ChannelView';
 
 const MessageMainScreen = ({navigation}) => {
-  const chatClient = StreamChat.getInstance(STREAMCHATKEY);
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [streamChatId, setStreamChatId] = useState('');
@@ -42,11 +36,10 @@ const MessageMainScreen = ({navigation}) => {
     });
   }, [navigation, isFocused]);
 
-  const getUserChannel = useCallback(async () => {
-    await upsertUserInstance(authContext);
-    const chatId = await getStreamChatIdBasedOnRole(authContext);
-
-    setStreamChatId(chatId);
+  const getUserChannel = useCallback(() => {
+    getStreamChatIdBasedOnRole(authContext).then((chatId) => {
+      setStreamChatId(chatId);
+    });
   }, [authContext]);
 
   useEffect(() => {
@@ -87,22 +80,24 @@ const MessageMainScreen = ({navigation}) => {
       </View>
 
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
-      <View style={{flex: 1}}>
-        <ChatOverlayProvider>
-          <Chat client={chatClient}>
-            <ChannelList
-              filters={{members: {$in: [streamChatId]}}}
-              sort={[{last_message_at: -1}]}
-              onSelect={(channel) =>
-                navigation.navigate('MessageChatScreen', {channel})
-              }
-              Preview={ChannelView}
-              LoadingIndicator={() => <UserListShimmer />}
-              EmptyStateIndicator={() => LiseEmptyComponent()}
-            />
-          </Chat>
-        </ChatOverlayProvider>
-      </View>
+      {streamChatId ? (
+        <View style={{flex: 1}}>
+          <ChatOverlayProvider>
+            <Chat client={authContext.chatClient}>
+              <ChannelList
+                filters={{members: {$in: [streamChatId]}}}
+                sort={[{last_message_at: -1}]}
+                onSelect={(channel) =>
+                  navigation.navigate('MessageChatScreen', {channel})
+                }
+                Preview={ChannelView}
+                LoadingIndicator={() => <UserListShimmer />}
+                EmptyStateIndicator={() => LiseEmptyComponent()}
+              />
+            </Chat>
+          </ChatOverlayProvider>
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 };
