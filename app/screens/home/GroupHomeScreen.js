@@ -794,7 +794,7 @@ const GroupHomeScreen = ({
     ];
 
     Promise.all(promiseArr)
-      .then(([gameList, eventList]) => {
+      .then(async ([gameList, eventList]) => {
         setLoading(false);
         console.log({gameList, eventList});
         for (const game of gameList) {
@@ -826,7 +826,8 @@ const GroupHomeScreen = ({
           });
         }
 
-        return getGamesList(gameList).then((gamedata) => gamedata);
+        const gamedata = await getGamesList(gameList);
+        return gamedata;
       })
       .catch((e) => {
         setLoading(false);
@@ -934,7 +935,7 @@ const GroupHomeScreen = ({
     ];
 
     return Promise.all(promiseArr)
-      .then(([gameList, eventList]) => {
+      .then(async ([gameList, eventList]) => {
         setLoading(false);
 
         for (const game of gameList) {
@@ -966,7 +967,8 @@ const GroupHomeScreen = ({
           });
         }
 
-        return getGamesList(gameList).then((gamedata) => gamedata);
+        const gamedata = await getGamesList(gameList);
+        return gamedata;
       })
       .catch((e) => {
         setLoading(false);

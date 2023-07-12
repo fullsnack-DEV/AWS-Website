@@ -37,7 +37,7 @@ import {strings} from '../../../Localization/translation';
 import GroupIcon from '../GroupIcon';
 import ActivityLoader from '../loader/ActivityLoader';
 import LikersModal from '../modals/LikersModal';
-import {tagRegex} from '../../Constants/GeneralConstants';
+import {ModalTypes, tagRegex} from '../../Constants/GeneralConstants';
 
 const SwipeOptions = [
   {
@@ -177,7 +177,7 @@ const CommentModal = ({
 
   const listEmptyComponent = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>No Comments Yet</Text>
+      <Text style={styles.emptyText}>{strings.noCommentsYetText}</Text>
     </View>
   );
 
@@ -343,6 +343,7 @@ const CommentModal = ({
   return (
     <CustomModalWrapper
       isVisible={showCommentModal}
+      modalType={ModalTypes.style2}
       closeModal={closeModal}
       containerStyle={{padding: 0, height: '97.5%'}}>
       <View style={styles.headerStyle}>
@@ -372,9 +373,9 @@ const CommentModal = ({
         />
         <View style={styles.inputContainer}>
           <TextInput
+            textAlignVertical="center"
             placeholder={strings.leaveComment}
             placeholderTextColor={colors.userPostTimeColor}
-            multiline
             onChangeText={(text) => {
               setCommentText(text);
             }}
@@ -393,7 +394,8 @@ const CommentModal = ({
                 } else {
                   handleComment();
                 }
-              }}>
+              }}
+              style={{paddingLeft: 7}}>
               <Text style={styles.sendTextStyle}>
                 {strings.send.toUpperCase()}
               </Text>
@@ -426,7 +428,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: colors.themeColor,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
   },
   emptyText: {
     fontSize: 18,
@@ -457,7 +459,7 @@ const styles = StyleSheet.create({
   writeCommectStyle: {
     flex: 1,
     fontSize: 16,
-    lineHeight: 18,
+
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     padding: 0,
@@ -472,13 +474,8 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: colors.whiteColor,
     shadowColor: colors.blackColor,
-    shadowOffset: {
-      width: 0,
-      height: -5,
-    },
-    shadowOpacity: 0.1608,
-    shadowRadius: 10,
-    elevation: 9,
+    borderTopColor: colors.grayBackgroundColor,
+    borderTopWidth: 0.5,
   },
   inputContainer: {
     flexDirection: 'row',

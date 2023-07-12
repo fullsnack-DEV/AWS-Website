@@ -117,6 +117,10 @@ const OrderedSporList = ({
     getStorage('appSetting').then((setting) => {
       setImageBaseUrl(setting.base_url_sporticon);
     });
+
+    return () => {
+      setImageBaseUrl('');
+    };
   }, []);
 
   const handleToggle = (item) => {

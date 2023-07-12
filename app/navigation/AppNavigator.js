@@ -239,16 +239,6 @@ const AppNavigator = ({navigation}) => {
           shadowRadius: 50,
           elevation: 50,
           borderTopColor: colors.thinLineGrayColor,
-          // height:
-          //   Platform.OS === 'android'
-          //     ? '7.5%'
-          //     : getHeight(),
-          // borderTopWidth: 5,
-          // height: heightPercentageToDP(10),
-        },
-        tabStyle: {
-          // height: heightPercentageToDP(9),
-          // marginTop: 7,
         },
       }}>
       <Tab.Screen

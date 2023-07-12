@@ -1,5 +1,25 @@
-import React, {useState, useEffect, useRef, useCallback, useContext, useMemo} from 'react';
-import {View, Text, Image, TouchableOpacity, TextInput, StyleSheet, SafeAreaView, Platform, FlatList, Alert, KeyboardAvoidingView, Dimensions} from 'react-native';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+  FlatList,
+  Alert,
+  KeyboardAvoidingView,
+  Dimensions,
+} from 'react-native';
 import Video from 'react-native-video';
 import ImagePicker from 'react-native-image-crop-picker';
 import _ from 'lodash';
@@ -13,12 +33,20 @@ import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
-import {whoCanDataSourceGroup, whoCanDataSourceUser} from '../../utils/constant';
+import {
+  whoCanDataSourceGroup,
+  whoCanDataSourceUser,
+} from '../../utils/constant';
 import ScreenHeader from '../../components/ScreenHeader';
 import GroupIcon from '../../components/GroupIcon';
 import Verbs from '../../Constants/Verbs';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
-import {hashTagRegex, ModalTypes, tagRegex, urlRegex} from '../../Constants/GeneralConstants';
+import {
+  hashTagRegex,
+  ModalTypes,
+  tagRegex,
+  urlRegex,
+} from '../../Constants/GeneralConstants';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import {createPost, createRePost} from '../../api/NewsFeeds';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
@@ -44,7 +72,9 @@ const WritePostScreen = ({navigation, route}) => {
 
   const [searchTag, setSearchTag] = useState();
   const [searchText, setSearchText] = useState('');
-  const [selectImage, setSelectImage] = useState(route.params.selectedImageList ?? []);
+  const [selectImage, setSelectImage] = useState(
+    route.params.selectedImageList ?? [],
+  );
   const [searchUsers, setSearchUsers] = useState([]);
   const [searchGroups, setSearchGroups] = useState([]);
   const [loading, setloading] = useState(false);
@@ -64,7 +94,10 @@ const WritePostScreen = ({navigation, route}) => {
     let body = dataParams;
     setloading(true);
 
-    if (authContext.entity.role === Verbs.entityTypeClub || authContext.entity.role === Verbs.entityTypeTeam) {
+    if (
+      authContext.entity.role === Verbs.entityTypeClub ||
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
       body = {
         ...dataParams,
         group_id: authContext.entity.uid,
@@ -123,7 +156,12 @@ const WritePostScreen = ({navigation, route}) => {
       let format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity)) ?? [];
       format_tagged_data = [...format_tagged_data, ...tagsOfGame];
       format_tagged_data.map(async (item, index) => {
-        const isThere = item?.entity_type !== Verbs.entityTypeGame ? searchText.includes(item?.entity_data?.tagged_formatted_name?.replace(/ /g, '')) : true;
+        const isThere =
+          item?.entity_type !== Verbs.entityTypeGame
+            ? searchText.includes(
+                item?.entity_data?.tagged_formatted_name?.replace(/ /g, ''),
+              )
+            : true;
         if (!isThere) format_tagged_data.splice(index, 1);
         return null;
       });
@@ -133,12 +171,24 @@ const WritePostScreen = ({navigation, route}) => {
 
       const who_can_see = {...privacySetting};
       if (privacySetting.value === 2) {
-        if ([Verbs.entityTypeTeam, Verbs.entityTypeClub, Verbs.entityTypeLeague].includes(authContext.entity.role)) {
+        if (
+          [
+            Verbs.entityTypeTeam,
+            Verbs.entityTypeClub,
+            Verbs.entityTypeLeague,
+          ].includes(authContext.entity.role)
+        ) {
           who_can_see.group_ids = [authContext.entity.uid];
         }
       }
       if (route.params?.sendCallBack) {
-        route.params.onPressDone(selectImage, searchText, tagData, who_can_see, format_tagged_data);
+        route.params.onPressDone(
+          selectImage,
+          searchText,
+          tagData,
+          who_can_see,
+          format_tagged_data,
+        );
         if (route?.params?.comeFrom) {
           navigation.pop(2);
         } else {
@@ -148,11 +198,17 @@ const WritePostScreen = ({navigation, route}) => {
       let dataParams = {};
       const entityID = postData.group_id ?? postData.user_id;
       if (entityID !== authContext.entity.uid) {
-        if (postData.entity_type === Verbs.entityTypeTeam || postData.entity_type === Verbs.entityTypeClub) {
+        if (
+          postData.entity_type === Verbs.entityTypeTeam ||
+          postData.entity_type === Verbs.entityTypeClub
+        ) {
           dataParams.group_id = postData.group_id;
           dataParams.feed_type = postData.entity_type;
         }
-        if (postData.entity_type === Verbs.entityTypeUser || postData.entity_type === Verbs.entityTypePlayer) {
+        if (
+          postData.entity_type === Verbs.entityTypeUser ||
+          postData.entity_type === Verbs.entityTypePlayer
+        ) {
           dataParams.user_id = postData.user_id;
         }
       }
@@ -167,7 +223,12 @@ const WritePostScreen = ({navigation, route}) => {
           who_can_see,
           format_tagged_data,
         };
-        imageUploadContext.uploadData(authContext, dataParams, imageArray, createPostAfterUpload);
+        imageUploadContext.uploadData(
+          authContext,
+          dataParams,
+          imageArray,
+          createPostAfterUpload,
+        );
       } else {
         dataParams = {
           ...dataParams,
@@ -198,22 +259,37 @@ const WritePostScreen = ({navigation, route}) => {
     if (route.params.selectedTagList?.length > 0) {
       route.params.selectedTagList.map((tagItem) => {
         let joinedString = '@';
-        const entity_text = ['player', 'user']?.includes(tagItem.entity_type) ? 'user_id' : 'group_id';
+        const entity_text = ['player', 'user']?.includes(tagItem.entity_type)
+          ? 'user_id'
+          : 'group_id';
         let entity_data = {};
         let entity_name = '';
-        const isExist = tagsOfEntity.some((item) => item?.entity_id === tagItem[entity_text]);
+        const isExist = tagsOfEntity.some(
+          (item) => item?.entity_id === tagItem[entity_text],
+        );
 
         const jsonData = {entity_type: '', entity_data, entity_id: ''};
 
-        jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type) ? 'player' : tagItem?.entity_type;
+        jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type)
+          ? 'player'
+          : tagItem?.entity_type;
 
         jsonData.entity_id = tagItem?.[entity_text];
 
         if (tagItem?.group_name) {
-          entity_name = _.startCase(_.toLower(tagItem?.group_name))?.replace(/ /g, '');
+          entity_name = _.startCase(_.toLower(tagItem?.group_name))?.replace(
+            / /g,
+            '',
+          );
         } else {
-          const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(/ /g, '');
-          const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(/ /g, '');
+          const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(
+            / /g,
+            '',
+          );
+          const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(
+            / /g,
+            '',
+          );
           entity_name = `${fName}${lName}`;
         }
         joinedString += `${entity_name} `;
@@ -234,7 +310,11 @@ const WritePostScreen = ({navigation, route}) => {
       setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
 
       const modifiedSearch = searchText;
-      const output = [modifiedSearch.slice(0, currentTextInputIndex - 1), tagName, modifiedSearch.slice(currentTextInputIndex - 1)].join('');
+      const output = [
+        modifiedSearch.slice(0, currentTextInputIndex - 1),
+        tagName,
+        modifiedSearch.slice(currentTextInputIndex - 1),
+      ].join('');
 
       setSearchText(output);
     }
@@ -320,11 +400,19 @@ const WritePostScreen = ({navigation, route}) => {
   const searchFilterFunction = useCallback(
     (text) => {
       if (text?.length > 0) {
-        let userData = searchUsers.filter((a) => !tagsOfEntity.some((b) => a.user_id === b.entity_id));
-        let groupData = searchGroups.filter((o1) => !tagsOfEntity.some((o2) => o1.group_id === o2?.entity_id));
+        let userData = searchUsers.filter(
+          (a) => !tagsOfEntity.some((b) => a.user_id === b.entity_id),
+        );
+        let groupData = searchGroups.filter(
+          (o1) => !tagsOfEntity.some((o2) => o1.group_id === o2?.entity_id),
+        );
 
-        userData = userData.filter((x) => x?.full_name?.toLowerCase().includes(text?.toLowerCase()));
-        groupData = groupData.filter((x) => x?.group_name?.toLowerCase().includes(text?.toLowerCase()));
+        userData = userData.filter((x) =>
+          x?.full_name?.toLowerCase().includes(text?.toLowerCase()),
+        );
+        groupData = groupData.filter((x) =>
+          x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
+        );
         setUsers([...userData]);
         setGroups([...groupData]);
       }
@@ -340,22 +428,30 @@ const WritePostScreen = ({navigation, route}) => {
     }
   }, [letModalVisible, searchTag, searchFilterFunction]);
 
-  const removeStr = (str, fromIndex, toIndex) => str.substring(0, fromIndex) + str.substring(toIndex, str.length);
+  const removeStr = (str, fromIndex, toIndex) =>
+    str.substring(0, fromIndex) + str.substring(toIndex, str.length);
 
-  const addStringInCurrentText = useCallback((str, fromIndex, toIndex, stringToAdd) => {
-    let string = removeStr(str, fromIndex, toIndex);
-    string = addStr(string, fromIndex, stringToAdd);
-    return string;
-  }, []);
+  const addStringInCurrentText = useCallback(
+    (str, fromIndex, toIndex, stringToAdd) => {
+      let string = removeStr(str, fromIndex, toIndex);
+      string = addStr(string, fromIndex, stringToAdd);
+      return string;
+    },
+    [],
+  );
 
   const onTagPress = (item = {}) => {
     const tagsArray = [];
     let joinedString = '@';
     let entity_data = {};
     let entity_name = '';
-    const entity_text = ['player', 'user']?.includes(item.entity_type) ? 'user_id' : 'group_id';
+    const entity_text = ['player', 'user']?.includes(item.entity_type)
+      ? 'user_id'
+      : 'group_id';
     const jsonData = {entity_type: '', entity_data, entity_id: ''};
-    jsonData.entity_type = ['player', 'user']?.includes(item.entity_type) ? 'player' : item?.entity_type;
+    jsonData.entity_type = ['player', 'user']?.includes(item.entity_type)
+      ? 'player'
+      : item?.entity_type;
     jsonData.entity_id = item?.[entity_text];
     if (item?.group_name) {
       entity_name = _.startCase(_.toLower(item?.group_name))?.replace(/ /g, '');
@@ -367,10 +463,17 @@ const WritePostScreen = ({navigation, route}) => {
     joinedString += `${entity_name} `;
     entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
     entity_data = getTaggedEntityData(entity_data, item);
-    const str = addStringInCurrentText(searchText, lastTagStartIndex, currentTextInputIndex, joinedString);
+    const str = addStringInCurrentText(
+      searchText,
+      lastTagStartIndex,
+      currentTextInputIndex,
+      joinedString,
+    );
     setSearchText(`${str} `);
 
-    const isExist = tagsOfEntity.some((tagItem) => tagItem?.entity_id === item[entity_text]);
+    const isExist = tagsOfEntity.some(
+      (tagItem) => tagItem?.entity_id === item[entity_text],
+    );
     if (!isExist) {
       tagsArray.push({
         entity_data,
@@ -385,7 +488,12 @@ const WritePostScreen = ({navigation, route}) => {
     setLastTagStartIndex(null);
   };
 
-  const renderTagText = useCallback((matchingString) => <Text style={styles.tagText}>{`${matchingString}`}</Text>, []);
+  const renderTagText = useCallback(
+    (matchingString) => (
+      <Text style={styles.tagText}>{`${matchingString}`}</Text>
+    ),
+    [],
+  );
 
   const renderTagUsersAndGroups = ({item}) => (
     <TouchableOpacity
@@ -394,11 +502,18 @@ const WritePostScreen = ({navigation, route}) => {
         onTagPress(item);
       }}
       style={styles.userListStyle}>
-      <Image source={item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder} style={{borderRadius: 13, height: 25, width: 25}} />
+      <Image
+        source={
+          item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
+        }
+        style={{borderRadius: 13, height: 25, width: 25}}
+      />
       <View style={{flexDirection: 'row', flex: 1}}>
         <View style={{maxWidth: '80%'}}>
           <Text style={styles.userTextStyle} numberOfLines={1}>
-            {item?.group_name ? item?.group_name : `${item.first_name} ${item.last_name}`}{' '}
+            {item?.group_name
+              ? item?.group_name
+              : `${item.first_name} ${item.last_name}`}{' '}
           </Text>
         </View>
         <View style={{flex: 1}}>
@@ -412,7 +527,10 @@ const WritePostScreen = ({navigation, route}) => {
 
   const onKeyPress = useCallback(
     ({nativeEvent}) => {
-      if (nativeEvent.key === 'Backspace' && searchText[currentTextInputIndex - 1] === '@') {
+      if (
+        nativeEvent.key === 'Backspace' &&
+        searchText[currentTextInputIndex - 1] === '@'
+      ) {
         setLastTagStartIndex(null);
         setLetModalVisible(false);
       }
@@ -428,7 +546,12 @@ const WritePostScreen = ({navigation, route}) => {
     const arr = [];
     const data = [...users, ...groups];
     data.forEach((obj) => {
-      const item = tagsOfEntity.filter((temp) => ![temp?.group_id, temp?.user_id, temp?.entity_id].includes(obj?.group_id || obj?.user_id || obj?.entity_id));
+      const item = tagsOfEntity.filter(
+        (temp) =>
+          ![temp?.group_id, temp?.user_id, temp?.entity_id].includes(
+            obj?.group_id || obj?.user_id || obj?.entity_id,
+          ),
+      );
       if (item) {
         arr.push(obj);
       }
@@ -436,15 +559,25 @@ const WritePostScreen = ({navigation, route}) => {
 
     if (letModalVisible && arr.length > 0) {
       return (
-        <View style={[styles.userListContainer, {marginTop: searchFieldHeight + 5}]}>
-          <FlatList data={arr} keyboardShouldPersistTaps={'always'} renderItem={renderTagUsersAndGroups} keyExtractor={(item, index) => index.toString()} />
+        <View
+          style={[
+            styles.userListContainer,
+            {marginTop: searchFieldHeight + 5},
+          ]}>
+          <FlatList
+            data={arr}
+            keyboardShouldPersistTaps={'always'}
+            renderItem={renderTagUsersAndGroups}
+            keyExtractor={(item, index) => index.toString()}
+          />
         </View>
       );
     }
     return null;
   };
 
-  const addStr = (str, index, stringToAdd) => str.substring(0, index) + stringToAdd + str.substring(index, str.length);
+  const addStr = (str, index, stringToAdd) =>
+    str.substring(0, index) + stringToAdd + str.substring(index, str.length);
 
   const renderUrlPreview = () => {
     if (searchText.length > 0) {
@@ -454,10 +587,15 @@ const WritePostScreen = ({navigation, route}) => {
         desc = addStr(desc, position, 'http://');
       }
 
-      return desc && showPreviewForUrl && selectImage.length === 0 && position !== -1 ? (
+      return desc &&
+        showPreviewForUrl &&
+        selectImage.length === 0 &&
+        position !== -1 ? (
         <View style={{flex: 1, paddingHorizontal: 15}}>
           <CustomURLPreview text={desc} />
-          <TouchableOpacity style={styles.closeIcon} onPress={() => setShowPreviewForUrl(false)}>
+          <TouchableOpacity
+            style={styles.closeIcon}
+            onPress={() => setShowPreviewForUrl(false)}>
             <Image source={images.roundCross} style={styles.image} />
           </TouchableOpacity>
         </View>
@@ -490,9 +628,21 @@ const WritePostScreen = ({navigation, route}) => {
           const mediaType = type.split('/')[0];
           if (mediaType === Verbs.mediaTypeImage) {
             return (
-              <View style={[styles.selectImage, index === 0 ? {marginLeft: 15} : {}]}>
-                <Image style={[styles.image, {resizeMode: 'cover', borderRadius: 10}]} source={{uri: item.path ?? item.thumbnail}} />
-                <TouchableOpacity style={[styles.closeIcon, {top: 5, right: 5}]} onPress={() => onImageItemPress(item)}>
+              <View
+                style={[
+                  styles.selectImage,
+                  index === 0 ? {marginLeft: 15} : {},
+                ]}>
+                <Image
+                  style={[
+                    styles.image,
+                    {resizeMode: 'cover', borderRadius: 10},
+                  ]}
+                  source={{uri: item.path ?? item.thumbnail}}
+                />
+                <TouchableOpacity
+                  style={[styles.closeIcon, {top: 5, right: 5}]}
+                  onPress={() => onImageItemPress(item)}>
                   <Image source={images.roundCross} style={styles.image} />
                 </TouchableOpacity>
               </View>
@@ -500,19 +650,28 @@ const WritePostScreen = ({navigation, route}) => {
           }
           if (mediaType === Verbs.mediaTypeVideo) {
             return (
-              <View style={[styles.selectImage, index === 0 ? {marginLeft: 15} : {}]}>
+              <View
+                style={[
+                  styles.selectImage,
+                  index === 0 ? {marginLeft: 15} : {},
+                ]}>
                 <Video
                   ref={videoPlayerRef}
                   paused
                   muted
                   source={{uri: item.path || item.thumbnail}}
-                  style={[styles.image, {resizeMode: 'cover', borderRadius: 10}]}
+                  style={[
+                    styles.image,
+                    {resizeMode: 'cover', borderRadius: 10},
+                  ]}
                   resizeMode={'cover'}
                   onLoad={() => {
                     videoPlayerRef.current.seek(0);
                   }}
                 />
-                <TouchableOpacity style={[styles.closeIcon, {top: 5, right: 5}]} onPress={() => onImageItemPress(item)}>
+                <TouchableOpacity
+                  style={[styles.closeIcon, {top: 5, right: 5, zIndex: 1}]}
+                  onPress={() => onImageItemPress(item)}>
                   <Image source={images.roundCross} style={styles.image} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.playPauseBtn}>
@@ -571,7 +730,12 @@ const WritePostScreen = ({navigation, route}) => {
   const renderWhoCan = ({item}) => (
     <>
       <TouchableOpacity
-        style={[styles.listItem, privacySetting.value === item.value ? {backgroundColor: colors.privacyBgColor} : {}]}
+        style={[
+          styles.listItem,
+          privacySetting.value === item.value
+            ? {backgroundColor: colors.privacyBgColor}
+            : {},
+        ]}
         onPress={() => {
           setPrivacySetting(item);
           setTimeout(() => {
@@ -602,7 +766,11 @@ const WritePostScreen = ({navigation, route}) => {
           onPress: () => navigation.goBack(),
         },
       ]);
-    } else if (searchText || selectImage.length > 0 || tagsOfEntity.length > 0) {
+    } else if (
+      searchText ||
+      selectImage.length > 0 ||
+      tagsOfEntity.length > 0
+    ) {
       Alert.alert('', strings.discardPost, [
         {
           text: strings.goBack,
@@ -627,8 +795,21 @@ const WritePostScreen = ({navigation, route}) => {
       <View style={{paddingHorizontal: 15}}>
         <FeedMedia data={objData} item={repostData} navigation={navigation} />
         <View style={styles.repostContainer}>
-          <FeedProfile time={repostData.time} data={repostData.actor.data} isRepost showThreeDot={false} />
-          <NewsFeedDescription descriptions={objData.text} numberOfLineDisplay={objData.attachments?.length > 0 ? 3 : 14} tagData={objData.format_tagged_data ?? []} navigation={navigation} isNewsFeedScreen descText={styles.repostText} descriptionTxt={styles.repostText} />
+          <FeedProfile
+            time={repostData.time}
+            data={repostData.actor.data}
+            isRepost
+            showThreeDot={false}
+          />
+          <NewsFeedDescription
+            descriptions={objData.text}
+            numberOfLineDisplay={objData.attachments?.length > 0 ? 3 : 14}
+            tagData={objData.format_tagged_data ?? []}
+            navigation={navigation}
+            isNewsFeedScreen
+            descText={styles.repostText}
+            descriptionTxt={styles.repostText}
+          />
         </View>
       </View>
     );
@@ -636,21 +817,53 @@ const WritePostScreen = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ScreenHeader title={strings.postTitle} leftIcon={images.backArrow} leftIconPress={handleBackPress} isRightIconText rightButtonText={strings.done} onRightButtonPress={() => (route.params.isRepost ? handleRepost() : handleDone())} />
+      <ScreenHeader
+        title={strings.postTitle}
+        leftIcon={images.backArrow}
+        leftIconPress={handleBackPress}
+        isRightIconText
+        rightButtonText={strings.done}
+        onRightButtonPress={() =>
+          route.params.isRepost ? handleRepost() : handleDone()
+        }
+      />
 
       <ActivityLoader visible={loading} />
       {renderImageProgress}
 
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{flex: 1}}>
         <View style={styles.container}>
           <View style={styles.userDetailView}>
-            <GroupIcon imageUrl={postData.thumbnail} entityType={postData.entity_type} groupName={postData.group_name} textstyle={{fontSize: 12}} containerStyle={styles.profileImage} />
+            <GroupIcon
+              imageUrl={postData.thumbnail}
+              entityType={postData.entity_type}
+              groupName={postData.group_name}
+              textstyle={{fontSize: 12}}
+              containerStyle={styles.profileImage}
+            />
             <View>
-              <Text style={styles.userTxt}>{postData.full_name ?? postData.group_name}</Text>
+              <Text style={styles.userTxt}>
+                {postData.full_name ?? postData.group_name}
+              </Text>
             </View>
           </View>
-          <View style={{paddingHorizontal: 15, marginBottom: 15}}>
-            <TextInput ref={textInputRef} onLayout={(event) => setSearchFieldHeight(event?.nativeEvent?.layout?.height)} placeholder={strings.whatsGoingText} placeholderTextColor={colors.userPostTimeColor} onSelectionChange={onSelectionChange} onKeyPress={onKeyPress} onChangeText={(text) => setSearchText(text)} style={styles.textInputField} multiline={true} textAlignVertical={'top'} maxLength={4000}>
+          <View style={{paddingHorizontal: 15, marginBottom: 15, zIndex: 100}}>
+            <TextInput
+              ref={textInputRef}
+              onLayout={(event) =>
+                setSearchFieldHeight(event?.nativeEvent?.layout?.height)
+              }
+              placeholder={strings.whatsGoingText}
+              placeholderTextColor={colors.userPostTimeColor}
+              onSelectionChange={onSelectionChange}
+              onKeyPress={onKeyPress}
+              onChangeText={(text) => setSearchText(text)}
+              style={styles.textInputField}
+              multiline={true}
+              textAlignVertical={'top'}
+              maxLength={4000}>
               <ParsedText
                 parse={[
                   {pattern: tagRegex, renderText: renderTagText},
@@ -695,14 +908,17 @@ const WritePostScreen = ({navigation, route}) => {
           )}
         </View>
         <View style={styles.bottomSafeAreaStyle}>
-          <TouchableOpacity style={styles.onlyMeViewStyle} onPress={() => setVisibleWhoModal(true)}>
+          <TouchableOpacity
+            style={styles.onlyMeViewStyle}
+            onPress={() => setVisibleWhoModal(true)}>
             <View style={styles.icon}>
               <Image source={images.lock} style={styles.image} />
             </View>
             <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
           </TouchableOpacity>
 
-          <View style={[styles.onlyMeViewStyle, {justifyContent: 'space-between'}]}>
+          <View
+            style={[styles.onlyMeViewStyle, {justifyContent: 'space-between'}]}>
             {route.params.isRepost ? null : (
               <TouchableOpacity style={styles.icon}>
                 <Image source={images.pollIcon} style={styles.image} />
@@ -730,9 +946,22 @@ const WritePostScreen = ({navigation, route}) => {
           </View>
         </View>
       </KeyboardAvoidingView>
-      <CustomModalWrapper isVisible={visibleWhoModal} closeModal={() => setVisibleWhoModal(false)} modalType={ModalTypes.style2} containerStyle={{paddingTop: 15, paddingHorizontal: 30}}>
+      <CustomModalWrapper
+        isVisible={visibleWhoModal}
+        closeModal={() => setVisibleWhoModal(false)}
+        modalType={ModalTypes.style2}
+        containerStyle={{paddingTop: 15, paddingHorizontal: 30}}>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
-        <FlatList showsVerticalScrollIndicator={false} data={['user', 'player'].includes(authContext.entity.role) ? whoCanDataSourceUser : whoCanDataSourceGroup} keyExtractor={(item, index) => index.toString()} renderItem={renderWhoCan} />
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={
+            ['user', 'player'].includes(authContext.entity.role)
+              ? whoCanDataSourceUser
+              : whoCanDataSourceGroup
+          }
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderWhoCan}
+        />
       </CustomModalWrapper>
     </SafeAreaView>
   );
@@ -839,8 +1068,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   userListContainer: {
-    zIndex: 1,
-    backgroundColor: 'white',
+    zIndex: 100,
+
+    backgroundColor: colors.whiteColor,
     maxHeight: 280,
     width: Dimensions.get('window').width - 30,
     position: 'absolute',

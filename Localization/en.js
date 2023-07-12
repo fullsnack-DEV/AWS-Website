@@ -3054,5 +3054,10 @@ export default {
   messageDeletedText: 'en_This mesage was deleted.',
   photoText: 'en_Photo',
   replyTo: 'en_Reply to',
+  noCommentsYetText: 'en_No Comments Yet',
+  editPrivacyText: 'en_Edit Privacy',
+  ReportText: 'en_Report',
+  newsFeedPostText: 'en_News Feed Post',
   participants: 'en_PARTICIPANTS',
+
 };

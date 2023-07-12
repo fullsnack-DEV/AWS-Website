@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-  useLayoutEffect,
-} from 'react';
+import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
 import {
   Image,
   StyleSheet,
@@ -62,79 +56,76 @@ const HomeScreen = ({navigation, route}) => {
     });
   }, [navigation]);
 
-  const getUserData = useCallback(
-    (uid, admin) => {
-      setLoading(true);
-      getUserDetails(uid, authContext, !admin)
-        .then((res1) => {
-          const userDetails = res1.payload;
-          const groupQuery = {
-            query: {
-              terms: {
-                _id: [
-                  ...(res1?.payload?.teamIds ?? []),
-                  ...(res1?.payload?.clubIds ?? []),
-                ],
-              },
+  const getUserData = (uid, admin) => {
+    setLoading(true);
+
+    getUserDetails(uid, authContext, !admin)
+      .then((res1) => {
+        const userDetails = res1.payload;
+        const groupQuery = {
+          query: {
+            terms: {
+              _id: [
+                ...(res1?.payload?.teamIds ?? []),
+                ...(res1?.payload?.clubIds ?? []),
+              ],
             },
+          },
+        };
+        getGroupIndex(groupQuery).then((res2) => {
+          const data = {
+            ...userDetails,
+            joined_teams: res2.filter(
+              (obj) => obj.entity_type === Verbs.entityTypeTeam,
+            ),
+            joined_clubs: res2.filter(
+              (obj) => obj.entity_type === Verbs.entityTypeClub,
+            ),
           };
-          getGroupIndex(groupQuery).then((res2) => {
-            const data = {
-              ...userDetails,
-              joined_teams: res2.filter(
-                (obj) => obj.entity_type === Verbs.entityTypeTeam,
-              ),
-              joined_clubs: res2.filter(
-                (obj) => obj.entity_type === Verbs.entityTypeClub,
-              ),
-            };
 
-            setCurrentUserData(data);
-            setLoading(false);
-          });
-        })
-        .catch((errResponse) => {
-          setLoading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, errResponse);
-          }, 10);
-          navigation.goBack();
-        });
-    },
-    [authContext, navigation],
-  );
-
-  const fetchGroupDetails = useCallback(
-    (userId, role, admin) => {
-      setLoading(true);
-      const promises = [
-        getGroupDetails(userId, authContext, !admin),
-        getGroupMembers(userId, authContext),
-      ];
-      if (role === Verbs.entityTypeClub) {
-        promises.push(getTeamsOfClub(userId, authContext));
-      }
-      Promise.all(promises)
-        .then(([res1, res2, res3]) => {
-          setCurrentUserData(res1.payload);
-          const groupDetails = {...res1.payload};
-          groupDetails.joined_members = res2.payload;
-          if (role === Verbs.entityTypeClub) {
-            groupDetails.joined_teams = res3.payload;
-          }
-          setCurrentUserData({...groupDetails});
-
-          setLoading(false);
-        })
-        .catch(() => {
+          setCurrentUserData(data);
           setLoading(false);
         });
-    },
-    [authContext],
-  );
+      })
+      .catch((errResponse) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, errResponse);
+        }, 10);
+        navigation.goBack();
+      });
+  };
+
+  const fetchGroupDetails = (userId, role, admin) => {
+    setLoading(true);
+
+    const promises = [
+      getGroupDetails(userId, authContext, !admin),
+      getGroupMembers(userId, authContext),
+    ];
+    if (role === Verbs.entityTypeClub) {
+      promises.push(getTeamsOfClub(userId, authContext));
+    }
+    Promise.all(promises)
+      .then(([res1, res2, res3]) => {
+        setCurrentUserData(res1.payload);
+        const groupDetails = {...res1.payload};
+        groupDetails.joined_members = res2.payload;
+        if (role === Verbs.entityTypeClub) {
+          groupDetails.joined_teams = res3.payload;
+        }
+        setCurrentUserData({...groupDetails});
+
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     const loginEntity = authContext.entity;
+
     const uid = route.params.uid ?? loginEntity.uid;
 
     const admin = loginEntity.uid === uid;
@@ -148,7 +139,7 @@ const HomeScreen = ({navigation, route}) => {
     if (role === Verbs.entityTypeClub || role === Verbs.entityTypeTeam) {
       fetchGroupDetails(uid, role, admin);
     }
-  }, [authContext.entity, route.params, getUserData, fetchGroupDetails]);
+  }, [authContext.entity, route.params.role, route.params.uid]);
 
   useEffect(() => {
     if (isFocused && route.params?.isEntityCreated && route.params?.entityObj) {
@@ -170,7 +161,7 @@ const HomeScreen = ({navigation, route}) => {
         {cancelable: false},
       );
     }
-  }, [route.params, isFocused]);
+  }, [route.params]);
 
   const handleMoreOptions = (option) => {
     setShowMoreOptionsModal(false);
@@ -208,6 +199,7 @@ const HomeScreen = ({navigation, route}) => {
 
   const getShimmer = () => {
     if (loading) {
+      console.log(loading, 'from load');
       if (
         route.params.role === Verbs.entityTypePlayer ||
         route.params.role === Verbs.entityTypeUser

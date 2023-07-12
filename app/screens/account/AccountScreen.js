@@ -269,7 +269,14 @@ const AccountScreen = ({navigation, route}) => {
       getNotificationCount();
       setShowOnlyTeamSport(false);
     }
-  }, [authContext, getNotificationCount, isFocused, getUsers, getLists]);
+  }, [
+    authContext,
+    getNotificationCount,
+    isFocused,
+    getUsers,
+    getLists,
+    route.params.switchToUser,
+  ]);
 
   useEffect(() => {
     if (isFocused) {

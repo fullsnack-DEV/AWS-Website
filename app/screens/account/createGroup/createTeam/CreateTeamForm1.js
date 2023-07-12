@@ -89,7 +89,7 @@ export default function CreateTeamForm1({navigation, route}) {
   const [selectedSport, SetSelectedSport] = useState(
     route?.params || route.params.sports,
   );
-  const [parentGroupID] = useState(route.params?.grp_id);
+  const [parentGroupID, setParentGroupID] = useState(route.params?.grp_id);
   const [statefull, setStatefull] = useState('');
 
   const actionSheet = useRef();
@@ -136,7 +136,11 @@ export default function CreateTeamForm1({navigation, route}) {
     if (isFocused) {
       // to get the club id if club creating the team
       if (route.params) {
-        delete route.params.grp_id;
+        if (route.params.grp_id) {
+          setParentGroupID(route.params.grp_id);
+          delete route.params.grp_id;
+        }
+
         SetSelectedSport(route?.params || route.params.sports);
       }
 

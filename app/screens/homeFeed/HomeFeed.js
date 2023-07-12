@@ -6,7 +6,9 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import {useIsFocused} from '@react-navigation/native';
 import {Alert, View} from 'react-native';
+
 import _ from 'lodash';
 import {
   createReaction,
@@ -24,6 +26,7 @@ import {ImageUploadContext} from '../../context/ImageUploadContext';
 import Verbs from '../../Constants/Verbs';
 
 let onEndReachedCalledDuringMomentum = true;
+
 const HomeFeed = ({
   onFeedScroll,
   refs,
@@ -40,12 +43,15 @@ const HomeFeed = ({
   const [fullScreenLoading, setFullScreenLoading] = useState(false);
   const [feedCalled, setFeedCalled] = useState(false);
 
-  const [postData, setPostData] = useState();
+  const [pullRefresh, setPullRefresh] = useState(false);
+  const [postData, setPostData] = useState([]);
   const [totalUserPostCount, setTotalUserPostCount] = useState(0);
   const [isNextDataLoading, setIsNextDataLoading] = useState(false);
   const [footerLoading, setFooterLoading] = useState(false);
 
-  useEffect(() => {
+  const isFocused = useIsFocused();
+
+  const getTimeLine = useCallback(() => {
     let entityType = 'users';
     if (
       currentUserData.entity_type === Verbs.entityTypeUser ||
@@ -64,11 +70,16 @@ const HomeFeed = ({
         setFeedCalled(true);
         setTotalUserPostCount(res?.payload?.total_count);
         setPostData([...res?.payload?.results]);
+        setPullRefresh(false);
       })
       .catch((e) => {
         console.log(e);
       });
-  }, [authContext, currentUserData?.entity_type, userID]);
+  }, [authContext, currentUserData.entity_type, userID]);
+
+  useEffect(() => {
+    getTimeLine();
+  }, [isFocused, getTimeLine]);
 
   useEffect(() => {
     if (postData?.length > 0 && totalUserPostCount > 0) {
@@ -184,7 +195,7 @@ const HomeFeed = ({
   const onLikePress = useCallback(
     (item) => {
       const bodyParams = {
-        reaction_type: 'clap',
+        reaction_type: 'like',
         activity_id: item.id,
       };
       createReaction(bodyParams, authContext)
@@ -231,7 +242,7 @@ const HomeFeed = ({
     [authContext, postData],
   );
 
-  const onEndReached = () => {
+  const onEndReached = useCallback(() => {
     if (!onEndReachedCalledDuringMomentum) {
       setFooterLoading(true);
       const id_lt = postData?.[postData.length - 1]?.id;
@@ -250,7 +261,7 @@ const HomeFeed = ({
       }
       onEndReachedCalledDuringMomentum = true;
     }
-  };
+  }, [authContext, isNextDataLoading, postData]);
 
   const StickyHeaderComponent = useMemo(
     () =>
@@ -259,12 +270,9 @@ const HomeFeed = ({
           navigation={navigation}
           postDataItem={currentUserData}
           onWritePostPress={() => {
-            navigation.navigate('News Feed', {
-              screen: 'WritePostScreen',
-              params: {
-                postData: currentUserData,
-                selectedImageList: [],
-              },
+            navigation.navigate('WritePostScreen', {
+              postData: currentUserData,
+              selectedImageList: [],
             });
           }}
         />
@@ -291,36 +299,47 @@ const HomeFeed = ({
     ],
   );
 
-  const updateCommentCount = (updatedComment) => {
-    const pData = _.cloneDeep(postData);
-    const pIndex = pData?.findIndex((item) => item?.id === updatedComment?.id);
-    if (pIndex !== -1) {
-      pData[pIndex].reaction_counts = {...pData?.[pIndex]?.reaction_counts};
-      pData[pIndex].reaction_counts.comment = updatedComment?.count;
-      setPostData([...pData]);
-    }
-  };
+  const updateCommentCount = useCallback(
+    (updatedComment) => {
+      const pData = _.cloneDeep(postData);
+      const pIndex = pData?.findIndex(
+        (item) => item?.id === updatedComment?.id,
+      );
+      if (pIndex !== -1) {
+        pData[pIndex].reaction_counts = {...pData?.[pIndex]?.reaction_counts};
+        pData[pIndex].reaction_counts.comment = updatedComment?.count;
+        setPostData([...pData]);
+      }
+    },
+    [postData],
+  );
+
+  const onRefreshPress = useCallback(() => {
+    setPullRefresh(true);
+
+    getTimeLine();
+  }, [getTimeLine]);
 
   return (
     <View style={{flex: 1}}>
       <ActivityLoader visible={fullScreenLoading} />
       <NewsFeedList
-        showEnptyDataText={currentTab === 0}
+        navigation={navigation}
         updateCommentCount={updateCommentCount}
+        pullRefresh={pullRefresh}
+        showEnptyDataText={currentTab === 0}
         onFeedScroll={onFeedScroll}
+        onRefreshPress={onRefreshPress}
         feedAPI={feedCalled}
         refs={refs}
         ListHeaderComponent={ListHeaderComponent}
         scrollEnabled={true}
         onDeletePost={onDeletePost}
-        navigation={navigation}
         postData={currentTab === 0 ? postData : []}
         onEditPressDone={editPostDoneCall}
         onLikePress={onLikePress}
         onEndReached={onEndReached}
-        onMomentumScrollBegin={() => {
-          onEndReachedCalledDuringMomentum = false;
-        }}
+        fetchFeeds={getTimeLine}
         footerLoading={footerLoading && isNextDataLoading}
         openProfilId={userID}
         entityDetails={currentUserData}

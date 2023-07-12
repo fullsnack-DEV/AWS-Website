@@ -164,10 +164,12 @@ export default function ChooseLocationScreen({navigation, route}) {
 
   const onSelectCurrentLocation = async () => {
     setLoading(true);
+
     const userData = {
       city: currentLocation?.city,
-      state_abbr: currentLocation?.stateAbbr,
+      state_abbr: currentLocation?.state_abbr,
       country: currentLocation?.country,
+      state: currentLocation.state_full,
     };
 
     navigateToChooseSportScreen(userData);
@@ -225,6 +227,7 @@ export default function ChooseLocationScreen({navigation, route}) {
           city: location.city,
           state_abbr: location.state,
           country: location.country,
+          state: item.location.state_full,
         };
         navigateToChooseSportScreen(userData);
       }
@@ -237,6 +240,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       city: item.city,
       state_abbr: item.state,
       country: item.country,
+      state: item.state_full,
     };
     navigateToChooseSportScreen(userData);
   };

@@ -73,15 +73,16 @@ const SportsListModal = ({
       setdoubleSportHandler(sport_data);
 
       setMemberListModalHandler(true);
-    } else if (authContext.entity.role !== Verbs.entityTypeUser) {
+    } else if (authContext.entity.role === Verbs.entityTypeClub) {
       closeList();
 
       const obj = {...sport_data};
+
       obj.grp_id = authContext.entity.obj.group_id;
 
       navigation.navigate('Account', {
         screen: 'CreateTeamForm1',
-        params: sport_data,
+        params: obj,
       });
     } else {
       closeList();
@@ -96,30 +97,6 @@ const SportsListModal = ({
     <Modal visible={isVisible} transparent animationType="slide">
       <View style={styles.parent}>
         <View style={styles.card}>
-          {/* <View style={styles.headerRow}>
-            <View style={{flex: 1}}>
-              <Pressable style={{width: 26, height: 26}} onPress={closeList}>
-                <Image source={images.crossImage} style={styles.image} />
-              </Pressable>
-            </View>
-            <View style={styles.headerTitleContainer}>
-              <Text style={styles.headerTitle}>{sport?.sport ? strings.sportTextTitle : title}</Text>
-            </View>
-            <Pressable
-              style={styles.buttonContainer}
-              onPress={() => {
-                if (!selectedSport?.sport_name) {
-                  return;
-                }
-                if (forTeam) {
-                  onNextPress(selectedSport);
-                } else {
-                  onNext(selectedSport);
-                }
-              }}>
-              <Text style={[styles.buttonText, selectedSport?.sport_name ? {} : {opacity: 0.5}]}>{sport?.sport ? strings.next : strings.apply}</Text>
-            </Pressable>
-          </View> */}
           <ScreenHeader
             title={sport?.sport ? strings.sportTextTitle : title}
             leftIcon={images.crossImage}

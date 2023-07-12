@@ -1,5 +1,13 @@
 import React, {memo, useCallback, useContext} from 'react';
-import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  SafeAreaView,
+  Platform,
+} from 'react-native';
 import Orientation from 'react-native-orientation';
 import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
@@ -52,11 +60,13 @@ const FeedAbsoluteTopView = memo(
     ]);
 
     return (
-      <View
-        pointerEvents={showParent ? 'auto' : 'none'}
+      <SafeAreaView
         style={[
           styles.topMainContainer,
-          {opacity: showParent ? 1 : 0},
+          {
+            opacity: showParent ? 1 : 0,
+            position: Platform.OS === 'ios' ? 'relative' : 'absolute',
+          },
           readMore
             ? {backgroundColor: colors.modalBackgroundColor, height: '100%'}
             : {},
@@ -70,7 +80,7 @@ const FeedAbsoluteTopView = memo(
             <TouchableOpacity
               onPress={() => {
                 Orientation.lockToPortrait();
-                navigation.goBack();
+                navigation.goBack(null);
               }}>
               <FastImage
                 tintColor={colors.whiteColor}
@@ -128,14 +138,13 @@ const FeedAbsoluteTopView = memo(
           tagData={feedSubItem?.format_tagged_data ?? []}
           navigation={navigation}
         />
-      </View>
+      </SafeAreaView>
     );
   },
 );
 
 const styles = StyleSheet.create({
   topMainContainer: {
-    position: 'absolute',
     top: 10,
     zIndex: 99,
   },

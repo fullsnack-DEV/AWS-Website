@@ -9,7 +9,7 @@ import {
   Pressable,
 } from 'react-native';
 import {
-  gestureHandlerRootHOC,
+  GestureHandlerRootView,
   PanGestureHandler,
 } from 'react-native-gesture-handler';
 import colors from '../Constants/Colors';
@@ -35,15 +35,12 @@ const CustomModalWrapper = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
   const translateY = new Animated.Value(0);
+
   const onPanGestureEvent = Animated.event(
-    [
-      {
-        nativeEvent: {
-          translationY: translateY,
-        },
-      },
-    ],
-    {useNativeDriver: true},
+    [{nativeEvent: {translationY: translateY}}],
+    {
+      useNativeDriver: true,
+    },
   );
 
   useEffect(() => {
@@ -133,74 +130,75 @@ const CustomModalWrapper = ({
     }
   };
 
-  const ModalChildWithHoc = gestureHandlerRootHOC(() => (
-    <Pressable
-      style={[styles.parent, {paddingTop: Top}]}
-      onPress={() => {
-        handleCloseModal();
-      }}>
-      {(modalType === ModalTypes.style7 ||
-        modalType === ModalTypes.style2 ||
-        modalType === ModalTypes.default) &&
-      showModal ? (
-        <PanGestureHandler
-          onGestureEvent={onPanGestureEvent}
-          onEnded={() => handleCloseModal()}>
-          <Animated.View
-            style={[
-              getCardStyle(),
-              {
-                transform: [
-                  {
-                    translateY,
-                  },
-                ],
-              },
-            ]}>
-            <Pressable onPress={() => {}}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignSelf: 'stretch',
-                  justifyContent: 'center',
-                }}>
-                {getModalHeader()}
-              </View>
-
-              <View style={[{padding: 25}, containerStyle]}>{children}</View>
-            </Pressable>
-          </Animated.View>
-        </PanGestureHandler>
-      ) : (
-        <Animated.View
-          style={[
-            getCardStyle(),
-            {
-              transform: [
-                {
-                  translateY,
-                },
-              ],
-            },
-          ]}>
-          <Pressable onPress={() => {}} style={{}}>
-            <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
-              {getModalHeader()}
-            </View>
-            <View style={[{padding: 25}, containerStyle]}>{children}</View>
-          </Pressable>
-        </Animated.View>
-      )}
-    </Pressable>
-  ));
-
   return (
     <Modal
       visible={isVisible}
+      collapsable
       transparent
       animationType="fade"
       onRequestClose={() => handleCloseModal()}>
-      <ModalChildWithHoc />
+      <GestureHandlerRootView style={{flex: 1}}>
+        <Pressable
+          style={[styles.parent, {paddingTop: Top}]}
+          onPress={() => {
+            handleCloseModal();
+          }}>
+          {(modalType === ModalTypes.style7 ||
+            modalType === ModalTypes.style2 ||
+            modalType === ModalTypes.default) &&
+          showModal ? (
+            <PanGestureHandler
+              onGestureEvent={onPanGestureEvent}
+              onEnded={() => handleCloseModal()}>
+              <Animated.View
+                style={[
+                  getCardStyle(),
+                  {
+                    transform: [
+                      {
+                        translateY,
+                      },
+                    ],
+                  },
+                ]}>
+                <Pressable onPress={() => {}}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignSelf: 'stretch',
+                      justifyContent: 'center',
+                    }}>
+                    {getModalHeader()}
+                  </View>
+
+                  <View style={[{padding: 25}, containerStyle]}>
+                    {children}
+                  </View>
+                </Pressable>
+              </Animated.View>
+            </PanGestureHandler>
+          ) : (
+            <Animated.View
+              style={[
+                getCardStyle(),
+                {
+                  transform: [
+                    {
+                      translateY,
+                    },
+                  ],
+                },
+              ]}>
+              <Pressable onPress={() => {}} style={{}}>
+                <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
+                  {getModalHeader()}
+                </View>
+                <View style={[{padding: 25}, containerStyle]}>{children}</View>
+              </Pressable>
+            </Animated.View>
+          )}
+        </Pressable>
+      </GestureHandlerRootView>
     </Modal>
   );
 };
