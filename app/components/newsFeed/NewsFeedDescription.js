@@ -29,7 +29,6 @@ const NewsFeedDescription = ({
   isNewsFeedScreen,
   openProfilId,
   moreTextStyle = {},
-  onExpand = () => {},
   onCollapse = () => {},
   tagStyle = {},
 }) => {
@@ -170,7 +169,6 @@ const NewsFeedDescription = ({
               allowFontScaling={false}
               seeLessStyle={[styles.moreText, moreTextStyle]}
               seeMoreStyle={[styles.moreText, moreTextStyle]}
-              onExpand={onExpand}
               onCollapse={onCollapse}>
               <ParsedText
                 style={[styles.text, descriptionTxt]}

@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Pressable,
-  Image,
-  StyleSheet,
-} from 'react-native';
+import {View, Text, Pressable, Image, StyleSheet} from 'react-native';
 import React, {useContext} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
@@ -39,7 +32,7 @@ export default function LocalHomeHeader({
         showBackgroundColor={true}
         centerComponent={
           <View>
-            <TouchableOpacity
+            <Pressable
               onPress={() => setShowSwitchAccountModal()}
               style={styles.headerNameStyle}>
               <Text style={styles.headerUserName} numberOfLines={1}>
@@ -48,21 +41,21 @@ export default function LocalHomeHeader({
               </Text>
 
               <Image source={images.path} style={styles.downArrow} />
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
+            <Pressable
               style={styles.titleHeaderView}
               onPress={() => setLocationpopup()}>
               <Text style={styles.headerTitle}>
                 {location?.charAt?.(0)?.toUpperCase() + location?.slice(1)}
               </Text>
               <Image source={images.home_gps} style={styles.gpsIconStyle} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         }
         rightComponent={
           <View style={styles.rightHeaderView}>
-            <TouchableOpacity
+            <Pressable
               onPress={() => {
                 navigation.navigate('EntitySearchScreen', {
                   sportsList: customSports,
@@ -70,9 +63,9 @@ export default function LocalHomeHeader({
                 });
               }}>
               <Image source={images.home_search} style={styles.townsCupIcon} />
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
+            <Pressable
               style={styles.iconButton}
               onPress={() => navigation.navigate('NotificationsListScreen')}>
               <Image
@@ -86,7 +79,7 @@ export default function LocalHomeHeader({
                   </Text>
                 </View>
               )}
-            </TouchableOpacity>
+            </Pressable>
           </View>
         }
       />

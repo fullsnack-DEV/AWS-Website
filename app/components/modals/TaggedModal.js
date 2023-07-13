@@ -8,6 +8,7 @@ import {
   Text,
   View,
   TouchableOpacity,
+  Pressable,
 } from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -31,7 +32,6 @@ const TaggedModal = ({
 
   useEffect(() => {
     if (taggedData?.length) {
-      console.log(taggedData, 'From data');
       const gData = taggedData?.filter((e) => e?.entity_type === 'game') ?? [];
 
       const eData =
@@ -54,15 +54,23 @@ const TaggedModal = ({
   const renderMatchTaggedItems = useCallback(
     ({item}) => (
       <View style={{marginHorizontal: 15}}>
-        <MatchCard
-          style={{marginBottom: 15}}
-          item={item?.matchData}
+        <Pressable
           onPress={() => {
+            onBackdropPress();
             const routeName = getGameHomeScreen(item?.matchData?.sport);
             if (routeName)
-              navigation.push(routeName, {gameId: item?.entity_id});
-          }}
-        />
+              navigation.navigate(routeName, {gameId: item?.entity_id});
+          }}>
+          <MatchCard
+            style={{marginBottom: 15}}
+            item={item?.matchData}
+            onPress={() => {
+              const routeName = getGameHomeScreen(item?.matchData?.sport);
+              if (routeName)
+                navigation.push(routeName, {gameId: item?.entity_id});
+            }}
+          />
+        </Pressable>
       </View>
     ),
     [navigation],
@@ -72,6 +80,19 @@ const TaggedModal = ({
     ({item}) => (
       <>
         <TouchableOpacity
+          onPress={() => {
+            onBackdropPress();
+            navigation.push('HomeScreen', {
+              uid: item?.entity_id,
+              role: [Verbs.entityTypePlayer, Verbs.entityTypeUser]?.includes(
+                item?.entity_type,
+              )
+                ? Verbs.entityTypeUser
+                : item?.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            });
+          }}
           style={{
             flexDirection: 'row',
             marginHorizontal: 17,

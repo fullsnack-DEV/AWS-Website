@@ -67,9 +67,7 @@ const FeedAbsoluteTopView = memo(
             opacity: showParent ? 1 : 0,
             position: Platform.OS === 'ios' ? 'relative' : 'absolute',
           },
-          readMore
-            ? {backgroundColor: colors.modalBackgroundColor, height: '100%'}
-            : {},
+          readMore ? {backgroundColor: colors.blackColor} : {},
         ]}>
         <View
           style={{

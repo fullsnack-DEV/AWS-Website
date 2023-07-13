@@ -1,6 +1,15 @@
 // @flow
 import React, {useContext, useEffect, useState} from 'react';
-import {StyleSheet, FlatList, View, Pressable, Image, Text, Alert, Platform} from 'react-native';
+import {
+  StyleSheet,
+  FlatList,
+  View,
+  Pressable,
+  Image,
+  Text,
+  Alert,
+  Platform,
+} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
@@ -13,16 +22,28 @@ import AccountCard from './AccountCard';
 import useSwitchAccount from '../../hooks/useSwitchAccount';
 import SwitchAccountLoader from './SwitchAccountLoader';
 import BottomSheet from '../modals/BottomSheet';
-import {actionOnGroupRequest, getTeamPendingRequest, groupValidate} from '../../api/Groups';
+import {
+  actionOnGroupRequest,
+  getTeamPendingRequest,
+  groupValidate,
+} from '../../api/Groups';
 import Verbs from '../../Constants/Verbs';
 import SwitchAccountShimmer from './SwitchAccountShimmer';
 import ScreenHeader from '../ScreenHeader';
 
-const SwitchAccountModal = ({isVisible = false, closeModal = () => {}, onCreate = () => {}}) => {
+const SwitchAccountModal = ({
+  isVisible = false,
+  closeModal = () => {},
+  onCreate = () => {},
+}) => {
   const [accountList, setAccountList] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState({});
   const [showLoader, setShowLoader] = useState(false);
-  const [createOptions] = useState([strings.team, strings.club, strings.leaguesTitle]);
+  const [createOptions] = useState([
+    strings.team,
+    strings.club,
+    strings.leaguesTitle,
+  ]);
   const [showBottomSheet, setBottomSheet] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isFetchingList, setIsFetchingList] = useState(false);
@@ -51,11 +72,15 @@ const SwitchAccountModal = ({isVisible = false, closeModal = () => {}, onCreate 
 
   const handleSwitchAccount = async (entity) => {
     if (entity.request_id) {
-      Alert.alert(Platform.OS === 'android' ? '' : strings.requestSwitchModalAlertMessage, Platform.OS === 'android' ? strings.requestSwitchModalAlertMessage : '', [
-        {
-          text: strings.okTitleText,
-        },
-      ]);
+      Alert.alert(
+        Platform.OS === 'android' ? '' : strings.requestSwitchModalAlertMessage,
+        Platform.OS === 'android' ? strings.requestSwitchModalAlertMessage : '',
+        [
+          {
+            text: strings.okTitleText,
+          },
+        ],
+      );
     } else {
       setShowLoader(true);
       setSelectedAccount(entity);
@@ -156,8 +181,38 @@ const SwitchAccountModal = ({isVisible = false, closeModal = () => {}, onCreate 
     );
   };
 
+  const ListFooterComponent = () => (
+    <>
+      {authContext.entity.role === Verbs.entityTypeUser && (
+        <>
+          <Pressable
+            style={[styles.row, {justifyContent: 'flex-start'}]}
+            onPress={() => {
+              setBottomSheet(true);
+            }}>
+            <View style={styles.iconContainer}>
+              <Image
+                source={images.createGroupIcon}
+                style={[styles.image, {borderRadius: 30}]}
+              />
+            </View>
+            <View style={{marginLeft: 15}}>
+              <Text style={styles.label}>{strings.createGroupAccount}</Text>
+            </View>
+          </Pressable>
+          <View style={styles.dividor} />
+        </>
+      )}
+    </>
+  );
+
   return (
-    <CustomModalWrapper modalType={ModalTypes.default} isVisible={isVisible} closeModal={closeModal} title={strings.switchAccount} containerStyle={styles.modalContainer}>
+    <CustomModalWrapper
+      modalType={ModalTypes.default}
+      isVisible={isVisible}
+      closeModal={closeModal}
+      title={strings.switchAccount}
+      containerStyle={styles.modalContainer}>
       <ScreenHeader title={strings.switchAccount} />
       {isFetchingList ? (
         <SwitchAccountShimmer />
@@ -178,7 +233,10 @@ const SwitchAccountModal = ({isVisible = false, closeModal = () => {}, onCreate 
                   entityData={item}
                   sportList={authContext.sports}
                   containerStyle={{paddingHorizontal: 5, flex: 1}}
-                  notificationCount={getNotificationCount(item.user_id ?? item.group_id, authContext)}
+                  notificationCount={getNotificationCount(
+                    item.user_id ?? item.group_id,
+                    authContext,
+                  )}
                   onPress={() => {
                     handleSwitchAccount(item);
                   }}
@@ -188,29 +246,21 @@ const SwitchAccountModal = ({isVisible = false, closeModal = () => {}, onCreate 
                   loading={loading}
                 />
                 <View style={styles.radioIcon}>
-                  <Image source={authContext.entity.uid === item.user_id || authContext.entity.uid === item.group_id ? images.radioSelectYellow : images.radioUnselect} style={styles.image} />
+                  <Image
+                    source={
+                      authContext.entity.uid === item.user_id ||
+                      authContext.entity.uid === item.group_id
+                        ? images.radioSelectYellow
+                        : images.radioUnselect
+                    }
+                    style={styles.image}
+                  />
                 </View>
               </Pressable>
               <View style={styles.dividor} />
             </>
           )}
-          ListFooterComponent={() => (
-            <>
-              <Pressable
-                style={[styles.row, {justifyContent: 'flex-start'}]}
-                onPress={() => {
-                  setBottomSheet(true);
-                }}>
-                <View style={styles.iconContainer}>
-                  <Image source={images.createGroupIcon} style={[styles.image, {borderRadius: 30}]} />
-                </View>
-                <View style={{marginLeft: 15}}>
-                  <Text style={styles.label}>{strings.createGroupAccount}</Text>
-                </View>
-              </Pressable>
-              <View style={styles.dividor} />
-            </>
-          )}
+          ListFooterComponent={ListFooterComponent}
         />
       )}
 

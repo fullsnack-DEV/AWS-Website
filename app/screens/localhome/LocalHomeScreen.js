@@ -16,7 +16,6 @@ import {
   Pressable,
   SafeAreaView,
   ActivityIndicator,
-  TouchableOpacity,
 } from 'react-native';
 
 import Modal from 'react-native-modal';
@@ -480,7 +479,7 @@ export default function LocalHomeScreen({navigation, route}) {
   );
 
   const SportsListView = ({item, index}) => (
-    <TouchableOpacity
+    <Pressable
       onPress={() => handlePress(item, index)}
       style={{
         justifyContent: 'center',
@@ -520,7 +519,7 @@ export default function LocalHomeScreen({navigation, route}) {
         }>
         {renderSportName(item)}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
