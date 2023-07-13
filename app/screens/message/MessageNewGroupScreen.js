@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {StreamChat} from 'stream-chat';
 import ImagePicker from 'react-native-image-crop-picker';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
@@ -20,15 +19,14 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import * as Utility from '../../utils/index';
 import {strings} from '../../../Localization/translation';
 import uploadImages from '../../utils/imageAction';
-import {upsertUserInstance, STREAMCHATKEY} from '../../utils/streamChat';
 import ScreenHeader from '../../components/ScreenHeader';
 import SelectedInviteeCard from './components/SelectedInviteeCard';
 import BottomSheet from '../../components/modals/BottomSheet';
+import useCreateChannel from '../../hooks/useCreateChannel';
 
 const NUM_OF_COLS = 5;
 
 const MessageNewGroupScreen = ({route, navigation}) => {
-  const chatClient = StreamChat.getInstance(STREAMCHATKEY);
   const authContext = useContext(AuthContext);
 
   const {selectedInviteesData} = route.params;
@@ -39,6 +37,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
   const [loading, setLoading] = useState(false);
   const [bottomSheetOptions, setBottomSheetOptions] = useState([]);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const {createChannel} = useCreateChannel();
 
   useEffect(() => {
     if (selectedInviteesData?.length > 0) {
@@ -58,14 +57,6 @@ const MessageNewGroupScreen = ({route, navigation}) => {
     }
   }, [route?.params?.dialog]);
 
-  const checkValidation = () => {
-    if (groupName === '') {
-      Alert.alert(strings.enterChatroomName);
-      return false;
-    }
-    return true;
-  };
-
   const toggleSelection = (isChecked, user) => {
     const data = selectedInvitees;
     if (isChecked) {
@@ -81,81 +72,51 @@ const MessageNewGroupScreen = ({route, navigation}) => {
   };
 
   const onSaveButtonClicked = () => {
-    if (checkValidation()) {
-      setLoading(true);
-      const groupData = {...groupProfile};
-      if (profileImageChanged) {
-        const imageArray = [];
-        if (profileImageChanged) {
-          imageArray.push({path: groupData.thumbnail});
-        }
-        uploadImages(imageArray, authContext)
-          .then((responses) => {
-            console.log('image response', responses);
+    setLoading(true);
 
-            if (profileImageChanged) {
-              setGroupProfile({
-                ...groupProfile,
-                thumbnail: responses[0].thumbnail,
-                full_image: responses[0].fullImage,
-              });
-              setProfileImageChanged(false);
-              groupData.full_image = responses[0].thumbnail;
-              groupData.thumbnail = responses[0].fullImage;
-            }
+    if (profileImageChanged) {
+      const imageArray = [{path: groupProfile.thumbnail}];
 
-            onDonePress();
-          })
-          .catch((e) => {
-            setTimeout(() => {
-              Alert.alert(strings.appName, e.messages);
-            }, 0.1);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      } else {
-        onDonePress();
-      }
-    }
-  };
+      uploadImages(imageArray, authContext)
+        .then((responses) => {
+          const profile = {
+            thumbnail: responses[0].thumbnail,
+            full_image: responses[0].fullImage,
+          };
 
-  const getCurrentUserObject = () => {
-    const user = {
-      user: {
-        id: authContext.entity?.obj?.user_id,
-        name: authContext.entity?.obj?.first_name,
-        entityType: authContext.entity?.obj?.entity_type,
-        image: null,
-      },
-    };
-    return user;
-  };
-
-  const onDonePress = async () => {
-    if (checkValidation()) {
-      setLoading(true);
-      const occupantsIds = [];
-      const members = [...selectedInvitees];
-      selectedInvitees.filter((item) => occupantsIds.push(item.id));
-      const currentUser = getCurrentUserObject();
-      if (occupantsIds.length > 0) {
-        members.push(currentUser);
-        await upsertUserInstance(authContext);
-        const channel = chatClient.channel(
-          'messaging',
-          groupName.replace(/\s/g, ''),
-          {
-            name: groupName,
-            members,
-          },
-        );
-        setLoading(false);
-        navigation.replace('MessageChatScreen', {
-          channel,
+          setGroupProfile(profile);
+          setProfileImageChanged(false);
+          onDonePress(profile);
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.appName, e.messages);
+          }, 0.1);
+        })
+        .finally(() => {
+          setLoading(false);
         });
-      }
+    } else {
+      onDonePress();
     }
+  };
+
+  const onDonePress = async (profileImage = '') => {
+    const list = selectedInvitees.filter((invitee) => invitee.id);
+
+    createChannel(list, profileImage, groupName)
+      .then((channel) => {
+        if (channel !== null) {
+          setLoading(false);
+          navigation.replace('MessageChatScreen', {
+            channel,
+          });
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        Alert.alert(strings.alertmessagetitle, err.message);
+      });
   };
 
   const openCamera = (width = 400, height = 400) => {
@@ -164,7 +125,8 @@ const MessageNewGroupScreen = ({route, navigation}) => {
       height,
       cropping: true,
     }).then((data) => {
-      setGroupProfile({...groupProfile, thumbnail: data.path});
+      setGroupProfile({thumbnail: data.path});
+      setShowBottomSheet(false);
       setProfileImageChanged(true);
     });
   };
@@ -175,13 +137,14 @@ const MessageNewGroupScreen = ({route, navigation}) => {
       cropping: true,
       cropperCircleOverlay: true,
     }).then((data) => {
-      setGroupProfile({...groupProfile, thumbnail: data.path});
+      setGroupProfile({thumbnail: data.path});
+      setShowBottomSheet(false);
       setProfileImageChanged(true);
     });
   };
 
   const deleteImage = () => {
-    setGroupProfile({...groupProfile, thumbnail: '', full_image: ''});
+    setGroupProfile({thumbnail: '', full_image: ''});
     setProfileImageChanged(false);
   };
 
@@ -241,7 +204,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
                 ? {uri: groupProfile.thumbnail}
                 : images.groupUsers
             }
-            style={styles.image}
+            style={[styles.image, {borderRadius: 40}]}
           />
           <View style={styles.absoluteCameraIcon}>
             <Image source={images.certificateUpload} style={styles.image} />

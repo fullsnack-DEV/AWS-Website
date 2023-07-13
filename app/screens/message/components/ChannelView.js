@@ -1,128 +1,102 @@
 import React, {useContext} from 'react';
 import {View, StyleSheet, Pressable, Text} from 'react-native';
-import {ChannelAvatar} from 'stream-chat-react-native';
 import {useNavigation} from '@react-navigation/native';
-import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
+import fonts from '../../../Constants/Fonts';
+import CustomAvatar from './CustomAvatar';
+import {getChannelName, getLastMessageTime} from '../../../utils/streamChat';
+import AuthContext from '../../../auth/context';
 
 const ChannelView = ({channel, latestMessagePreview}) => {
-  const authContext = useContext(AuthContext);
+  const {state} = channel;
   const {navigate} = useNavigation();
+  const authContext = useContext(AuthContext);
 
-  const renderChatTitle = () => {
-    let name;
-    if (channel.data.member_count === 2) {
-      const members = channel?.state?.members;
-      const filteredMember = Object.fromEntries(
-        Object.entries(members).filter(
-          ([key]) => key !== authContext.entity?.obj?.user_id,
-        ),
-      );
-      name = Object.entries(filteredMember).map((obj) => obj[1]?.user?.name);
-    } else {
-      name = channel.data.name;
+  const getLastMessage = () => {
+    if (latestMessagePreview.messageObject?.text) {
+      return latestMessagePreview.messageObject.text;
     }
-    return name;
-  };
 
-  const renderDateTimeString = () => {
-    const timeString = channel.data.last_message_at;
-    const date = new Date(timeString);
-    const day = date.getDate();
-    const month = date.toLocaleString('default', {month: 'short'});
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const currentDate = new Date();
-    let formattedTime;
-    let formattedDate;
-    let chatScreenTime;
-
-    if (date.toDateString() === currentDate.toDateString()) {
-      formattedTime =
-        hours >= 12
-          ? `${hours % 12}:${minutes < 10 ? `0 ${minutes}` : minutes} PM`
-          : `${hours}:${minutes < 10 ? `0 ${minutes}` : minutes} AM`;
-      chatScreenTime = `${formattedTime}`;
-    } else {
-      formattedTime = `${hours}:${minutes < 10 ? `0 ${minutes}` : minutes}`;
-      formattedDate = `${day} ${month}`;
-      chatScreenTime = `${formattedDate}`;
-
-      if (date < currentDate) {
-        chatScreenTime = `${chatScreenTime}`;
-      }
+    if (latestMessagePreview.messageObject?.attachments?.length > 0) {
+      return 'Photo';
     }
-    return chatScreenTime;
+    return strings.emptyChatMessage;
   };
 
   return (
-    <Pressable onPress={() => navigate('MessageChatScreen', {channel})}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          padding: 15,
-        }}>
-        <View style={{flexDirection: 'row'}}>
-          <View style={{marginRight: 10}}>
-            <ChannelAvatar channel={channel} />
-          </View>
-          <View>
-            <Text style={styles.channelTitle}>{renderChatTitle(channel)}</Text>
-            <Text style={styles.channelLowerText}>
-              {latestMessagePreview?.messageObject?.text
-                ? latestMessagePreview.messageObject?.text
-                : strings.emptyChatMessage}
-            </Text>
-          </View>
+    <Pressable
+      onPress={async () => {
+        await channel.watch();
+        navigate('MessageChatScreen', {channel});
+      }}
+      style={styles.parent}>
+      <View style={styles.userDetails}>
+        <CustomAvatar channel={channel} />
+        <View style={{flex: 1}}>
+          <Text style={styles.channelTitle} numberOfLines={1}>
+            {getChannelName(channel, authContext.entity.uid)}
+          </Text>
+          <Text style={styles.channelLowerText}>{getLastMessage()}</Text>
         </View>
-        <View>
-          <View>
-            <Text style={styles.channelAge}>
-              {renderDateTimeString(channel)}
-            </Text>
+      </View>
+      <View style={{alignItems: 'flex-end'}}>
+        <Text style={styles.channelAge}>{getLastMessageTime(channel)}</Text>
+
+        {state.unreadCount > 0 ? (
+          <View style={styles.channelUnreadCount}>
+            <Text style={styles.channelUnreadText}>{state.unreadCount}</Text>
           </View>
-          {channel.state?.unreadCount > 0 && (
-            <View style={styles.channelUnreadCount}>
-              <Text style={styles.channelUnreadText}>
-                {channel.state?.unreadCount}
-              </Text>
-            </View>
-          )}
-        </View>
+        ) : null}
       </View>
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
+  parent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingVertical: 20,
+  },
+  userDetails: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 15,
+  },
   channelTitle: {
     fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 5,
-    color: colors.blackColor,
+    lineHeight: 24,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RMedium,
   },
   channelLowerText: {
     fontSize: 14,
+    lineHeight: 21,
+    fontFamily: fonts.RRegular,
     color: colors.placeHolderColor,
   },
   channelAge: {
     fontSize: 12,
     lineHeight: 18,
+    fontFamily: fonts.RRegular,
     color: colors.placeHolderColor,
   },
   channelUnreadCount: {
-    backgroundColor: colors.redColorCard,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 50,
     marginTop: 5,
-    width: 30,
+    borderRadius: 50,
+    alignItems: 'center',
+    paddingHorizontal: 5,
+    justifyContent: 'center',
+    backgroundColor: colors.redColorCard,
   },
   channelUnreadText: {
     color: colors.whiteColor,
     fontSize: 12,
+    lineHeight: 18,
     textAlign: 'center',
   },
 });

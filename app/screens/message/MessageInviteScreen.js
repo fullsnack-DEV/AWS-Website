@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {
+  Alert,
   FlatList,
   SafeAreaView,
   StyleSheet,
@@ -20,9 +21,11 @@ import Verbs from '../../Constants/Verbs';
 import TabBarForInvitee from './components/TabBarForInvitee';
 import InviteeCard from './components/InviteeCard';
 import SelectedInviteeCard from './components/SelectedInviteeCard';
+import useCreateChannel from '../../hooks/useCreateChannel';
 
 const MessageInviteScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
+  const {createChannel, isCreatingChannel} = useCreateChannel();
 
   const [currentTab, setCurrentTab] = useState(strings.allType);
   const [loading, setLoading] = useState(false);
@@ -138,44 +141,21 @@ const MessageInviteScreen = ({navigation}) => {
     </View>
   );
 
-  const getCurrentUserObject = () => {
-    const entity = {...authContext.entity.obj};
-    const user = {
-      user: {
-        id: entity.user_id ?? entity.group_id,
-        name: entity.full_name ?? entity.group_name,
-        entityType: entity.entity_type,
-        image: entity.full_image ?? entity.thumbnail,
-      },
-    };
-    return user;
-  };
-
-  const handlePress = async () => {
-    // const occupantsIds = [];
-    // const members = [...selectedInvitees];
-    // selectedInvitees.filter((item) => occupantsIds.push(item.id));
-    const currentUser = getCurrentUserObject();
-    // if (occupantsIds.length > 0) {
-    //   if (occupantsIds.length === 1) {
-    //     members.push(currentUser);
-    //     await upsertUserInstance(authContext);
-    //     const channel = authContext.chatClient.channel('messaging', null, {
-    //       members,
-    //     });
-    //     navigation.replace('MessageChatScreen', {
-    //       channel,
-    //     });
-    //   } else {
-    //     navigation.replace('MessageNewGroupScreen', {
-    //       selectedInviteesData: selectedInvitees,
-    //     });
-    //   }
-    // } else {
-    //   Alert.alert(strings.selectMembers);
-    // }
-    console.log({currentUser});
-    if (selectedInvitees.length > 1) {
+  const handlePress = () => {
+    if (selectedInvitees.length === 1) {
+      createChannel(selectedInvitees)
+        .then(async (channel) => {
+          if (channel !== null) {
+            await channel.watch();
+            navigation.replace('MessageChatScreen', {
+              channel,
+            });
+          }
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    } else if (selectedInvitees.length > 1) {
       navigation.replace('MessageNewGroupScreen', {
         selectedInviteesData: selectedInvitees,
       });
@@ -202,7 +182,7 @@ const MessageInviteScreen = ({navigation}) => {
             handlePress();
           }
         }}
-        loading={loading}
+        loading={isCreatingChannel}
       />
 
       <TextInput

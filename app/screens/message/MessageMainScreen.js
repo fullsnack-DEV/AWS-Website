@@ -87,9 +87,6 @@ const MessageMainScreen = ({navigation}) => {
               <ChannelList
                 filters={{members: {$in: [streamChatId]}}}
                 sort={[{last_message_at: -1}]}
-                onSelect={(channel) =>
-                  navigation.navigate('MessageChatScreen', {channel})
-                }
                 Preview={ChannelView}
                 LoadingIndicator={() => <UserListShimmer />}
                 EmptyStateIndicator={() => LiseEmptyComponent()}

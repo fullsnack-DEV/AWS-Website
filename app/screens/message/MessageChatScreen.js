@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext, useMemo} from 'react';
+import React, {useState, useContext, useMemo} from 'react';
 import {
   Text,
   StyleSheet,
@@ -28,61 +28,152 @@ import * as Progress from 'react-native-progress';
 import {TapGestureHandler} from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
-import {StreamChat} from 'stream-chat';
+
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import ScreenHeader from '../../components/ScreenHeader';
 import {widthPercentageToDP as wp} from '../../utils';
 import AuthContext from '../../auth/context';
-import {STREAMCHATKEY} from '../../utils/streamChat';
+
 import {strings} from '../../../Localization/translation';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import BottomSheet from '../../components/modals/BottomSheet';
+import ChatGroupDetails from './components/ChatGroupDetails';
+import {getChannelName} from '../../utils/streamChat';
 
-const ChannelScreen = ({chatClient, channel, navigation}) => {
+const TAB_ITEMS = [
+  {
+    url: '',
+    type: 'all',
+  },
+  {
+    url: images.emojiHappy,
+    type: 'happy',
+  },
+  {
+    url: images.emojiWow,
+    type: 'wow',
+  },
+  {
+    url: images.emojiSad,
+    type: 'sad',
+  },
+  {
+    url: images.emojiCorrect,
+    type: 'correct',
+  },
+  {
+    url: images.emojiLike,
+    type: 'like',
+  },
+  {
+    url: images.emojiLove,
+    type: 'love',
+  },
+];
+
+const myMessageTheme = {
+  messageSimple: {
+    content: {
+      replyBorder: {
+        borderColor: colors.whiteColor,
+      },
+      containerInner: {
+        backgroundColor: colors.chatBubbleContainer,
+        borderWidth: 0,
+      },
+      deletedContainerInner: {
+        backgroundColor: colors.chatBubbleContainer,
+        borderWidth: 0,
+      },
+    },
+    replies: {
+      container: {
+        backgroundColor: colors.chatBubbleContainer,
+      },
+    },
+  },
+};
+
+const themeStyle = {
+  messageSimple: {
+    content: {
+      markdown: {
+        inlineCode: {
+          fontSize: 10,
+        },
+        text: {
+          color: colors.blackColor,
+        },
+      },
+      containerInner: {
+        borderWidth: 0,
+        backgroundColor: colors.lightGrayBackground,
+      },
+      container: {
+        backgroundColor: colors.lightGrayBackground,
+      },
+    },
+    avatarWrapper: {
+      container: {
+        display: 'flex',
+        alignSelf: 'center',
+        margintop: 100,
+      },
+    },
+    container: {},
+  },
+  messageList: {
+    container: {
+      backgroundColor: colors.lightGrayBackground,
+    },
+  },
+};
+
+const deleteArray = [
+  strings.deleteForEveryOneOption,
+  strings.deleteForMeOption,
+];
+
+const newReactionData = [
+  {
+    Icon: images.emojiHappy,
+    type: 'happy',
+  },
+  {
+    Icon: images.emojiSad,
+    type: 'sad',
+  },
+  {
+    Icon: images.emojiWow,
+    type: 'wow',
+  },
+  {
+    Icon: images.emojiCorrect,
+    type: 'correct',
+  },
+  {
+    Icon: images.emojiLike,
+    type: 'like',
+  },
+  {
+    Icon: images.emojiLove,
+    type: 'love',
+  },
+];
+
+const MessageChatScreen = ({navigation, route}) => {
+  const {channel} = route.params;
   const authContext = useContext(AuthContext);
+
   const [isVisible, setIsVisible] = useState(false);
   const [currentTab, setCurrentTab] = useState(0);
   const [allReaction, setAllReaction] = useState([]);
   const [deleteMessageModal, setDeleteMessageModal] = useState(false);
   const [deleteMessageObject, setDeleteMessageObject] = useState({});
 
-  const deleteArray = [
-    strings.deleteForEveryOneOption,
-    strings.deleteForMeOption,
-  ];
-
-  const TAB_ITEMS = [
-    {
-      url: '',
-      type: 'all',
-    },
-    {
-      url: images.emojiHappy,
-      type: 'happy',
-    },
-    {
-      url: images.emojiWow,
-      type: 'wow',
-    },
-    {
-      url: images.emojiSad,
-      type: 'sad',
-    },
-    {
-      url: images.emojiCorrect,
-      type: 'correct',
-    },
-    {
-      url: images.emojiLike,
-      type: 'like',
-    },
-    {
-      url: images.emojiLove,
-      type: 'love',
-    },
-  ];
+  const [showDetails, setShowDetails] = useState(false);
 
   const showUserRole = (id) => {
     const roleArr = id.split('-');
@@ -176,67 +267,9 @@ const ChannelScreen = ({chatClient, channel, navigation}) => {
     );
   };
 
-  const myMessageTheme = {
-    messageSimple: {
-      content: {
-        replyBorder: {
-          borderColor: colors.whiteColor,
-        },
-        containerInner: {
-          backgroundColor: colors.chatBubbleContainer,
-          borderWidth: 0,
-        },
-        deletedContainerInner: {
-          backgroundColor: colors.chatBubbleContainer,
-          borderWidth: 0,
-        },
-      },
-      replies: {
-        container: {
-          backgroundColor: colors.chatBubbleContainer,
-        },
-      },
-    },
-  };
-
-  const themeStyle = {
-    messageSimple: {
-      content: {
-        markdown: {
-          inlineCode: {
-            fontSize: 10,
-          },
-          text: {
-            color: colors.blackColor,
-          },
-        },
-        containerInner: {
-          borderWidth: 0,
-          backgroundColor: colors.lightGrayBackground,
-        },
-        container: {
-          backgroundColor: colors.lightGrayBackground,
-        },
-      },
-      avatarWrapper: {
-        container: {
-          display: 'flex',
-          alignSelf: 'center',
-          margintop: 100,
-        },
-      },
-      container: {},
-    },
-    messageList: {
-      container: {
-        backgroundColor: colors.lightGrayBackground,
-      },
-    },
-  };
-
   const renderChatTitle = () => {
     let name;
-    if (channel.data.member_count === 2) {
+    if (channel.data?.member_count === 2) {
       const members = channel?.state?.members;
       const filteredMember = Object.fromEntries(
         Object.entries(members).filter(
@@ -245,7 +278,7 @@ const ChannelScreen = ({chatClient, channel, navigation}) => {
       );
       name = Object.entries(filteredMember).map((obj) => obj[1]?.user?.name);
     } else {
-      name = channel.data.name;
+      name = channel.data?.name;
     }
     return name;
   };
@@ -332,33 +365,6 @@ const ChannelScreen = ({chatClient, channel, navigation}) => {
       removeImage(item.id);
     });
   };
-
-  const newReactionData = [
-    {
-      Icon: images.emojiHappy,
-      type: 'happy',
-    },
-    {
-      Icon: images.emojiSad,
-      type: 'sad',
-    },
-    {
-      Icon: images.emojiWow,
-      type: 'wow',
-    },
-    {
-      Icon: images.emojiCorrect,
-      type: 'correct',
-    },
-    {
-      Icon: images.emojiLike,
-      type: 'like',
-    },
-    {
-      Icon: images.emojiLove,
-      type: 'love',
-    },
-  ];
 
   const CustomReactionComponent = () => {
     const {message} = useMessageContext();
@@ -858,12 +864,12 @@ const ChannelScreen = ({chatClient, channel, navigation}) => {
 
   const deleteForMe = async () => {
     deleteMessageObject.deleteForMe = true;
-    await chatClient.updateMessage(deleteMessageObject);
+    await authContext.chatClient.updateMessage(deleteMessageObject);
     setDeleteMessageModal(false);
   };
 
   const deleteForEveryone = async () => {
-    await chatClient.deleteMessage(deleteMessageObject.id);
+    await authContext.chatClient.deleteMessage(deleteMessageObject.id);
     setDeleteMessageModal(false);
   };
 
@@ -1019,26 +1025,18 @@ const ChannelScreen = ({chatClient, channel, navigation}) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View>
-        <ScreenHeader
-          title={renderChatTitle(channel)}
-          leftIcon={images.backArrow}
-          leftIconPress={() => {
-            navigation.goBack();
-          }}
-          rightIcon2={images.vertical3Dot}
-          rightIcon2Press={() => {}}
-          loading={false}
-          containerStyle={{
-            paddingLeft: 10,
-            paddingRight: 17,
-            paddingTop: 8,
-            paddingBottom: 13,
-            borderBottomWidth: 0,
-          }}
-        />
-      </View>
-      <View style={styles.separateLine} />
+      <ScreenHeader
+        title={getChannelName(channel, authContext.entity.uid)}
+        leftIcon={images.backArrow}
+        leftIconPress={() => {
+          navigation.goBack();
+        }}
+        rightIcon2={images.vertical3Dot}
+        rightIcon2Press={() => {
+          setShowDetails(true);
+        }}
+        loading={false}
+      />
 
       <View style={{flex: 1}}>
         <ChatOverlayProvider
@@ -1049,7 +1047,7 @@ const ChannelScreen = ({chatClient, channel, navigation}) => {
           MessageActionListItem={CustomMessageActionListItem}
           OverlayReactionList={() => null}
           ImageGalleryFooter={CustomImageGalleryComponent}>
-          <Chat style={themeStyle} client={chatClient}>
+          <Chat style={themeStyle} client={authContext.chatClient}>
             <Channel
               MessageText={CustomMessageTextContent}
               MessageAvatar={CustomAvatar}
@@ -1058,7 +1056,7 @@ const ChannelScreen = ({chatClient, channel, navigation}) => {
               channel={channel}
               keyboardVerticalOffset={5}
               MessageHeader={(props) =>
-                props.message?.user?.id !== chatClient.userID ? (
+                props.message?.user?.id !== authContext.chatClient.userID ? (
                   <View style={{flexDirection: 'row'}}>
                     {Object.keys(props.members).length > 2 &&
                     props.message.user?.id ? (
@@ -1135,55 +1133,22 @@ const ChannelScreen = ({chatClient, channel, navigation}) => {
             }
           }}
         />
+
+        {/* Chat group details */}
+        <ChatGroupDetails
+          isVisible={showDetails}
+          closeModal={() => setShowDetails(false)}
+          channel={channel}
+          currentEntityId={authContext.entity.uid}
+        />
       </View>
     </SafeAreaView>
   );
 };
 
-function MessageChatScreen(props) {
-  const [ready, setReady] = useState(false);
-  const [channelId, setChannel] = useState({});
-  const client = StreamChat.getInstance(STREAMCHATKEY);
-
-  useEffect(() => {
-    const connectStreamUser = async () => {
-      try {
-        const channel = props.route.params?.channel;
-        setChannel(channel);
-        await channel.watch();
-        setReady(true);
-      } catch (err) {
-        console.log(err);
-      }
-      return () => {};
-    };
-    const start = async () => {
-      connectStreamUser();
-    };
-    start();
-  }, []);
-
-  if (!ready) {
-    return null;
-  }
-
-  return (
-    <ChannelScreen
-      navigation={props.navigation}
-      channel={channelId}
-      chatClient={client}
-    />
-  );
-}
-
 const styles = StyleSheet.create({
   fullWidth: {
     width: wp(95),
-  },
-  separateLine: {
-    borderColor: colors.writePostSepratorColor,
-    borderWidth: 0.5,
-    width: wp(100),
   },
   chatSeparateLine: {
     borderColor: colors.writePostSepratorColor,

@@ -3034,7 +3034,7 @@ export default {
   noMatch: 'en_No Match',
   vs: 'VS',
   leaveComment: 'en_Leave a comment',
-  nTimeAgo: 'en_{0}{1} ago',
+  nTimeAgo: 'en_{0} {1} ago',
   report: 'en_Report',
   blockUser: 'en_Block User',
   removeMyTagFromPost: 'en_Remove my tag from post',
@@ -3059,5 +3059,5 @@ export default {
   ReportText: 'en_Report',
   newsFeedPostText: 'en_News Feed Post',
   participants: 'en_PARTICIPANTS',
-
+  justNow: 'en_Just now',
 };

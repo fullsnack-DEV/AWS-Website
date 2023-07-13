@@ -1,4 +1,6 @@
-import {StreamChat} from 'stream-chat';
+/* eslint-disable no-bitwise */
+import moment from 'moment';
+import {strings} from '../../Localization/translation';
 import getUserToken from '../api/StreamChat';
 import {updateUserProfile} from '../api/Users';
 import Verbs from '../Constants/Verbs';
@@ -12,26 +14,6 @@ export const generateUserStreamToken = async (authContext) => {
   });
 };
 
-export const allStreamUserData = async () => {
-  const chatClient = StreamChat.getInstance(STREAMCHATKEY);
-  const data = await chatClient.queryUsers({banned: false});
-  if (data.users.length > 0) {
-    const users = data.users.map((user) => ({
-      id: user.id,
-      name: user.name,
-      entityType: user.entityType,
-      image: user.image,
-    }));
-    return users;
-  }
-  return [];
-};
-
-const getStreamChatUserToken = async (authContext) => {
-  const userToken = await getUserToken(authContext);
-  return userToken.payload;
-};
-
 export const getStreamChatIdBasedOnRole = async (authContext) => {
   if (
     authContext.entity.role === Verbs.entityTypeTeam ||
@@ -43,34 +25,161 @@ export const getStreamChatIdBasedOnRole = async (authContext) => {
   return authContext.entity.uid;
 };
 
-export const upsertUserInstance = async (authContext) => {
-  const streamUserId = await getStreamChatIdBasedOnRole(authContext);
-  const chatClient = StreamChat.getInstance(STREAMCHATKEY);
-  const streamChatToken = await getStreamChatUserToken(authContext);
-
-  if (authContext.entity) {
-    const user = {
-      id: streamUserId,
-    };
-    if (chatClient.userID) {
-      if (streamUserId !== chatClient.userID) {
-        await chatClient.disconnectUser();
-        await chatClient.connectUser(user, streamChatToken);
-      }
-    }
-    if (!chatClient.userID) {
-      await chatClient.connectUser(user, streamChatToken);
-    }
-  }
+const getStreamChatToken = async (authContext) => {
+  const userToken = await getUserToken(authContext);
+  return userToken.payload;
 };
 
-export const getStreamChatChannel = async (filterChannel) => {
-  const chatClient = StreamChat.getInstance(STREAMCHATKEY);
-  const sort = [{last_message_at: -1}];
-  const channels = await chatClient.queryChannels(filterChannel, sort, {
-    watch: true,
-    state: true,
+export const connectUserToStreamChat = async (authContext) => {
+  const streamUserId = await getStreamChatIdBasedOnRole(authContext);
+  const streamChatToken = await getStreamChatToken(authContext);
+
+  if (
+    authContext.chatClient.userID &&
+    streamUserId !== authContext.chatClient.userID
+  ) {
+    await authContext.chatClient.disconnectUser();
+  }
+
+  await authContext.chatClient.connectUser({id: streamUserId}, streamChatToken);
+};
+
+export const createStreamChatChannel = async ({
+  authContext,
+  channelId,
+  members = [],
+  channelName = '',
+  groupType = '',
+  channelAvatar = '',
+}) => {
+  const channel = authContext.chatClient.channel('messaging', channelId, {
+    name: channelName,
+    members,
+    image: channelAvatar,
+    group_type: groupType,
+  });
+  return channel;
+};
+
+export const generateUUID = () =>
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 32) | 0,
+      v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
   });
 
-  return channels;
+export const prepareChannelId = (entityId, inviteeId) => {
+  const entity_id = entityId.split('-').join('');
+  const invitee_id = inviteeId.split('-').join('');
+
+  return `${entity_id}${invitee_id}`;
+};
+
+export const getChannelAvatar = (channel = {}, currentEntityId = '') => {
+  const membersList = getChannelMembers(channel, currentEntityId);
+  let profiles = [];
+  membersList.forEach((item) => {
+    const list = item.members.map((member) => ({
+      imageUrl: member.user.image ?? '',
+      entityType:
+        member.user.entityType === 'group'
+          ? Verbs.entityTypeTeam
+          : member.user.entityType,
+    }));
+    profiles = [...profiles, ...list];
+  });
+
+  return [...profiles];
+};
+
+export const getChannelName = (channel = {}, currentEntityId = '') => {
+  const {data} = channel;
+  if (data.channel_type === 'Auto' && data.name) {
+    return data.name;
+  }
+
+  const members = getChannelMembers(channel, currentEntityId);
+  let channelName = '';
+  if (members.length === 1) {
+    channelName = members[0].memberName;
+  } else {
+    members.forEach((member) => {
+      channelName +=
+        channelName.length === 0 ? member.memberName : `, ${member.memberName}`;
+    });
+  }
+
+  return channelName;
+};
+
+export const getLastMessageTime = (channel = {}) => {
+  const {data, state} = channel;
+  if (state.last_message_at) {
+    const time = new Date(state.last_message_at);
+    time.setMinutes(time.getMinutes());
+    const minute = moment(new Date()).diff(time, 'minute');
+    const hour = moment(new Date()).diff(time, 'hour');
+
+    if (minute === 0) {
+      return strings.justNow;
+    }
+    if (hour < 24) {
+      return moment(time).format('hh:mm A');
+    }
+
+    return moment(data.updated_at).format('DD MMM');
+  }
+
+  return moment(data.updated_at).format('DD MMM');
+};
+
+export const getChannelMembers = (channel = {}, currentEntityId = '') => {
+  const {state} = channel;
+  const keys = Object.keys(state.members);
+
+  const admins = keys.filter((memberId) => memberId.includes('@'));
+
+  const groupIds = [];
+  admins.forEach((item) => {
+    const groupId = item.split('@')[0];
+    if (groupIds.length === 0 || !groupIds.includes(groupId)) {
+      groupIds.push(groupId);
+    }
+  });
+
+  const adminList = [];
+  groupIds.forEach((item) => {
+    const objList = [];
+    keys.forEach((memberId) => {
+      if (state.members[memberId].user_id.includes(item)) {
+        objList.push(state.members[memberId]);
+      }
+    });
+    const groupName = objList.find((member) => member.user.group_name)?.user
+      .group_name;
+    const obj = {
+      memberName: groupName,
+      members: [...objList],
+    };
+    adminList.push(obj);
+  });
+
+  const str = admins.join('_');
+  const membersList = [];
+  keys.forEach((memberId) => {
+    if (
+      !memberId.includes('@') &&
+      !str.includes(memberId) &&
+      memberId !== currentEntityId
+    ) {
+      const obj = {
+        memberName: state.members[memberId].user.name,
+        members: [state.members[memberId]],
+      };
+      membersList.push(obj);
+    }
+  });
+  const finalMembers = [...adminList, ...membersList];
+
+  return finalMembers;
 };
