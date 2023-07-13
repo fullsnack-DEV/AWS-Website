@@ -532,7 +532,7 @@ export default function GameDuration({navigation, route}) {
                 setWithOverTime(!withOverTime);
               }}>
               <View>{withOverTime === false ? <Image source={images.radioCheckYellow} style={styles.checkboxImg} /> : <Image source={images.radioUnselect} style={styles.checkboxImg} />}</View>
-              <Text style={[styles.minText, {marginLeft: 10}]}>{strings.withoutOverTimeText}</Text>
+              <Text style={[styles.minText, {marginLeft: 10, fontFamily: fonts.RRegular}]}>{strings.withoutOverTimeText}</Text>
             </TouchableOpacity>
           </View>
 
@@ -548,7 +548,7 @@ export default function GameDuration({navigation, route}) {
                 setWithOverTime(!withOverTime);
               }}>
               <View>{withOverTime === true ? <Image source={images.radioCheckYellow} style={styles.checkboxImg} /> : <Image source={images.radioUnselect} style={styles.checkboxImg} />}</View>
-              <Text style={[styles.minText, {marginLeft: 10}]}>{strings.withOverTimeText}</Text>
+              <Text style={[styles.minText, {marginLeft: 10, fontFamily: fonts.RRegular}]}>{strings.withOverTimeText}</Text>
             </TouchableOpacity>
           </View>
           {withOverTime ? (
@@ -669,8 +669,9 @@ const styles = StyleSheet.create({
   },
   totalTimeText: {
     fontSize: 16,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
+    lineHeight: 24,
   },
   btnContainer: {
     alignItems: 'center',

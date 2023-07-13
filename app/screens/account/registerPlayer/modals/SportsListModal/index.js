@@ -8,18 +8,7 @@ import Verbs from '../../../../../Constants/Verbs';
 import styles from './styles';
 import ScreenHeader from '../../../../../components/ScreenHeader';
 
-const SportsListModal = ({
-  isVisible = false,
-  closeList = () => {},
-  sportsList = [],
-  onNext = () => {},
-  sport = null,
-  title = '',
-  forTeam = false,
-  authContext,
-  setdoubleSportHandler = () => {},
-  setMemberListModalHandler = () => {},
-}) => {
+const SportsListModal = ({isVisible = false, closeList = () => {}, sportsList = [], onNext = () => {}, sport = null, title = '', forTeam = false, authContext, setdoubleSportHandler = () => {}, setMemberListModalHandler = () => {}}) => {
   const [selectedSport, setSelectedSport] = useState(null);
   const navigation = useNavigation();
 
@@ -64,11 +53,7 @@ const SportsListModal = ({
   // only for Create Team Call
 
   const onNextPress = (sport_data) => {
-    if (
-      sport_data.sport_type === Verbs.doubleSport &&
-      authContext?.entity?.role ===
-        (Verbs.entityTypeUser || Verbs.entityTypePlayer)
-    ) {
+    if (sport_data.sport_type === Verbs.doubleSport && authContext?.entity?.role === (Verbs.entityTypeUser || Verbs.entityTypePlayer)) {
       closeList();
       setdoubleSportHandler(sport_data);
 
@@ -103,11 +88,8 @@ const SportsListModal = ({
             leftIconPress={closeList}
             containerStyle={{paddingBottom: 14}}
             isRightIconText
-            rightButtonTextStyle={[
-              styles.buttonText,
-              selectedSport?.sport_name ? {} : {opacity: 0.5},
-            ]}
-            rightButtonText={sport?.sport ? strings.apply : strings.next}
+            rightButtonTextStyle={[styles.buttonText, selectedSport?.sport_name ? {} : {opacity: 0.5}]}
+            rightButtonText={sport?.sport ? strings.next : strings.apply}
             onRightButtonPress={() => {
               if (!selectedSport?.sport_name) {
                 return;
@@ -122,16 +104,8 @@ const SportsListModal = ({
           />
           <View style={styles.divider} />
           <View style={styles.container}>
-            {getQuestionAndDescription().question ? (
-              <Text style={styles.title}>
-                {getQuestionAndDescription().question}
-              </Text>
-            ) : null}
-            {getQuestionAndDescription().description ? (
-              <Text style={styles.description}>
-                {getQuestionAndDescription().description}
-              </Text>
-            ) : null}
+            {getQuestionAndDescription().question ? <Text style={styles.title}>{getQuestionAndDescription().question}</Text> : null}
+            {getQuestionAndDescription().description ? <Text style={styles.description}>{getQuestionAndDescription().description}</Text> : null}
 
             <FlatList
               data={sportsList}
@@ -139,24 +113,9 @@ const SportsListModal = ({
               showsVerticalScrollIndicator={false}
               renderItem={({item}) => (
                 <>
-                  <Pressable
-                    style={styles.listItem}
-                    onPress={() => setSelectedSport(item)}>
+                  <Pressable style={styles.listItem} onPress={() => setSelectedSport(item)}>
                     <Text style={styles.listLabel}>{item.sport_name}</Text>
-                    <View style={styles.listIconContainer}>
-                      {selectedSport?.sport_name === item?.sport_name &&
-                      selectedSport?.sport_type === item?.sport_type ? (
-                        <Image
-                          source={images.radioCheckYellow}
-                          style={styles.image}
-                        />
-                      ) : (
-                        <Image
-                          source={images.radioUnselect}
-                          style={styles.image}
-                        />
-                      )}
-                    </View>
+                    <View style={styles.listIconContainer}>{selectedSport?.sport_name === item?.sport_name && selectedSport?.sport_type === item?.sport_type ? <Image source={images.radioCheckYellow} style={styles.image} /> : <Image source={images.radioUnselect} style={styles.image} />}</View>
                   </Pressable>
                   <View style={styles.lineSeparator} />
                 </>
