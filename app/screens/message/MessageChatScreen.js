@@ -18,7 +18,6 @@ import {
   useMessageInputContext,
   AutoCompleteInput,
   MessageAvatar,
-  MessageSimple,
   MessageActionListItem,
   useOverlayContext,
   useMessageActionAnimation,
@@ -29,7 +28,6 @@ import {TapGestureHandler} from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
 
-import moment from 'moment';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -42,102 +40,18 @@ import {ModalTypes} from '../../Constants/GeneralConstants';
 import BottomSheet from '../../components/modals/BottomSheet';
 import ChatGroupDetails from './components/ChatGroupDetails';
 import {getChannelName} from '../../utils/streamChat';
-import fonts from '../../Constants/Fonts';
 
-const TAB_ITEMS = [
-  {
-    url: '',
-    type: 'all',
-  },
-  {
-    url: images.emojiHappy,
-    type: 'happy',
-  },
-  {
-    url: images.emojiWow,
-    type: 'wow',
-  },
-  {
-    url: images.emojiSad,
-    type: 'sad',
-  },
-  {
-    url: images.emojiCorrect,
-    type: 'correct',
-  },
-  {
-    url: images.emojiLike,
-    type: 'like',
-  },
-  {
-    url: images.emojiLove,
-    type: 'love',
-  },
-];
-
-const themeStyle = {
-  messageSimple: {
-    content: {
-      markdown: {
-        inlineCode: {
-          fontSize: 10,
-        },
-        text: {
-          color: colors.blackColor,
-        },
-      },
-      containerInner: {
-        borderWidth: 0,
-        backgroundColor: colors.chatBubbleContainer,
-      },
-      container: {
-        backgroundColor: colors.lightGrayBackground,
-        marginHorizontal: 10,
-      },
-    },
-    avatarWrapper: {
-      container: {},
-    },
-    container: {},
-  },
-  messageList: {
-    container: {
-      backgroundColor: colors.lightGrayBackground,
-    },
-  },
-};
-
-const deleteArray = [
-  strings.deleteForEveryOneOption,
-  strings.deleteForMeOption,
-];
-
-const newReactionData = [
-  {
-    Icon: images.emojiHappy,
-    type: 'happy',
-  },
-  {
-    Icon: images.emojiSad,
-    type: 'sad',
-  },
-  {
-    Icon: images.emojiWow,
-    type: 'wow',
-  },
-  {
-    Icon: images.emojiCorrect,
-    type: 'correct',
-  },
-  {
-    Icon: images.emojiLike,
-    type: 'like',
-  },
-  {
-    Icon: images.emojiLove,
-    type: 'love',
-  },
-];
+import CustomTypingIndicator from './components/CustomTypingIndicator';
+import CustomMessageHeader from './components/CustomMessageHeader';
+import {
+  myMessageTheme,
+  newReactionData,
+  TAB_ITEMS,
+  themeStyle,
+} from './constants';
+import CustomMessageText from './components/CustomMessageText';
+import CustomMessageFooter from './components/CustomMessageFooter';
+import CustomDateSeparator from './components/CustomDateSeparator';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
@@ -165,15 +79,6 @@ const MessageChatScreen = ({navigation, route}) => {
       />
     );
   };
-
-  const CustomMessageSimple = () => (
-    <View>
-      <MessageSimple
-        MessageAvatar={CustomAvatar}
-        MessageTextContainer={CustomMessageTextContent}
-      />
-    </View>
-  );
 
   const CustomInput = () => {
     const {sendMessage, toggleAttachmentPicker, ImageUploadPreview} =
@@ -390,14 +295,15 @@ const MessageChatScreen = ({navigation, route}) => {
       },
       {
         action() {
-          setDeleteMessageModal(true);
           setDeleteMessageObject(message);
+          setDeleteMessageModal(true);
           setOverlay('none');
         },
         actionType: 'deleteMessage',
         title: 'Delete',
       },
     ];
+
     return (
       <View style={{backgroundColor: 'white', marginTop: 10, borderRadius: 10}}>
         <View
@@ -472,84 +378,6 @@ const MessageChatScreen = ({navigation, route}) => {
           </>
         )}
       </>
-    );
-  };
-
-  const ReactionItems = ({url, count}) => {
-    const {message} = useMessageContext();
-    const showReactionModal = async () => {
-      const response = await channel.getReactions(message.id);
-      setAllReaction(response.reactions);
-      setIsVisible(true);
-    };
-
-    return (
-      <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          backgroundColor: colors.whiteColor,
-          borderRadius: 10,
-          paddingHorizontal: 5,
-          paddingVertical: 5,
-          margin: 5,
-        }}
-        onPress={() => {
-          showReactionModal();
-        }}>
-        <Image source={url} style={{width: 15, height: 15, marginRight: 5}} />
-        <Text style={{fontSize: 12}}>{count}+</Text>
-      </TouchableOpacity>
-    );
-  };
-
-  const CustomMessageFooter = () => {
-    const {message} = useMessageContext();
-    return (
-      <View style={styles.reactionAndTimeContainer}>
-        <View style={{flexDirection: 'row'}}>
-          {message.reaction_counts?.happy && (
-            <ReactionItems
-              url={images.emojiHappy}
-              count={message.reaction_counts.happy}
-            />
-          )}
-          {message.reaction_counts?.wow && (
-            <ReactionItems
-              url={images.emojiWow}
-              count={message.reaction_counts.wow}
-            />
-          )}
-          {message.reaction_counts?.sad && (
-            <ReactionItems
-              url={images.emojiSad}
-              count={message.reaction_counts.sad}
-            />
-          )}
-          {message.reaction_counts?.correct && (
-            <ReactionItems
-              url={images.emojiCorrect}
-              count={message.reaction_counts.correct}
-            />
-          )}
-          {message.reaction_counts?.like && (
-            <ReactionItems
-              url={images.emojiLike}
-              count={message.reaction_counts.like}
-            />
-          )}
-          {message.reaction_counts?.love && (
-            <ReactionItems
-              url={images.emojiLove}
-              count={message.reaction_counts.love}
-            />
-          )}
-        </View>
-        <View>
-          <Text style={styles.time}>
-            {moment(message.updated_at).format('hh:mm A')}
-          </Text>
-        </View>
-      </View>
     );
   };
 
@@ -781,74 +609,6 @@ const MessageChatScreen = ({navigation, route}) => {
     );
   };
 
-  const CustomMessageTextContent = () => {
-    const {message} = useMessageContext();
-
-    return (
-      <View
-        style={{
-          paddingHorizontal: 4,
-          paddingVertical: 8,
-        }}>
-        {message.deleteForMe &&
-        message.user.id === authContext.entity?.obj?.user_id ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              padding: 2,
-            }}>
-            <Image
-              source={images.deleteChat}
-              style={{width: 15, height: 15, marginRight: 5}}
-            />
-            <Text style={{fontSize: 14, color: colors.darkGrayColor}}>
-              {strings.messageDeletedText}
-            </Text>
-          </View>
-        ) : (
-          <>
-            {message.type === 'deleted' ? (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  padding: 2,
-                }}>
-                <Image
-                  source={images.deleteChat}
-                  style={{width: 15, height: 15, marginRight: 5}}
-                />
-                <Text style={{fontSize: 14, color: colors.darkGrayColor}}>
-                  {strings.messageDeletedText}
-                </Text>
-              </View>
-            ) : (
-              <Text
-                style={[
-                  styles.messageHeaderText,
-                  {marginBottom: 0, fontFamily: fonts.RRegular},
-                ]}>
-                {message.text}
-              </Text>
-            )}
-          </>
-        )}
-      </View>
-    );
-  };
-
-  const deleteForMe = async () => {
-    deleteMessageObject.deleteForMe = true;
-    await authContext.chatClient.updateMessage(deleteMessageObject);
-    setDeleteMessageModal(false);
-  };
-
-  const deleteForEveryone = async () => {
-    await authContext.chatClient.deleteMessage(deleteMessageObject.id);
-    setDeleteMessageModal(false);
-  };
-
   const CustomReplyComponent = () => {
     const {message} = useMessageContext();
     let attachementType;
@@ -996,18 +756,6 @@ const MessageChatScreen = ({navigation, route}) => {
 
   const CustomImageGalleryComponent = () => <ImageGallery />;
 
-  const dateSeparator = (date = new Date()) => {
-    const isToday = moment(new Date()).diff(date, 'hours') < 24;
-    const dateString = isToday
-      ? strings.todayTitleText
-      : moment(date).format('MMM DD');
-    return (
-      <View style={styles.dateSeparatorContainer}>
-        <Text style={styles.dateSeparator}>{dateString}</Text>
-      </View>
-    );
-  };
-
   const handleChannelLeave = async () => {
     const streamChatUserId = authContext.chatClient.userID;
     const members = Object.keys(channel.state.members);
@@ -1024,6 +772,55 @@ const MessageChatScreen = ({navigation, route}) => {
     navigation.goBack();
   };
 
+  const deleteForMe = async () => {
+    try {
+      await authContext.chatClient.partialUpdateMessage(
+        deleteMessageObject.id,
+        {
+          set: {
+            deleted_for_me: {
+              status: true,
+              user_id: [authContext.chatClient.userID],
+            },
+          },
+        },
+      );
+    } catch (error) {
+      Alert.alert(strings.alertmessagetitle, error.message);
+    }
+    setDeleteMessageModal(false);
+  };
+
+  const deleteForEveryone = async () => {
+    await authContext.chatClient.deleteMessage(deleteMessageObject.id);
+    setDeleteMessageModal(false);
+  };
+
+  const handleMessageDeletion = (option) => {
+    Alert.alert(
+      option === strings.deleteForEveryOneOption
+        ? strings.deleteForEveryOne
+        : strings.deleteForMe,
+      '',
+      [
+        {
+          text: strings.cancel,
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: strings.delete,
+          onPress: () =>
+            option === strings.deleteForEveryOneOption
+              ? deleteForEveryone()
+              : deleteForMe(),
+          style: 'destructive',
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -1038,39 +835,41 @@ const MessageChatScreen = ({navigation, route}) => {
         }}
         loading={false}
       />
-
       <View style={{flex: 1}}>
         <ChatOverlayProvider
           translucentStatusBar={false}
           topInset={0}
-          // value={{style: themeStyle}}
           MessageActionList={CustomMessageActionList}
           MessageActionListItem={CustomMessageActionListItem}
           OverlayReactionList={() => null}
           ImageGalleryFooter={CustomImageGalleryComponent}>
           <Chat style={themeStyle} client={authContext.chatClient}>
             <Channel
-              MessageAvatar={CustomAvatar}
-              MessageSimple={CustomMessageSimple}
               channel={channel}
-              keyboardVerticalOffset={5}
-              MessageHeader={({message}) => {
-                if (message.user.id !== authContext.chatClient.userID) {
-                  return (
-                    <Text style={styles.messageHeaderText}>
-                      {message.user.group_name ?? message.user.name}
-                    </Text>
-                  );
-                }
-                return null;
-              }}
-              MessageFooter={CustomMessageFooter}
+              MessageText={CustomMessageText}
+              MessageAvatar={CustomAvatar}
+              myMessageTheme={myMessageTheme}
+              MessageHeader={CustomMessageHeader}
+              MessageFooter={() => (
+                <CustomMessageFooter
+                  onPress={async (messageId) => {
+                    const response = await channel.getReactions(messageId);
+                    setAllReaction(response.reactions);
+                    setIsVisible(true);
+                  }}
+                />
+              )}
               ImageUploadPreview={CustomImageUploadPreview}
               ReactionList={() => null}
               InputReplyStateHeader={CustomReplyInputPreview}
               Reply={CustomReplyComponent}
-              DateHeader={(props) => dateSeparator(props.dateString)}
-              InlineDateSeparator={(props) => dateSeparator(props.date)}>
+              DateHeader={(props) => (
+                <CustomDateSeparator date={props.dateString} />
+              )}
+              InlineDateSeparator={(props) => (
+                <CustomDateSeparator date={props.date} />
+              )}
+              TypingIndicator={CustomTypingIndicator}>
               <MessageList />
               <MessageInput Input={CustomInput} />
             </Channel>
@@ -1087,47 +886,14 @@ const MessageChatScreen = ({navigation, route}) => {
         </CustomModalWrapper>
 
         <BottomSheet
-          optionList={deleteArray}
+          type="ios"
+          optionList={[
+            strings.deleteForEveryOneOption,
+            strings.deleteForMeOption,
+          ]}
           isVisible={deleteMessageModal}
           closeModal={() => setDeleteMessageModal(false)}
-          textStyle={{color: colors.themeColor2}}
-          onSelect={(option) => {
-            if (option === strings.deleteForEveryOneOption) {
-              Alert.alert(
-                strings.deleteForEveryOne,
-                '',
-                [
-                  {
-                    text: strings.cancel,
-                    onPress: () => {},
-                    style: 'cancel',
-                  },
-                  {
-                    text: strings.delete,
-                    onPress: () => deleteForEveryone(),
-                  },
-                ],
-                {cancelable: false},
-              );
-            } else {
-              Alert.alert(
-                strings.deleteForMe,
-                '',
-                [
-                  {
-                    text: strings.cancel,
-                    onPress: () => {},
-                    style: 'cancel',
-                  },
-                  {
-                    text: strings.delete,
-                    onPress: () => deleteForMe(),
-                  },
-                ],
-                {cancelable: false},
-              );
-            }
-          }}
+          onSelect={handleMessageDeletion}
         />
 
         {/* Chat group details */}
@@ -1156,35 +922,6 @@ const styles = StyleSheet.create({
   modalContainer: {
     height: '98%',
     padding: 0,
-  },
-  dateSeparatorContainer: {
-    alignItems: 'center',
-    marginVertical: 15,
-  },
-  dateSeparator: {
-    fontSize: 12,
-    lineHeight: 18,
-    color: colors.userPostTimeColor,
-    fontFamily: fonts.RRegular,
-  },
-  messageHeaderText: {
-    fontSize: 16,
-    lineHeight: 21,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
-    marginBottom: 5,
-  },
-  time: {
-    fontSize: 10,
-    lineHeight: 15,
-    fontFamily: fonts.RRegular,
-    color: colors.userPostTimeColor,
-  },
-  reactionAndTimeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    marginTop: 5,
   },
 });
 

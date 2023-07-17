@@ -201,3 +201,19 @@ export const getChannelMembers = (channel = {}, currentEntityId = '') => {
 
   return finalMembers;
 };
+
+export const checkIsMessageDeleted = (chatUserId = '', message = {}) => {
+  if (message.type === 'deleted') {
+    return true;
+  }
+  if (message.deleted_for_me?.status) {
+    const userId = message.deleted_for_me.user_id.find(
+      (item) => item === chatUserId,
+    );
+    if (userId) {
+      return true;
+    }
+    return false;
+  }
+  return false;
+};

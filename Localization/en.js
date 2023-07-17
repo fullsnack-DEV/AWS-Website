@@ -3063,4 +3063,6 @@ export default {
   viewText: 'en_View',
   leaveChatAlertText: 'en_Are you sure you want to leave this chatroom?',
   editChatRoom: 'en_Edit ChatRoom Name & Photo',
+  deleteForMe: 'en_The message will be deleted from from only your device.',
+  deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
 };
