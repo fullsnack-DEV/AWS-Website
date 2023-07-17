@@ -104,7 +104,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
   const onDonePress = async (profileImage = '') => {
     const list = selectedInvitees.filter((invitee) => invitee.id);
 
-    createChannel(list, profileImage, groupName)
+    createChannel(list, profileImage, groupName, 'General')
       .then((channel) => {
         if (channel !== null) {
           setLoading(false);

@@ -159,6 +159,6 @@ const colors = {
   maskColor: 'rgba(0,0,0,0.1)',
   linkGrey: '#727272',
   pagingBgColor: 'rgba(153, 153, 153, 0.6)',
-  chatBubbleContainer: '#ffd798',
+  chatBubbleContainer: '#FFE7CB',
 };
 export default colors;

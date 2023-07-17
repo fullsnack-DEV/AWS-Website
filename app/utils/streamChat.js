@@ -76,25 +76,41 @@ export const prepareChannelId = (entityId, inviteeId) => {
 };
 
 export const getChannelAvatar = (channel = {}, currentEntityId = '') => {
+  if (channel.data.image) {
+    return [
+      {
+        imageUrl: channel.data.image.thumbnail,
+        entityType: channel.data.group_type,
+      },
+    ];
+  }
   const membersList = getChannelMembers(channel, currentEntityId);
+
   let profiles = [];
-  membersList.forEach((item) => {
-    const list = item.members.map((member) => ({
-      imageUrl: member.user.image ?? '',
-      entityType:
-        member.user.entityType === 'group'
-          ? Verbs.entityTypeTeam
-          : member.user.entityType,
-    }));
-    profiles = [...profiles, ...list];
-  });
+  if (membersList.length === 0) {
+    profiles.push({imageUrl: '', entityType: channel.data.group_type});
+  } else {
+    membersList.forEach((item) => {
+      const list = item.members.map((member) => ({
+        imageUrl: member.user.image ?? '',
+        entityType:
+          member.user.entityType === 'group'
+            ? Verbs.entityTypeTeam
+            : member.user.entityType,
+      }));
+      profiles = [...profiles, ...list];
+    });
+  }
 
   return [...profiles];
 };
 
 export const getChannelName = (channel = {}, currentEntityId = '') => {
   const {data} = channel;
-  if (data.channel_type === 'Auto' && data.name) {
+  if (
+    data?.channel_type === 'Auto' ||
+    (data.group_type === 'General' && data.name)
+  ) {
     return data.name;
   }
 
@@ -137,7 +153,9 @@ export const getChannelMembers = (channel = {}, currentEntityId = '') => {
   const {state} = channel;
   const keys = Object.keys(state.members);
 
-  const admins = keys.filter((memberId) => memberId.includes('@'));
+  const admins = keys.filter(
+    (memberId) => memberId.includes('@') && !memberId.includes(currentEntityId),
+  );
 
   const groupIds = [];
   admins.forEach((item) => {

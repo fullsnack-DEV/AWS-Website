@@ -3060,4 +3060,7 @@ export default {
   newsFeedPostText: 'en_News Feed Post',
   participants: 'en_PARTICIPANTS',
   justNow: 'en_Just now',
+  viewText: 'en_View',
+  leaveChatAlertText: 'en_Are you sure you want to leave this chatroom?',
+  editChatRoom: 'en_Edit ChatRoom Name & Photo',
 };

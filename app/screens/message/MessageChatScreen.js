@@ -29,6 +29,7 @@ import {TapGestureHandler} from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
 
+import moment from 'moment';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -41,6 +42,7 @@ import {ModalTypes} from '../../Constants/GeneralConstants';
 import BottomSheet from '../../components/modals/BottomSheet';
 import ChatGroupDetails from './components/ChatGroupDetails';
 import {getChannelName} from '../../utils/streamChat';
+import fonts from '../../Constants/Fonts';
 
 const TAB_ITEMS = [
   {
@@ -73,29 +75,6 @@ const TAB_ITEMS = [
   },
 ];
 
-const myMessageTheme = {
-  messageSimple: {
-    content: {
-      replyBorder: {
-        borderColor: colors.whiteColor,
-      },
-      containerInner: {
-        backgroundColor: colors.chatBubbleContainer,
-        borderWidth: 0,
-      },
-      deletedContainerInner: {
-        backgroundColor: colors.chatBubbleContainer,
-        borderWidth: 0,
-      },
-    },
-    replies: {
-      container: {
-        backgroundColor: colors.chatBubbleContainer,
-      },
-    },
-  },
-};
-
 const themeStyle = {
   messageSimple: {
     content: {
@@ -109,18 +88,15 @@ const themeStyle = {
       },
       containerInner: {
         borderWidth: 0,
-        backgroundColor: colors.lightGrayBackground,
+        backgroundColor: colors.chatBubbleContainer,
       },
       container: {
         backgroundColor: colors.lightGrayBackground,
+        marginHorizontal: 10,
       },
     },
     avatarWrapper: {
-      container: {
-        display: 'flex',
-        alignSelf: 'center',
-        margintop: 100,
-      },
+      container: {},
     },
     container: {},
   },
@@ -174,17 +150,6 @@ const MessageChatScreen = ({navigation, route}) => {
   const [deleteMessageObject, setDeleteMessageObject] = useState({});
 
   const [showDetails, setShowDetails] = useState(false);
-
-  const showUserRole = (id) => {
-    const roleArr = id.split('-');
-    let role;
-    if (roleArr[1] === 'admin') {
-      role = strings.admin;
-    } else {
-      role = strings.member;
-    }
-    return role;
-  };
 
   const CustomAvatar = (props) => {
     const {message} = useMessageContext();
@@ -540,7 +505,7 @@ const MessageChatScreen = ({navigation, route}) => {
   const CustomMessageFooter = () => {
     const {message} = useMessageContext();
     return (
-      <View>
+      <View style={styles.reactionAndTimeContainer}>
         <View style={{flexDirection: 'row'}}>
           {message.reaction_counts?.happy && (
             <ReactionItems
@@ -578,6 +543,11 @@ const MessageChatScreen = ({navigation, route}) => {
               count={message.reaction_counts.love}
             />
           )}
+        </View>
+        <View>
+          <Text style={styles.time}>
+            {moment(message.updated_at).format('hh:mm A')}
+          </Text>
         </View>
       </View>
     );
@@ -854,7 +824,13 @@ const MessageChatScreen = ({navigation, route}) => {
                 </Text>
               </View>
             ) : (
-              <Text>{message.text}</Text>
+              <Text
+                style={[
+                  styles.messageHeaderText,
+                  {marginBottom: 0, fontFamily: fonts.RRegular},
+                ]}>
+                {message.text}
+              </Text>
             )}
           </>
         )}
@@ -1018,9 +994,34 @@ const MessageChatScreen = ({navigation, route}) => {
     });
   };
 
-  const CustomImageGalleryComponent = ({imageGalleryCustomComponents}) => {
-    console.log(imageGalleryCustomComponents);
-    return <ImageGallery />;
+  const CustomImageGalleryComponent = () => <ImageGallery />;
+
+  const dateSeparator = (date = new Date()) => {
+    const isToday = moment(new Date()).diff(date, 'hours') < 24;
+    const dateString = isToday
+      ? strings.todayTitleText
+      : moment(date).format('MMM DD');
+    return (
+      <View style={styles.dateSeparatorContainer}>
+        <Text style={styles.dateSeparator}>{dateString}</Text>
+      </View>
+    );
+  };
+
+  const handleChannelLeave = async () => {
+    const streamChatUserId = authContext.chatClient.userID;
+    const members = Object.keys(channel.state.members);
+    const list = members.filter((item) =>
+      item.includes(authContext.entity.uid),
+    );
+
+    const memberIds = streamChatUserId.includes('@')
+      ? [...list]
+      : [streamChatUserId];
+    await channel.removeMembers(memberIds);
+
+    setShowDetails(false);
+    navigation.goBack();
   };
 
   return (
@@ -1042,41 +1043,36 @@ const MessageChatScreen = ({navigation, route}) => {
         <ChatOverlayProvider
           translucentStatusBar={false}
           topInset={0}
-          value={{style: themeStyle}}
+          // value={{style: themeStyle}}
           MessageActionList={CustomMessageActionList}
           MessageActionListItem={CustomMessageActionListItem}
           OverlayReactionList={() => null}
           ImageGalleryFooter={CustomImageGalleryComponent}>
           <Chat style={themeStyle} client={authContext.chatClient}>
             <Channel
-              MessageText={CustomMessageTextContent}
               MessageAvatar={CustomAvatar}
               MessageSimple={CustomMessageSimple}
-              myMessageTheme={myMessageTheme}
               channel={channel}
               keyboardVerticalOffset={5}
-              MessageHeader={(props) =>
-                props.message?.user?.id !== authContext.chatClient.userID ? (
-                  <View style={{flexDirection: 'row'}}>
-                    {Object.keys(props.members).length > 2 &&
-                    props.message.user?.id ? (
-                      <Text
-                        style={{color: colors.darkGrayColor, marginRight: 8}}>
-                        {showUserRole(props.message.user.id)}
-                      </Text>
-                    ) : null}
-                  </View>
-                ) : null
-              }
+              MessageHeader={({message}) => {
+                if (message.user.id !== authContext.chatClient.userID) {
+                  return (
+                    <Text style={styles.messageHeaderText}>
+                      {message.user.group_name ?? message.user.name}
+                    </Text>
+                  );
+                }
+                return null;
+              }}
               MessageFooter={CustomMessageFooter}
               ImageUploadPreview={CustomImageUploadPreview}
               ReactionList={() => null}
               InputReplyStateHeader={CustomReplyInputPreview}
-              Reply={CustomReplyComponent}>
-              <View style={{flex: 1}}>
-                <MessageList />
-                <MessageInput Input={CustomInput} />
-              </View>
+              Reply={CustomReplyComponent}
+              DateHeader={(props) => dateSeparator(props.dateString)}
+              InlineDateSeparator={(props) => dateSeparator(props.date)}>
+              <MessageList />
+              <MessageInput Input={CustomInput} />
             </Channel>
           </Chat>
         </ChatOverlayProvider>
@@ -1140,6 +1136,7 @@ const MessageChatScreen = ({navigation, route}) => {
           closeModal={() => setShowDetails(false)}
           channel={channel}
           currentEntityId={authContext.entity.uid}
+          leaveChannel={handleChannelLeave}
         />
       </View>
     </SafeAreaView>
@@ -1160,5 +1157,35 @@ const styles = StyleSheet.create({
     height: '98%',
     padding: 0,
   },
+  dateSeparatorContainer: {
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+  dateSeparator: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+  },
+  messageHeaderText: {
+    fontSize: 16,
+    lineHeight: 21,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RMedium,
+    marginBottom: 5,
+  },
+  time: {
+    fontSize: 10,
+    lineHeight: 15,
+    fontFamily: fonts.RRegular,
+    color: colors.userPostTimeColor,
+  },
+  reactionAndTimeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    marginTop: 5,
+  },
 });
+
 export default MessageChatScreen;

@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  Alert,
+  Platform,
 } from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
@@ -19,16 +21,17 @@ import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
 import {getChannelMembers, getChannelName} from '../../../utils/streamChat';
 import CustomAvatar from './CustomAvatar';
+import UpdateChannelInfo from './UpdateChannelInfo';
 
 const ChatGroupDetails = ({
   isVisible = false,
   closeModal = () => {},
   channel = {},
   currentEntityId = '',
+  leaveChannel = () => {},
 }) => {
-  // const {data, state} = channel;
   const [members, setMembers] = useState([]);
-
+  const [showUpdateInfoModal, setShowUpdateInfoModal] = useState(false);
   useEffect(() => {
     if (isVisible) {
       const list = getChannelMembers(channel, currentEntityId);
@@ -46,38 +49,55 @@ const ChatGroupDetails = ({
     return {url: '', entityType: Verbs.entityTypeTeam};
   };
 
+  const handleLeaveChat = () => {
+    Alert.alert(
+      Platform.OS === 'android' ? '' : strings.leaveChatAlertText,
+      Platform.OS === 'android' ? strings.leaveChatAlertText : '',
+      [
+        {
+          text: strings.cancel,
+          style: 'cancel',
+        },
+        {
+          text: strings.leave,
+          style: 'destructive',
+          onPress: leaveChannel,
+        },
+      ],
+    );
+  };
+
   return (
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeModal}
       modalType={ModalTypes.default}
       containerStyle={{height: '98%'}}>
-      {members.length > 1 ? (
-        <>
-          <Text style={[styles.sectionTitle, {marginBottom: 10}]}>
-            {strings.chatroomName.toUpperCase()}
-          </Text>
-          <TouchableOpacity
-            style={[styles.row, {justifyContent: 'space-between'}]}>
-            <View style={[styles.row, {flex: 1}]}>
-              <CustomAvatar
-                channel={channel}
-                imageStyle={{width: 30, height: 30}}
-              />
+      <Text style={[styles.sectionTitle, {marginBottom: 10}]}>
+        {strings.chatroomName.toUpperCase()}
+      </Text>
+      <TouchableOpacity
+        style={[styles.row, {justifyContent: 'space-between'}]}
+        onPress={() => setShowUpdateInfoModal(true)}>
+        <View style={[styles.row, {flex: 1}]}>
+          <View style={{marginRight: 10}}>
+            <CustomAvatar
+              channel={channel}
+              imageStyle={{width: 30, height: 30}}
+            />
+          </View>
 
-              <View style={{flex: 1}}>
-                <Text style={styles.channelName} numberOfLines={1}>
-                  {getChannelName(channel)}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.iconContainer}>
-              <Image source={images.nextArrow} style={styles.icon} />
-            </View>
-          </TouchableOpacity>
-          <View style={styles.separator} />
-        </>
-      ) : null}
+          <View style={{flex: 1}}>
+            <Text style={styles.channelName} numberOfLines={1}>
+              {getChannelName(channel, currentEntityId)}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.iconContainer}>
+          <Image source={images.nextArrow} style={styles.icon} />
+        </View>
+      </TouchableOpacity>
+      <View style={styles.separator} />
 
       <Text style={[styles.sectionTitle, {marginBottom: 15}]}>
         {strings.participants}
@@ -104,26 +124,32 @@ const ChatGroupDetails = ({
             </View>
           );
         }}
-        ListHeaderComponent={() =>
-          members.length > 1 ? (
-            <View style={styles.listItem}>
-              <View style={styles.addIconContainer}>
-                <Image source={images.plusInvoice} style={styles.addIcon} />
-              </View>
-              <Text style={[styles.listText, {color: colors.tabFontColor}]}>
-                {strings.invite}
-              </Text>
+        ListHeaderComponent={() => (
+          <TouchableOpacity style={styles.listItem}>
+            <View style={styles.addIconContainer}>
+              <Image source={images.plusInvoice} style={styles.addIcon} />
             </View>
-          ) : null
-        }
+            <Text style={[styles.listText, {color: colors.tabFontColor}]}>
+              {strings.invite}
+            </Text>
+          </TouchableOpacity>
+        )}
       />
 
-      <TouchableOpacity style={styles.bottomContainer}>
+      <TouchableOpacity
+        style={styles.bottomContainer}
+        onPress={handleLeaveChat}>
         <View style={[styles.iconContainer, {marginLeft: 0, marginRight: 10}]}>
           <Image source={images.leave_chat_room} style={styles.icon} />
         </View>
         <Text style={styles.buttonText}>{strings.leaveChatRoom}</Text>
       </TouchableOpacity>
+
+      <UpdateChannelInfo
+        isVisible={showUpdateInfoModal}
+        closeModal={() => setShowUpdateInfoModal(false)}
+        channel={channel}
+      />
     </CustomModalWrapper>
   );
 };

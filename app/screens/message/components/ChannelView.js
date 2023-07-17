@@ -37,7 +37,9 @@ const ChannelView = ({channel, latestMessagePreview}) => {
           <Text style={styles.channelTitle} numberOfLines={1}>
             {getChannelName(channel, authContext.entity.uid)}
           </Text>
-          <Text style={styles.channelLowerText}>{getLastMessage()}</Text>
+          <Text style={styles.channelLowerText} numberOfLines={1}>
+            {getLastMessage()}
+          </Text>
         </View>
       </View>
       <View style={{alignItems: 'flex-end'}}>

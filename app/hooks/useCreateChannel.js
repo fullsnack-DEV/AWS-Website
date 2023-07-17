@@ -35,20 +35,9 @@ const useCreateChannel = () => {
         if (item.is_admin && item.connected) {
           const adminId = `${entity_id}@${item.user_id}`;
 
-          const isExists = groupMembers.find(
-            (ele) => item.user_id === ele.user_id,
-          );
           const isAdminExists = groupMembers.find(
             (ele) => adminId === ele.user_id,
           );
-
-          if (!isExists) {
-            groupMembers.push({
-              user_id: item.user_id,
-              channel_role:
-                entityId === entity_id ? 'channel_moderator' : 'channel_member',
-            });
-          }
 
           if (!isAdminExists) {
             groupMembers.push({
@@ -84,6 +73,7 @@ const useCreateChannel = () => {
     inviteesList = [],
     groupProfile = '',
     groupName = '',
+    groupType = '',
   ) => {
     if (inviteesList.length === 0) {
       return null;
@@ -121,10 +111,10 @@ const useCreateChannel = () => {
     const channel = await createStreamChatChannel({
       authContext,
       channelId,
-      channelName: inviteesList.length > 1 ? groupName : inviteesList[0].name,
+      channelName: inviteesList.length > 1 ? groupName : '',
       members: memberList,
-      channelAvatar:
-        inviteesList.length > 1 ? groupProfile : inviteesList[0].image,
+      channelAvatar: inviteesList.length > 1 ? groupProfile : '',
+      groupType,
     });
 
     setLoading(false);
