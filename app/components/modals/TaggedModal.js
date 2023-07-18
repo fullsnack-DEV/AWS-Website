@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 
 import {
-  Dimensions,
   Platform,
   SectionList,
   StyleSheet,
@@ -198,21 +197,11 @@ const TaggedModal = ({
         closeModal={onBackdropPress}
         isVisible={showTaggedModal}
         modalType={ModalTypes.style2}
+        isSwipeUp={true}
         containerStyle={{
           padding: 0,
-          height:
-            Dimensions.get('window').height -
-            Dimensions.get('window').height / 2.5,
         }}>
-        <View
-          style={[
-            styles.bottomPopupContainer,
-            {
-              height:
-                Dimensions.get('window').height -
-                Dimensions.get('window').height / 2.5,
-            },
-          ]}>
+        <View style={styles.bottomPopupContainer}>
           {ModalHeader()}
           <SectionList
             sections={sections}

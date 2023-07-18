@@ -367,8 +367,12 @@ const CongratulationsModal = ({
                 ]}>
                 <Text>
                   {strings.congratulationsTitle}
-                  <Text style={{color: colors.orangeColor}}>
-                    {''} {title}
+                  <Text
+                    style={{
+                      color: colors.orangeColor,
+                      lineHeight: 24,
+                    }}>
+                    {title}
                   </Text>
                 </Text>
 

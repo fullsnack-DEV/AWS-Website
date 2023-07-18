@@ -1124,7 +1124,7 @@ export default {
   scorekeepingTitleText: 'en_Scorekeeping',
   addSportsTitle: 'en_Add Sport',
   congratsModalTitle:
-    'en_Congratulations!\nYou are now registered as a player in ',
+    'en_Congratulations!\nYou are now registered\nas a player in\n ',
   registerRefereeTitle: 'en_Register as Referee',
   registerScorekeeperTitle: 'en_Register as Scorekeeper',
   inviteYouToJoinEventText: 'en_invited you to join the event.',
@@ -2510,9 +2510,9 @@ export default {
   addScorekeeperFee: 'en_ADD SCOREKEEPER FEE',
   continueWithNoScorekeeperFee: 'en_CONTINUE WITH NO SCOREKEEPER FEE',
   refereeCongratsModalTitle:
-    'Congratulations! \nYou are now registered as a referee in',
+    'Congratulations! \nYou are now registered as\n a referee in\n',
   scoreKeeperCongratsModalTitle:
-    'Congratulations! \nYou are now registered as a scorekeeper in',
+    'Congratulations! \nYou are now registered as\n a scorekeeper in\n',
   scoreKeeperCongratulationsModal:
     'en_You can now receive scorekeeper booking requests from teams and players, and also can sent offers to teams and players.',
   matchesNearYou: 'en_MATCHES NEAR YOU',
@@ -3060,9 +3060,11 @@ export default {
   newsFeedPostText: 'en_News Feed Post',
   participants: 'en_PARTICIPANTS',
   justNow: 'en_Just now',
+  whenyouTerminateAccount: 'en_When you Pause the team:',
   viewText: 'en_View',
   leaveChatAlertText: 'en_Are you sure you want to leave this chatroom?',
   editChatRoom: 'en_Edit ChatRoom Name & Photo',
-  deleteForMe: 'en_The message will be deleted from from only your device.',
+   deleteForMe: 'en_The message will be deleted from from only your device.',
   deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
+
 };

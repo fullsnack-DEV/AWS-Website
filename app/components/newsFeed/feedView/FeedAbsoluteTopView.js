@@ -22,7 +22,6 @@ import Verbs from '../../../Constants/Verbs';
 
 const FeedAbsoluteTopView = memo(
   ({
-    showParent = false,
     screenInsets,
     feedItem = {},
     isLandscape = false,
@@ -64,7 +63,6 @@ const FeedAbsoluteTopView = memo(
         style={[
           styles.topMainContainer,
           {
-            opacity: showParent ? 1 : 0,
             position: Platform.OS === 'ios' ? 'relative' : 'absolute',
           },
           readMore ? {backgroundColor: colors.blackColor} : {},

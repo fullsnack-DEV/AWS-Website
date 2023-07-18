@@ -1,6 +1,21 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform, Image, TouchableOpacity, Alert, TextInput, FlatList} from 'react-native';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  Image,
+  TouchableOpacity,
+  Alert,
+  TextInput,
+  FlatList,
+} from 'react-native';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -52,7 +67,9 @@ export default function TagUserScreen({backBtnPress, onItemPress}) {
   }
 
   return (
-    <KeyboardAvoidingView style={{flex: 1, backgroundColor: 'white'}} behavior={Platform.OS === 'ios' ? 'padding' : null}>
+    <KeyboardAvoidingView
+      style={{flex: 1, backgroundColor: 'white'}}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}>
       <SafeAreaView>
         <View style={styles.containerStyle}>
           <View style={styles.backIconViewStyle}>
@@ -85,7 +102,9 @@ export default function TagUserScreen({backBtnPress, onItemPress}) {
           autoFocus={true}
           onChangeText={(text) => {
             const newData = data.filter((item) => {
-              const itemData = item.full_name ? item.full_name.toUpperCase() : ''.toUpperCase();
+              const itemData = item.full_name
+                ? item.full_name.toUpperCase()
+                : ''.toUpperCase();
               const textData = text.toUpperCase();
               return itemData.indexOf(textData) > -1;
             });

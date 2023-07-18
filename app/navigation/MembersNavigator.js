@@ -250,7 +250,7 @@ const MembersNavigator = () => (
       component={GroupMembersScreen}
       options={{
         title: strings.membersTitle,
-        headerShown: true,
+        headerShown: false,
         headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {

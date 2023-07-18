@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
   sportName: {
     fontSize: 16,
     lineHeight: 24,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
   matchCount: {

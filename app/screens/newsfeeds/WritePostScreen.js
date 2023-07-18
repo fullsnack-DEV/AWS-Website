@@ -455,14 +455,18 @@ const WritePostScreen = ({navigation, route}) => {
     jsonData.entity_id = item?.[entity_text];
     if (item?.group_name) {
       entity_name = _.startCase(_.toLower(item?.group_name))?.replace(/ /g, '');
+      entity_data.group_id = item.group_id;
     } else {
       const fName = _.startCase(_.toLower(item?.first_name))?.replace(/ /g, '');
       const lName = _.startCase(_.toLower(item?.last_name))?.replace(/ /g, '');
       entity_name = `${fName}${lName}`;
+      entity_data.user_id = item.user_id;
     }
     joinedString += `${entity_name} `;
     entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
+
     entity_data = getTaggedEntityData(entity_data, item);
+
     const str = addStringInCurrentText(
       searchText,
       lastTagStartIndex,
@@ -481,7 +485,7 @@ const WritePostScreen = ({navigation, route}) => {
         entity_type: jsonData?.entity_type,
       });
     }
-
+    console.log(tagsOfEntity, 'from entity');
     setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
     setLetModalVisible(false);
     textInputRef.current.focus();
@@ -843,7 +847,7 @@ const WritePostScreen = ({navigation, route}) => {
               textstyle={{fontSize: 12}}
               containerStyle={styles.profileImage}
             />
-            <View>
+            <View style={{flex: 0.9}}>
               <Text style={styles.userTxt}>
                 {postData.full_name ?? postData.group_name}
               </Text>
@@ -928,6 +932,7 @@ const WritePostScreen = ({navigation, route}) => {
             <TouchableOpacity
               style={[styles.icon, {marginHorizontal: 10}]}
               onPress={() => {
+                console.log(postData, 'Frompost');
                 navigation.navigate('UserTagSelectionListScreen', {
                   postData,
                   routeParams: route.params.isRepost ? {...route.params} : {},
@@ -1111,8 +1116,7 @@ const styles = StyleSheet.create({
     width: 111,
     height: 111,
     borderRadius: 10,
-    // alignItems: 'center',
-    // justifyContent: 'center',
+
     marginLeft: 10,
   },
   repostContainer: {

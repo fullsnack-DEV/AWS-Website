@@ -16,13 +16,11 @@ import {
   TextInput,
   StyleSheet,
   SafeAreaView,
-  ScrollView,
   KeyboardAvoidingView,
   Platform,
   FlatList,
   Alert,
   Dimensions,
-  // Keyboard,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -52,6 +50,7 @@ import {
   whoCanDataSourceGroup,
   whoCanDataSourceUser,
 } from '../../utils/constant';
+import ScreenHeader from '../../components/ScreenHeader';
 
 const urlRegex =
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
@@ -601,160 +600,149 @@ const EditPostScreen = ({navigation, route}) => {
   );
 
   return (
-    <KeyboardAvoidingView
-      style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : null}>
-      <ActivityLoader visible={loading} />
-      <SafeAreaView>
-        <View style={styles.containerStyle}>
-          <View style={styles.backIconViewStyle}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Image source={images.backArrow} style={styles.backImage} />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.writePostViewStyle}>
-            <Text style={styles.writePostTextStyle}>{strings.editPost}</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.doneViewStyle}
-            onPress={() => {
-              if (searchText.trim().length === 0 && selectImage.length === 0) {
-                Alert.alert(strings.writeText);
-              } else {
-                setloading(false);
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.editPost}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isRightIconText
+        rightButtonText={strings.done}
+        onRightButtonPress={() => {
+          if (searchText.trim().length === 0 && selectImage.length === 0) {
+            Alert.alert(strings.writeText);
+          } else {
+            setloading(false);
 
-                const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-                const format_tagged_data = JSON.parse(
-                  JSON.stringify(tagsOfEntity),
-                );
-                format_tagged_data.map(async (item, index) => {
-                  const isThere =
-                    item?.entity_type !== 'game'
-                      ? searchText.includes(
-                          item?.entity_data?.tagged_formatted_name?.replace(
-                            / /g,
-                            '',
-                          ),
-                        )
-                      : true;
-                  if (!isThere) format_tagged_data.splice(index, 1);
-                  return null;
-                });
-                // eslint-disable-next-line no-param-reassign
-                tagData.forEach((tData) => delete tData.entity_data);
-                navigation.goBack();
+            const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
+            const format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity));
+            format_tagged_data.map(async (item, index) => {
+              const isThere =
+                item?.entity_type !== 'game'
+                  ? searchText.includes(
+                      item?.entity_data?.tagged_formatted_name?.replace(
+                        / /g,
+                        '',
+                      ),
+                    )
+                  : true;
+              if (!isThere) format_tagged_data.splice(index, 1);
+              return null;
+            });
+            // eslint-disable-next-line no-param-reassign
+            tagData.forEach((tData) => delete tData.entity_data);
+            navigation.goBack();
 
-                const who_can_see = {...privacySetting};
-                if (privacySetting.value === 2) {
-                  if (
-                    ['team', 'club', 'league'].includes(authContext.entity.role)
-                  ) {
-                    who_can_see.group_ids = [authContext.entity.uid];
-                  }
-                }
-
-                onPressDone(
-                  selectImage,
-                  searchText,
-                  data,
-                  tagData,
-                  who_can_see,
-                  format_tagged_data,
-                );
+            const who_can_see = {...privacySetting};
+            if (privacySetting.value === 2) {
+              if (
+                ['team', 'club', 'league'].includes(authContext.entity.role)
+              ) {
+                who_can_see.group_ids = [authContext.entity.uid];
               }
-            }}>
-            <Text style={styles.doneTextStyle}>{strings.done}</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-      <View style={styles.sperateLine} />
-      <View style={styles.userDetailView}>
-        <Image
-          style={styles.background}
-          source={userImage ? {uri: userImage} : images.profilePlaceHolder}
-        />
-        <View style={styles.userTxtView}>
-          <Text style={styles.userTxt}>{userName}</Text>
-        </View>
-      </View>
+            }
 
-      <ScrollView
-        bounces={false}
-        style={{flex: 1}}
-        // onTouchEnd={() => !isKeyboardOpen && textInputRef.current.focus()}
-      >
-        <TextInput
-          ref={textInputRef}
-          onLayout={(event) =>
-            setSearchFieldHeight(event?.nativeEvent?.layout?.height)
+            onPressDone(
+              selectImage,
+              searchText,
+              data,
+              tagData,
+              who_can_see,
+              format_tagged_data,
+            );
           }
-          placeholder={strings.whatsGoingText}
-          placeholderTextColor={colors.userPostTimeColor}
-          onSelectionChange={onSelectionChange}
-          onKeyPress={onKeyPress}
-          onChangeText={(text) => setSearchText(text)}
-          style={styles.textInputField}
-          multiline={true}
-          autoCapitalize="none"
-          textAlignVertical={'top'}>
-          <ParsedText
-            parse={[{pattern: tagRegex, renderText: renderTagText}]}
-            childrenProps={{allowFontScaling: false}}>
-            {searchText}
-          </ParsedText>
-        </TextInput>
+        }}
+      />
+
+      <ActivityLoader visible={loading} />
+
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'android' ? 'padding' : 'height'}>
+        <View style={styles.userDetailView}>
+          <Image
+            style={styles.background}
+            source={userImage ? {uri: userImage} : images.profilePlaceHolder}
+          />
+          <View style={styles.userTxtView}>
+            <Text style={styles.userTxt}>{userName}</Text>
+          </View>
+        </View>
+        <View style={{paddingHorizontal: 15, marginBottom: 15, zIndex: 100}}>
+          <TextInput
+            ref={textInputRef}
+            onLayout={(event) =>
+              setSearchFieldHeight(event?.nativeEvent?.layout?.height)
+            }
+            placeholder={strings.whatsGoingText}
+            placeholderTextColor={colors.userPostTimeColor}
+            onSelectionChange={onSelectionChange}
+            onKeyPress={onKeyPress}
+            onChangeText={(text) => setSearchText(text)}
+            style={styles.textInputField}
+            multiline={true}
+            autoCapitalize="none"
+            textAlignVertical={'top'}>
+            <ParsedText
+              parse={[{pattern: tagRegex, renderText: renderTagText}]}
+              childrenProps={{allowFontScaling: false}}>
+              {searchText}
+            </ParsedText>
+          </TextInput>
+        </View>
+
         {renderUrlPreview}
         {renderSelectedImageList}
         {renderGameTags}
         {renderModalTagEntity}
-      </ScrollView>
 
-      <SafeAreaView style={styles.bottomSafeAreaStyle}>
-        <View style={styles.bottomImgView}>
-          <View style={styles.onlyMeViewStyle}>
-            <ImageButton
-              source={images.lock}
-              imageStyle={{width: 30, height: 30}}
-              onImagePress={() => setVisibleWhoModal(true)}
-            />
-            <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
-          </View>
-          <View
-            style={[
-              styles.onlyMeViewStyle,
-              {flex: 1, justifyContent: 'flex-end'},
-            ]}>
-            {selectImage?.length < MAX_UPLOAD_POST_ASSETS && (
+        <View style={styles.bottomSafeAreaStyle}>
+          <View style={styles.bottomImgView}>
+            <View style={styles.onlyMeViewStyle}>
               <ImageButton
-                source={images.pickImage}
+                source={images.lock}
                 imageStyle={{width: 30, height: 30}}
-                onImagePress={onImagePress}
+                onImagePress={() => setVisibleWhoModal(true)}
               />
-            )}
-            <ImageButton
-              source={images.tagImage}
-              imageStyle={{width: 30, height: 30, marginLeft: 10}}
-              onImagePress={() => {
-                navigation.navigate('UserTagSelectionListScreen', {
-                  data,
-                  onPressDone,
-                  route,
-                  comeFrom: 'EditPostScreen',
-                  onSelectMatch,
-                  taggedData: JSON.parse(JSON.stringify(tagsOfEntity)).map(
-                    (obj) => ({
-                      city: obj.entity_data.city,
-                      full_name: obj.entity_data.full_name,
-                      entity_id: obj.entity_id,
-                      entity_type: obj.entity_type,
-                    }),
-                  ),
-                });
-              }}
-            />
+              <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
+            </View>
+            <View
+              style={[
+                styles.onlyMeViewStyle,
+                {flex: 1, justifyContent: 'flex-end'},
+              ]}>
+              {selectImage?.length < MAX_UPLOAD_POST_ASSETS && (
+                <ImageButton
+                  source={images.pickImage}
+                  imageStyle={{width: 30, height: 30}}
+                  onImagePress={onImagePress}
+                />
+              )}
+              <ImageButton
+                source={images.tagImage}
+                imageStyle={{width: 30, height: 30, marginLeft: 10}}
+                onImagePress={() => {
+                  navigation.navigate('UserTagSelectionListScreen', {
+                    data,
+                    onPressDone,
+                    route,
+                    comeFrom: 'EditPostScreen',
+                    onSelectMatch,
+                    taggedData: JSON.parse(JSON.stringify(tagsOfEntity)).map(
+                      (obj) => ({
+                        city: obj.entity_data.city,
+                        full_name: obj.entity_data.full_name,
+                        entity_id: obj.entity_id,
+                        entity_type: obj.entity_type,
+                      }),
+                    ),
+                  });
+                }}
+              />
+            </View>
           </View>
         </View>
-      </SafeAreaView>
+      </KeyboardAvoidingView>
+
       <Modal
         isVisible={visibleWhoModal}
         onBackdropPress={() => setVisibleWhoModal(false)}
@@ -819,20 +807,11 @@ const EditPostScreen = ({navigation, route}) => {
           />
         </View>
       </Modal>
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  backIconViewStyle: {
-    justifyContent: 'center',
-    width: wp('17%'),
-  },
-  backImage: {
-    height: hp('2%'),
-    tintColor: colors.lightBlackColor,
-    width: hp('1.5%'),
-  },
   background: {
     borderRadius: hp('3%'),
     height: hp('6%'),
@@ -843,26 +822,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     paddingVertical: hp('1%'),
-    width: wp(100),
     paddingHorizontal: 10,
   },
-  containerStyle: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: hp('1%'),
-    width: wp('92%'),
-  },
-  doneTextStyle: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    lineHeight: 19,
-  },
-  doneViewStyle: {
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-  },
+
   onlyMeTextStyle: {
     color: colors.googleColor,
     fontFamily: fonts.RRegular,
@@ -874,11 +836,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: wp('46%'),
   },
-  sperateLine: {
-    borderColor: colors.writePostSepratorColor,
-    borderWidth: 0.5,
-    marginVertical: hp('1%'),
-  },
+
   textInputField: {
     alignSelf: 'center',
     fontSize: 16,
@@ -900,23 +858,15 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
   },
-  writePostTextStyle: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-  },
-  writePostViewStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: wp('58%'),
-  },
+
   bottomSafeAreaStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: colors.whiteColor,
-    shadowOpacity: 0.2,
-    shadowOffset: {
-      height: -3,
-      width: 0,
-    },
+    elevation: 9,
+    shadowColor: colors.blackColor,
+    shadowOpacity: 0.1608,
   },
   userListStyle: {
     flexDirection: 'row',

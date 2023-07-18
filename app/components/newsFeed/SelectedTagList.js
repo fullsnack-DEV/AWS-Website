@@ -31,10 +31,12 @@ export default function SelectedTagList({dataSource, onTagCancelPress}) {
       </View>
     </>
   );
+
   return (
     <View>
       <FlatList
         data={dataSource}
+        nestedScrollEnabled
         renderItem={renderTags}
         keyExtractor={(item, index) => index.toString()}
         style={styles.tagListStyle}

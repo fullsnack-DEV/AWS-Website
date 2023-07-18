@@ -7,17 +7,17 @@ import {
   Dimensions,
   Animated,
   Pressable,
+  InteractionManager,
 } from 'react-native';
 import {
   GestureHandlerRootView,
   PanGestureHandler,
+  State,
 } from 'react-native-gesture-handler';
 import colors from '../Constants/Colors';
 import {ModalTypes} from '../Constants/GeneralConstants';
 import images from '../Constants/ImagePath';
 import ScreenHeader from './ScreenHeader';
-
-const screenHeight = Dimensions.get('window').height;
 
 const CustomModalWrapper = ({
   loading = false,
@@ -31,29 +31,58 @@ const CustomModalWrapper = ({
   headerBottomBorderColor = colors.grayBackgroundColor,
   children = null,
   Top = 50,
+  isSwipeUp = false,
   showBackButton = false,
 }) => {
-  const [showModal, setShowModal] = useState(false);
+  const [isFullHeight, setIsFullHeight] = useState(isSwipeUp);
   const translateY = new Animated.Value(0);
+  let isGestureActive = false;
 
   const onPanGestureEvent = Animated.event(
     [{nativeEvent: {translationY: translateY}}],
     {
-      useNativeDriver: true,
+      useNativeDriver: false,
+      listener: (event) => {
+        if (event.nativeEvent.translationY <= 0) {
+          translateY.setValue(0);
+
+          if (isSwipeUp) {
+            setIsFullHeight(true);
+            translateY.setValue(0);
+          }
+        } else if (event.nativeEvent.translationY > 0) {
+          translateY.setValue(event.nativeEvent.translationY);
+        }
+      },
     },
   );
 
-  useEffect(() => {
-    if (isVisible) {
-      setTimeout(() => {
-        setShowModal(true);
-      }, 30);
+  const onPanGestureStateChange = (event) => {
+    if (event.nativeEvent.state === State.ACTIVE) {
+      isGestureActive = true;
+    } else if (event.nativeEvent.state === State.END) {
+      if (isGestureActive) {
+        isGestureActive = false;
+        if (event.nativeEvent.translationY > 0) {
+          handleCloseModal();
+        } else {
+          InteractionManager.runAfterInteractions(() => {
+            Animated.spring(translateY, {
+              toValue: 0,
+              useNativeDriver: true,
+            }).start();
+          });
+        }
+      }
     }
+  };
+
+  useEffect(() => {
+    setIsFullHeight(false);
   }, [isVisible]);
 
   const handleCloseModal = () => {
     closeModal();
-    setShowModal(false);
   };
 
   const getModalHeader = () => {
@@ -63,7 +92,7 @@ const CustomModalWrapper = ({
         return (
           <ScreenHeader
             leftIcon={showBackButton ? images.backArrow : images.crossImage}
-            leftIconPress={() => handleCloseModal()}
+            leftIconPress={handleCloseModal}
             title={title}
             isRightIconText
             rightButtonText={headerRightButtonText}
@@ -81,7 +110,7 @@ const CustomModalWrapper = ({
         return (
           <ScreenHeader
             rightIcon2={images.crossImage}
-            rightIcon2Press={() => handleCloseModal()}
+            rightIcon2Press={handleCloseModal}
             title={title}
             containerStyle={[styles.headerStyle, {paddingRight: 15}]}
           />
@@ -93,7 +122,7 @@ const CustomModalWrapper = ({
           <ScreenHeader
             title={title}
             rightIcon2={images.crossImage}
-            rightIcon2Press={() => handleCloseModal()}
+            rightIcon2Press={handleCloseModal}
             containerStyle={[
               styles.headerStyle,
               {paddingRight: 15},
@@ -113,17 +142,33 @@ const CustomModalWrapper = ({
   };
 
   const getCardStyle = () => {
+    if (isFullHeight) {
+      const animatedTranslateY = new Animated.Value(300);
+
+      const animatedStyle = {
+        transform: [
+          {
+            translateY: animatedTranslateY,
+          },
+        ],
+      };
+
+      Animated.timing(animatedTranslateY, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+
+      return [styles.card, animatedStyle];
+    }
+
     switch (modalType) {
       case ModalTypes.style1:
-        return [styles.card, {flex: 1}];
-
       case ModalTypes.style2:
       case ModalTypes.style3:
       case ModalTypes.style4:
-        return styles.card;
-
       case ModalTypes.style5:
-        return [styles.card, {height: screenHeight * 0.66}];
+        return styles.card;
 
       default:
         return [styles.card, {flex: 1}];
@@ -136,20 +181,17 @@ const CustomModalWrapper = ({
       collapsable
       transparent
       animationType="fade"
-      onRequestClose={() => handleCloseModal()}>
+      onRequestClose={handleCloseModal}>
       <GestureHandlerRootView style={{flex: 1}}>
         <Pressable
           style={[styles.parent, {paddingTop: Top}]}
-          onPress={() => {
-            handleCloseModal();
-          }}>
+          onPress={handleCloseModal}>
           {(modalType === ModalTypes.style7 ||
             modalType === ModalTypes.style2 ||
-            modalType === ModalTypes.default) &&
-          showModal ? (
+            modalType === ModalTypes.default) && (
             <PanGestureHandler
               onGestureEvent={onPanGestureEvent}
-              onEnded={() => handleCloseModal()}>
+              onHandlerStateChange={onPanGestureStateChange}>
               <Animated.View
                 style={[
                   getCardStyle(),
@@ -171,32 +213,47 @@ const CustomModalWrapper = ({
                     {getModalHeader()}
                   </View>
 
-                  <View style={[{padding: 25}, containerStyle]}>
+                  <View
+                    style={[
+                      {
+                        height: !isFullHeight
+                          ? Dimensions.get('window').height -
+                            Dimensions.get('window').height / 2.5
+                          : '100%',
+                      },
+                      containerStyle,
+                    ]}>
                     {children}
                   </View>
                 </Pressable>
               </Animated.View>
             </PanGestureHandler>
-          ) : (
-            <Animated.View
-              style={[
-                getCardStyle(),
-                {
-                  transform: [
-                    {
-                      translateY,
-                    },
-                  ],
-                },
-              ]}>
-              <Pressable onPress={() => {}} style={{}}>
-                <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
-                  {getModalHeader()}
-                </View>
-                <View style={[{padding: 25}, containerStyle]}>{children}</View>
-              </Pressable>
-            </Animated.View>
           )}
+
+          {modalType !== ModalTypes.style7 &&
+            modalType !== ModalTypes.style2 &&
+            modalType !== ModalTypes.default && (
+              <Animated.View
+                style={[
+                  getCardStyle(),
+                  {
+                    transform: [
+                      {
+                        translateY,
+                      },
+                    ],
+                  },
+                ]}>
+                <Pressable onPress={() => {}} style={{}}>
+                  <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
+                    {getModalHeader()}
+                  </View>
+                  <View style={[{padding: 25}, containerStyle]}>
+                    {children}
+                  </View>
+                </Pressable>
+              </Animated.View>
+            )}
         </Pressable>
       </GestureHandlerRootView>
     </Modal>
@@ -235,4 +292,5 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.greyBorderColor,
   },
 });
+
 export default CustomModalWrapper;

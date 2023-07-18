@@ -29,6 +29,7 @@ const NewsFeedDescription = ({
   isNewsFeedScreen,
   openProfilId,
   moreTextStyle = {},
+  setReadMoreCollapsed = () => {},
   onCollapse = () => {},
   tagStyle = {},
 }) => {
@@ -165,8 +166,9 @@ const NewsFeedDescription = ({
               numberOfLines={numberOfLineDisplay}
               seeMoreText={strings.moreText}
               seeLessText={strings.lessText}
-              seeMoreOverlapCount={0}
+              seeMoreOverlapCount={7}
               allowFontScaling={false}
+              onPressIn={() => setReadMoreCollapsed(true)}
               seeLessStyle={[styles.moreText, moreTextStyle]}
               seeMoreStyle={[styles.moreText, moreTextStyle]}
               onCollapse={onCollapse}>
