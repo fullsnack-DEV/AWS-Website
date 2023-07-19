@@ -53,6 +53,7 @@ import {getSportDetails, getSportList} from '../utils/sportsActivityUtils';
 import SearchModal from '../components/Filter/SearchModal';
 import {ModalTypes} from '../Constants/GeneralConstants';
 import CustomModalWrapper from '../components/CustomModalWrapper';
+import ScreenHeader from '../components/ScreenHeader';
 
 let stopFetchMore = true;
 
@@ -1803,7 +1804,7 @@ export default function EntitySearchScreen({navigation, route}) {
                 setSettingPopup(true);
               }, 100);
             }}>
-            <Image source={images.homeSetting} style={styles.settingImage} />
+            <Image source={images.filterIcon} style={styles.settingImage} />
           </TouchableWithoutFeedback>
         )}
       </View>
@@ -2095,6 +2096,11 @@ export default function EntitySearchScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.searchText}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
       <ActivityLoader visible={loading} />
       <View style={styles.searchBarView}>
         <TCSearchBox
@@ -2168,9 +2174,10 @@ export default function EntitySearchScreen({navigation, route}) {
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         style={{
-          backgroundColor: '#FCFCFC',
+          backgroundColor: colors.whiteColor,
           flex: 1,
-          padding: 15,
+          paddingHorizontal: 15,
+          paddingBottom: 15,
           marginTop: 0,
         }}
         onEndReachedThreshold={0.01}
@@ -2616,7 +2623,7 @@ const styles = StyleSheet.create({
   searchBarView: {
     flexDirection: 'row',
     marginLeft: 15,
-    marginTop: 15,
+    marginTop: 20,
     marginBottom: 0,
     marginRight: 15,
   },
@@ -2626,8 +2633,8 @@ const styles = StyleSheet.create({
     height: 72,
   },
   settingImage: {
-    height: 20,
-    width: 20,
+    height: 25,
+    width: 25,
     resizeMode: 'cover',
     alignSelf: 'center',
     position: 'absolute',

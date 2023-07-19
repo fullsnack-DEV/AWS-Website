@@ -49,6 +49,7 @@ import {joinTeam} from '../../api/Groups';
 import {acceptRequest, declineRequest} from '../../api/Notificaitons';
 import {getSportList} from '../../utils/sportsActivityUtils';
 import SearchModal from '../../components/Filter/SearchModal';
+import ScreenHeader from '../../components/ScreenHeader';
 
 let stopFetchMore = true;
 
@@ -498,6 +499,12 @@ export default function RecruitingPlayerScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.groupsRecruitingMembers}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        // labelStyle={{width: 300, backgroundColor: colors.red}}
+      />
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>

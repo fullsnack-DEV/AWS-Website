@@ -33,6 +33,7 @@ import Verbs from '../../Constants/Verbs';
 import SearchModal from '../../components/Filter/SearchModal';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
+import ScreenHeader from '../../components/ScreenHeader';
 
 let stopFetchMore = true;
 
@@ -397,6 +398,11 @@ export default function ScorekeeperListScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.scoreKeeperAvailable}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>

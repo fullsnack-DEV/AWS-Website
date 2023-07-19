@@ -38,6 +38,7 @@ import {getSportList} from '../../utils/sportsActivityUtils';
 import SearchModal from '../../components/Filter/SearchModal';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
+import ScreenHeader from '../../components/ScreenHeader';
 
 let stopFetchMore = true;
 
@@ -407,6 +408,11 @@ export default function LookingTeamScreen({navigation, route}) {
   );
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.individualsLookingforGroups}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>

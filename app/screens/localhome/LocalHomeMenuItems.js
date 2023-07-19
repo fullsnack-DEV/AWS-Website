@@ -6,8 +6,10 @@ import {
   Text,
   ScrollView,
   StyleSheet,
+  Pressable,
+  Image,
 } from 'react-native';
-import React, {useContext, memo} from 'react';
+import React, {useContext, memo, useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
 import {strings} from '../../../Localization/translation';
@@ -25,14 +27,19 @@ import {
 import TCGameCardPlaceholder from '../../components/TCGameCardPlaceholder';
 import PlayersCard from './PlayersCard';
 import {getDataForNextScreen} from './LocalHomeUtils';
-import {getSingleSportList} from '../../utils/sportsActivityUtils';
-import {getSportName} from '../../utils';
+import {
+  getSingleSportList,
+  getSportDetails,
+} from '../../utils/sportsActivityUtils';
+import {getSportName, getStorage} from '../../utils';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import PlayersCardPlaceHolder from './PlayersCardPlaceHolder';
 import TCThinDivider from '../../components/TCThinDivider';
 import colors from '../../Constants/Colors';
 import EventsCard from './EventsCard';
 import fonts from '../../Constants/Fonts';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 
 const LocalHomeMenuItems = memo(
   ({
@@ -50,6 +57,58 @@ const LocalHomeMenuItems = memo(
   }) => {
     const navigation = useNavigation();
     const authContext = useContext(AuthContext);
+    const [playerDetailPopup, setPlayerDetailPopup] = useState();
+    const [playerDetail, setPlayerDetail] = useState();
+    const [imageBaseUrl, setImageBaseUrl] = useState('');
+    useEffect(() => {
+      getStorage('appSetting').then((setting) => {
+        setImageBaseUrl(setting.base_url_sporticon);
+      });
+    }, []);
+    const sportsView = (item) => (
+      <Pressable
+        style={[
+          styles.sportView,
+          styles.row,
+          {borderLeftColor: colors.redColorCard},
+        ]}
+        onPress={() => {
+          setPlayerDetailPopup(false);
+          navigation.navigate('SportActivityHome', {
+            sport: item.sport,
+            sportType: item?.sport_type,
+            uid: playerDetail.user_id,
+            entityType: playerDetail.entity_type,
+            showPreview: true,
+            backScreen: 'LocalHomeScreen',
+          });
+        }}
+        disabled={item.is_hide}>
+        <View style={styles.innerViewContainer}>
+          <View style={styles.row}>
+            <View style={styles.imageContainer}>
+              <Image
+                // source={{uri: `${imageBaseUrl}${item.player_image}`}}
+                source={{
+                  uri: `${imageBaseUrl}${
+                    getSportDetails(
+                      item.sport,
+                      item.sport_type,
+                      authContext.sports,
+                    ).sport_image
+                  }`,
+                }}
+                style={styles.sportIcon}
+              />
+            </View>
+            <View>
+              <Text style={styles.sportName}>{item.sport_name}</Text>
+              <Text style={styles.matchCount}>0 match</Text>
+            </View>
+          </View>
+        </View>
+      </Pressable>
+    );
 
     const onCardPress = (card, item) => {
       if (
@@ -60,6 +119,35 @@ const LocalHomeMenuItems = memo(
         const routeName = getGameHomeScreen(sportName);
 
         if (routeName) navigation.push(routeName, {gameId: item?.game_id});
+      } else if (card.key === strings.playersAvailableforChallenge) {
+        const object = {...item};
+        const sports = object.registered_sports.filter(
+          (obj) =>
+            obj.is_active === true && obj.sport_type === Verbs.singleSport,
+        );
+        object.sports = sports;
+        setPlayerDetail(object);
+        setPlayerDetailPopup(true);
+      } else if (card.key === strings.refreesAvailable) {
+        const object = item;
+        const sports = object.referee_data;
+        object.sports = sports;
+        setPlayerDetail(object);
+        setPlayerDetailPopup(true);
+      } else if (card.key === strings.scorekeepersAvailable) {
+        const object = item;
+        const sports = object.scorekeeper_data;
+        object.sports = sports;
+        setPlayerDetail(object);
+        setPlayerDetailPopup(true);
+      } else if (card.key === strings.lookingForTeamTitle) {
+        const object = {...item};
+        const sports = object.registered_sports.filter(
+          (obj) => obj.is_active === true,
+        );
+        object.sports = sports;
+        setPlayerDetail(object);
+        setPlayerDetailPopup(true);
       } else {
         navigation.navigate('HomeScreen', {
           uid: [Verbs.entityTypeUser, Verbs.entityTypePlayer]?.includes(
@@ -713,7 +801,26 @@ const LocalHomeMenuItems = memo(
       }
     };
 
-    return <View style={{flex: 1}}>{RenderMenuItem(item)}</View>;
+    return (
+      <View style={{flex: 1}}>
+        <View>{RenderMenuItem(item)}</View>
+        <CustomModalWrapper
+          isVisible={playerDetailPopup}
+          closeModal={() => {
+            setPlayerDetailPopup(false);
+          }}
+          modalType={ModalTypes.style2}>
+          <View style={{paddingTop: 0, paddingHorizontal: 0}}>
+            <FlatList
+              data={playerDetail?.sports}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item, index}) => sportsView(item, item.type, index)}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+        </CustomModalWrapper>
+      </View>
+    );
   },
 );
 
@@ -724,6 +831,57 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     marginLeft: 15,
     textTransform: 'uppercase',
+  },
+  sportView: {
+    justifyContent: 'space-between',
+    borderRadius: 8,
+    backgroundColor: colors.lightGrayBackground,
+    shadowColor: colors.googleColor,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowRadius: 3,
+    shadowOpacity: 0.2,
+    elevation: 5,
+    marginBottom: 20,
+    borderLeftWidth: 8,
+    paddingVertical: 5,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  innerViewContainer: {
+    flex: 1,
+    marginRight: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sportName: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  matchCount: {
+    fontSize: 12,
+    lineHeight: 14,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+  },
+  sportIcon: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  imageContainer: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
   },
 });
 

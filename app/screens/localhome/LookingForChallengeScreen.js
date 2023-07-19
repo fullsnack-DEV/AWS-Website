@@ -51,6 +51,7 @@ import {acceptRequest, declineRequest} from '../../api/Notificaitons';
 import {inviteUser} from '../../api/Users';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
+import ScreenHeader from '../../components/ScreenHeader';
 
 let stopFetchMore = true;
 
@@ -87,17 +88,17 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   const [imageBaseUrl, setImageBaseUrl] = useState('');
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: () => (
-        <Text style={styles.headerTitle}>
-          {authContext.entity.role === Verbs.entityTypeUser
-            ? strings.playersAvailableforChallenge
-            : strings.teamAvailableforChallenge}
-        </Text>
-      ),
-    });
-  }, [authContext.entity.role, navigation]);
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerTitle: () => (
+  //       <Text style={styles.headerTitle}>
+  //         {authContext.entity.role === Verbs.entityTypeUser
+  //           ? strings.playersAvailableforChallenge
+  //           : strings.teamAvailableforChallenge}
+  //       </Text>
+  //     ),
+  //   });
+  // }, [authContext.entity.role, navigation]);
 
   useEffect(() => {
     getStorage('appSetting').then((setting) => {
@@ -808,6 +809,16 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={
+          authContext.entity.role === Verbs.entityTypeUser
+            ? strings.playersAvailableforChallenge
+            : strings.teamAvailableforChallenge
+        }
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isFullTitle={true}
+      />
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>

@@ -323,7 +323,7 @@ const LocalHomeNavigator = () => (
           fontSize: 16,
           color: colors.lightBlackColor,
         },
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -342,7 +342,7 @@ const LocalHomeNavigator = () => (
           fontSize: 16,
           color: colors.lightBlackColor,
         },
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -361,7 +361,7 @@ const LocalHomeNavigator = () => (
           fontSize: 16,
           color: colors.lightBlackColor,
         },
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -446,7 +446,7 @@ const LocalHomeNavigator = () => (
           fontSize: 16,
           color: colors.lightBlackColor,
         },
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -465,7 +465,7 @@ const LocalHomeNavigator = () => (
           fontSize: 16,
           color: colors.lightBlackColor,
         },
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -484,7 +484,7 @@ const LocalHomeNavigator = () => (
           fontSize: 16,
           color: colors.lightBlackColor,
         },
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -503,7 +503,7 @@ const LocalHomeNavigator = () => (
           fontSize: 16,
           color: colors.lightBlackColor,
         },
-        headerShown: true,
+        headerShown: false,
         headerStyle: {
           backgroundColor: colors.whiteColor,
           borderBottomColor: colors.grayColor,
@@ -634,6 +634,7 @@ const LocalHomeNavigator = () => (
       component={EntitySearchScreen}
       options={{
         title: strings.searchText,
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontFamily: fonts.RBold,

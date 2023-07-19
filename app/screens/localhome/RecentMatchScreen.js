@@ -11,6 +11,7 @@ import {
   Platform,
   Alert,
   TextInput,
+  SafeAreaView,
 } from 'react-native';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
@@ -29,6 +30,7 @@ import {locationType, filterType} from '../../utils/constant';
 import SearchModal from '../../components/Filter/SearchModal';
 import {getSportList} from '../../utils/sportsActivityUtils';
 import Verbs from '../../Constants/Verbs';
+import ScreenHeader from '../../components/ScreenHeader';
 
 let stopFetchMore = true;
 
@@ -337,7 +339,12 @@ export default function RecentMatchScreen({navigation, route}) {
   };
 
   return (
-    <View>
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.completedMatches}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
         <View style={styles.searchViewContainer}>
@@ -418,7 +425,7 @@ export default function RecentMatchScreen({navigation, route}) {
         onPressCancel={() => {
           setSettingPopup(false);
         }}></SearchModal>
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

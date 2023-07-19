@@ -317,6 +317,7 @@ const images = {
 
   homeSetting: require('../assets/images/ic_home_setting.png'),
   settingInvoice: require('../assets/images/setting_invoice.png'),
+  filterIcon: require('../assets/images/filterIcon.png'),
 
   arrowDown: require('../assets/images/arrow_down.png'),
   moveIcon: require('../assets/images/ic_move.png'),
@@ -539,7 +540,6 @@ const images = {
   replyIcon: require('../assets/images/replyIcon.png'),
   reportIcon: require('../assets/images/reportIcon.png'),
   searchIcon: require('../assets/images/searchIcon.png'),
-
 };
 
 export default images;
