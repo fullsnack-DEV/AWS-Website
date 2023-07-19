@@ -6,7 +6,6 @@ import React, {
   useEffect,
   useContext,
   useRef,
-  useLayoutEffect,
 } from 'react';
 import {
   View,
@@ -87,18 +86,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
   const [playerDetail, setPlayerDetail] = useState();
 
   const [imageBaseUrl, setImageBaseUrl] = useState('');
-
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerTitle: () => (
-  //       <Text style={styles.headerTitle}>
-  //         {authContext.entity.role === Verbs.entityTypeUser
-  //           ? strings.playersAvailableforChallenge
-  //           : strings.teamAvailableforChallenge}
-  //       </Text>
-  //     ),
-  //   });
-  // }, [authContext.entity.role, navigation]);
 
   useEffect(() => {
     getStorage('appSetting').then((setting) => {
@@ -1307,11 +1294,6 @@ const styles = StyleSheet.create({
   myCityText: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-  headerTitle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
     color: colors.lightBlackColor,
   },
 
