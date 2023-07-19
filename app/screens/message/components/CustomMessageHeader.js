@@ -1,6 +1,6 @@
 // @flow
 import React, {useContext} from 'react';
-import {StyleSheet, Text} from 'react-native';
+import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -14,9 +14,11 @@ const CustomMessageHeader = ({message}) => {
     (groupStyle === 'top' || groupStyle === 'single')
   ) {
     return (
-      <Text style={styles.messageHeaderText}>
-        {message.user.group_name ?? message.user.name}
-      </Text>
+      <View style={{maxWidth: Dimensions.get('window').width * 0.6}}>
+        <Text style={styles.messageHeaderText} numberOfLines={1}>
+          {message.user.group_name ?? message.user.name}
+        </Text>
+      </View>
     );
   }
   return null;

@@ -1,3 +1,4 @@
+import {Dimensions} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -51,6 +52,9 @@ export const themeStyle = {
         borderWidth: 0,
         backgroundColor: colors.whiteColor,
       },
+      containerInner: {
+        maxWidth: Dimensions.get('window').width * 0.7,
+      },
     },
   },
 
@@ -65,7 +69,7 @@ export const myMessageTheme = {
   messageSimple: {
     content: {
       textContainer: {
-        backgroundColor: colors.chatBubbleContainer,
+        //
       },
       markdown: {
         text: {
@@ -77,6 +81,7 @@ export const myMessageTheme = {
       },
       containerInner: {
         borderWidth: 0,
+        backgroundColor: colors.chatBubbleContainer,
       },
       deletedContainerInner: {
         borderWidth: 0,

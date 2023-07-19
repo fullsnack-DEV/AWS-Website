@@ -1,26 +1,52 @@
 // @flow
-import moment from 'moment';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View, StyleSheet, TouchableOpacity, Image, Text} from 'react-native';
+import moment from 'moment';
 import {useMessageContext} from 'stream-chat-react-native';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import images from '../../../Constants/ImagePath';
 import {checkIsMessageDeleted} from '../../../utils/streamChat';
+import {newReactionData} from '../constants';
 
-const ReactionItems = ({url, count, onPress = () => {}}) => {
-  const {message} = useMessageContext();
+const Reactions = ({messageId, reactions = {}, onPress = () => {}}) => {
+  const [totalReactionCount, setTotalReactionCount] = useState(0);
+  const keys = Object.keys(reactions);
+
+  useEffect(() => {
+    if (keys.length > 0) {
+      let count = 0;
+      keys.forEach((item) => {
+        count += reactions[item];
+      });
+      setTotalReactionCount(count);
+    }
+  }, [keys, reactions]);
+
+  if (keys.length === 0) {
+    return null;
+  }
 
   return (
-    <TouchableOpacity
-      style={styles.reactionContainer}
-      onPress={() => {
-        onPress(message.id);
-      }}>
-      <Image source={url} style={{width: 15, height: 15, marginRight: 5}} />
-      <Text style={{fontSize: 12}}>{count}+</Text>
-    </TouchableOpacity>
+    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      {keys.map((item) => {
+        const emojiPath = newReactionData.find((ele) => item === ele.type).Icon;
+        return (
+          <TouchableOpacity
+            key={item}
+            style={styles.reactionContainer}
+            onPress={() => {
+              onPress(messageId);
+            }}>
+            <Image source={emojiPath} style={styles.emoji} />
+            <Text style={styles.countText}>{reactions[item]}+</Text>
+          </TouchableOpacity>
+        );
+      })}
+      {totalReactionCount ? (
+        <Text style={styles.totalCount}>{totalReactionCount}</Text>
+      ) : null}
+    </View>
   );
 };
 
@@ -39,50 +65,11 @@ const CustomMessageFooter = ({onPress = () => {}}) => {
   ) {
     return (
       <View style={styles.reactionAndTimeContainer}>
-        <View style={{flexDirection: 'row'}}>
-          {message.reaction_counts?.happy && (
-            <ReactionItems
-              url={images.emojiHappy}
-              count={message.reaction_counts.happy}
-              onPress={onPress}
-            />
-          )}
-          {message.reaction_counts?.wow && (
-            <ReactionItems
-              url={images.emojiWow}
-              count={message.reaction_counts.wow}
-              onPress={onPress}
-            />
-          )}
-          {message.reaction_counts?.sad && (
-            <ReactionItems
-              url={images.emojiSad}
-              count={message.reaction_counts.sad}
-              onPress={onPress}
-            />
-          )}
-          {message.reaction_counts?.correct && (
-            <ReactionItems
-              url={images.emojiCorrect}
-              count={message.reaction_counts.correct}
-              onPress={onPress}
-            />
-          )}
-          {message.reaction_counts?.like && (
-            <ReactionItems
-              url={images.emojiLike}
-              count={message.reaction_counts.like}
-              onPress={onPress}
-            />
-          )}
-          {message.reaction_counts?.love && (
-            <ReactionItems
-              url={images.emojiLove}
-              count={message.reaction_counts.love}
-              onPress={onPress}
-            />
-          )}
-        </View>
+        <Reactions
+          messageId={message.id}
+          reactions={message.reaction_counts}
+          onPress={onPress}
+        />
         <View>
           <Text style={styles.time}>
             {moment(message.updated_at).format('hh:mm A')}
@@ -96,12 +83,12 @@ const CustomMessageFooter = ({onPress = () => {}}) => {
 
 const styles = StyleSheet.create({
   reactionContainer: {
-    flexDirection: 'row',
-    backgroundColor: colors.whiteColor,
+    padding: 3,
+    marginRight: 5,
     borderRadius: 10,
-    paddingHorizontal: 5,
-    paddingVertical: 5,
-    margin: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.whiteColor,
   },
   time: {
     fontSize: 10,
@@ -114,6 +101,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-end',
     marginTop: 5,
+  },
+  countText: {
+    fontSize: 12,
+    lineHeight: 15,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+  },
+  emoji: {
+    width: 12,
+    height: 12,
+    resizeMode: 'contain',
+    marginRight: 5,
+  },
+  totalCount: {
+    fontSize: 12,
+    lineHeight: 15,
+    color: colors.themeColor,
+    fontFamily: fonts.RBold,
+    marginRight: 5,
   },
 });
 export default CustomMessageFooter;

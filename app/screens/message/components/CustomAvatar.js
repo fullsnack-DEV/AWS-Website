@@ -34,10 +34,7 @@ const CustomAvatar = ({channel = {}, imageStyle = {}}) => {
         {profileList.map((item, index) => (
           <View
             key={index}
-            style={[
-              {position: 'relative', marginLeft: index === 0 ? 0 : -38},
-              index !== 0 ? {marginTop: 15 * index} : {},
-            ]}>
+            style={{position: 'relative', marginLeft: index === 0 ? 0 : -35}}>
             <GroupIcon
               imageUrl={item.imageUrl}
               entityType={item.entityType}

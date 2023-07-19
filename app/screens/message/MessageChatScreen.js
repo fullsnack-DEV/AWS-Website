@@ -1,4 +1,4 @@
-import React, {useState, useContext, useMemo} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   Text,
   StyleSheet,
@@ -16,18 +16,10 @@ import {
   OverlayProvider as ChatOverlayProvider,
   useMessageContext,
   useMessageInputContext,
-  AutoCompleteInput,
   MessageAvatar,
-  MessageActionListItem,
-  useOverlayContext,
-  useMessageActionAnimation,
   ImageGallery,
 } from 'stream-chat-react-native';
 import * as Progress from 'react-native-progress';
-import {TapGestureHandler} from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
-import LinearGradient from 'react-native-linear-gradient';
-
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -35,30 +27,28 @@ import {widthPercentageToDP as wp} from '../../utils';
 import AuthContext from '../../auth/context';
 
 import {strings} from '../../../Localization/translation';
-import CustomModalWrapper from '../../components/CustomModalWrapper';
-import {ModalTypes} from '../../Constants/GeneralConstants';
 import BottomSheet from '../../components/modals/BottomSheet';
 import ChatGroupDetails from './components/ChatGroupDetails';
 import {getChannelName} from '../../utils/streamChat';
 
 import CustomTypingIndicator from './components/CustomTypingIndicator';
 import CustomMessageHeader from './components/CustomMessageHeader';
-import {
-  myMessageTheme,
-  newReactionData,
-  TAB_ITEMS,
-  themeStyle,
-} from './constants';
+import {myMessageTheme, themeStyle} from './constants';
 import CustomMessageText from './components/CustomMessageText';
 import CustomMessageFooter from './components/CustomMessageFooter';
 import CustomDateSeparator from './components/CustomDateSeparator';
+import CustomMessageActionList from './components/CustomMessageActionList';
+import CustomMessageActionListItem from './components/CustomMessageActionListItem';
+import ReactionsModal from './components/ReactionsModal';
+import CustomInput from './components/CustomInput';
+import CustomAutoCompleteSuggestionsList from './components/CustomAutoCompleteSuggestionsList';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
   const authContext = useContext(AuthContext);
 
   const [isVisible, setIsVisible] = useState(false);
-  const [currentTab, setCurrentTab] = useState(0);
+
   const [allReaction, setAllReaction] = useState([]);
   const [deleteMessageModal, setDeleteMessageModal] = useState(false);
   const [deleteMessageObject, setDeleteMessageObject] = useState({});
@@ -77,63 +67,6 @@ const MessageChatScreen = ({navigation, route}) => {
           message.groupStyles[0] === 'top'
         }
       />
-    );
-  };
-
-  const CustomInput = () => {
-    const {sendMessage, toggleAttachmentPicker, ImageUploadPreview} =
-      useMessageInputContext();
-    return (
-      <View style={styles.fullWidth}>
-        <ImageUploadPreview />
-        <CustomFileUploadPreview />
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            position: 'relative',
-            marginTop: 5,
-          }}>
-          <TouchableOpacity
-            style={{width: 30}}
-            onPress={toggleAttachmentPicker}>
-            <Image
-              style={{width: 27, height: 20, marginTop: 8}}
-              source={images.chatCamera}
-            />
-          </TouchableOpacity>
-          <View
-            style={{
-              width: wp(85),
-              height: 40,
-              backgroundColor: colors.lightGrey,
-              borderRadius: 15,
-              padding: 10,
-            }}>
-            <AutoCompleteInput />
-          </View>
-          <View
-            style={{
-              width: 27,
-              height: 27,
-              borderRadius: 50,
-              backgroundColor: colors.themeColor1,
-              display: 'flex',
-              justifyContent: 'center',
-              alignContent: 'center',
-              alignItems: 'center',
-              position: 'absolute',
-              right: 5,
-              top: 5,
-              marginTop: 0,
-            }}>
-            <TouchableOpacity onPress={sendMessage}>
-              <Image style={{width: 17, height: 19}} source={images.chatBtn} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
     );
   };
 
@@ -236,328 +169,6 @@ const MessageChatScreen = ({navigation, route}) => {
     });
   };
 
-  const CustomReactionComponent = () => {
-    const {message} = useMessageContext();
-    const {setOverlay} = useOverlayContext();
-
-    const handleMessageReaction = async (type) => {
-      const user_id = authContext.entity?.obj?.user_id;
-      await channel.sendReaction(
-        message.id,
-        {type, user_id},
-        {enforce_unique: true},
-      );
-      setOverlay('none');
-    };
-
-    return (
-      <View
-        style={{
-          marginTop: 0,
-          borderTopWidth: 1,
-          paddingVertical: 5,
-          borderColor: colors.darkGrey,
-        }}>
-        <View style={{flexDirection: 'row'}}>
-          {newReactionData.map((Item, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => {
-                handleMessageReaction(Item.type);
-              }}>
-              <Image
-                source={Item.Icon}
-                style={{
-                  width: 30,
-                  height: 30,
-                  margin: 5,
-                }}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-    );
-  };
-
-  const CustomMessageActionList = () => {
-    const {message, handleQuotedReplyMessage} = useMessageContext();
-    const {setOverlay} = useOverlayContext();
-
-    const messageActions = [
-      {
-        action() {
-          handleQuotedReplyMessage();
-          setOverlay('none');
-        },
-        actionType: 'quotedReply',
-        title: 'Reply',
-      },
-      {
-        action() {
-          setDeleteMessageObject(message);
-          setDeleteMessageModal(true);
-          setOverlay('none');
-        },
-        actionType: 'deleteMessage',
-        title: 'Delete',
-      },
-    ];
-
-    return (
-      <View style={{backgroundColor: 'white', marginTop: 10, borderRadius: 10}}>
-        <View
-          style={{
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}>
-          {messageActions.map(({actionType, ...rest}) => (
-            <CustomMessageActionListItem
-              actionType={actionType}
-              key={actionType}
-              {...rest}
-            />
-          ))}
-          <CustomReactionComponent />
-        </View>
-      </View>
-    );
-  };
-
-  const CustomMessageActionListItem = ({action, actionType, ...rest}) => {
-    const {onTap} = useMessageActionAnimation({action});
-    return (
-      <>
-        {actionType === 'quotedReply' ? (
-          <TapGestureHandler onHandlerStateChange={onTap}>
-            <Animated.View
-              style={{
-                paddingVertical: 10,
-                paddingHorizontal: 13,
-                borderBottomWidth: 1,
-                borderColor: colors.darkGrey,
-              }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  alignSelf: 'flex-start',
-                  color: colors.blueColor,
-                }}>
-                {rest.title}
-              </Text>
-            </Animated.View>
-          </TapGestureHandler>
-        ) : (
-          <>
-            {actionType === 'deleteMessage' ? (
-              <TapGestureHandler onHandlerStateChange={onTap}>
-                <Animated.View
-                  style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 13,
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      alignSelf: 'flex-start',
-                      borderBottomWidth: 1,
-                      borderColor: colors.lightGrayBackground,
-                      color: colors.themeColor2,
-                    }}>
-                    {rest.title}
-                  </Text>
-                </Animated.View>
-              </TapGestureHandler>
-            ) : (
-              <MessageActionListItem
-                action={action}
-                actionType={actionType}
-                {...rest}
-              />
-            )}
-          </>
-        )}
-      </>
-    );
-  };
-
-  const getReactionFromType = (type) => {
-    const reactionArr = [];
-    allReaction.forEach((item) => {
-      if (type === 'all') {
-        reactionArr.push(item);
-      } else if (item.type === type) {
-        reactionArr.push(item);
-      }
-    });
-    return reactionArr;
-  };
-
-  const getAllEmptyReactionCount = () => {
-    const emojiTypes = [];
-    const allEmojis = ['happy', 'wow', 'sad', 'correct', 'like', 'love'];
-    allReaction.forEach((item) => {
-      emojiTypes.push(item.type);
-    });
-    const uniqueArr = allEmojis.filter((obj) => emojiTypes.indexOf(obj) === -1);
-    return uniqueArr.length;
-  };
-
-  const getEmojiImageUrl = (type) => {
-    const result = TAB_ITEMS.find((item) => item.type === type);
-    return result.url;
-  };
-
-  const RenderTabContain = () => {
-    const currentItem = TAB_ITEMS[currentTab];
-    const currentTabItems = [];
-    allReaction.forEach((item) => {
-      if (currentItem.type === 'all') {
-        currentTabItems.push(item);
-      } else if (currentItem.type === item.type) {
-        currentTabItems.push(item);
-      }
-    });
-
-    return (
-      <View style={{padding: 20}}>
-        {currentTabItems.map((item) => (
-          <>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 10,
-              }}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <View style={{marginRight: 15}}>
-                  <Image
-                    source={images.profilePlaceHolder}
-                    style={{width: 25, height: 25}}
-                  />
-                </View>
-                <View>
-                  <Text style={{fontSize: 16}}>{item.user.name}</Text>
-                </View>
-              </View>
-              <View>
-                <Image
-                  source={getEmojiImageUrl(item.type)}
-                  style={{width: 20, height: 20}}
-                />
-              </View>
-            </View>
-          </>
-        ))}
-      </View>
-    );
-  };
-
-  const renderTabs = useMemo(
-    () => (
-      <View style={{flex: 1}}>
-        <View
-          style={{
-            alignItems: 'flex-start',
-            flexDirection: 'row',
-            height: 50,
-          }}>
-          {TAB_ITEMS.map(
-            (item, index) =>
-              getReactionFromType(item.type).length > 0 && (
-                <>
-                  <TouchableOpacity
-                    activeOpacity={1}
-                    key={index}
-                    style={{
-                      width: wp(100) / 7,
-                      height: 45,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                    onPress={() => {
-                      setCurrentTab(index);
-                    }}>
-                    <View
-                      style={{
-                        width: '100%',
-                        height: 43,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                      {item.type === 'all' ? (
-                        <Text
-                          style={{
-                            width: '100%',
-                            alignSelf: 'center',
-                            fontSize: 16,
-                            textAlign: 'center',
-                          }}>
-                          All {getReactionFromType(item.type).length}
-                        </Text>
-                      ) : (
-                        <View
-                          style={{flexDirection: 'row', alignItems: 'center'}}>
-                          <Image
-                            source={item.url}
-                            style={{width: 15, height: 15}}
-                          />
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              marginLeft: 5,
-                            }}>
-                            {getReactionFromType(item.type).length}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                    <LinearGradient
-                      colors={
-                        currentTab === index
-                          ? [colors.themeColor, colors.themeColor3]
-                          : [colors.thinDividerColor, 'transparent']
-                      }
-                      style={{
-                        alignSelf: 'flex-end',
-                        width: '100%',
-                        height: currentTab === index ? 3 : 1,
-                      }}
-                    />
-                  </TouchableOpacity>
-                </>
-              ),
-          )}
-          {[...Array(getAllEmptyReactionCount())].map((_, index) => (
-            <TouchableOpacity
-              key={index}
-              activeOpacity={1}
-              style={{
-                width: wp(100) / 7,
-                height: 88,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <LinearGradient
-                colors={[colors.thinDividerColor, 'transparent']}
-                style={{
-                  alignSelf: 'flex-end',
-                  width: '100%',
-                  height: 1,
-                }}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-        <View style={{flex: 1, width: wp(100)}}>
-          <RenderTabContain />
-        </View>
-      </View>
-    ),
-    [TAB_ITEMS, currentTab],
-  );
-
   const CustomReplyInputPreview = () => {
     const {quotedMessage, clearQuotedMessageState} = useMessageInputContext();
     return (
@@ -582,7 +193,7 @@ const MessageChatScreen = ({navigation, route}) => {
               />
             )}
             <View>
-              <Text style={{fontSize: 14, color: colors.darkYellowColor}}>
+              <Text style={{fontSize: 14, color: colors.themeColor}}>
                 Reply to {renderChatTitle()}
               </Text>
               <Text style={{fontSize: 14, marginTop: 5}}>
@@ -620,6 +231,7 @@ const MessageChatScreen = ({navigation, route}) => {
           message.quoted_message.attachments[0].type.toUpperCase();
       }
     }
+    console.log({message});
     return (
       <>
         {message.quoted_message && (
@@ -630,7 +242,10 @@ const MessageChatScreen = ({navigation, route}) => {
             }}>
             <View
               style={{
-                borderBottomColor: colors.whiteColor,
+                borderBottomColor:
+                  message.user.id === authContext.chatClient.userID
+                    ? colors.whiteColor
+                    : colors.grayBackgroundColor,
                 borderBottomWidth: 1,
               }}>
               <Text style={{fontSize: 10, color: colors.themeColor2}}>
@@ -671,87 +286,6 @@ const MessageChatScreen = ({navigation, route}) => {
         )}
       </>
     );
-  };
-
-  const CustomFileUploadPreview = () => {
-    const {fileUploads, setFileUploads, numberOfUploads, removeFile} =
-      useMessageInputContext();
-
-    setFileUploads(fileUploads);
-    let fileState;
-    fileUploads.forEach((item) => {
-      fileState = item.state;
-    });
-
-    return (
-      <>
-        {fileUploads.length > 0 ? (
-          <View style={{marginBottom: fileState === 'uploading' ? 12 : 8}}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingHorizontal: 5,
-                paddingVertical: 5,
-              }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                <Image
-                  style={{width: 28, height: 28, marginRight: 10}}
-                  source={{uri: fileUploads[0].url}}
-                  onPress={() => {
-                    CancelFileUpload(fileUploads, removeFile);
-                  }}
-                />
-                <Text>
-                  {fileState === 'uploading' ? 'Uploading' : 'Uploaded'} :{' '}
-                  {numberOfUploads}
-                </Text>
-              </View>
-              <View>
-                <TouchableOpacity
-                  onPress={() => {
-                    CancelFileUpload(fileUploads, removeFile);
-                  }}>
-                  <Image
-                    style={{width: 12, height: 12}}
-                    source={images.crossSingle}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-            {fileState !== 'uploading' && (
-              <View style={styles.chatSeparateLine} />
-            )}
-
-            {fileState === 'uploading' && (
-              <View style={{position: 'absolute', bottom: -8, left: -10}}>
-                <Progress.Bar
-                  progress={1}
-                  width={wp(100)}
-                  height={5}
-                  borderRadius={5}
-                  borderWidth={0}
-                  color={'rgba(255, 138, 1, 0.6)'}
-                  unfilledColor={colors.grayBackgroundColor}
-                  indeterminate={true}
-                />
-              </View>
-            )}
-          </View>
-        ) : null}
-      </>
-    );
-  };
-
-  const CancelFileUpload = (files, removeFile) => {
-    files.forEach((item) => {
-      removeFile(item.id);
-    });
   };
 
   const CustomImageGalleryComponent = () => <ImageGallery />;
@@ -839,7 +373,15 @@ const MessageChatScreen = ({navigation, route}) => {
         <ChatOverlayProvider
           translucentStatusBar={false}
           topInset={0}
-          MessageActionList={CustomMessageActionList}
+          MessageActionList={() => (
+            <CustomMessageActionList
+              channel={channel}
+              deleteMessageAction={(messageObj = {}) => {
+                setDeleteMessageObject(messageObj);
+                setDeleteMessageModal(true);
+              }}
+            />
+          )}
           MessageActionListItem={CustomMessageActionListItem}
           OverlayReactionList={() => null}
           ImageGalleryFooter={CustomImageGalleryComponent}>
@@ -869,21 +411,19 @@ const MessageChatScreen = ({navigation, route}) => {
               InlineDateSeparator={(props) => (
                 <CustomDateSeparator date={props.date} />
               )}
-              TypingIndicator={CustomTypingIndicator}>
+              TypingIndicator={CustomTypingIndicator}
+              AutoCompleteSuggestionList={CustomAutoCompleteSuggestionsList}>
               <MessageList />
               <MessageInput Input={CustomInput} />
             </Channel>
           </Chat>
         </ChatOverlayProvider>
 
-        <CustomModalWrapper
-          modalType={ModalTypes.default}
+        <ReactionsModal
           isVisible={isVisible}
           closeModal={() => setIsVisible(false)}
-          title={''}
-          containerStyle={styles.modalContainer}>
-          {renderTabs}
-        </CustomModalWrapper>
+          reactionsList={allReaction}
+        />
 
         <BottomSheet
           type="ios"
@@ -910,18 +450,11 @@ const MessageChatScreen = ({navigation, route}) => {
 };
 
 const styles = StyleSheet.create({
-  fullWidth: {
-    width: wp(95),
-  },
   chatSeparateLine: {
     borderColor: colors.writePostSepratorColor,
     marginTop: 5,
     borderWidth: 0.5,
     width: wp(95),
-  },
-  modalContainer: {
-    height: '98%',
-    padding: 0,
   },
 });
 

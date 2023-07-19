@@ -86,19 +86,12 @@ export const getChannelAvatar = (channel = {}, currentEntityId = '') => {
   }
   const membersList = getChannelMembers(channel, currentEntityId);
 
-  let profiles = [];
+  const profiles = [];
   if (membersList.length === 0) {
     profiles.push({imageUrl: '', entityType: channel.data.group_type});
   } else {
     membersList.forEach((item) => {
-      const list = item.members.map((member) => ({
-        imageUrl: member.user.image ?? '',
-        entityType:
-          member.user.entityType === 'group'
-            ? Verbs.entityTypeTeam
-            : member.user.entityType,
-      }));
-      profiles = [...profiles, ...list];
+      profiles.push(item.profileIcon);
     });
   }
 
@@ -150,7 +143,7 @@ export const getLastMessageTime = (channel = {}) => {
 };
 
 export const getChannelMembers = (channel = {}, currentEntityId = '') => {
-  const {state} = channel;
+  const {data, state} = channel;
   const keys = Object.keys(state.members);
 
   const admins = keys.filter(
@@ -177,6 +170,10 @@ export const getChannelMembers = (channel = {}, currentEntityId = '') => {
       .group_name;
     const obj = {
       memberName: groupName,
+      profileIcon: {
+        imageUrl: data.image?.thumbnail ?? '',
+        entityType: data.group_type,
+      },
       members: [...objList],
     };
     adminList.push(obj);
@@ -192,6 +189,10 @@ export const getChannelMembers = (channel = {}, currentEntityId = '') => {
     ) {
       const obj = {
         memberName: state.members[memberId].user.name,
+        profileIcon: {
+          imageUrl: state.members[memberId].user.image ?? '',
+          entityType: state.members[memberId].user.entityType,
+        },
         members: [state.members[memberId]],
       };
       membersList.push(obj);
