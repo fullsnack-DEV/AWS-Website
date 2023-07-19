@@ -85,6 +85,7 @@ export const myMessageTheme = {
       },
       deletedContainerInner: {
         borderWidth: 0,
+        backgroundColor: colors.chatBubbleContainer,
       },
       container: {
         borderWidth: 0,

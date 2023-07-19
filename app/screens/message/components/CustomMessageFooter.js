@@ -1,13 +1,22 @@
 // @flow
 import React, {useContext, useEffect, useState} from 'react';
-import {View, StyleSheet, TouchableOpacity, Image, Text} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Text,
+  Dimensions,
+} from 'react-native';
 import moment from 'moment';
+import {format} from 'react-string-format';
 import {useMessageContext} from 'stream-chat-react-native';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import {checkIsMessageDeleted} from '../../../utils/streamChat';
 import {newReactionData} from '../constants';
+import {strings} from '../../../../Localization/translation';
 
 const Reactions = ({messageId, reactions = {}, onPress = () => {}}) => {
   const [totalReactionCount, setTotalReactionCount] = useState(0);
@@ -70,6 +79,11 @@ const CustomMessageFooter = ({onPress = () => {}}) => {
           reactions={message.reaction_counts}
           onPress={onPress}
         />
+        {message.user.group_name ? (
+          <Text style={[styles.time, {marginRight: 10}]} numberOfLines={1}>
+            {format(strings.byUser, message.user.name)}
+          </Text>
+        ) : null}
         <View>
           <Text style={styles.time}>
             {moment(message.updated_at).format('hh:mm A')}
@@ -101,6 +115,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-end',
     marginTop: 5,
+    maxWidth: Dimensions.get('window').width * 0.6,
   },
   countText: {
     fontSize: 12,

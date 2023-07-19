@@ -14,9 +14,7 @@ import {
   MessageInput,
   MessageList,
   OverlayProvider as ChatOverlayProvider,
-  useMessageContext,
   useMessageInputContext,
-  MessageAvatar,
   ImageGallery,
 } from 'stream-chat-react-native';
 import * as Progress from 'react-native-progress';
@@ -42,6 +40,9 @@ import CustomMessageActionListItem from './components/CustomMessageActionListIte
 import ReactionsModal from './components/ReactionsModal';
 import CustomInput from './components/CustomInput';
 import CustomAutoCompleteSuggestionsList from './components/CustomAutoCompleteSuggestionsList';
+import CustomReplyComponent from './components/CustomReplyComponent';
+import CustomReplyInputPreview from './components/CustomReplyInputPreview';
+import CustomAvatar from './components/CustomAvatar';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
@@ -54,37 +55,6 @@ const MessageChatScreen = ({navigation, route}) => {
   const [deleteMessageObject, setDeleteMessageObject] = useState({});
 
   const [showDetails, setShowDetails] = useState(false);
-
-  const CustomAvatar = (props) => {
-    const {message} = useMessageContext();
-    return (
-      <MessageAvatar
-        {...props}
-        size={25}
-        alignment="left"
-        showAvatar={
-          message.groupStyles[0] === 'single' ||
-          message.groupStyles[0] === 'top'
-        }
-      />
-    );
-  };
-
-  const renderChatTitle = () => {
-    let name;
-    if (channel.data?.member_count === 2) {
-      const members = channel?.state?.members;
-      const filteredMember = Object.fromEntries(
-        Object.entries(members).filter(
-          ([key]) => key !== authContext.entity?.obj?.user_id,
-        ),
-      );
-      name = Object.entries(filteredMember).map((obj) => obj[1]?.user?.name);
-    } else {
-      name = channel.data?.name;
-    }
-    return name;
-  };
 
   const CustomImageUploadPreview = () => {
     const {imageUploads, setImageUploads, numberOfUploads, removeImage} =
@@ -167,125 +137,6 @@ const MessageChatScreen = ({navigation, route}) => {
     imageUploads.forEach((item) => {
       removeImage(item.id);
     });
-  };
-
-  const CustomReplyInputPreview = () => {
-    const {quotedMessage, clearQuotedMessageState} = useMessageInputContext();
-    return (
-      <View style={{marginBottom: 8}}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingHorizontal: 5,
-            paddingVertical: 5,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            {quotedMessage.attachments.length > 0 && (
-              <Image
-                style={{width: 30, height: 30, marginRight: 10}}
-                source={{uri: quotedMessage.attachments[0].image_url}}
-              />
-            )}
-            <View>
-              <Text style={{fontSize: 14, color: colors.themeColor}}>
-                Reply to {renderChatTitle()}
-              </Text>
-              <Text style={{fontSize: 14, marginTop: 5}}>
-                {quotedMessage.attachments.length > 0
-                  ? 'Photo'
-                  : quotedMessage.text}
-              </Text>
-            </View>
-          </View>
-          <View>
-            <TouchableOpacity
-              onPress={() => {
-                clearQuotedMessageState();
-              }}>
-              <Image
-                style={{width: 12, height: 12}}
-                source={images.crossSingle}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.chatSeparateLine} />
-      </View>
-    );
-  };
-
-  const CustomReplyComponent = () => {
-    const {message} = useMessageContext();
-    let attachementType;
-    if (message.quoted_message.attachments.length > 0) {
-      if (message.quoted_message.attachments[0].type === 'image') {
-        attachementType = strings.photoText;
-      } else {
-        attachementType =
-          message.quoted_message.attachments[0].type.toUpperCase();
-      }
-    }
-    console.log({message});
-    return (
-      <>
-        {message.quoted_message && (
-          <View
-            style={{
-              paddingHorizontal: 3,
-              paddingVertical: 3,
-            }}>
-            <View
-              style={{
-                borderBottomColor:
-                  message.user.id === authContext.chatClient.userID
-                    ? colors.whiteColor
-                    : colors.grayBackgroundColor,
-                borderBottomWidth: 1,
-              }}>
-              <Text style={{fontSize: 10, color: colors.themeColor2}}>
-                {strings.replyTo} {renderChatTitle(channel)}
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                {message.quoted_message.attachments.length > 0 && (
-                  <Image
-                    style={{
-                      width: 30,
-                      height: 30,
-                      marginRight: 10,
-                      marginVertical: 5,
-                    }}
-                    source={{
-                      uri: message.quoted_message.attachments[0].image_url,
-                    }}
-                  />
-                )}
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: colors.placeHolderColor,
-                    marginTop: 5,
-                    marginBottom: 5,
-                  }}>
-                  {message.quoted_message.attachments.length > 0
-                    ? attachementType
-                    : message.quoted_message.text}
-                </Text>
-              </View>
-            </View>
-          </View>
-        )}
-      </>
-    );
   };
 
   const CustomImageGalleryComponent = () => <ImageGallery />;
@@ -389,7 +240,12 @@ const MessageChatScreen = ({navigation, route}) => {
             <Channel
               channel={channel}
               MessageText={CustomMessageText}
-              MessageAvatar={CustomAvatar}
+              MessageAvatar={() => (
+                <CustomAvatar
+                  channel={channel}
+                  imageStyle={{width: 30, height: 30}}
+                />
+              )}
               myMessageTheme={myMessageTheme}
               MessageHeader={CustomMessageHeader}
               MessageFooter={() => (
@@ -403,8 +259,10 @@ const MessageChatScreen = ({navigation, route}) => {
               )}
               ImageUploadPreview={CustomImageUploadPreview}
               ReactionList={() => null}
-              InputReplyStateHeader={CustomReplyInputPreview}
-              Reply={CustomReplyComponent}
+              InputReplyStateHeader={() => (
+                <CustomReplyInputPreview channel={channel} />
+              )}
+              Reply={() => <CustomReplyComponent channel={channel} />}
               DateHeader={(props) => (
                 <CustomDateSeparator date={props.dateString} />
               )}

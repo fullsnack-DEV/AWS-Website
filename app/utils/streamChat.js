@@ -5,7 +5,12 @@ import getUserToken from '../api/StreamChat';
 import {updateUserProfile} from '../api/Users';
 import Verbs from '../Constants/Verbs';
 
-export const STREAMCHATKEY = 'zc2b2gy9aymw';
+const StreamChatKey = {
+  dev: 'mstd5kjv35xd',
+  qa: 'c3fzuf7xazfj',
+};
+
+export const STREAMCHATKEY = StreamChatKey.dev;
 
 export const generateUserStreamToken = async (authContext) => {
   await getUserToken(authContext).then(async (responseChat) => {
@@ -86,12 +91,12 @@ export const getChannelAvatar = (channel = {}, currentEntityId = '') => {
   }
   const membersList = getChannelMembers(channel, currentEntityId);
 
-  const profiles = [];
+  let profiles = [];
   if (membersList.length === 0) {
     profiles.push({imageUrl: '', entityType: channel.data.group_type});
   } else {
     membersList.forEach((item) => {
-      profiles.push(item.profileIcon);
+      profiles = [...profiles, ...item.profiles];
     });
   }
 
@@ -143,7 +148,7 @@ export const getLastMessageTime = (channel = {}) => {
 };
 
 export const getChannelMembers = (channel = {}, currentEntityId = '') => {
-  const {data, state} = channel;
+  const {state} = channel;
   const keys = Object.keys(state.members);
 
   const admins = keys.filter(
@@ -166,14 +171,18 @@ export const getChannelMembers = (channel = {}, currentEntityId = '') => {
         objList.push(state.members[memberId]);
       }
     });
+
     const groupName = objList.find((member) => member.user.group_name)?.user
       .group_name;
+
+    const profiles = objList.map((member) => ({
+      imageUrl: member.user.image ?? '',
+      entityType: member.user.entityType,
+    }));
+
     const obj = {
+      profiles,
       memberName: groupName,
-      profileIcon: {
-        imageUrl: data.image?.thumbnail ?? '',
-        entityType: data.group_type,
-      },
       members: [...objList],
     };
     adminList.push(obj);
@@ -188,11 +197,13 @@ export const getChannelMembers = (channel = {}, currentEntityId = '') => {
       memberId !== currentEntityId
     ) {
       const obj = {
+        profiles: [
+          {
+            imageUrl: state.members[memberId].user.image ?? '',
+            entityType: state.members[memberId].user.entityType,
+          },
+        ],
         memberName: state.members[memberId].user.name,
-        profileIcon: {
-          imageUrl: state.members[memberId].user.image ?? '',
-          entityType: state.members[memberId].user.entityType,
-        },
         members: [state.members[memberId]],
       };
       membersList.push(obj);
@@ -217,4 +228,20 @@ export const checkIsMessageDeleted = (chatUserId = '', message = {}) => {
     return false;
   }
   return false;
+};
+
+export const renderChatTitle = (channel = {}, authContext = {}) => {
+  let name;
+  if (channel.data?.member_count === 2) {
+    const members = channel?.state?.members;
+    const filteredMember = Object.fromEntries(
+      Object.entries(members).filter(
+        ([key]) => key !== authContext.entity.obj.user_id,
+      ),
+    );
+    name = Object.entries(filteredMember).map((obj) => obj[1]?.user?.name);
+  } else {
+    name = channel.data?.name;
+  }
+  return name;
 };

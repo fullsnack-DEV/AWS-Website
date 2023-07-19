@@ -3065,4 +3065,6 @@ export default {
   editChatRoom: 'en_Edit ChatRoom Name & Photo',
   deleteForMe: 'en_The message will be deleted from from only your device.',
   deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
+  viewAll: 'en_View all',
+  byUser: 'en_By {0}',
 };

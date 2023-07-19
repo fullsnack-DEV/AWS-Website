@@ -1,7 +1,8 @@
 // @flow
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import {AutoCompleteSuggestionHeader} from 'stream-chat-react-native';
+import AuthContext from '../../../auth/context';
 import CustomAutoCompleteSuggestionItem from './CustomAutoCompleteSuggestionItem';
 
 const CustomAutoCompleteSuggestionsList = ({
@@ -11,6 +12,7 @@ const CustomAutoCompleteSuggestionsList = ({
   triggerType,
 }) => {
   const [list, setList] = useState([]);
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     if (data.length > 0) {
@@ -19,12 +21,17 @@ const CustomAutoCompleteSuggestionsList = ({
       data.forEach((item) => {
         if (item.id.includes('@')) {
           const id = item.id.split('@')[0];
-          if (!groupIds.includes(id)) groupIds.push(id);
+          if (
+            !groupIds.includes(id) &&
+            item.id !== authContext.chatClient.userID
+          )
+            groupIds.push(id);
         } else {
           const obj = {
             entityName: item.name,
             members: [item],
           };
+
           membersList.push(obj);
         }
       });
@@ -43,7 +50,7 @@ const CustomAutoCompleteSuggestionsList = ({
 
       setList([...membersList, ...adminsList]);
     }
-  }, [data]);
+  }, [data, authContext.chatClient.userID]);
 
   return (
     <View style={styles.parent}>
