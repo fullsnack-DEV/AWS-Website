@@ -2279,8 +2279,7 @@ export default {
     'en_The match result has an effect on TC points and TC rankings of the challenger and you.',
   gameTypeFriendlyInfo:
     'en_The match result has no effect on TC points and TC rankings of the challenger and you.',
-  matchFeeModalTitle:
-    'en_Set the match fee that you want to Charge to a challenger.',
+  matchFeeModalTitle: 'en_How much do you want to Charge for The match fee?',
   chooseCancellationPolicyTitle: 'en_Choose Cancellation Policy.',
   refeereModalTitle:
     'en_How many referees will you hire for a match at your own cost?',
@@ -2565,7 +2564,7 @@ export default {
   congratesSubTitle: 'en_Your account has been switched to {0}.  ',
   whoDoYouwantToCreateTeamWith:
     'en_Who do you want to create the new team with?',
-  congratulationsTitle: 'en_Congratulations!',
+  congratulationsTitle: 'en_Congratulations! \n',
   hasBeenCreated: ' en_has been created.',
   jerseyValidation: 'en_Jersey Number is not valid!',
   clubModalTitle: 'en_Which sports does the new club will be involved in?',
@@ -3064,7 +3063,6 @@ export default {
   viewText: 'en_View',
   leaveChatAlertText: 'en_Are you sure you want to leave this chatroom?',
   editChatRoom: 'en_Edit ChatRoom Name & Photo',
-   deleteForMe: 'en_The message will be deleted from from only your device.',
+  deleteForMe: 'en_The message will be deleted from from only your device.',
   deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
-
 };

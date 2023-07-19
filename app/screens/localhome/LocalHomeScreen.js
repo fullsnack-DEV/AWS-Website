@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useRef,
+  useMemo,
 } from 'react';
 import {
   View,
@@ -61,7 +62,7 @@ import BottomSheet from '../../components/modals/BottomSheet';
 
 const defaultPageSize = 10;
 
-export default function LocalHomeScreen({navigation, route}) {
+function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
   const listRef = useRef();
   const isFocused = useIsFocused();
@@ -642,6 +643,16 @@ export default function LocalHomeScreen({navigation, route}) {
     setVisibleSportsModalForClub(val);
   };
 
+  const LocalHeader = useMemo(() => (
+    <LocalHomeHeader
+      setShowSwitchAccountModal={() => setShowSwitchAccountModal(true)}
+      setLocationpopup={() => setLocationPopup(true)}
+      location={location}
+      notificationCount={notificationCount}
+      customSports={customSports}
+    />
+  ));
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -652,13 +663,7 @@ export default function LocalHomeScreen({navigation, route}) {
         }}>
         {/* screen Header */}
 
-        <LocalHomeHeader
-          setShowSwitchAccountModal={() => setShowSwitchAccountModal(true)}
-          setLocationpopup={() => setLocationPopup(true)}
-          location={location}
-          notificationCount={notificationCount}
-          customSports={customSports}
-        />
+        {LocalHeader}
 
         <View style={styles.separateLine} testID="local-home-screen" />
 
@@ -678,30 +683,34 @@ export default function LocalHomeScreen({navigation, route}) {
             opacity: authContext.isAccountDeactivated ? 0.8 : 1,
           }}>
           {/* Flatlist  */}
-
           <FlatList
             data={localHomeMenu}
             ref={listRef}
-            keyExtractor={(item) => item.index.toString()}
+            keyExtractor={(_, index) => index.toString()}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled
-            maxToRenderPerBatch={10}
+            removeClippedSubviews={true}
             initialNumToRender={10}
+            maxToRenderPerBatch={10}
             windowSize={21}
-            ListHeaderComponent={({index}) => (
-              <TopTileSection
-                key={index}
-                handleTileClick={handleTileClick}
-                visibleSportsModalForClub={visibleSportsModalForClub}
-                visibleSportsModalForTeam={visibleSportsModalForTeam}
-                onRegisterAsTilePress={onRegisterAsTilePress}
-                setSelectedMenuOptionType={(val) =>
-                  setSelectedMenuOptionType(val)
-                }
-                setTeamModal={setTeamModal}
-                setClubModal={setClubModal}
-                setNavigationOptions={(obj) => setNavigationOptions(obj)}
-              />
+            ListHeaderComponent={React.memo(
+              (
+                {index}, // Memoize TopTileSection
+              ) => (
+                <TopTileSection
+                  key={index}
+                  handleTileClick={handleTileClick}
+                  visibleSportsModalForClub={visibleSportsModalForClub}
+                  visibleSportsModalForTeam={visibleSportsModalForTeam}
+                  onRegisterAsTilePress={onRegisterAsTilePress}
+                  setSelectedMenuOptionType={(val) =>
+                    setSelectedMenuOptionType(val)
+                  }
+                  setTeamModal={setTeamModal}
+                  setClubModal={setClubModal}
+                  setNavigationOptions={(obj) => setNavigationOptions(obj)}
+                />
+              ),
             )}
             renderItem={({item, index}) => (
               <LocalHomeMenuItems
@@ -724,6 +733,7 @@ export default function LocalHomeScreen({navigation, route}) {
           />
         </View>
       )}
+
       <Modal
         onBackdropPress={() => setLocationPopup(false)}
         style={{
@@ -965,6 +975,9 @@ export default function LocalHomeScreen({navigation, route}) {
     </SafeAreaView>
   );
 }
+
+export default React.memo(LocalHomeScreen);
+
 const styles = StyleSheet.create({
   sportName: {
     fontSize: 12,

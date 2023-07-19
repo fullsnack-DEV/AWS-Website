@@ -16,7 +16,7 @@ import {STREAMCHATKEY} from './app/utils/streamChat';
 
 console.disableYellowBox = true;
 
-export default function App() {
+function App() {
   const [networkConnected, setNetworkConntected] = useState(true);
   const [user, setUser] = useState(null);
   const [sports, setSports] = useState([]);
@@ -174,3 +174,5 @@ export default function App() {
     </AuthContext.Provider>
   );
 }
+
+export default React.memo(App);

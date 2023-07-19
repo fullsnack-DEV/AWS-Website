@@ -366,14 +366,8 @@ const CongratulationsModal = ({
                   },
                 ]}>
                 <Text>
-                  {strings.congratulationsTitle}
-                  <Text
-                    style={{
-                      color: colors.orangeColor,
-                      lineHeight: 24,
-                    }}>
-                    {title}
-                  </Text>
+                  {strings.congratulationsTitle}{' '}
+                  <Text style={styles.congratsTextStyle}>{title}</Text>
                 </Text>
 
                 {strings.hasBeenCreated}
@@ -429,7 +423,7 @@ const CongratulationsModal = ({
           )}
           <View style={styles.dividor} />
 
-          <View style={{paddingHorizontal: 25, flex: 1, paddingTop: 7}}>
+          <View style={styles.renderListcontainer}>
             {renderList(sportType)}
           </View>
         </View>
@@ -596,6 +590,15 @@ const styles = StyleSheet.create({
   closeIcon: {
     width: 25,
     height: 25,
+  },
+  renderListcontainer: {
+    paddingHorizontal: 25,
+    flex: 1,
+    paddingTop: 7,
+  },
+  congratsTextStyle: {
+    color: colors.orangeColor,
+    lineHeight: 24,
   },
 });
 export default CongratulationsModal;

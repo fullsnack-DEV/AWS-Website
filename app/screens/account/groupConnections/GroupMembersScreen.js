@@ -462,20 +462,6 @@ export default function GroupMembersScreen({navigation, route}) {
                           />
                         </TouchableOpacity>
                       )} */}
-
-                    {/* {groupObjNew?.who_can_see_member_profile ===
-                      Verbs.PRIVACY_GROUP_MEMBER_TEAM &&
-                      groupObjNew?.am_i_admin && (
-                        <TouchableOpacity
-                          style={[styles.buttonContainer, {marginLeft: 15}]}
-                          onPress={() => onPressProfile(data)}
-                          hitSlop={getHitSlop(15)}>
-                          <Image
-                            source={images.arrowGraterthan}
-                            style={styles.arrowStyle}
-                          />
-                        </TouchableOpacity>
-                      )} */}
                   </>
                 )}
             </View>
@@ -497,19 +483,6 @@ export default function GroupMembersScreen({navigation, route}) {
                 onUserAction('follow', data, index);
               }}
             />
-
-            {/* {groupObj?.who_can_see_member_profile ===
-              Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS && (
-              <TouchableOpacity
-                style={[styles.buttonContainer, {marginLeft: 15}]}
-                onPress={() => onPressProfile(data)}
-                hitSlop={getHitSlop(15)}>
-                <Image
-                  source={images.arrowGraterthan}
-                  style={styles.arrowStyle}
-                />
-              </TouchableOpacity>
-            )} */}
           </View>
         );
       }
@@ -674,39 +647,6 @@ export default function GroupMembersScreen({navigation, route}) {
           rightIcon1Press={() => actionSheet.current.show()}
           rightIcon2Press={() => actionSheetPlus.current.show()}
         />
-
-        {/* {currentRoute === 'GroupMembersScreen' && (
-          <Header
-            leftComponent={
-              <Text style={styles.eventTitleTextStyle}>
-                {strings.membersTitle}
-              </Text>
-            }
-            showBackgroundColor={true}
-            rightComponent={
-              <View>
-                {switchUser.uid === groupID && (
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <TouchableWithoutFeedback
-                      onPress={() => actionSheet.current.show()}>
-                      <Image
-                        source={images.createMember}
-                        style={styles.createMemberStyle}
-                      />
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback
-                      onPress={() => actionSheetPlus.current.show()}>
-                      <Image
-                        source={images.vertical3Dot}
-                        style={styles.navigationRightItem}
-                      />
-                    </TouchableWithoutFeedback>
-                  </View>
-                )}
-              </View>
-            }
-          />
-        )} */}
       </View>
       <View tabLabel={strings.membersTitle} style={{flex: 1}}>
         {SearchBox()}
