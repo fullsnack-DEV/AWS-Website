@@ -1,12 +1,5 @@
 import React, {useState, useContext, useLayoutEffect} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  Alert,
-} from 'react-native';
+import {View, StyleSheet, Text, SafeAreaView, Alert} from 'react-native';
 import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../loader/ActivityLoader';
@@ -106,22 +99,22 @@ export default function PauseGroupScreen({navigation}) {
         leftIconPress={() => navigation.goBack()}
       />
       <ActivityLoader visible={loading} />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
-          <Text style={styles.descText}>
-            {strings.deactiveScreenDescription}
-          </Text>
-        </View>
-        <TCGradientButton
-          title={
-            authContext.entity.obj.is_pause === true
-              ? strings.unpause
-              : strings.pause
-          }
-          outerContainerStyle={styles.buttonContainer}
-          onPress={handleButtonPress}
-        />
-      </ScrollView>
+
+      <View style={{marginTop: 18, marginHorizontal: 12}}>
+        <Text style={styles.descText}> {strings.whenyouTerminateAccount} </Text>
+      </View>
+      <View style={styles.container}>
+        <Text style={styles.descText}>{strings.deactiveScreenDescription}</Text>
+      </View>
+      <TCGradientButton
+        title={
+          authContext.entity.obj.is_pause === true
+            ? strings.unpause
+            : strings.pause
+        }
+        outerContainerStyle={styles.buttonContainer}
+        onPress={handleButtonPress}
+      />
     </SafeAreaView>
   );
 }

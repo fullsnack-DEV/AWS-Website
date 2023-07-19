@@ -332,7 +332,7 @@ const FeedsScreen = ({navigation}) => {
     />
   );
 
-  const renderTopHeader = () => (
+  const RenderTopHeader = () => (
     <View style={styles.headerRow}>
       <View>
         <Text style={styles.headerTitle}>{strings.feedTitleText}</Text>
@@ -368,7 +368,7 @@ const FeedsScreen = ({navigation}) => {
       <View
         style={{opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
-        {renderTopHeader()}
+        <RenderTopHeader />
       </View>
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       <View
@@ -402,6 +402,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1019,
     shadowRadius: 5,
     elevation: 5,
+
+    top: 0,
+    left: 0,
+    right: 0,
   },
   headerTitle: {
     fontSize: 20,

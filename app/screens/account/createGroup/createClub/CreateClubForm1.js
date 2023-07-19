@@ -62,6 +62,7 @@ export default function CreateClubForm1({navigation, route}) {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
+  const [statefull, setStateFull] = useState('');
 
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   const [selectedSports, setSelectedSports] = useState([]);
@@ -141,6 +142,7 @@ export default function CreateClubForm1({navigation, route}) {
       city,
       state_abbr: state,
       country,
+      state: statefull,
       descriptions: description,
       entity_type: Verbs.entityTypeClub,
     };
@@ -257,6 +259,7 @@ export default function CreateClubForm1({navigation, route}) {
   const handleSetLocationOptions = (locations) => {
     setCity(locations.city);
     setState(locations.state);
+    setStateFull(locations.state_full);
     setCountry(locations.country);
     setLocation(
       [locations.city, locations.state, locations.country]

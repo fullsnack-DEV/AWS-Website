@@ -186,11 +186,12 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
 
   const handleSelectLocationOptions = (currentLocation) => {
     const obj = {
-      mail_city: currentLocation.city,
-      mail_state: currentLocation.state_full,
-      mail_state_abbr: currentLocation.state,
-      mail_country: currentLocation.country,
+      city: currentLocation.city,
+      state: currentLocation.state_full,
+      state_abbr: currentLocation.state,
+      country: currentLocation.country,
     };
+
     setGroupData({...groupData, ...obj});
   };
 
@@ -431,6 +432,7 @@ const EditGroupBasicInfoScreen = ({navigation, route}) => {
         title={strings.homeCityTitleText}
         setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
         onLocationSelect={handleSelectLocationOptions}
+        placeholder={strings.searchByCity}
       />
 
       <AddressLocationModal

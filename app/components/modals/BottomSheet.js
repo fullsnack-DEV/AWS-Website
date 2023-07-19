@@ -17,6 +17,7 @@ const BottomSheet = ({
   headerStyle = {},
   headerTitleStyle = {},
   separatorLineStyle = {},
+  textStyle = {},
 }) => {
   const [sheetType, setSheetType] = useState('default');
 
@@ -60,6 +61,7 @@ const BottomSheet = ({
                       style={[
                         styles.modalButtonText,
                         item.includes('Delete') ? {color: colors.redColor} : {},
+                        textStyle,
                       ]}>
                       {item}
                     </Text>

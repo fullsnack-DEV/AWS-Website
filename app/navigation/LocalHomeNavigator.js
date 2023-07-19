@@ -1091,9 +1091,12 @@ const LocalHomeNavigator = () => (
       component={GroupMembersScreen}
       options={{
         title: strings.membersTitle,
+        headerShown: false,
+        headerTitleAlign: 'center',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RMedium,
+          fontSize: 16,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

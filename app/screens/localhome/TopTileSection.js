@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Pressable,
   Dimensions,
-  TouchableOpacity,
   ScrollView,
 } from 'react-native';
 import React, {useContext, useState, useEffect} from 'react';
@@ -205,7 +204,7 @@ export default function TopTileSection({
   );
 
   const RenderInviteMemberbutton = () => (
-    <TouchableOpacity
+    <Pressable
       onPress={() => navigation.navigate('InviteMembersBySearchScreen')}
       style={styles.memberInviteButton}>
       <FastImage
@@ -219,7 +218,7 @@ export default function TopTileSection({
         }}>
         {strings.inviteMemberText}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   const renderhorizontalTileContent = () => {

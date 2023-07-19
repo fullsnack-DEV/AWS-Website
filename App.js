@@ -4,6 +4,7 @@ import {Alert, StatusBar} from 'react-native';
 import {decode, encode} from 'base-64';
 import messaging from '@react-native-firebase/messaging';
 import Orientation from 'react-native-orientation';
+import {StreamChat} from 'stream-chat';
 import AuthContext from './app/auth/context';
 import LocationContext from './app/context/LocationContext';
 import NavigationMainContainer from './NavigationMainContainer';
@@ -11,10 +12,11 @@ import * as Utility from './app/utils';
 import {strings} from './Localization/translation';
 import {ImageUploadProvider} from './app/context/GetContexts';
 import CommonAlert from './app/screens/account/commonScreen/CommonAlert';
+import {STREAMCHATKEY} from './app/utils/streamChat';
 
 console.disableYellowBox = true;
 
-export default function App() {
+function App() {
   const [networkConnected, setNetworkConntected] = useState(true);
   const [user, setUser] = useState(null);
   const [sports, setSports] = useState([]);
@@ -28,6 +30,8 @@ export default function App() {
   const [unreadNotificationCount, setNotificationCount] = useState({});
   const [totalNotificationCount, setTotalNotificationCount] = useState(0);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
+  const [streamChatToken, setStreamChatToken] = useState(null);
+  const [chatClient] = useState(StreamChat.getInstance(STREAMCHATKEY));
 
   const setTokenData = useCallback(async (token) => {
     setToken(token);
@@ -40,7 +44,7 @@ export default function App() {
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     if (enabled) {
-      // console.log('Authorization status:', authStatus);
+      console.log('Authorization status:', authStatus);
     }
   }
 
@@ -64,6 +68,7 @@ export default function App() {
       strings.networkConnectivityErrorMessage,
     );
   };
+
   useEffect(() => {
     NetInfo.addEventListener((state) => {
       setNetworkConntected(state.isConnected);
@@ -103,6 +108,7 @@ export default function App() {
     setManagedEntityList([]);
     setNotificationCount({});
     setTotalNotificationCount(0);
+    setStreamChatToken(null);
   }, []);
 
   const authValue = useMemo(
@@ -131,6 +137,9 @@ export default function App() {
       clearAuthContext,
       isAccountDeactivated,
       setIsAccountDeactivated,
+      streamChatToken,
+      setStreamChatToken,
+      chatClient,
     }),
     [
       role,
@@ -149,6 +158,8 @@ export default function App() {
       setTotalNotificationCount,
       clearAuthContext,
       isAccountDeactivated,
+      streamChatToken,
+      chatClient,
     ],
   );
 
@@ -163,3 +174,5 @@ export default function App() {
     </AuthContext.Provider>
   );
 }
+
+export default React.memo(App);

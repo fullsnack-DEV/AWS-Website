@@ -40,6 +40,7 @@ import EventsCard from './EventsCard';
 import fonts from '../../Constants/Fonts';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
+import PlayerShimmerCard from './PlayerShimmerCard';
 
 const LocalHomeMenuItems = memo(
   ({
@@ -54,6 +55,7 @@ const LocalHomeMenuItems = memo(
     navigateToScoreKeeper,
     owners,
     allUserData,
+    cardLoader,
   }) => {
     const navigation = useNavigation();
     const authContext = useContext(AuthContext);
@@ -112,54 +114,31 @@ const LocalHomeMenuItems = memo(
 
     const onCardPress = (card, item) => {
       if (
-        card.key === strings.completedMatches ||
-        card.key === strings.upcomingMatchesTitle
+        [strings.completedMatches, strings.upcomingMatchesTitle].includes(
+          card.key,
+        )
       ) {
         const sportName = getSportName(item, authContext);
         const routeName = getGameHomeScreen(sportName);
-
-        if (routeName) navigation.push(routeName, {gameId: item?.game_id});
-      } else if (card.key === strings.playersAvailableforChallenge) {
-        const object = {...item};
-        const sports = object.registered_sports.filter(
-          (obj) =>
-            obj.is_active === true && obj.sport_type === Verbs.singleSport,
-        );
-        object.sports = sports;
-        setPlayerDetail(object);
-        setPlayerDetailPopup(true);
-      } else if (card.key === strings.refreesAvailable) {
-        const object = item;
-        const sports = object.referee_data;
-        object.sports = sports;
-        setPlayerDetail(object);
-        setPlayerDetailPopup(true);
-      } else if (card.key === strings.scorekeepersAvailable) {
-        const object = item;
-        const sports = object.scorekeeper_data;
-        object.sports = sports;
-        setPlayerDetail(object);
-        setPlayerDetailPopup(true);
-      } else if (card.key === strings.lookingForTeamTitle) {
-        const object = {...item};
-        const sports = object.registered_sports.filter(
-          (obj) => obj.is_active === true,
-        );
-        object.sports = sports;
-        setPlayerDetail(object);
-        setPlayerDetailPopup(true);
+        if (routeName) {
+          navigation.push(routeName, {gameId: item?.game_id});
+        }
       } else {
+        const uid = [Verbs.entityTypeUser, Verbs.entityTypePlayer].includes(
+          item?.entity_type,
+        )
+          ? item?.user_id
+          : item?.group_id;
+
+        const role = [Verbs.entityTypeUser, Verbs.entityTypePlayer].includes(
+          item?.entity_type,
+        )
+          ? Verbs.entityTypeUser
+          : item?.entity_type;
+
         navigation.navigate('HomeScreen', {
-          uid: [Verbs.entityTypeUser, Verbs.entityTypePlayer]?.includes(
-            item?.entity_type,
-          )
-            ? item?.user_id
-            : item?.group_id,
-          role: [Verbs.entityTypeUser, Verbs.entityTypePlayer]?.includes(
-            item?.entity_type,
-          )
-            ? Verbs.entityTypeUser
-            : item.entity_type,
+          uid,
+          role,
           backButtonVisible: true,
           menuBtnVisible: false,
         });
@@ -167,22 +146,20 @@ const LocalHomeMenuItems = memo(
     };
 
     const onTitlePress = (item) => {
-      switch (item?.key) {
-        case strings.playersAvailableforChallenge:
-          {
-            const data = getDataForNextScreen(
-              Verbs.SPORT_DATA,
-              filter,
-              location,
-              selectedLocationOption,
-              authContext,
-            );
+      const data = getDataForNextScreen(
+        Verbs.SPORT_DATA,
+        filter,
+        location,
+        selectedLocationOption,
+        authContext,
+      );
 
-            navigation.navigate('LookingForChallengeScreen', {
-              filters: data,
-              registerFavSports: getSingleSportList(sports),
-            });
-          }
+      switch (item.key) {
+        case strings.playersAvailableforChallenge:
+          navigation.navigate('LookingForChallengeScreen', {
+            filters: data,
+            registerFavSports: getSingleSportList(sports),
+          });
           break;
 
         case strings.refreesAvailable:
@@ -191,130 +168,61 @@ const LocalHomeMenuItems = memo(
 
         case strings.scorekeepersAvailable:
           navigateToScoreKeeper();
-
           break;
 
         case strings.hiringPlayerTitle:
-          {
-            const data = getDataForNextScreen(
-              Verbs.SPORT_DATA,
-              filter,
-              location,
-              selectedLocationOption,
-              authContext,
-            );
-
-            navigation.navigate('RecruitingPlayerScreen', {
-              filters: {
-                ...data,
-              },
-            });
-          }
-
+          navigation.navigate('RecruitingPlayerScreen', {
+            filters: data,
+          });
           break;
 
         case strings.completedMatches:
-          if (authContext.entity.role === Verbs.entityTypeTeam) {
-            const data = getDataForNextScreen(
-              Verbs.TEAM_DATA,
-              filter,
-              location,
-              selectedLocationOption,
-              authContext,
-            );
-            navigation.navigate('RecentMatchScreen', {
-              filters: {
-                location: data.location,
-                locationOption: data.locationOption,
-              },
-              teamSportData: data.teamSportData,
-            });
-          } else {
-            const data = getDataForNextScreen(
-              Verbs.SPORT_DATA,
-              filter,
-              location,
-              selectedLocationOption,
-              authContext,
-            );
-
-            navigation.navigate('RecentMatchScreen', {
-              filters: data,
-            });
-          }
-
-          break;
-
         case strings.upcomingMatchesTitle:
-          if (authContext.entity.role === Verbs.entityTypeTeam) {
-            const data = getDataForNextScreen(
-              Verbs.TEAM_DATA,
-              filter,
-              location,
-              selectedLocationOption,
-              authContext,
-            );
-            navigation.navigate('UpcomingMatchScreen', {
-              filters: {
-                location: data.location,
-                locationOption: data.locationOption,
-              },
-              teamSportData: data.teamSportData,
-            });
-          } else {
-            const data = getDataForNextScreen(
-              Verbs.SPORT_DATA,
-              filter,
-              location,
-              selectedLocationOption,
-              authContext,
-            );
-            navigation.navigate('UpcomingMatchScreen', {
-              filters: data,
-            });
-          }
+          // eslint-disable-next-line no-case-declarations
+          const filters = {
+            location,
+            locationOption: selectedLocationOption,
+            teamSportData: data.teamSportData,
+          };
 
+          if (authContext.entity.role === Verbs.entityTypeTeam) {
+            navigation.navigate(
+              item.key === strings.completedMatches
+                ? 'RecentMatchScreen'
+                : 'UpcomingMatchScreen',
+              {
+                filters,
+                teamSportData: data.teamSportData,
+              },
+            );
+          } else {
+            navigation.navigate(
+              item.key === strings.completedMatches
+                ? 'RecentMatchScreen'
+                : 'UpcomingMatchScreen',
+              {
+                filters: data,
+              },
+            );
+          }
           break;
 
         case strings.teamAvailableforChallenge:
-          {
-            const data = getDataForNextScreen(
-              Verbs.TEAM_DATA,
-              filter,
-              location,
-              selectedLocationOption,
-              authContext,
-            );
-            navigation.navigate('LookingForChallengeScreen', {
-              filters: {
-                location: data.location,
-                locationOption: data.locationOption,
-              },
-              teamSportData: data.teamSportData,
-              registerFavSports: sports,
-            });
-          }
-
+          navigation.navigate('LookingForChallengeScreen', {
+            filters: data,
+            teamSportData: data.teamSportData,
+            registerFavSports: sports,
+          });
           break;
 
         case strings.lookingForTeamTitle:
-          {
-            const data = getDataForNextScreen(
-              Verbs.SPORT_DATA,
-              filter,
-              location,
-              selectedLocationOption,
-              authContext,
-            );
-            navigation.navigate('LookingTeamScreen', {
-              filters: data,
-            });
-          }
-
+          navigation.navigate('LookingTeamScreen', {
+            filters: data,
+          });
           break;
 
         case strings.eventHometitle:
-          Alert.alert('Pressd');
+          Alert.alert('Pressed');
           break;
 
         default:
@@ -343,11 +251,17 @@ const LocalHomeMenuItems = memo(
                 showsHorizontalScrollIndicator={false}
                 renderItem={({item}) => <TeamCard item={item} />}
                 ListEmptyComponent={() => (
-                  <PlayersCardPlaceHolder
-                    data={dummyTeamData}
-                    forTeams={true}
-                    placeholdertext={strings.hiringPlayersPlaceholderText}
-                  />
+                  <>
+                    {cardLoader ? (
+                      <PlayerShimmerCard data={dummyPlayerData} />
+                    ) : (
+                      <PlayersCardPlaceHolder
+                        data={dummyTeamData}
+                        forTeams={true}
+                        placeholdertext={strings.hiringPlayersPlaceholderText}
+                      />
+                    )}
+                  </>
                 )}
               />
 
@@ -466,10 +380,7 @@ const LocalHomeMenuItems = memo(
                     isDisabled={!(items?.data?.length > 0)}
                     onPress={() =>
                       navigation.navigate('Schedule', {
-                        screen: 'CreateEventScreen',
-                        params: {
-                          comeName: 'HomeScreen',
-                        },
+                        screen: 'EventScheduleScreen',
                       })
                     }
                   />
@@ -553,11 +464,17 @@ const LocalHomeMenuItems = memo(
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
                     ListEmptyComponent={() => (
-                      <PlayersCardPlaceHolder
-                        data={dummyTeamData}
-                        forTeams={true}
-                        placeholdertext={strings.noTeams}
-                      />
+                      <>
+                        {cardLoader ? (
+                          <PlayerShimmerCard data={dummyPlayerData} />
+                        ) : (
+                          <PlayersCardPlaceHolder
+                            data={dummyTeamData}
+                            forTeams={true}
+                            placeholdertext={strings.noTeams}
+                          />
+                        )}
+                      </>
                     )}
                   />
                   <TCThinDivider
@@ -597,15 +514,24 @@ const LocalHomeMenuItems = memo(
                         selectedSport={selectedSport}
                         sportType={sportType}
                         item={item}
+                        hiring={true}
                         onPress={() => onCardPress(items, item)}
                       />
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
                     ListEmptyComponent={() => (
-                      <PlayersCardPlaceHolder
-                        data={dummyPlayerData}
-                        placeholdertext={strings.lookingTeamsPlaceholderText}
-                      />
+                      <>
+                        {cardLoader ? (
+                          <PlayerShimmerCard data={dummyPlayerData} />
+                        ) : (
+                          <PlayersCardPlaceHolder
+                            data={dummyPlayerData}
+                            placeholdertext={
+                              strings.lookingTeamsPlaceholderText
+                            }
+                          />
+                        )}
+                      </>
                     )}
                   />
                   <TCThinDivider
@@ -645,10 +571,16 @@ const LocalHomeMenuItems = memo(
                 )}
                 ListFooterComponent={() => <View style={{width: 15}} />}
                 ListEmptyComponent={() => (
-                  <PlayersCardPlaceHolder
-                    data={dummyPlayerData}
-                    placeholdertext={strings.refereesPlaceholderText}
-                  />
+                  <>
+                    {cardLoader ? (
+                      <PlayerShimmerCard data={dummyPlayerData} />
+                    ) : (
+                      <PlayersCardPlaceHolder
+                        data={dummyPlayerData}
+                        placeholdertext={strings.refereesPlaceholderText}
+                      />
+                    )}
+                  </>
                 )}
               />
               <TCThinDivider
@@ -687,10 +619,16 @@ const LocalHomeMenuItems = memo(
                 )}
                 ListFooterComponent={() => <View style={{width: 15}} />}
                 ListEmptyComponent={() => (
-                  <PlayersCardPlaceHolder
-                    data={dummyPlayerData}
-                    placeholdertext={strings.scorekeepersPlaceholderText}
-                  />
+                  <>
+                    {cardLoader ? (
+                      <PlayerShimmerCard data={dummyPlayerData} />
+                    ) : (
+                      <PlayersCardPlaceHolder
+                        data={dummyPlayerData}
+                        placeholdertext={strings.scorekeepersPlaceholderText}
+                      />
+                    )}
+                  </>
                 )}
               />
               <TCThinDivider
@@ -733,10 +671,16 @@ const LocalHomeMenuItems = memo(
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
                     ListEmptyComponent={() => (
-                      <PlayersCardPlaceHolder
-                        data={dummyPlayerData}
-                        placeholdertext={strings.noMembers}
-                      />
+                      <>
+                        {cardLoader ? (
+                          <PlayerShimmerCard data={dummyPlayerData} />
+                        ) : (
+                          <PlayersCardPlaceHolder
+                            data={dummyPlayerData}
+                            placeholdertext={strings.noMembers}
+                          />
+                        )}
+                      </>
                     )}
                   />
                   <TCThinDivider
@@ -779,10 +723,16 @@ const LocalHomeMenuItems = memo(
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
                     ListEmptyComponent={() => (
-                      <PlayersCardPlaceHolder
-                        data={dummyPlayerData}
-                        placeholdertext={strings.noTeamclub}
-                      />
+                      <>
+                        {cardLoader ? (
+                          <PlayerShimmerCard data={dummyPlayerData} />
+                        ) : (
+                          <PlayersCardPlaceHolder
+                            data={dummyPlayerData}
+                            placeholdertext={strings.noTeamclub}
+                          />
+                        )}
+                      </>
                     )}
                   />
                   <TCThinDivider

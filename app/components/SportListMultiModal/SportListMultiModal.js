@@ -1,12 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {
-  FlatList,
-  Image,
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import {FlatList, Image, Text, View, StyleSheet, Pressable} from 'react-native';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
@@ -104,7 +97,7 @@ const SportListMultiModal = ({
         keyExtractor={(item, index) => index.toString()}
         renderItem={({item}) => (
           <>
-            <TouchableOpacity
+            <Pressable
               style={styles.listItem}
               onPress={() => handleClick(item)}>
               <View>
@@ -120,7 +113,7 @@ const SportListMultiModal = ({
                   style={styles.checkboxImg}
                 />
               </View>
-            </TouchableOpacity>
+            </Pressable>
             <View style={styles.dividor} />
           </>
         )}

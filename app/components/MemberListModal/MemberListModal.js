@@ -59,7 +59,7 @@ const MemberListModal = ({
     if (sportsList.length > 0) {
       Setplayers(sportsList);
     }
-  }, [isFocused, sportsList]);
+  }, [isFocused, sportsList, isVisible]);
 
   const seLoaderHandler = (val) => {
     setLoading(val);

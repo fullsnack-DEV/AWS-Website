@@ -8,8 +8,8 @@ import fonts from '../../Constants/Fonts';
 import Verbs from '../../Constants/Verbs';
 import {getJSDate} from '../../utils';
 
-const MatchCard = ({item = {}}) => (
-  <View style={styles.parent}>
+const MatchCard = ({item = {}, style}) => (
+  <View style={[styles.parent, {...style}]}>
     <View style={styles.row}>
       <Text style={styles.dateTime}>
         {moment(getJSDate(item?.actual_startdatetime).getTime()).format(

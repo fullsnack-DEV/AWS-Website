@@ -187,6 +187,7 @@ const Verbs = {
   report: 'report',
   ITEM_HEIGHT: 178,
   ITEM_LENGTH: 25,
+  VIEW_POSITION: 0.9,
 };
 
 export default Verbs;

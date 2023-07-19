@@ -327,7 +327,7 @@ export default function EditGroupProfileScreen({navigation}) {
               />
             </View>
 
-            <View style={{marginBottom: 35}}>
+            <View style={styles.containerStyle}>
               <Text style={styles.labelText}>
                 {strings.homeCityTitle.toUpperCase()}
                 <Text
@@ -350,7 +350,7 @@ export default function EditGroupProfileScreen({navigation}) {
             </View>
 
             {authContext.entity.role === Verbs.entityTypeClub && (
-              <View style={{marginBottom: 35}}>
+              <View style={styles.containerStyle}>
                 <Text style={styles.labelText}>
                   {strings.sportsTitleText.toUpperCase()}
                   <Text
@@ -376,7 +376,7 @@ export default function EditGroupProfileScreen({navigation}) {
             )}
 
             {authContext.entity.role === Verbs.entityTypeTeam && (
-              <View style={{marginBottom: 35}}>
+              <View style={styles.containerStyle}>
                 <Text style={styles.labelText}>
                   {strings.sportsTitleText.toUpperCase()}
                 </Text>
@@ -384,7 +384,7 @@ export default function EditGroupProfileScreen({navigation}) {
               </View>
             )}
 
-            <View style={{marginBottom: 35}}>
+            <View style={styles.containerStyle}>
               <Text style={styles.labelText}>
                 {strings.slogan.toUpperCase()}
               </Text>
@@ -409,9 +409,10 @@ export default function EditGroupProfileScreen({navigation}) {
 
         <LocationModal
           visibleLocationModal={visibleLocationModal}
-          title={strings.homeCityTitleText}
+          title={strings.homeCityTitle}
           setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
           onLocationSelect={handleSelectLocationOptions}
+          placeholder={strings.searchByCity}
         />
         <SportListMultiModal
           isVisible={visibleSportsModal}
@@ -505,5 +506,8 @@ const styles = StyleSheet.create({
     paddingBottom: 9,
     borderRadius: 5,
     backgroundColor: colors.textFieldBackground,
+  },
+  containerStyle: {
+    marginBottom: 35,
   },
 });

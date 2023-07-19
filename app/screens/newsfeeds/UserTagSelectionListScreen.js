@@ -14,6 +14,7 @@ import {
   FlatList,
   SafeAreaView,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import _ from 'lodash';
@@ -34,6 +35,7 @@ import ScreenHeader from '../../components/ScreenHeader';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import {getGroupSportName} from '../../utils/sportsActivityUtils';
 import Verbs from '../../Constants/Verbs';
+import SelectedMatchList from '../../components/newsFeed/SelectedMatchList';
 
 const tabList = [
   strings.peopleTitleText,
@@ -136,8 +138,15 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused && route.params.gameTags && route.params.tagsOfEntity) {
-      setSeletedEntity([...route.params.tagsOfEntity]);
+      console.log(route.params.tagsOfEntity, 'from tga ta');
+      const entityDataArray = route.params.tagsOfEntity.map(
+        (item) => item.entity_data,
+      );
+      setSeletedEntity([...entityDataArray]);
+
       setSelectedMatch([...route.params.gameTags]);
+
+      console.log(seletedEntity, 'from eneitn');
     }
   }, [isFocused, route.params]);
 
@@ -168,6 +177,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       } else {
         gData.splice(gIndex, 1);
       }
+      console.log(gData, 'Frpm ');
       setSelectedMatch([...gData]);
     },
     [selectedMatch],
@@ -276,7 +286,16 @@ export default function UserTagSelectionListScreen({navigation, route}) {
     } else {
       newList.push(data);
     }
+
     setSeletedEntity([...newList]);
+  };
+
+  const handleGameTagSelection = (item) => {
+    const filteredMatchTagData = selectedMatch.filter(
+      (match) => match.challenge_id !== item.challenge_id,
+    );
+
+    setSelectedMatch(filteredMatchTagData);
   };
 
   const renderTabContain = () => {
@@ -341,6 +360,16 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       />
     ) : null;
 
+  const renderSelectedMatchList = () =>
+    selectedMatch.length > 0 ? (
+      <SelectedMatchList
+        matches={selectedMatch}
+        onTagCancelPress={(item) => {
+          handleGameTagSelection(item);
+        }}
+      />
+    ) : null;
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -373,7 +402,22 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         }}
         value={searchText}
       />
-      {renderSelectedEntity()}
+      <View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            alignItems: 'flex-start',
+            flexGrow: 1,
+            paddingRight: 15,
+          }}>
+          <View style={styles.scrollStyle}>
+            {renderSelectedEntity()}
+            {renderSelectedMatchList()}
+          </View>
+        </ScrollView>
+      </View>
+
       {renderTopTabView()}
       <View style={{flex: 1}}>{renderTabContain()}</View>
     </SafeAreaView>
@@ -447,5 +491,9 @@ const styles = StyleSheet.create({
   activeSubTabText: {
     fontFamily: fonts.RBold,
     color: colors.tabFontColor,
+  },
+  scrollStyle: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
 });

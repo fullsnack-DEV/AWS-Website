@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useRef,
+  useMemo,
 } from 'react';
 import {
   View,
@@ -16,7 +17,6 @@ import {
   Pressable,
   SafeAreaView,
   ActivityIndicator,
-  TouchableOpacity,
 } from 'react-native';
 
 import Modal from 'react-native-modal';
@@ -62,8 +62,9 @@ import BottomSheet from '../../components/modals/BottomSheet';
 
 const defaultPageSize = 10;
 
-export default function LocalHomeScreen({navigation, route}) {
+function LocalHomeScreen({navigation, route}) {
   const refContainer = useRef();
+  const listRef = useRef();
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const locationContext = useContext(LocationContext);
@@ -121,6 +122,7 @@ export default function LocalHomeScreen({navigation, route}) {
   const [allUserData, setAllUserData] = useState([]);
   const [owners, setOwners] = useState([]);
   const [sportIconLoader, setSportIconLoader] = useState(false);
+  const [cardLoader, setCardLoader] = useState(false);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -176,6 +178,7 @@ export default function LocalHomeScreen({navigation, route}) {
         setLookingTeam,
         setReferees,
         setScorekeepers,
+        setCardLoader,
       );
     }
   }, [
@@ -299,7 +302,7 @@ export default function LocalHomeScreen({navigation, route}) {
   useEffect(() => {
     getSportsForHome(authContext, setSportHandler, sports, setSportIconLoader);
     setSelectedSport(strings.allType);
-  }, [authContext]);
+  }, [authContext.entity]);
 
   useEffect(() => {
     const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
@@ -444,12 +447,9 @@ export default function LocalHomeScreen({navigation, route}) {
     if (item.title === strings.addTeamClub) {
       setBottomSheet(true);
     }
-    if (item.title === strings.createevents) {
+    if (item.title === strings.createEventhomeTitle) {
       navigation.navigate('Schedule', {
-        screen: 'CreateEventScreen',
-        params: {
-          comeName: 'HomeScreen',
-        },
+        screen: 'EventScheduleScreen',
       });
     }
     if (item.title === strings.inviteMemberClub) {
@@ -458,12 +458,8 @@ export default function LocalHomeScreen({navigation, route}) {
   };
 
   const handlePress = useCallback(
-    (item, index) => {
-      refContainer.current.scrollToIndex({
-        animated: true,
-        index,
-        viewPosition: 0.3,
-      });
+    (item) => {
+      listRef.current.scrollToOffset({offset: 0, animated: true});
 
       if (item.sport === strings.editType) {
         // Handle editType logic
@@ -481,7 +477,7 @@ export default function LocalHomeScreen({navigation, route}) {
   );
 
   const SportsListView = ({item, index}) => (
-    <TouchableOpacity
+    <Pressable
       onPress={() => handlePress(item, index)}
       style={{
         justifyContent: 'center',
@@ -521,7 +517,7 @@ export default function LocalHomeScreen({navigation, route}) {
         }>
         {renderSportName(item)}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
@@ -603,16 +599,6 @@ export default function LocalHomeScreen({navigation, route}) {
       keyExtractor={keyExtractor}
       renderItem={SportsListView}
       getItemLayout={getLayout}
-      onScrollToIndexFailed={(info) => {
-        // eslint-disable-next-line no-promise-executor-return
-        const wait = new Promise((resolve) => setTimeout(resolve, 500));
-        wait.then(() => {
-          refContainer.current.scrollToIndex({
-            animated: true,
-            index: info.index,
-          });
-        });
-      }}
     />
   );
 
@@ -654,6 +640,16 @@ export default function LocalHomeScreen({navigation, route}) {
     setVisibleSportsModalForClub(val);
   };
 
+  const LocalHeader = useMemo(() => (
+    <LocalHomeHeader
+      setShowSwitchAccountModal={() => setShowSwitchAccountModal(true)}
+      setLocationpopup={() => setLocationPopup(true)}
+      location={location}
+      notificationCount={notificationCount}
+      customSports={customSports}
+    />
+  ));
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
@@ -664,13 +660,7 @@ export default function LocalHomeScreen({navigation, route}) {
         }}>
         {/* screen Header */}
 
-        <LocalHomeHeader
-          setShowSwitchAccountModal={() => setShowSwitchAccountModal(true)}
-          setLocationpopup={() => setLocationPopup(true)}
-          location={location}
-          notificationCount={notificationCount}
-          customSports={customSports}
-        />
+        {LocalHeader}
 
         <View style={styles.separateLine} testID="local-home-screen" />
 
@@ -690,29 +680,34 @@ export default function LocalHomeScreen({navigation, route}) {
             opacity: authContext.isAccountDeactivated ? 0.8 : 1,
           }}>
           {/* Flatlist  */}
-
           <FlatList
             data={localHomeMenu}
-            keyExtractor={(item) => item.index.toString()}
+            ref={listRef}
+            keyExtractor={(_, index) => index.toString()}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled
-            maxToRenderPerBatch={10}
+            removeClippedSubviews={true}
             initialNumToRender={10}
+            maxToRenderPerBatch={10}
             windowSize={21}
-            ListHeaderComponent={({index}) => (
-              <TopTileSection
-                key={index}
-                handleTileClick={handleTileClick}
-                visibleSportsModalForClub={visibleSportsModalForClub}
-                visibleSportsModalForTeam={visibleSportsModalForTeam}
-                onRegisterAsTilePress={onRegisterAsTilePress}
-                setSelectedMenuOptionType={(val) =>
-                  setSelectedMenuOptionType(val)
-                }
-                setTeamModal={setTeamModal}
-                setClubModal={setClubModal}
-                setNavigationOptions={(obj) => setNavigationOptions(obj)}
-              />
+            ListHeaderComponent={React.memo(
+              (
+                {index}, // Memoize TopTileSection
+              ) => (
+                <TopTileSection
+                  key={index}
+                  handleTileClick={handleTileClick}
+                  visibleSportsModalForClub={visibleSportsModalForClub}
+                  visibleSportsModalForTeam={visibleSportsModalForTeam}
+                  onRegisterAsTilePress={onRegisterAsTilePress}
+                  setSelectedMenuOptionType={(val) =>
+                    setSelectedMenuOptionType(val)
+                  }
+                  setTeamModal={setTeamModal}
+                  setClubModal={setClubModal}
+                  setNavigationOptions={(obj) => setNavigationOptions(obj)}
+                />
+              ),
             )}
             renderItem={({item, index}) => (
               <LocalHomeMenuItems
@@ -728,12 +723,14 @@ export default function LocalHomeScreen({navigation, route}) {
                 sportType={sportType}
                 owners={owners}
                 allUserData={allUserData}
+                cardLoader={cardLoader}
               />
             )}
             getItemLayout={getItemLayout}
           />
         </View>
       )}
+
       <Modal
         onBackdropPress={() => setLocationPopup(false)}
         style={{
@@ -975,14 +972,18 @@ export default function LocalHomeScreen({navigation, route}) {
     </SafeAreaView>
   );
 }
+
+export default React.memo(LocalHomeScreen);
+
 const styles = StyleSheet.create({
   sportName: {
     fontSize: 12,
-    fontFamily: fonts.RRegular,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     alignSelf: 'center',
     marginLeft: 15,
     marginRight: 15,
+    lineHeight: 14,
   },
 
   bottomPopupContainer: {
@@ -1105,8 +1106,8 @@ const styles = StyleSheet.create({
   },
 
   separateLine: {
-    borderColor: colors.veryLightGray,
-    borderWidth: 0.5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.veryLightGray,
   },
 
   locationText: {

@@ -19,7 +19,7 @@ const FeedProfile = ({
 }) => (
   <View style={styles.mainContainer}>
     <TouchableOpacity
-      style={{flexDirection: 'row', alignItems: 'center'}}
+      style={{flexDirection: 'row', alignItems: 'flex-start'}}
       onPress={onImageProfilePress}>
       <GroupIcon
         imageUrl={data.full_image ?? data.thumbnail}
@@ -27,9 +27,9 @@ const FeedProfile = ({
         groupName={data.group_name}
         containerStyle={styles.imageMainContainer}
       />
-      <View>
+      <View style={{width: 290}}>
         <Text
-          numberOfLines={1}
+          numberOfLines={2}
           style={styles.userNameTxt}
           onPress={onImageProfilePress}>
           {data.full_name ?? data.group_name}{' '}
@@ -70,14 +70,14 @@ const styles = StyleSheet.create({
     tintColor: colors.googleColor,
   },
   dotImageTouchStyle: {
-    paddingLeft: 15,
-    alignItems: 'center',
-    alignSelf: 'center',
+    paddingLeft: 5,
+    alignItems: 'flex-start',
+    marginTop: 10,
     justifyContent: 'center',
   },
   mainContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     marginBottom: 15,
   },
@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
+    textAlign: 'left',
   },
   imageMainContainer: {
     height: 40,

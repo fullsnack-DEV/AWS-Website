@@ -270,7 +270,8 @@ import IncomingReservationSettings from '../screens/account/registerReferee/Inco
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
 import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
-
+import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
+import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -296,6 +297,12 @@ const AccountNavigator = () => (
         borderBottomWidth: 0.3,
       },
     }}>
+    <Stack.Screen
+      name="WritePostScreen"
+      component={WritePostScreen}
+      options={{headerShown: false}}
+    />
+
     <Stack.Screen
       name="AccountScreen"
       component={AccountScreen}
@@ -423,16 +430,7 @@ const AccountNavigator = () => (
       name="UserTagSelectionListScreen"
       component={UserTagSelectionListScreen}
       options={{
-        title: strings.tag,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
+        headerShown: false,
       }}
     />
 
@@ -664,6 +662,11 @@ const AccountNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+    <Stack.Screen
+      name={'FeedViewScreen'}
+      component={FeedViewScreen}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="EditEventScreen"

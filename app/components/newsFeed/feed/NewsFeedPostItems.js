@@ -90,6 +90,7 @@ const NewsFeedPostItems = memo(
             data: item,
             onPressDone: onEditPressDone,
           });
+          setShowMoreOptions(false);
           break;
 
         case strings.delete:
@@ -181,7 +182,12 @@ const NewsFeedPostItems = memo(
     };
 
     return (
-      <View style={{paddingHorizontal: 15, paddingTop: 17, paddingBottom: 20}}>
+      <View
+        style={{
+          paddingHorizontal: 15,
+          paddingTop: 17,
+          paddingBottom: 20,
+        }}>
         {postType === Verbs.eventVerb ? (
           <PostForEvent
             postData={item}

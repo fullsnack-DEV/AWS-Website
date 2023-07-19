@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Pressable,
-  Image,
-  StyleSheet,
-} from 'react-native';
+import {View, Text, Pressable, Image, StyleSheet} from 'react-native';
 import React, {useContext} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
@@ -28,7 +21,7 @@ export default function LocalHomeHeader({
     <View>
       <Header
         leftComponent={
-          <Pressable onPress={() => console.log(authContext, 'from auth')}>
+          <Pressable>
             <FastImage
               source={images.newTcLogo}
               resizeMode={'contain'}
@@ -39,29 +32,30 @@ export default function LocalHomeHeader({
         showBackgroundColor={true}
         centerComponent={
           <View>
-            <TouchableOpacity
+            <Pressable
               onPress={() => setShowSwitchAccountModal()}
               style={styles.headerNameStyle}>
               <Text style={styles.headerUserName} numberOfLines={1}>
                 {authContext.entity.obj.full_name ??
                   authContext.entity.obj.group_name}
               </Text>
-              <Image source={images.path} style={styles.downArrow} />
-            </TouchableOpacity>
 
-            <TouchableOpacity
+              <Image source={images.path} style={styles.downArrow} />
+            </Pressable>
+
+            <Pressable
               style={styles.titleHeaderView}
               onPress={() => setLocationpopup()}>
               <Text style={styles.headerTitle}>
                 {location?.charAt?.(0)?.toUpperCase() + location?.slice(1)}
               </Text>
               <Image source={images.home_gps} style={styles.gpsIconStyle} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         }
         rightComponent={
           <View style={styles.rightHeaderView}>
-            <TouchableOpacity
+            <Pressable
               onPress={() => {
                 navigation.navigate('EntitySearchScreen', {
                   sportsList: customSports,
@@ -69,9 +63,9 @@ export default function LocalHomeHeader({
                 });
               }}>
               <Image source={images.home_search} style={styles.townsCupIcon} />
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
+            <Pressable
               style={styles.iconButton}
               onPress={() => navigation.navigate('NotificationsListScreen')}>
               <Image
@@ -85,7 +79,7 @@ export default function LocalHomeHeader({
                   </Text>
                 </View>
               )}
-            </TouchableOpacity>
+            </Pressable>
           </View>
         }
       />
@@ -123,9 +117,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     fontSize: 12,
     color: colors.lightBlackColor,
+    lineHeight: 14,
   },
   headerUserName: {
     fontSize: 16,
@@ -161,7 +156,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 18,
     resizeMode: 'contain',
-    marginLeft: 5,
+    marginLeft: 6,
     marginTop: 3,
   },
   backImageStyle: {

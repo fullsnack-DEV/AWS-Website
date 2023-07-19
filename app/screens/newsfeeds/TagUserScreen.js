@@ -20,7 +20,7 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {getGroupList, getUserList} from '../../api/elasticSearch';
-import { strings } from '../../../Localization/translation';
+import {strings} from '../../../Localization/translation';
 
 export default function TagUserScreen({backBtnPress, onItemPress}) {
   const [searchUser, setSearchUser] = useState('');

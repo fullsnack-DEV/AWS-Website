@@ -89,7 +89,8 @@ export default function CreateTeamForm1({navigation, route}) {
   const [selectedSport, SetSelectedSport] = useState(
     route?.params || route.params.sports,
   );
-  const [parentGroupID] = useState(route.params?.grp_id);
+  const [parentGroupID, setParentGroupID] = useState(route.params?.grp_id);
+  const [statefull, setStatefull] = useState('');
 
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
@@ -135,7 +136,11 @@ export default function CreateTeamForm1({navigation, route}) {
     if (isFocused) {
       // to get the club id if club creating the team
       if (route.params) {
-        delete route.params.grp_id;
+        if (route.params.grp_id) {
+          setParentGroupID(route.params.grp_id);
+          delete route.params.grp_id;
+        }
+
         SetSelectedSport(route?.params || route.params.sports);
       }
 
@@ -333,12 +338,8 @@ export default function CreateTeamForm1({navigation, route}) {
 
   const deleteImage = () => {
     if (currentImageSelection) {
-      // 1 means profile image
-      // setGroupProfile({ ...groupProfile, thumbnail: '', full_image: '' })
       setThumbnail();
     } else {
-      // 0 means profile image
-      // setGroupProfile({ ...groupProfile, background_thumbnail: '', background_full_image: '' })
       setBackgroundThumbnail();
     }
   };
@@ -347,6 +348,7 @@ export default function CreateTeamForm1({navigation, route}) {
     setCity(locations.city);
     setState(locations.state);
     setCountry(locations.country);
+    setStatefull(locations.state_full);
     setHomeCity(
       [locations.city, locations.state, locations.country]
         .filter((v) => v)
@@ -464,6 +466,7 @@ export default function CreateTeamForm1({navigation, route}) {
       city,
       state_abbr: state,
       country,
+      state: statefull,
       currency_type: authContext?.entity?.obj?.currency_type,
       sport_type: selectedSport.sport_type,
       sport: selectedSport.sport,

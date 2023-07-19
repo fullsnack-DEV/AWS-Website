@@ -179,8 +179,6 @@ function LocationModal({
         } else {
           setLoading(false);
           setCurrentLocation(null);
-
-          handleVisibleModal();
         }
       })
       .catch((e) => {

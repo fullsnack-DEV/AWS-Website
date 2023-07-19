@@ -1124,7 +1124,7 @@ export default {
   scorekeepingTitleText: 'en_Scorekeeping',
   addSportsTitle: 'en_Add Sport',
   congratsModalTitle:
-    'en_Congratulations!\nYou are now registered as a player in ',
+    'en_Congratulations!\nYou are now registered\nas a player in\n ',
   registerRefereeTitle: 'en_Register as Referee',
   registerScorekeeperTitle: 'en_Register as Scorekeeper',
   inviteYouToJoinEventText: 'en_invited you to join the event.',
@@ -1768,9 +1768,9 @@ export default {
   nOverTime: 'en_{0} Overtime',
   Overtime: 'en_OVERTIME',
   addIntervalPeriod: 'en_+ Add Intermission & Period',
-  addIntervalOverTime:'en_+ Add Intermission & Overtime',
-  intermission:'en_Intermission',
-  FirstPeriodOfOverTime:'en_1st Period of Overtime',
+  addIntervalOverTime: 'en_+ Add Intermission & Overtime',
+  intermission: 'en_Intermission',
+  FirstPeriodOfOverTime: 'en_1st Period of Overtime',
   hmTime: 'en_{0}h {1}m',
   canNotCgangesetting: 'en_You can not change availibility setting.',
   hasBeenDeclined: 'en_ has been declined.',
@@ -2279,8 +2279,7 @@ export default {
     'en_The match result has an effect on TC points and TC rankings of the challenger and you.',
   gameTypeFriendlyInfo:
     'en_The match result has no effect on TC points and TC rankings of the challenger and you.',
-  matchFeeModalTitle:
-    'en_Set the match fee that you want to Charge to a challenger.',
+  matchFeeModalTitle: 'en_How much do you want to Charge for The match fee?',
   chooseCancellationPolicyTitle: 'en_Choose Cancellation Policy.',
   refeereModalTitle:
     'en_How many referees will you hire for a match at your own cost?',
@@ -2314,10 +2313,8 @@ export default {
   warningTextForFee: 'en_Do you want to reconsider a',
   warningTextForFee1: 'en_match fee?',
   changecapital: 'en_CHANGE',
-
   filladdressmanually: 'en_ Fill in the address manually',
   cityStateOrCountryTitle: 'en_City, State or Country',
-
   youWillBeChallenger: 'en_You will be the challenger.',
   youWillBeHost: 'en_You will be the match host.',
   addText: 'en_Add',
@@ -2347,7 +2344,6 @@ export default {
   //Message Navigator
   messageChat: 'en_Message Chat',
   memberProfile: 'en_Member Profile',
-
   groupEvent: 'en_Group Events',
   memberProfile: 'en_Member Profile',
   whoCanJoinTeam: 'en_Who Can Join Team',
@@ -2513,9 +2509,9 @@ export default {
   addScorekeeperFee: 'en_ADD SCOREKEEPER FEE',
   continueWithNoScorekeeperFee: 'en_CONTINUE WITH NO SCOREKEEPER FEE',
   refereeCongratsModalTitle:
-    'Congratulations! \nYou are now registered as a referee in',
+    'Congratulations! \nYou are now registered as\n a referee in\n',
   scoreKeeperCongratsModalTitle:
-    'Congratulations! \nYou are now registered as a scorekeeper in',
+    'Congratulations! \nYou are now registered as\n a scorekeeper in\n',
   scoreKeeperCongratulationsModal:
     'en_You can now receive scorekeeper booking requests from teams and players, and also can sent offers to teams and players.',
   matchesNearYou: 'en_MATCHES NEAR YOU',
@@ -2568,7 +2564,7 @@ export default {
   congratesSubTitle: 'en_Your account has been switched to {0}.  ',
   whoDoYouwantToCreateTeamWith:
     'en_Who do you want to create the new team with?',
-  congratulationsTitle: 'en_Congratulations!',
+  congratulationsTitle: 'en_Congratulations! \n',
   hasBeenCreated: ' en_has been created.',
   jerseyValidation: 'en_Jersey Number is not valid!',
   clubModalTitle: 'en_Which sports does the new club will be involved in?',
@@ -2577,6 +2573,7 @@ export default {
   createTeamUnderYourClub: 'en_Create A Team Under Your CLub ',
 
   scorekeptMatches: 'en_Scorekept Matches',
+
   allSport: 'en_All',
   challengeScreenBottomText:
     'en_These settings will be applied only to incoming challenges that you will receive.',
@@ -2864,7 +2861,6 @@ export default {
   recruitingBottomClubText:
     'en_If you select “Yes, display it.”, your club profile may be displayed on the “Recruiting Members” section in Local Home.',
   areYouSureTo: 'en_Are you sure you want to {0} {1}?',
-
   paidInCash: 'en_Paid in cash',
   paidthroughStripe: 'en_Paid through Stripe',
   paidbyCheque: 'en_Paid by Cheque',
@@ -3037,12 +3033,38 @@ export default {
   noMatch: 'en_No Match',
   vs: 'VS',
   leaveComment: 'en_Leave a comment',
-  nTimeAgo: 'en_{0}{1} ago',
+  nTimeAgo: 'en_{0} {1} ago',
   report: 'en_Report',
   blockUser: 'en_Block User',
   removeMyTagFromPost: 'en_Remove my tag from post',
   deleteFromPost: 'en_Delete from my posts',
   blockAccount: 'en_Block Account',
   viewMoreReplies: 'en_View {0} more replies',
+  addPhone: 'en_+ Add Phone',
+  emptyChatMessage: 'en_No Message',
 
+  deleteForMeOption: 'en_Delete for Me',
+  deleteForEveryOneOption: 'en_Delete for EveryOne',
+  deleteForMeText: 'en_This message will be deleted from only your device',
+  deleteForEveryOneText:
+    "en_This message will be deleted from everyone's device",
+  uploadingText: 'en_Uploading',
+  uploadedText: ' en_Uploaded',
+  messageDeletedText: 'en_This mesage was deleted.',
+  photoText: 'en_Photo',
+  replyTo: 'en_Reply to',
+  noCommentsYetText: 'en_No Comments Yet',
+  editPrivacyText: 'en_Edit Privacy',
+  ReportText: 'en_Report',
+  newsFeedPostText: 'en_News Feed Post',
+  participants: 'en_PARTICIPANTS',
+  justNow: 'en_Just now',
+  whenyouTerminateAccount: 'en_When you Pause the team:',
+  viewText: 'en_View',
+  leaveChatAlertText: 'en_Are you sure you want to leave this chatroom?',
+  editChatRoom: 'en_Edit ChatRoom Name & Photo',
+  deleteForMe: 'en_The message will be deleted from from only your device.',
+  deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
+  viewAll: 'en_View all',
+  byUser: 'en_By {0}',
 };

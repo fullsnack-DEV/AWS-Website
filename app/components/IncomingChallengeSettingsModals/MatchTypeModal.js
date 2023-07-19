@@ -13,6 +13,13 @@ const gameTypeList = [
 ];
 
 const MatchTypeModal = ({gameType = '', onChange = () => {}}) => {
+  const addPrefixIfNeeded = (type) => {
+    if (type.startsWith('en_')) {
+      return type;
+    }
+    return `en_${type}`;
+  };
+
   const getDescription = () => {
     switch (gameType) {
       case strings.officialGameType:
@@ -77,7 +84,7 @@ const MatchTypeModal = ({gameType = '', onChange = () => {}}) => {
           <TouchableOpacity
             style={styles.radioContainer}
             onPress={() => onChange(item.label)}>
-            {gameType === item.label ? (
+            {addPrefixIfNeeded(gameType) === item.label ? (
               <Image source={images.radioCheckYellow} style={styles.image} />
             ) : (
               <Image source={images.radioUnselect} style={styles.image} />

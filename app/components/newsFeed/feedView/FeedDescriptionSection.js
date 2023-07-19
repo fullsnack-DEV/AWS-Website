@@ -56,9 +56,10 @@ const FeedDescriptionSection = ({
 
 const styles = StyleSheet.create({
   parent: {
-    marginLeft: 45,
-    marginTop: 15,
-    marginRight: 15,
+    top: 50,
+    left: 45,
+    right: 15,
+    position: 'absolute',
   },
   descText: {
     fontSize: 16,

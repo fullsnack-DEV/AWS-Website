@@ -88,7 +88,6 @@ const MatchFeeModal = ({
         selectedcurrency={currency}
         onNext={(item) => {
           setSelectedCurrency(item);
-
           onChangeCurrency(item);
           setShowCurrencyModal(false);
         }}
@@ -103,7 +102,7 @@ const MatchFeeModal = ({
           <Text style={styles.matchHostTitle}>{strings.whatMatchHostDo}</Text>
           <Text style={styles.matchfeeTitle}>{strings.matchFeeModalInfo2}</Text>
           <View>
-            <View style={[styles.rowContainerStyle, {marginTop: 5}]}>
+            <View style={[styles.rowContainerStyle, {marginTop: 10}]}>
               <View style={styles.bulletContainerView} />
               <Text style={styles.bulletText}>{`${strings.venue}`}</Text>
             </View>

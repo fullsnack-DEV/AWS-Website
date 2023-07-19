@@ -349,7 +349,7 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
 
           <SafeAreaView>
             <View
-              style={{flexDirection: 'row', marginLeft: 25, marginBottom: 5}}>
+              style={{flexDirection: 'row', marginLeft: 25, marginBottom: 20}}>
               <Pressable
                 onPress={async () => {
                   await setStorage('showPopup', showCheck);
