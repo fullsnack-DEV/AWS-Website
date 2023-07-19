@@ -12,7 +12,7 @@ import * as Utility from './app/utils';
 import {strings} from './Localization/translation';
 import {ImageUploadProvider} from './app/context/GetContexts';
 import CommonAlert from './app/screens/account/commonScreen/CommonAlert';
-import {STREAMCHATKEY} from './app/utils/streamChat';
+import {getAppSettingsWithoutAuth} from './app/api/Users';
 
 console.disableYellowBox = true;
 
@@ -31,7 +31,24 @@ function App() {
   const [totalNotificationCount, setTotalNotificationCount] = useState(0);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [streamChatToken, setStreamChatToken] = useState(null);
-  const [chatClient] = useState(StreamChat.getInstance(STREAMCHATKEY));
+  const [chatClient, setChatClient] = useState({});
+
+  useEffect(() => {
+    if (!chatClient.userID) {
+      getAppSettingsWithoutAuth()
+        .then((res) => {
+          const streamChatConfig = res.payload.app.stream;
+          if (streamChatConfig.key) {
+            const client = StreamChat.getInstance(streamChatConfig.key);
+
+            setChatClient(client);
+          }
+        })
+        .catch((err) => {
+          console.log({err});
+        });
+    }
+  }, [chatClient.userID]);
 
   const setTokenData = useCallback(async (token) => {
     setToken(token);

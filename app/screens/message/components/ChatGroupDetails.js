@@ -72,7 +72,7 @@ const ChatGroupDetails = ({
       isVisible={isVisible}
       closeModal={closeModal}
       modalType={ModalTypes.default}
-      containerStyle={{height: '98%', padding: 25}}>
+      containerStyle={{height: '98%'}}>
       <Text style={[styles.sectionTitle, {marginBottom: 10}]}>
         {strings.chatroomName.toUpperCase()}
       </Text>

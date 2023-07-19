@@ -4,9 +4,8 @@ import {useMessageContext} from 'stream-chat-react-native';
 import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
-import {renderChatTitle} from '../../../utils/streamChat';
 
-const CustomReplyComponent = ({channel = {}}) => {
+const CustomReplyComponent = () => {
   const {message} = useMessageContext();
   const authContext = useContext(AuthContext);
 
@@ -37,7 +36,9 @@ const CustomReplyComponent = ({channel = {}}) => {
               borderBottomWidth: 1,
             }}>
             <Text style={{fontSize: 10, color: colors.themeColor2}}>
-              {strings.replyTo} {renderChatTitle(channel, authContext)}
+              {strings.replyTo}{' '}
+              {message.quoted_message.user.group_name ??
+                message.quoted_message.user.name}
             </Text>
             <View
               style={{

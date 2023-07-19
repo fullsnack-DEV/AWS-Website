@@ -117,10 +117,10 @@ export default function NavigationMainContainer() {
   }, [authContext]);
 
   useEffect(() => {
-    if (authContext.entity?.uid) {
+    if (authContext.entity?.uid && authContext.chatClient?.key) {
       connectUserToStreamChat(authContext);
     }
-  }, [authContext.entity?.uid]);
+  }, [authContext.entity?.uid, authContext.chatClient?.key]);
 
   return (
     <Fragment>

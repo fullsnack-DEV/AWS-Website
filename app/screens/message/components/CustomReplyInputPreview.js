@@ -1,14 +1,14 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useMessageInputContext} from 'stream-chat-react-native';
-import AuthContext from '../../../auth/context';
+import {strings} from '../../../../Localization/translation';
+
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
-import {renderChatTitle} from '../../../utils/streamChat';
 
-const CustomReplyInputPreview = ({channel}) => {
+const CustomReplyInputPreview = () => {
   const {quotedMessage, clearQuotedMessageState} = useMessageInputContext();
-  const authContext = useContext(AuthContext);
+
   return (
     <View style={{marginBottom: 8}}>
       <View
@@ -32,7 +32,8 @@ const CustomReplyInputPreview = ({channel}) => {
           )}
           <View>
             <Text style={{fontSize: 14, color: colors.themeColor}}>
-              Reply to {renderChatTitle(channel, authContext)}
+              {strings.replyTo}{' '}
+              {quotedMessage.user.group_name ?? quotedMessage.user.name}
             </Text>
             <Text style={{fontSize: 14, marginTop: 5}}>
               {quotedMessage.attachments.length > 0

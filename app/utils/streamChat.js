@@ -5,13 +5,6 @@ import getUserToken from '../api/StreamChat';
 import {updateUserProfile} from '../api/Users';
 import Verbs from '../Constants/Verbs';
 
-const StreamChatKey = {
-  dev: 'mstd5kjv35xd',
-  qa: 'c3fzuf7xazfj',
-};
-
-export const STREAMCHATKEY = StreamChatKey.dev;
-
 export const generateUserStreamToken = async (authContext) => {
   await getUserToken(authContext).then(async (responseChat) => {
     updateUserProfile({streamChatToken: responseChat.payload}, authContext);
@@ -45,7 +38,6 @@ export const connectUserToStreamChat = async (authContext) => {
   ) {
     await authContext.chatClient.disconnectUser();
   }
-
   await authContext.chatClient.connectUser({id: streamUserId}, streamChatToken);
 };
 

@@ -259,10 +259,8 @@ const MessageChatScreen = ({navigation, route}) => {
               )}
               ImageUploadPreview={CustomImageUploadPreview}
               ReactionList={() => null}
-              InputReplyStateHeader={() => (
-                <CustomReplyInputPreview channel={channel} />
-              )}
-              Reply={() => <CustomReplyComponent channel={channel} />}
+              InputReplyStateHeader={CustomReplyInputPreview}
+              Reply={CustomReplyComponent}
               DateHeader={(props) => (
                 <CustomDateSeparator date={props.dateString} />
               )}
