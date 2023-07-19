@@ -119,7 +119,7 @@ export default function EventsCard({
               />
             )}
           </View>
-          <Text style={styles.nameStyle}>
+          <Text style={styles.nameStyle} numberOfLines={1}>
             {forPlaceholder ? data.title : getUserFullName()}
           </Text>
         </View>

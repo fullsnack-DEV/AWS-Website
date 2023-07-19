@@ -21,6 +21,7 @@ import GroupBasicInfo from './Team/GroupBasicInfo';
 import Venues from '../../screens/home/SportActivity/components/Venues';
 import TeamCard from '../TeamCard';
 import BottomSheet from '../modals/BottomSheet';
+import {getGroupDetails} from '../../api/Groups';
 
 const teamOptions = [
   strings.bio,
@@ -54,11 +55,13 @@ export default function GroupInfo({
   onEdit = () => {},
   onClickPrivacy = () => {},
   onAddMember = () => {},
+  authContext,
 }) {
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalOptions, setModalOptions] = useState([]);
+  const [clubTeams, setClubTeams] = useState([]);
 
   useEffect(() => {
     if (groupDetails.entity_type) {
@@ -69,6 +72,23 @@ export default function GroupInfo({
       );
     }
   }, [groupDetails]);
+
+  useEffect(() => {
+    const fetchClubTeams = async () => {
+      const teams = await Promise.all(
+        groupDetails.joined_clubs.map((club) =>
+          getGroupDetails(club, authContext),
+        ),
+      );
+      const payloadOnly = teams.map((team) => team.payload);
+
+      setClubTeams(payloadOnly);
+    };
+
+    if (groupDetails.joined_clubs && groupDetails.joined_clubs.length > 0) {
+      fetchClubTeams();
+    }
+  }, [groupDetails.joined_clubs, authContext]);
 
   const handleEdit = (option) => {
     let optionList = [];
@@ -143,11 +163,6 @@ export default function GroupInfo({
   };
 
   const renderSectionContent = (option) => {
-    const clubList =
-      groupDetails.joined_clubs?.length > 0
-        ? [...groupDetails.joined_clubs]
-        : [];
-
     const teamList =
       groupDetails.joined_teams?.length > 0
         ? [...groupDetails.joined_teams]
@@ -273,8 +288,8 @@ export default function GroupInfo({
       case strings.clubsTitleText:
         return (
           <View>
-            {clubList.length > 0
-              ? clubList.map((item, index) => {
+            {clubTeams.length > 0
+              ? clubTeams.map((item, index) => {
                   if (index > 2) {
                     return null;
                   }
@@ -285,7 +300,7 @@ export default function GroupInfo({
                         key={index}
                         onPress={() => onPressGroup(item)}
                       />
-                      {index !== 2 && clubList.length !== 1 ? (
+                      {index !== 2 && clubTeams.length !== 1 ? (
                         <View
                           style={{
                             height: 1,
@@ -442,7 +457,7 @@ export default function GroupInfo({
                   item === strings.clubsTitleText ? (
                     <TouchableOpacity
                       style={{marginRight: 10}}
-                      onPress={() => onSeeAll(item)}>
+                      onPress={() => onSeeAll(item, clubTeams)}>
                       <Text
                         style={[
                           styles.moreLessText,

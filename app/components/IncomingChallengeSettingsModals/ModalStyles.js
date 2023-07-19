@@ -7,8 +7,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 30,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    marginBottom: 20,
+    fontFamily: fonts.RMedium,
+    marginBottom: 10,
   },
   row: {
     flexDirection: 'row',
@@ -56,7 +56,8 @@ const styles = StyleSheet.create({
   },
   linkButton: {
     alignSelf: 'flex-end',
-    marginTop: 5,
+
+    marginTop: -25,
   },
   linkButtonText: {
     fontSize: 14,
@@ -167,9 +168,9 @@ const styles = StyleSheet.create({
     color: colors.googleColor,
   },
   matchFeeModalInfoText: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: fonts.RRegular,
-    lineHeight: 18,
+    lineHeight: 21,
     color: colors.googleColor,
     marginBottom: 25,
   },

@@ -275,21 +275,26 @@ const FeedViewScreen = ({navigation, route}) => {
         ref={threeDotRef}
         options={
           isPostOwner
-            ? ['Edit Privacy', 'Report', strings.cancel]
-            : ['Report', strings.cancel]
+            ? [strings.editPrivacyText, strings.ReportText, strings.cancel]
+            : [strings.ReportText, strings.cancel]
         }
         cancelButtonIndex={isPostOwner ? 2 : 1}
         onPress={(index) => {
           if (isPostOwner) {
-            if (index === 0) Alert.alert('Edit Privacy');
-            else if (index === 1) Alert.alert('Report');
-          } else if (index === 0) Alert.alert('Report');
+            if (index === 0) Alert.alert(strings.editPrivacyText);
+            else if (index === 1) Alert.alert(strings.ReportText);
+          } else if (index === 0) Alert.alert(strings.ReportText);
         }}
       />
       <ActionSheet
         ref={shareActionSheetRef}
-        title={'News Feed Post'}
-        options={['Repost', 'Copy Link', 'More', strings.cancel]}
+        title={strings.newsFeedPostText}
+        options={[
+          strings.ReportText,
+          strings.copyLink,
+          strings.moreText,
+          strings.cancel,
+        ]}
         cancelButtonIndex={3}
         onPress={onShareActionSheetItemPress}
       />

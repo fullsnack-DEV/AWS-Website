@@ -15,22 +15,6 @@ const TeamCard = ({
   locationTextStyle = {},
 }) => (
   <Pressable style={[styles.parent, containerStyle]} onPress={onPress}>
-    {/* <View style={[styles.iconContainer, iconStyle]}>
-      <Image
-        source={item.thumbnail ? {uri: item.thumbnail} : images.teamPatchIcon}
-        style={styles.image}
-      />
-      <View style={styles.teamIcon}>
-        <Image
-          source={
-            item.entity_type === Verbs.entityTypeClub
-              ? images.newClubIcon
-              : images.teamPatchIcon
-          }
-          style={styles.image}
-        />
-      </View>
-    </View> */}
     <GroupIcon
       imageUrl={item.thumbnil}
       entityType={item.entity_type}

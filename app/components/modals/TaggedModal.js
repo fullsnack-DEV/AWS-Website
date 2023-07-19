@@ -1,25 +1,25 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Portal} from 'react-native-portalize';
+
 import {
-  Dimensions,
   Platform,
   SectionList,
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
+  Pressable,
 } from 'react-native';
-import Modal from 'react-native-modal';
 import colors from '../../Constants/Colors';
-import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
-import TCGameCard from '../TCGameCard';
-import TaggedEntityView from '../shorts/TaggedEntityView';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import Verbs from '../../Constants/Verbs';
+import MatchCard from '../../screens/newsfeeds/MatchCard';
+import GroupIcon from '../GroupIcon';
+import CustomModalWrapper from '../CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 
 const TaggedModal = ({
-  taggedModalRef,
   navigation,
   taggedData,
   showTaggedModal,
@@ -27,68 +27,60 @@ const TaggedModal = ({
 }) => {
   const [gameTagList, setGameTagList] = useState([]);
   const [entityTagList, setEntityTagList] = useState([]);
+  const [teamTagList, setTeamTagList] = useState([]);
 
   useEffect(() => {
     if (taggedData?.length) {
       const gData = taggedData?.filter((e) => e?.entity_type === 'game') ?? [];
-      const eData = taggedData?.filter((e) => e?.entity_type !== 'game') ?? [];
+
+      const eData =
+        taggedData?.filter((e) => e?.entity_type === Verbs.entityTypePlayer) ??
+        [];
+
+      const teamData =
+        taggedData?.filter(
+          (e) =>
+            e?.entity_type === Verbs.entityTypeTeam ||
+            e?.entity_type === Verbs.entityTypeClub,
+        ) ?? [];
+
       setGameTagList([...gData]);
       setEntityTagList([...eData]);
+      setTeamTagList([...teamData]);
     }
   }, [taggedData]);
 
-  const renderSeparator = ({section}) => {
-    if (section.title === strings.taggedPeopleText)
-      return <View style={styles.separatorLine} />;
-    if (section.title === strings.taggedMatchesText)
-      return <View style={styles.separatorLineGame} />;
-    return <View />;
-  };
-
-  const handleCloseModal = useCallback(() => {
-    taggedModalRef.current.close();
-  }, [taggedModalRef]);
-
   const renderMatchTaggedItems = useCallback(
     ({item}) => (
-      <TCGameCard
-        data={item?.entity_data}
-        cardWidth={'92%'}
-        onPress={() => {
-          const routeName = getGameHomeScreen(item?.entity_data?.sport);
-          if (routeName) navigation.push(routeName, {gameId: item?.entity_id});
-        }}
-      />
+      <View style={{marginHorizontal: 15}}>
+        <Pressable
+          onPress={() => {
+            onBackdropPress();
+            const routeName = getGameHomeScreen(item?.matchData?.sport);
+            if (routeName)
+              navigation.navigate(routeName, {gameId: item?.entity_id});
+          }}>
+          <MatchCard
+            style={{marginBottom: 15}}
+            item={item?.matchData}
+            onPress={() => {
+              const routeName = getGameHomeScreen(item?.matchData?.sport);
+              if (routeName)
+                navigation.push(routeName, {gameId: item?.entity_id});
+            }}
+          />
+        </Pressable>
+      </View>
     ),
     [navigation],
   );
 
   const renderEntityTaggedItems = useCallback(
-    ({item}) => {
-      let teamIcon = '';
-      let teamImagePH = '';
-      if (item?.entity_type === Verbs.entityTypeTeam) {
-        teamIcon = images.myTeams;
-        teamImagePH = images.team_ph;
-      } else if (item?.entity_type === Verbs.entityTypeClub) {
-        teamIcon = images.myClubs;
-        teamImagePH = images.club_ph;
-      } else if (item?.entity_type === Verbs.entityTypePlayer) {
-        teamImagePH = images.profilePlaceHolder;
-      }
-      return (
-        <TaggedEntityView
-          titleStyle={{
-            color: colors.lightBlackColor,
-            fontSize: 16,
-            fontFamily: fonts.RMedium,
-          }}
-          cityStyle={{
-            color: colors.lightBlackColor,
-            fontSize: 14,
-            fontFamily: fonts.RRegular,
-          }}
-          onProfilePress={() => {
+    ({item}) => (
+      <>
+        <TouchableOpacity
+          onPress={() => {
+            onBackdropPress();
             navigation.push('HomeScreen', {
               uid: item?.entity_id,
               role: [Verbs.entityTypePlayer, Verbs.entityTypeUser]?.includes(
@@ -100,32 +92,59 @@ const TaggedModal = ({
               menuBtnVisible: false,
             });
           }}
-          teamImage={
-            item?.entity_data?.thumbnail
-              ? {uri: item?.entity_data?.thumbnail}
-              : teamImagePH
-          }
-          teamTitle={
-            item?.entity_data?.group_name ?? item?.entity_data?.full_name
-          }
-          teamIcon={teamIcon}
-          teamCityName={`${item?.entity_data?.city}`}
-        />
-      );
-    },
-    [handleCloseModal, navigation],
+          style={{
+            flexDirection: 'row',
+            marginHorizontal: 17,
+            paddingVertical: 15,
+          }}>
+          <GroupIcon
+            entityType={item.entity_type}
+            containerStyle={styles.grpIconContainer}
+            imageUrl={item?.entity_data?.thumbnail}
+          />
+
+          <View style={{marginLeft: 10}}>
+            <Text
+              style={{
+                color: colors.lightBlackColor,
+                fontSize: 16,
+                fontFamily: fonts.RMedium,
+              }}>
+              {item?.entity_data?.group_name ?? item?.entity_data?.full_name}
+            </Text>
+            <Text
+              style={{
+                color: colors.lightBlackColor,
+                fontSize: 14,
+                fontFamily: fonts.RRegular,
+              }}>{`${item?.entity_data?.city}`}</Text>
+          </View>
+        </TouchableOpacity>
+
+        <View style={styles.separatorLineGame} />
+      </>
+    ),
+    [],
   );
 
   const renderSectionHeader = useCallback(
     ({section: {title}}) => {
-      if (gameTagList.length > 0 && title === strings.taggedMatchesText) {
+      if (gameTagList.length > 0 && title === strings.matchesTitleText) {
+        return (
+          <View style={[styles.closeStyle, {marginBottom: 15}]}>
+            <Text style={styles.tagTitle}>{title}</Text>
+          </View>
+        );
+      }
+      if (entityTagList.length > 0 && title === strings.peopleTitleText) {
         return (
           <View style={styles.closeStyle}>
             <Text style={styles.tagTitle}>{title}</Text>
           </View>
         );
       }
-      if (entityTagList.length > 0 && title === strings.taggedPeopleText) {
+
+      if (teamTagList.length > 0 && title === strings.group) {
         return (
           <View style={styles.closeStyle}>
             <Text style={styles.tagTitle}>{title}</Text>
@@ -134,20 +153,25 @@ const TaggedModal = ({
       }
       return null;
     },
-    [entityTagList.length, gameTagList.length],
+    [entityTagList.length, gameTagList.length, teamTagList.length],
   );
 
   /* SECTIONS */
   const sections = useMemo(
     () => [
       {
-        title: strings.taggedMatchesText,
+        title: strings.matchesTitleText,
         data: gameTagList,
         renderItem: renderMatchTaggedItems,
       },
       {
-        title: strings.taggedPeopleText,
+        title: strings.peopleTitleText,
         data: entityTagList,
+        renderItem: renderEntityTaggedItems,
+      },
+      {
+        title: strings.group,
+        data: teamTagList,
         renderItem: renderEntityTaggedItems,
       },
     ],
@@ -156,12 +180,12 @@ const TaggedModal = ({
       gameTagList,
       renderEntityTaggedItems,
       renderMatchTaggedItems,
+      teamTagList,
     ],
   );
 
   const ModalHeader = () => (
     <View style={styles.headerStyle}>
-      <View style={styles.handleStyle} />
       <Text style={styles.titleText}>{strings.taggedTitle}</Text>
       <View style={styles.headerSeparator} />
     </View>
@@ -169,38 +193,28 @@ const TaggedModal = ({
 
   return (
     <View>
-      <Portal>
-        <Modal
-          onBackdropPress={onBackdropPress}
-          isVisible={showTaggedModal}
-          animationInTiming={300}
-          animationOutTiming={800}
-          backdropTransitionInTiming={300}
-          backdropTransitionOutTiming={800}
-          style={{
-            margin: 0,
-          }}>
-          <View
-            style={[
-              styles.bottomPopupContainer,
-              {
-                height:
-                  Dimensions.get('window').height -
-                  Dimensions.get('window').height / 2.5,
-              },
-            ]}>
-            {ModalHeader()}
-            <SectionList
-              sections={sections}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item, index) => item + index}
-              renderSectionHeader={renderSectionHeader}
-              ItemSeparatorComponent={renderSeparator}
-            />
-          </View>
-        </Modal>
-      </Portal>
+      <CustomModalWrapper
+        closeModal={onBackdropPress}
+        isVisible={showTaggedModal}
+        modalType={ModalTypes.style2}
+        isSwipeUp={true}
+        containerStyle={{
+          padding: 0,
+        }}>
+        <View style={styles.bottomPopupContainer}>
+          {ModalHeader()}
+          <SectionList
+            sections={sections}
+            stickyHeaderHiddenOnScroll={false}
+            StickyHeaderComponent={false}
+            scrollEnabled
+            showsVerticalScrollIndicator={true}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => item + index}
+            renderSectionHeader={renderSectionHeader}
+          />
+        </View>
+      </CustomModalWrapper>
     </View>
   );
 };
@@ -216,37 +230,21 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     marginLeft: 15,
+    textTransform: 'uppercase',
   },
-  handleStyle: {
-    marginTop: 15,
-    alignSelf: 'center',
-    height: 5,
-    width: 40,
-    borderRadius: 15,
-    backgroundColor: '#DADBDA',
-  },
-  separatorLine: {
+
+  separatorLineGame: {
     backgroundColor: colors.grayBackgroundColor,
     width: '92%',
     alignSelf: 'center',
     height: 1,
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  separatorLineGame: {
-    backgroundColor: 'transparent',
-    width: '92%',
-    alignSelf: 'center',
-    height: 1,
-    marginTop: 8,
-    marginBottom: 8,
   },
   closeStyle: {
     backgroundColor: colors.whiteColor,
-    height: 30,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: 15,
   },
   titleText: {
     color: colors.extraLightBlackColor,
@@ -259,28 +257,16 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.grayBackgroundColor,
     height: 2,
-    marginBottom: 15,
   },
   bottomPopupContainer: {
     paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     backgroundColor: colors.whiteColor,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
+  },
+  grpIconContainer: {
+    width: 40,
+    height: 40,
   },
 });
 

@@ -134,7 +134,7 @@ const UserHomeScreen = ({
           ]);
         }, 10);
       });
-  }, [authContext, currentUserData, userID, navigation]);
+  }, [authContext, currentUserData, userID]);
 
   const onMessageButtonPress = useCallback(
     (user) => {
@@ -401,9 +401,10 @@ const UserHomeScreen = ({
     }
   };
 
-  const handleMainRefOnScroll = Animated.event([
-    {nativeEvent: {contentOffset: {y: mainFlatListFromTop}}},
-  ]);
+  const handleMainRefOnScroll = Animated.event(
+    [{nativeEvent: {contentOffset: {y: mainFlatListFromTop}}}],
+    {useNativeDriver: false},
+  );
 
   const userDetailsSection = () => (
     <>
@@ -453,7 +454,10 @@ const UserHomeScreen = ({
   return (
     <>
       <View
-        style={{flex: 1, opacity: isAccountDeactivated ? 0.5 : 1}}
+        style={{
+          flex: 1,
+          opacity: isAccountDeactivated ? 0.5 : 1,
+        }}
         pointerEvents={pointEvent}>
         <ActivityLoader visible={loading} />
         <View style={{flex: 1}}>

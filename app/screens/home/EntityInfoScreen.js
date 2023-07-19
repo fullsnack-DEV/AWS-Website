@@ -7,7 +7,6 @@ import AuthContext from '../../auth/context';
 import {
   getGroupDetails,
   getGroupMembers,
-  getJoinedGroups,
   getTeamsOfClub,
 } from '../../api/Groups';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -30,14 +29,13 @@ const EntityInfoScreen = ({navigation, route}) => {
         getGroupDetails(uid, authContext),
         getGroupMembers(uid, authContext),
         getTeamsOfClub(uid, authContext),
-        getJoinedGroups(Verbs.entityTypeClub, authContext),
       ])
-        .then(([groupResonse, memberResponse, teamsResponse, clubList]) => {
+        .then(([groupResonse, memberResponse, teamsResponse]) => {
           const obj = {
             ...groupResonse.payload,
             joined_members: memberResponse.payload ?? [],
             joined_teams: teamsResponse.payload ?? [],
-            joined_clubs: clubList.payload ?? [],
+            joined_clubs: groupResonse.payload?.parent_groups ?? [],
           };
           setCurrentUserData(obj);
           setLoading(false);
@@ -164,7 +162,8 @@ const EntityInfoScreen = ({navigation, route}) => {
           navigation={navigation}
           groupDetails={currentUserData}
           isAdmin={currentUserData?.am_i_admin}
-          onSeeAll={(option = '') => {
+          authContext={authContext}
+          onSeeAll={(option = '', clubsofteam = []) => {
             switch (option) {
               case strings.membersTitle:
                 navigation.navigate('GroupMembersScreen', {
@@ -176,7 +175,7 @@ const EntityInfoScreen = ({navigation, route}) => {
 
               case strings.clubsTitleText:
                 navigation.push('GroupListScreen', {
-                  groups: currentUserData.joined_clubs,
+                  groups: clubsofteam,
                   entity_type: Verbs.entityTypeClub,
                 });
                 break;

@@ -596,21 +596,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const onEditAdminPrivPress = () => {
     setloading(true);
-    const bodyParams = {...memberDetail, ...setting};
-
-    if (setting.is_admin === false) {
-      const adminCount = members?.filter((item) => item.is_admin === true);
-      const toaccount = true;
-      if (
-        members.length === 1 &&
-        adminCount.length === 1 &&
-        memberID === authContext.entity.auth.user_id
-      ) {
-        setShowAdminPrivillege(false);
-        onDeleteMemberProfile(switchUser.uid, memberDetail.user_id, toaccount);
-      }
-      return;
-    }
+    const bodyParams = {is_admin: setting.is_admin};
 
     patchMember(
       entity.obj.group_id,
@@ -620,6 +606,30 @@ export default function MembersProfileScreen({navigation, route}) {
     )
       .then(() => {
         setloading(false);
+
+        if (!setting.is_admin) {
+          const adminCount = members?.filter((item) => item.is_admin === true);
+
+          if (
+            members.length > 1 &&
+            adminCount.length > 1 &&
+            memberID === authContext.entity.auth.user_id
+          ) {
+            setShowAdminPrivillege(false);
+
+            onSwitchProfile(authContext.user);
+
+            navigation.navigate('Account', {
+              screen: 'AccountScreen',
+              initial: false,
+              params: {
+                switchToUser: true,
+                grpName: switchUser.obj.group_name,
+              },
+            });
+          }
+        }
+
         getMemberInformation();
         setShowAdminPrivillege(false);
       })

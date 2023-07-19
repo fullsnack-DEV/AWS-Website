@@ -21,17 +21,15 @@ const TagItemView = ({
 
   useEffect(() => {
     if (selectedList.length > 0) {
-      const obj = selectedList.find(
+      const isItemSelected = selectedList.some(
         (item) => item.user_id === entityId || item.group_id === entityId,
       );
 
-      if (obj) {
-        setIsSelected(true);
-      } else {
-        setIsSelected(false);
-      }
+      setIsSelected(isItemSelected);
+    } else {
+      setIsSelected(false);
     }
-  }, [selectedList, entityId]);
+  }, [entityId, selectedList]);
 
   return (
     <View style={styles.mainContainerStyle}>
@@ -46,7 +44,9 @@ const TagItemView = ({
           textstyle={{fontSize: 12}}
         />
         <View style={styles.textViewStyle}>
-          <Text style={styles.userNameTextStyle}>{entityName}</Text>
+          <Text style={styles.userNameTextStyle} numberOfLines={1}>
+            {entityName}
+          </Text>
           {entityType === Verbs.entityTypePlayer ||
           entityType === Verbs.entityTypeUser ? (
             <Text style={styles.userLocationTextStyle}>{userLocation}</Text>
@@ -68,7 +68,7 @@ const TagItemView = ({
       </TouchableOpacity>
       <TouchableOpacity style={styles.imageCheckBoxStyle} onPress={onSelect}>
         <Image
-          source={isSelected ? images.checkWhiteLanguage : images.uncheckWhite}
+          source={isSelected ? images.orangeCheckBox : images.uncheckWhite}
           style={{width: '100%', height: '100%', resizeMode: 'contain'}}
         />
       </TouchableOpacity>
@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
   },
   textViewStyle: {
     marginLeft: 12,
+    flex: 0.9,
   },
   userNameTextStyle: {
     fontSize: 16,

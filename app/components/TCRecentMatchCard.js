@@ -41,8 +41,6 @@ function TCRecentMatchCard({data, onPress, cardWidth = '86%'}) {
     return time;
   };
 
-  console.log(data, 'From complted match');
-
   // const renderMediaList = useCallback(
   //   () => (
   //     <Image

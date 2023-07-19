@@ -1,12 +1,5 @@
 import React, {useState, useContext} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  ScrollView,
-  SafeAreaView,
-  Alert,
-} from 'react-native';
+import {View, StyleSheet, Text, SafeAreaView, Alert} from 'react-native';
 import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../loader/ActivityLoader';
@@ -99,22 +92,19 @@ export default function DeactivateAccountScreen({navigation}) {
         leftIconPress={() => navigation.goBack()}
       />
       <ActivityLoader visible={loading} />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
-          <Text style={styles.descText}>
-            {strings.deactiveScreenDescription}
-          </Text>
-        </View>
-        <TCGradientButton
-          title={
-            authContext.entity.obj.is_deactivate === true
-              ? strings.reactivateMyAccount
-              : strings.deactivateAccountTitle
-          }
-          outerContainerStyle={styles.buttonContainer}
-          onPress={handleButtonPress}
-        />
-      </ScrollView>
+
+      <View style={styles.container}>
+        <Text style={styles.descText}>{strings.deactiveScreenDescription}</Text>
+      </View>
+      <TCGradientButton
+        title={
+          authContext.entity.obj.is_deactivate === true
+            ? strings.reactivateMyAccount
+            : strings.deactivateAccountTitle
+        }
+        outerContainerStyle={styles.buttonContainer}
+        onPress={handleButtonPress}
+      />
     </SafeAreaView>
   );
 }
@@ -125,7 +115,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 26,
+    paddingTop: 15,
     paddingHorizontal: 15,
   },
   descText: {

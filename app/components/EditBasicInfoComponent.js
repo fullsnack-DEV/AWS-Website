@@ -25,11 +25,7 @@ import TCCountryCodeModal from './TCCountryCodeModal';
 import TCKeyboardView from './TCKeyboardView';
 import Verbs from '../Constants/Verbs';
 
-const EditBasicInfoComponent = ({
-  userInfo = {},
-  containerStyle = {},
-  setUserInfo = () => {},
-}) => {
+const EditBasicInfoComponent = ({userInfo = {}, containerStyle = {}, setUserInfo = () => {}}) => {
   const [countryCodeVisible, setCountryCodeVisible] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState({
     code: 1,
@@ -75,17 +71,9 @@ const EditBasicInfoComponent = ({
     if (userInfo?.phone_numbers?.length > 0) {
       return userInfo.phone_numbers.map((item, index) => (
         <View style={[styles.row, {marginBottom: 15}]} key={index}>
-          <Pressable
-            style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]}
-            onPress={() => setCountryCodeVisible(true)}>
+          <Pressable style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]} onPress={() => setCountryCodeVisible(true)}>
             <View style={{flex: 1, alignItems: 'center'}}>
-              <Text
-                style={[
-                  styles.titleText,
-                  {fontFamily: fonts.RRegular, marginBottom: 0},
-                ]}>
-                {`${selectedCountryCode.country} (+${selectedCountryCode.code})`}
-              </Text>
+              <Text style={[styles.titleText, {fontFamily: fonts.RRegular, marginBottom: 0}]}>{`${selectedCountryCode.country} (+${selectedCountryCode.code})`}</Text>
             </View>
             <View style={{width: 10, height: 10}}>
               <Image
@@ -125,17 +113,9 @@ const EditBasicInfoComponent = ({
     }
     return (
       <View style={styles.row}>
-        <Pressable
-          style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]}
-          onPress={() => setCountryCodeVisible(true)}>
+        <Pressable style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]} onPress={() => setCountryCodeVisible(true)}>
           <View style={{flex: 1, alignItems: 'center'}}>
-            <Text
-              style={[
-                styles.titleText,
-                {fontFamily: fonts.RRegular, marginBottom: 0},
-              ]}>
-              {`${selectedCountryCode.country} (+${selectedCountryCode.code})`}
-            </Text>
+            <Text style={[styles.titleText, {fontFamily: fonts.RRegular, marginBottom: 0}]}>{`${selectedCountryCode.country} (+${selectedCountryCode.code})`}</Text>
           </View>
           <View style={{width: 10, height: 10}}>
             <Image
@@ -193,16 +173,8 @@ const EditBasicInfoComponent = ({
         </View>
 
         <View style={{marginBottom: 35}}>
-          <Text style={styles.titleText}>
-            {strings.birthDatePlaceholder.toUpperCase()}
-          </Text>
-          <Text
-            style={[
-              styles.titleText,
-              {fontFamily: fonts.RRegular, marginBottom: 0},
-            ]}>
-            {moment(getJSDate(userInfo?.birthday)).format('MMM DD,YYYY')}
-          </Text>
+          <Text style={styles.titleText}>{strings.birthDatePlaceholder.toUpperCase()}</Text>
+          <Text style={[styles.titleText, {fontFamily: fonts.RRegular, marginBottom: 0, textTransform: 'capitalize'}]}>{moment(getJSDate(userInfo?.birthday)).format('MMM DD,YYYY')}</Text>
         </View>
 
         <View style={{marginBottom: 35}}>
@@ -217,8 +189,7 @@ const EditBasicInfoComponent = ({
                     ...userInfo,
                     height: {
                       height: text,
-                      height_type:
-                        userInfo.height?.height_type ?? Verbs.defaultHeightType,
+                      height_type: userInfo.height?.height_type ?? Verbs.defaultHeightType,
                     },
                   });
                 }}
@@ -248,12 +219,7 @@ const EditBasicInfoComponent = ({
                   inputIOS: styles.inputField,
                   inputAndroid: [styles.inputField, {textAlign: 'center'}],
                 }}
-                Icon={() => (
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.miniDownArrow}
-                  />
-                )}
+                Icon={() => <Image source={images.dropDownArrow} style={styles.miniDownArrow} />}
               />
             </View>
           </View>
@@ -271,8 +237,7 @@ const EditBasicInfoComponent = ({
                     ...userInfo,
                     weight: {
                       weight: text,
-                      weight_type:
-                        userInfo.weight?.weight_type ?? Verbs.defaultWeightType,
+                      weight_type: userInfo.weight?.weight_type ?? Verbs.defaultWeightType,
                     },
                   });
                 }}
@@ -302,29 +267,16 @@ const EditBasicInfoComponent = ({
                   inputIOS: styles.inputField,
                   inputAndroid: [styles.inputField, {textAlign: 'center'}],
                 }}
-                Icon={() => (
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.miniDownArrow}
-                  />
-                )}
+                Icon={() => <Image source={images.dropDownArrow} style={styles.miniDownArrow} />}
               />
             </View>
           </View>
         </View>
 
         <View style={{marginBottom: 35}}>
-          <Text style={styles.titleText}>
-            {strings.languages.toUpperCase()}
-          </Text>
+          <Text style={styles.titleText}>{strings.languages.toUpperCase()}</Text>
           <Pressable onPress={() => setShowLanguageModal(true)}>
-            <TextInput
-              placeholder={strings.leaguesPlaceholder}
-              style={styles.inputField}
-              editable={false}
-              pointerEvents={'none'}
-              value={languageName}
-            />
+            <TextInput placeholder={strings.leaguesPlaceholder} style={styles.inputField} editable={false} pointerEvents={'none'} value={languageName} />
           </Pressable>
         </View>
 
@@ -334,11 +286,7 @@ const EditBasicInfoComponent = ({
         </View>
 
         <Pressable
-          style={{backgroundColor: colors.textFieldBackground,
-              paddingVertical: 5,
-              paddingHorizontal: 10,
-              alignSelf: 'center',
-              borderRadius: 5,marginBottom:50}}
+          style={{backgroundColor: colors.textFieldBackground, paddingVertical: 5, paddingHorizontal: 10, alignSelf: 'center', borderRadius: 5, marginBottom: 50}}
           onPress={() => {
             const list = [...userInfo.phone_numbers];
             const obj = {
@@ -354,35 +302,22 @@ const EditBasicInfoComponent = ({
           <Text
             style={{
               textAlign: 'center',
-              fontFamily:fonts.RBold,
-              fontSize:12,
-              lineHeight:18,
-              color:colors.lightBlackColor
+              fontFamily: fonts.RBold,
+              fontSize: 12,
+              lineHeight: 18,
+              color: colors.lightBlackColor,
             }}>
-            + Add Phone
+            {strings.addPhone}
           </Text>
         </Pressable>
-
         <View style={{marginBottom: 35}}>
-          <Text style={styles.titleText}>
-            {strings.mailingAddressText.toUpperCase()}
-          </Text>
+          <Text style={styles.titleText}>{strings.mailingAddressText.toUpperCase()}</Text>
           <Pressable
             onPress={() => {
               setVisibleAddressModal(true);
             }}
             style={styles.mailingContainer}>
-            <Text
-              style={[
-                styles.mailingText,
-                userInfo.mail_formattedAddress || userInfo.mail_street_address
-                  ? {color: colors.lightBlackColor}
-                  : {color: colors.userPostTimeColor},
-              ]}>
-              {userInfo.mail_formattedAddress || userInfo.mail_street_address
-                ? userInfo.mail_formattedAddress || userInfo.mail_street_address
-                : strings.address}
-            </Text>
+            <Text style={[styles.mailingText, userInfo.mail_formattedAddress || userInfo.mail_street_address ? {color: colors.lightBlackColor} : {color: colors.userPostTimeColor}]}>{userInfo.mail_formattedAddress || userInfo.mail_street_address ? userInfo.mail_formattedAddress || userInfo.mail_street_address : strings.address}</Text>
           </Pressable>
         </View>
 
@@ -422,15 +357,7 @@ const EditBasicInfoComponent = ({
           onDonePress={(street, code) => {
             const obj = {...userInfo};
             obj.mail_postal_code = code;
-            obj.mail_street_address = [
-              street,
-              userInfo.mail_city,
-              userInfo.mail_state,
-              userInfo.mail_country,
-              code,
-            ]
-              .filter((w) => w)
-              .join(', ');
+            obj.mail_street_address = [street, userInfo.mail_city, userInfo.mail_state, userInfo.mail_country, code].filter((w) => w).join(', ');
             setUserInfo(obj);
           }}
         />

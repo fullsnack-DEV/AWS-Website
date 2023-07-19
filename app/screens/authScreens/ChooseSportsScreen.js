@@ -34,6 +34,7 @@ import fonts from '../../Constants/Fonts';
 import {getGroupIndex} from '../../api/elasticSearch';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import apiCall from '../../utils/apiCall';
+import {generateUserStreamToken} from '../../utils/streamChat';
 
 export default function ChooseSportsScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
@@ -268,9 +269,11 @@ export default function ChooseSportsScreen({navigation, route}) {
       <Separator />
     </TouchableWithoutFeedback>
   );
+
   const setDummyAuthContext = (key, value) => {
     dummyAuthContext[key] = value;
   };
+
   const finalStepSignUp = async () => {
     setloading(true);
     const tokenData = authContext?.tokenData;
@@ -375,6 +378,8 @@ export default function ChooseSportsScreen({navigation, route}) {
           setDummyAuthContext('entity', authEntity);
           setDummyAuthContext('user', createdUser?.payload);
           await wholeSignUpProcessComplete(createdUser?.payload);
+          // Call Stream chat token api and save in authContex
+          await generateUserStreamToken(authEntity);
         })
         .catch((e) => {
           setloading(false);
@@ -405,6 +410,7 @@ export default function ChooseSportsScreen({navigation, route}) {
 
     setloading(false);
   };
+
   return (
     <LinearGradient
       colors={[colors.themeColor1, colors.themeColor3]}

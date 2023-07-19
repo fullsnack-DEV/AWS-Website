@@ -18,6 +18,7 @@ import * as Utility from './app/utils/index';
 import ActivityLoader from './app/components/loader/ActivityLoader';
 import LoneStackNavigator from './app/navigation/LoneStackNavigator';
 import {getSportsList} from './app/api/Games';
+import {connectUserToStreamChat} from './app/utils/streamChat';
 // import {getUnreadNotificationCount} from './app/utils/accountUtils';
 
 const Stack = createStackNavigator();
@@ -114,6 +115,12 @@ export default function NavigationMainContainer() {
         authContext?.entity?.obj?.is_deactivate,
     );
   }, [authContext]);
+
+  useEffect(() => {
+    if (authContext.entity?.uid) {
+      connectUserToStreamChat(authContext);
+    }
+  }, [authContext.entity?.uid]);
 
   return (
     <Fragment>

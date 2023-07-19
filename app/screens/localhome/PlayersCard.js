@@ -14,13 +14,21 @@ export default function PlayersCard({
   selectedSport,
   scoreKeeper = false,
   refree = false,
+  hiring = false,
   onPress = () => {},
 }) {
   const getEntityName = () => item.full_name;
 
   const getName = () => {
+    if (hiring && selectedSport !== strings.allType) {
+      const filteredSports = item.registered_sports.find(
+        (i) => i.sport.toLowerCase() === selectedSport.toLowerCase(),
+      );
+      return filteredSports ? filteredSports.sport_name : '';
+    }
+
     if (selectedSport === strings.allType) {
-      return item?.sports[0]?.sport_name;
+      return item?.sports?.[0]?.sport_name ?? null;
     }
 
     if (scoreKeeper && selectedSport !== strings.allType) {
@@ -87,6 +95,7 @@ export default function PlayersCard({
         }
         blurRadius={4}>
         <Text
+          numberOfLines={1}
           style={{
             fontFamily: fonts.RBold,
             fontSize: 14,

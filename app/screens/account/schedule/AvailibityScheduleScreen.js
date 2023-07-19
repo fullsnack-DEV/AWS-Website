@@ -480,8 +480,8 @@ export default function AvailibilityScheduleScreen({
                 item={item}
                 onEdit={async () => {
                   setIsFromSlots(false);
-                  await prepareSlotArray(getJSDate(item.time));
-                  await setVisibleAvailabilityModal(true);
+                  prepareSlotArray(getJSDate(item.time));
+                  setVisibleAvailabilityModal(true);
                 }}
                 addToSlotData={addToSlotData}
                 deleteFromSlotData={deleteFromSlotData}

@@ -57,7 +57,7 @@ const MatchFeeReminder = ({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={onCloseModal}
-      containerStyle={{width: '100%', height: '100%'}}>
+      containerStyle={{width: '100%', height: '100%', paddingHorizontal: 20}}>
       <View style={{flex: 1}}>
         {entityType === Verbs.entityTypePlayer ? (
           <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
