@@ -12,7 +12,6 @@ import {
   FlatList,
   Alert,
   TouchableOpacity,
-  SafeAreaView,
   Platform,
   Linking,
 } from 'react-native';
@@ -221,13 +220,14 @@ export default function ChooseLocationScreen({navigation, route}) {
     setLoading(true);
     getPlaceNameFromPlaceID(item.place_id).then((location) => {
       setLoading(false);
+
       if (location) {
         let userData = {};
         userData = {
           city: location.city,
           state_abbr: location.state,
           country: location.country,
-          state: item.location.state_full,
+          state: location.state_full,
         };
         navigateToChooseSportScreen(userData);
       }

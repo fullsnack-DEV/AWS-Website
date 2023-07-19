@@ -226,6 +226,7 @@ const CustomModalWrapper = ({
                           ? Dimensions.get('window').height -
                             Dimensions.get('window').height / 2.5
                           : '100%',
+                        padding: 25,
                       },
                       containerStyle,
                     ]}>
