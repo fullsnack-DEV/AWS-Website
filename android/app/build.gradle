@@ -140,7 +140,10 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 def enableHermes = project.ext.react.get("enableHermes", true);
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion 
+
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
 
 packagingOptions {
     pickFirst 'lib/x86_64/libjsc.so'

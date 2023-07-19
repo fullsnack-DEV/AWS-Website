@@ -19,6 +19,8 @@ import {ModalTypes} from '../Constants/GeneralConstants';
 import images from '../Constants/ImagePath';
 import ScreenHeader from './ScreenHeader';
 
+const screenHeight = Dimensions.get('window').height;
+
 const CustomModalWrapper = ({
   loading = false,
   isVisible = false,
@@ -164,11 +166,15 @@ const CustomModalWrapper = ({
 
     switch (modalType) {
       case ModalTypes.style1:
+        return [styles.card, {flex: 1}];
+
       case ModalTypes.style2:
       case ModalTypes.style3:
       case ModalTypes.style4:
-      case ModalTypes.style5:
         return styles.card;
+
+      case ModalTypes.style5:
+        return [styles.card, {height: screenHeight * 0.66}];
 
       default:
         return [styles.card, {flex: 1}];
