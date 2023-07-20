@@ -1897,6 +1897,7 @@ const MembersNavigator = () => (
       component={EntitySearchScreen}
       options={{
         title: 'Search',
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontFamily: fonts.RBold,

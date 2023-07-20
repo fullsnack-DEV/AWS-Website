@@ -169,6 +169,7 @@ const GroupHomeScreen = ({
         });
         break;
       case strings.scheduleTitle:
+        navigation.navigate('ScheduleScreen', {});
         break;
       case strings.scoreboard:
         navigation.navigate('EntityScoreboardScreen', {

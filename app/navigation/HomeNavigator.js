@@ -2652,7 +2652,7 @@ const HomeNavigator = () => (
       component={EntitySearchScreen}
       options={{
         title: strings.searchText,
-
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontFamily: fonts.RBold,

@@ -53,6 +53,7 @@ import {getSportDetails, getSportList} from '../utils/sportsActivityUtils';
 import SearchModal from '../components/Filter/SearchModal';
 import {ModalTypes} from '../Constants/GeneralConstants';
 import CustomModalWrapper from '../components/CustomModalWrapper';
+import ScreenHeader from '../components/ScreenHeader';
 
 let stopFetchMore = true;
 
@@ -111,7 +112,7 @@ export default function EntitySearchScreen({navigation, route}) {
   const [clubsPageFrom, setClubsPageFrom] = useState(0);
   const [completedGamePageFrom, setCompletedGamePageFrom] = useState(0);
   const [upcomingGamePageFrom, setUpcomingGamePageFrom] = useState(0);
-  const [location, setLocation] = useState(strings.worldTitleText);
+  // const [location, setLocation] = useState(strings.worldTitleText);
   const [generalFilter, setGeneralFilter] = useState({
     location: strings.worldTitleText,
     locationOption: locationType.WORLD,
@@ -198,7 +199,7 @@ export default function EntitySearchScreen({navigation, route}) {
     });
     if (route.params.locationText) {
       setSettingPopup(true);
-      setLocation(route.params.locationText);
+      // setLocation(route.params.locationText);
       // setSearchLocation(route.params.locationText);
     }
   }, [route.params.locationText]);
@@ -1323,35 +1324,55 @@ export default function EntitySearchScreen({navigation, route}) {
   };
 
   const getLocation = () => {
-    // setloading(true);
+    setloading(true);
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
-        setloading(false);
         if (currentLocation.position) {
-          setLocation(
+          const loc =
             currentLocation.city?.charAt(0).toUpperCase() +
-              currentLocation.city?.slice(1),
-          );
+            currentLocation.city?.slice(1);
+          // setLocation(loc);
           switch (currentTab) {
             case 0:
               if (currentSubTab === strings.generalText) {
-                setGeneralFilter({...generalFilter, locationOption: 2});
+                setGeneralFilter({
+                  ...generalFilter,
+                  locationOption: 2,
+                  location: loc,
+                });
               } else if (currentSubTab === strings.playerTitle) {
-                setPlayerFilter({...playerFilter, locationOption: 2});
+                setPlayerFilter({
+                  ...playerFilter,
+                  locationOption: 2,
+                  location: loc,
+                });
               } else if (currentSubTab === strings.refereesTitle) {
-                setrRefereeFilters({...refereeFilters, locationOption: 2});
+                setrRefereeFilters({
+                  ...refereeFilters,
+                  locationOption: 2,
+                  location: loc,
+                });
               } else if (currentSubTab === strings.scorekeeperTitle) {
                 setScoreKeeperFilters({
                   ...scoreKeeperFilters,
                   locationOption: 2,
+                  location: loc,
                 });
               }
               break;
             case 1:
               if (currentSubTab === strings.teamsTitleText) {
-                setTeamFilters({...teamFilters, locationOption: 2});
+                setTeamFilters({
+                  ...teamFilters,
+                  locationOption: 2,
+                  location: loc,
+                });
               } else if (currentSubTab === strings.clubsTitleText) {
-                setClubFilters({...clubFilters, locationOption: 2});
+                setClubFilters({
+                  ...clubFilters,
+                  locationOption: 2,
+                  location: loc,
+                });
               }
               break;
             case 2:
@@ -1359,11 +1380,13 @@ export default function EntitySearchScreen({navigation, route}) {
                 setCompletedGameFilters({
                   ...completedGameFilters,
                   locationOption: 2,
+                  location: loc,
                 });
               } else if (currentSubTab === strings.upcomingTitleText) {
                 setUpcomingGameFilters({
                   ...upcomingGameFilters,
                   locationOption: 2,
+                  location: loc,
                 });
               }
               break;
@@ -1371,9 +1394,13 @@ export default function EntitySearchScreen({navigation, route}) {
               break;
           }
         }
+        setloading(false);
+        setSettingPopup(false);
       })
       .catch((e) => {
         setloading(false);
+        setSettingPopup(false);
+
         if (e.message !== strings.userdeniedgps) {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
@@ -1769,42 +1796,42 @@ export default function EntitySearchScreen({navigation, route}) {
           <TouchableWithoutFeedback
             onPress={() => {
               setTimeout(() => {
-                switch (currentSubTab) {
-                  case strings.playerTitle: {
-                    setLocation(playerFilter.location);
-                    break;
-                  }
-                  case strings.refereesTitle: {
-                    setLocation(refereeFilters.location);
-                    break;
-                  }
-                  case strings.scorekeeperTitle: {
-                    setLocation(scoreKeeperFilters.location);
-                    break;
-                  }
-                  case strings.teamsTitleText: {
-                    setLocation(teamFilters.location);
-                    break;
-                  }
-                  case strings.clubsTitleText: {
-                    setLocation(clubFilters.location);
-                    break;
-                  }
-                  case strings.completedTitleText: {
-                    setLocation(completedGameFilters.location);
-                    break;
-                  }
-                  case strings.upcomingTitleText: {
-                    setLocation(upcomingGameFilters.location);
-                    break;
-                  }
-                  default:
-                    break;
-                }
+                // switch (currentSubTab) {
+                //   case strings.playerTitle: {
+                //     setLocation(playerFilter.location);
+                //     break;
+                //   }
+                //   case strings.refereesTitle: {
+                //     setLocation(refereeFilters.location);
+                //     break;
+                //   }
+                //   case strings.scorekeeperTitle: {
+                //     setLocation(scoreKeeperFilters.location);
+                //     break;
+                //   }
+                //   case strings.teamsTitleText: {
+                //     setLocation(teamFilters.location);
+                //     break;
+                //   }
+                //   case strings.clubsTitleText: {
+                //     setLocation(clubFilters.location);
+                //     break;
+                //   }
+                //   case strings.completedTitleText: {
+                //     setLocation(completedGameFilters.location);
+                //     break;
+                //   }
+                //   case strings.upcomingTitleText: {
+                //     setLocation(upcomingGameFilters.location);
+                //     break;
+                //   }
+                //   default:
+                //     break;
+                // }
                 setSettingPopup(true);
               }, 100);
             }}>
-            <Image source={images.homeSetting} style={styles.settingImage} />
+            <Image source={images.filterIcon} style={styles.settingImage} />
           </TouchableWithoutFeedback>
         )}
       </View>
@@ -2096,6 +2123,11 @@ export default function EntitySearchScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.searchText}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
       <ActivityLoader visible={loading} />
       <View style={styles.searchBarView}>
         <TCSearchBox
@@ -2169,9 +2201,10 @@ export default function EntitySearchScreen({navigation, route}) {
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         style={{
-          backgroundColor: '#FCFCFC',
+          backgroundColor: colors.whiteColor,
           flex: 1,
-          padding: 15,
+          paddingHorizontal: 15,
+          paddingBottom: 15,
           marginTop: 0,
         }}
         onEndReachedThreshold={0.01}
@@ -2254,27 +2287,30 @@ export default function EntitySearchScreen({navigation, route}) {
           setloading(false);
           let tempFilter = {};
           tempFilter = {...filterData};
-          setSettingPopup(false);
+          // setSettingPopup(false);
           setPageFrom(0);
           if (filterData.locationOption === locationType.WORLD) {
-            setLocation(strings.worldTitleText);
+            // setLocation(strings.worldTitleText);
             tempFilter.location = strings.worldTitleText;
+            setSettingPopup(false);
           } else if (filterData.locationOption === locationType.HOME_CITY) {
-            setLocation(
-              authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
-                authContext?.entity?.obj?.city.slice(1),
-            );
+            // setLocation(
+            //   authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
+            //     authContext?.entity?.obj?.city.slice(1),
+            // );
             tempFilter.location =
               authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
               authContext?.entity?.obj?.city.slice(1);
+            setSettingPopup(false);
           } else if (
             filterData.locationOption === locationType.CURRENT_LOCATION
           ) {
             getLocation();
-            tempFilter.location = location;
+            // tempFilter.location = location;
           } else if (filterData.locationOption === locationType.SEARCH_CITY) {
-            setLocation(filterData.searchCityLoc);
+            // setLocation(filterData.searchCityLoc);
             tempFilter.location = filterData.searchCityLoc;
+            setSettingPopup(false);
           }
           switch (currentSubTab) {
             case strings.generalText: {
@@ -2617,7 +2653,7 @@ const styles = StyleSheet.create({
   searchBarView: {
     flexDirection: 'row',
     marginLeft: 15,
-    marginTop: 15,
+    marginTop: 20,
     marginBottom: 0,
     marginRight: 15,
   },
@@ -2627,8 +2663,8 @@ const styles = StyleSheet.create({
     height: 72,
   },
   settingImage: {
-    height: 20,
-    width: 20,
+    height: 25,
+    width: 25,
     resizeMode: 'cover',
     alignSelf: 'center',
     position: 'absolute',

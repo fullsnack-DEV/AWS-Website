@@ -21,6 +21,7 @@ const ScreenHeader = ({
   rightIcon2,
   loading = false,
   isRightIconText = false,
+  isFullTitle = false,
   rightButtonText = '',
   onRightButtonPress = () => {},
   leftIconPress = () => {},
@@ -41,7 +42,7 @@ const ScreenHeader = ({
       )}
     </View>
 
-    <View style={styles.titleContainer}>
+    <View style={[styles.titleContainer, {flex: isFullTitle ? 'none' : 1}]}>
       {sportIcon ? (
         <View style={styles.largeIconContainer}>
           <Image source={{uri: sportIcon}} style={styles.image} />
@@ -54,9 +55,7 @@ const ScreenHeader = ({
         )
       )}
 
-      <Text style={[styles.headerTitle, labelStyle]} numberOfLines={1}>
-        {title}
-      </Text>
+      <Text style={[styles.headerTitle, labelStyle]}>{title}</Text>
     </View>
 
     <View style={{width: 80}}>
