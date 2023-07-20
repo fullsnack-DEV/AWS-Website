@@ -135,9 +135,6 @@ const LocalHomeMenuItems = memo(
         )
           ? Verbs.entityTypeUser
           : item?.entity_type;
-
-        console.log('item  =>', item);
-        console.log('card  =>', card);
         let sportsList = [];
         switch (card.key) {
           case strings.refreesAvailable:
