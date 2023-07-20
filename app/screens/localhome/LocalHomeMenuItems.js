@@ -136,12 +136,39 @@ const LocalHomeMenuItems = memo(
           ? Verbs.entityTypeUser
           : item?.entity_type;
 
-        navigation.navigate('HomeScreen', {
-          uid,
-          role,
-          backButtonVisible: true,
-          menuBtnVisible: false,
-        });
+        console.log('item  =>', item);
+        console.log('card  =>', card);
+        let sportsList = [];
+        switch (card.key) {
+          case strings.refreesAvailable:
+            sportsList = item.referee_data ?? [];
+            break;
+
+          case strings.scorekeepersAvailable:
+            sportsList = item.scorekeeper_data ?? [];
+            break;
+
+          case strings.lookingForTeamTitle:
+            sportsList = item.registered_sports ?? [];
+            break;
+          default:
+            console.log('Pressed');
+        }
+        if (sportsList.length > 1) {
+          setPlayerDetailPopup(true);
+          setPlayerDetail({
+            user_id: uid,
+            entity_type: role,
+            sports: sportsList,
+          });
+        } else {
+          navigation.navigate('HomeScreen', {
+            uid,
+            role,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+          });
+        }
       }
     };
 
