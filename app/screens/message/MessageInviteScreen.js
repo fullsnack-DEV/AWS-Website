@@ -21,11 +21,11 @@ import Verbs from '../../Constants/Verbs';
 import TabBarForInvitee from './components/TabBarForInvitee';
 import InviteeCard from './components/InviteeCard';
 import SelectedInviteeCard from './components/SelectedInviteeCard';
-import useCreateChannel from '../../hooks/useCreateChannel';
+import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 
 const MessageInviteScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
-  const {createChannel, isCreatingChannel} = useCreateChannel();
+  const {createChannel, isCreatingChannel} = useStreamChatUtils();
 
   const [currentTab, setCurrentTab] = useState(strings.allType);
   const [loading, setLoading] = useState(false);
@@ -78,7 +78,7 @@ const MessageInviteScreen = ({navigation}) => {
   useEffect(() => {
     if (searchText.length > 0) {
       const filteredData = list.filter((item) =>
-        item.name.includes(searchText),
+        item.name.toLowerCase().includes(searchText.toLowerCase()),
       );
 
       setSearchedList(filteredData);

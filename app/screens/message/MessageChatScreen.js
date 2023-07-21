@@ -43,17 +43,17 @@ import CustomAutoCompleteSuggestionsList from './components/CustomAutoCompleteSu
 import CustomReplyComponent from './components/CustomReplyComponent';
 import CustomReplyInputPreview from './components/CustomReplyInputPreview';
 import CustomAvatar from './components/CustomAvatar';
+import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
   const authContext = useContext(AuthContext);
+  const {addMembersToChannel, isMemberAdding} = useStreamChatUtils();
 
   const [isVisible, setIsVisible] = useState(false);
-
   const [allReaction, setAllReaction] = useState([]);
   const [deleteMessageModal, setDeleteMessageModal] = useState(false);
   const [deleteMessageObject, setDeleteMessageObject] = useState({});
-
   const [showDetails, setShowDetails] = useState(false);
 
   const CustomImageUploadPreview = () => {
@@ -209,7 +209,7 @@ const MessageChatScreen = ({navigation, route}) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
-        title={getChannelName(channel, authContext.entity.uid)}
+        title={getChannelName(channel, authContext.chatClient.userID)}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.goBack();
@@ -261,9 +261,7 @@ const MessageChatScreen = ({navigation, route}) => {
               ReactionList={() => null}
               InputReplyStateHeader={CustomReplyInputPreview}
               Reply={CustomReplyComponent}
-              DateHeader={(props) => (
-                <CustomDateSeparator date={props.dateString} />
-              )}
+              DateHeader={() => null}
               InlineDateSeparator={(props) => (
                 <CustomDateSeparator date={props.date} />
               )}
@@ -297,8 +295,14 @@ const MessageChatScreen = ({navigation, route}) => {
           isVisible={showDetails}
           closeModal={() => setShowDetails(false)}
           channel={channel}
-          currentEntityId={authContext.entity.uid}
+          streamUserId={authContext.chatClient.userID}
           leaveChannel={handleChannelLeave}
+          addMembers={(members = []) => {
+            addMembersToChannel({channel, newMembers: members}).catch((err) => {
+              Alert.alert(strings.alertmessagetitle, err.message);
+            });
+          }}
+          loading={isMemberAdding}
         />
       </View>
     </SafeAreaView>
