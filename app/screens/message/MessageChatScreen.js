@@ -48,7 +48,8 @@ import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
   const authContext = useContext(AuthContext);
-  const {addMembersToChannel, isMemberAdding} = useStreamChatUtils();
+  const {addMembersToChannel, isMemberAdding, createChannel} =
+    useStreamChatUtils();
 
   const [isVisible, setIsVisible] = useState(false);
   const [allReaction, setAllReaction] = useState([]);
@@ -206,6 +207,36 @@ const MessageChatScreen = ({navigation, route}) => {
     );
   };
 
+  const handleTagPress = (mentions = [], mentionText = '') => {
+    const entity_name = mentionText.slice(1);
+    const member = mentions.find(
+      (item) => item.group_name === entity_name || item.name === entity_name,
+    );
+    const memberId = member.id.includes('@')
+      ? member.id.split('@')[0]
+      : member.id;
+
+    const obj = {
+      id: memberId,
+      name: member.group_name ?? member.name,
+      image: member.image,
+      entityType: member.entityType,
+    };
+
+    createChannel([obj])
+      .then(async (channelObj) => {
+        if (channelObj !== null) {
+          await channelObj.watch();
+          navigation.replace('MessageChatScreen', {
+            channel: channelObj,
+          });
+        }
+      })
+      .catch((err) => {
+        Alert.alert(strings.alertmessagetitle, err.message);
+      });
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -239,7 +270,9 @@ const MessageChatScreen = ({navigation, route}) => {
           <Chat style={themeStyle} client={authContext.chatClient}>
             <Channel
               channel={channel}
-              MessageText={CustomMessageText}
+              MessageText={() => (
+                <CustomMessageText onTagPress={handleTagPress} />
+              )}
               MessageAvatar={() => (
                 <CustomAvatar
                   channel={channel}

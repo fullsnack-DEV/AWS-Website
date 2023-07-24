@@ -9,7 +9,7 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {checkIsMessageDeleted} from '../../../utils/streamChat';
 
-const CustomMessageText = () => {
+const CustomMessageText = ({onTagPress = () => {}}) => {
   const [showFullMessage, setShowFullMessage] = useState(false);
   const authContext = useContext(AuthContext);
   const {message} = useMessageContext();
@@ -30,11 +30,13 @@ const CustomMessageText = () => {
         const match = word.match(mentionRegex);
 
         if (match) {
+          const mention = `${match[0]} ${wordsArray[index + 1]}`;
           return (
             <Text
               key={index}
+              onPress={() => onTagPress(message.mentioned_users, mention)}
               style={[styles.messageText, {color: colors.tagColor}]}>
-              {`${match[0]} ${wordsArray[index + 1]} `}
+              {mention}{' '}
             </Text>
           );
         }
