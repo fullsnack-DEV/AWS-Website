@@ -1,5 +1,11 @@
 // @flow
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -29,6 +35,7 @@ const MessageSearchScreen = ({navigation}) => {
   const [channels, setChannels] = useState([]);
 
   const authContext = useContext(AuthContext);
+  const timeoutRef = useRef();
 
   const getSearchData = useCallback(
     (text = '') => {
@@ -116,10 +123,10 @@ const MessageSearchScreen = ({navigation}) => {
 
   useEffect(() => {
     if (searchText.length > 0) {
-      getSearchData(searchText);
-    } else {
-      setMessages([]);
-      setChannels([]);
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        getSearchData(searchText);
+      }, 300);
     }
   }, [searchText, getSearchData]);
 
@@ -152,9 +159,17 @@ const MessageSearchScreen = ({navigation}) => {
           }}
           placeholder={strings.searchText}
         />
-        <TouchableOpacity onPress={() => setSearchText('')}>
-          <Image source={images.closeRound} style={{height: 15, width: 15}} />
-        </TouchableOpacity>
+        {searchText.length > 0 && (
+          <TouchableOpacity
+            onPress={() => {
+              clearTimeout(timeoutRef.current);
+              setSearchText('');
+              setMessages([]);
+              setChannels([]);
+            }}>
+            <Image source={images.closeRound} style={{height: 15, width: 15}} />
+          </TouchableOpacity>
+        )}
       </View>
 
       {messages.length > 0 || channels.length > 0 ? (

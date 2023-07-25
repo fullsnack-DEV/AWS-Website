@@ -1,4 +1,10 @@
-import React, {useState, useContext} from 'react';
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import {
   Text,
   StyleSheet,
@@ -60,6 +66,9 @@ const MessageChatScreen = ({navigation, route}) => {
   const [showDetails, setShowDetails] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [showSearchInput, setShowSearchInput] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [messages, setMessages] = useState([]);
+  const timeoutRef = useRef();
 
   const CustomImageUploadPreview = () => {
     const {imageUploads, setImageUploads, numberOfUploads, removeImage} =
@@ -241,6 +250,31 @@ const MessageChatScreen = ({navigation, route}) => {
       });
   };
 
+  const getSearchData = useCallback(
+    async (text = '') => {
+      const channelFilters = {cid: channel.cid};
+      const messageFilters = {text: {$autocomplete: text}};
+
+      const response = await authContext.chatClient.search(
+        channelFilters,
+        messageFilters,
+        {sort: [{relevance: -1}, {updated_at: 1}, {my_custom_field: -1}]},
+      );
+
+      setMessages(response.results);
+    },
+    [channel.cid, authContext.chatClient],
+  );
+
+  useEffect(() => {
+    if (searchText.length > 0) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        getSearchData(searchText);
+      }, 300);
+    }
+  }, [searchText, getSearchData]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -276,6 +310,7 @@ const MessageChatScreen = ({navigation, route}) => {
                 <TouchableOpacity
                   onPress={() => {
                     setSearchText('');
+                    setMessages([]);
                     setShowSearchInput(false);
                   }}>
                   <Image
