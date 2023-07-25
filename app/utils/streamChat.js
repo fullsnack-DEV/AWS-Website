@@ -99,7 +99,7 @@ export const getChannelName = (channel = {}, streamUserId = '') => {
   const {data} = channel;
   if (
     data?.channel_type === 'Auto' ||
-    (data.group_type === 'General' && data.name)
+    (data?.group_type === 'General' && data.name)
   ) {
     return data.name;
   }

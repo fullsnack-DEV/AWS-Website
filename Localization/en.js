@@ -3067,4 +3067,5 @@ export default {
   deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
   viewAll: 'en_View all',
   byUser: 'en_By {0}',
+  chatroomText: 'en_Chatroom',
 };

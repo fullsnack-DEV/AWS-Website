@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  TextInput,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {
@@ -44,6 +45,7 @@ import CustomReplyComponent from './components/CustomReplyComponent';
 import CustomReplyInputPreview from './components/CustomReplyInputPreview';
 import CustomAvatar from './components/CustomAvatar';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
+import fonts from '../../Constants/Fonts';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
@@ -56,6 +58,8 @@ const MessageChatScreen = ({navigation, route}) => {
   const [deleteMessageModal, setDeleteMessageModal] = useState(false);
   const [deleteMessageObject, setDeleteMessageObject] = useState({});
   const [showDetails, setShowDetails] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [showSearchInput, setShowSearchInput] = useState(false);
 
   const CustomImageUploadPreview = () => {
     const {imageUploads, setImageUploads, numberOfUploads, removeImage} =
@@ -250,8 +254,40 @@ const MessageChatScreen = ({navigation, route}) => {
           setShowDetails(true);
         }}
         loading={false}
+        rightIcon1={showSearchInput ? images.searchLocation : images.chatSearch}
+        rightIcon1Press={() => {
+          setShowSearchInput(!showSearchInput);
+        }}
       />
       <View style={{flex: 1}}>
+        {showSearchInput ? (
+          <View style={styles.floatingInput}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholderTextColor={strings.searchText}
+                style={styles.textInputStyle}
+                value={searchText}
+                onChangeText={(text) => {
+                  setSearchText(text);
+                }}
+                placeholder={strings.searchText}
+              />
+              {searchText.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setSearchText('');
+                    setShowSearchInput(false);
+                  }}>
+                  <Image
+                    source={images.closeRound}
+                    style={{height: 15, width: 15}}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        ) : null}
+
         <ChatOverlayProvider
           translucentStatusBar={false}
           topInset={0}
@@ -348,6 +384,31 @@ const styles = StyleSheet.create({
     marginTop: 5,
     borderWidth: 0.5,
     width: wp(95),
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    backgroundColor: colors.whiteColor,
+    height: 40,
+  },
+  textInputStyle: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    padding: 0,
+  },
+  floatingInput: {
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    backgroundColor: colors.inputBgOpacityColor,
+    position: 'absolute',
+    top: 0,
+    zIndex: 1,
+    width: '100%',
   },
 });
 
