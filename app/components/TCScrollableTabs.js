@@ -2,6 +2,7 @@ import React, {memo} from 'react';
 
 import ScrollableTabView, {
   ScrollableTabBar,
+  // eslint-disable-next-line import/no-unresolved
 } from 'react-native-scrollable-tab-view-forked';
 
 import colors from '../Constants/Colors';

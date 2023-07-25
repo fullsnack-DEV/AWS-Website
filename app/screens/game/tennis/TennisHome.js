@@ -19,7 +19,6 @@ import {Modalize} from 'react-native-modalize';
 import {format} from 'react-string-format';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import TopBackgroundHeader from '../../../components/game/tennis/home/TopBackgroundHeader';
-import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/tennis/home/summary/Summary';
 import Gallery from '../../../components/game/common/gallary/Gallery';
 import Stats from '../../../components/game/tennis/home/stats/Stats';
@@ -61,6 +60,7 @@ import {ImageUploadContext} from '../../../context/ImageUploadContext';
 import ScorekeeperReservationStatus from '../../../Constants/ScorekeeperReservationStatus';
 import RefereeReservationStatus from '../../../Constants/RefereeReservationStatus';
 import Verbs from '../../../Constants/Verbs';
+import CustomScrollTabs from '../../../components/CustomScrollTabs';
 
 const TAB_ITEMS = ['Summary', 'Stats', 'Gallery'];
 
@@ -545,13 +545,10 @@ const TennisHome = ({navigation, route}) => {
         resetGameDetail={resetGameDetail}
         navigation={navigation}
         gameData={gameData}>
-        <TCScrollableProfileTabs
-          tabItem={TAB_ITEMS}
-          onChangeTab={(ChangeTab) => {
-            setCurrentTab(ChangeTab.i);
-          }}
+        <CustomScrollTabs
+          tabsItem={TAB_ITEMS}
+          setCurrentTab={(ChangeTab) => setCurrentTab(ChangeTab)}
           currentTab={currentTab}
-          renderTabContain={renderTabContain}
         />
       </TopBackgroundHeader>
     ),

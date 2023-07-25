@@ -6,9 +6,9 @@ import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.reactcommunity.rndatetimepicker.RNDateTimePickerPackage;
 // import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
-import com.cmcewen.blurview.BlurViewPackage;
+
 //import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;
-import com.cmcewen.blurview.BlurViewPackage;
+
 import com.github.yamill.orientation.OrientationPackage;
 
 import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
@@ -19,9 +19,8 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import com.facebook.react.bridge.JSIModulePackage; // <- add
-import com.swmansion.reanimated.ReanimatedJSIModulePackage; // <- add
-import io.amarcruz.photoview.PhotoViewPackage;
+
+
 //import com.zoontek.rnlocalize.RNLocalizePackage;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -42,7 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           //packages.add(new MapsPackage());
-          packages.add(new PhotoViewPackage());
+     
 		  //packages.add(new RNLocalizePackage());
 
           return packages;
@@ -54,10 +53,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected String getJSMainModuleName() {
           return "index";
         }
-        @Override
-        protected JSIModulePackage getJSIModulePackage() {
-          return new ReanimatedJSIModulePackage(); // <- add
-      }
+     
       };
 
   @Override

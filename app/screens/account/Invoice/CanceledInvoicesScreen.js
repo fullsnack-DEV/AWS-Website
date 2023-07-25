@@ -11,7 +11,6 @@ import {
   Image,
   SafeAreaView,
   TouchableOpacity,
-  ScrollView,
 } from 'react-native';
 
 import moment from 'moment';
@@ -32,6 +31,7 @@ import {getTCDate, groupBy} from '../../../utils';
 import DateFilterModal from './DatefilterModal';
 import ScreenHeader from '../../../components/ScreenHeader';
 import InvoiceAmount from '../../../components/invoice/InvoiceAmount';
+import CustomScrollTabs from '../../../components/CustomScrollTabs';
 
 function CanceledInvoicesScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
@@ -67,10 +67,9 @@ function CanceledInvoicesScreen({navigation, route}) {
   const [totalInvoice, setTotalInvoice] = useState(0);
   const [selectedCurrency, setSelectedCurrency] = useState();
   const [visibleCurrencySheet, setVisibleCurrencySheet] = useState();
-  const [activeTab, setActiveTab] = useState(0);
 
   const tabChangePress = useCallback((changeTab) => {
-    setTabNumber(changeTab.i);
+    setTabNumber(changeTab);
   }, []);
 
   const getDates = (optionsState) => {
@@ -209,28 +208,7 @@ function CanceledInvoicesScreen({navigation, route}) {
     [currentRecordSet],
   );
 
-  const handleTabPress = (index) => {
-    setActiveTab(index);
-  };
-
   // eslint-disable-next-line no-shadow
-  const ScrollableTabs = ({tabs}) => (
-    <View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {tabs.map((tab, index) => (
-          <TouchableOpacity
-            key={index}
-            style={index === activeTab ? styles.activeTab : styles.tab}
-            onPress={() => handleTabPress(index)}>
-            <Text
-              style={index === activeTab ? styles.boldText : styles.tabText}>
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
-  );
 
   const handleTabSelection = (index) => {
     tabChangePress(index);
@@ -416,7 +394,13 @@ function CanceledInvoicesScreen({navigation, route}) {
           <View style={{flex: 1}}>
             {from === Verbs.INVOICERECEVIED ? (
               <View style={{backgroundColor: colors.whiteColor}}>
-                <ScrollableTabs tabs={tabs} onSelectTab={handleTabSelection} />
+                <CustomScrollTabs
+                  tabsItem={tabs}
+                  setCurrentTab={handleTabSelection}
+                  currentTab={tabNumber}
+                />
+
+                {/* <ScrollableTabs tabs={tabs} onSelectTab={handleTabSelection} /> */}
               </View>
             ) : null}
             <FlatList
@@ -491,26 +475,6 @@ function CanceledInvoicesScreen({navigation, route}) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-  },
-  tab: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  activeTab: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderBottomWidth: 3.5,
-    borderBottomColor: colors.orangeColorCard,
-  },
-  tabText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-  boldText: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    color: colors.orangeColorCard,
   },
 });
 

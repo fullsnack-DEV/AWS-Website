@@ -21,11 +21,11 @@ import {
   InvoiceRecipientTabType,
   InvoiceRowType,
 } from '../../../Constants/GeneralConstants';
-import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import AuthContext from '../../../auth/context';
 import Verbs from '../../../Constants/Verbs';
 import SelectedRecipientsModal from './SelectedRecipientsModal';
 import RecipientCell from './RecipientCell';
+import CustomScrollTabs from '../../../components/CustomScrollTabs';
 
 const TAB_ITEMS = [strings.peopleTitleText, strings.teamsTitleText];
 
@@ -302,7 +302,7 @@ const AddRecipientsModal = ({
   );
 
   const tabChangePress = useCallback((changeTab) => {
-    switch (changeTab.i) {
+    switch (changeTab) {
       case InvoiceRecipientTabType.People:
         break;
       case InvoiceRecipientTabType.Teams:
@@ -310,7 +310,7 @@ const AddRecipientsModal = ({
       default:
         break;
     }
-    setCurrentTab(changeTab.i);
+    setCurrentTab(changeTab);
   }, []);
 
   const showSelectedRecipient = () => {
@@ -413,10 +413,9 @@ const AddRecipientsModal = ({
       {/* show the tabs if club is sending the invoice */}
       {isShowTabs && invoiceType === InvoiceType.Invoice && (
         <View style={{backgroundColor: '#FFFFFF'}}>
-          <TCScrollableProfileTabs
-            tabItem={TAB_ITEMS}
-            tabVerticalScroll={false}
-            onChangeTab={tabChangePress}
+          <CustomScrollTabs
+            tabsItem={TAB_ITEMS}
+            setCurrentTab={tabChangePress}
             currentTab={currentTab}
           />
         </View>

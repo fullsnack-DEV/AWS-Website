@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-undef */
 import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {View, StyleSheet, Alert, FlatList, SafeAreaView} from 'react-native';
 
@@ -5,7 +6,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getReservationList} from '../../api/Reservations';
 import TCNoDataView from '../../components/TCNoDataView';
 import {strings} from '../../../Localization/translation';
-import TCScrollableTabs from '../../components/TCScrollableTabs';
+
 import AuthContext from '../../auth/context';
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
