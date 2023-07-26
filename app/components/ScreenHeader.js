@@ -42,7 +42,7 @@ const ScreenHeader = ({
       )}
     </View>
 
-    <View style={[styles.titleContainer, {flex: isFullTitle ? 'none' : 1}]}>
+    <View style={[styles.titleContainer, {flex: isFullTitle ? 0 : 1}]}>
       {sportIcon ? (
         <View style={styles.largeIconContainer}>
           <Image source={{uri: sportIcon}} style={styles.image} />
@@ -136,7 +136,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
   },
   largeIconContainer: {
     width: 40,

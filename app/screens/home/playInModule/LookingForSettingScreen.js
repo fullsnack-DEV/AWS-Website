@@ -204,7 +204,7 @@ export default function LookingForSettingScreen({navigation, route}) {
             />
           </View>
         </View>
-        <Text style={styles.languageList}>
+        <Text style={[styles.languageList, {marginBottom: 50}]}>
           {format(strings.lookingForBottomText, getHeaderTitle())}
         </Text>
       </View>

@@ -1979,6 +1979,7 @@ const AccountNavigator = () => (
       options={{
         title: strings.paymentMethod,
         headerTintColor: colors.blackColor,
+        headerShown: false,
         headerTitleStyle: {
           fontWeight: '500',
         },

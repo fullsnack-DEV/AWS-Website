@@ -46,6 +46,7 @@
     "@react-native-firebase/crashlytics": "^14.12.0",
     "@react-native-firebase/messaging": "^14.12.0",
     "@react-native-google-signin/google-signin": "^10.0.1",
+    "@react-native-picker/picker": "^2.4.10",
     "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/drawer": "^6.4.1",
     "@react-navigation/native": "^6.0.8",
@@ -106,11 +107,9 @@
     "react-native-modalize": "^2.0.13",
     "react-native-orientation": "^3.1.3",
     "react-native-pager-view": "^6.2.0",
-   
     "react-native-parallax-scroll-view": "^0.21.3",
     "react-native-parsed-text": "0.0.22",
     "react-native-permissions": "^3.3.1",
-    
     "react-native-picker-select": "^8.0.4",
     "react-native-pie": "^1.1.2",
     "react-native-portalize": "^1.0.7",

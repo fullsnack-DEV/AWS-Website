@@ -62,6 +62,7 @@ const InfoContentScreen = ({
     buttonText: '',
     showPrivacy: false,
   });
+  const [forHome] = useState(true);
 
   const isFocused = useIsFocused();
 
@@ -108,7 +109,7 @@ const InfoContentScreen = ({
               <Text style={[styles.smallText, {marginTop: 5}]}>
                 {format(
                   strings.registerDate,
-                  getTitleForRegister(entityType),
+                  getTitleForRegister(entityType, forHome),
                   moment(
                     getJSDate(new Date(sportObj.created_at).getTime()),
                   ).format('YYYY'),

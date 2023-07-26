@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {View, StyleSheet, Alert, Text, Image, FlatList} from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -19,6 +19,7 @@ import * as Utility from '../../../utils';
 import images from '../../../Constants/ImagePath';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import TCInnerLoader from '../../../components/TCInnerLoader';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function PaymentMethodsScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
@@ -48,23 +49,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
         });
     }
   }, [isFocused]);
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text
-          style={styles.nextButtonStyle}
-          onPress={() => {
-            if (selectedCard) {
-              onCardSelected(selectedCard);
-            } else {
-              Alert.alert(strings.selectAnyCard);
-            }
-          }}>
-          {strings.done}
-        </Text>
-      ),
-    });
-  }, [navigation, loading, selectedCard]);
+
   const getPaymentMethods = () =>
     new Promise((resolve, reject) => {
       paymentMethods(authContext)
@@ -324,12 +309,27 @@ export default function PaymentMethodsScreen({navigation, route}) {
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
+      <ScreenHeader
+        title={strings.paymentMethod}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        rightButtonText={strings.done}
+        isRightIconText
+        onRightButtonPress={() => {
+          if (selectedCard) {
+            onCardSelected(selectedCard);
+          } else {
+            Alert.alert(strings.selectAnyCard);
+          }
+        }}
+      />
+
       <Text
         style={{
           marginLeft: 15,
-          marginTop: 15,
+          marginTop: 20,
           color: colors.lightBlackColor,
-          fontFamily: fonts.RRegular,
+          fontFamily: fonts.RMedium,
           fontSize: 20,
         }}>
         {strings.selectPaymentMethod}
@@ -338,7 +338,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
       {!firstTimeLoad && (
         <FlatList
           testID="payment-method-list"
-          style={{marginTop: 15}}
+          style={{marginTop: 20}}
           data={cards}
           renderItem={renderCard}
           keyExtractor={(item) => item.id}
@@ -353,13 +353,8 @@ export default function PaymentMethodsScreen({navigation, route}) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: colors.grayBackgroundColor,
   },
-  nextButtonStyle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    marginRight: 10,
-  },
+
   paymentCardRow: {
     marginBottom: 10,
     marginLeft: 15,
@@ -371,7 +366,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 2,
     height: 70,
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.lightGrey,
     justifyContent: 'center',
     paddingHorizontal: 15,
   },

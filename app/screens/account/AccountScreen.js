@@ -219,6 +219,7 @@ const AccountScreen = ({navigation, route}) => {
         );
 
         setAccountMenu(menu);
+
         setLoading(false);
       })
       .catch((e) => {
@@ -327,7 +328,6 @@ const AccountScreen = ({navigation, route}) => {
         break;
 
       case strings.addSportsTitle:
-        console.log(rowObj, 'From add sport');
         setNavigationOptions({
           screenName: rowObj.navigateTo.screenName,
           data: rowObj.navigateTo.data,
@@ -345,7 +345,7 @@ const AccountScreen = ({navigation, route}) => {
         if (authContext.entity.role === Verbs.entityTypeUser && rowObj.sport) {
           navigation.navigate('SportActivityHome', {
             sport: rowObj.sport.sport,
-            sportType: rowObj.sport.sport_type ?? '',
+            sportType: rowObj.sport.sport_type ?? Verbs.sportTypeSingle,
             uid: authContext.entity.obj.user_id,
             selectedTab: strings.infoTitle,
             entityType: rowObj.sport.type,
