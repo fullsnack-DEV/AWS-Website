@@ -2808,7 +2808,9 @@ const AccountNavigator = () => (
         headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
-          fontWeight: '500',
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,
