@@ -272,8 +272,8 @@ import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
 import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
+import EventsListScreen from '../screens/account/schedule/EventsListScreen';
 // Scorekeeper Review Screen
-
 const Stack = createStackNavigator();
 
 const AccountNavigator = () => (
@@ -698,6 +698,7 @@ const AccountNavigator = () => (
           borderBottomColor: colors.grayColor,
           borderBottomWidth: 0.3,
         },
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -2792,6 +2793,25 @@ const AccountNavigator = () => (
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
+      name="EventsListScreen"
+      component={EventsListScreen}
+      options={{
+        title: strings.events,
+        headerShown: false,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

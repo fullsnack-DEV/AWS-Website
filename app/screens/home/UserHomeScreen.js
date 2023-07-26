@@ -444,7 +444,9 @@ const UserHomeScreen = ({
               currentUserData,
             });
           } else if (option === strings.event) {
-            //
+            navigation.navigate('EventsListScreen', {
+              screen: 'EventsListScreen',
+            });
           }
         }}
       />

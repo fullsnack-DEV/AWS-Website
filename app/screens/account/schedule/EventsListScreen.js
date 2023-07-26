@@ -35,7 +35,6 @@ import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
-import FastImage from 'react-native-fast-image';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import EventScheduleScreen from './EventScheduleScreen';
@@ -60,16 +59,15 @@ import TCAccountDeactivate from '../../../components/TCAccountDeactivate';
 import {getUserSettings} from '../../../api/Users';
 import {getGroups, getTeamsOfClub} from '../../../api/Groups';
 import TCThinDivider from '../../../components/TCThinDivider';
-import {reservationOpetions} from '../../../utils/constant';
 import Verbs from '../../../Constants/Verbs';
-import AvailibilityScheduleScreen from './AvailibityScheduleScreen';
-// import ChallengeAvailability from './ChallengeAvailability';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import FilterTimeSelectItem from '../../../components/Filter/FilterTimeSelectItem';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import EventListShimmer from '../../../components/shimmer/schedule/EventListShimmer';
+import ScreenHeader from '../../../components/ScreenHeader';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-export default function ScheduleScreen({navigation, route}) {
+export default function EventsListScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
   if (route?.params?.isBackVisible) {
     authContext = {
@@ -102,7 +100,6 @@ export default function ScheduleScreen({navigation, route}) {
     }
   }
 
-  const refContainer = useRef();
   const rsvpFilterOptions = [
     strings.eventFilterRsvpAll,
     strings.eventFilterRsvpGoing,
@@ -151,8 +148,6 @@ export default function ScheduleScreen({navigation, route}) {
   );
   const [timeSelectionModal, setTimeSelectionModal] = useState(false);
   const [timeSelectionPicker, setTimeSelectionPicker] = useState(false);
-  const [sports, setSports] = useState([]);
-  const [organizerOptions, setOrganizerOptions] = useState([]);
   const [owners, setOwners] = useState([]);
   const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [eventData, setEventData] = useState([]);
@@ -163,10 +158,7 @@ export default function ScheduleScreen({navigation, route}) {
   const [refereeReservData, setRefereeReserveData] = useState([]);
   const [scorekeeperReservData, setScorekeeperReserveData] = useState([]);
   const [indigator, setIndigator] = useState(false);
-  const [isRefeering, setIsRefeering] = useState(true);
-  const [isScorekeeping, setIsScoreKeeping] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isSortbyOthers, setIsSortByOthers] = useState(true);
+
   const [eventSettingsOption, setEventSettingsOption] =
     useState(settingsOptions);
   const [selectedOptions, setSelectedOptions] = useState({
@@ -190,7 +182,16 @@ export default function ScheduleScreen({navigation, route}) {
   const [filterTags, setFilterTags] = useState([]);
   const [filterCancelled, setFilterCancelled] = useState(false);
   const [isAdmin] = useState(route?.params?.isAdmin);
+  const [organizerOptions, setOrganizerOptions] = useState([]);
+  const [sports, setSports] = useState([]);
+  console.log('route==>', route);
+  console.log('allSlots==>', allSlots);
+  console.log('isAdmin==>', isAdmin);
+  console.log('sports==>', sports);
+  console.log('organizerOptions==>', organizerOptions);
+
   useEffect(() => {
+    setScheduleIndexCounter(0);
     navigation.getParent()?.setOptions({
       tabBarStyle: {
         display: isFocused ? 'flex' : 'none',
@@ -271,20 +272,20 @@ export default function ScheduleScreen({navigation, route}) {
       setPopupFilterHeight(500);
     }
 
-    // Check if role contains referee
-    if (!authContext?.entity?.obj?.referee_data) {
-      setIsRefeering(false);
-    }
+    // // Check if role contains referee
+    // if (!authContext?.entity?.obj?.referee_data) {
+    //   setIsRefeering(false);
+    // }
 
-    // Check if role contains scorekeeper
-    if (!authContext.entity.obj?.scorekeeper_data) {
-      setIsScoreKeeping(false);
-    }
+    // // Check if role contains scorekeeper
+    // if (!authContext.entity.obj?.scorekeeper_data) {
+    //   setIsScoreKeeping(false);
+    // }
 
-    // Check if user has any registered sport
-    if (!authContext.entity.obj?.registered_sports) {
-      setIsPlaying(false);
-    }
+    // // Check if user has any registered sport
+    // if (!authContext.entity.obj?.registered_sports) {
+    //   setIsPlaying(false);
+    // }
   }, [authContext.entity, isFocused, indigator]);
 
   const handleCancelPress = () => {
@@ -322,9 +323,9 @@ export default function ScheduleScreen({navigation, route}) {
   useEffect(() => {
     const events = eventData.filter((obj) => !obj.game);
     if (events.length === 0) {
-      setIsSortByOthers(false);
+      // setIsSortByOthers(false);
     } else {
-      setIsSortByOthers(true);
+      // setIsSortByOthers(true);
     }
     setFilterCancelled(false);
   }, [eventData]);
@@ -378,11 +379,11 @@ export default function ScheduleScreen({navigation, route}) {
           // setting?.payload?.user?.club_event_view_settings_option : setting?.payload?.user?.event_view_settings_option;
 
           // setFilterSetting({...filterSetting, sort :  eventViewOption})
-          // setSelectedOptions({
-          //   ...selectedOptions,
-          //   option: 0,
-          //   title: strings.all,
-          // });
+          setSelectedOptions({
+            ...selectedOptions,
+            option: 0,
+            title: strings.all,
+          });
 
           if (scheduleFilter && scheduleFilter?.length > 0) {
             if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
@@ -640,10 +641,6 @@ export default function ScheduleScreen({navigation, route}) {
     }
   }, [isFocused, filterCancelled]);
 
-  const onDayPress = async () => {
-    await getEventsAndSlotsList();
-  };
-
   const getQueryParticipants = async () => {
     let participants = [];
 
@@ -832,219 +829,92 @@ export default function ScheduleScreen({navigation, route}) {
       });
   };
 
-  const keyExtractor = useCallback((item, index) => index.toString(), []);
+  // const makeOpetionsSelected = useCallback(
+  //   (item) => {
+  //     if (
+  //       filterSetting.sort ===
+  //       ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 1)
+  //     ) {
+  //       if (
+  //         selectedOptions.title.group_name === item.group_name ||
+  //         selectedOptions.title === item.group_name
+  //       ) {
+  //         return styles.sportSelectedName;
+  //       }
+  //       return styles.sportName;
+  //     }
+  //     if (
+  //       filterSetting.sort ===
+  //       ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 2 : 3)
+  //     ) {
+  //       if (
+  //         selectedOptions.title.sport === item.sport ||
+  //         selectedOptions.title === item.sport
+  //       ) {
+  //         return styles.sportSelectedName;
+  //       }
+  //       return styles.sportName;
+  //     }
+  //     if (
+  //       filterSetting.sort ===
+  //       ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2)
+  //     ) {
+  //       if (selectedOptions.title === item) {
+  //         return styles.sportSelectedName;
+  //       }
+  //       return styles.sportName;
+  //     }
+  //   },
+  //   [selectedOptions.title, filterSetting.sort],
+  // );
 
-  const makeOpetionsSelected = useCallback(
-    (item) => {
-      if (
-        filterSetting.sort ===
-        ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 1)
-      ) {
-        if (
-          selectedOptions.title.group_name === item.group_name ||
-          selectedOptions.title === item.group_name
-        ) {
-          return styles.sportSelectedName;
-        }
-        return styles.sportName;
-      }
-      if (
-        filterSetting.sort ===
-        ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 2 : 3)
-      ) {
-        if (
-          selectedOptions.title.sport === item.sport ||
-          selectedOptions.title === item.sport
-        ) {
-          return styles.sportSelectedName;
-        }
-        return styles.sportName;
-      }
-      if (
-        filterSetting.sort ===
-        ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2)
-      ) {
-        if (selectedOptions.title === item) {
-          return styles.sportSelectedName;
-        }
-        return styles.sportName;
-      }
-    },
-    [selectedOptions.title, filterSetting.sort],
-  );
-
-  const wrapperClassStyle = useCallback(
-    (item) => {
-      if (
-        filterSetting.sort ===
-        ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 1)
-      ) {
-        if (
-          selectedOptions.title.group_name === item.group_name ||
-          selectedOptions.title === item.group_name
-        ) {
-          if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-            return styles.clubActiveWrapper;
-          }
-          return styles.clubInactiveWrapper;
-        }
-        return styles.clubInactiveWrapper;
-      }
-      if (
-        filterSetting.sort ===
-        ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 2 : 3)
-      ) {
-        if (
-          selectedOptions.title.sport === item.sport ||
-          selectedOptions.title === item.sport
-        ) {
-          if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-            return styles.clubActiveWrapper;
-          }
-          return styles.clubInactiveWrapper;
-        }
-        return styles.clubInactiveWrapper;
-      }
-      if (
-        filterSetting.sort ===
-        ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2)
-      ) {
-        if (selectedOptions.title === item) {
-          if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-            return styles.clubActiveWrapper;
-          }
-          return styles.clubInactiveWrapper;
-        }
-        return styles.clubInactiveWrapper;
-      }
-    },
-    [selectedOptions.title, filterSetting.sort],
-  );
-
-  const optionsListView = useCallback(
-    ({item, index}) => {
-      if (item === strings.refeeringText && !isRefeering) {
-        return null;
-      }
-
-      if (item === strings.scorekeeperingText && !isScorekeeping) {
-        return null;
-      }
-
-      if (item === strings.playingTitleText && !isPlaying) {
-        return null;
-      }
-
-      if (
-        item === strings.othersText &&
-        eventData.length > 0 &&
-        !isSortbyOthers
-      ) {
-        return null;
-      }
-
-      return (
-        <View style={wrapperClassStyle(item)}>
-          <Text
-            style={[
-              makeOpetionsSelected(item),
-              {
-                marginLeft: 15,
-                marginRight: [Verbs.entityTypeClub].includes(
-                  authContext.entity.role,
-                )
-                  ? 15
-                  : 5,
-              },
-            ]}
-            onPress={() => {
-              refContainer.current.scrollToIndex({
-                animated: true,
-                index,
-                viewPosition: 0.8,
-              });
-              setSelectedOptions({
-                option: index,
-                title: item,
-              });
-            }}>
-            {item?.sport
-              ? item?.sport === strings.all
-                ? strings.all
-                : getSportName(item, authContext)
-              : item}
-          </Text>
-        </View>
-      );
-    },
-    [authContext, makeOpetionsSelected, isRefeering, isScorekeeping, isPlaying],
-  );
-
-  const sportOptionsListView = useCallback(
-    ({item, index}) => (
-      <View style={wrapperClassStyle(item)}>
-        <Text
-          style={[
-            makeOpetionsSelected(item),
-            {
-              marginLeft: 15,
-              marginRight: [Verbs.entityTypeClub].includes(
-                authContext.entity.role,
-              )
-                ? 15
-                : 5,
-            },
-          ]}
-          onPress={() => {
-            refContainer.current.scrollToIndex({
-              animated: true,
-              index,
-              viewPosition: 0.5,
-            });
-            setSelectedOptions({
-              option: index,
-              title: item,
-            });
-          }}>
-          {item.sport[0] + item.sport.slice(1)}
-        </Text>
-      </View>
-    ),
-    [makeOpetionsSelected, selectedOptions.title],
-  );
-
-  const organizerListView = useCallback(
-    ({item, index}) => (
-      <View style={wrapperClassStyle(item)}>
-        <Text
-          style={[
-            makeOpetionsSelected(item),
-            {
-              marginLeft: 15,
-              marginRight: [Verbs.entityTypeClub].includes(
-                authContext.entity.role,
-              )
-                ? 15
-                : 5,
-            },
-          ]}
-          onPress={() => {
-            refContainer.current.scrollToIndex({
-              animated: true,
-              index,
-              viewPosition: 0.5,
-            });
-            setSelectedOptions({
-              option: index,
-              title: item,
-            });
-          }}>
-          {item.group_name}
-        </Text>
-      </View>
-    ),
-    [makeOpetionsSelected, selectedOptions.title],
-  );
+  // const wrapperClassStyle = useCallback(
+  //   (item) => {
+  //     if (
+  //       filterSetting.sort ===
+  //       ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 1)
+  //     ) {
+  //       if (
+  //         selectedOptions.title.group_name === item.group_name ||
+  //         selectedOptions.title === item.group_name
+  //       ) {
+  //         if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+  //           return styles.clubActiveWrapper;
+  //         }
+  //         return styles.clubInactiveWrapper;
+  //       }
+  //       return styles.clubInactiveWrapper;
+  //     }
+  //     if (
+  //       filterSetting.sort ===
+  //       ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 2 : 3)
+  //     ) {
+  //       if (
+  //         selectedOptions.title.sport === item.sport ||
+  //         selectedOptions.title === item.sport
+  //       ) {
+  //         if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+  //           return styles.clubActiveWrapper;
+  //         }
+  //         return styles.clubInactiveWrapper;
+  //       }
+  //       return styles.clubInactiveWrapper;
+  //     }
+  //     if (
+  //       filterSetting.sort ===
+  //       ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2)
+  //     ) {
+  //       if (selectedOptions.title === item) {
+  //         if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+  //           return styles.clubActiveWrapper;
+  //         }
+  //         return styles.clubInactiveWrapper;
+  //       }
+  //       return styles.clubInactiveWrapper;
+  //     }
+  //   },
+  //   [selectedOptions.title, filterSetting.sort],
+  // );
 
   const renderRsvpFilterOpetions = ({index, item}) => (
     <View
@@ -1183,10 +1053,11 @@ export default function ScheduleScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ActivityLoader visible={loading} />
       <View
         style={{opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={authContext.isAccountDeactivated ? 'none' : 'auto'}>
-        <Header
+        {/* <Header
           leftComponent={
             <Text style={styles.eventTitleTextStyle}>
               {[Verbs.entityTypeClub].includes(authContext.entity.role)
@@ -1237,6 +1108,21 @@ export default function ScheduleScreen({navigation, route}) {
               </View>
             )
           }
+        /> */}
+        <ScreenHeader
+          leftIcon={images.backArrow}
+          leftIconPress={() => navigation.goBack()}
+          title={strings.events}
+          rightIcon1={images.localHomeFilter}
+          rightIcon2={images.addEvent}
+          rightIcon3={images.vertical3Dot}
+          rightIcon1Press={() => setFilterPopup(true)}
+          rightIcon2Press={() =>
+            navigation.navigate('CreateEventScreen', {
+              comeName: 'EventsListScreen',
+            })
+          }
+          rightIcon3Press={() => setSettingsModal(true)}
         />
         <View style={styles.separateLine} />
       </View>
@@ -1249,7 +1135,7 @@ export default function ScheduleScreen({navigation, route}) {
         pointerEvents={authContext.isAccountDeactivated ? 'none' : 'auto'}
         needsOffscreenAlphaCompositing>
         <View style={{flex: 1, backgroundColor: colors.offwhite}}>
-          {![Verbs.entityTypeClub].includes(authContext.entity.role) && (
+          {/* {![Verbs.entityTypeClub].includes(authContext.entity.role) && (
             <View
               style={{
                 flexDirection: 'row',
@@ -1310,63 +1196,9 @@ export default function ScheduleScreen({navigation, route}) {
                 </TouchableOpacity>
               )}
             </View>
-          )}
+          )} */}
 
-          <View style={styles.separateLine} />
-          {!loading &&
-            scheduleIndexCounter === 0 &&
-            [
-              Verbs.entityTypeUser,
-              Verbs.entityTypePlayer,
-              Verbs.entityTypeClub,
-            ].includes(authContext.entity.role) &&
-            filterSetting.sort > 0 && (
-              <View style={styles.sportsListView}>
-                <FlatList
-                  ref={refContainer}
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}
-                  data={
-                    (filterSetting.sort ===
-                      ([Verbs.entityTypeClub].includes(authContext.entity.role)
-                        ? 1
-                        : 1) &&
-                      organizerOptions) ||
-                    (filterSetting.sort ===
-                      ([Verbs.entityTypeClub].includes(authContext.entity.role)
-                        ? 2
-                        : 3) &&
-                      sports) ||
-                    (filterSetting.sort ===
-                      ([Verbs.entityTypeClub].includes(authContext.entity.role)
-                        ? -1
-                        : 2) &&
-                      reservationOpetions)
-                  }
-                  keyExtractor={keyExtractor}
-                  renderItem={
-                    (filterSetting.sort ===
-                      ([Verbs.entityTypeClub].includes(authContext.entity.role)
-                        ? 1
-                        : 1) &&
-                      organizerListView) ||
-                    (filterSetting.sort ===
-                      ([Verbs.entityTypeClub].includes(authContext.entity.role)
-                        ? 2
-                        : 3) &&
-                      sportOptionsListView) ||
-                    (filterSetting.sort ===
-                      ([Verbs.entityTypeClub].includes(authContext.entity.role)
-                        ? -1
-                        : 2) &&
-                      ![Verbs.entityTypeClub].includes(
-                        authContext.entity.role,
-                      ) &&
-                      optionsListView)
-                  }
-                />
-              </View>
-            )}
+          {/* <View style={styles.separateLine} /> */}
 
           {filterTags.length > 0 && scheduleIndexCounter === 0 ? (
             <View style={{backgroundColor: colors.whiteColor}}>
@@ -1419,14 +1251,6 @@ export default function ScheduleScreen({navigation, route}) {
                   timeSelectionOption={timeSelectionOption}
                   startDateTime={startDateTime}
                   endDateTime={endDateTime}
-                />
-              )}
-
-              {scheduleIndexCounter === 1 && (
-                <AvailibilityScheduleScreen
-                  allSlots={allSlots}
-                  onDayPress={onDayPress}
-                  isAdmin={isAdmin}
                 />
               )}
             </>
@@ -1923,50 +1747,6 @@ export default function ScheduleScreen({navigation, route}) {
           }}
         />
       </View>
-
-      {/*  Availability edit modal */}
-      {/* <Modal
-        onBackdropPress={() => setVisibleAvailabilityModal(false)}
-        isVisible={visibleAvailabilityModal}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={[
-            styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 50},
-          ]}>
-          <ChallengeAvailability
-            setVisibleAvailabilityModal={setVisibleAvailabilityModal}
-            slots={[]}
-            slotType={editableSlotsType}
-            setEditableSlotsType={setEditableSlotsType}
-          />
-        </View>
-      </Modal> */}
-
-      {/* <ActionSheet
-        ref={plusActionSheet}
-        options={[
-          strings.createEvent,
-          strings.editChallengeAvailibilityText,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            navigation.navigate('CreateEventScreen', {
-              comeName: 'ScheduleScreen',
-            });
-          } else if (index === 1) {
-            setVisibleAvailabilityModal(true);
-          }
-        }}
-      /> */}
     </SafeAreaView>
   );
 }
@@ -2078,77 +1858,12 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.writePostSepratorColor,
   },
-  activeButton: {
-    fontSize: 16,
-    fontFamily: fonts.RBlack,
-    color: colors.darkYellowColor,
-  },
-  activeWrapper: {
-    borderBottomColor: colors.darkYellowColor,
-    borderBottomWidth: 3,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-  },
-  inActiveButton: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
-  inactiveWrapper: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-  },
-  clubActiveWrapper: {
-    borderBottomColor: colors.darkYellowColor,
-    borderBottomWidth: 2,
-  },
-  clubInactiveWrapper: {
-    borderBottomWidth: 0,
-  },
-  headerRightImg: {
-    height: 25,
-    resizeMode: 'contain',
-    width: 25,
-    tintColor: colors.lightBlackColor,
-  },
-
-  eventTitleTextStyle: {
-    width: 130,
-    textAlign: 'left',
-    fontFamily: fonts.Roboto,
-    fontWeight: '700',
-    fontSize: 20,
-    lineHeight: 18,
-    paddingTop: 5,
-    color: colors.lightBlackColor,
-    marginLeft: 0,
-  },
 
   separateLine: {
     borderColor: colors.writePostSepratorColor,
     borderWidth: 0.5,
   },
-  sportsListView: {
-    flexDirection: 'row',
-    backgroundColor: colors.offwhite,
-    borderBottomColor: colors.writePostSepratorColor,
-    borderBottomWidth: 0.5,
-    alignItems: 'center',
-  },
-  sportName: {
-    fontSize: 14,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    alignSelf: 'center',
-    margin: 10,
-  },
-  sportSelectedName: {
-    fontSize: 14,
-    fontFamily: fonts.RBold,
-    color: colors.themeColor,
-    alignSelf: 'center',
-    margin: 10,
-  },
+
   bottomPopupContainer: {
     paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     backgroundColor: colors.whiteColor,
@@ -2189,14 +1904,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: colors.blackColor,
   },
-  // closeButton: {
-  //   alignSelf: 'center',
-  //   width: 15,
-  //   height: 15,
-  //   marginLeft: 5,
-  //   resizeMode: 'contain',
-  //   tintColor: colors.blackColor,
-  // },
+
   topHeaderContainer: {
     // backgroundColor: '#333',
     height: 40,
@@ -2219,20 +1927,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-  },
-  // changeOrderStyle: {
-  //   fontSize: 14,
-  //   fontFamily: fonts.RRegular,
-  //   color: colors.themeColor,
-  //   textDecorationLine: 'underline',
-  //   marginLeft: 20,
-  // },
-  threeDotImageStyle: {
-    height: 25,
-    width: 25,
-    // tintColor: colors.blackColor,
-    resizeMode: 'contain',
-    marginLeft: 10,
-    marginRight: -7,
   },
 });

@@ -796,6 +796,7 @@ const MembersNavigator = () => (
       options={{
         title: 'Create an Event',
         headerTintColor: colors.blackColor,
+        headerShown: false,
       }}
     />
     <Stack.Screen

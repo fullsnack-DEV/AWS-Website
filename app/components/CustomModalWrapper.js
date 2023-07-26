@@ -35,6 +35,7 @@ const CustomModalWrapper = ({
   Top = 50,
   isSwipeUp = false,
   showBackButton = false,
+  ratio = 2.5,
 }) => {
   const [isFullHeight, setIsFullHeight] = useState(isSwipeUp);
   const translateY = new Animated.Value(0);
@@ -226,7 +227,7 @@ const CustomModalWrapper = ({
                       {
                         height: !isFullHeight
                           ? Dimensions.get('window').height -
-                            Dimensions.get('window').height / 2.5
+                            Dimensions.get('window').height / ratio
                           : '100%',
                         padding: 25,
                       },

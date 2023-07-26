@@ -19,7 +19,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import Modal from 'react-native-modal';
 import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../auth/context';
@@ -30,7 +29,6 @@ import colors from '../../Constants/Colors';
 import {strings} from '../../../Localization/translation';
 import * as Utility from '../../utils';
 import {widthPercentageToDP} from '../../utils';
-import TCThinDivider from '../../components/TCThinDivider';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
 import {getUserSettings} from '../../api/Users';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
@@ -59,6 +57,8 @@ import LocalHomeMenuItems from './LocalHomeMenuItems';
 import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 
 import BottomSheet from '../../components/modals/BottomSheet';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 
 const defaultPageSize = 10;
 
@@ -730,183 +730,158 @@ function LocalHomeScreen({navigation, route}) {
           />
         </View>
       )}
-
-      <Modal
-        onBackdropPress={() => setLocationPopup(false)}
-        style={{
-          margin: 0,
-        }}
+      <CustomModalWrapper
         isVisible={locationPopup}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}>
-        <View style={styles.bottomPopupContainer}>
-          <View style={styles.viewsContainer}>
-            <Text
-              onPress={() => setLocationPopup(false)}
-              style={styles.cancelText}>
-              {strings.cancel}
-            </Text>
-            <Text style={styles.locationText}>Location</Text>
-          </View>
-          <TCThinDivider width={'100%'} marginBottom={15} />
-          <TouchableWithoutFeedback
-            onPress={() => {
-              navigation.setParams({locationText: null});
-              getLocation();
-              setTimeout(() => {
-                setLocationPopup(false);
-              }, 300);
-            }}>
-            {selectedLocationOption === 0 ? (
-              <View style={styles.backgroundViewSelected}>
-                <Text
-                  style={[
-                    styles.curruentLocationText,
-                    {color: colors.orangeGradientColor},
-                  ]}>
-                  {strings.locationTitle}
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.backgroundView}>
-                <Text style={styles.curruentLocationText}>
-                  {strings.locationTitle}
-                </Text>
-              </View>
-            )}
-          </TouchableWithoutFeedback>
-
-          <LocationModal
-            visibleLocationModal={visibleLocationModal}
-            title={strings.cityStateOrCountryTitle}
-            setVisibleLocationModalhandler={() =>
-              setVisibleLocationModal(false)
-            }
-            onLocationSelect={handleSetLocationOptions}
-            placeholder={strings.searchTitle}
-            type={'country'}
-          />
-
-          <TouchableWithoutFeedback
-            onPress={() => {
-              setSelectedLocationOption(1);
-              setLocation(
+        modalType={ModalTypes.style2}
+        ratio={1.53}
+        closeModal={() => {
+          setLocationPopup(false);
+        }}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            navigation.setParams({locationText: null});
+            getLocation();
+            setTimeout(() => {
+              setLocationPopup(false);
+            }, 300);
+          }}>
+          {selectedLocationOption === 0 ? (
+            <View style={styles.backgroundViewSelected}>
+              <Text
+                style={[
+                  styles.curruentLocationText,
+                  {color: colors.orangeGradientColor},
+                ]}>
+                {strings.locationTitle}
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.backgroundView}>
+              <Text style={styles.curruentLocationText}>
+                {strings.locationTitle}
+              </Text>
+            </View>
+          )}
+        </TouchableWithoutFeedback>
+        <LocationModal
+          visibleLocationModal={visibleLocationModal}
+          title={strings.cityStateOrCountryTitle}
+          setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
+          onLocationSelect={handleSetLocationOptions}
+          placeholder={strings.searchcitystatecountry}
+          type={'country'}
+        />
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setSelectedLocationOption(1);
+            setLocation(
+              authContext.entity.obj.city?.charAt(0).toUpperCase() +
+                authContext.entity.obj.city?.slice(1),
+            );
+            setFilters({
+              ...filters,
+              location:
                 authContext.entity.obj.city?.charAt(0).toUpperCase() +
-                  authContext.entity.obj.city?.slice(1),
-              );
-              setFilters({
-                ...filters,
-                location:
-                  authContext.entity.obj.city?.charAt(0).toUpperCase() +
-                  authContext.entity.obj.city?.slice(1),
-              });
-              navigation.setParams({locationText: null});
-              setTimeout(() => {
-                setLocationPopup(false);
-              }, 300);
-            }}>
-            {selectedLocationOption === 1 ? (
-              <View style={styles.backgroundViewSelected}>
-                <Text
-                  style={[
-                    styles.myCityText,
-                    {color: colors.orangeGradientColor},
-                  ]}>
-                  {strings.cityText}
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.backgroundView}>
-                <Text style={styles.myCityText}>{strings.cityText}</Text>
-              </View>
-            )}
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              setSelectedLocationOption(2);
-              navigation.setParams({locationText: null});
-              setLocation(strings.worldTitleText);
-              setFilters({
-                ...filters,
-                location: strings.worldTitleText,
-              });
+                authContext.entity.obj.city?.slice(1),
+            });
+            navigation.setParams({locationText: null});
+            setTimeout(() => {
+              setLocationPopup(false);
+            }, 300);
+          }}>
+          {selectedLocationOption === 1 ? (
+            <View style={styles.backgroundViewSelected}>
+              <Text
+                style={[
+                  styles.myCityText,
+                  {color: colors.orangeGradientColor},
+                ]}>
+                {strings.homeCityTitleText}
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.backgroundView}>
+              <Text style={styles.myCityText}>{strings.homeCityTitleText}</Text>
+            </View>
+          )}
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setSelectedLocationOption(2);
+            navigation.setParams({locationText: null});
+            setLocation(strings.worldTitleText);
+            setFilters({
+              ...filters,
+              location: strings.worldTitleText,
+            });
 
-              setTimeout(() => {
-                setLocationPopup(false);
-              }, 300);
-            }}>
-            {selectedLocationOption === 2 ? (
-              <View style={styles.backgroundViewSelected}>
+            setTimeout(() => {
+              setLocationPopup(false);
+            }, 300);
+          }}>
+          {selectedLocationOption === 2 ? (
+            <View style={styles.backgroundViewSelected}>
+              <Text
+                style={[styles.worldText, {color: colors.orangeGradientColor}]}>
+                {strings.world}
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.backgroundView}>
+              <Text style={styles.worldText}>{strings.world}</Text>
+            </View>
+          )}
+        </TouchableWithoutFeedback>
+        {locationSelectedViaModal ? (
+          <>
+            {selectedLocationOption === 3 ? (
+              <Pressable
+                onPress={() => {
+                  setSelectedLocationOption(3);
+                  setVisibleLocationModal(true);
+                }}
+                style={[styles.backgroundViewSelected, {alignItems: 'center'}]}>
                 <Text
                   style={[
                     styles.worldText,
                     {color: colors.orangeGradientColor},
                   ]}>
-                  {strings.world}
+                  {location}
                 </Text>
-              </View>
+
+                <Text style={styles.chnageWordText}>
+                  {strings.changecapital}
+                </Text>
+              </Pressable>
             ) : (
-              <View style={styles.backgroundView}>
-                <Text style={styles.worldText}>{strings.world}</Text>
-              </View>
-            )}
-          </TouchableWithoutFeedback>
-          <Text style={styles.orText}>{strings.OrCaps}</Text>
-
-          {locationSelectedViaModal ? (
-            <>
-              {selectedLocationOption === 3 ? (
-                <Pressable
-                  onPress={() => {
-                    setSelectedLocationOption(3);
-                    setVisibleLocationModal(true);
-                  }}
-                  style={[
-                    styles.backgroundViewSelected,
-                    {alignItems: 'center'},
-                  ]}>
-                  <Text
-                    style={[
-                      styles.worldText,
-                      {color: colors.orangeGradientColor},
-                    ]}>
-                    {location}
-                  </Text>
-
-                  <Text style={styles.chnageWordText}>
-                    {strings.changecapital}
-                  </Text>
-                </Pressable>
-              ) : (
-                <Pressable
-                  style={styles.backgroundView}
-                  onPress={() => {
-                    setSelectedLocationOption(3);
-                    setVisibleLocationModal(true);
-                  }}>
-                  <Text style={styles.worldText}>{location}</Text>
-                  <Text style={styles.chnageWordText}>
-                    {strings.changecapital}
-                  </Text>
-                </Pressable>
-              )}
-            </>
-          ) : (
-            <>
               <Pressable
-                style={styles.sectionStyle}
+                style={styles.backgroundView}
                 onPress={() => {
                   setSelectedLocationOption(3);
                   setVisibleLocationModal(true);
                 }}>
-                <Text style={styles.searchText}>{strings.searchTitle}</Text>
+                <Text style={styles.worldText}>{location}</Text>
+                <Text style={styles.chnageWordText}>
+                  {strings.changecapital}
+                </Text>
               </Pressable>
-            </>
-          )}
-        </View>
-      </Modal>
+            )}
+          </>
+        ) : (
+          <>
+            <Pressable
+              style={styles.sectionStyle}
+              onPress={() => {
+                setSelectedLocationOption(3);
+                setVisibleLocationModal(true);
+              }}>
+              <Text style={styles.searchText}>
+                {strings.searchcitystatecountry}
+              </Text>
+            </Pressable>
+          </>
+        )}
+      </CustomModalWrapper>
 
       {/* Edit Filter Modal */}
 
@@ -986,68 +961,41 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
 
-  bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
-  },
   backgroundViewSelected: {
-    alignSelf: 'center',
+    // alignSelf: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 8,
     borderWidth: 3,
     borderColor: colors.orangeGradientColor,
     elevation: 5,
     flexDirection: 'row',
-    height: 50,
+    height: 40,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    width: widthPercentageToDP('86%'),
+    // width: widthPercentageToDP('86%'),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
   },
   backgroundView: {
-    alignSelf: 'center',
+    // alignSelf: 'center',
     backgroundColor: colors.whiteColor,
     borderRadius: 8,
     elevation: 5,
     flexDirection: 'row',
-    height: 50,
+    height: 40,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 5},
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    width: widthPercentageToDP('86%'),
+    // width: widthPercentageToDP('86%'),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
   },
-  orText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    alignSelf: 'center',
-    margin: 15,
-  },
+
   worldText: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
@@ -1072,14 +1020,6 @@ const styles = StyleSheet.create({
     color: colors.userPostTimeColor,
   },
 
-  viewsContainer: {
-    height: 60,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 20,
-    marginRight: 20,
-  },
   sectionStyle: {
     alignItems: 'center',
     fontSize: 15,
@@ -1108,17 +1048,6 @@ const styles = StyleSheet.create({
   separateLine: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.veryLightGray,
-  },
-
-  locationText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-  cancelText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.veryLightGray,
   },
   imgloaderStyle: {
     height: 25,
