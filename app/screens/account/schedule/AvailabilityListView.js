@@ -15,9 +15,11 @@ const AvailabilityListView = ({
   <View style={{marginBottom: 20}}>
     <View style={styles.header}>
       <Text style={styles.label}>{item.title.toUpperCase()}</Text>
-      <TouchableOpacity style={styles.editContainer} onPress={onEdit}>
-        <Image source={images.editProfilePencil} style={styles.icon} />
-      </TouchableOpacity>
+      {isAdmin && (
+        <TouchableOpacity style={styles.editContainer} onPress={onEdit}>
+          <Image source={images.editProfilePencil} style={styles.icon} />
+        </TouchableOpacity>
+      )}
     </View>
     {item.data.map((ele, key) => (
       <BlockSlotView

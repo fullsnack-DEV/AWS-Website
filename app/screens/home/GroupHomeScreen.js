@@ -169,7 +169,11 @@ const GroupHomeScreen = ({
         });
         break;
       case strings.scheduleTitle:
-        navigation.navigate('ScheduleScreen', {});
+        navigation.navigate('ScheduleScreen', {
+          uid: groupId,
+          isAdmin,
+          entityType: groupData.entity_type,
+        });
         break;
       case strings.scoreboard:
         navigation.navigate('EntityScoreboardScreen', {

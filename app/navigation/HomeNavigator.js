@@ -214,6 +214,7 @@ import IncomingReservationSettings from '../screens/account/registerReferee/Inco
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
 import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
+import EventsListScreen from '../screens/account/schedule/EventsListScreen';
 // Scorekeeper Review Screen
 
 const Stack = createStackNavigator();
@@ -621,6 +622,7 @@ const HomeNavigator = () => (
           borderBottomColor: colors.grayColor,
           borderBottomWidth: 0.3,
         },
+        headerShown: false,
       }}
     />
     <Stack.Screen

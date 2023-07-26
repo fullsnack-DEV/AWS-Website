@@ -1273,6 +1273,7 @@ const LocalHomeNavigator = () => (
           borderBottomColor: colors.grayColor,
           borderBottomWidth: 0.3,
         },
+        headerShown: false,
       }}
     />
     <Stack.Screen

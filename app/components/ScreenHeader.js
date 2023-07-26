@@ -19,6 +19,7 @@ const ScreenHeader = ({
   title,
   rightIcon1,
   rightIcon2,
+  rightIcon3,
   loading = false,
   isRightIconText = false,
   isFullTitle = false,
@@ -27,6 +28,7 @@ const ScreenHeader = ({
   leftIconPress = () => {},
   rightIcon1Press = () => {},
   rightIcon2Press = () => {},
+  rightIcon3Press = () => {},
   containerStyle = {},
   labelStyle = {},
   rightButtonTextStyle = {},
@@ -91,6 +93,17 @@ const ScreenHeader = ({
                 <ActivityIndicator size={'small'} />
               ) : (
                 <Image source={rightIcon2} style={styles.image} />
+              )}
+            </TouchableOpacity>
+          ) : null}
+          {rightIcon3 ? (
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={rightIcon3Press}>
+              {loading ? (
+                <ActivityIndicator size={'small'} />
+              ) : (
+                <Image source={rightIcon3} style={styles.image} />
               )}
             </TouchableOpacity>
           ) : null}
