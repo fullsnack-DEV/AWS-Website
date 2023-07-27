@@ -108,16 +108,15 @@ const styles = StyleSheet.create({
     height: 60,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
+    // borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.thinDividerColor,
     borderRadius: 30,
     backgroundColor: colors.whiteColor,
+    
   },
   image: {
     width: '100%',
     height: '100%',
-
-    borderRadius: 30,
   },
   name: {
     justifyContent: 'center',

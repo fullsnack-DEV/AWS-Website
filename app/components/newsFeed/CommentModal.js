@@ -459,14 +459,16 @@ const styles = StyleSheet.create({
   writeCommectStyle: {
     flex: 1,
     fontSize: 16,
-
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     padding: 0,
+ 
   },
   profileIcon: {
     width: 40,
     height: 40,
+    borderWidth:1,
+  
   },
   bottomContainer: {
     flexDirection: 'row',
@@ -476,6 +478,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.blackColor,
     borderTopColor: colors.grayBackgroundColor,
     borderTopWidth: 0.5,
+  
   },
   inputContainer: {
     flexDirection: 'row',
@@ -485,7 +488,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingVertical: 7,
+ 
   },
   tagText: {
     fontSize: 16,

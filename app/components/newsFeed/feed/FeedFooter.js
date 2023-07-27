@@ -6,15 +6,32 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 
-const FeedFooter = ({like = false, likeCount = 0, repostCount = 0, commentCount = 0, setShowLikeModal = () => {}, onWriteCommentPress = () => {}, onNewsFeedLikePress = () => {}, setShowShareOptionsModal = () => {}}) => (
+const FeedFooter = ({
+  like = false,
+  likeCount = 0,
+  repostCount = 0,
+  commentCount = 0,
+  setShowLikeModal = () => {},
+  onWriteCommentPress = () => {},
+  onNewsFeedLikePress = () => {},
+  setShowShareOptionsModal = () => {},
+}) => (
   <>
-    <View style={[styles.row, {justifyContent: 'space-between', marginTop: 15}]}>
+    <View
+      style={[styles.row, {justifyContent: 'space-between', marginTop: 15}]}>
       <View style={styles.row}>
-        <TouchableOpacity style={styles.commentShareLikeView} onPress={onNewsFeedLikePress}>
-          <Image source={like ? images.likeImage : images.unlikeImage} style={styles.icon} />
+        <TouchableOpacity
+          style={styles.commentShareLikeView}
+          onPress={onNewsFeedLikePress}>
+          <Image
+            source={like ? images.likeImage : images.unlikeImage}
+            style={styles.icon}
+          />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={onWriteCommentPress} style={[styles.commentShareLikeView, {marginLeft: 15}]}>
+        <TouchableOpacity
+          onPress={onWriteCommentPress}
+          style={[styles.commentShareLikeView, {marginLeft: 15}]}>
           <Image style={styles.icon} source={images.commentImage} />
         </TouchableOpacity>
       </View>
@@ -38,26 +55,48 @@ const FeedFooter = ({like = false, likeCount = 0, repostCount = 0, commentCount 
           }}
         />
         {/* Like comments count part */}
-        <View style={[styles.row, {paddingTop: 15, justifyContent: 'space-between'}]}>
+        <View
+          style={[
+            styles.row,
+            {paddingTop: 15, justifyContent: 'space-between'},
+          ]}>
           <View style={styles.row}>
             {likeCount > 0 ? (
-              <TouchableOpacity onPress={() => setShowLikeModal()} style={styles.row}>
-                <Text style={styles.likeText}>{likeCount <= 0 ? 0 : likeCount} </Text>
-                <Text style={styles.likeText}>{likeCount > 1 ? strings.likesTitle : strings.likeTitle}</Text>
+              <TouchableOpacity
+                onPress={() => setShowLikeModal()}
+                style={styles.row}>
+                <Text style={styles.likeText}>
+                  {likeCount <= 0 ? 0 : likeCount}{' '}
+                </Text>
+                <Text style={styles.likeText}>
+                  {likeCount > 1 ? strings.likesTitle : strings.likeTitle}
+                </Text>
               </TouchableOpacity>
             ) : null}
-            {likeCount > 0 && commentCount > 0 ? <View style={styles.divider} /> : null}
+            {likeCount > 0 && commentCount > 0 ? (
+              <View style={styles.divider} />
+            ) : null}
             {commentCount > 0 ? (
-              <TouchableOpacity onPress={onWriteCommentPress} style={styles.row}>
-                <Text style={styles.likeText}>{commentCount <= 0 ? 0 : commentCount} </Text>
-                <Text style={styles.likeText}>{commentCount > 1 ? strings.comments : strings.comment}</Text>
+              <TouchableOpacity
+                onPress={onWriteCommentPress}
+                style={styles.row}>
+                <Text style={styles.likeText}>
+                  {commentCount <= 0 ? 0 : commentCount}{' '}
+                </Text>
+                <Text style={styles.likeText}>
+                  {commentCount > 1 ? strings.comments : strings.comment}
+                </Text>
               </TouchableOpacity>
             ) : null}
           </View>
           {repostCount > 0 ? (
-            <View>
-              <Text style={styles.likeText}>{repostCount <= 0 ? 0 : repostCount} </Text>
-              <Text style={styles.likeText}>{repostCount > 1 ? strings.reposts : strings.repost}</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text style={styles.likeText}>
+                {repostCount <= 0 ? 0 : repostCount}{' '}
+              </Text>
+              <Text style={styles.likeText}>
+                {repostCount > 1 ? strings.reposts : strings.repost}
+              </Text>
             </View>
           ) : null}
         </View>

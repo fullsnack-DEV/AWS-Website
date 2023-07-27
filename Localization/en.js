@@ -594,7 +594,7 @@ export default {
   gamefeeperhour: 'en_Match Fee Per Hour',
   CAD: 'en_CAD',
   primaryRefundPolicy: 'en_Primary Refund Policy',
-  defaultCurrency: 'en_USD',
+  defaultCurrency: 'en_CAD',
   currencyplacholder: 'en_Select Currency',
   languages: 'en_Languages',
   sportcannotbeblank: 'en_Sports cannot be blank',

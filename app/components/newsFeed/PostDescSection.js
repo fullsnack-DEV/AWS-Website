@@ -58,6 +58,7 @@ function PostDescSection({
 const styles = StyleSheet.create({
   containerStyle: {
     marginHorizontal: 15,
+    
   },
   descText: {
     color: 'gray',

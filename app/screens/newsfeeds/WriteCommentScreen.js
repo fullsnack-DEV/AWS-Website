@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
   },
   commentReportView: {
     alignItems: 'center',
+    
     justifyContent: 'center',
   },
   containerStyle: {
@@ -211,6 +212,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
     fontSize: 14,
+    
   },
   doneViewStyle: {
     alignItems: 'flex-end',
@@ -228,6 +230,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 0.5,
     width: wp('80%'),
+    
   },
   sendTextStyle: {
     color: colors.themeColor,
@@ -243,6 +246,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     fontSize: 16,
+    
   },
   writePostViewStyle: {
     alignItems: 'center',

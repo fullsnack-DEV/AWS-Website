@@ -101,7 +101,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           state: {query: authContext.entity.obj.state, boost: 3},
         },
       });
-    } else {
+    } else if (authContext.entity.obj.state_abbr) {
       gamesquery.query.bool.should.push({
         match: {
           state_abbr: {
@@ -138,15 +138,12 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
   useEffect(() => {
     if (isFocused && route.params.gameTags && route.params.tagsOfEntity) {
-      console.log(route.params.tagsOfEntity, 'from tga ta');
       const entityDataArray = route.params.tagsOfEntity.map(
         (item) => item.entity_data,
       );
       setSeletedEntity([...entityDataArray]);
 
       setSelectedMatch([...route.params.gameTags]);
-
-      console.log(seletedEntity, 'from eneitn');
     }
   }, [isFocused, route.params]);
 
@@ -177,7 +174,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       } else {
         gData.splice(gIndex, 1);
       }
-      console.log(gData, 'Frpm ');
+
       setSelectedMatch([...gData]);
     },
     [selectedMatch],

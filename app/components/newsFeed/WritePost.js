@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: colors.grayBackgroundColor,
+    backgroundColor:'red',
   },
   writePostActorContainer: {
     width: 40,

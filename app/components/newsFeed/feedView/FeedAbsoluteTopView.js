@@ -65,7 +65,7 @@ const FeedAbsoluteTopView = memo(
           {
             position: Platform.OS === 'ios' ? 'relative' : 'absolute',
           },
-          readMore ? {backgroundColor: colors.blackColor} : {},
+          readMore ? {backgroundColor: colors.blackColor,} : {},
         ]}>
         <View
           style={{
@@ -141,7 +141,8 @@ const FeedAbsoluteTopView = memo(
 
 const styles = StyleSheet.create({
   topMainContainer: {
-    top: 10,
+    flex:1,
+    top: 30,
     zIndex: 99,
   },
   topSubContainer: {

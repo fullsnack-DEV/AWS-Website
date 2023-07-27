@@ -1,25 +1,43 @@
 import React from 'react';
-import {StyleSheet, Platform, Image, View, Text} from 'react-native';
-
-import RNPickerSelect from 'react-native-picker-select';
+import {StyleSheet, View, Text} from 'react-native';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {Picker} from '@react-native-picker/picker';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
 
 export default function EventMonthlySelection({
-  dataSource,
-  placeholder,
-  value,
-  onValueChange,
-  containerStyle,
-  title,
+  dataSource = [],
+  placeholder = '',
+  value = '',
+  onValueChange = () => {},
+  containerStyle = {},
+  title = '',
+  titleStyle = {},
 }) {
   return (
     <View style={[styles.containerStyle, containerStyle]}>
-      <Text style={styles.headerTextStyle}>{title}</Text>
       <View style={{flex: 1}}>
-        <RNPickerSelect
+        <Text style={[styles.headerTextStyle, titleStyle]}>{title}</Text>
+      </View>
+      <View style={{flex: 1}}>
+        <Picker
+          mode="dropdown"
+          placeholder={placeholder}
+          selectedValue={value}
+          onValueChange={(itemValue) => {
+            onValueChange(itemValue);
+          }}>
+          <Picker.Item
+            label={placeholder}
+            value={Verbs.eventRecurringEnum.Never}
+          />
+          {dataSource.map((item, index) => (
+            <Picker.Item key={index} label={item.label} value={item.value} />
+          ))}
+        </Picker>
+      </View>
+      {/* <Picker
           placeholder={{
             label: placeholder,
             value: Verbs.eventRecurringEnum.Never,
@@ -36,52 +54,26 @@ export default function EventMonthlySelection({
           Icon={() => (
             <Image source={images.dropDownArrow} style={styles.downArrow} />
           )}
-        />
-      </View>
+        /> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   containerStyle: {
-    // width: wp('92%'),
-    // alignSelf: 'center',
-    padding: 10,
+    flex: 1,
+    height: 40,
+    paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 5,
     marginBottom: 15,
-    backgroundColor: colors.lightGrey,
+    backgroundColor: colors.textFieldBackground,
   },
   headerTextStyle: {
     fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    // av
-    // width: wp('22'),
-    // paddingLeft: 5,
-  },
-  inputAndroid: {
-    borderRadius: 5,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    padding: 10,
-    marginLeft: 25,
-    marginRight: 10,
-  },
-  inputIOS: {
-    borderRadius: 5,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    padding: 10,
-    marginLeft: 25,
-    marginRight: 10,
-  },
-  downArrow: {
-    height: 15,
-    resizeMode: 'contain',
-    tintColor: colors.lightBlackColor,
-    top: 5,
-    width: 15,
   },
 });
