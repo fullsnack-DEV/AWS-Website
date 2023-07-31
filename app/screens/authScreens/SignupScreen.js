@@ -253,7 +253,7 @@ export default function SignupScreen({navigation}) {
     setloading(false);
     navigation.navigate('EmailVerificationScreen', {
       signupInfo: {
-        emailAddress: email,
+        emailAddress: email.toLowerCase(),
         password,
       },
     });

@@ -9,6 +9,6 @@ import App from './App';
 import 'react-native-get-random-values';
 import {name as appName} from './app.json';
 
-enableScreens();
+enableScreens(true);
 
 AppRegistry.registerComponent(appName, () => App);

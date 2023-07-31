@@ -363,6 +363,7 @@ const AccountNavigator = () => (
       component={GroupListScreen}
       options={{
         title: strings.club,
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
