@@ -836,7 +836,7 @@ const WritePostScreen = ({navigation, route}) => {
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={-25}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -25}
         style={{flex: 1}}>
         <View style={styles.container}>
           <View style={styles.userDetailView}>
@@ -986,7 +986,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginRight: 10,
-   
   },
   userTxt: {
     fontSize: 16,
