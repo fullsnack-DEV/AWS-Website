@@ -986,6 +986,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginRight: 10,
+   
   },
   userTxt: {
     fontSize: 16,
@@ -1073,7 +1074,6 @@ const styles = StyleSheet.create({
   },
   userListContainer: {
     zIndex: 100,
-
     backgroundColor: colors.whiteColor,
     maxHeight: 280,
     width: Dimensions.get('window').width - 30,

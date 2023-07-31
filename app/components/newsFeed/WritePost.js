@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.grayBackgroundColor,
     backgroundColor:'red',
+    
   },
   writePostActorContainer: {
     width: 40,
@@ -42,6 +43,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: colors.greyBorderColor,
+    
   },
   profileImg: {
     width: '100%',
@@ -55,12 +57,14 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     borderRadius: 5,
     backgroundColor: colors.textFieldBackground,
+   
   },
   writePostText: {
     fontSize: 14,
     lineHeight: 21,
     color: colors.userPostTimeColor,
     fontFamily: fonts.RRegular,
+    
   },
 });
 
