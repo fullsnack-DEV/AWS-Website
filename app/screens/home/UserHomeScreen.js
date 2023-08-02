@@ -120,6 +120,7 @@ const UserHomeScreen = ({
               strings.entityInvitedSuccessfully,
               `${currentUserData.first_name} ${currentUserData.last_name}`,
             ),
+            [{text: strings.okTitleText}],
           );
         }, 10);
       })
@@ -177,6 +178,7 @@ const UserHomeScreen = ({
             Alert.alert(
               strings.alertmessagetitle,
               strings.acceptRequestMessage,
+              [{text: strings.okTitleText}],
             );
           }, 10);
         })
@@ -208,6 +210,7 @@ const UserHomeScreen = ({
             Alert.alert(
               strings.alertmessagetitle,
               strings.declinedRequestMessage,
+              [{text: strings.okTitleText}],
             );
           }, 10);
         })
@@ -262,6 +265,7 @@ const UserHomeScreen = ({
           Alert.alert(
             strings.alertmessagetitle,
             strings.declinedRequestMessage,
+            [{text: strings.okTitleText}],
           );
         }, 10);
       })

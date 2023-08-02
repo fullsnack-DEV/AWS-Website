@@ -38,17 +38,20 @@ const MatchFeeModal = ({
         style={[
           styles.title,
           entityType === Verbs.entityTypeReferee
-            ? {fontFamily: fonts.RMedium, marginBottom: 20}
+            ? {
+                fontFamily: fonts.RMedium,
+                marginBottom: 20,
+              }
             : {},
         ]}>
         {getTitle()}
       </Text>
 
-      {entityType !== Verbs.entityTypeReferee && (
+      {/* {entityType !== Verbs.entityTypeReferee && (
         <Text style={styles.matchFeeModalInfoText}>
           {strings.matchFeeModalInfo}
         </Text>
-      )}
+      )} */}
 
       <View
         style={[

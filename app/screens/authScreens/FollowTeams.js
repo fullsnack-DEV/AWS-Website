@@ -33,7 +33,6 @@ import {strings} from '../../../Localization/translation';
 import TCProfileImage from '../../components/TCProfileImage';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import apiCall from '../../utils/apiCall';
-import {generateUserStreamToken} from '../../utils/streamChat';
 
 export default function FollowTeams({route, navigation}) {
   const [teams, setTeams] = useState(['1']);
@@ -252,7 +251,7 @@ export default function FollowTeams({route, navigation}) {
       }
 
       await createUser(data, authContext)
-        .then(async (createdUser) => {
+        .then((createdUser) => {
           const authEntity = {...dummyAuthContext.entity};
           authEntity.obj = createdUser?.payload;
           authEntity.auth.user = createdUser?.payload;
@@ -260,9 +259,6 @@ export default function FollowTeams({route, navigation}) {
           setDummyAuthContext('entity', authEntity);
           setDummyAuthContext('user', createdUser?.payload);
           wholeSignUpProcessComplete(createdUser?.payload);
-
-          // Call Stream chat token api and save in authContex
-          await generateUserStreamToken(authEntity);
         })
         .catch((e) => {
           setloading(false);

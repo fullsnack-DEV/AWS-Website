@@ -27,8 +27,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 20,
+    lineHeight: 30,
     fontFamily: fonts.RBold,
     textAlign: 'center',
   },
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.localHomeGreenGradientEnd,
     alignSelf: 'center',
+    lineHeight: 24,
   },
   congratsText: {
     alignSelf: 'center',

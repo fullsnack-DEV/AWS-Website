@@ -127,6 +127,7 @@ export default function WelcomeScreen({navigation}) {
         Utility.setStorage('loggedInEntity', entity),
         authContext.setUser({...townscupUser}),
         authContext.setEntity({...entity}),
+        generateUserStreamToken(entity),
       ])
         .then(() => {
           getRedirectionScreenName(townscupUser)
@@ -142,6 +143,7 @@ export default function WelcomeScreen({navigation}) {
                 Utility.setStorage('authContextEntity', {...entity}),
                 Utility.setStorage('loggedInEntity', {...entity}),
                 authContext.setEntity({...entity}),
+                generateUserStreamToken(entity),
               ])
                 .then(() => {
                   setloading(false);
@@ -183,7 +185,7 @@ export default function WelcomeScreen({navigation}) {
 
     await authContext.setTokenData(token);
     await authContext.setEntity(authEntity);
-
+    await generateUserStreamToken(dummyAuthContext);
     navigation.navigate('AddNameScreen', {
       signupInfo: {
         first_name: userDetail?.first_name,
@@ -212,7 +214,6 @@ export default function WelcomeScreen({navigation}) {
         dummyAuthContext.user = createdUser?.payload;
         // signUpWithQB(createdUser?.payload, dummyAuthContext);
         // Call Stream chat token api and save in authContex
-        await generateUserStreamToken(authEntity);
       })
       .catch((e) => {
         setloading(false);

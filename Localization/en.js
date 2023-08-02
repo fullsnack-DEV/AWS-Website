@@ -2514,7 +2514,9 @@ export default {
   scoreKeeperCongratsModalTitle:
     'Congratulations! \nYou are now registered as\n a scorekeeper in\n',
   scoreKeeperCongratulationsModal:
-    'en_You can now receive scorekeeper booking requests from teams and players, and also can sent offers to teams and players.',
+    'en_You can now receive scorekeeper booking requests from {0}, and also can sent offers to {0}.',
+  teamsAndPlayers: 'en_teams and players',
+  teams: 'en_teams',
   matchesNearYou: 'en_MATCHES NEAR YOU',
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',

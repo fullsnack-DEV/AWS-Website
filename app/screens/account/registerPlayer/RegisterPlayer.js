@@ -111,7 +111,7 @@ const RegisterPlayer = ({navigation, route}) => {
         ...authContext.entity.obj,
         registered_sports: registerdPlayerData,
       };
-
+      console.log('selectedSport==>', JSON.stringify(selectedSport));
       if (selectedSport?.sport_type === Verbs.sportTypeSingle) {
         // navigate to incoming challenge settings
         navigation.navigate('IncomingChallengeSettings', {

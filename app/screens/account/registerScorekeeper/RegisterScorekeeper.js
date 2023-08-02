@@ -310,6 +310,7 @@ const RegisterScorekeeper = ({navigation, route}) => {
           setSelectedSport({...sport});
         }}
         sport={selectedSport}
+        rightButtonText={strings.apply}
       />
     </TCKeyboardView>
   );

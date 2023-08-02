@@ -367,7 +367,11 @@ const GroupHomeScreen = ({
         obj?.game_type
       ) {
         if (myGroupDetail.is_pause === true) {
-          Alert.alert(format(strings.groupPaused, myGroupDetail.group_name));
+          Alert.alert(
+            format(strings.groupPaused, myGroupDetail.group_name, [
+              {text: strings.okTitleText},
+            ]),
+          );
         } else {
           navigation.navigate('InviteChallengeScreen', {
             setting: obj,
@@ -390,7 +394,9 @@ const GroupHomeScreen = ({
                 text: strings.okTitleText,
                 onPress: () => {
                   if (currentUserData?.is_pause === true) {
-                    Alert.alert(strings.yourTeamPaused);
+                    Alert.alert(strings.yourTeamPaused, '', [
+                      {text: strings.okTitleText},
+                    ]);
                   } else {
                     navigation.navigate('ManageChallengeScreen', {
                       groupObj: currentUserData,
@@ -410,22 +416,28 @@ const GroupHomeScreen = ({
         'player_deactivated' in myGroupDetail &&
         myGroupDetail?.player_deactivated
       ) {
-        Alert.alert(strings.playerDeactivatedSport);
+        Alert.alert(strings.playerDeactivatedSport, '', [
+          {text: strings.okTitleText},
+        ]);
       } else if (
         'player_leaved' in currentUserData ||
         currentUserData?.player_leaved
       ) {
         Alert.alert(
           format(strings.groupHaveNo2Player, currentUserData?.group_name),
+          '',
+          [{text: strings.okTitleText}],
         );
       } else if (
         'player_leaved' in myGroupDetail ||
         myGroupDetail?.player_leaved
       ) {
-        Alert.alert(strings.youHaveNo2Player);
+        Alert.alert(strings.youHaveNo2Player, '', [
+          {text: strings.okTitleText},
+        ]);
       }
     } else if (myGroupDetail.is_pause === true) {
-      Alert.alert(strings.yourTeamPaused);
+      Alert.alert(strings.yourTeamPaused, '', [{text: strings.okTitleText}]);
     } else {
       navigation.navigate('InviteChallengeScreen', {
         setting: obj,
@@ -470,26 +482,34 @@ const GroupHomeScreen = ({
           groupObj: currentUserData,
         });
       } else {
-        Alert.alert(strings.teamHaveNoCompletedSetting);
+        Alert.alert(strings.teamHaveNoCompletedSetting, '', [
+          {text: strings.okTitleText},
+        ]);
       }
     } else if (currentUserData.sport_type === Verbs.doubleSport) {
       if (
         'player_deactivated' in currentUserData &&
         currentUserData?.player_deactivated
       ) {
-        Alert.alert(strings.playerDeactivatedSport);
+        Alert.alert(strings.playerDeactivatedSport, '', [
+          {text: strings.okTitleText},
+        ]);
       } else if (
         'player_leaved' in currentUserData &&
         currentUserData?.player_leaved
       ) {
         Alert.alert(
           format(strings.groupHaveNo2Player, currentUserData?.group_name),
+          '',
+          [{text: strings.okTitleText}],
         );
       } else if (
         'player_leaved' in myGroupDetail &&
         myGroupDetail?.player_leaved
       ) {
-        Alert.alert(strings.youHaveNo2Player);
+        Alert.alert(strings.youHaveNo2Player, '', [
+          {text: strings.okTitleText},
+        ]);
       }
     } else {
       navigation.navigate('ChallengeScreen', {
@@ -528,7 +548,7 @@ const GroupHomeScreen = ({
           label = strings.alertTitle4;
         }
         setTimeout(() => {
-          Alert.alert(label);
+          Alert.alert(label, '', [{text: strings.okTitleText}]);
         }, 10);
       })
       .catch((error) => {
@@ -626,7 +646,9 @@ const GroupHomeScreen = ({
             //   strings.alertmessagetitle,
             //   format(strings.alertTitle2, groupData.group_name),
             // );
-            Alert.alert('', response.payload.user_message);
+            Alert.alert('', response.payload.user_message, [
+              {text: strings.okTitleText},
+            ]);
           } else if (
             response.payload.error_code ===
             ErrorCodes.MEMBERALREADYREQUESTERRORCODE
@@ -636,14 +658,20 @@ const GroupHomeScreen = ({
             //   strings.alertmessagetitle,
             //   format(strings.alertTitle2, groupData.group_name),
             // );
-            Alert.alert('', response.payload.user_message);
+            Alert.alert('', response.payload.user_message, [
+              {text: strings.okTitleText},
+            ]);
           } else {
-            Alert.alert('', response.payload.user_message);
+            Alert.alert('', response.payload.user_message, [
+              {text: strings.okTitleText},
+            ]);
           }
         } else {
           setCurrentGroupData(Verbs.joinVerb);
           setLoading(false);
-          Alert.alert(format(strings.alertTitle1, groupData.group_name));
+          Alert.alert(format(strings.alertTitle1, groupData.group_name), '', [
+            {text: strings.okTitleText},
+          ]);
         }
       })
       .catch((error) => {
@@ -689,6 +717,8 @@ const GroupHomeScreen = ({
         setTimeout(() => {
           Alert.alert(
             `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`,
+            '',
+            [{text: strings.okTitleText}],
           );
         }, 10);
       })
@@ -720,6 +750,8 @@ const GroupHomeScreen = ({
                 : strings.alertTitle1,
               groupData.group_name,
             ),
+            '',
+            [{text: strings.okTitleText}],
           );
         }, 10);
       })
@@ -744,7 +776,7 @@ const GroupHomeScreen = ({
           },
         });
         setTimeout(() => {
-          Alert.alert(strings.alertTitle5);
+          Alert.alert(strings.alertTitle5, '', [{text: strings.okTitleText}]);
         }, 10);
       })
       .catch((error) => {
@@ -887,7 +919,9 @@ const GroupHomeScreen = ({
           setRefereeSettingObject(refereeSetting);
         } else {
           setTimeout(() => {
-            Alert.alert(strings.configureYourRefereeSetting);
+            Alert.alert(strings.configureYourRefereeSetting, '', [
+              {text: strings.okTitleText},
+            ]);
           }, 10);
         }
       })
@@ -1028,7 +1062,9 @@ const GroupHomeScreen = ({
         setScorekeeperSettingObject(scorekeeperSetting);
       } else {
         setTimeout(() => {
-          Alert.alert(strings.cannotSendOfferSettingConfigure);
+          Alert.alert(strings.cannotSendOfferSettingConfigure, '', [
+            {text: strings.okTitleText},
+          ]);
         }, 10);
       }
     });
