@@ -149,7 +149,6 @@ export default function EventsListScreen({navigation, route}) {
   const [timeSelectionModal, setTimeSelectionModal] = useState(false);
   const [timeSelectionPicker, setTimeSelectionPicker] = useState(false);
   const [owners, setOwners] = useState([]);
-  const [scheduleIndexCounter, setScheduleIndexCounter] = useState(0);
   const [eventData, setEventData] = useState([]);
   const [selectedEventItem, setSelectedEventItem] = useState(null);
   const [loading, setloading] = useState(false);
@@ -172,10 +171,6 @@ export default function EventsListScreen({navigation, route}) {
   const [timeFilterOpetion, setTimeFilterOpetion] = useState(0);
   const [rsvpFilterOption, setRsvpFilterOption] = useState(0);
   const [filterPopup, setFilterPopup] = useState(false);
-  // const [editableSlotsType, setEditableSlotsType] = useState(false);
-  const [allSlots, setAllSlots] = useState([]);
-  // const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
-  //   useState(false);
   const [settingsModal, setSettingsModal] = useState(false);
   const [allUserData, setAllUserData] = useState([]);
   const [popupFilterHeight, setPopupFilterHeight] = useState(300);
@@ -191,13 +186,12 @@ export default function EventsListScreen({navigation, route}) {
   console.log('organizerOptions==>', organizerOptions);
 
   useEffect(() => {
-    setScheduleIndexCounter(0);
     navigation.getParent()?.setOptions({
       tabBarStyle: {
-        display: isFocused ? 'flex' : 'none',
+        display: 'none',
       },
     });
-  }, [navigation, isFocused]);
+  }, [navigation]);
 
   // Get Future Date:
   const getDates = (type, optionsState) => {
@@ -375,10 +369,6 @@ export default function EventsListScreen({navigation, route}) {
           )
             ? setting?.payload?.user?.club_schedule_group_filter
             : setting?.payload?.user?.schedule_group_filter;
-          // const eventViewOption = [Verbs.entityTypeClub].includes(authContext.entity.role) ?
-          // setting?.payload?.user?.club_event_view_settings_option : setting?.payload?.user?.event_view_settings_option;
-
-          // setFilterSetting({...filterSetting, sort :  eventViewOption})
           setSelectedOptions({
             ...selectedOptions,
             option: 0,
@@ -761,6 +751,7 @@ export default function EventsListScreen({navigation, route}) {
           resCalenders = response.filter(
             (obj) => obj.cal_type === Verbs.blockedVerb,
           );
+          console.log(resCalenders);
           eventsCal = response.filter((obj) => {
             if (obj.cal_type === Verbs.eventVerb) {
               if (obj?.expiry_datetime) {
@@ -775,7 +766,6 @@ export default function EventsListScreen({navigation, route}) {
           });
         }
 
-        setAllSlots(resCalenders);
         eventsCal.forEach((item) => {
           if (item?.rrule) {
             let rEvents = getEventOccuranceFromRule(item);
@@ -1109,17 +1099,19 @@ export default function EventsListScreen({navigation, route}) {
             )
           }
         /> */}
+
         <ScreenHeader
           leftIcon={images.backArrow}
           leftIconPress={() => navigation.goBack()}
           title={strings.events}
           rightIcon1={images.localHomeFilter}
-          rightIcon2={images.addEvent}
+          rightIcon2={isAdmin ? images.addEvent : null}
           rightIcon3={images.vertical3Dot}
           rightIcon1Press={() => setFilterPopup(true)}
           rightIcon2Press={() =>
             navigation.navigate('CreateEventScreen', {
               comeName: 'EventsListScreen',
+              isAdmin,
             })
           }
           rightIcon3Press={() => setSettingsModal(true)}
@@ -1200,7 +1192,7 @@ export default function EventsListScreen({navigation, route}) {
 
           {/* <View style={styles.separateLine} /> */}
 
-          {filterTags.length > 0 && scheduleIndexCounter === 0 ? (
+          {filterTags.length > 0 ? (
             <View style={{backgroundColor: colors.whiteColor}}>
               <FlatList
                 data={filterTags}
@@ -1216,43 +1208,42 @@ export default function EventsListScreen({navigation, route}) {
             <EventListShimmer />
           ) : (
             <>
-              {scheduleIndexCounter === 0 && (
-                <EventScheduleScreen
-                  filterOptions={filterSetting}
-                  selectedFilter={selectedOptions}
-                  eventData={eventData}
-                  navigation={navigation}
-                  profileID={authContext.entity.uid}
-                  onThreeDotPress={(item) => {
-                    setSelectedEventItem(item);
-                  }}
-                  onItemPress={async (item) => {
-                    if (item?.game_id) {
-                      if (item?.game?.sport) {
-                        const gameHome = getGameHomeScreen(
-                          item.game.sport.replace(' ', '_'),
-                        );
-                        setIndigator(false);
-                        navigation.navigate(gameHome, {
-                          gameId: item?.game_id,
-                        });
-                      }
-                    } else {
+              <EventScheduleScreen
+                filterOptions={filterSetting}
+                selectedFilter={selectedOptions}
+                eventData={eventData}
+                navigation={navigation}
+                profileID={authContext.entity.uid}
+                onThreeDotPress={(item) => {
+                  setSelectedEventItem(item);
+                }}
+                onItemPress={async (item) => {
+                  if (item?.game_id) {
+                    if (item?.game?.sport) {
+                      const gameHome = getGameHomeScreen(
+                        item.game.sport.replace(' ', '_'),
+                      );
                       setIndigator(false);
-                      navigation.navigate('EventScreen', {
-                        data: item,
-                        gameData: item,
+                      navigation.navigate(gameHome, {
+                        gameId: item?.game_id,
                       });
                     }
-                  }}
-                  entity={authContext.entity}
-                  owners={owners}
-                  allUserData={allUserData}
-                  timeSelectionOption={timeSelectionOption}
-                  startDateTime={startDateTime}
-                  endDateTime={endDateTime}
-                />
-              )}
+                  } else {
+                    setIndigator(false);
+                    navigation.navigate('EventScreen', {
+                      data: item,
+                      gameData: item,
+                      isAdmin,
+                    });
+                  }
+                }}
+                entity={authContext.entity}
+                owners={owners}
+                allUserData={allUserData}
+                timeSelectionOption={timeSelectionOption}
+                startDateTime={startDateTime}
+                endDateTime={endDateTime}
+              />
             </>
           )}
         </View>

@@ -454,6 +454,25 @@ const HomeNavigator = () => (
       }}
     />
     <Stack.Screen
+      name="EventsListScreen"
+      component={EventsListScreen}
+      options={{
+        title: strings.events,
+        headerShown: false,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+    <Stack.Screen
       name="EntityInfoScreen"
       component={EntityInfoScreen}
       options={{

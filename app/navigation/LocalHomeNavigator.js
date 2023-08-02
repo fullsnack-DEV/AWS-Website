@@ -253,6 +253,7 @@ import IncomingReservationSettings from '../screens/account/registerReferee/Inco
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
 import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
+import EventsListScreen from '../screens/account/schedule/EventsListScreen';
 
 const Stack = createStackNavigator();
 
@@ -1124,6 +1125,26 @@ const LocalHomeNavigator = () => (
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="EventsListScreen"
+      component={EventsListScreen}
+      options={{
+        title: strings.events,
+        headerShown: false,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

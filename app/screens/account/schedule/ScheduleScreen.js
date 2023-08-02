@@ -68,6 +68,7 @@ import BottomSheet from '../../../components/modals/BottomSheet';
 import FilterTimeSelectItem from '../../../components/Filter/FilterTimeSelectItem';
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import EventListShimmer from '../../../components/shimmer/schedule/EventListShimmer';
+import ScreenHeader from '../../../components/ScreenHeader';
 import AvailabilityShimmer from '../../../components/shimmer/schedule/AvailibilityShimmer';
 
 export default function ScheduleScreen({navigation, route}) {
@@ -181,7 +182,6 @@ export default function ScheduleScreen({navigation, route}) {
   const [timeFilterOpetion, setTimeFilterOpetion] = useState(0);
   const [rsvpFilterOption, setRsvpFilterOption] = useState(0);
   const [filterPopup, setFilterPopup] = useState(false);
-  // const [editableSlotsType, setEditableSlotsType] = useState(false);
   const [allSlots, setAllSlots] = useState([]);
   // const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
   //   useState(false);
@@ -191,10 +191,17 @@ export default function ScheduleScreen({navigation, route}) {
   const [filterTags, setFilterTags] = useState([]);
   const [filterCancelled, setFilterCancelled] = useState(false);
   const [isAdmin] = useState(route?.params?.isAdmin);
+  const [isFromHomeScreen] = useState(route?.params?.isFromHomeScreen);
+  console.log('isFromHomeScreen', route?.params?.isFromHomeScreen);
+  console.log('isAdmin', isAdmin);
+
   useEffect(() => {
     navigation.getParent()?.setOptions({
+      // tabBarStyle: {
+      //   display: isFocused ? 'flex' : 'none',
+      // },
       tabBarStyle: {
-        display: isFocused ? 'flex' : 'none',
+        display: isFromHomeScreen ? 'none' : 'flex',
       },
     });
   }, [navigation, isFocused]);
@@ -1181,13 +1188,81 @@ export default function ScheduleScreen({navigation, route}) {
       </>
     );
   };
-
   return (
     <SafeAreaView style={{flex: 1}}>
       <View
         style={{opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={authContext.isAccountDeactivated ? 'none' : 'auto'}>
-        <Header
+        {isFromHomeScreen ? (
+          <ScreenHeader
+            leftIcon={images.backArrow}
+            leftIconPress={() => navigation.goBack()}
+            title={strings.events}
+            rightIcon1={isAdmin ? images.addEvent : null}
+            rightIcon2={images.vertical3Dot}
+            rightIcon1Press={() =>
+              navigation.navigate('CreateEventScreen', {
+                comeName: 'ScheduleScreen',
+                isAdmin,
+              })
+            }
+            rightIcon2Press={() => setFilterPopup(true)}
+          />
+        ) : (
+          <Header
+            leftComponent={
+              <Text style={styles.eventTitleTextStyle}>
+                {[Verbs.entityTypeClub].includes(authContext.entity.role)
+                  ? strings.events
+                  : strings.schedule}
+              </Text>
+            }
+            showBackgroundColor={true}
+            rightComponent={
+              scheduleIndexCounter === 0 && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
+                  {[Verbs.entityTypeClub].includes(authContext.entity.role) && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setFilterPopup(true);
+                      }}>
+                      <FastImage
+                        source={images.localHomeFilter}
+                        style={{height: 25, width: 25, marginRight: 15}}
+                        resizeMode={'contain'}
+                      />
+                    </TouchableOpacity>
+                  )}
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('CreateEventScreen', {
+                        comeName: 'ScheduleScreen',
+                      });
+                    }}>
+                    <Image
+                      source={images.addEvent}
+                      style={styles.headerRightImg}
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={() => setSettingsModal(true)}>
+                    <Image
+                      source={images.vertical3Dot}
+                      style={styles.threeDotImageStyle}
+                    />
+                  </TouchableOpacity>
+                </View>
+              )
+            }
+          />
+        )}
+        {/* <Header
           leftComponent={
             <Text style={styles.eventTitleTextStyle}>
               {[Verbs.entityTypeClub].includes(authContext.entity.role)
@@ -1216,19 +1291,19 @@ export default function ScheduleScreen({navigation, route}) {
                     />
                   </TouchableOpacity>
                 )}
-                {isAdmin && (
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigation.navigate('CreateEventScreen', {
-                        comeName: 'ScheduleScreen',
-                      });
-                    }}>
-                    <Image
-                      source={images.addEvent}
-                      style={styles.headerRightImg}
-                    />
-                  </TouchableOpacity>
-                )}
+
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('CreateEventScreen', {
+                      comeName: 'ScheduleScreen',
+                    });
+                  }}>
+                  <Image
+                    source={images.addEvent}
+                    style={styles.headerRightImg}
+                  />
+                </TouchableOpacity>
+
                 <TouchableOpacity onPress={() => setSettingsModal(true)}>
                   <Image
                     source={images.vertical3Dot}
@@ -1238,7 +1313,7 @@ export default function ScheduleScreen({navigation, route}) {
               </View>
             )
           }
-        />
+        /> */}
         <View style={styles.separateLine} />
       </View>
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
@@ -1433,7 +1508,7 @@ export default function ScheduleScreen({navigation, route}) {
                 <AvailibilityScheduleScreen
                   allSlots={allSlots}
                   onDayPress={onDayPress}
-                  isAdmin={isAdmin}
+                  isAdmin
                 />
               )}
             </>
