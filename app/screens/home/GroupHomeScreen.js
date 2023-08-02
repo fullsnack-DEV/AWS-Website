@@ -170,9 +170,12 @@ const GroupHomeScreen = ({
         break;
       case strings.scheduleTitle:
         navigation.navigate('ScheduleScreen', {
+          // screen: 'ScheduleScreen',
           uid: groupId,
           isAdmin,
-          entityType: groupData.entity_type,
+          // entityType: groupData.entity_type,
+          // isBackVisible: true,
+          isFromHomeScreen: true,
         });
         break;
       case strings.scoreboard:

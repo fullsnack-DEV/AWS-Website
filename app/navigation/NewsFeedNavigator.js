@@ -93,6 +93,7 @@ import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScre
 import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
+import EventsListScreen from '../screens/account/schedule/EventsListScreen';
 
 const Stack = createStackNavigator();
 
@@ -218,7 +219,7 @@ const NewsFeedNavigator = () => (
       component={EntitySearchScreen}
       options={{
         title: strings.searchText,
-        headerShown:false,
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontFamily: fonts.RBold,
@@ -275,6 +276,26 @@ const NewsFeedNavigator = () => (
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
+        },
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="EventsListScreen"
+      component={EventsListScreen}
+      options={{
+        title: strings.events,
+        headerShown: false,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontFamily: fonts.RBold,
+          fontSize: 16,
+          color: colors.lightBlackColor,
         },
         headerStyle: {
           backgroundColor: colors.whiteColor,

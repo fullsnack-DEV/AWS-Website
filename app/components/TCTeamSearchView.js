@@ -59,6 +59,8 @@ function TCTeamSearchView({
     filterSport();
     if (authContext.entity.role === Verbs.entityTypeUser) {
       isJoinButton = true;
+    } else if (authContext.entity.role === Verbs.entityTypeTeam) {
+      isJoinButton = true;
     }
   }
 

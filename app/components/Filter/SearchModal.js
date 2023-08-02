@@ -377,6 +377,7 @@ const SearchModal = ({
       },
     ];
   }, [favoriteSportsList, sports]);
+
   return (
     <View>
       <CustomModalWrapper
@@ -1220,6 +1221,7 @@ const SearchModal = ({
         ) : (
           <CustomModalWrapper
             isVisible={visibleSportsModal}
+            ratio={9}
             closeModal={() => {
               setVisibleSportsModal(false);
             }}

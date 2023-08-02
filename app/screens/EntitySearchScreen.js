@@ -370,6 +370,20 @@ export default function EntitySearchScreen({navigation, route}) {
               },
             },
           ],
+          // should: [
+          //   {match: {entity_type: 'player'}},
+          //   // {term: {is_deactivate: false}},
+          //   {
+          //     nested: {
+          //       path: 'registered_sports',
+          //       query: {
+          //         bool: {
+          //           must: [{term: {'registered_sports.is_active': true}}],
+          //         },
+          //       },
+          //     },
+          //   },
+          // ],
         },
       },
     };
@@ -404,16 +418,67 @@ export default function EntitySearchScreen({navigation, route}) {
         playerFilter.sport === strings.allSport &&
         playerFilter.location === strings.worldTitleText
       ) {
+        // playersQuery.query.bool.should.push({
+        //   query_string: {
+        //     query: `*${playerFilter.searchText.toLowerCase()}*`,
+        //     fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
+        //   },
+        // });
+        // playersQuery.query.bool.must.push({
+        //   nested: {
+        //     path: 'registered_sports',
+        //     query: {
+        //       query_string: {
+        //         query: `*${playerFilter.searchText.toLowerCase()}*`,
+        //         fields: [
+        //           'registered_sports.sport',
+        //           'registered_sports.sport_type.keyword',
+        //           'registered_sports.sport_name.keyword',
+        //         ],
+        //       },
+        //     },
+        //   },
+        // });
+
         playersQuery.query.bool.must.push({
-          query_string: {
-            query: `*${playerFilter.searchText.toLowerCase()}*`,
-            fields: [
-              'full_name',
-              'city',
-              'country',
-              'state',
-              'state_abbr',
-              'registered_sports.sport',
+          bool: {
+            should: [
+              {
+                query_string: {
+                  query: `*${playerFilter.searchText.toLowerCase()}*`,
+                  fields: [
+                    'full_name',
+                    'city',
+                    'country',
+                    'state',
+                    'state_abbr',
+                  ],
+                },
+              },
+              {
+                nested: {
+                  path: 'registered_sports',
+                  query: {
+                    term: {
+                      'registered_sports.sport.keyword': `${playerFilter.searchText.toLowerCase()}`,
+                    },
+                  },
+                },
+              },
+              // {
+              //   nested: {
+              //     path: 'registered_sports',
+              //     query: {
+              //       query_string: {
+              //         query: `*${playerFilter.searchText.toLowerCase()}*`,
+              //         fields: [
+              //           'registered_sports.sport',
+              //           'registered_sports.sport_name.keyword',
+              //         ],
+              //       },
+              //     },
+              //   },
+              // },
             ],
           },
         });
@@ -1322,92 +1387,117 @@ export default function EntitySearchScreen({navigation, route}) {
         break;
     }
   };
-
-  const getLocation = () => {
-    setloading(true);
-    getGeocoordinatesWithPlaceName(Platform.OS)
-      .then((currentLocation) => {
-        if (currentLocation.position) {
-          const loc =
-            currentLocation.city?.charAt(0).toUpperCase() +
-            currentLocation.city?.slice(1);
-          // setLocation(loc);
-          switch (currentTab) {
-            case 0:
-              if (currentSubTab === strings.generalText) {
-                setGeneralFilter({
-                  ...generalFilter,
-                  locationOption: 2,
-                  location: loc,
-                });
-              } else if (currentSubTab === strings.playerTitle) {
-                setPlayerFilter({
-                  ...playerFilter,
-                  locationOption: 2,
-                  location: loc,
-                });
-              } else if (currentSubTab === strings.refereesTitle) {
-                setrRefereeFilters({
-                  ...refereeFilters,
-                  locationOption: 2,
-                  location: loc,
-                });
-              } else if (currentSubTab === strings.scorekeeperTitle) {
-                setScoreKeeperFilters({
-                  ...scoreKeeperFilters,
-                  locationOption: 2,
-                  location: loc,
-                });
-              }
-              break;
-            case 1:
-              if (currentSubTab === strings.teamsTitleText) {
-                setTeamFilters({
-                  ...teamFilters,
-                  locationOption: 2,
-                  location: loc,
-                });
-              } else if (currentSubTab === strings.clubsTitleText) {
-                setClubFilters({
-                  ...clubFilters,
-                  locationOption: 2,
-                  location: loc,
-                });
-              }
-              break;
-            case 2:
-              if (currentSubTab === strings.completedTitleText) {
-                setCompletedGameFilters({
-                  ...completedGameFilters,
-                  locationOption: 2,
-                  location: loc,
-                });
-              } else if (currentSubTab === strings.upcomingTitleText) {
-                setUpcomingGameFilters({
-                  ...upcomingGameFilters,
-                  locationOption: 2,
-                  location: loc,
-                });
-              }
-              break;
-            default:
-              break;
-          }
-        }
+  const getLocation = async () => {
+    try {
+      setloading(true);
+      const currentLocation = await getGeocoordinatesWithPlaceName(Platform.OS);
+      let loc = '';
+      if (currentLocation.position) {
+        loc =
+          currentLocation.city?.charAt(0).toUpperCase() +
+          currentLocation.city?.slice(1);
         setloading(false);
         setSettingPopup(false);
-      })
-      .catch((e) => {
-        setloading(false);
-        setSettingPopup(false);
-
-        if (e.message !== strings.userdeniedgps) {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        }
-      });
+      }
+      return loc;
+    } catch (error) {
+      setloading(false);
+      setSettingPopup(false);
+      if (error.message !== strings.userdeniedgps) {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      }
+      return null;
+    }
   };
+
+  // const getLocation = async () => {
+  //   setloading(true);
+  //   await getGeocoordinatesWithPlaceName(Platform.OS)
+  //     .then((currentLocation) => {
+  //       if (currentLocation.position) {
+  //         const loc =
+  //           currentLocation.city?.charAt(0).toUpperCase() +
+  //           currentLocation.city?.slice(1);
+  //         // setLocation(loc);
+  //         switch (currentTab) {
+  //           case 0:
+  //             if (currentSubTab === strings.generalText) {
+  //               setGeneralFilter({
+  //                 ...generalFilter,
+  //                 locationOption: 2,
+  //                 location: loc,
+  //               });
+  //             } else if (currentSubTab === strings.playerTitle) {
+  //               setPlayerFilter({
+  //                 ...playerFilter,
+  //                 locationOption: 2,
+  //                 location: loc,
+  //               });
+  //             } else if (currentSubTab === strings.refereesTitle) {
+  //               setrRefereeFilters({
+  //                 ...refereeFilters,
+  //                 locationOption: 2,
+  //                 location: loc,
+  //               });
+  //             } else if (currentSubTab === strings.scorekeeperTitle) {
+  //               setScoreKeeperFilters({
+  //                 ...scoreKeeperFilters,
+  //                 locationOption: 2,
+  //                 location: loc,
+  //               });
+  //             }
+  //             break;
+  //           case 1:
+  //             if (currentSubTab === strings.teamsTitleText) {
+  //               setTeamFilters({
+  //                 ...teamFilters,
+  //                 locationOption: 2,
+  //                 location: loc,
+  //               });
+  //             } else if (currentSubTab === strings.clubsTitleText) {
+  //               setClubFilters({
+  //                 ...clubFilters,
+  //                 locationOption: 2,
+  //                 location: loc,
+  //               });
+  //             }
+  //             break;
+  //           case 2:
+  //             if (currentSubTab === strings.completedTitleText) {
+  //               setCompletedGameFilters({
+  //                 ...completedGameFilters,
+  //                 locationOption: 2,
+  //                 location: loc,
+  //               });
+  //             } else if (currentSubTab === strings.upcomingTitleText) {
+  //               setUpcomingGameFilters({
+  //                 ...upcomingGameFilters,
+  //                 locationOption: 2,
+  //                 location: loc,
+  //               });
+  //             }
+  //             break;
+  //           default:
+  //             break;
+  //         }
+  //       }
+  //       setloading(false);
+  //       setSettingPopup(false);
+  //       return currentLocation;
+  //     })
+  //     .catch((e) => {
+  //       setloading(false);
+  //       setSettingPopup(false);
+
+  //       if (e.message !== strings.userdeniedgps) {
+  //         setTimeout(() => {
+  //           Alert.alert(strings.alertmessagetitle, e.message);
+  //         }, 10);
+  //       }
+  //     });
+  // };
 
   const onScrollHandler = () => {
     switch (currentTab) {
@@ -1465,100 +1555,119 @@ export default function EntitySearchScreen({navigation, route}) {
     }
   };
 
-  const searchFilterFunction = (text) => {
-    switch (currentSubTab) {
-      case strings.generalText:
-        setGeneralList([]);
-        setGeneralPageFrom(0);
-        setGeneralFilter({
-          ...generalFilter,
-          searchText: text,
-        });
-        break;
-      case strings.playerTitle:
-        setplayerList([]);
-        setPageFrom(0);
-        setPlayerFilter({
-          ...playerFilter,
-          searchText: text,
-        });
-        break;
-      case strings.refereesTitle:
-        setReferees([]);
-        setRefereesPageFrom(0);
-        setrRefereeFilters({
-          ...refereeFilters,
-          searchText: text,
-        });
-        break;
-      case strings.scorekeeperTitle:
-        setScorekeepers([]);
-        setScorekeeperPageFrom(0);
-        setScoreKeeperFilters({
-          ...scoreKeeperFilters,
-          searchText: text,
-        });
-        break;
-      case strings.teamsTitleText:
-        setTeams([]);
-        setTeamsPageFrom(0);
-        setTeamFilters({
-          ...teamFilters,
-          searchText: text,
-        });
-        break;
-      case strings.clubsTitleText:
-        setClubs([]);
-        setClubsPageFrom(0);
-        setClubFilters({
-          ...clubFilters,
-          searchText: text,
-        });
-        break;
-      case strings.completedTitleText:
-        setCompletedGame([]);
-        setCompletedGamePageFrom(0);
-        setCompletedGameFilters({
-          ...completedGameFilters,
-          searchText: text,
-        });
-        break;
-      case strings.upcomingTitleText:
-        setUpcomingGame([]);
-        setUpcomingGamePageFrom(0);
-        setUpcomingGameFilters({
-          ...upcomingGameFilters,
-          searchText: text,
-        });
-        break;
-      default:
-        break;
-    }
-  };
+  const searchFilterFunction = useCallback(
+    (text) => {
+      switch (currentSubTab) {
+        case strings.generalText:
+          setGeneralList([]);
+          setGeneralPageFrom(0);
+          setGeneralFilter({
+            ...generalFilter,
+            searchText: text,
+          });
+          break;
+        case strings.playerTitle:
+          setplayerList([]);
+          setPageFrom(0);
+          setPlayerFilter({
+            ...playerFilter,
+            searchText: text,
+          });
+          break;
+        case strings.refereesTitle:
+          setReferees([]);
+          setRefereesPageFrom(0);
+          setrRefereeFilters({
+            ...refereeFilters,
+            searchText: text,
+          });
+          break;
+        case strings.scorekeeperTitle:
+          setScorekeepers([]);
+          setScorekeeperPageFrom(0);
+          setScoreKeeperFilters({
+            ...scoreKeeperFilters,
+            searchText: text,
+          });
+          break;
+        case strings.teamsTitleText:
+          setTeams([]);
+          setTeamsPageFrom(0);
+          setTeamFilters({
+            ...teamFilters,
+            searchText: text,
+          });
+          break;
+        case strings.clubsTitleText:
+          setClubs([]);
+          setClubsPageFrom(0);
+          setClubFilters({
+            ...clubFilters,
+            searchText: text,
+          });
+          break;
+        case strings.completedTitleText:
+          setCompletedGame([]);
+          setCompletedGamePageFrom(0);
+          setCompletedGameFilters({
+            ...completedGameFilters,
+            searchText: text,
+          });
+          break;
+        case strings.upcomingTitleText:
+          setUpcomingGame([]);
+          setUpcomingGamePageFrom(0);
+          setUpcomingGameFilters({
+            ...upcomingGameFilters,
+            searchText: text,
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    [
+      clubFilters,
+      completedGameFilters,
+      currentSubTab,
+      generalFilter,
+      playerFilter,
+      refereeFilters,
+      scoreKeeperFilters,
+      teamFilters,
+      upcomingGameFilters,
+    ],
+  );
 
-  const tabChangePress = useCallback((changeTab) => {
-    searchFilterFunction('');
-    searchBoxRef.current.clear();
-    switch (changeTab.i) {
-      case 0:
-        setCurrentSubTab(strings.generalText);
-        break;
-      case 1:
-        setCurrentSubTab(strings.teamsTitleText);
-        break;
-      case 2:
-        setCurrentSubTab(strings.completedTitleText);
-        break;
-      default:
-        break;
-    }
-    setCurrentTab(changeTab.i);
-  }, []);
-  const onPressSubTabs = useCallback((item) => {
-    setCurrentSubTab(item);
-    searchFilterFunction('');
-    searchBoxRef.current.clear();
-  }, []);
+  const tabChangePress = useCallback(
+    (changeTab) => {
+      searchFilterFunction('');
+      searchBoxRef.current.clear();
+      switch (changeTab.i) {
+        case 0:
+          setCurrentSubTab(strings.generalText);
+          break;
+        case 1:
+          setCurrentSubTab(strings.teamsTitleText);
+          break;
+        case 2:
+          setCurrentSubTab(strings.completedTitleText);
+          break;
+        default:
+          break;
+      }
+      setCurrentTab(changeTab.i);
+    },
+    [searchFilterFunction],
+  );
+  const onPressSubTabs = useCallback(
+    (item) => {
+      setCurrentSubTab(item);
+      searchFilterFunction('');
+      searchBoxRef.current.clear();
+    },
+    [searchFilterFunction],
+  );
 
   const userJoinGroup = (groupId) => {
     setloading(true);
@@ -1735,11 +1844,12 @@ export default function EntitySearchScreen({navigation, route}) {
               </TouchableOpacity>
             ))}
           {currentTab === 1 &&
-            GROUP_SUB_TAB_ITEMS.map((item) => (
+            GROUP_SUB_TAB_ITEMS.map((item, index) => (
               <TouchableOpacity
                 key={item}
                 style={{padding: 10}}
-                onPress={() => setCurrentSubTab(item)}>
+                // onPress={() => setCurrentSubTab(item)}>
+                onPress={() => onPressSubTabs(item, index)}>
                 <Text
                   style={{
                     color:
@@ -1754,11 +1864,11 @@ export default function EntitySearchScreen({navigation, route}) {
               </TouchableOpacity>
             ))}
           {currentTab === 2 &&
-            GAMES_SUB_TAB_ITEMS.map((item) => (
+            GAMES_SUB_TAB_ITEMS.map((item, index) => (
               <TouchableOpacity
                 key={item}
                 style={{padding: 10}}
-                onPress={() => setCurrentSubTab(item)}>
+                onPress={() => onPressSubTabs(item, index)}>
                 <Text
                   style={{
                     color:
@@ -1836,18 +1946,7 @@ export default function EntitySearchScreen({navigation, route}) {
         )}
       </View>
     ),
-    [
-      currentSubTab,
-      currentTab,
-      onPressSubTabs,
-      playerFilter,
-      refereeFilters,
-      scoreKeeperFilters,
-      teamFilters,
-      clubFilters,
-      completedGameFilters,
-      upcomingGameFilters,
-    ],
+    [currentSubTab, currentTab, onPressSubTabs],
   );
 
   const renderItem = useCallback(
@@ -2283,7 +2382,7 @@ export default function EntitySearchScreen({navigation, route}) {
         }
         isVisible={settingPopup}
         showSportOption={true}
-        onPressApply={(filterData) => {
+        onPressApply={async (filterData) => {
           setloading(false);
           let tempFilter = {};
           tempFilter = {...filterData};
@@ -2305,8 +2404,8 @@ export default function EntitySearchScreen({navigation, route}) {
           } else if (
             filterData.locationOption === locationType.CURRENT_LOCATION
           ) {
-            getLocation();
-            // tempFilter.location = location;
+            const loc = await getLocation();
+            tempFilter.location = loc;
           } else if (filterData.locationOption === locationType.SEARCH_CITY) {
             // setLocation(filterData.searchCityLoc);
             tempFilter.location = filterData.searchCityLoc;
