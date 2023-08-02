@@ -131,17 +131,18 @@ export default function AddBirthdayScreen({navigation, route}) {
             </Text>
           }
           backgroundColor={colors.parrotColor}
-          height={305}
           width={305}
           overlayColor={'transparent'}
           skipAndroidStatusBar={true}
           containerStyle={{
             left: 25,
             padding: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.16)',
+            shadowColor: colors.shdowColorToolKit,
             shadowOffset: {width: 0, height: 3},
             shadowOpacity: 1,
             shadowRadius: 6,
+            height: 334,
+            paddingVertical: 10,
           }}>
           <Text style={styles.whyAskingText}>{strings.whyAskingText}</Text>
         </Tooltip>
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 65,
     color: 'black',
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: colors.bhirthdaybgcolor,
     paddingLeft: 20,
     borderRadius: 5,
     shadowColor: colors.googleColor,

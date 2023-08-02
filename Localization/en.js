@@ -89,7 +89,7 @@ export default {
   apply: 'en_Apply',
   yes: 'en_Yes',
   no: 'en_No',
-  passwordText: 'en_Password (at least 6 characters)',
+  passwordText: 'en_Password',
   passwordWarningMessage: 'en_Password should be atleast 8 characters.',
   confirmPasswordText: 'en_Confirm Password',
   // Password message
@@ -3071,5 +3071,7 @@ export default {
   chatroomText: 'en_Chatroom',
   ratingText:
     'en_Ratings shows the average ratings that the referee received from teams regarding their matches. The following questions are used to collect ratings from teams.',
+  signUpPasswordText: 'en_Your password must be at least 8 characters.',
   Minimum: 'en_Minimum',
+
 };

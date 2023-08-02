@@ -429,18 +429,6 @@ export default function ChooseSportsScreen({navigation, route}) {
           renderItem={renderItem}
         />
       </SafeAreaView>
-      {/* <TCButton
-        title={'CONTINUE'}
-        extraStyle={{position: 'absolute', bottom: hp('7%')}}
-        onPress={() => {
-          if (selected.length > 0) {
-            getTeamsData();
-          } else {
-            Alert.alert(strings.appName, 'Please choose at least one sport.');
-            return false;
-          }
-        }}
-      /> */}
     </LinearGradient>
   );
 }
@@ -479,8 +467,6 @@ const styles = StyleSheet.create({
   },
   sportList: {
     color: colors.whiteColor,
-    // fontSize: wp('4%'),
-
     fontFamily: fonts.RRegular,
   },
   sportText: {

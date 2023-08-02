@@ -543,13 +543,15 @@ const images = {
   chatSearch: require('../assets/images/search-chat.png'),
   chatCamera: require('../assets/images/chat-camera.png'),
   chatBtn: require('../assets/images/chat-btn.png'),
-  emojiSad : require('../assets/images/emoji-sad.png'),
-  emojiHappy : require('../assets/images/emoji-happy.png'),
-  emojiWow : require('../assets/images/emoji-wow.png'),
-  emojiCorrect : require('../assets/images/emoji-correct.png'),
-  emojiLike : require('../assets/images/emoji-like.png'),
-  emojiLove : require('../assets/images/emoji-love.png'),
-  deleteChat : require('../assets/images/delete-chat.png')
+  emojiSad: require('../assets/images/emoji-sad.png'),
+  emojiHappy: require('../assets/images/emoji-happy.png'),
+  emojiWow: require('../assets/images/emoji-wow.png'),
+  emojiCorrect: require('../assets/images/emoji-correct.png'),
+  emojiLike: require('../assets/images/emoji-like.png'),
+  emojiLove: require('../assets/images/emoji-love.png'),
+  deleteChat: require('../assets/images/delete-chat.png'),
+  verficationPlane: require('../assets/images/verificationPlane.png'),
+  townsCupLogoNew: require('../assets/images/TownsCupNewLogo.png'),
 };
 
 export default images;

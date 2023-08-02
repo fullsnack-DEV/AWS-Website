@@ -188,6 +188,7 @@ const Verbs = {
   ITEM_HEIGHT: 178,
   ITEM_LENGTH: 25,
   VIEW_POSITION: 0.9,
+  PASSWORD_LENGTH: 8,
 };
 
 export default Verbs;

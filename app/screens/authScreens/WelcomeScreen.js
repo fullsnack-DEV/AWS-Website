@@ -11,21 +11,20 @@ import {
   Alert,
   Animated,
   Platform,
+  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import crashlytics from '@react-native-firebase/crashlytics';
 
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
 import auth from '@react-native-firebase/auth';
-import {AccessToken, LoginManager} from 'react-native-fbsdk';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {AccessToken, LoginManager} from 'react-native-fbsdk-next';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   GoogleSignin,
   statusCodes,
@@ -39,27 +38,25 @@ import {
 import 'react-native-get-random-values';
 import {v4 as uuid} from 'uuid';
 import Config from 'react-native-config';
-import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../auth/context';
 import FacebookButton from '../../components/FacebookButton';
 import GoogleButton from '../../components/GoogleButton';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import * as Utility from '../../utils/index';
 import apiCall from '../../utils/apiCall';
-
-import {QBconnectAndSubscribe, QBlogin} from '../../utils/QuickBlox';
 import AppleButton from '../../components/AppleButton';
 import {checkTownscupEmail, createUser, updateFBToken} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
 import {generateUserStreamToken} from '../../utils/streamChat';
 
 const BACKGROUND_CHANGE_INTERVAL = 4000; // 4 seconds
+
+const windowHeight = Dimensions.get('window').height;
+
 export default function WelcomeScreen({navigation}) {
   const fadeInOpacity = new Animated.Value(0);
   // For activity indigator
@@ -162,27 +159,6 @@ export default function WelcomeScreen({navigation}) {
     [authContext, getRedirectionScreenName, navigation],
   );
 
-  const QBInitialLogin = async (dummyAuth, townscupUser) => {
-    const dummyAuthContext = {...dummyAuth};
-    let qbEntity = {...dummyAuthContext?.entity};
-    QBlogin(qbEntity?.uid, townscupUser)
-      .then(async (res) => {
-        qbEntity = {
-          ...qbEntity,
-          QB: {...res?.user, connected: true, token: res?.session?.token},
-        };
-        QBconnectAndSubscribe(qbEntity);
-        dummyAuthContext.entity = {...qbEntity};
-        await loginFinalRedirection(townscupUser, dummyAuthContext);
-      })
-      .catch(async (error) => {
-        console.log('QB Login Error : ', error.message);
-        qbEntity = {...qbEntity, QB: {connected: false}};
-        dummyAuthContext.entity = {...qbEntity};
-        await loginFinalRedirection(townscupUser, dummyAuthContext);
-      });
-  };
-
   const wholeSignUpProcessComplete = async (userData, dummyAuthContext) => {
     const entity = {...dummyAuthContext?.entity};
     const tokenData = dummyAuthContext?.tokenData;
@@ -199,33 +175,7 @@ export default function WelcomeScreen({navigation}) {
     navigation.navigate('AddBirthdayScreen');
   };
 
-  const signUpWithQB = (response, dummyAuth) => {
-    const dummyAuthContext = {...dummyAuth};
-    let qbEntity = {...dummyAuthContext?.entity};
-    QBlogin(qbEntity?.uid, response)
-      .then(async (res) => {
-        qbEntity = {
-          ...qbEntity,
-          QB: {...res?.user, connected: true, token: res?.session?.token},
-        };
-
-        QBconnectAndSubscribe(qbEntity);
-        dummyAuthContext.entity = qbEntity;
-        await wholeSignUpProcessComplete(response, dummyAuthContext);
-      })
-      .catch(async (error) => {
-        console.log('QB Login Error : ', error.message);
-        qbEntity = {...qbEntity, QB: {connected: false}};
-        dummyAuthContext.entity = qbEntity;
-        await wholeSignUpProcessComplete(response, dummyAuthContext);
-      });
-  };
   const navigateToAddBirthdayScreen = async (userDetail, dummyAuth) => {
-    // const entity = {
-    //   auth: {user_id: user.uid},
-    //   uid: user.uid,
-    //   role: 'user',
-    // };
     setloading(false);
     const dummyAuthContext = {...dummyAuth};
     const authEntity = {...dummyAuthContext?.entity};
@@ -233,13 +183,6 @@ export default function WelcomeScreen({navigation}) {
 
     await authContext.setTokenData(token);
     await authContext.setEntity(authEntity);
-    // navigation.navigate('AddBirthdayScreen', {
-    //   signupInfo: {
-    //     first_name: userDetail?.first_name,
-    //     last_name: userDetail?.last_name,
-    //     email: userDetail?.email,
-    //   },
-    // });
 
     navigation.navigate('AddNameScreen', {
       signupInfo: {
@@ -458,6 +401,8 @@ export default function WelcomeScreen({navigation}) {
         'email',
         'user_birthday',
       ]);
+
+      console.log(result, 'From result');
 
       if (result.isCancelled) {
         setloading(false);
@@ -701,26 +646,20 @@ export default function WelcomeScreen({navigation}) {
   );
 
   return (
-    <LinearGradient
-      testID={'WelcomeScreen'}
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <ActivityLoader visible={loading} />
       {renderBackgroundImages}
       <View style={styles.logoContainer}>
         <FastImage
           style={styles.logo}
-          resizeMode={'contain'}
-          source={images.townsCupLogo}
+          resizeMode={'cover'}
+          source={images.townsCupLogoNew}
         />
-        <Text style={styles.logoTitle}>{strings.townsCupTitle}</Text>
-        <Text style={styles.logoTagLine}>{strings.townsCupTagLine}</Text>
       </View>
 
       <View style={{flex: 1, justifyContent: 'flex-end'}}>
-        <View style={{marginBottom: hp(2)}}>
-          {/* {Platform.OS === 'ios' && ( */}
+        <View style={{marginBottom: 2}}>
           <AppleButton
             onPress={() => {
               if (authContext.networkConnected) onAppleButtonPress();
@@ -795,7 +734,7 @@ export default function WelcomeScreen({navigation}) {
           .
         </Text>
       </View>
-    </LinearGradient>
+    </SafeAreaView>
   );
 }
 
@@ -809,10 +748,6 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     alignItems: 'center',
     padding: 12,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
   },
   alreadyMemberText: {
     color: colors.whiteColor,
@@ -833,39 +768,20 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   background: {
-    height: hp('100%'),
+    height: windowHeight,
     position: 'absolute',
     resizeMode: 'stretch',
-    width: wp('100%'),
+    width: '100%',
   },
   logo: {
     alignContent: 'center',
-    height: hp(12),
-    width: wp(22),
-    marginBottom: hp(4),
+    height: 83,
+    width: 280,
   },
   logoContainer: {
     alignItems: 'center',
     flexDirection: 'column',
-    marginTop: hp('15%'),
-  },
-  logoTagLine: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RMedium,
-    fontSize: wp('4%'),
-    marginTop: hp('1%'),
-  },
-  logoTitle: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBlack,
-    fontSize: wp('9%'),
-    letterSpacing: 5,
-  },
-
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    paddingVertical: 25,
+    marginTop: 204,
   },
 
   signUpImg: {
