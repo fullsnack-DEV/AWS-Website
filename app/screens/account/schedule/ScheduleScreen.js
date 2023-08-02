@@ -69,6 +69,7 @@ import FilterTimeSelectItem from '../../../components/Filter/FilterTimeSelectIte
 import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal';
 import EventListShimmer from '../../../components/shimmer/schedule/EventListShimmer';
 import ScreenHeader from '../../../components/ScreenHeader';
+import AvailabilityShimmer from '../../../components/shimmer/schedule/AvailibilityShimmer';
 
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
@@ -1456,7 +1457,13 @@ export default function ScheduleScreen({navigation, route}) {
             </View>
           ) : null}
           {indigator ? (
-            <EventListShimmer />
+            <>
+              {scheduleIndexCounter === 0 ? (
+                <EventListShimmer />
+              ) : (
+                <AvailabilityShimmer />
+              )}
+            </>
           ) : (
             <>
               {scheduleIndexCounter === 0 && (

@@ -14,6 +14,8 @@ import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
 import EntityInfoShimmer from '../../components/shimmer/account/EntityInfoShimmer';
 
+import WrapperModal from '../../components/IncomingChallengeSettingsModals/WrapperModal';
+
 const EntityInfoScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
@@ -21,6 +23,7 @@ const EntityInfoScreen = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const [currentUserData, setCurrentUserData] = useState();
   const [selectedVenue, setSelectedVenue] = useState([]);
+  const [visibleVenueModal, setVisibleVenuModal] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
@@ -81,12 +84,8 @@ const EntityInfoScreen = ({navigation, route}) => {
         break;
 
       case strings.matchVenues:
-        navigation.navigate('Venue', {
-          settingObj: authContext.entity.obj.setting ?? {},
-          comeFrom: 'EntityInfoScreen',
-          sportName: currentUserData.sport,
-          sportType: currentUserData.sport_type,
-        });
+        setVisibleVenuModal(true);
+
         break;
 
       case strings.membershipFee:
@@ -210,6 +209,16 @@ const EntityInfoScreen = ({navigation, route}) => {
           onAddMember={() => {}}
         />
       )}
+      <WrapperModal
+        isVisible={visibleVenueModal}
+        closeModal={() => setVisibleVenuModal(false)}
+        title={strings.venue}
+        onSave={(settings) => {
+          setVisibleVenuModal(false);
+
+          setSelectedVenue({...settings});
+        }}
+      />
     </SafeAreaView>
   );
 };

@@ -8,7 +8,7 @@ import {
   prepareChannelId,
 } from '../utils/streamChat';
 
-const useCreateChannel = () => {
+const useStreamChatUtils = () => {
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
   const entity = {...authContext.entity.obj};
@@ -121,7 +121,20 @@ const useCreateChannel = () => {
     return channel;
   };
 
-  return {createChannel, isCreatingChannel: loading};
+  const addMembersToChannel = async ({channel = {}, newMembers = []}) => {
+    setLoading(true);
+    const members = await fetchMembers(newMembers);
+    await channel.addMembers([...members]);
+    setLoading(false);
+    return true;
+  };
+
+  return {
+    createChannel,
+    isCreatingChannel: loading,
+    addMembersToChannel,
+    isMemberAdding: loading,
+  };
 };
 
-export default useCreateChannel;
+export default useStreamChatUtils;

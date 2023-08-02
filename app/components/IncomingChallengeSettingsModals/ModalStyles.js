@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     padding: 10,
+    lineHeight: 24,
   },
   addVenueButton: {
     alignSelf: 'center',

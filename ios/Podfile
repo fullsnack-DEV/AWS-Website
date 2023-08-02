@@ -16,7 +16,7 @@ project 'Townscup',
 target 'townscup_reactnative' do
   config = use_native_modules!
   permissions_path = '../node_modules/react-native-permissions/ios'
-  use_react_native!(:path => config["reactNativePath"])
+  use_react_native!(:path => config[:reactNativePath])
 
   pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways"
   pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
@@ -24,7 +24,7 @@ target 'townscup_reactnative' do
   pod 'react-native-config', :path => '../node_modules/react-native-config'
   pod 'RNTextGradientView', :path => '../node_modules/react-native-text-gradient'
   pod 'react-native-orientation', :path => '../node_modules/react-native-orientation'
-  pod 'react-native-blur', :path => '../node_modules/@react-native-community/blur'
+  
 
   pod 'RNLocalize', :path => '../node_modules/react-native-localize'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"

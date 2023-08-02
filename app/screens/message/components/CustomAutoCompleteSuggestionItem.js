@@ -12,8 +12,11 @@ const CustomAutoCompleteSuggestionItem = ({itemProps, triggerType}) => {
       <View style={styles.parent}>
         <GroupIcon
           imageUrl={itemProps.members[0].image}
+          groupName={itemProps.members[0].group_name}
           entityType={itemProps.members[0].entityType}
           containerStyle={styles.profileIcon}
+          textstyle={{fontSize: 10, marginTop: 2}}
+          placeHolderStyle={{width: 8, height: 8}}
         />
         <Text style={styles.label}>{itemProps.entityName}</Text>
       </View>

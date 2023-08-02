@@ -34,14 +34,13 @@ import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
 import {getTCDate, groupBy} from '../../../utils';
 import colors from '../../../Constants/Colors';
-
-import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import images from '../../../Constants/ImagePath';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import fonts from '../../../Constants/Fonts';
 import {MonthData} from '../../../Constants/GeneralConstants';
 import ScreenHeader from '../../../components/ScreenHeader';
 import DateFilterModal from './DatefilterModal';
+import CustomScrollTabs from '../../../components/CustomScrollTabs';
 
 export default function InvoiceReceivedScreen({navigation}) {
   const defaultRecords = [
@@ -83,7 +82,7 @@ export default function InvoiceReceivedScreen({navigation}) {
   const [showDateModal, setShowDateModal] = useState(false);
 
   const tabChangePress = useCallback((changeTab) => {
-    setTabNumber(changeTab.i);
+    setTabNumber(changeTab);
   }, []);
 
   useLayoutEffect(() => {
@@ -425,18 +424,10 @@ export default function InvoiceReceivedScreen({navigation}) {
 
         {selectedCurrency !== strings.all && (
           <View style={{backgroundColor: colors.whiteColor}}>
-            <TCScrollableProfileTabs
-              tabItem={tabs}
-              tabVerticalScroll={false}
-              onChangeTab={tabChangePress}
+            <CustomScrollTabs
+              tabsItem={tabs}
+              setCurrentTab={tabChangePress}
               currentTab={tabNumber}
-              customStyle={{
-                paddingVertical: 0,
-              }}
-              bounces={false}
-              tabStyle={{
-                marginTop: -2,
-              }}
             />
           </View>
         )}

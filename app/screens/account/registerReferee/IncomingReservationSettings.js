@@ -86,7 +86,11 @@ const IncomingReservationSettings = ({navigation, route}) => {
   };
 
   const onSave = () => {
-    if (settingsObject.game_fee?.fee === 0 && !isAlreadyWarned) {
+    if (
+      (settingsObject.game_fee?.fee === 0 ||
+        settingsObject.game_fee?.fee === '') &&
+      !isAlreadyWarned
+    ) {
       setShowMatchFeeReminderModal(true);
       setIsAlreadyWarned(true);
     } else {

@@ -141,7 +141,8 @@ const FeedAbsoluteTopView = memo(
 
 const styles = StyleSheet.create({
   topMainContainer: {
-    top: 10,
+    // flex: 1,
+    top: 30,
     zIndex: 99,
   },
   topSubContainer: {

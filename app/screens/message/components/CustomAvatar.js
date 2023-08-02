@@ -5,23 +5,26 @@ import AuthContext from '../../../auth/context';
 import GroupIcon from '../../../components/GroupIcon';
 import {getChannelAvatar, getChannelName} from '../../../utils/streamChat';
 
-const CustomAvatar = ({channel = {}, imageStyle = {}}) => {
+const CustomAvatar = ({
+  channel = {},
+  imageStyle = {},
+  placeHolderStyle = {},
+}) => {
   const [profileList, setProfileList] = useState([]);
   const authContext = useContext(AuthContext);
-  const [entityId] = useState(authContext.entity.uid);
   const {data} = channel;
   useEffect(() => {
     if (!data.image?.thumbnail) {
-      const list = getChannelAvatar(channel, entityId);
+      const list = getChannelAvatar(channel, authContext.chatClient.userID);
       setProfileList(list);
     }
-  }, [entityId, data, channel]);
+  }, [data, channel, authContext.chatClient.userID]);
 
   if (data.image?.thumbnail) {
     return (
       <GroupIcon
         imageUrl={data.image.thumbnail}
-        groupName={getChannelName(channel, entityId)}
+        groupName={getChannelName(channel, authContext.chatClient.userID)}
         showPlaceholder={false}
         containerStyle={[styles.imageContainer, {marginRight: 10}, imageStyle]}
       />
@@ -38,8 +41,9 @@ const CustomAvatar = ({channel = {}, imageStyle = {}}) => {
             <GroupIcon
               imageUrl={item.imageUrl}
               entityType={item.entityType}
-              groupName={getChannelName(channel, entityId)}
+              groupName={getChannelName(channel, authContext.chatClient.userID)}
               containerStyle={[styles.imageContainer, imageStyle]}
+              placeHolderStyle={placeHolderStyle}
             />
           </View>
         ))}

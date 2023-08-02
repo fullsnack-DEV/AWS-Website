@@ -28,7 +28,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'react-string-format';
 import AuthContext from '../auth/context';
 import {getStorage} from '../utils';
-import TCScrollableProfileTabs from '../components/TCScrollableProfileTabs';
+
 import colors from '../Constants/Colors';
 import Verbs from '../Constants/Verbs';
 import fonts from '../Constants/Fonts';
@@ -53,7 +53,11 @@ import {getSportDetails, getSportList} from '../utils/sportsActivityUtils';
 import SearchModal from '../components/Filter/SearchModal';
 import {ModalTypes} from '../Constants/GeneralConstants';
 import CustomModalWrapper from '../components/CustomModalWrapper';
+
+import CustomScrollTabs from '../components/CustomScrollTabs';
+
 import ScreenHeader from '../components/ScreenHeader';
+
 
 let stopFetchMore = true;
 
@@ -1669,6 +1673,7 @@ export default function EntitySearchScreen({navigation, route}) {
     [searchFilterFunction],
   );
 
+
   const userJoinGroup = (groupId) => {
     setloading(true);
     const params = {};
@@ -2239,10 +2244,9 @@ export default function EntitySearchScreen({navigation, route}) {
         />
       </View>
       <View style={{backgroundColor: '#FFFFFF'}}>
-        <TCScrollableProfileTabs
-          tabItem={TAB_ITEMS}
-          tabVerticalScroll={false}
-          onChangeTab={tabChangePress}
+        <CustomScrollTabs
+          tabsItem={TAB_ITEMS}
+          setCurrentTab={tabChangePress}
           currentTab={currentTab}
         />
       </View>

@@ -1,7 +1,7 @@
 import React from 'react';
-import {StyleSheet, Image} from 'react-native';
+import {StyleSheet, Image, Text} from 'react-native';
 
-import {Tooltip, Text} from 'react-native-elements';
+import {Tooltip} from 'react-native-elements';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';

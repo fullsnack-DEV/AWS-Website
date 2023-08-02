@@ -6,16 +6,16 @@ buildscript {
         googlePlayServicesIidVersion = "17.0.0" // default: "17.0.0" - AndroidX
         googlePlayServicesIidVersion = "16.0.1"
         kotlinVersion = "1.6.10"
-        buildToolsVersion = "30.0.2"
+         buildToolsVersion = "30.0.2"
         minSdkVersion = 21
-        compileSdkVersion = 33
+         compileSdkVersion = 33
         targetSdkVersion = 33
 
-        
-        // compileSdkVersion 29
-    	// buildToolsVersion "23.0.3"
-        // targetSdkVersion = 29
-		// minSdkVersion = 16
+
+
+              // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
+        ndkVersion = "23.1.7779620"
+       
     }
     repositories {
         google()
@@ -23,8 +23,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.android.tools.build:gradle:7.0.3')
-        classpath 'com.google.gms:google-services:4.3.10'
+           classpath("com.android.tools.build:gradle")
+              classpath 'com.google.gms:google-services:4.3.13'
+      
+        classpath("com.facebook.react:react-native-gradle-plugin")
 		classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         //classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.1'
@@ -33,35 +35,5 @@ buildscript {
     }
 }
 
-def REACT_NATIVE_VERSION = new File(['node', '--print',"JSON.parse(require('fs').readFileSync(require.resolve('react-native/package.json'), 'utf-8')).version"].execute(null, rootDir).text.trim())
+// def REACT_NATIVE_VERSION = new File(['node', '--print',"JSON.parse(require('fs').readFileSync(require.resolve('react-native/package.json'), 'utf-8')).version"].execute(null, rootDir).text.trim())
 
-allprojects {
-    repositories {
-        mavenLocal()
-        maven {
-            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url("$rootDir/../node_modules/react-native/android")
-        }
-        maven {
-            // Android JSC is installed from npm
-            url("$rootDir/../node_modules/jsc-android/dist")
-        }
-        maven { url 'https://maven.google.com' }
-
-        google()
-        jcenter()
-        maven { url 'https://www.jitpack.io' }
-        mavenCentral()
-        maven {
-        url "https://maven.springframework.org/release"
-    }
-    maven {
-        url "https://maven.restlet.com"
-    }
-    }
-	configurations.all {
-        resolutionStrategy {
-            force "com.facebook.react:react-native:" + REACT_NATIVE_VERSION
-        }
-    }
-}

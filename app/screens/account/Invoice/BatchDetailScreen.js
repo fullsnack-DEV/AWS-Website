@@ -30,13 +30,13 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {getJSDate} from '../../../utils';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
-import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import CancelInvoivebybatchModal from './CancelInvoivebybatchModal';
 import AddRecipientsInBatchModal from './AddRecipientsInBatchModal';
 import {InvoiceActionType} from '../../../Constants/GeneralConstants';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {getBatchInvoices} from '../../../api/Invoice';
 import InvoiceProgressBar from './InvoiceProgressBar';
+import CustomScrollTabs from '../../../components/CustomScrollTabs';
 
 export default function BatchDetailScreen({navigation, route}) {
   const [from] = useState(route.params.from);
@@ -394,18 +394,10 @@ export default function BatchDetailScreen({navigation, route}) {
         </View>
 
         <View style={{backgroundColor: colors.whiteColor}}>
-          <TCScrollableProfileTabs
-            tabItem={tabs}
-            tabVerticalScroll={false}
-            onChangeTab={(Tab) => setTabNumber(Tab.i)}
+          <CustomScrollTabs
+            tabsItem={tabs}
+            setCurrentTab={(Tab) => setTabNumber(Tab)}
             currentTab={tabNumber}
-            customStyle={{
-              marginTop: 15,
-            }}
-            bounces={false}
-            tabStyle={{
-              marginTop: -15,
-            }}
           />
         </View>
 

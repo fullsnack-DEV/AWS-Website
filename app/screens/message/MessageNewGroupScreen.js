@@ -22,7 +22,7 @@ import uploadImages from '../../utils/imageAction';
 import ScreenHeader from '../../components/ScreenHeader';
 import SelectedInviteeCard from './components/SelectedInviteeCard';
 import BottomSheet from '../../components/modals/BottomSheet';
-import useCreateChannel from '../../hooks/useCreateChannel';
+import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 
 const NUM_OF_COLS = 5;
 
@@ -37,7 +37,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
   const [loading, setLoading] = useState(false);
   const [bottomSheetOptions, setBottomSheetOptions] = useState([]);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
-  const {createChannel} = useCreateChannel();
+  const {createChannel} = useStreamChatUtils();
 
   useEffect(() => {
     if (selectedInviteesData?.length > 0) {

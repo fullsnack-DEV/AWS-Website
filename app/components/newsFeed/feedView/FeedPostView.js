@@ -36,6 +36,7 @@ const FeedPostView = ({
       }
     });
   }, [currentPage]);
+
   const renderAttachments = useCallback(
     ({item, index}) =>
       showContent && (

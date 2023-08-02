@@ -37,14 +37,13 @@ import BatchInvoiceView from '../../../components/invoice/BatchInvoiceView';
 import {strings} from '../../../../Localization/translation';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import Verbs from '../../../Constants/Verbs';
-import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
-
 import SendNewInvoiceModal from './SendNewInvoiceModal';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import {MonthData} from '../../../Constants/GeneralConstants';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {getTCDate} from '../../../utils';
 import DateFilterModal from './DatefilterModal';
+import CustomScrollTabs from '../../../components/CustomScrollTabs';
 
 export default function InvoiceSentScreen({navigation}) {
   const defaultRecords = [
@@ -105,7 +104,8 @@ export default function InvoiceSentScreen({navigation}) {
   };
 
   const tabChangePress = useCallback((changeTab) => {
-    setMaintabNumber(changeTab.i);
+    console.log(changeTab, 'from tab');
+    setMaintabNumber(changeTab);
   }, []);
 
   const getDates = (optionsState) => {
@@ -541,58 +541,19 @@ export default function InvoiceSentScreen({navigation}) {
 
         {selectedCurrency !== strings.all && (
           <View style={{backgroundColor: colors.whiteColor}}>
-            <TCScrollableProfileTabs
-              tabItem={tabs}
-              tabVerticalScroll={false}
-              onChangeTab={tabChangePress}
+            <CustomScrollTabs
+              tabsItem={tabs}
+              setCurrentTab={tabChangePress}
               currentTab={maintabNumber}
-              bounces={false}
-              tabStyle={{
-                marginTop: -2,
-              }}
+              subTabItems={subTabs}
+              setCurrentSubTab={setCurrentSubTab}
+              currentGroupTab={currentSubTab}
             />
           </View>
         )}
 
         {selectedCurrency !== strings.all && (
           <View style={{flex: 1, backgroundColor: colors.whiteColor}}>
-            <View
-              style={{
-                flexDirection: 'row',
-                borderBottomColor: colors.grayBackgroundColor,
-                borderBottomWidth: 1,
-                backgroundColor: colors.whiteGradientColor,
-              }}>
-              <ScrollView
-                nestedScrollEnabled
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                style={{
-                  marginRight: 40,
-                }}>
-                {subTabs.map((item, index) => (
-                  <TouchableOpacity
-                    key={item}
-                    style={{padding: 10}}
-                    onPress={() => setCurrentSubTab(index)}>
-                    <Text
-                      style={{
-                        color:
-                          index === currentSubTab
-                            ? colors.themeColor
-                            : colors.lightBlackColor,
-                        fontFamily:
-                          index === currentSubTab
-                            ? fonts.RBold
-                            : fonts.RRegular,
-                      }}>
-                      {item}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-
             {maintabNumber === InvoiceSentMainTab.Recipients ? (
               <FlatList
                 style={{backgroundColor: colors.whiteColor}}

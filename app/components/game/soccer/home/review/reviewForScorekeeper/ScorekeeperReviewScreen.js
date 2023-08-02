@@ -116,17 +116,18 @@ export default function ScorekeeperReviewScreen({navigation, route}) {
     Object.keys(keys).map((key) => {
       if (reviewsData[key] > 0) {
         isRating = true;
-      }
-      else{
+      } else {
         isBlankRating = true;
       }
     });
 
-    if(isRating && isBlankRating){
+    if (isRating && isBlankRating) {
       Alert.alert(strings.completeallrating);
       returnValue = false;
-    }
-    else if(!isRating && (!reviewsData.comment || reviewsData.comment?.length <= 0)){      
+    } else if (
+      !isRating &&
+      (!reviewsData.comment || reviewsData.comment?.length <= 0)
+    ) {
       Alert.alert(strings.reviewvalidation);
       returnValue = false;
     }
@@ -171,7 +172,7 @@ export default function ScorekeeperReviewScreen({navigation, route}) {
 
   const setReviewRating = (key = '', value = '') => {
     if (reviewsData[key] !== value) {
-        reviewsData[key] = value;
+      reviewsData[key] = value;
       setReviewsData({...reviewsData});
     }
   };
@@ -185,54 +186,54 @@ export default function ScorekeeperReviewScreen({navigation, route}) {
       keys[item.name] = 0;
     });
     Object.keys(keys).map((key) => {
-      reviewsData[key] = 0
+      reviewsData[key] = 0;
     });
     setReviewsData({...reviewsData});
-  }
+  };
 
-  const renderReviewStar = (index,item) => ( <View key={index}>
-    <Text style={styles.questionTitle}>
-      {item.title.toUpperCase()}
-    </Text>
-    <Text style={styles.questionText}>{item.description}</Text>
-    <TCRatingStarSlider
-      currentRating={reviewsData[item.name]}
-      onPress={(star) => {
-        setReviewRating(item.name, star);
-      }}
-      style={{
-        alignSelf: 'center',
-        marginTop: 5,
-        marginBottom: 25,
-      }}
-      starColor={STAR_COLOR.YELLOW}
-    />
-  </View>);
+  const renderReviewStar = (index, item) => (
+    <View key={index}>
+      <Text style={styles.questionTitle}>{item.title.toUpperCase()}</Text>
+      <Text style={styles.questionText}>{item.description}</Text>
+      <TCRatingStarSlider
+        currentRating={reviewsData[item.name]}
+        onPress={(star) => {
+          setReviewRating(item.name, star);
+        }}
+        style={{
+          alignSelf: 'center',
+          marginTop: 5,
+          marginBottom: 25,
+        }}
+        starColor={STAR_COLOR.YELLOW}
+      />
+    </View>
+  );
 
-return (
-  <View style={{flex: 1}}>
-    <Header
-      leftComponent={
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={images.backArrow} style={styles.backImageStyle} />
-        </TouchableOpacity>
-      }
-      centerComponent={
-        <Text style={styles.eventTextStyle}>
-          {strings.leavereviewinsmall}
-        </Text>
-      }
-      rightComponent={
-        <Text onPress={createReview} style={styles.nextButtonStyle}>
-          {strings.done}
-        </Text>
-      }
-    />
-    {/* Seperator */}
-    <View style={styles.headerSeperator} />
-    <ActivityLoader visible={loading} />
-    {!loading && (
-      <ScrollView>
+  return (
+    <View style={{flex: 1}}>
+      <Header
+        leftComponent={
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image source={images.backArrow} style={styles.backImageStyle} />
+          </TouchableOpacity>
+        }
+        centerComponent={
+          <Text style={styles.eventTextStyle}>
+            {strings.leavereviewinsmall}
+          </Text>
+        }
+        rightComponent={
+          <Text onPress={createReview} style={styles.nextButtonStyle}>
+            {strings.done}
+          </Text>
+        }
+      />
+      {/* Seperator */}
+      <View style={styles.headerSeperator} />
+      <ActivityLoader visible={loading} />
+      {!loading && (
+        <ScrollView>
           <View style={styles.mainContainer}>
             {/* Title */}
             <Text style={styles.titleText}>
@@ -250,7 +251,7 @@ return (
                       : images.profilePlaceHolder
                   }
                   resizeMode={'cover'}
-                  style={{height: 45, width: 45, borderRadius:22.5}}
+                  style={{height: 45, width: 45, borderRadius: 22.5}}
                 />
               </View>
 
@@ -258,17 +259,19 @@ return (
               <Text style={styles.teamName}>{userData.full_name}</Text>
 
               {/* Reviewed Location */}
-              <Text style={styles.countryName}>{displayLocation(userData)}</Text>
+              <Text style={styles.countryName}>
+                {displayLocation(userData)}
+              </Text>
             </View>
 
             {/* Seperator */}
-            <View style={[styles.seperator,{marginVertical: 15,}]} />
+            <View style={[styles.seperator, {marginVertical: 15}]} />
 
             {/*  Rate Performance */}
 
             <View style={styles.mainContainerRate}>
               {/*    Title */}
-              <Text style={[styles.titleText,{marginBottom:14}]}>
+              <Text style={[styles.titleText, {marginBottom: 14}]}>
                 {strings.rateperformance.toUpperCase()}
               </Text>
 
@@ -297,67 +300,72 @@ return (
               ))}
 
               {/* Top Star Rating */}
-              {topStarAttributesForScorekeeper?.map((item, index) => (
-                renderReviewStar(index,item)
-              ))}
+              {topStarAttributesForScorekeeper?.map((item, index) =>
+                renderReviewStar(index, item),
+              )}
 
               {topStarAttributesForScorekeeper?.length > 0 && (
-                <View style={[styles.seperator,{marginBottom:25}]} />
+                <View style={[styles.seperator, {marginBottom: 25}]} />
               )}
 
               {/* Middle Star Rating */}
-              {middleStarAttributesForScorekeeper?.map((item, index) => (
-                renderReviewStar(index,item)
-              ))}
+              {middleStarAttributesForScorekeeper?.map((item, index) =>
+                renderReviewStar(index, item),
+              )}
 
               {middleStarAttributesForScorekeeper?.length > 0 && (
-                <View style={[styles.seperator,{marginBottom:25}]} />
+                <View style={[styles.seperator, {marginBottom: 25}]} />
               )}
 
               {/* Bottom Star Rating */}
-              {bottomStarAttributesForScorekeeper?.map((item, index) => (
-                renderReviewStar(index,item)
-              ))}
-
-              {bottomStarAttributesForScorekeeper?.length > 0 && (
-                <View style={[styles.seperator,{marginBottom:25}]} />
+              {bottomStarAttributesForScorekeeper?.map((item, index) =>
+                renderReviewStar(index, item),
               )}
 
+              {bottomStarAttributesForScorekeeper?.length > 0 && (
+                <View style={[styles.seperator, {marginBottom: 25}]} />
+              )}
             </View>
 
             {/*  Delete All Rating */}
-            <View style={{marginBottom:25, flexDirection:'row', justifyContent:'center'}}>
+            <View
+              style={{
+                marginBottom: 25,
+                flexDirection: 'row',
+                justifyContent: 'center',
+              }}>
               <Pressable
                 style={{
-                  paddingHorizontal:10,
+                  paddingHorizontal: 10,
                   paddingVertical: 3,
                   backgroundColor: colors.lightGrey,
                   borderRadius: 5,
                 }}
                 onPress={() => {
-                  removeRatings()
+                  removeRatings();
                 }}>
                 <View>
-                    <Text
-                      style={{
-                        fontFamily: fonts.Roboto,
-                        fontSize: 14,
-                        color: colors.redColorCard,
-                        lineHeight:21,
-                        fontWeight:'500'
-                      }}>
-                      {strings.deleteallrating}
-                    </Text>
+                  <Text
+                    style={{
+                      fontFamily: fonts.RMedium,
+                      fontSize: 14,
+                      color: colors.redColorCard,
+                      lineHeight: 21,
+                    }}>
+                    {strings.deleteallrating}
+                  </Text>
                 </View>
               </Pressable>
             </View>
 
             {/*  Leave a Review */}
             <View>
-              <Text style={[styles.questionTitle,{marginBottom:15}]}>{strings.leaveareview.toUpperCase()}</Text>
+              <Text style={[styles.questionTitle, {marginBottom: 15}]}>
+                {strings.leaveareview.toUpperCase()}
+              </Text>
               <Pressable
                 style={{
-                  flex: 1,                    
+                  flex: 1,
                   alignItems: 'flex-start',
                   paddingVertical: 10,
                   paddingHorizontal: 15,
@@ -369,7 +377,7 @@ return (
                     comeFrom: 'ScorekeeperReviewScreen',
                     postData: null,
                     comment: reviewsData.comment ?? '',
-                    selectedImageList: reviewsData.attachments || []
+                    selectedImageList: reviewsData.attachments || [],
                   });
                 }}>
                 <View>
@@ -385,11 +393,10 @@ return (
                   ) : (
                     <Text
                       style={{
-                        fontFamily: fonts.Roboto,
+                        fontFamily: fonts.RRegular,
                         fontSize: 16,
                         color: colors.userPostTimeColor,
-                        lineHeight:24,
-                        fontWeight:'400'
+                        lineHeight: 24,
                       }}>
                       {strings.writescorekeeperreviewplacholder}
                     </Text>
@@ -422,8 +429,8 @@ return (
               keyExtractor={(item, index) => index.toString()}
             />
           </View>
-      </ScrollView>
-    )}
-  </View>
-);
+        </ScrollView>
+      )}
+    </View>
+  );
 }

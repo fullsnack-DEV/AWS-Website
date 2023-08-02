@@ -23,7 +23,6 @@ import colors from '../../../Constants/Colors';
 import TCBorderButton from '../../../components/TCBorderButton';
 
 import TopBackgroundHeader from '../../../components/game/soccer/home/TopBackgroundHeader';
-import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Summary from '../../../components/game/soccer/home/summary/Summary';
 import Stats from '../../../components/game/soccer/home/stats/Stats';
 import Gallery from '../../../components/game/common/gallary/Gallery';
@@ -65,6 +64,7 @@ import ScorekeeperReservationStatus from '../../../Constants/ScorekeeperReservat
 import ReservationStatus from '../../../Constants/ReservationStatus';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {TAB_ITEMS} from '../../../utils/constant';
+import CustomScrollTabs from '../../../components/CustomScrollTabs';
 
 const SoccerHome = ({navigation, route}) => {
   const gameFeedFlatListRef = useRef(null);
@@ -557,11 +557,10 @@ const SoccerHome = ({navigation, route}) => {
             resetGameDetail(soccerGameId);
           }
         }}>
-        <TCScrollableProfileTabs
-          tabItem={TAB_ITEMS}
-          onChangeTab={(ChangeTab) => setCurrentTab(ChangeTab.i)}
+        <CustomScrollTabs
+          tabsItem={TAB_ITEMS}
+          setCurrentTab={(ChangeTab) => setCurrentTab(ChangeTab)}
           currentTab={currentTab}
-          renderTabContain={renderTabContain}
         />
       </TopBackgroundHeader>
     ),

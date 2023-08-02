@@ -32,8 +32,6 @@ import images from '../../../Constants/ImagePath';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';
 import GroupIcon from '../../../components/GroupIcon';
-
-import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import Verbs from '../../../Constants/Verbs';
 import {displayLocation, getTCDate} from '../../../utils';
 import BottomSheet from '../../../components/modals/BottomSheet';
@@ -42,6 +40,7 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import {getSenderInvoices} from '../../../api/Invoice';
 import AuthContext from '../../../auth/context';
 import DateFilterModal from './DatefilterModal';
+import CustomScrollTabs from '../../../components/CustomScrollTabs';
 
 export default function RecipientDetailScreen({navigation, route}) {
   const defaultRecords = [
@@ -205,7 +204,7 @@ export default function RecipientDetailScreen({navigation, route}) {
   );
 
   const tabChangePress = useCallback((changeTab) => {
-    setTabNumber(changeTab.i);
+    setTabNumber(changeTab);
   }, []);
 
   return (
@@ -449,10 +448,9 @@ export default function RecipientDetailScreen({navigation, route}) {
           </>
         ) : (
           <View style={{backgroundColor: colors.whiteColor}}>
-            <TCScrollableProfileTabs
-              tabItem={tabs}
-              tabVerticalScroll={false}
-              onChangeTab={tabChangePress}
+            <CustomScrollTabs
+              tabsItem={tabs}
+              setCurrentTab={tabChangePress}
               currentTab={tabNumber}
             />
           </View>

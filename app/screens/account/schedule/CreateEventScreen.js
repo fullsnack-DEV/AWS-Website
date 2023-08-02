@@ -1,7 +1,29 @@
-import React, {useEffect, useState, useContext, useRef, useCallback} from 'react';
-import {View, StyleSheet, TouchableOpacity, Image, Text, SafeAreaView, ScrollView, Alert, TextInput, FlatList, Platform, Pressable} from 'react-native';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  Alert,
+  TextInput,
+  FlatList,
+  Platform,
+  Pressable,
+} from 'react-native';
 import moment from 'moment';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -26,7 +48,15 @@ import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTa
 import EventVenueTogglebtn from '../../../components/Schedule/EventVenueTogglebtn';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
-import {deleteConfirmation, getTCDate, ordinal_suffix_of, getDayFromDate, countNumberOfWeekFromDay, countNumberOfWeeks, getRoundedDate} from '../../../utils';
+import {
+  deleteConfirmation,
+  getTCDate,
+  ordinal_suffix_of,
+  getDayFromDate,
+  countNumberOfWeekFromDay,
+  countNumberOfWeeks,
+  getRoundedDate,
+} from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
 import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
@@ -34,10 +64,17 @@ import uploadImages from '../../../utils/imageAction';
 import Verbs from '../../../Constants/Verbs';
 import ScreenHeader from '../../../components/ScreenHeader';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
-import {DEFAULT_LATITUDE, DEFAULT_LONGITUDE, LATITUDE_DELTA, LONGITUDE_DELTA, ModalTypes} from '../../../Constants/GeneralConstants';
+import {
+  DEFAULT_LATITUDE,
+  DEFAULT_LONGITUDE,
+  LATITUDE_DELTA,
+  LONGITUDE_DELTA,
+  ModalTypes,
+} from '../../../Constants/GeneralConstants';
 import {getSportList} from '../../../utils/sportsActivityUtils';
 import SportsListModal from '../registerPlayer/modals/SportsListModal';
 import AddressWithMapModal from '../../../components/AddressWithMap/AddressWithMapModal';
+import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
 
 export default function CreateEventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -56,9 +93,14 @@ export default function CreateEventScreen({navigation, route}) {
   const [eventFee, setEventFee] = useState('');
   const [refundPolicy, setRefundPolicy] = useState('');
   const [toggle] = useState(false);
-  const [eventStartDateTime, setEventStartdateTime] = useState(getRoundedDate(5));
-  const [eventEndDateTime, setEventEnddateTime] = useState(moment(getRoundedDate(5)).add(5, 'm').toDate());
-  const [eventUntilDateTime, setEventUntildateTime] = useState(eventEndDateTime);
+  const [eventStartDateTime, setEventStartdateTime] = useState(
+    getRoundedDate(5),
+  );
+  const [eventEndDateTime, setEventEnddateTime] = useState(
+    moment(getRoundedDate(5)).add(5, 'm').toDate(),
+  );
+  const [eventUntilDateTime, setEventUntildateTime] =
+    useState(eventEndDateTime);
   const [searchLocation, setSearchLocation] = useState('');
   const [locationDetail, setLocationDetail] = useState({
     latitude: 0.0,
@@ -105,7 +147,9 @@ export default function CreateEventScreen({navigation, route}) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
-  const [selectWeekMonth, setSelectWeekMonth] = useState(Verbs.eventRecurringEnum.Never);
+  const [selectWeekMonth, setSelectWeekMonth] = useState(
+    Verbs.eventRecurringEnum.Never,
+  );
   const [backgroundThumbnail, setBackgroundThumbnail] = useState();
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
   const venueInputRef = useRef();
@@ -123,6 +167,9 @@ export default function CreateEventScreen({navigation, route}) {
     longitudeDelta: LONGITUDE_DELTA,
   });
 
+  const [showCurrencyModal, setShowCurrencyModal] = useState(false);
+  const [currency, setSelectedCurrency] = useState('');
+
   const handleStartDatePress = (date) => {
     const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date;
     setEventStartdateTime(startDateTime);
@@ -130,7 +177,9 @@ export default function CreateEventScreen({navigation, route}) {
     const unitDate = eventUntilDateTime;
 
     if (endDateTime.getTime() <= startDateTime.getTime()) {
-      endDateTime = toggle ? date.setHours(23, 59, 59, 0) : moment(startDateTime).add(5, 'm').toDate();
+      endDateTime = toggle
+        ? date.setHours(23, 59, 59, 0)
+        : moment(startDateTime).add(5, 'm').toDate();
     }
 
     setEventEnddateTime(endDateTime);
@@ -251,7 +300,19 @@ export default function CreateEventScreen({navigation, route}) {
           marginBottom: 15,
         }}>
         <Text style={styles.languageList}>{item.text}</Text>
-        <View style={styles.checkbox}>{(whoOption === see && whoCanSeeOption.value === item?.value) || (whoOption === join && whoCanJoinOption.value === item?.value) || (whoOption === posted && eventPosted.value === item?.value) || (whoOption === invite && whoCanInviteOption.value === item?.value) ? <Image source={images.radioCheckYellow} style={styles.checkboxImg} /> : <Image source={images.radioUnselect} style={styles.checkboxImg} />}</View>
+        <View style={styles.checkbox}>
+          {(whoOption === see && whoCanSeeOption.value === item?.value) ||
+          (whoOption === join && whoCanJoinOption.value === item?.value) ||
+          (whoOption === posted && eventPosted.value === item?.value) ||
+          (whoOption === invite && whoCanInviteOption.value === item?.value) ? (
+            <Image
+              source={images.radioCheckYellow}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -268,10 +329,16 @@ export default function CreateEventScreen({navigation, route}) {
 
   const renderSeeGroups = ({item, index}) => (
     <GroupEventItems
-      eventImageSource={item.entity_type === Verbs.entityTypeTeam ? images.teamPatch : images.clubPatch}
+      eventImageSource={
+        item.entity_type === Verbs.entityTypeTeam
+          ? images.teamPatch
+          : images.clubPatch
+      }
       eventText={item.group_name}
       groupImageSource={getImage(item)}
-      checkBoxImage={item.isSelected ? images.orangeCheckBox : images.uncheckWhite}
+      checkBoxImage={
+        item.isSelected ? images.orangeCheckBox : images.uncheckWhite
+      }
       onCheckBoxPress={() => {
         groupsSeeList[index].isSelected = !groupsSeeList[index].isSelected;
         setGroupsSeeList([...groupsSeeList]);
@@ -282,10 +349,16 @@ export default function CreateEventScreen({navigation, route}) {
 
   const renderJoinGroups = ({item, index}) => (
     <GroupEventItems
-      eventImageSource={item.entity_type === Verbs.entityTypeTeam ? images.teamPatch : images.clubPatch}
+      eventImageSource={
+        item.entity_type === Verbs.entityTypeTeam
+          ? images.teamPatch
+          : images.clubPatch
+      }
       eventText={item.group_name}
       groupImageSource={getImage(item)}
-      checkBoxImage={item.isSelected ? images.orangeCheckBox : images.uncheckWhite}
+      checkBoxImage={
+        item.isSelected ? images.orangeCheckBox : images.uncheckWhite
+      }
       onCheckBoxPress={() => {
         groupsJoinList[index].isSelected = !groupsJoinList[index].isSelected;
         setGroupsJoinList([...groupsJoinList]);
@@ -432,13 +505,22 @@ export default function CreateEventScreen({navigation, route}) {
     }
 
     return true;
-  }, [eventDescription, eventEndDateTime, eventStartDateTime, eventTitle, maxAttendees, minAttendees, selectedSport.sport]);
+  }, [
+    eventDescription,
+    eventEndDateTime,
+    eventStartDateTime,
+    eventTitle,
+    maxAttendees,
+    minAttendees,
+    selectedSport.sport,
+  ]);
 
   const createEventDone = (data) => {
     const arr = [...data];
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
-    const entityRole = entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
+    const entityRole =
+      entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
 
     let rule;
     if (selectWeekMonth === Verbs.eventRecurringEnum.Daily) {
@@ -446,11 +528,15 @@ export default function CreateEventScreen({navigation, route}) {
     } else if (selectWeekMonth === Verbs.eventRecurringEnum.Weekly) {
       rule = 'FREQ=WEEKLY';
     } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfMonth) {
-      rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(eventStartDateTime).substring(0, 2).toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
+      rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(eventStartDateTime)
+        .substring(0, 2)
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
     } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfMonth) {
       rule = `FREQ=MONTHLY;BYMONTHDAY=${eventStartDateTime.getDate()}`;
     } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfYear) {
-      rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(eventStartDateTime).substring(0, 2).toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
+      rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(eventStartDateTime)
+        .substring(0, 2)
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
     } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfYear) {
       rule = `FREQ=YEARLY;BYMONTHDAY=${eventStartDateTime.getDate()};BYMONTH=${eventStartDateTime.getMonth()}`;
     }
@@ -470,8 +556,7 @@ export default function CreateEventScreen({navigation, route}) {
       })
       .catch((e) => {
         setloading(false);
-        console.log('Error ::--', e);
-        Alert.alert('', e.messages);
+        Alert.alert(strings.alertmessagetitle, e.messages);
       });
   };
 
@@ -479,7 +564,10 @@ export default function CreateEventScreen({navigation, route}) {
     if (checkValidation()) {
       setloading(true);
       const entity = authContext.entity;
-      const entityRole = entity.role === Verbs.entityTypeUser ? Verbs.entityTypeUsers : Verbs.entityTypeGroups;
+      const entityRole =
+        entity.role === Verbs.entityTypeUser
+          ? Verbs.entityTypeUsers
+          : Verbs.entityTypeGroups;
       const data = [
         {
           title: eventTitle,
@@ -509,10 +597,15 @@ export default function CreateEventScreen({navigation, route}) {
           refund_policy: refundPolicy,
           min_attendees: Number(minAttendees),
           max_attendees: Number(maxAttendees),
-          entity_type: authContext.entity.role === Verbs.entityTypeUser ? Verbs.entityTypePlayer : authContext.entity.role,
+          entity_type:
+            authContext.entity.role === Verbs.entityTypeUser
+              ? Verbs.entityTypePlayer
+              : authContext.entity.role,
           participants: [
             {
-              entity_id: authContext.entity.obj.user_id || authContext.entity.obj.group_id,
+              entity_id:
+                authContext.entity.obj.user_id ||
+                authContext.entity.obj.group_id,
               entity_type: entityRole,
             },
           ],
@@ -551,7 +644,6 @@ export default function CreateEventScreen({navigation, route}) {
 
       if (backgroundImageChanged) {
         const imageArray = [];
-        console.log('#######', imageArray);
         imageArray.push({path: backgroundThumbnail});
         uploadImages(imageArray, authContext)
           .then((responses) => {
@@ -614,7 +706,10 @@ export default function CreateEventScreen({navigation, route}) {
   };
 
   const getOptions = () => {
-    if (authContext.entity.role === Verbs.entityTypeUser || authContext.entity.role === Verbs.entityTypePlayer) {
+    if (
+      authContext.entity.role === Verbs.entityTypeUser ||
+      authContext.entity.role === Verbs.entityTypePlayer
+    ) {
       if (whoOption === see) {
         return [
           {
@@ -679,17 +774,33 @@ export default function CreateEventScreen({navigation, route}) {
         ];
       }
     }
-    if (authContext.entity.role === Verbs.entityTypeTeam || authContext.entity.role === Verbs.entityTypeClub) {
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam ||
+      authContext.entity.role === Verbs.entityTypeClub
+    ) {
       if (whoOption === see) {
-        return [strings.everyoneTitleText, strings.followerTitleText, strings.membersTitle, format(strings.onlyAccount, authContext.entity.role)];
+        return [
+          strings.everyoneTitleText,
+          strings.followerTitleText,
+          strings.membersTitle,
+          format(strings.onlyAccount, authContext.entity.role),
+        ];
       }
 
       if (whoOption === join) {
-        return [strings.everyoneTitleText, strings.followerTitleText, strings.membersTitle, format(strings.onlyOrganizer, authContext.entity.role)];
+        return [
+          strings.everyoneTitleText,
+          strings.followerTitleText,
+          strings.membersTitle,
+          format(strings.onlyOrganizer, authContext.entity.role),
+        ];
       }
 
       if (whoOption === invite) {
-        return [strings.attendeeRadioText, format(strings.onlyOption, authContext.entity.role)];
+        return [
+          strings.attendeeRadioText,
+          format(strings.onlyOption, authContext.entity.role),
+        ];
       }
     }
     return [];
@@ -713,7 +824,17 @@ export default function CreateEventScreen({navigation, route}) {
       <TCKeyboardView>
         <ScrollView bounces={false} nestedScrollEnabled={true}>
           <View style={{paddingTop: 10, paddingHorizontal: 10}}>
-            <EventBackgroundPhoto isEdit={!!backgroundThumbnail} isPreview={false} imageURL={backgroundThumbnail ? {uri: backgroundThumbnail} : images.backgroundGrayPlceholder} containerStyle={{marginBottom: 35}} onPress={() => onBGImageClicked()} />
+            <EventBackgroundPhoto
+              isEdit={!!backgroundThumbnail}
+              isPreview={false}
+              imageURL={
+                backgroundThumbnail
+                  ? {uri: backgroundThumbnail}
+                  : images.backgroundGrayPlceholder
+              }
+              containerStyle={{marginBottom: 35}}
+              onPress={() => onBGImageClicked()}
+            />
           </View>
           <View style={{paddingHorizontal: 15}}>
             <EventTextInputItem
@@ -729,7 +850,8 @@ export default function CreateEventScreen({navigation, route}) {
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
-                {strings.sportCreateEvent} <Text style={{color: colors.darkThemeColor}}> *</Text>
+                {strings.sportCreateEvent}{' '}
+                <Text style={{color: colors.darkThemeColor}}> *</Text>
               </Text>
               <TouchableOpacity
                 onPress={() => {
@@ -761,12 +883,37 @@ export default function CreateEventScreen({navigation, route}) {
             />
 
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.organizerTitle}</Text>
-              <TCProfileView type="medium" name={authContext.entity.obj.group_name ?? authContext.entity.obj.full_name} image={authContext.entity.obj.thumbnail ? {uri: authContext.entity.obj.thumbnail} : images.teamPH} alignSelf={'flex-start'} marginTop={10} />
+              <Text style={styles.headerTextStyle}>
+                {strings.organizerTitle}
+              </Text>
+              <TCProfileView
+                type="medium"
+                name={
+                  authContext.entity.obj.group_name ??
+                  authContext.entity.obj.full_name
+                }
+                image={
+                  authContext.entity.obj.thumbnail
+                    ? {uri: authContext.entity.obj.thumbnail}
+                    : images.teamPH
+                }
+                alignSelf={'flex-start'}
+                marginTop={10}
+              />
             </View>
 
-            <EventItemRender containerStyle={{position: 'relative', marginBottom: 35}} headerTextStyle={{fontSize: 16}} title={strings.place} isRequired={true}>
-              <EventVenueTogglebtn offline={is_Offline} firstTabTitle={strings.offline} secondTabTitle={strings.online} onFirstTabPress={() => setIsOffline(true)} onSecondTabPress={() => setIsOffline(false)} />
+            <EventItemRender
+              containerStyle={{position: 'relative', marginBottom: 35}}
+              headerTextStyle={{fontSize: 16}}
+              title={strings.place}
+              isRequired={true}>
+              <EventVenueTogglebtn
+                offline={is_Offline}
+                firstTabTitle={strings.offline}
+                secondTabTitle={strings.online}
+                onFirstTabPress={() => setIsOffline(true)}
+                onSecondTabPress={() => setIsOffline(false)}
+              />
               {is_Offline ? (
                 <>
                   <TextInput
@@ -826,7 +973,9 @@ export default function CreateEventScreen({navigation, route}) {
 
                   <AddressWithMapModal
                     visibleLocationModal={visibleLocationModal}
-                    setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
+                    setVisibleAddressModalhandler={() =>
+                      setVisibleLocationModal(false)
+                    }
                     onAddressSelect={(location) => {
                       onSelectAddress(location);
                     }}
@@ -851,17 +1000,43 @@ export default function CreateEventScreen({navigation, route}) {
               )}
             </EventItemRender>
 
-            <EventItemRender title={strings.timeTitle} isRequired={true} headerTextStyle={{marginBottom: 15, fontSize: 16}}>
+            <EventItemRender
+              title={strings.timeTitle}
+              isRequired={true}
+              headerTextStyle={{marginBottom: 15, fontSize: 16}}>
               <EventTimeSelectItem
                 title={strings.starts}
                 toggle={!toggle}
-                date={eventStartDateTime ? moment(eventStartDateTime).format('ll') : moment(new Date()).format('ll')}
-                time={eventStartDateTime ? moment(eventStartDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')}
+                date={
+                  eventStartDateTime
+                    ? moment(eventStartDateTime).format('ll')
+                    : moment(new Date()).format('ll')
+                }
+                time={
+                  eventStartDateTime
+                    ? moment(eventStartDateTime).format('h:mm a')
+                    : moment(new Date()).format('h:mm a')
+                }
                 onDatePress={() => {
                   setStartDateVisible(!startDateVisible);
                 }}
               />
-              <EventTimeSelectItem title={strings.ends} toggle={!toggle} date={eventEndDateTime ? moment(eventEndDateTime).format('ll') : moment(new Date()).format('ll')} time={eventEndDateTime ? moment(eventEndDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')} containerStyle={{marginBottom: 8}} onDatePress={() => setEndDateVisible(!endDateVisible)} />
+              <EventTimeSelectItem
+                title={strings.ends}
+                toggle={!toggle}
+                date={
+                  eventEndDateTime
+                    ? moment(eventEndDateTime).format('ll')
+                    : moment(new Date()).format('ll')
+                }
+                time={
+                  eventEndDateTime
+                    ? moment(eventEndDateTime).format('h:mm a')
+                    : moment(new Date()).format('h:mm a')
+                }
+                containerStyle={{marginBottom: 8}}
+                onDatePress={() => setEndDateVisible(!endDateVisible)}
+              />
 
               <View
                 style={{
@@ -880,7 +1055,10 @@ export default function CreateEventScreen({navigation, route}) {
                       textDecorationStyle: 'solid',
                       textDecorationColor: colors.darkGrayColor,
                     }}>
-                    {Intl.DateTimeFormat()?.resolvedOptions().timeZone.split('/').pop()}
+                    {Intl.DateTimeFormat()
+                      ?.resolvedOptions()
+                      .timeZone.split('/')
+                      .pop()}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -894,19 +1072,35 @@ export default function CreateEventScreen({navigation, route}) {
                     value: Verbs.eventRecurringEnum.Weekly,
                   },
                   {
-                    label: format(strings.monthlyOnText, `${countNumberOfWeekFromDay(eventStartDateTime)} ${getDayFromDate(eventStartDateTime)}`),
+                    label: format(
+                      strings.monthlyOnText,
+                      `${countNumberOfWeekFromDay(
+                        eventStartDateTime,
+                      )} ${getDayFromDate(eventStartDateTime)}`,
+                    ),
                     value: Verbs.eventRecurringEnum.WeekOfMonth,
                   },
                   {
-                    label: format(strings.monthlyOnDayText, ordinal_suffix_of(eventStartDateTime.getDate())),
+                    label: format(
+                      strings.monthlyOnDayText,
+                      ordinal_suffix_of(eventStartDateTime.getDate()),
+                    ),
                     value: Verbs.eventRecurringEnum.DayOfMonth,
                   },
                   {
-                    label: format(strings.yearlyOnText, `${countNumberOfWeekFromDay(eventStartDateTime)} ${getDayFromDate(eventStartDateTime)}`),
+                    label: format(
+                      strings.yearlyOnText,
+                      `${countNumberOfWeekFromDay(
+                        eventStartDateTime,
+                      )} ${getDayFromDate(eventStartDateTime)}`,
+                    ),
                     value: Verbs.eventRecurringEnum.WeekOfYear,
                   },
                   {
-                    label: format(strings.yearlyOnDayText, ordinal_suffix_of(eventStartDateTime.getDate())),
+                    label: format(
+                      strings.yearlyOnDayText,
+                      ordinal_suffix_of(eventStartDateTime.getDate()),
+                    ),
                     value: Verbs.eventRecurringEnum.DayOfYear,
                   },
                 ]}
@@ -915,17 +1109,52 @@ export default function CreateEventScreen({navigation, route}) {
                 onValueChange={(value) => {
                   setSelectWeekMonth(value);
                 }}
+                titleStyle={{color: colors.userPostTimeColor}}
               />
-              {selectWeekMonth !== Verbs.eventRecurringEnum.Never && <EventTimeSelectItem title={strings.until} toggle={!toggle} date={eventUntilDateTime ? moment(eventUntilDateTime).format('ll') : moment(new Date()).format('ll')} time={eventUntilDateTime ? moment(eventUntilDateTime).format('h:mm a') : moment(new Date()).format('h:mm a')} containerStyle={{marginBottom: 12}} onDatePress={() => setUntilDateVisible(!untilDateVisible)} />}
+              {selectWeekMonth !== Verbs.eventRecurringEnum.Never && (
+                <EventTimeSelectItem
+                  title={strings.until}
+                  toggle={!toggle}
+                  date={
+                    eventUntilDateTime
+                      ? moment(eventUntilDateTime).format('ll')
+                      : moment(new Date()).format('ll')
+                  }
+                  time={
+                    eventUntilDateTime
+                      ? moment(eventUntilDateTime).format('h:mm a')
+                      : moment(new Date()).format('h:mm a')
+                  }
+                  containerStyle={{marginBottom: 12}}
+                  onDatePress={() => setUntilDateVisible(!untilDateVisible)}
+                />
+              )}
             </EventItemRender>
 
-            <EventItemRender containerStyle={{marginTop: -40, marginBottom: 10}} title={''}>
-              <Text style={styles.availableSubHeader}>{strings.availableSubTitle}</Text>
-              <BlockAvailableTabView blocked={is_Blocked} firstTabTitle={strings.blocked} secondTabTitle={strings.availableText} onFirstTabPress={() => setIsBlocked(true)} onSecondTabPress={() => setIsBlocked(false)} startGradientColor={colors.grayBackgroundColor} endGradientColor={colors.grayBackgroundColor} activeEventPricacy={styles.activeEventPricacy} inactiveEventPricacy={styles.inactiveEventPricacy} inactiveEventPrivacyText={styles.inactiveEventPrivacyText} />
+            <EventItemRender
+              containerStyle={{marginTop: -40, marginBottom: 10}}
+              title={''}>
+              <Text style={styles.availableSubHeader}>
+                {strings.availableSubTitle}
+              </Text>
+              <BlockAvailableTabView
+                blocked={is_Blocked}
+                firstTabTitle={strings.blocked}
+                secondTabTitle={strings.availableText}
+                onFirstTabPress={() => setIsBlocked(true)}
+                onSecondTabPress={() => setIsBlocked(false)}
+                startGradientColor={colors.grayBackgroundColor}
+                endGradientColor={colors.grayBackgroundColor}
+                activeEventPricacy={styles.activeEventPricacy}
+                inactiveEventPricacy={styles.inactiveEventPricacy}
+                inactiveEventPrivacyText={styles.inactiveEventPrivacyText}
+              />
             </EventItemRender>
 
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.eventFeeTitle}</Text>
+              <Text style={styles.headerTextStyle}>
+                {strings.eventFeeTitle}
+              </Text>
               <View style={[styles.feeContainer, {marginTop: 10}]}>
                 <TextInput
                   style={styles.eventFeeStyle}
@@ -936,24 +1165,30 @@ export default function CreateEventScreen({navigation, route}) {
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />
-                <Text style={styles.currencyStyle}>{strings.defaultCurrency}</Text>
+                <Text style={styles.currencyStyle}>
+                  {currency || strings.defaultCurrency}
+                </Text>
               </View>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: fonts.RRegular,
-                  textDecorationLine: 'underline',
-                  textAlign: 'right',
-                  paddingHorizontal: 5,
-                  marginTop: 5,
-                  color: colors.lightBlackColor,
-                }}>
-                {strings.changeCurrency}
-              </Text>
+              <TouchableOpacity onPress={() => setShowCurrencyModal(true)}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: fonts.RRegular,
+                    textDecorationLine: 'underline',
+                    textAlign: 'right',
+                    paddingHorizontal: 5,
+                    marginTop: 5,
+                    color: colors.lightBlackColor,
+                  }}>
+                  {strings.changeCurrency}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.refundPolicyTitle}</Text>
+              <Text style={styles.headerTextStyle}>
+                {strings.refundPolicyTitle}
+              </Text>
               <Text style={[styles.subTitleText, {marginTop: 10}]}>
                 {strings.attendeesMustRefundedText}
                 {strings.readPaymentPolicyText}
@@ -971,7 +1206,16 @@ export default function CreateEventScreen({navigation, route}) {
                   refundPolicyInputRef.current.focus();
                 }}
                 style={styles.detailsContainer}>
-                <TextInput ref={refundPolicyInputRef} placeholder={strings.additionalRefundPolicy} style={styles.detailsInputStyle} onChangeText={(value) => setRefundPolicy(value)} value={refundPolicy} multiline textAlignVertical={'top'} placeholderTextColor={colors.userPostTimeColor} />
+                <TextInput
+                  ref={refundPolicyInputRef}
+                  placeholder={strings.additionalRefundPolicy}
+                  style={styles.detailsInputStyle}
+                  onChangeText={(value) => setRefundPolicy(value)}
+                  value={refundPolicy}
+                  multiline
+                  textAlignVertical={'top'}
+                  placeholderTextColor={colors.userPostTimeColor}
+                />
               </Pressable>
             </View>
 
@@ -980,8 +1224,15 @@ export default function CreateEventScreen({navigation, route}) {
                 {strings.numberOfAttend}
                 {/* <Text style={styles.opetionalTextStyle}>{strings.optional}</Text> */}
               </Text>
-              <Text style={styles.subTitleText}>{strings.eventMayBeCancelledByOrganizerText}</Text>
-              <NumberOfAttendees onChangeMinText={setMinAttendees} onChangeMaxText={setMaxAttendees} min={minAttendees} max={maxAttendees} />
+              <Text style={styles.subTitleText}>
+                {strings.eventMayBeCancelledByOrganizerText}
+              </Text>
+              <NumberOfAttendees
+                onChangeMinText={setMinAttendees}
+                onChangeMaxText={setMaxAttendees}
+                min={minAttendees}
+                max={maxAttendees}
+              />
             </View>
 
             <View style={styles.containerStyle}>
@@ -992,31 +1243,52 @@ export default function CreateEventScreen({navigation, route}) {
                   setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>{whoCanSeeOption.text}</Text>
-                  <Image source={images.dropDownArrow} style={styles.downArrowWhoCan} />
+                  <Text style={styles.textInputDropStyle}>
+                    {whoCanSeeOption.text}
+                  </Text>
+                  <Image
+                    source={images.dropDownArrow}
+                    style={styles.downArrowWhoCan}
+                  />
                 </View>
               </TouchableOpacity>
             </View>
 
-            {whoCanSeeOption.value === indexThree && authContext.entity.role === Verbs.entityTypeUser && (
-              <View>
-                <View style={styles.allStyle}>
-                  <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsAll(!isAll);
-                      const groups = groupsSeeList.map((obj) => ({
-                        ...obj,
-                        isSelected: !isAll,
-                      }));
-                      setGroupsSeeList([...groups]);
-                    }}>
-                    <Image source={isAll ? images.orangeCheckBox : images.uncheckWhite} style={styles.imageStyle} />
-                  </TouchableOpacity>
+            {whoCanSeeOption.value === indexThree &&
+              authContext.entity.role === Verbs.entityTypeUser && (
+                <View>
+                  <View style={styles.allStyle}>
+                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsAll(!isAll);
+                        const groups = groupsSeeList.map((obj) => ({
+                          ...obj,
+                          isSelected: !isAll,
+                        }));
+                        setGroupsSeeList([...groups]);
+                      }}>
+                      <Image
+                        source={
+                          isAll ? images.orangeCheckBox : images.uncheckWhite
+                        }
+                        style={styles.imageStyle}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <FlatList
+                    scrollEnabled={false}
+                    data={[...groupsSeeList]}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => (
+                      <View style={{height: wp('4%')}} />
+                    )}
+                    renderItem={renderSeeGroups}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.listStyle}
+                  />
                 </View>
-                <FlatList scrollEnabled={false} data={[...groupsSeeList]} showsVerticalScrollIndicator={false} ItemSeparatorComponent={() => <View style={{height: wp('4%')}} />} renderItem={renderSeeGroups} keyExtractor={(item, index) => index.toString()} style={styles.listStyle} />
-              </View>
-            )}
+              )}
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>
@@ -1026,30 +1298,51 @@ export default function CreateEventScreen({navigation, route}) {
                   setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>{whoCanJoinOption.text}</Text>
-                  <Image source={images.dropDownArrow} style={styles.downArrowWhoCan} />
+                  <Text style={styles.textInputDropStyle}>
+                    {whoCanJoinOption.text}
+                  </Text>
+                  <Image
+                    source={images.dropDownArrow}
+                    style={styles.downArrowWhoCan}
+                  />
                 </View>
               </TouchableOpacity>
             </View>
-            {whoCanJoinOption.value === 2 && authContext.entity.role === Verbs.entityTypeUser && (
-              <View>
-                <View style={styles.allStyle}>
-                  <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsAll(!isAll);
-                      const groups = groupsJoinList.map((obj) => ({
-                        ...obj,
-                        isSelected: !isAll,
-                      }));
-                      setGroupsJoinList([...groups]);
-                    }}>
-                    <Image source={isAll ? images.orangeCheckBox : images.uncheckWhite} style={styles.imageStyle} />
-                  </TouchableOpacity>
+            {whoCanJoinOption.value === 2 &&
+              authContext.entity.role === Verbs.entityTypeUser && (
+                <View>
+                  <View style={styles.allStyle}>
+                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsAll(!isAll);
+                        const groups = groupsJoinList.map((obj) => ({
+                          ...obj,
+                          isSelected: !isAll,
+                        }));
+                        setGroupsJoinList([...groups]);
+                      }}>
+                      <Image
+                        source={
+                          isAll ? images.orangeCheckBox : images.uncheckWhite
+                        }
+                        style={styles.imageStyle}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <FlatList
+                    scrollEnabled={false}
+                    data={[...groupsJoinList]}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => (
+                      <View style={{height: wp('4%')}} />
+                    )}
+                    renderItem={renderJoinGroups}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.listStyle}
+                  />
                 </View>
-                <FlatList scrollEnabled={false} data={[...groupsJoinList]} showsVerticalScrollIndicator={false} ItemSeparatorComponent={() => <View style={{height: wp('4%')}} />} renderItem={renderJoinGroups} keyExtractor={(item, index) => index.toString()} style={styles.listStyle} />
-              </View>
-            )}
+              )}
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanInvite}</Text>
@@ -1059,30 +1352,51 @@ export default function CreateEventScreen({navigation, route}) {
                   setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>{whoCanInviteOption.text}</Text>
-                  <Image source={images.dropDownArrow} style={styles.downArrowWhoCan} />
+                  <Text style={styles.textInputDropStyle}>
+                    {whoCanInviteOption.text}
+                  </Text>
+                  <Image
+                    source={images.dropDownArrow}
+                    style={styles.downArrowWhoCan}
+                  />
                 </View>
               </TouchableOpacity>
             </View>
-            {whoCanInviteOption.value === 2 && authContext.entity.role === Verbs.entityTypeUser && (
-              <View>
-                <View style={styles.allStyle}>
-                  <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsAll(!isAll);
-                      const groups = groupsSeeList.map((obj) => ({
-                        ...obj,
-                        isSelected: !isAll,
-                      }));
-                      setGroupsSeeList([...groups]);
-                    }}>
-                    <Image source={isAll ? images.orangeCheckBox : images.uncheckWhite} style={styles.imageStyle} />
-                  </TouchableOpacity>
+            {whoCanInviteOption.value === 2 &&
+              authContext.entity.role === Verbs.entityTypeUser && (
+                <View>
+                  <View style={styles.allStyle}>
+                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsAll(!isAll);
+                        const groups = groupsSeeList.map((obj) => ({
+                          ...obj,
+                          isSelected: !isAll,
+                        }));
+                        setGroupsSeeList([...groups]);
+                      }}>
+                      <Image
+                        source={
+                          isAll ? images.orangeCheckBox : images.uncheckWhite
+                        }
+                        style={styles.imageStyle}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <FlatList
+                    scrollEnabled={false}
+                    data={[...groupsSeeList]}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => (
+                      <View style={{height: wp('4%')}} />
+                    )}
+                    renderItem={renderSeeGroups}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.listStyle}
+                  />
                 </View>
-                <FlatList scrollEnabled={false} data={[...groupsSeeList]} showsVerticalScrollIndicator={false} ItemSeparatorComponent={() => <View style={{height: wp('4%')}} />} renderItem={renderSeeGroups} keyExtractor={(item, index) => index.toString()} style={styles.listStyle} />
-              </View>
-            )}
+              )}
 
             <View style={styles.containerStyle}>
               <View style={{flexDirection: 'row'}}>
@@ -1101,15 +1415,52 @@ export default function CreateEventScreen({navigation, route}) {
                       });
                     }
                   }}>
-                  <Image source={eventPosted.value === 1 ? images.yellowCheckBox : images.uncheckWhite} style={styles.checkboxPostImg} resizeMode={'contain'} />
+                  <Image
+                    source={
+                      eventPosted.value === 1
+                        ? images.yellowCheckBox
+                        : images.uncheckWhite
+                    }
+                    style={styles.checkboxPostImg}
+                    resizeMode={'contain'}
+                  />
                 </TouchableOpacity>
-                <Text style={[styles.allDayText, {flex: 1, flexWrap: 'wrap'}]}>{strings.eventPostCreate}</Text>
+                <Text style={[styles.allDayText, {flex: 1, flexWrap: 'wrap'}]}>
+                  {strings.eventPostCreate}
+                </Text>
               </View>
             </View>
 
-            <DateTimePickerView date={eventStartDateTime} visible={startDateVisible} onDone={handleStartDatePress} onCancel={handleCancelPress} onHide={handleCancelPress} minimumDate={getRoundedDate(5)} minutesGap={5} mode={toggle ? 'date' : 'datetime'} />
-            <DateTimePickerView date={eventEndDateTime} visible={endDateVisible} onDone={handleEndDatePress} onCancel={handleCancelPress} onHide={handleCancelPress} minimumDate={moment(eventStartDateTime).add(5, 'm').toDate()} minutesGap={5} mode={toggle ? 'date' : 'datetime'} />
-            <DateTimePickerView date={eventUntilDateTime} visible={untilDateVisible} onDone={handleUntilDatePress} onCancel={handleCancelPress} onHide={handleCancelPress} minimumDate={moment(eventEndDateTime).add(5, 'm').toDate()} minutesGap={5} mode={toggle ? 'date' : 'datetime'} />
+            <DateTimePickerView
+              date={eventStartDateTime}
+              visible={startDateVisible}
+              onDone={handleStartDatePress}
+              onCancel={handleCancelPress}
+              onHide={handleCancelPress}
+              minimumDate={getRoundedDate(5)}
+              minutesGap={5}
+              mode={toggle ? 'date' : 'datetime'}
+            />
+            <DateTimePickerView
+              date={eventEndDateTime}
+              visible={endDateVisible}
+              onDone={handleEndDatePress}
+              onCancel={handleCancelPress}
+              onHide={handleCancelPress}
+              minimumDate={moment(eventStartDateTime).add(5, 'm').toDate()}
+              minutesGap={5}
+              mode={toggle ? 'date' : 'datetime'}
+            />
+            <DateTimePickerView
+              date={eventUntilDateTime}
+              visible={untilDateVisible}
+              onDone={handleUntilDatePress}
+              onCancel={handleCancelPress}
+              onHide={handleCancelPress}
+              minimumDate={moment(eventEndDateTime).add(5, 'm').toDate()}
+              minutesGap={5}
+              mode={toggle ? 'date' : 'datetime'}
+            />
           </View>
         </ScrollView>
       </TCKeyboardView>
@@ -1124,6 +1475,7 @@ export default function CreateEventScreen({navigation, route}) {
           setSelectedSport(sport);
           setVisibleSportsModal(false);
         }}
+        rightButtonText={strings.apply}
       />
 
       <CustomModalWrapper
@@ -1135,7 +1487,12 @@ export default function CreateEventScreen({navigation, route}) {
           padding: 15,
           marginBottom: Platform.OS === 'ios' ? 35 : 0,
         }}>
-        <FlatList data={getOptions()} renderItem={renderWhoCan} showsVerticalScrollIndicator={false} keyExtractor={(item, index) => index.toString()} />
+        <FlatList
+          data={getOptions()}
+          renderItem={renderWhoCan}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => index.toString()}
+        />
       </CustomModalWrapper>
 
       <ActionSheet
@@ -1154,7 +1511,12 @@ export default function CreateEventScreen({navigation, route}) {
       <ActionSheet
         ref={actionSheetWithDelete}
         // title={'News Feed Post'}
-        options={[strings.camera, strings.album, strings.deleteTitle, strings.cancelTitle]}
+        options={[
+          strings.camera,
+          strings.album,
+          strings.deleteTitle,
+          strings.cancelTitle,
+        ]}
         cancelButtonIndex={3}
         destructiveButtonIndex={2}
         onPress={(index) => {
@@ -1163,8 +1525,21 @@ export default function CreateEventScreen({navigation, route}) {
           } else if (index === 1) {
             openImagePicker(750, 348);
           } else if (index === 2) {
-            deleteConfirmation(strings.appName, strings.deleteConfirmationText, () => deleteImage());
+            deleteConfirmation(
+              strings.appName,
+              strings.deleteConfirmationText,
+              () => deleteImage(),
+            );
           }
+        }}
+      />
+      <CurrencyModal
+        isVisible={showCurrencyModal}
+        closeList={() => setShowCurrencyModal(false)}
+        selectedcurrency={currency}
+        onNext={(item) => {
+          setSelectedCurrency(item);
+          setShowCurrencyModal(false);
         }}
       />
     </SafeAreaView>

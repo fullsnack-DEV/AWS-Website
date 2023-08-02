@@ -10,7 +10,7 @@ import MessageInviteScreen from '../screens/message/MessageInviteScreen';
 import MessageNewGroupScreen from '../screens/message/MessageNewGroupScreen';
 // import HomeScreen from '../screens/home/HomeScreen';
 import MessageEditGroupScreen from '../screens/message/MessageEditGroupScreen';
-import MessageSearchScreen from '../screens/message/MessageSearchScreen';
+import MessageSearchScreen from '../screens/message/search/MessageSearchScreen';
 import MessageEditInviteeScreen from '../screens/message/MessageEditInviteeScreen';
 // import SearchScreen from '../screens/search/SearchScreen';
 // // import MessageChat from '../components/message/MessageChat';

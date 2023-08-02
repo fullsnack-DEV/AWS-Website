@@ -72,7 +72,7 @@ export const prepareChannelId = (entityId, inviteeId) => {
   return `${entity_id}${invitee_id}`;
 };
 
-export const getChannelAvatar = (channel = {}, currentEntityId = '') => {
+export const getChannelAvatar = (channel = {}, streamUserId = '') => {
   if (channel.data.image) {
     return [
       {
@@ -81,7 +81,7 @@ export const getChannelAvatar = (channel = {}, currentEntityId = '') => {
       },
     ];
   }
-  const membersList = getChannelMembers(channel, currentEntityId);
+  const membersList = getChannelMembers(channel, streamUserId);
 
   let profiles = [];
   if (membersList.length === 0) {
@@ -95,16 +95,16 @@ export const getChannelAvatar = (channel = {}, currentEntityId = '') => {
   return [...profiles];
 };
 
-export const getChannelName = (channel = {}, currentEntityId = '') => {
+export const getChannelName = (channel = {}, streamUserId = '') => {
   const {data} = channel;
   if (
     data?.channel_type === 'Auto' ||
-    (data.group_type === 'General' && data.name)
+    (data?.group_type === 'General' && data.name)
   ) {
     return data.name;
   }
 
-  const members = getChannelMembers(channel, currentEntityId);
+  const members = getChannelMembers(channel, streamUserId);
   let channelName = '';
   if (members.length === 1) {
     channelName = members[0].memberName;
@@ -139,12 +139,12 @@ export const getLastMessageTime = (channel = {}) => {
   return moment(data.updated_at).format('DD MMM');
 };
 
-export const getChannelMembers = (channel = {}, currentEntityId = '') => {
+export const getChannelMembers = (channel = {}, streamUserId = '') => {
   const {state} = channel;
   const keys = Object.keys(state.members);
 
   const admins = keys.filter(
-    (memberId) => memberId.includes('@') && !memberId.includes(currentEntityId),
+    (memberId) => memberId.includes('@') && memberId !== streamUserId,
   );
 
   const groupIds = [];
@@ -186,7 +186,7 @@ export const getChannelMembers = (channel = {}, currentEntityId = '') => {
     if (
       !memberId.includes('@') &&
       !str.includes(memberId) &&
-      memberId !== currentEntityId
+      memberId !== streamUserId
     ) {
       const obj = {
         profiles: [

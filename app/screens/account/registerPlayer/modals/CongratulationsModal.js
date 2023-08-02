@@ -598,7 +598,6 @@ const styles = StyleSheet.create({
   },
   congratsTextStyle: {
     color: colors.orangeColor,
-    lineHeight: 24,
   },
 });
 export default CongratulationsModal;

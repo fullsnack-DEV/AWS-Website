@@ -26,7 +26,10 @@ import {
 } from 'react-native-responsive-screen';
 import auth from '@react-native-firebase/auth';
 import {AccessToken, LoginManager} from 'react-native-fbsdk';
-import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import jwtDecode from 'jwt-decode';
 
 import {

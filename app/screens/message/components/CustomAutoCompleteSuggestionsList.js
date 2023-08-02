@@ -19,20 +19,18 @@ const CustomAutoCompleteSuggestionsList = ({
       const groupIds = [];
       const membersList = [];
       data.forEach((item) => {
-        if (item.id.includes('@')) {
-          const id = item.id.split('@')[0];
-          if (
-            !groupIds.includes(id) &&
-            item.id !== authContext.chatClient.userID
-          )
-            groupIds.push(id);
-        } else {
-          const obj = {
-            entityName: item.name,
-            members: [item],
-          };
+        if (item.id !== authContext.chatClient.userID) {
+          if (item.id.includes('@')) {
+            const id = item.id.split('@')[0];
+            if (!groupIds.includes(id)) groupIds.push(id);
+          } else {
+            const obj = {
+              entityName: item.name,
+              members: [item],
+            };
 
-          membersList.push(obj);
+            membersList.push(obj);
+          }
         }
       });
 
@@ -66,7 +64,13 @@ const CustomAutoCompleteSuggestionsList = ({
         renderItem={({item}) => (
           <TouchableOpacity
             onPress={() => {
-              onSelect(item.members[0]);
+              const obj = {
+                ...item.members[0],
+              };
+              if (item.members[0]?.group_name) {
+                obj.name = item.members[0].group_name;
+              }
+              onSelect(obj);
             }}>
             <CustomAutoCompleteSuggestionItem
               itemProps={item}

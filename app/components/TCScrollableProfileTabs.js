@@ -1,9 +1,8 @@
 import React from 'react';
 import {ScrollView, View} from 'react-native';
 
-import ScrollableTabView, {
-  ScrollableTabBar,
-} from 'react-native-scrollable-tab-view-forked';
+// eslint-disable-next-line import/no-unresolved
+import ScrollableTabView from 'react-native-scrollable-tab-view';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -31,7 +30,8 @@ const TCScrollableProfileTabs = ({
       tabBarInactiveTextColor={colors.lightBlackColor}
       tabBarUnderlineStyle={{backgroundColor: colors.themeColor}}
       // initialPage={currentTab}
-      renderTabBar={() => <ScrollableTabBar />}>
+      // renderTabBar={() => <ScrollableTabBar />}
+    >
       {tabItem.map((item, key) => (
         <View key={key} tabLabel={item} />
       ))}

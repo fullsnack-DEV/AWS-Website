@@ -1,14 +1,6 @@
 // @flow
 import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Animated,
-  Alert,
-  Text,
-  BackHandler,
-} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
+import {View, StyleSheet, Animated, Alert, Text} from 'react-native';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {format} from 'react-string-format';
@@ -84,20 +76,6 @@ const GroupHomeScreen = ({
       setCurrentUserData(groupData);
     }
   }, [groupData]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const handleBackButton = () => {
-        navigation.navigate('AccountScreen');
-        return true;
-      };
-
-      BackHandler.addEventListener('hardwareBackPress', handleBackButton);
-
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
-    }, [navigation]),
-  );
 
   const createPostAfterUpload = (dataParams) => {
     let body = dataParams;

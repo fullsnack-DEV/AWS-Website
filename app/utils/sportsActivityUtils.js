@@ -83,13 +83,18 @@ const getScoreboardListTitle = (entityType = Verbs.entityTypePlayer) => {
   }
 };
 
-const getTitleForRegister = (entityType = Verbs.entityTypePlayer) => {
+const getTitleForRegister = (
+  entityType = Verbs.entityTypePlayer,
+  forHome = false,
+) => {
   switch (entityType) {
     case Verbs.entityTypePlayer:
       return strings.registerAsPlayerTitle;
 
     case Verbs.entityTypeReferee:
-      return strings.registerRefereeTitle;
+      return forHome
+        ? strings.registeredRefreeTitle
+        : strings.registerRefereeTitle;
 
     case Verbs.entityTypeScorekeeper:
       return strings.registerScorekeeperTitle;

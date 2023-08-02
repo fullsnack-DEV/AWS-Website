@@ -41,6 +41,8 @@ const CustomModalWrapper = ({
   const translateY = new Animated.Value(0);
   let isGestureActive = false;
 
+  const SWIPE_THRESHOLD = 50;
+
   const onPanGestureEvent = Animated.event(
     [{nativeEvent: {translationY: translateY}}],
     {
@@ -49,7 +51,7 @@ const CustomModalWrapper = ({
         if (event.nativeEvent.translationY <= 0) {
           translateY.setValue(0);
 
-          if (isSwipeUp) {
+          if (isSwipeUp && event.nativeEvent.translationY < -SWIPE_THRESHOLD) {
             setIsFullHeight(true);
             translateY.setValue(0);
           }
@@ -252,7 +254,7 @@ const CustomModalWrapper = ({
                     ],
                   },
                 ]}>
-                <Pressable onPress={() => {}} style={{}}>
+                <Pressable onPress={() => {}} style={{flex: 1}}>
                   <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
                     {getModalHeader()}
                   </View>

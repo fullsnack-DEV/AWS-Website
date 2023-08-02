@@ -594,7 +594,7 @@ export default {
   gamefeeperhour: 'en_Match Fee Per Hour',
   CAD: 'en_CAD',
   primaryRefundPolicy: 'en_Primary Refund Policy',
-  defaultCurrency: 'en_USD',
+  defaultCurrency: 'en_CAD',
   currencyplacholder: 'en_Select Currency',
   languages: 'en_Languages',
   sportcannotbeblank: 'en_Sports cannot be blank',
@@ -1126,6 +1126,7 @@ export default {
   congratsModalTitle:
     'en_Congratulations!\nYou are now registered\nas a player in\n ',
   registerRefereeTitle: 'en_Register as Referee',
+  registeredRefreeTitle: 'en_Registered as Referee',
   registerScorekeeperTitle: 'en_Register as Scorekeeper',
   inviteYouToJoinEventText: 'en_invited you to join the event.',
   createTeamText: 'en_Create Team',
@@ -3067,4 +3068,8 @@ export default {
   deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
   viewAll: 'en_View all',
   byUser: 'en_By {0}',
+  chatroomText: 'en_Chatroom',
+  ratingText:
+    'en_Ratings shows the average ratings that the referee received from teams regarding their matches. The following questions are used to collect ratings from teams.',
+  Minimum: 'en_Minimum',
 };

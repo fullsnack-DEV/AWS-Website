@@ -31,13 +31,17 @@ const PrivacySettingsScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    const user = authContext.entity.obj ?? {};
+    const {entity} = authContext;
+    const user = entity.obj ?? {};
 
     if (user.user_id && user.registered_sports?.length > 0) {
       const obj = user.registered_sports.find(
         (item) => item.sport === sport && item.sport_type === sportType,
       );
-      setSportObj(obj);
+
+      if (obj) {
+        setSportObj(obj);
+      }
     }
   }, [authContext, sport, sportType]);
 
@@ -125,6 +129,14 @@ const PrivacySettingsScreen = ({navigation, route}) => {
         </Pressable>
       ));
     }
+
+    const handleListItemPress = (item) => {
+      setSportObj((prevSportObj) => {
+        const newObj = {...prevSportObj};
+        newObj[privacyKey.language] = item;
+        return newObj;
+      });
+    };
 
     return (
       <View style={{flex: 1}}>
@@ -245,11 +257,7 @@ const PrivacySettingsScreen = ({navigation, route}) => {
               <Pressable
                 style={styles.listItem}
                 key={index}
-                onPress={() => {
-                  const newObj = {...sportObj};
-                  newObj[privacyKey.language] = item;
-                  setSportObj({...newObj});
-                }}>
+                onPress={() => handleListItemPress(item)}>
                 <Text style={styles.listLabel}>{privacySettingEnum[item]}</Text>
                 <View style={styles.listIconContainer}>
                   {sportObj[privacyKey.language] === item ? (
