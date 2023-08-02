@@ -17,7 +17,6 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Keyboard,
-  Platform,
 } from 'react-native';
 
 import {
@@ -27,7 +26,6 @@ import {
 import FastImage from 'react-native-fast-image';
 import firebase from '@react-native-firebase/app';
 import Config from 'react-native-config';
-import LinearGradient from 'react-native-linear-gradient';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -447,9 +445,7 @@ const LoginScreen = ({navigation}) => {
   }, [navigation]);
 
   return (
-    <LinearGradient
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
       <ActivityLoader visible={loading} />
       <FastImage style={styles.background} source={images.loginBg} />
       <TouchableWithoutFeedback
@@ -497,7 +493,7 @@ const LoginScreen = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -518,14 +514,11 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
+    marginTop: 50,
     marginLeft: 25,
     textAlign: 'left',
   },
-  mainContainer: {
-    flex: 1,
-    paddingTop: 25,
-  },
+
   passwordEyes: {
     fontSize: 10,
     color: colors.darkYellowColor,
@@ -539,7 +532,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: colors.bhirthdaybgcolor,
     height: 40,
     color: 'black',
     elevation: 3,
@@ -567,7 +560,7 @@ const styles = StyleSheet.create({
 
   textFieldStyle: {
     alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: colors.bhirthdaybgcolor,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
@@ -581,7 +574,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     textAlign: 'center',
-    // marginTop: hp('38%'),
   },
   alreadyView: {
     alignSelf: 'center',

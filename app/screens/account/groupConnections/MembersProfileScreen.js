@@ -477,7 +477,7 @@ export default function MembersProfileScreen({navigation, route}) {
       Animated.timing(animProgress, {
         useNativeDriver: false,
         toValue: 100,
-        duration: 200,
+        duration: 400,
       }).start();
     } else {
       setloading(true);
@@ -486,11 +486,10 @@ export default function MembersProfileScreen({navigation, route}) {
     deleteMember(groupId, memberId, authContext)
       .then(async (response) => {
         setloading(false);
-        setShowSwitchScreen(false);
 
         const validator = 102;
 
-        if (toaccount) {
+        if (toaccount && Object.keys(response.payload).length === 0) {
           await onSwitchProfile(authContext.user);
 
           navigation.navigate('Account', {
@@ -502,6 +501,7 @@ export default function MembersProfileScreen({navigation, route}) {
             },
           });
         } else if (response.payload.error_code === validator) {
+          setShowSwitchScreen(false);
           Alert.alert(
             strings.appName,
             strings.childMemberError,

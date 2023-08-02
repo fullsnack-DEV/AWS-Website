@@ -189,6 +189,7 @@ const Verbs = {
   ITEM_LENGTH: 25,
   VIEW_POSITION: 0.9,
   PASSWORD_LENGTH: 8,
+  INCOMING_CHALLENGE_SCREEN: 'IncomingChallengeScreen',
 };
 
 export default Verbs;

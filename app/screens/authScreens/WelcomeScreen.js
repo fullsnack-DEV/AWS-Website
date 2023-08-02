@@ -638,7 +638,6 @@ export default function WelcomeScreen({navigation}) {
           ...styles.background,
           opacity: fadeInOpacity,
         }}
-        // resizeMode={'stretch'}
         source={images[`welcomeImage${currentBackground}`]}
       />
     ),
@@ -658,7 +657,7 @@ export default function WelcomeScreen({navigation}) {
         />
       </View>
 
-      <View style={{flex: 1, justifyContent: 'flex-end'}}>
+      <View style={{flex: 1, marginTop: 87}}>
         <View style={{marginBottom: 2}}>
           <AppleButton
             onPress={() => {
@@ -666,7 +665,6 @@ export default function WelcomeScreen({navigation}) {
               else authContext.showNetworkAlert();
             }}
           />
-          {/* )} */}
 
           <FacebookButton
             onPress={() => {
@@ -686,9 +684,6 @@ export default function WelcomeScreen({navigation}) {
             testID="signup-button"
             style={styles.allButton}
             onPress={() => {
-              // navigation.navigate('AddBirthdayScreen', {
-              // 	signupInfo: {},
-              //   });
               navigation.navigate('SignupScreen');
             }}>
             <FastImage

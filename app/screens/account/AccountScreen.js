@@ -153,7 +153,7 @@ const AccountScreen = ({navigation, route}) => {
       );
       setLoading(false);
     }
-  }, [route.params?.switchToUser, route.params?.grpName, getUsers]);
+  }, [route.params?.switchToUser, route.params?.grpName]);
 
   useEffect(() => {
     if (

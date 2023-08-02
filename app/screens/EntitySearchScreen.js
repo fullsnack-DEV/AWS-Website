@@ -58,7 +58,6 @@ import CustomScrollTabs from '../components/CustomScrollTabs';
 
 import ScreenHeader from '../components/ScreenHeader';
 
-
 let stopFetchMore = true;
 
 const TAB_ITEMS = [
@@ -1660,7 +1659,7 @@ export default function EntitySearchScreen({navigation, route}) {
         default:
           break;
       }
-      setCurrentTab(changeTab.i);
+      setCurrentTab(changeTab);
     },
     [searchFilterFunction],
   );
@@ -1672,7 +1671,6 @@ export default function EntitySearchScreen({navigation, route}) {
     },
     [searchFilterFunction],
   );
-
 
   const userJoinGroup = (groupId) => {
     setloading(true);

@@ -1,6 +1,20 @@
 // @flow
-import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
-import {View, StyleSheet, Animated, Alert, Text} from 'react-native';
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from 'react';
+import {
+  View,
+  StyleSheet,
+  Animated,
+  Alert,
+  Text,
+  BackHandler,
+} from 'react-native';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {format} from 'react-string-format';
@@ -70,6 +84,25 @@ const GroupHomeScreen = ({
   const [matchData, setMatchData] = useState([]);
   const [refereeSettingObject, setRefereeSettingObject] = useState();
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
+
+  const backButtonHandler = useCallback(() => {
+    if (route.params.comeFrom === Verbs.INCOMING_CHALLENGE_SCREEN) {
+      navigation.navigate('Account', {
+        screen: 'AccountScreen',
+      });
+    } else {
+      navigation.goBack();
+    }
+    return true;
+  }, [navigation, route.params.comeFrom]);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backButtonHandler);
+    };
+  }, [backButtonHandler]);
 
   useEffect(() => {
     if (groupData?.group_id) {

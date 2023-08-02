@@ -3073,5 +3073,5 @@ export default {
     'en_Ratings shows the average ratings that the referee received from teams regarding their matches. The following questions are used to collect ratings from teams.',
   signUpPasswordText: 'en_Your password must be at least 8 characters.',
   Minimum: 'en_Minimum',
-
+  writePostText: 'en_Write a post...',
 };

@@ -7,6 +7,7 @@ import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import {getHitSlop} from '../../utils';
 
 export default function LocalHomeHeader({
   setLocationpopup,
@@ -66,7 +67,8 @@ export default function LocalHomeHeader({
             </Pressable>
 
             <Pressable
-              style={styles.iconButton}
+              hitSlop={getHitSlop(10)}
+              style={{}}
               onPress={() => navigation.navigate('NotificationsListScreen')}>
               <Image
                 source={images.notificationBellHome}
