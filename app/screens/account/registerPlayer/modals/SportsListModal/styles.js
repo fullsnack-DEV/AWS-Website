@@ -4,9 +4,10 @@ import fonts from '../../../../../Constants/Fonts';
 
 const styles = StyleSheet.create({
   parent: {
+    padding: 0,
+    paddingHorizontal: 30,
+    paddingVertical: 20,
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'flex-end',
   },
   card: {
     backgroundColor: colors.whiteColor,

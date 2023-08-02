@@ -1475,6 +1475,7 @@ export default function CreateEventScreen({navigation, route}) {
           setSelectedSport(sport);
           setVisibleSportsModal(false);
         }}
+        rightButtonText={strings.apply}
       />
 
       <CustomModalWrapper

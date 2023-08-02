@@ -3071,4 +3071,5 @@ export default {
   chatroomText: 'en_Chatroom',
   ratingText:
     'en_Ratings shows the average ratings that the referee received from teams regarding their matches. The following questions are used to collect ratings from teams.',
+  Minimum: 'en_Minimum',
 };
