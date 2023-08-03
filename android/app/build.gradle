@@ -167,7 +167,7 @@ packagingOptions {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.33"
+        versionName "1.0.34"
         multiDexEnabled true
         flavorDimensions "default"
         vectorDrawables.useSupportLibrary = true

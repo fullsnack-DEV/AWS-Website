@@ -1645,8 +1645,9 @@ export default function EntitySearchScreen({navigation, route}) {
   const tabChangePress = useCallback(
     (changeTab) => {
       searchFilterFunction('');
+
       searchBoxRef.current.clear();
-      switch (changeTab.i) {
+      switch (changeTab) {
         case 0:
           setCurrentSubTab(strings.generalText);
           break;
@@ -1659,6 +1660,7 @@ export default function EntitySearchScreen({navigation, route}) {
         default:
           break;
       }
+
       setCurrentTab(changeTab);
     },
     [searchFilterFunction],
