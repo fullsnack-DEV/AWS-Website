@@ -199,7 +199,6 @@ const HomeScreen = ({navigation, route}) => {
 
   const getShimmer = () => {
     if (loading) {
-      console.log(loading, 'from load');
       if (
         route.params.role === Verbs.entityTypePlayer ||
         route.params.role === Verbs.entityTypeUser

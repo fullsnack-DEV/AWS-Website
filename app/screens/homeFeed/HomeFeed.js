@@ -52,17 +52,17 @@ const HomeFeed = ({
   const isFocused = useIsFocused();
 
   const getTimeLine = useCallback(() => {
-    let entityType = 'users';
+    let entityType = Verbs.entityTypeUsers;
     if (
       currentUserData.entity_type === Verbs.entityTypeUser ||
       currentUserData.entity_type === Verbs.entityTypePlayer
     ) {
-      entityType = 'users';
+      entityType = Verbs.entityTypeUsers;
     } else if (
       currentUserData.entity_type === Verbs.entityTypeTeam ||
       currentUserData.entity_type === Verbs.entityTypeClub
     ) {
-      entityType = 'groups';
+      entityType = Verbs.entityTypeGroups;
     }
 
     getTimeline(entityType, userID, '', authContext)

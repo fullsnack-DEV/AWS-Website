@@ -508,7 +508,7 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('playersQuery ==>', JSON.stringify(playersQuery));
+
     getUserIndex(playersQuery)
       .then((res) => {
         if (res.length > 0) {
@@ -652,7 +652,7 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('refereeQuery==>', JSON.stringify(refereeQuery));
+
     getUserIndex(refereeQuery)
       .then((res) => {
         if (res.length > 0) {
@@ -790,7 +790,6 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('scoreKeeperQuery==>', JSON.stringify(scoreKeeperQuery));
 
     getUserIndex(scoreKeeperQuery)
       .then((res) => {
@@ -886,7 +885,6 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('teamsQuery==>', JSON.stringify(teamsQuery));
 
     getGroupIndex(teamsQuery)
       .then((res) => {
@@ -994,7 +992,7 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('clubsQuery==>', JSON.stringify(clubsQuery));
+
     getGroupIndex(clubsQuery)
       .then((res) => {
         if (res.length > 0) {

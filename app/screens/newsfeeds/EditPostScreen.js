@@ -518,7 +518,11 @@ const EditPostScreen = ({navigation, route}) => {
         contentContainerStyle={{paddingHorizontal: 15, marginVertical: 15}}
         pagingEnabled={true}
         horizontal={true}
-        data={tagsOfEntity?.filter((item) => item?.entity_type === 'game')}
+        data={
+          tagsOfEntity?.length > 0
+            ? tagsOfEntity.filter((item) => item?.entity_type === 'game')
+            : []
+        }
         renderItem={renderSelectedGame}
         keyExtractor={(item) => item?.entity_id}
       />

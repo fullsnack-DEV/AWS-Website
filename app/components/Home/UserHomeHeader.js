@@ -51,7 +51,7 @@ const UserHomeHeader = ({
           } else if (
             currentUserData.invite_request?.action === Verbs.inviteVerb
           ) {
-            name = strings.inviteSent;
+            name = strings.requestSent;
           } else {
             name = strings.invite;
           }
@@ -119,11 +119,8 @@ const UserHomeHeader = ({
         onAction(Verbs.inviteVerb);
         break;
 
-      case strings.inviteSent:
-        setOptions([
-          strings.acceptInvitateRequest,
-          strings.declineMemberRequest,
-        ]);
+      case strings.requestSent:
+        setOptions([strings.cancelRequestText]);
         setShowModal(true);
         break;
 
@@ -212,6 +209,7 @@ const UserHomeHeader = ({
       </View>
       <BottomSheet
         isVisible={showModal}
+        type="ios"
         closeModal={() => setShowModal(false)}
         optionList={options}
         onSelect={handleOptions}

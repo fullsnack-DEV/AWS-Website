@@ -438,7 +438,7 @@ export default function CreateTeamForm1({navigation, route}) {
       showAlertWithoutTitle(strings.pleaseFillTeanName);
       return false;
     }
-    if (city === '') {
+    if (homeCity === '') {
       showAlertWithoutTitle(strings.pleaseFillHomeCity);
       return false;
     }
