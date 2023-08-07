@@ -63,7 +63,7 @@ const RegisterScorekeeper = ({navigation, route}) => {
         isValid = false;
         Alert.alert(strings.warningCertificateTitleText, '', [
           {
-            text: strings.OkText,
+            text: strings.okTitleText,
             style: 'cancel',
           },
         ]);

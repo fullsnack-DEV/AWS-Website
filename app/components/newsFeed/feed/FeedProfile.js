@@ -24,8 +24,9 @@ const FeedProfile = ({
       <GroupIcon
         imageUrl={data.full_image ?? data.thumbnail}
         entityType={data.entity_type}
-        groupName={data.group_name}
+        groupName={data.full_name ?? data.group_name}
         containerStyle={styles.imageMainContainer}
+        textstyle={{fontSize: 12}}
       />
       <View style={{width: 290}}>
         <Text

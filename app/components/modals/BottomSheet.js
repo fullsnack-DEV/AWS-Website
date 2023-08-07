@@ -40,7 +40,7 @@ const BottomSheet = ({
                   <View
                     style={[
                       styles.modalButtonContainer,
-                      {paddingVertical: 15},
+                      {paddingVertical: 15,},
                       headerStyle,
                     ]}>
                     <Text style={[styles.modalTitle, headerTitleStyle]}>
@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'flex-end',
+   
   },
   card: {
     marginHorizontal: 15,
@@ -137,16 +138,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightWhite,
     opacity: 0.96,
     borderRadius: 13,
+    
   },
   cardAndroid: {
     backgroundColor: colors.lightWhite,
     paddingVertical: 15,
     paddingHorizontal: 18,
+    
   },
   modalButtonContainer: {
-    paddingVertical: 18,
+    paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
+
   },
   modalButtonContainerAndroid: {
     paddingVertical: 8,
@@ -158,17 +162,20 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.eventBlueColor,
+  
   },
   modalButtonTextAndroid: {
     fontSize: 16,
     lineHeight: 24,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+
   },
   modalLineSeparator: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#09141F',
-    opacity: 0.13,
+    opacity: 0.5,
+    
   },
   modalCancelButton: {
     backgroundColor: colors.whiteColor,

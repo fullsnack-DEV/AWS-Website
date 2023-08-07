@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, View, Text, Image, Pressable} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -130,7 +131,12 @@ const UserHomeHeader = ({
         break;
 
       case strings.member:
-        setOptions([strings.removeMemberFromTeamText]);
+        setOptions([
+          format(
+            strings.removeMemberFromTeamText,
+            loggedInEntity.role === Verbs.entityTypeTeam ? 'Team' : 'Club',
+          ),
+        ]);
         setShowModal(true);
         break;
 

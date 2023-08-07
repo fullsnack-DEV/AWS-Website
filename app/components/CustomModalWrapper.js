@@ -36,6 +36,7 @@ const CustomModalWrapper = ({
   isSwipeUp = false,
   showBackButton = false,
   ratio = 2.5,
+  parentStyle = {},
 }) => {
   const [isFullHeight, setIsFullHeight] = useState(isSwipeUp);
   const translateY = new Animated.Value(0);
@@ -169,7 +170,7 @@ const CustomModalWrapper = ({
 
     switch (modalType) {
       case ModalTypes.style1:
-        return [styles.card, {flex: 1}];
+        return [styles.card, {flex: 1}, parentStyle];
 
       case ModalTypes.style2:
       case ModalTypes.style3:

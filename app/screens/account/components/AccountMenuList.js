@@ -108,10 +108,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
   },
   row: {
+    flex:1,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 15,
-    paddingBottom: 15,
+    paddingBottom: 15, 
   },
   iconContainer: {
     width: 40,
@@ -130,6 +131,8 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
+
+
   },
 });
 export default AccountMenuList;

@@ -111,12 +111,12 @@ export default function CurrencyModal({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeList}
-      modalType={ModalTypes.style6}
-      onRightButtonPress={() => onNext(selectedCurrency)}
-      headerRightButtonText={strings.next}
+      modalType={ModalTypes.style1}
+      // onRightButtonPress={() => onNext(selectedCurrency)}
+      // headerRightButtonText={strings.next}
       title={strings.changeCurrency}
-      containerStyle={{padding: 0, width: '100%', height: '100%'}}
-      showBackButton>
+      containerStyle={{padding: 0}}
+      parentStyle={{marginTop: 20}}>
       <FlatList
         data={currencydata}
         ItemSeparatorComponent={() => <TCThinDivider />}

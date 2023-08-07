@@ -78,7 +78,7 @@ export default function GroupMembersSettingScreen({navigation}) {
           : Verbs.club,
       ):
         if (groupDetails.who_can_join_for_member === 0) {
-          return strings.camAccepted;
+          return strings.everyoneRadio;
         }
         if (groupDetails.who_can_join_for_member === 1) {
           return `${

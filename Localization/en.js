@@ -498,7 +498,7 @@ export default {
   invite: 'en_Invite',
   member: 'en_Member',
   join: 'en_Join',
-  joining: 'en_Joining',
+  joining: 'en_Joined',
   challenge: 'en_Challenge',
 
   total: 'en_Total',
@@ -2661,7 +2661,7 @@ export default {
   requestPendingText: 'en_Request pending',
   acceptInvitateRequest: 'en_Accept Membership Request',
   declineMemberRequest: 'en_Decline Membership Request',
-  removeMemberFromTeamText: 'en_Remove Member From Team',
+  removeMemberFromTeamText: 'en_Remove Member From {0}',
   newTeamText: 'en_New Team',
   invitePending: 'en_Invite Pending',
   leaveTeamFromClub: 'en_Leave This Team  From Club',
@@ -2730,6 +2730,7 @@ export default {
   alertTitle4: 'en_Request Canceled',
   alertTitle5: 'en_Invite Declined',
   alertTitle6: 'en_Congratualtions! Your team now joined "{0}". ',
+  alertTitle7: 'en_Congratualtions! "{0}" team now joined your club. ',
   actionsheetTitle3:
     'en_You have sent a request to join “{0}”.\n Do you want to cancel it?',
   actionsheetTitle6:

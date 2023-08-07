@@ -61,7 +61,7 @@ const RegisterReferee = ({navigation, route}) => {
         isValid = isValid && true;
       } else if (item.url && !item.title) {
         isValid = false;
-        Alert.alert(strings.warningCertificateTitleText);
+        Alert.alert(strings.warningCertificateTitleText,'',[{text:strings.okTitleText}]);
       } else if (item.title && !item.url) {
         isValid = false;
         Alert.alert(strings.warningCertificateImageText);

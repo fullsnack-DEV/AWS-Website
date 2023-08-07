@@ -242,10 +242,7 @@ const NewsFeedPostItems = memo(
             isNewsFeedScreen={isNewsFeedScreen}
             openProfilId={openProfilId}
             isRepost={postType === Verbs.repostVerb}
-            showMoreOptions={
-              authContext.entity.role === Verbs.entityTypePlayer ||
-              authContext.entity.role === Verbs.entityTypeUser
-            }
+            showMoreOptions
           />
         )}
 

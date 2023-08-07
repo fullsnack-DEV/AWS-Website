@@ -662,10 +662,23 @@ const GroupHomeScreen = ({
               {text: strings.okTitleText},
             ]);
           } else {
+            setLoading(false);
             Alert.alert('', response.payload.user_message, [
               {text: strings.okTitleText},
             ]);
           }
+        } else if (response.payload.action === Verbs.requestVerb) {
+          const obj = {
+            ...currentUserData,
+            invite_request: inviteRequest,
+          };
+          setCurrentUserData(obj);
+          setLoading(false);
+          Alert.alert(
+            strings.alertmessagetitle,
+            format(strings.alreadySendRequestMsg, groupData.group_name),
+            [{text: strings.okTitleText}],
+          );
         } else {
           setCurrentGroupData(Verbs.joinVerb);
           setLoading(false);
@@ -687,8 +700,8 @@ const GroupHomeScreen = ({
     const params = {};
     leaveTeam(params, groupId, authContext)
       .then(() => {
-        setLoading(false);
         setCurrentGroupData(Verbs.leaveVerb);
+        setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
@@ -730,6 +743,24 @@ const GroupHomeScreen = ({
       });
   };
 
+  const getAlertTitle = () => {
+    if (
+      groupData.entity_type === Verbs.entityTypeClub &&
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
+      return strings.alertTitle6;
+    }
+
+    if (
+      groupData.entity_type === Verbs.entityTypeTeam &&
+      authContext.entity.role === Verbs.entityTypeClub
+    ) {
+      return strings.alertTitle7;
+    }
+
+    return strings.alertTitle1;
+  };
+
   const onAccept = (requestId) => {
     setLoading(true);
     acceptRequest({}, requestId, authContext)
@@ -739,20 +770,27 @@ const GroupHomeScreen = ({
           ...currentUserData,
           is_joined: true,
         };
+        if (
+          currentUserData?.entity_type === Verbs.entityTypeClub &&
+          authContext.entity.role === Verbs.entityTypeTeam
+        ) {
+          group.joined_teams = [...group.joined_teams, authContext.entity.obj];
+        }
+        if (
+          currentUserData?.entity_type === Verbs.entityTypeTeam &&
+          authContext.entity.role === Verbs.entityTypeClub
+        ) {
+          group.parent_groups = [
+            ...group.parent_groups,
+            authContext.entity.uid,
+          ];
+        }
         setCurrentUserData(group);
         setLoading(false);
         setTimeout(() => {
-          Alert.alert(
-            format(
-              groupData.entity_type === Verbs.entityTypeClub &&
-                authContext.entity.role === Verbs.entityTypeTeam
-                ? strings.alertTitle6
-                : strings.alertTitle1,
-              groupData.group_name,
-            ),
-            '',
-            [{text: strings.okTitleText}],
-          );
+          Alert.alert(format(getAlertTitle(), groupData.group_name), '', [
+            {text: strings.okTitleText},
+          ]);
         }, 10);
       })
       .catch((error) => {
@@ -1230,6 +1268,7 @@ const GroupHomeScreen = ({
 
       case strings.acceptInvite:
       case strings.acceptRequest:
+      case strings.acceptRequet:
         onAccept(currentUserData.invite_request.activity_id);
         break;
 

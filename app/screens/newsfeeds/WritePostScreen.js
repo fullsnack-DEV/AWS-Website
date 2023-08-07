@@ -954,7 +954,10 @@ const WritePostScreen = ({navigation, route}) => {
         isVisible={visibleWhoModal}
         closeModal={() => setVisibleWhoModal(false)}
         modalType={ModalTypes.style2}
-        containerStyle={{paddingTop: 15, paddingHorizontal: 30}}>
+        containerStyle={{
+          paddingTop: 15,
+          paddingHorizontal: 30,
+        }}>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
         <FlatList
           showsVerticalScrollIndicator={false}
