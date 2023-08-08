@@ -22,7 +22,7 @@ import {widthPercentageToDP, getStorage} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
-import {getUserIndex} from '../../api/elasticSearch';
+import {getGameIndex, getUserIndex} from '../../api/elasticSearch';
 import TCTagsFilter from '../../components/TCTagsFilter';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -330,12 +330,7 @@ export default function RefereesListScreen({navigation, route}) {
               sportObject.setting?.refund_policy &&
               sportObject.setting?.available_area
             ) {
-              navigation.navigate('RefereeBookingDateAndTime', {
-                settingObj: sportObject.setting,
-                userData: refereeObj,
-                showMatches: true,
-                sportName: sportObject.sport,
-              });
+              getGamesForBookAReferee(refereeObj, sportObject);
             } else {
               Alert.alert(strings.refereeSettingNotConfigureValidation);
             }
@@ -398,33 +393,92 @@ export default function RefereesListScreen({navigation, route}) {
     }, 10);
   };
 
-  const getLocation = () => {
-    // setloading(true);
-    getGeocoordinatesWithPlaceName(Platform.OS)
-      .then((currentLocation) => {
-        setloading(false);
-        if (currentLocation.position) {
-          setLocation(
-            currentLocation.city?.charAt(0).toUpperCase() +
-              currentLocation.city?.slice(1),
-          );
-          // setLocationFilterOpetion(2);
-          setFilters({...filters, locationOption: 2});
-        }
-      })
-      .catch((e) => {
-        setloading(false);
-        if (e.message !== strings.userdeniedgps) {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        }
-      });
+  const getLocation = async () => {
+    try {
+      // setloading(true);
+      const currentLocation = await getGeocoordinatesWithPlaceName(Platform.OS);
+      let loc = '';
+      if (currentLocation.position) {
+        loc =
+          currentLocation.city?.charAt(0).toUpperCase() +
+          currentLocation.city?.slice(1);
+      }
+      setloading(false);
+      setSettingPopup(false);
+      return loc;
+    } catch (error) {
+      setloading(false);
+      setSettingPopup(false);
+      if (error.message !== strings.userdeniedgps) {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      }
+      return null;
+    }
   };
 
   const applyFilter = useCallback((fil) => {
     getReferees(fil);
   }, []);
+
+  const getGamesForBookAReferee = useCallback(
+    (refereeObj, sportObject) => {
+      const gameListWithFilter = {
+        query: {
+          bool: {
+            must: [
+              {
+                bool: {
+                  should: [
+                    {term: {'home_team.keyword': authContext.entity.uid}},
+                    {term: {'away_team.keyword': authContext.entity.uid}},
+                  ],
+                },
+              },
+              {
+                range: {
+                  end_datetime: {
+                    gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+                  },
+                },
+              },
+              {term: {'status.keyword': 'accepted'}},
+              {
+                term: {
+                  'challenge_referee.who_secure.responsible_team_id.keyword':
+                    authContext.entity.uid,
+                },
+              },
+            ],
+          },
+        },
+        sort: [{start_datetime: 'asc'}],
+      };
+
+      console.log('gameListWithFilter==>', JSON.stringify(gameListWithFilter));
+      getGameIndex(gameListWithFilter)
+        .then((res) => {
+          if (res.length > 0) {
+            console.log('11111', res);
+            navigation.navigate('RefereeBookingDateAndTime', {
+              settingObj: sportObject.setting,
+              userData: refereeObj,
+              showMatches: true,
+              sportName: sportObject.sport,
+            });
+          } else {
+            Alert.alert(strings.alertmessagetitle, strings.bookRefereeMessage);
+          }
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    },
+    [authContext.entity.uid, navigation],
+  );
 
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
@@ -555,7 +609,7 @@ export default function RefereesListScreen({navigation, route}) {
         filterObject={filters}
         feeTitle={strings.refereeFee}
         isVisible={settingPopup}
-        onPressApply={(filterData) => {
+        onPressApply={async (filterData) => {
           setloading(false);
           let tempFilter = {};
           tempFilter = {...filterData};
@@ -576,10 +630,8 @@ export default function RefereesListScreen({navigation, route}) {
           } else if (
             filterData.locationOption === locationType.CURRENT_LOCATION
           ) {
-            getLocation();
-            console.log('current location ===>', location);
-
-            tempFilter.location = location;
+            const loc = await getLocation();
+            tempFilter.location = loc;
           } else if (filterData.locationOption === locationType.SEARCH_CITY) {
             setLocation(filterData.searchCityLoc);
             tempFilter.location = filterData.searchCityLoc;
