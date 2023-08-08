@@ -6,6 +6,8 @@ import React, {
   useCallback,
 } from 'react';
 import {NavigationContainer} from '@react-navigation/native';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import SplashScreen from 'react-native-splash-screen';
 import firebase from '@react-native-firebase/app';
 import jwtDecode from 'jwt-decode';
 import {Host} from 'react-native-portalize';
@@ -33,6 +35,10 @@ export default function NavigationMainContainer() {
       authContext.setSports(res.payload);
     });
   }, [authContext]);
+
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
 
   useEffect(() => {
     if (authContext.entity?.isLoggedIn && authContext.sports?.length === 0) {

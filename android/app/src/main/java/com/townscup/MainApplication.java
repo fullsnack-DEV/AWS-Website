@@ -5,6 +5,7 @@ import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.reactcommunity.rndatetimepicker.RNDateTimePickerPackage; 
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 
 // import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 
@@ -38,7 +39,9 @@ public class MainApplication extends Application implements ReactApplication {
         @Override
         protected List<ReactPackage> getPackages() {
           @SuppressWarnings("UnnecessaryLocalVariable")
-          List<ReactPackage> packages = new PackageList(this).getPackages();
+          List<ReactPackage> packages = new PackageList(this).getPackages(); 
+            
+            // packages.add(new SplashScreenReactPackage());
        
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());

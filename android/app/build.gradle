@@ -145,7 +145,8 @@ android {
 
     aaptOptions.cruncherEnabled = false
     aaptOptions.useNewCruncher = false 
-    namespace "com.townscup" 
+    namespace "com.townscup"  
+  
    
 
 packagingOptions {
@@ -256,6 +257,7 @@ packagingOptions {
 
 dependencies {
     implementation project(':react-native-config')
+    implementation project(':react-native-splash-screen')
 
     implementation platform("com.google.firebase:firebase-bom:29.0.4")
     //noinspection GradleDynamicVersion
