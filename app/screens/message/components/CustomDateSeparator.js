@@ -7,7 +7,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 
 const CustomDateSeparator = ({date = new Date()}) => {
-  const isToday = moment(new Date()).diff(date, 'hours') < 24;
+  const isToday = moment(new Date()).diff(date, 'hours') < 12;
   let dateString = '';
   if (typeof date === 'string') {
     dateString = date;

@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import {format} from 'react-string-format';
 import ParsedText from 'react-native-parsed-text';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {
   createReaction,
   getReactions,
@@ -109,6 +110,7 @@ const CommentModal = ({
       .then(() => {
         const params = {
           activity_id: postId,
+          reaction_type: Verbs.comment,
         };
         getReactions(params, authContext)
           .then((response) => {
@@ -345,64 +347,70 @@ const CommentModal = ({
       isVisible={showCommentModal}
       modalType={ModalTypes.style2}
       closeModal={closeModal}
-      containerStyle={{padding: 0, height: '97.5%'}}>
+      containerStyle={{padding: 0, height: '97%'}}>
       <View style={styles.headerStyle}>
         <Text style={styles.headerTitle}>{strings.comments}</Text>
       </View>
+      <KeyboardAwareScrollView
+        contentContainerStyle={{flex: 1}}
+        nestedScrollEnabled
+        keyboardVerticalOffset={0}
+        behavior={Platform.OS === 'ios' ? 'height' : 'height'}>
+        <ActivityLoader visible={loading} />
 
-      <ActivityLoader visible={loading} />
-
-      <FlatList
-        data={commentData}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderComments}
-        ListEmptyComponent={listEmptyComponent}
-        showsVerticalScrollIndicator={false}
-      />
-
-      <View
-        style={[
-          styles.bottomContainer,
-          Platform.OS === 'ios' ? {paddingBottom: 20} : {},
-        ]}>
-        <GroupIcon
-          imageUrl={authContext.entity.obj.thumbnail}
-          groupName={authContext.entity.obj.group_name}
-          entityType={authContext.entity.obj.entity_type}
-          containerStyle={styles.profileIcon}
+        <FlatList
+          data={commentData}
+          keyExtractor={(item, index) => index.toString()}
+          nestedScrollEnabled
+          renderItem={renderComments}
+          ListEmptyComponent={listEmptyComponent}
+          showsVerticalScrollIndicator={false}
         />
-        <View style={styles.inputContainer}>
-          <TextInput
-            textAlignVertical="center"
-            placeholder={strings.leaveComment}
-            placeholderTextColor={colors.userPostTimeColor}
-            onChangeText={(text) => {
-              setCommentText(text);
-            }}
-            style={styles.writeCommectStyle}>
-            <ParsedText
-              parse={[{pattern: tagRegex, renderText: renderTagText}]}
-              childrenProps={{allowFontScaling: false}}>
-              {commentTxt}
-            </ParsedText>
-          </TextInput>
-          {commentTxt.trim().length > 0 && (
-            <TouchableOpacity
-              onPress={() => {
-                if (replyParams.activity_id) {
-                  handleCommentReply();
-                } else {
-                  handleComment();
-                }
+
+        <View
+          style={[
+            styles.bottomContainer,
+            Platform.OS === 'ios' ? {paddingBottom: 20} : {},
+          ]}>
+          <GroupIcon
+            imageUrl={authContext.entity.obj.thumbnail}
+            groupName={authContext.entity.obj.group_name}
+            entityType={authContext.entity.obj.entity_type}
+            containerStyle={styles.profileIcon}
+          />
+          <View style={styles.inputContainer}>
+            <TextInput
+              textAlignVertical="center"
+              placeholder={strings.leaveComment}
+              placeholderTextColor={colors.userPostTimeColor}
+              onChangeText={(text) => {
+                setCommentText(text);
               }}
-              style={{paddingLeft: 7}}>
-              <Text style={styles.sendTextStyle}>
-                {strings.send.toUpperCase()}
-              </Text>
-            </TouchableOpacity>
-          )}
+              style={styles.writeCommectStyle}>
+              <ParsedText
+                parse={[{pattern: tagRegex, renderText: renderTagText}]}
+                childrenProps={{allowFontScaling: false}}>
+                {commentTxt}
+              </ParsedText>
+            </TextInput>
+            {commentTxt.trim().length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  if (replyParams.activity_id) {
+                    handleCommentReply();
+                  } else {
+                    handleComment();
+                  }
+                }}
+                style={{paddingLeft: 7}}>
+                <Text style={styles.sendTextStyle}>
+                  {strings.send.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
+      </KeyboardAwareScrollView>
       <ReportCommentModal
         commentData={selectedCommentData}
         reportCommentModalRef={reportCommentModalRef}
@@ -459,7 +467,6 @@ const styles = StyleSheet.create({
   writeCommectStyle: {
     flex: 1,
     fontSize: 16,
-
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     padding: 0,
@@ -467,6 +474,7 @@ const styles = StyleSheet.create({
   profileIcon: {
     width: 40,
     height: 40,
+    borderWidth: 1,
   },
   bottomContainer: {
     flexDirection: 'row',
@@ -485,7 +493,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingVertical: 7,
   },
   tagText: {
     fontSize: 16,

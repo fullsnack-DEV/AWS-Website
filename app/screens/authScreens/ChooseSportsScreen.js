@@ -131,13 +131,11 @@ export default function ChooseSportsScreen({navigation, route}) {
     setSelected(selectedSports);
   };
 
-  const navigateToFollowScreen = (response) => {
+  const navigateToFollowScreen = async (response) => {
     if (response.length > 0) {
-      console.log('Location data :=>', {
-        ...route?.params?.locationInfo,
-        teamData: response,
-        sports: selected,
-      });
+      if (!authContext.streamChatToken) {
+        await generateUserStreamToken(authContext);
+      }
       navigation.navigate('FollowTeams', {
         sportInfo: {
           ...route?.params?.locationInfo,
@@ -378,8 +376,6 @@ export default function ChooseSportsScreen({navigation, route}) {
           setDummyAuthContext('entity', authEntity);
           setDummyAuthContext('user', createdUser?.payload);
           await wholeSignUpProcessComplete(createdUser?.payload);
-          // Call Stream chat token api and save in authContex
-          await generateUserStreamToken(authEntity);
         })
         .catch((e) => {
           setloading(false);
@@ -404,6 +400,9 @@ export default function ChooseSportsScreen({navigation, route}) {
       await authContext.setTokenData(tokenData);
       await authContext.setUser({...userData});
       await authContext.setEntity({...entity});
+      if (!authContext.streamChatToken) {
+        await generateUserStreamToken(authContext);
+      }
     } catch (error) {
       console.log('error ==>', error);
     }
@@ -429,18 +428,6 @@ export default function ChooseSportsScreen({navigation, route}) {
           renderItem={renderItem}
         />
       </SafeAreaView>
-      {/* <TCButton
-        title={'CONTINUE'}
-        extraStyle={{position: 'absolute', bottom: hp('7%')}}
-        onPress={() => {
-          if (selected.length > 0) {
-            getTeamsData();
-          } else {
-            Alert.alert(strings.appName, 'Please choose at least one sport.');
-            return false;
-          }
-        }}
-      /> */}
     </LinearGradient>
   );
 }
@@ -479,8 +466,6 @@ const styles = StyleSheet.create({
   },
   sportList: {
     color: colors.whiteColor,
-    // fontSize: wp('4%'),
-
     fontFamily: fonts.RRegular,
   },
   sportText: {

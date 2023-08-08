@@ -186,7 +186,7 @@ const CertificateDisplayScreen = ({navigation, route}) => {
       isValid = isValid && true;
     } else if (updatedCertificate?.url && !updatedCertificate?.title) {
       isValid = false;
-      Alert.alert(strings.warningCertificateTitleText);
+      Alert.alert(strings.warningCertificateTitleText,'',[{test:strings.okTitleText}]);
     } else if (updatedCertificate?.title && !updatedCertificate?.url) {
       isValid = false;
       Alert.alert(strings.warningCertificateImageText);

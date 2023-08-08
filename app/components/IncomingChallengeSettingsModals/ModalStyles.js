@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   row: {
     flexDirection: 'row',
@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
+    lineHeight: 20,
   },
   radioContainer: {
     width: 22,
@@ -39,9 +40,9 @@ const styles = StyleSheet.create({
   greyContainer: {
     paddingHorizontal: 10,
     marginVertical: 35,
-
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
+    height: 35,
   },
   bottomContainer: {
     flex: 1,
@@ -105,6 +106,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     padding: 10,
+    lineHeight: 24,
   },
   addVenueButton: {
     alignSelf: 'center',

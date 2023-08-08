@@ -120,6 +120,7 @@ const UserHomeScreen = ({
               strings.entityInvitedSuccessfully,
               `${currentUserData.first_name} ${currentUserData.last_name}`,
             ),
+            [{text: strings.okTitleText}],
           );
         }, 10);
       })
@@ -177,6 +178,7 @@ const UserHomeScreen = ({
             Alert.alert(
               strings.alertmessagetitle,
               strings.acceptRequestMessage,
+              [{text: strings.okTitleText}],
             );
           }, 10);
         })
@@ -208,6 +210,7 @@ const UserHomeScreen = ({
             Alert.alert(
               strings.alertmessagetitle,
               strings.declinedRequestMessage,
+              [{text: strings.okTitleText}],
             );
           }, 10);
         })
@@ -257,11 +260,20 @@ const UserHomeScreen = ({
     };
     cancelGroupInvite(params, authContext)
       .then(() => {
+        const obj = {
+          ...currentUserData,
+          invite_request: {
+            ...currentUserData.invite_request,
+            action: Verbs.cancelVerb,
+          },
+        };
+        setCurrentUserData(obj);
         setloading(false);
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
             strings.declinedRequestMessage,
+            [{text: strings.okTitleText}],
           );
         }, 10);
       })
@@ -288,16 +300,19 @@ const UserHomeScreen = ({
           break;
 
         case strings.cancelMembershipInvitation:
+        case strings.cancelRequestText:
           Alert.alert(
-            format(strings.alreadySendRequestMsg, currentUserData.full_name),
             '',
+            format(strings.alreadySendRequestMsg, currentUserData.full_name),
             [
               {
                 text: strings.cancelRequestTitle,
                 onPress: () => cancelGroupInvitation(),
+                style: 'destructive',
               },
               {
                 text: strings.cancel,
+                style: 'cancel',
               },
             ],
           );

@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, Image, View} from 'react-native';
-
+// import/no-extraneous-dependencies
 import RNPickerSelect from 'react-native-picker-select';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';

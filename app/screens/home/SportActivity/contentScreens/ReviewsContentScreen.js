@@ -104,7 +104,7 @@ const ReviewsContentScreen = ({
                     defaultRating={ratings[item.name] ?? 0}
                     showRating={false}
                     size={23}
-                    selectedColor={colors.themeColor}
+                    selectedColor={colors.grayBackgroundColor}
                     isDisabled
                   />
                   <Text
@@ -159,9 +159,7 @@ const ReviewsContentScreen = ({
         closeModal={() => setShowModal(false)}
         modalType={ModalTypes.style2}>
         <Text style={[styles.label, {marginBottom: 25}]}>
-          Ratings shows the average ratings that the referee received from teams
-          regarding their matches. The following questions are used to collect
-          ratings from teams.
+          {strings.ratingText}
         </Text>
         {ratingsOption.length > 0
           ? ratingsOption.map((item, index) => (
@@ -186,10 +184,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.whiteColor,
   },
   title: {
-    fontSize: 20,
+    fontSize: 16,
     lineHeight: 24,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
     marginBottom: 15,
   },
   row: {

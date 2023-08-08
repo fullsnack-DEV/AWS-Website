@@ -1,4 +1,10 @@
-import React, {useState, useContext} from 'react';
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import {
   Text,
   StyleSheet,
@@ -6,6 +12,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  TextInput,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {
@@ -43,18 +50,25 @@ import CustomAutoCompleteSuggestionsList from './components/CustomAutoCompleteSu
 import CustomReplyComponent from './components/CustomReplyComponent';
 import CustomReplyInputPreview from './components/CustomReplyInputPreview';
 import CustomAvatar from './components/CustomAvatar';
+import useStreamChatUtils from '../../hooks/useStreamChatUtils';
+import fonts from '../../Constants/Fonts';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
   const authContext = useContext(AuthContext);
+  const {addMembersToChannel, isMemberAdding, createChannel} =
+    useStreamChatUtils();
 
   const [isVisible, setIsVisible] = useState(false);
-
   const [allReaction, setAllReaction] = useState([]);
   const [deleteMessageModal, setDeleteMessageModal] = useState(false);
   const [deleteMessageObject, setDeleteMessageObject] = useState({});
-
   const [showDetails, setShowDetails] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [showSearchInput, setShowSearchInput] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [messages, setMessages] = useState([]);
+  const timeoutRef = useRef();
 
   const CustomImageUploadPreview = () => {
     const {imageUploads, setImageUploads, numberOfUploads, removeImage} =
@@ -206,10 +220,65 @@ const MessageChatScreen = ({navigation, route}) => {
     );
   };
 
+  const handleTagPress = (mentions = [], mentionText = '') => {
+    const entity_name = mentionText.slice(1);
+    const member = mentions.find(
+      (item) => item.group_name === entity_name || item.name === entity_name,
+    );
+    const memberId = member.id.includes('@')
+      ? member.id.split('@')[0]
+      : member.id;
+
+    const obj = {
+      id: memberId,
+      name: member.group_name ?? member.name,
+      image: member.image,
+      entityType: member.entityType,
+    };
+
+    createChannel([obj])
+      .then(async (channelObj) => {
+        if (channelObj !== null) {
+          await channelObj.watch();
+          navigation.replace('MessageChatScreen', {
+            channel: channelObj,
+          });
+        }
+      })
+      .catch((err) => {
+        Alert.alert(strings.alertmessagetitle, err.message);
+      });
+  };
+
+  const getSearchData = useCallback(
+    async (text = '') => {
+      const channelFilters = {cid: channel.cid};
+      const messageFilters = {text: {$autocomplete: text}};
+
+      const response = await authContext.chatClient.search(
+        channelFilters,
+        messageFilters,
+        {sort: [{relevance: -1}, {updated_at: 1}, {my_custom_field: -1}]},
+      );
+
+      setMessages(response.results);
+    },
+    [channel.cid, authContext.chatClient],
+  );
+
+  useEffect(() => {
+    if (searchText.length > 0) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        getSearchData(searchText);
+      }, 300);
+    }
+  }, [searchText, getSearchData]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
-        title={getChannelName(channel, authContext.entity.uid)}
+        title={getChannelName(channel, authContext.chatClient.userID)}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.goBack();
@@ -219,8 +288,41 @@ const MessageChatScreen = ({navigation, route}) => {
           setShowDetails(true);
         }}
         loading={false}
+        rightIcon1={showSearchInput ? images.searchLocation : images.chatSearch}
+        rightIcon1Press={() => {
+          setShowSearchInput(!showSearchInput);
+        }}
       />
       <View style={{flex: 1}}>
+        {showSearchInput ? (
+          <View style={styles.floatingInput}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholderTextColor={strings.searchText}
+                style={styles.textInputStyle}
+                value={searchText}
+                onChangeText={(text) => {
+                  setSearchText(text);
+                }}
+                placeholder={strings.searchText}
+              />
+              {searchText.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setSearchText('');
+                    setMessages([]);
+                    setShowSearchInput(false);
+                  }}>
+                  <Image
+                    source={images.closeRound}
+                    style={{height: 15, width: 15}}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        ) : null}
+
         <ChatOverlayProvider
           translucentStatusBar={false}
           topInset={0}
@@ -239,7 +341,9 @@ const MessageChatScreen = ({navigation, route}) => {
           <Chat style={themeStyle} client={authContext.chatClient}>
             <Channel
               channel={channel}
-              MessageText={CustomMessageText}
+              MessageText={() => (
+                <CustomMessageText onTagPress={handleTagPress} />
+              )}
               MessageAvatar={() => (
                 <CustomAvatar
                   channel={channel}
@@ -261,9 +365,7 @@ const MessageChatScreen = ({navigation, route}) => {
               ReactionList={() => null}
               InputReplyStateHeader={CustomReplyInputPreview}
               Reply={CustomReplyComponent}
-              DateHeader={(props) => (
-                <CustomDateSeparator date={props.dateString} />
-              )}
+              DateHeader={() => null}
               InlineDateSeparator={(props) => (
                 <CustomDateSeparator date={props.date} />
               )}
@@ -297,8 +399,14 @@ const MessageChatScreen = ({navigation, route}) => {
           isVisible={showDetails}
           closeModal={() => setShowDetails(false)}
           channel={channel}
-          currentEntityId={authContext.entity.uid}
+          streamUserId={authContext.chatClient.userID}
           leaveChannel={handleChannelLeave}
+          addMembers={(members = []) => {
+            addMembersToChannel({channel, newMembers: members}).catch((err) => {
+              Alert.alert(strings.alertmessagetitle, err.message);
+            });
+          }}
+          loading={isMemberAdding}
         />
       </View>
     </SafeAreaView>
@@ -311,6 +419,31 @@ const styles = StyleSheet.create({
     marginTop: 5,
     borderWidth: 0.5,
     width: wp(95),
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    backgroundColor: colors.whiteColor,
+    height: 40,
+  },
+  textInputStyle: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    padding: 0,
+  },
+  floatingInput: {
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    backgroundColor: colors.inputBgOpacityColor,
+    position: 'absolute',
+    top: 0,
+    zIndex: 1,
+    width: '100%',
   },
 });
 

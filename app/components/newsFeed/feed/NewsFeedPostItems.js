@@ -1,7 +1,7 @@
 import React, {useCallback, memo, useEffect, useState, useContext} from 'react';
 import {Alert, View} from 'react-native';
 import Share from 'react-native-share';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import CommentModal from '../CommentModal';
 import LikersModal from '../../modals/LikersModal';
 import AuthContext from '../../../auth/context';
@@ -242,10 +242,7 @@ const NewsFeedPostItems = memo(
             isNewsFeedScreen={isNewsFeedScreen}
             openProfilId={openProfilId}
             isRepost={postType === Verbs.repostVerb}
-            showMoreOptions={
-              authContext.entity.role === Verbs.entityTypePlayer ||
-              authContext.entity.role === Verbs.entityTypeUser
-            }
+            showMoreOptions
           />
         )}
 

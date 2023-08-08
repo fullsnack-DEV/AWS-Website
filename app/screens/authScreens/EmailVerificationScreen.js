@@ -12,15 +12,11 @@ import {
   TouchableOpacity,
   Alert,
   Image,
-  Platform,
+  SafeAreaView,
+  Dimensions,
 } from 'react-native';
-import firebase from '@react-native-firebase/app';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 
-import LinearGradient from 'react-native-linear-gradient';
+import firebase from '@react-native-firebase/app';
 import FastImage from 'react-native-fast-image';
 import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
@@ -30,6 +26,8 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {setStorage} from '../../utils';
+
+const windowHeight = Dimensions.get('window').height;
 
 export default function EmailVerificationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -52,15 +50,7 @@ export default function EmailVerificationScreen({navigation, route}) {
           onPress={() => {
             navigation.pop();
           }}>
-          <Image
-            source={images.backArrow}
-            style={{
-              height: 20,
-              width: 15,
-              marginLeft: 20,
-              tintColor: colors.whiteColor,
-            }}
-          />
+          <Image source={images.backArrow} style={styles.backarrowImg} />
         </TouchableOpacity>
       ),
     });
@@ -193,107 +183,116 @@ export default function EmailVerificationScreen({navigation, route}) {
   );
 
   return (
-    <LinearGradient
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
       <ActivityLoader visible={loading} />
       <FastImage style={styles.background} source={images.loginBg} />
-      <View
-        style={{
-          marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
-          alignSelf: 'center',
-          marginLeft: 25,
-          marginRight: 25,
-        }}>
-        <Text
-          style={{
-            fontSize: 25,
-            fontFamily: fonts.RBold,
-            color: colors.whiteColor,
-            marginBottom: 5,
-          }}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerTextContainer}>
           {strings.verifyEmailText}
         </Text>
-        <Text style={{fontSize: 16, color: 'white', fontFamily: fonts.RMedium}}>
+        <Text style={styles.verificationemailText}>
           {getVerificationEmailText}
         </Text>
       </View>
-      <FastImage
-        style={{
-          height: 65.33,
-          width: 101,
-          alignSelf: 'center',
-          marginTop: 68,
-        }}
-        resizeMode={'contain'}
-        source={images.emailSendIconBG}
-      />
-
-      <TouchableOpacity
-        testID="verify-email-button"
-        onPress={verifyUserEmail}
-        style={{
-          borderRadius: 50,
-          marginTop: 43.5,
-          height: 45,
-          marginLeft: 25,
-          marginRight: 25,
-          opacity: 1,
-        }}>
-        <View
-          style={{
-            borderRadius: 50,
-            backgroundColor: 'white',
-            borderWidth: 1,
-            borderColor: 'orange',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: 45,
-            opacity: 1,
-          }}>
-          <Text
-            style={{
-              fontSize: 15,
-              fontFamily: fonts.RBold,
-              color: colors.darkYellowColor,
-            }}>
-            {' '}
-            {strings.iHaveVerifiedEmail}
-          </Text>
-        </View>
-      </TouchableOpacity>
       <TouchableOpacity
         onPress={resend}
         disabled={timer !== 0}
         style={{alignItems: 'center'}}>
-        <Text
-          style={{
-            textAlign: 'center',
-            color: colors.lightGreen,
-            textDecorationLine: 'underline',
-            fontSize: 14,
-            fontWeight: '700',
-            marginTop: 20,
-            fontFamily: fonts.RBold,
-            marginLeft: 10,
-            marginRight: 10,
-          }}>
+        <Text style={styles.sendTextagain}>
           {timer !== 0
             ? format(strings.sentVerificationEmailAfterSecond, timer)
             : strings.sentEmailAgainTExt}
         </Text>
       </TouchableOpacity>
-    </LinearGradient>
+      <FastImage
+        style={styles.planeImgStyle}
+        resizeMode={'contain'}
+        source={images.verficationPlane}
+      />
+
+      <TouchableOpacity
+        testID="verify-email-button"
+        onPress={verifyUserEmail}
+        style={styles.ihaveVerfiedButton}>
+        <View style={styles.ihaveverfied}>
+          <Text style={styles.ihaveverfiedText}>
+            {' '}
+            {strings.iHaveVerifiedEmail}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   background: {
-    height: hp('100%'),
     position: 'absolute',
-    width: wp('100%'),
+    width: '100%',
+    height: windowHeight,
+    resizeMode: 'cover',
   },
-  mainContainer: {
-    flex: 1,
-    paddingTop: 25,
+
+  ihaveverfied: {
+    borderRadius: 50,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'orange',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 45,
+    opacity: 1,
+  },
+  ihaveverfiedText: {
+    fontSize: 15,
+    fontFamily: fonts.RBold,
+    color: colors.darkYellowColor,
+  },
+  ihaveVerfiedButton: {
+    borderRadius: 50,
+    marginTop: 210,
+    height: 45,
+    marginLeft: 25,
+    marginRight: 25,
+    opacity: 1,
+  },
+  backarrowImg: {
+    height: 20,
+    width: 15,
+    marginLeft: 20,
+    tintColor: colors.whiteColor,
+  },
+
+  headerContainer: {
+    marginTop: 50,
+    alignSelf: 'center',
+    marginLeft: 25,
+    marginRight: 25,
+  },
+  headerTextContainer: {
+    fontSize: 25,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
+    marginBottom: 5,
+    lineHeight: 37,
+  },
+  verificationemailText: {
+    fontSize: 16,
+    color: 'white',
+    fontFamily: fonts.RMedium,
+  },
+  sendTextagain: {
+    textAlign: 'center',
+    color: colors.lightGreen,
+    textDecorationLine: 'underline',
+    fontSize: 14,
+    fontFamily: fonts.RBold,
+    marginTop: 30,
+    marginHorizontal: 10,
+  },
+  planeImgStyle: {
+    height: 65.33,
+    width: 101,
+    alignSelf: 'center',
+    marginTop: 113,
   },
 });

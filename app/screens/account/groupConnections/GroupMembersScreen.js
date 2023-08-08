@@ -469,7 +469,12 @@ export default function GroupMembersScreen({navigation, route}) {
         }
         return <View />;
       }
-      if (authContext.entity.uid !== data?.user_id && data?.connected) {
+      if (
+        authContext.entity.uid !== data?.user_id &&
+        data?.connected &&
+        (authContext.entity.role !== Verbs.entityTypeTeam ||
+          authContext.entity.role !== Verbs.entityTypeClub)
+      ) {
         return (
           <View style={{flexDirection: 'row'}}>
             <TCFollowUnfollwButton

@@ -309,7 +309,7 @@ export default function ChooseLocationScreen({navigation, route}) {
           autoCorrect={false}
           spellCheck={false}
           style={styles.textInput}
-          placeholder={strings.locationPlaceholderText}
+          placeholder={strings.searchByCity}
           clearButtonMode="always"
           placeholderTextColor={colors.themeColor}
           onChangeText={(text) =>

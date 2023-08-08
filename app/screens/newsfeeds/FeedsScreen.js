@@ -275,6 +275,7 @@ const FeedsScreen = ({navigation}) => {
   );
 
   const onEndReached = useCallback(() => {
+    if (postData.length === 0) return;
     setIsMoreLoading(true);
     setFooterLoading(true);
     const id_lt = postData?.[postData.length - 1]?.id;

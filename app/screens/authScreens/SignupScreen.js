@@ -6,20 +6,14 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  SafeAreaView,
   Image,
-  Platform,
+  SafeAreaView,
+  Dimensions,
 } from 'react-native';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
 
 import firebase from '@react-native-firebase/app';
-
 import FastImage from 'react-native-fast-image';
 import Config from 'react-native-config';
-import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'react-string-format';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import TCKeyboardView from '../../components/TCKeyboardView';
@@ -36,6 +30,9 @@ import apiCall from '../../utils/apiCall';
 import {checkTownscupEmail} from '../../api/Users';
 
 import {getHitSlop} from '../../utils/index';
+import Verbs from '../../Constants/Verbs';
+
+const windowHeight = Dimensions.get('window').height;
 
 export default function SignupScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -65,6 +62,7 @@ export default function SignupScreen({navigation}) {
       displayAlert(strings.lastnamevalidation);
       return false;
     }
+
     if (Utility.validatedName(lName) === false) {
       displayAlert(strings.lNameCanNotBlank);
       return false;
@@ -77,6 +75,13 @@ export default function SignupScreen({navigation}) {
       displayAlert(strings.validEmailMessage);
       return false;
     }
+
+    if (password.length < Verbs.PASSWORD_LENGTH) {
+      Utility.showAlert(strings.passwordWarningMessage);
+
+      return false;
+    }
+
     if (password === '') {
       displayAlert(strings.passwordCanNotBlank);
       return false;
@@ -89,11 +94,7 @@ export default function SignupScreen({navigation}) {
       displayAlert(strings.confirmAndPasswordNotMatch);
       return false;
     }
-    if (password.length < 6) {
-      displayAlert(strings.firstnamevalidation);
-      Alert.alert(strings.appName, strings.passwordWarningMessage);
-      return false;
-    }
+
     return true;
   };
   const displayAlert = (message) => {
@@ -153,7 +154,7 @@ export default function SignupScreen({navigation}) {
               }
             }
           }}>
-          {strings.signUp}
+          {strings.next}
         </Text>
       ),
     });
@@ -253,7 +254,7 @@ export default function SignupScreen({navigation}) {
     setloading(false);
     navigation.navigate('EmailVerificationScreen', {
       signupInfo: {
-        emailAddress: email,
+        emailAddress: email.toLowerCase(),
         password,
       },
     });
@@ -294,8 +295,7 @@ export default function SignupScreen({navigation}) {
         if (e.code === 'auth/network-request-failed') {
           message = strings.networkConnectivityErrorMessage;
         }
-        if (message !== '')
-          setTimeout(() => Alert.alert(strings.appName, message), 50);
+        if (message !== '') setTimeout(() => Utility.showAlert(message), 50);
       });
   };
   // This commented code we will be used in production for email varification please dont remove it.
@@ -337,7 +337,7 @@ export default function SignupScreen({navigation}) {
       if (userExist) {
         setloading(false);
         setTimeout(() => {
-          Alert.alert(strings.alreadyRegisteredMessage);
+          Utility.showAlert(strings.alreadyRegisteredMessage);
         }, 100);
       } else {
         checkUserIsRegistratedOrNotWithFirebase()
@@ -353,10 +353,12 @@ export default function SignupScreen({navigation}) {
                   setTimeout(() => {
                     Alert.alert(
                       strings.appName,
+
                       format(
                         strings.emailAlreadyRegisteredWith,
                         error?.provider,
                       ),
+                      [{text: strings.okTitleText, onPress: () => {}}],
                     );
                   }, 100);
                 });
@@ -378,135 +380,143 @@ export default function SignupScreen({navigation}) {
   };
 
   return (
-    <>
-      <LinearGradient
-        colors={[colors.themeColor1, colors.themeColor3]}
-        style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
-        <FastImage style={styles.background} source={images.loginBg} />
-        <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
-        <TCKeyboardView>
-          <View
-            style={{
-              marginVertical: 66,
-              marginLeft: 35,
-              marginRight: 35,
-            }}>
-            <TCTextField
-              testID={'email-signup-input'}
+    <SafeAreaView style={{flex: 1, backgroundColor: '#FF8A01'}}>
+      <ActivityLoader visible={loading} />
+      <FastImage
+        style={styles.background}
+        source={images.loginBg}
+        resizeMode="cover"
+      />
+      <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
+      <TCKeyboardView>
+        <View
+          style={{
+            marginVertical: 66,
+            marginLeft: 35,
+            marginRight: 35,
+          }}>
+          <TCTextField
+            testID={'email-signup-input'}
+            placeholderTextColor={colors.darkYellowColor}
+            style={styles.textFieldStyle}
+            height={40}
+            placeholder={strings.email}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+          />
+
+          <View style={styles.passwordView}>
+            <TextInput
+              testID="password-signup-input"
+              style={{
+                ...styles.textInput,
+              }}
+              placeholder={strings.passwordText}
+              onChangeText={(text) => {
+                if (text.includes(' ')) {
+                  setPassword(text.trim());
+                } else {
+                  setPassword(text);
+                }
+              }}
+              value={password}
               placeholderTextColor={colors.darkYellowColor}
-              style={styles.textFieldStyle}
-              height={40}
-              placeholder={strings.emailPlaceHolder}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              onChangeText={(text) => setEmail(text)}
-              value={email}
+              secureTextEntry={hidePassword}
+              keyboardType={'default'}
             />
-
-            <View style={styles.passwordView}>
-              <TextInput
-                testID="password-signup-input"
-                style={{
-                  ...styles.textInput,
-                }}
-                placeholder={strings.passwordText}
-                onChangeText={(text) => {
-                  if (text.includes(' ')) {
-                    setPassword(text.trim());
-                  } else {
-                    setPassword(text);
-                  }
-                }}
-                value={password}
-                placeholderTextColor={colors.darkYellowColor}
-                secureTextEntry={hidePassword}
-                keyboardType={'default'}
-              />
-              <TouchableOpacity
-                onPress={() => hideShowPassword()}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: 10,
-                }}>
-                {hidePassword ? (
-                  <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
-                ) : (
-                  <Text style={styles.passwordEyes}>{strings.HIDE}</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.passwordView}>
-              <TextInput
-                testID="cpassword-signup-input"
-                autoCapitalize="none"
-                style={{...styles.textInput}}
-                placeholder={strings.confirmPasswordText}
-                onChangeText={(text) => {
-                  if (text.includes(' ')) {
-                    setCPassword(text.trim());
-                  } else {
-                    setCPassword(text);
-                  }
-                }}
-                value={cPassword}
-                placeholderTextColor={colors.darkYellowColor}
-                secureTextEntry={hideConfirmPassword}
-                keyboardType={'default'}
-              />
-              <TouchableOpacity
-                onPress={() => hideShowConfirmPassword()}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: 10,
-                }}>
-                {hideConfirmPassword ? (
-                  <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
-                ) : (
-                  <Text style={styles.passwordEyes}>{strings.HIDE}</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TCKeyboardView>
-        <SafeAreaView>
-          <View style={{bottom: 15}}>
             <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              onPress={() => navigation.navigate('LoginScreen')}
-              style={styles.alreadyView}>
-              <Text style={styles.alreadyMemberText}>
-                {strings.alreadyMember}
-                <Text> </Text>
-                <Text
-                  style={{
-                    textDecorationLine: 'underline',
-                    fontFamily: fonts.RBold,
-                  }}>
-                  {strings.loginText}
-                </Text>
-              </Text>
+              onPress={() => hideShowPassword()}
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 10,
+              }}>
+              {hidePassword ? (
+                <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
+              ) : (
+                <Text style={styles.passwordEyes}>{strings.HIDE}</Text>
+              )}
             </TouchableOpacity>
           </View>
-        </SafeAreaView>
-      </LinearGradient>
-    </>
+
+          <View style={styles.passwordView}>
+            <TextInput
+              testID="cpassword-signup-input"
+              autoCapitalize="none"
+              style={{...styles.textInput}}
+              placeholder={strings.confirmPasswordText}
+              onChangeText={(text) => {
+                if (text.includes(' ')) {
+                  setCPassword(text.trim());
+                } else {
+                  setCPassword(text);
+                }
+              }}
+              value={cPassword}
+              placeholderTextColor={colors.darkYellowColor}
+              secureTextEntry={hideConfirmPassword}
+              keyboardType={'default'}
+            />
+            <TouchableOpacity
+              onPress={() => hideShowConfirmPassword()}
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 10,
+              }}>
+              {hideConfirmPassword ? (
+                <Text style={styles.passwordEyes}>{strings.SHOW}</Text>
+              ) : (
+                <Text style={styles.passwordEyes}>{strings.HIDE}</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={{marginTop: 20}}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RMedium,
+                lineHeight: 24,
+                color: colors.whiteColor,
+              }}>
+              {strings.signUpPasswordText}
+            </Text>
+          </View>
+        </View>
+      </TCKeyboardView>
+
+      <View style={{bottom: 70}}>
+        <TouchableOpacity
+          hitSlop={getHitSlop(15)}
+          onPress={() => navigation.navigate('LoginScreen')}
+          style={styles.alreadyView}>
+          <Text style={styles.alreadyMemberText}>
+            {strings.alreadyMember}
+            <Text> </Text>
+            <Text
+              style={{
+                textDecorationLine: 'underline',
+                fontFamily: fonts.RBold,
+              }}>
+              {strings.loginText}
+            </Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   background: {
-    height: hp('100%'),
     position: 'absolute',
-    width: wp('100%'),
+    width: '100%',
+    height: windowHeight,
+    resizeMode: 'cover',
   },
-  mainContainer: {
-    flex: 1,
-    paddingTop: 25,
-  },
+
   passwordEyes: {
     fontSize: 10,
     color: colors.darkYellowColor,
@@ -520,12 +530,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 5,
     color: 'black',
-    elevation: 3,
     flexDirection: 'row',
     marginVertical: 5,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.5,
     shadowRadius: 4,
   },
   textInput: {
@@ -538,11 +544,7 @@ const styles = StyleSheet.create({
   textFieldStyle: {
     marginVertical: 5,
     alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
+    backgroundColor: colors.bhirthdaybgcolor,
     paddingHorizontal: 5,
     marginHorizontal: 0,
   },
@@ -561,7 +563,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
     color: colors.whiteColor,
-    // backgroundColor: 'red',
     paddingLeft: 20,
     paddingVertical: 10,
   },
@@ -570,7 +571,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginLeft: 25,
-    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
+    marginTop: 50,
     textAlign: 'left',
   },
 });

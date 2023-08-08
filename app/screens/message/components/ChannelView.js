@@ -35,7 +35,7 @@ const ChannelView = ({channel, latestMessagePreview}) => {
         <CustomAvatar channel={channel} />
         <View style={{flex: 1}}>
           <Text style={styles.channelTitle} numberOfLines={1}>
-            {getChannelName(channel, authContext.entity.uid)}
+            {getChannelName(channel, authContext.chatClient.userID)}
           </Text>
           <Text style={styles.channelLowerText} numberOfLines={1}>
             {getLastMessage()}

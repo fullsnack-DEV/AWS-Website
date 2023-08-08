@@ -36,10 +36,13 @@ const CustomModalWrapper = ({
   isSwipeUp = false,
   showBackButton = false,
   ratio = 2.5,
+  parentStyle = {},
 }) => {
   const [isFullHeight, setIsFullHeight] = useState(isSwipeUp);
   const translateY = new Animated.Value(0);
   let isGestureActive = false;
+
+  const SWIPE_THRESHOLD = 50;
 
   const onPanGestureEvent = Animated.event(
     [{nativeEvent: {translationY: translateY}}],
@@ -49,7 +52,7 @@ const CustomModalWrapper = ({
         if (event.nativeEvent.translationY <= 0) {
           translateY.setValue(0);
 
-          if (isSwipeUp) {
+          if (isSwipeUp && event.nativeEvent.translationY < -SWIPE_THRESHOLD) {
             setIsFullHeight(true);
             translateY.setValue(0);
           }
@@ -167,7 +170,7 @@ const CustomModalWrapper = ({
 
     switch (modalType) {
       case ModalTypes.style1:
-        return [styles.card, {flex: 1}];
+        return [styles.card, {flex: 1}, parentStyle];
 
       case ModalTypes.style2:
       case ModalTypes.style3:
@@ -252,7 +255,7 @@ const CustomModalWrapper = ({
                     ],
                   },
                 ]}>
-                <Pressable onPress={() => {}} style={{}}>
+                <Pressable onPress={() => {}} style={{flex: 1}}>
                   <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
                     {getModalHeader()}
                   </View>

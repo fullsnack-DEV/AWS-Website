@@ -11,6 +11,7 @@ import {
   Image,
   FlatList,
 } from 'react-native';
+import {format} from 'react-string-format';
 import {strings} from '../../../../../Localization/translation';
 import {
   getGameIndex,
@@ -38,6 +39,7 @@ const RefereeCongratulationsModal = ({
   const [matchList, setMatchList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [teamsData, setTeamsData] = useState({});
+  const [isTeamSport, setIsTeamSport] = useState(false);
 
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
@@ -182,6 +184,23 @@ const RefereeCongratulationsModal = ({
     }
   }, [isFocused, isVisible, getUpcomingGameList]);
 
+  useEffect(() => {
+    if (sport) {
+      const obj = authContext.sports.find((item) => item.sport === sport);
+
+      if (obj) {
+        const sportFormat = (obj.format ?? []).find(
+          (item) => item.entity_type === Verbs.entityTypePlayer,
+        );
+        if (sportFormat) {
+          setIsTeamSport(false);
+        } else {
+          setIsTeamSport(true);
+        }
+      }
+    }
+  }, [sport, authContext.sports]);
+
   return (
     <Modal
       visible={isVisible}
@@ -216,8 +235,14 @@ const RefereeCongratulationsModal = ({
 
           <Text style={styles.description}>
             {entityType === Verbs.entityTypeReferee
-              ? strings.refereeCongratulationsModal
-              : strings.scoreKeeperCongratulationsModal}
+              ? format(
+                  strings.refereeCongratulationsModal,
+                  isTeamSport ? strings.teams : strings.teamsAndPlayers,
+                )
+              : format(
+                  strings.scoreKeeperCongratulationsModal,
+                  isTeamSport ? strings.teams : strings.teamsAndPlayers,
+                )}
           </Text>
           <View style={styles.dividor} />
           {renderList()}

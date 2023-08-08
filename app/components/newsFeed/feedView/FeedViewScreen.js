@@ -9,7 +9,7 @@ import {Alert, SafeAreaView, StatusBar} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {useIsFocused} from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import Share from 'react-native-share';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import colors from '../../../Constants/Colors';

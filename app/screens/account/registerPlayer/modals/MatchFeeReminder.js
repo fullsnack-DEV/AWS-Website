@@ -192,7 +192,7 @@ const MatchFeeReminder = ({
                   style={[
                     styles.buttonContainer,
                     {
-                      marginBottom: 15,
+                      marginBottom: 5,
                       backgroundColor: colors.grayBackgroundColor,
                     },
                   ]}

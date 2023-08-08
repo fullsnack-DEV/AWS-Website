@@ -10,6 +10,7 @@ import LocationContext from './app/context/LocationContext';
 import NavigationMainContainer from './NavigationMainContainer';
 import * as Utility from './app/utils';
 import {strings} from './Localization/translation';
+
 import {ImageUploadProvider} from './app/context/GetContexts';
 import CommonAlert from './app/screens/account/commonScreen/CommonAlert';
 import {getAppSettingsWithoutAuth} from './app/api/Users';

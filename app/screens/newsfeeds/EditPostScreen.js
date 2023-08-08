@@ -1,5 +1,3 @@
-/* eslint-disable no-useless-escape */
-
 import React, {
   useState,
   useRef,
@@ -20,18 +18,15 @@ import {
   Platform,
   FlatList,
   Alert,
-  Dimensions,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import Modal from 'react-native-modal';
 
 import ImagePicker from 'react-native-image-crop-picker';
 import ParsedText from 'react-native-parsed-text';
 import _ from 'lodash';
-// import UrlPreview from 'react-native-url-preview';
 import ImageButton from '../../components/WritePost/ImageButton';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
@@ -39,23 +34,19 @@ import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import {getHitSlop, getTaggedEntityData} from '../../utils';
+import {getTaggedEntityData} from '../../utils';
 import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
 import TCGameCard from '../../components/TCGameCard';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import {strings} from '../../../Localization/translation';
-import TCThinDivider from '../../components/TCThinDivider';
 import AuthContext from '../../auth/context';
 import {
   whoCanDataSourceGroup,
   whoCanDataSourceUser,
 } from '../../utils/constant';
 import ScreenHeader from '../../components/ScreenHeader';
-
-const urlRegex =
-  /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gim;
-// const tagRegex = /(?<![\w@])@([\w@]+(?:[.!][\w@]+)*)/gmi
-const tagRegex = /(?!\w)@\w+/gim;
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {ModalTypes, tagRegex, urlRegex} from '../../Constants/GeneralConstants';
 
 const EditPostScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -139,7 +130,7 @@ const EditPostScreen = ({navigation, route}) => {
       setLastTagStartIndex(currentTextInputIndex - 1);
     if (searchText[currentTextInputIndex - 1] === ' ')
       setLastTagStartIndex(null);
-  }, [searchText]);
+  }, [searchText, currentTextInputIndex]);
 
   useEffect(() => {
     if (searchText?.length === 0) {
@@ -166,9 +157,32 @@ const EditPostScreen = ({navigation, route}) => {
     }
   }, [currentTextInputIndex, searchText]);
 
+  const searchFilterFunction = useCallback(
+    (text) => {
+      if (text?.length > 0) {
+        let userData = searchUsers.filter(
+          (a) => !tagsOfEntity.some((b) => a.user_id === b.entity_id),
+        );
+        let groupData = searchGroups.filter(
+          (o1) => !tagsOfEntity.some((o2) => o1.group_id === o2?.entity_id),
+        );
+
+        userData = userData.filter((x) =>
+          x?.full_name?.toLowerCase().includes(text?.toLowerCase()),
+        );
+        groupData = groupData.filter((x) =>
+          x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
+        );
+        setUsers([...userData]);
+        setGroups([...groupData]);
+      }
+    },
+    [searchGroups, searchUsers, tagsOfEntity],
+  );
+
   useEffect(() => {
     if (letModalVisible) searchFilterFunction(searchTag?.replace('@', ''));
-  }, [letModalVisible, searchTag]);
+  }, [letModalVisible, searchTag, searchFilterFunction]);
 
   const removeStr = (str, fromIndex, toIndex) =>
     str.substring(0, fromIndex) + str.substring(toIndex, str.length);
@@ -306,30 +320,7 @@ const EditPostScreen = ({navigation, route}) => {
       ].join('');
       setSearchText(output);
     }
-  }, [route?.params]);
-
-  const searchFilterFunction = useCallback(
-    (text) => {
-      if (text?.length > 0) {
-        let userData = searchUsers.filter(
-          (a) => !tagsOfEntity.some((b) => a.user_id === b.entity_id),
-        );
-        let groupData = searchGroups.filter(
-          (o1) => !tagsOfEntity.some((o2) => o1.group_id === o2?.entity_id),
-        );
-
-        userData = userData.filter((x) =>
-          x?.full_name?.toLowerCase().includes(text?.toLowerCase()),
-        );
-        groupData = groupData.filter((x) =>
-          x?.group_name?.toLowerCase().includes(text?.toLowerCase()),
-        );
-        setUsers([...userData]);
-        setGroups([...groupData]);
-      }
-    },
-    [searchGroups, searchUsers, tagsOfEntity],
-  );
+  }, [route?.params, currentTextInputIndex, searchText, tagsOfEntity]);
 
   let userImage = '';
   let userName = '';
@@ -527,7 +518,11 @@ const EditPostScreen = ({navigation, route}) => {
         contentContainerStyle={{paddingHorizontal: 15, marginVertical: 15}}
         pagingEnabled={true}
         horizontal={true}
-        data={tagsOfEntity?.filter((item) => item?.entity_type === 'game')}
+        data={
+          tagsOfEntity?.length > 0
+            ? tagsOfEntity.filter((item) => item?.entity_type === 'game')
+            : []
+        }
         renderItem={renderSelectedGame}
         keyExtractor={(item) => item?.entity_id}
       />
@@ -565,38 +560,28 @@ const EditPostScreen = ({navigation, route}) => {
       ),
     [selectImage],
   );
-
   const renderWhoCan = ({item}) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => {
-        setPrivacySetting(item);
-
-        setTimeout(() => {
-          setVisibleWhoModal(false);
-        }, 300);
-      }}>
-      <View
-        style={{
-          padding: 20,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginRight: 15,
+    <>
+      <TouchableOpacity
+        style={[
+          styles.listItem,
+          privacySetting.value === item.value
+            ? {backgroundColor: colors.privacyBgColor}
+            : {},
+        ]}
+        onPress={() => {
+          setPrivacySetting(item);
+          setTimeout(() => {
+            setVisibleWhoModal(false);
+          }, 300);
         }}>
-        <Text style={styles.languageList}>{item.text}</Text>
-        <View style={styles.checkbox}>
-          {privacySetting.value === item?.value ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
+        <View style={[styles.icon, {marginRight: 10}]}>
+          <Image source={item.icon} style={styles.image} />
         </View>
-      </View>
-    </TouchableOpacity>
+        <Text style={styles.languageList}>{item.text}</Text>
+      </TouchableOpacity>
+      <View style={styles.separator} />
+    </>
   );
 
   return (
@@ -697,14 +682,16 @@ const EditPostScreen = ({navigation, route}) => {
 
         <View style={styles.bottomSafeAreaStyle}>
           <View style={styles.bottomImgView}>
-            <View style={styles.onlyMeViewStyle}>
+            <TouchableOpacity
+              style={styles.onlyMeViewStyle}
+              onPress={() => setVisibleWhoModal(true)}>
               <ImageButton
                 source={images.lock}
                 imageStyle={{width: 30, height: 30}}
                 onImagePress={() => setVisibleWhoModal(true)}
               />
               <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
-            </View>
+            </TouchableOpacity>
             <View
               style={[
                 styles.onlyMeViewStyle,
@@ -743,70 +730,23 @@ const EditPostScreen = ({navigation, route}) => {
         </View>
       </KeyboardAvoidingView>
 
-      <Modal
+      <CustomModalWrapper
         isVisible={visibleWhoModal}
-        onBackdropPress={() => setVisibleWhoModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={50}
-        backdropTransitionOutTiming={50}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.3,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              hitSlop={getHitSlop(15)}
-              style={styles.closeButton}
-              onPress={() => setVisibleWhoModal(false)}>
-              <Image source={images.cancelImage} style={styles.closeButton} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.privacySettingText}
-            </Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
-            showsVerticalScrollIndicator={false}
-            data={
-              ['user', 'player'].includes(authContext.entity.role)
-                ? whoCanDataSourceUser
-                : whoCanDataSourceGroup
-            }
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderWhoCan}
-          />
-        </View>
-      </Modal>
+        closeModal={() => setVisibleWhoModal(false)}
+        modalType={ModalTypes.style2}
+        containerStyle={{paddingTop: 15, paddingHorizontal: 30}}>
+        <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={
+            ['user', 'player'].includes(authContext.entity.role)
+              ? whoCanDataSourceUser
+              : whoCanDataSourceGroup
+          }
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderWhoCan}
+        />
+      </CustomModalWrapper>
     </SafeAreaView>
   );
 };
@@ -901,45 +841,40 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     paddingVertical: hp(1),
   },
-  // previewContainerStyle: {
-  //   margin: 5,
-  //   borderWidth: 1,
-  //   borderColor: colors.grayBackgroundColor,
-  //   padding: 8,
-  //   borderRadius: 10,
-  // },
-
-  checkboxImg: {
-    width: wp('5.5%'),
-    resizeMode: 'contain',
-    alignSelf: 'center',
+  icon: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  checkbox: {
-    alignSelf: 'center',
-    position: 'absolute',
-    right: wp(0),
-  },
-
-  closeButton: {
-    alignSelf: 'center',
-    width: 13,
-    height: 13,
-    marginLeft: 5,
+  image: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
   },
-
-  separatorLine: {
-    alignSelf: 'center',
-    backgroundColor: colors.grayColor,
-    height: 0.5,
-    marginTop: 14,
-    width: wp('92%'),
-  },
-
-  languageList: {
+  modalTitile: {
+    fontSize: 20,
+    lineHeight: 30,
+    textAlign: 'center',
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+    marginBottom: 15,
+  },
+  listItem: {
+    paddingVertical: 15,
+    paddingHorizontal: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.grayBackgroundColor,
+  },
+  languageList: {
+    fontSize: 16,
+    lineHeight: 24,
     fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
+    color: colors.lightBlackColor,
   },
 });
 export default EditPostScreen;

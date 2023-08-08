@@ -33,6 +33,7 @@ const SettingsMenuItem = ({
           );
 
         case strings.gameFee:
+          // console.log('settings==>', settingObject);
           return (
             <Text style={styles.normalStyle}>
               {`${settingObject.game_fee?.fee || 0} ${

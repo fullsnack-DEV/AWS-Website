@@ -31,7 +31,7 @@ const AccountMenuRow = ({
     }
   }, [item, authContext]);
 
-  return !isAccountDeactivated ? (
+  return !isAccountDeactivated && item.option ? (
     <View style={{paddingHorizontal: 15}}>
       <View
         style={[

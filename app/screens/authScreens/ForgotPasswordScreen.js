@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Image,
-  Platform,
+  SafeAreaView,
 } from 'react-native';
 
 import {
@@ -17,7 +17,7 @@ import {
 
 import firebase from '@react-native-firebase/app';
 import FastImage from 'react-native-fast-image';
-import LinearGradient from 'react-native-linear-gradient';
+
 import TCTextField from '../../components/TCTextField';
 import {strings} from '../../../Localization/translation';
 import images from '../../Constants/ImagePath';
@@ -135,9 +135,7 @@ export default function ForgotPasswordScreen({navigation}) {
   };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <LinearGradient
-        colors={[colors.themeColor1, colors.themeColor3]}
-        style={styles.mainContainer}>
+      <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
         <ActivityLoader visible={loading} />
         <FastImage style={styles.background} source={images.loginBg} />
         <Text style={styles.forgotText}>{strings.forgotPassword}</Text>
@@ -152,21 +150,7 @@ export default function ForgotPasswordScreen({navigation}) {
           onChangeText={(text) => setEmail(text)}
           value={email}
         />
-
-        {/* <View style={{flex: 1}} /> */}
-
-        {/* <View style={{marginBottom: 20}}>
-          <TCButton
-            title={strings.nextTitle}
-            onPress={() => {
-              if (checkValidation()) {
-                forgotPassword(email);
-              }
-            }}
-            extraStyle={{marginBottom: 10}}
-          />
-        </View> */}
-      </LinearGradient>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 }
@@ -181,14 +165,11 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
+    marginTop: 50,
     paddingLeft: 25,
     textAlign: 'left',
   },
-  mainContainer: {
-    flex: 1,
-    paddingVertical: 25,
-  },
+
   resetText: {
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,

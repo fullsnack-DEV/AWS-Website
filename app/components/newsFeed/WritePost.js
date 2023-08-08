@@ -3,6 +3,7 @@ import {StyleSheet, View, Image, Text, TouchableOpacity} from 'react-native';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import {strings} from '../../../Localization/translation';
 
 function WritePost({postDataItem, onWritePostPress}) {
   let userImage = '';
@@ -19,7 +20,7 @@ function WritePost({postDataItem, onWritePostPress}) {
         />
       </View>
       <TouchableOpacity style={styles.writePostView} onPress={onWritePostPress}>
-        <Text style={styles.writePostText}>Write a post...</Text>
+        <Text style={styles.writePostText}> {strings.writePostText} </Text>
       </TouchableOpacity>
     </View>
   );

@@ -222,23 +222,28 @@ export default function UserConnections({navigation, route}) {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.buttonContainer}
-                  onPress={() => {
-                    if (item.is_following) {
-                      handleUnfollow(item);
-                    } else {
-                      handleFollow(item);
-                    }
-                  }}>
-                  <Text
-                    style={[
-                      styles.buttonText,
-                      item.is_following ? {color: colors.lightBlackColor} : {},
-                    ]}>
-                    {item.is_following ? strings.following : strings.follow}
-                  </Text>
-                </TouchableOpacity>
+                {authContext.entity.role === Verbs.entityTypeUser ||
+                authContext.entity.role === Verbs.entityTypePlayer ? (
+                  <TouchableOpacity
+                    style={styles.buttonContainer}
+                    onPress={() => {
+                      if (item.is_following) {
+                        handleUnfollow(item);
+                      } else {
+                        handleFollow(item);
+                      }
+                    }}>
+                    <Text
+                      style={[
+                        styles.buttonText,
+                        item.is_following
+                          ? {color: colors.lightBlackColor}
+                          : {},
+                      ]}>
+                      {item.is_following ? strings.following : strings.follow}
+                    </Text>
+                  </TouchableOpacity>
+                ) : null}
               </View>
               <View style={styles.separator} />
             </>

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {Pressable} from 'react-native';
 import TCZoomableImage from '../../TCZoomableImage';
 import {getScreenHeight, getScreenWidth} from '../../../utils';
 
@@ -11,7 +11,7 @@ const FeedImageView = ({
   sourceData,
   isLandscape,
 }) => (
-  <View
+  <Pressable
     style={{
       alignItems: 'center',
       justifyContent: 'center',
@@ -27,6 +27,6 @@ const FeedImageView = ({
         height: getScreenHeight({isLandscape, screenInsets}),
       }}
     />
-  </View>
+  </Pressable>
 );
 export default FeedImageView;

@@ -12,10 +12,10 @@ import {
   InvoiceRecipientTabType,
   InvoiceRowType,
 } from '../../../Constants/GeneralConstants';
-import TCScrollableProfileTabs from '../../../components/TCScrollableProfileTabs';
 import AuthContext from '../../../auth/context';
 import Verbs from '../../../Constants/Verbs';
 import RecipientCell from './RecipientCell';
+import CustomScrollTabs from '../../../components/CustomScrollTabs';
 
 const SelectedRecipientsModal = ({
   isVisible,
@@ -39,7 +39,7 @@ const SelectedRecipientsModal = ({
   ]);
 
   const tabChangePress = useCallback((changeTab) => {
-    switch (changeTab.i) {
+    switch (changeTab) {
       case InvoiceRecipientTabType.People:
         break;
       case InvoiceRecipientTabType.Teams:
@@ -47,7 +47,7 @@ const SelectedRecipientsModal = ({
       default:
         break;
     }
-    setCurrentTab(changeTab.i);
+    setCurrentTab(changeTab);
   }, []);
 
   useEffect(() => {
@@ -122,10 +122,9 @@ const SelectedRecipientsModal = ({
       Top={100}>
       {isShowTabs && invoiceType === InvoiceType.Invoice && (
         <View style={{backgroundColor: '#FFFFFF'}}>
-          <TCScrollableProfileTabs
-            tabItem={tabs}
-            tabVerticalScroll={false}
-            onChangeTab={tabChangePress}
+          <CustomScrollTabs
+            tabsItem={tabs}
+            setCurrentTab={tabChangePress}
             currentTab={currentTab}
           />
         </View>

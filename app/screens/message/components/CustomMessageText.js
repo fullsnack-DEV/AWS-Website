@@ -1,17 +1,15 @@
 // @flow
 import React, {useContext, useState} from 'react';
 import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
-import ParsedText from 'react-native-parsed-text';
 import {useMessageContext} from 'stream-chat-react-native';
 import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import {tagRegex} from '../../../Constants/GeneralConstants';
 import images from '../../../Constants/ImagePath';
 import {checkIsMessageDeleted} from '../../../utils/streamChat';
 
-const CustomMessageText = () => {
+const CustomMessageText = ({onTagPress = () => {}}) => {
   const [showFullMessage, setShowFullMessage] = useState(false);
   const authContext = useContext(AuthContext);
   const {message} = useMessageContext();
@@ -20,25 +18,35 @@ const CustomMessageText = () => {
     message,
   );
 
-  const renderTagText = (match) => {
-    let color = colors.black;
-    let isTagName = false;
+  const renderMentions = () => {
+    const mentionRegex = /@\S+(\s+\S+)*/g;
+    const matchIndex = message.text.indexOf('@');
+    const wordsArray = message.text.split(/\s+/);
+    let processedText = '';
+    if (matchIndex === -1) {
+      processedText = message.text;
+    } else {
+      processedText = wordsArray.map((word, index) => {
+        const match = word.match(mentionRegex);
 
-    if (message.mentioned_users && message.mentioned_users.length > 0) {
-      isTagName =
-        message.mentioned_users.filter((item) => item.name === match).length >
-        0;
+        if (match) {
+          const mention = `${match[0]} ${wordsArray[index + 1]}`;
+          return (
+            <Text
+              key={index}
+              onPress={() => onTagPress(message.mentioned_users, mention)}
+              style={[styles.messageText, {color: colors.tagColor}]}>
+              {mention}{' '}
+            </Text>
+          );
+        }
 
-      if (isTagName) color = colors.tagColor;
+        return wordsArray[index - 1]?.match(mentionRegex) !== null
+          ? ''
+          : `${word} `;
+      });
     }
-
-    return (
-      <Text
-        // onPress={() => isTagName && handleNamePress(match, startTagIndex)}
-        style={{...styles.username, color}}>
-        {match}
-      </Text>
-    );
+    return <Text style={styles.messageText}>{processedText}</Text>;
   };
 
   if (isDeletedMessage) {
@@ -78,12 +86,7 @@ const CustomMessageText = () => {
   return (
     <View style={styles.parent}>
       {/* <Text style={styles.messageText}>{message.text}</Text> */}
-      <ParsedText
-        style={styles.text}
-        parse={[{pattern: tagRegex, renderText: renderTagText}]}
-        childrenProps={{allowFontScaling: false}}>
-        {message.text}
-      </ParsedText>
+      {renderMentions()}
     </View>
   );
 };

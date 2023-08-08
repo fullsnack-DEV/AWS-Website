@@ -19,7 +19,7 @@ const EventListShimmer = () => (
             <ShimmerView height={20} width={160} />
             <View style={styles.container}>
               <ShimmerView
-                style={{width: '100%', marginTop: 0, backgroundColor: 'yellow'}}
+                style={{width: '100%', marginTop: 0}}
                 height={80}
                 borderRadius={5}
               />

@@ -955,6 +955,7 @@ const LocalHomeNavigator = () => (
       component={GroupListScreen}
       options={{
         title: 'Club',
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

@@ -14,6 +14,7 @@ import {
 import {strings} from '../../../../Localization/translation';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import GroupIcon from '../../../components/GroupIcon';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import {ModalTypes} from '../../../Constants/GeneralConstants';
@@ -21,23 +22,28 @@ import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
 import {getChannelMembers, getChannelName} from '../../../utils/streamChat';
 import CustomAvatar from './CustomAvatar';
+import InviteModal from './InviteModal';
 import UpdateChannelInfo from './UpdateChannelInfo';
 
 const ChatGroupDetails = ({
   isVisible = false,
   closeModal = () => {},
   channel = {},
-  currentEntityId = '',
+  streamUserId = '',
   leaveChannel = () => {},
+  addMembers = () => {},
+  loading = false,
 }) => {
   const [members, setMembers] = useState([]);
   const [showUpdateInfoModal, setShowUpdateInfoModal] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+
   useEffect(() => {
     if (isVisible) {
-      const list = getChannelMembers(channel, currentEntityId);
+      const list = getChannelMembers(channel, streamUserId);
       setMembers(list);
     }
-  }, [isVisible, channel, currentEntityId]);
+  }, [isVisible, channel, streamUserId]);
 
   const getIconUrl = (item) => {
     if (item.members?.length === 1) {
@@ -73,31 +79,37 @@ const ChatGroupDetails = ({
       closeModal={closeModal}
       modalType={ModalTypes.default}
       containerStyle={{height: '98%'}}>
-      <Text style={[styles.sectionTitle, {marginBottom: 10}]}>
-        {strings.chatroomName.toUpperCase()}
-      </Text>
-      <TouchableOpacity
-        style={[styles.row, {justifyContent: 'space-between'}]}
-        onPress={() => setShowUpdateInfoModal(true)}>
-        <View style={[styles.row, {flex: 1}]}>
-          <View style={{marginRight: 10}}>
-            <CustomAvatar
-              channel={channel}
-              imageStyle={{width: 30, height: 30}}
-            />
-          </View>
+      <ActivityLoader visible={loading} />
+      {members.length > 1 ? (
+        <>
+          <Text style={[styles.sectionTitle, {marginBottom: 10}]}>
+            {strings.chatroomName.toUpperCase()}
+          </Text>
+          <TouchableOpacity
+            style={[styles.row, {justifyContent: 'space-between'}]}
+            onPress={() => setShowUpdateInfoModal(true)}>
+            <View style={[styles.row, {flex: 1}]}>
+              <View style={{marginRight: 10}}>
+                <CustomAvatar
+                  channel={channel}
+                  imageStyle={{width: 30, height: 30}}
+                  placeHolderStyle={{width: 8, height: 8}}
+                />
+              </View>
 
-          <View style={{flex: 1}}>
-            <Text style={styles.channelName} numberOfLines={1}>
-              {getChannelName(channel, currentEntityId)}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.iconContainer}>
-          <Image source={images.nextArrow} style={styles.icon} />
-        </View>
-      </TouchableOpacity>
-      <View style={styles.separator} />
+              <View style={{flex: 1}}>
+                <Text style={styles.channelName} numberOfLines={1}>
+                  {getChannelName(channel, streamUserId)}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.iconContainer}>
+              <Image source={images.nextArrow} style={styles.icon} />
+            </View>
+          </TouchableOpacity>
+          <View style={styles.separator} />
+        </>
+      ) : null}
 
       <Text style={[styles.sectionTitle, {marginBottom: 15}]}>
         {strings.participants}
@@ -124,16 +136,20 @@ const ChatGroupDetails = ({
             </View>
           );
         }}
-        ListHeaderComponent={() => (
-          <TouchableOpacity style={styles.listItem}>
-            <View style={styles.addIconContainer}>
-              <Image source={images.plusInvoice} style={styles.addIcon} />
-            </View>
-            <Text style={[styles.listText, {color: colors.tabFontColor}]}>
-              {strings.invite}
-            </Text>
-          </TouchableOpacity>
-        )}
+        ListHeaderComponent={() =>
+          channel.data?.channel_type !== 'Auto' && members.length !== 1 ? (
+            <TouchableOpacity
+              style={styles.listItem}
+              onPress={() => setShowInviteModal(true)}>
+              <View style={styles.addIconContainer}>
+                <Image source={images.plusInvoice} style={styles.addIcon} />
+              </View>
+              <Text style={[styles.listText, {color: colors.tabFontColor}]}>
+                {strings.invite}
+              </Text>
+            </TouchableOpacity>
+          ) : null
+        }
       />
 
       <TouchableOpacity
@@ -149,6 +165,15 @@ const ChatGroupDetails = ({
         isVisible={showUpdateInfoModal}
         closeModal={() => setShowUpdateInfoModal(false)}
         channel={channel}
+      />
+
+      <InviteModal
+        isVisible={showInviteModal}
+        closeModal={() => setShowInviteModal(false)}
+        addMembers={(memberList) => {
+          setShowInviteModal(false);
+          addMembers(memberList);
+        }}
       />
     </CustomModalWrapper>
   );

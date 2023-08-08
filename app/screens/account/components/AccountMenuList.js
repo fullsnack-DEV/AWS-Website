@@ -83,9 +83,7 @@ const AccountMenuList = ({
         ListFooterComponent={() => (
           <>
             <View style={styles.dividor} />
-            <Pressable
-              style={[styles.row, {paddingHorizontal: 15}]}
-              onPress={handleLogOut}>
+            <Pressable style={styles.row} onPress={handleLogOut}>
               <View style={styles.iconContainer}>
                 <Image source={images.logoutIcon} style={styles.icon} />
               </View>
@@ -110,8 +108,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
   },
   row: {
+    flex:1,
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingBottom: 15, 
   },
   iconContainer: {
     width: 40,
@@ -130,6 +131,8 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
+
+
   },
 });
 export default AccountMenuList;

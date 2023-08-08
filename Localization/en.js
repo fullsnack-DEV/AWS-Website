@@ -89,7 +89,7 @@ export default {
   apply: 'en_Apply',
   yes: 'en_Yes',
   no: 'en_No',
-  passwordText: 'en_Password (at least 6 characters)',
+  passwordText: 'en_Password',
   passwordWarningMessage: 'en_Password should be atleast 8 characters.',
   confirmPasswordText: 'en_Confirm Password',
   // Password message
@@ -498,7 +498,7 @@ export default {
   invite: 'en_Invite',
   member: 'en_Member',
   join: 'en_Join',
-  joining: 'en_Joining',
+  joining: 'en_Joined',
   challenge: 'en_Challenge',
 
   total: 'en_Total',
@@ -594,7 +594,7 @@ export default {
   gamefeeperhour: 'en_Match Fee Per Hour',
   CAD: 'en_CAD',
   primaryRefundPolicy: 'en_Primary Refund Policy',
-  defaultCurrency: 'en_USD',
+  defaultCurrency: 'en_CAD',
   currencyplacholder: 'en_Select Currency',
   languages: 'en_Languages',
   sportcannotbeblank: 'en_Sports cannot be blank',
@@ -1126,6 +1126,7 @@ export default {
   congratsModalTitle:
     'en_Congratulations!\nYou are now registered\nas a player in\n ',
   registerRefereeTitle: 'en_Register as Referee',
+  registeredRefreeTitle: 'en_Registered as Referee',
   registerScorekeeperTitle: 'en_Register as Scorekeeper',
   inviteYouToJoinEventText: 'en_invited you to join the event.',
   createTeamText: 'en_Create Team',
@@ -2513,7 +2514,9 @@ export default {
   scoreKeeperCongratsModalTitle:
     'Congratulations! \nYou are now registered as\n a scorekeeper in\n',
   scoreKeeperCongratulationsModal:
-    'en_You can now receive scorekeeper booking requests from teams and players, and also can sent offers to teams and players.',
+    'en_You can now receive scorekeeper booking requests from {0}, and also can sent offers to {0}.',
+  teamsAndPlayers: 'en_teams and players',
+  teams: 'en_teams',
   matchesNearYou: 'en_MATCHES NEAR YOU',
   matchHostText: 'en_Match Host',
   sendOfferText: 'en_Send Offer',
@@ -2658,7 +2661,7 @@ export default {
   requestPendingText: 'en_Request pending',
   acceptInvitateRequest: 'en_Accept Membership Request',
   declineMemberRequest: 'en_Decline Membership Request',
-  removeMemberFromTeamText: 'en_Remove Member From Team',
+  removeMemberFromTeamText: 'en_Remove Member From {0}',
   newTeamText: 'en_New Team',
   invitePending: 'en_Invite Pending',
   leaveTeamFromClub: 'en_Leave This Team  From Club',
@@ -2727,6 +2730,7 @@ export default {
   alertTitle4: 'en_Request Canceled',
   alertTitle5: 'en_Invite Declined',
   alertTitle6: 'en_Congratualtions! Your team now joined "{0}". ',
+  alertTitle7: 'en_Congratualtions! "{0}" team now joined your club. ',
   actionsheetTitle3:
     'en_You have sent a request to join “{0}”.\n Do you want to cancel it?',
   actionsheetTitle6:
@@ -3071,4 +3075,10 @@ export default {
     "en_You don't have a confirmed match to book this referee for.",
   bookScorekeeperMessage:
     "en_Your team doesn't have a confirmed match to book this scorekeeper for.",
+  chatroomText: 'en_Chatroom',
+  ratingText:
+    'en_Ratings shows the average ratings that the referee received from teams regarding their matches. The following questions are used to collect ratings from teams.',
+  signUpPasswordText: 'en_Your password must be at least 8 characters.',
+  Minimum: 'en_Minimum',
+  writePostText: 'en_Write a post...',
 };

@@ -107,7 +107,8 @@ const PostForEvent = ({
 };
 
 const styles = StyleSheet.create({
-  parent: {},
+  parent: {
+  },
   card: {
     backgroundColor: colors.whiteColor,
     borderRadius: 5,

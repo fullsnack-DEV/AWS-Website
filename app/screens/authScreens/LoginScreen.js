@@ -17,7 +17,6 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Keyboard,
-  Platform,
 } from 'react-native';
 
 import {
@@ -26,9 +25,7 @@ import {
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import firebase from '@react-native-firebase/app';
-
 import Config from 'react-native-config';
-import LinearGradient from 'react-native-linear-gradient';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -42,7 +39,11 @@ import TCButton from '../../components/TCButton';
 import TCTextField from '../../components/TCTextField';
 import {eventDefaultColorsData} from '../../Constants/LoaderImages';
 import apiCall from '../../utils/apiCall';
-import {getAppSettingsWithoutAuth, updateFBToken, updateUserProfile} from '../../api/Users';
+import {
+  getAppSettingsWithoutAuth,
+  updateFBToken,
+  updateUserProfile,
+} from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
 import getUserToken from '../../api/StreamChat';
 
@@ -50,6 +51,7 @@ const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('vineetpatidar@gmail.com');
   const [password, setPassword] = useState('123456');
   const [hidePassword, setHidePassword] = useState(true);
+
   const authContext = useContext(AuthContext);
   const dummyAuthContext = {...authContext};
 
@@ -59,17 +61,23 @@ const LoginScreen = ({navigation}) => {
   const validate = useCallback(() => {
     if (email === '') {
       setloading(false);
-      Alert.alert(strings.emailNotBlankText);
+      Utility.showAlert(strings.emailNotBlankText);
+
       return false;
     }
     if (validateEmail(email) === false) {
       setloading(false);
-      Alert.alert(strings.validEmailMessage);
+      Utility.showAlert(strings.validEmailMessage);
       return false;
     }
     if (password === '') {
       setloading(false);
-      Alert.alert(strings.appName, strings.passwordCanNotBlank);
+      Utility.showAlert(strings.passwordCanNotBlank);
+      return false;
+    }
+    if (password.length < 6) {
+      setloading(false);
+      Utility.showAlert(strings.passwordWarningMessage);
       return false;
     }
     return true;
@@ -109,12 +117,15 @@ const LoginScreen = ({navigation}) => {
 
       entity.auth.user = {...userData};
       entity.obj = {...userData};
-      await authContext.setTokenData(dummyAuthContext?.tokenData);
-      await Utility.setStorage('authContextUser', {...userData});
-      await authContext.setUser({...userData});
-      await Utility.setStorage('authContextEntity', {...entity});
-      await Utility.setStorage('loggedInEntity', entity);
-      await authContext.setEntity({...entity});
+
+      await Promise.all([
+        authContext.setTokenData(dummyAuthContext?.tokenData),
+        Utility.setStorage('authContextUser', {...userData}),
+        authContext.setUser({...userData}),
+        Utility.setStorage('authContextEntity', {...entity}),
+        Utility.setStorage('loggedInEntity', entity),
+        authContext.setEntity({...entity}),
+      ]);
 
       // eslint-disable-next-line no-underscore-dangle
       if (!firebaseUser?._user?.emailVerified) {
@@ -138,7 +149,6 @@ const LoginScreen = ({navigation}) => {
             await Utility.setStorage('loggedInEntity', {...entity});
             getAppSettingsWithoutAuth()
               .then(async (response) => {
-                console.log('without token api res', response.payload);
                 global.sport_icon_baseurl =
                   response.payload.app.base_url_sporticon;
 
@@ -168,8 +178,7 @@ const LoginScreen = ({navigation}) => {
   const onAuthStateChanged = useCallback(
     (user) => {
       if (user) {
-        console.log('user', user);
-        user.getIdTokenResult().then(async(idTokenResult) => {
+        user.getIdTokenResult().then(async (idTokenResult) => {
           const token = {
             token: idTokenResult.token,
             expirationTime: idTokenResult.expirationTime,
@@ -187,9 +196,9 @@ const LoginScreen = ({navigation}) => {
               url: `${Config.BASE_URL}/users/${user.uid}`,
               headers: {Authorization: `Bearer ${token.token}`},
             };
-            
+
             apiCall(userConfig)
-              .then(async(response) => {
+              .then(async (response) => {
                 dummyAuthContext.entity = {
                   uid: user.uid,
                   role: 'user',
@@ -201,14 +210,19 @@ const LoginScreen = ({navigation}) => {
                 };
 
                 // Call Stream chat token api and save in authContex
-                await getUserToken(dummyAuthContext).then(async(responseChat) => {
-                  updateUserProfile({streamChatToken: responseChat.payload}, dummyAuthContext); 
-                  await authContext.setStreamChatToken(responseChat.payload)
-                  loginFinalRedirection(user, response.payload);
-                })
+                await getUserToken(dummyAuthContext).then(
+                  async (responseChat) => {
+                    updateUserProfile(
+                      {streamChatToken: responseChat.payload},
+                      dummyAuthContext,
+                    );
+                    await authContext.setStreamChatToken(responseChat.payload);
+                    loginFinalRedirection(user, response.payload);
+                  },
+                );
               })
               .catch((e) => {
-                console.log('Error', e)
+                console.log('Error', e);
                 navigateToAddNameScreen(user);
               });
           }
@@ -286,6 +300,7 @@ const LoginScreen = ({navigation}) => {
 
   const login = useCallback(async () => {
     await Utility.clearStorage();
+
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
@@ -430,9 +445,7 @@ const LoginScreen = ({navigation}) => {
   }, [navigation]);
 
   return (
-    <LinearGradient
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
       <ActivityLoader visible={loading} />
       <FastImage style={styles.background} source={images.loginBg} />
       <TouchableWithoutFeedback
@@ -480,7 +493,7 @@ const LoginScreen = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -501,14 +514,11 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
     fontSize: 25,
-    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
+    marginTop: 50,
     marginLeft: 25,
     textAlign: 'left',
   },
-  mainContainer: {
-    flex: 1,
-    paddingTop: 25,
-  },
+
   passwordEyes: {
     fontSize: 10,
     color: colors.darkYellowColor,
@@ -522,7 +532,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fonts.RRegular,
     fontSize: 16,
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: colors.bhirthdaybgcolor,
     height: 40,
     color: 'black',
     elevation: 3,
@@ -550,7 +560,7 @@ const styles = StyleSheet.create({
 
   textFieldStyle: {
     alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: colors.bhirthdaybgcolor,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.5,
@@ -564,7 +574,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
     textAlign: 'center',
-    // marginTop: hp('38%'),
   },
   alreadyView: {
     alignSelf: 'center',

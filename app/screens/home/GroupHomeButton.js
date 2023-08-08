@@ -1,17 +1,9 @@
 // @flow
 import {useIsFocused} from '@react-navigation/native';
-import React, {
-  useCallback,
-  // useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {View, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
-import ActionSheet from 'react-native-actionsheet';
 import {format} from 'react-string-format';
 import {strings} from '../../../Localization/translation';
-// import AuthContext from '../../auth/context';
 import BottomSheet from '../../components/modals/BottomSheet';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -32,6 +24,7 @@ const GroupHomeButton = ({
   const [showOptions, setShowOptions] = useState(false);
   const [showOptions2, setShowOptions2] = useState(false);
   const [showOptions3, setShowOptions3] = useState(false);
+  const [showOptions4, setShowOptions4] = useState(false);
   const [buttons, setButtons] = useState({
     btn1: '',
     btn2: '',
@@ -40,8 +33,6 @@ const GroupHomeButton = ({
   const [actionSheetTitle, setActionSheetTitle] = useState('');
 
   const isFocused = useIsFocused();
-  // const authContext = useContext(AuthContext);
-  const actionSheetRef = useRef();
 
   useEffect(() => {
     if (groupData.setting) {
@@ -133,21 +124,17 @@ const GroupHomeButton = ({
         setOptions([strings.removeTeamFromClub]);
       } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
         obj.btn1 = strings.inviteSent;
-        setOptions([strings.cancelInvite, strings.cancel]);
+        setOptions([strings.cancelInvite]);
         setActionSheetTitle(
           format(strings.actionsheetTitle8, loggedInEntity.obj.group_name),
         );
       } else if (groupData.invite_request?.action === Verbs.requestVerb) {
         obj.btn1 = strings.requestPendingText;
-        setOptions([
-          strings.acceptRequet,
-          strings.cancelRequestText,
-          strings.cancel,
-        ]);
+        setOptions([strings.acceptRequet, strings.cancelRequestText]);
         setActionSheetTitle(
           format(strings.actionsheetTitle9, groupData.group_name),
         );
-      } else {
+      } else if (groupData.who_can_invite_for_club) {
         obj.btn1 = strings.invite;
       }
     }
@@ -216,22 +203,6 @@ const GroupHomeButton = ({
   }, [groupData, loggedInEntity]);
 
   const getButtonTitle = useCallback(async () => {
-    // if (!isAdmin) {
-    //   // this should be decided from action key
-    //   if (groupData.invite_request) {
-    //     if (groupData.invite_request.entity_type === Verbs.entityTypeUser) {
-    //       obj.btn1 = strings.requestSent;
-    //     } else if (
-    //       groupData.invite_request.entity_type === Verbs.entityTypeClub ||
-    //       groupData.invite_request.entity_type === Verbs.entityTypeTeam
-    //     ) {
-    //       obj.btn1 = strings.invitePending;
-    //     }
-    //   } else {
-    //     obj.btn1 = strings.join;
-    //   }
-    // }
-
     if (isAdmin) {
       setButtons({btn1: strings.editprofiletitle, btn2: '', btn3: ''});
     } else if (groupData.entity_type === Verbs.entityTypeTeam) {
@@ -260,7 +231,8 @@ const GroupHomeButton = ({
       case strings.inviteSent:
       case strings.requestSent:
       case strings.requestPendingText:
-        actionSheetRef.current.show();
+        // actionSheetRef.current.show();
+        setShowOptions4(true);
         break;
 
       case strings.invitePending:
@@ -269,13 +241,7 @@ const GroupHomeButton = ({
 
       case strings.joining:
         setShowOptions(true);
-        // if (
-        //   authContext.entity.role === Verbs.entityTypePlayer ||
-        //   authContext.entity.role === Verbs.entityTypeUser
-        // ) {
-        // } else {
-        //   onPress(option);
-        // }
+
         break;
 
       default:
@@ -382,14 +348,23 @@ const GroupHomeButton = ({
           handleButtonPress(option);
         }}
       />
-      <ActionSheet
+      <BottomSheet
+        isVisible={showOptions4}
+        closeModal={() => setShowOptions4(false)}
+        optionList={options}
+        type="ios"
         title={actionSheetTitle}
-        ref={actionSheetRef}
-        options={options}
-        cancelButtonIndex={options.length - 1}
-        onPress={(index) => {
-          handleButtonPress(options[index]);
+        onSelect={(option) => {
+          setShowOptions4(false);
+          handleButtonPress(option);
         }}
+        headerTitleStyle={{
+          textAlign: 'center',
+          fontSize: 14,
+          lineHeight: 16,
+          fontFamily: fonts.RRegular,
+        }}
+        headerStyle={{paddingHorizontal: 15}}
       />
     </View>
   );

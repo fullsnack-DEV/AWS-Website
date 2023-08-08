@@ -28,7 +28,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'react-string-format';
 import AuthContext from '../auth/context';
 import {getStorage} from '../utils';
-import TCScrollableProfileTabs from '../components/TCScrollableProfileTabs';
+
 import colors from '../Constants/Colors';
 import Verbs from '../Constants/Verbs';
 import fonts from '../Constants/Fonts';
@@ -53,6 +53,9 @@ import {getSportDetails, getSportList} from '../utils/sportsActivityUtils';
 import SearchModal from '../components/Filter/SearchModal';
 import {ModalTypes} from '../Constants/GeneralConstants';
 import CustomModalWrapper from '../components/CustomModalWrapper';
+
+import CustomScrollTabs from '../components/CustomScrollTabs';
+
 import ScreenHeader from '../components/ScreenHeader';
 
 let stopFetchMore = true;
@@ -505,7 +508,7 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('playersQuery ==>', JSON.stringify(playersQuery));
+
     getUserIndex(playersQuery)
       .then((res) => {
         if (res.length > 0) {
@@ -649,7 +652,7 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('refereeQuery==>', JSON.stringify(refereeQuery));
+
     getUserIndex(refereeQuery)
       .then((res) => {
         if (res.length > 0) {
@@ -787,7 +790,6 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('scoreKeeperQuery==>', JSON.stringify(scoreKeeperQuery));
 
     getUserIndex(scoreKeeperQuery)
       .then((res) => {
@@ -883,7 +885,6 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('teamsQuery==>', JSON.stringify(teamsQuery));
 
     getGroupIndex(teamsQuery)
       .then((res) => {
@@ -991,7 +992,7 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
-    console.log('clubsQuery==>', JSON.stringify(clubsQuery));
+
     getGroupIndex(clubsQuery)
       .then((res) => {
         if (res.length > 0) {
@@ -1720,9 +1721,9 @@ export default function EntitySearchScreen({navigation, route}) {
   const tabChangePress = useCallback(
     (changeTab) => {
       searchFilterFunction('');
-      searchBoxRef.current.clear();
 
-      switch (changeTab.i) {
+      searchBoxRef.current.clear();
+      switch (changeTab) {
         case 0:
           setCurrentSubTab(strings.generalText);
           break;
@@ -1735,7 +1736,8 @@ export default function EntitySearchScreen({navigation, route}) {
         default:
           break;
       }
-      setCurrentTab(changeTab.i);
+
+      setCurrentTab(changeTab);
     },
     [searchFilterFunction],
   );
@@ -2318,10 +2320,9 @@ export default function EntitySearchScreen({navigation, route}) {
         />
       </View>
       <View style={{backgroundColor: '#FFFFFF'}}>
-        <TCScrollableProfileTabs
-          tabItem={TAB_ITEMS}
-          tabVerticalScroll={false}
-          onChangeTab={tabChangePress}
+        <CustomScrollTabs
+          tabsItem={TAB_ITEMS}
+          setCurrentTab={tabChangePress}
           currentTab={currentTab}
         />
       </View>

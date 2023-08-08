@@ -481,6 +481,7 @@ const OrderedSporList = ({
       {type === 'horizontal' ? renderHorizontalList() : renderList()}
       <BottomSheet
         isVisible={showAddActivityModal}
+        type="ios"
         closeModal={() => setShowAddActivityModal(false)}
         optionList={[
           strings.addPlaying,

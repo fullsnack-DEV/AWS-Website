@@ -363,6 +363,7 @@ const AccountNavigator = () => (
       component={GroupListScreen}
       options={{
         title: strings.club,
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -1980,6 +1981,7 @@ const AccountNavigator = () => (
       options={{
         title: strings.paymentMethod,
         headerTintColor: colors.blackColor,
+        headerShown: false,
         headerTitleStyle: {
           fontWeight: '500',
         },

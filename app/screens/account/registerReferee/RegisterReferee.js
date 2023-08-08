@@ -1,5 +1,14 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import ImagePicker from 'react-native-image-crop-picker';
 import images from '../../../Constants/ImagePath';
@@ -32,7 +41,10 @@ const RegisterReferee = ({navigation, route}) => {
   const bioInputRef = useRef();
 
   useEffect(() => {
-    const sportsArr = getExcludedSportsList(authContext, Verbs.entityTypeReferee);
+    const sportsArr = getExcludedSportsList(
+      authContext,
+      Verbs.entityTypeReferee,
+    );
     setSportList(sportsArr);
   }, [authContext]);
 
@@ -49,7 +61,7 @@ const RegisterReferee = ({navigation, route}) => {
         isValid = isValid && true;
       } else if (item.url && !item.title) {
         isValid = false;
-        Alert.alert(strings.warningCertificateTitleText);
+        Alert.alert(strings.warningCertificateTitleText,'',[{text:strings.okTitleText}]);
       } else if (item.title && !item.url) {
         isValid = false;
         Alert.alert(strings.warningCertificateImageText);
@@ -70,7 +82,10 @@ const RegisterReferee = ({navigation, route}) => {
         is_published: true,
         type: Verbs.entityTypeReferee,
       };
-      const refereeData = [...(authContext.entity.obj.referee_data || []), bodyParams];
+      const refereeData = [
+        ...(authContext.entity.obj.referee_data || []),
+        bodyParams,
+      ];
       navigation.navigate('IncomingReservationSettings', {
         bodyParams: refereeData,
         entityType: Verbs.entityTypeReferee,
@@ -162,27 +177,55 @@ const RegisterReferee = ({navigation, route}) => {
         onRightButtonPress={onNextPress}
       />
       <TCFormProgress totalSteps={2} curruentStep={1} />
-      <ScrollView contentContainerStyle={{paddingTop: 25, paddingHorizontal: 15}}>
+      <ScrollView
+        contentContainerStyle={{paddingTop: 25, paddingHorizontal: 15}}>
         <View>
-          <TCLabel title={strings.whichSport} required={true} style={{marginLeft: 0, marginTop: 0}} />
-          <TouchableOpacity style={styles.searchView} onPress={() => setVisibleSportsModal(true)}>
-            <TextInput style={styles.searchTextField} placeholder={strings.selectSportPlaceholderReferee} value={getSportName(selectedSport, authContext)} editable={false} pointerEvents="none" />
+          <TCLabel
+            title={strings.whichSport}
+            required={true}
+            style={{marginLeft: 0, marginTop: 0}}
+          />
+          <TouchableOpacity
+            style={styles.searchView}
+            onPress={() => setVisibleSportsModal(true)}>
+            <TextInput
+              style={styles.searchTextField}
+              placeholder={strings.selectSportPlaceholderReferee}
+              value={getSportName(selectedSport, authContext)}
+              editable={false}
+              pointerEvents="none"
+            />
           </TouchableOpacity>
         </View>
 
         <View>
-          <TCLabel title={strings.bio.toUpperCase()} style={{marginLeft: 0, marginTop: 0}} />
+          <TCLabel
+            title={strings.bio.toUpperCase()}
+            style={{marginLeft: 0, marginTop: 0}}
+          />
           <TouchableOpacity
             style={[styles.searchView, {minHeight: 100, paddingVertical: 5}]}
             onPress={() => {
               bioInputRef.current?.focus();
             }}>
-            <TextInput ref={bioInputRef} style={styles.searchTextField} onChangeText={(text) => setBio(text)} value={bio} multiline placeholder={strings.descriptionRefereePlaceholder} maxLength={50} />
+            <TextInput
+              ref={bioInputRef}
+              style={styles.searchTextField}
+              onChangeText={(text) => setBio(text)}
+              value={bio}
+              multiline
+              placeholder={strings.descriptionRefereePlaceholder}
+              maxLength={50}
+            />
           </TouchableOpacity>
         </View>
 
         <View>
-          <TCLabel title={strings.certiTitle} required={false} style={{marginLeft: 0, marginTop: 0}} />
+          <TCLabel
+            title={strings.certiTitle}
+            required={false}
+            style={{marginLeft: 0, marginTop: 0}}
+          />
           {certificateList.length > 0 &&
             certificateList.map((item, index) => (
               <View key={index} style={{marginBottom: 15}}>
@@ -220,19 +263,31 @@ const RegisterReferee = ({navigation, route}) => {
                     {item.isLoading ? (
                       <View style={styles.maskView}>
                         <TCInnerLoader visible />
-                        <Text style={styles.maskViewText}>{strings.uploadingText}</Text>
+                        <Text style={styles.maskViewText}>
+                          {strings.uploadingText}
+                        </Text>
                       </View>
                     ) : null}
                   </View>
                 ) : (
-                  <TouchableOpacity style={styles.addCertificateButton} onPress={() => handleCertification(index)}>
-                    <FastImage resizeMode={FastImage.resizeMode.cover} source={images.messageCamera} style={styles.imageStyle} />
-                    <Text style={styles.addCertificateText}>{strings.addCertificateTitle}</Text>
+                  <TouchableOpacity
+                    style={styles.addCertificateButton}
+                    onPress={() => handleCertification(index)}>
+                    <FastImage
+                      resizeMode={FastImage.resizeMode.cover}
+                      source={images.messageCamera}
+                      style={styles.imageStyle}
+                    />
+                    <Text style={styles.addCertificateText}>
+                      {strings.addCertificateTitle}
+                    </Text>
                   </TouchableOpacity>
                 )}
               </View>
             ))}
-          <Text style={styles.certificateDescription}>{strings.certificationDescription}</Text>
+          <Text style={styles.certificateDescription}>
+            {strings.certificationDescription}
+          </Text>
         </View>
       </ScrollView>
       <SportsListModal
@@ -245,6 +300,7 @@ const RegisterReferee = ({navigation, route}) => {
           setSelectedSport({...sport});
         }}
         sport={selectedSport}
+        rightButtonText={strings.apply}
       />
     </TCKeyboardView>
   );

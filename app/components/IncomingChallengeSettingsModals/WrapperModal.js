@@ -2,7 +2,7 @@
 /* eslint-disable no-nested-ternary */
 
 import React, {useEffect, useState} from 'react';
-import {View, Modal, Pressable, Image, Text} from 'react-native';
+import {View, Modal} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
@@ -16,6 +16,7 @@ import ScorekeeperModal from './ScorekeeperModal';
 import SetsGamesDurationModal from './SetsGamesDurationModal';
 import VenueModal from './VenueModal';
 import styles from './WrapperModalStyles';
+import ScreenHeader from '../ScreenHeader';
 
 const WrapperModal = ({
   isVisible = false,
@@ -192,22 +193,14 @@ const WrapperModal = ({
     <Modal visible={isVisible} transparent animationType="slide">
       <View style={styles.parent}>
         <View style={styles.card}>
-          <View style={styles.headerRow}>
-            <View style={{flex: 1}}>
-              <Pressable style={{width: 26, height: 26}} onPress={closeModal}>
-                <Image source={images.crossImage} style={styles.image} />
-              </Pressable>
-            </View>
-            <View style={styles.headerTitleContainer}>
-              <Text style={styles.headerTitle}>{title}</Text>
-            </View>
-            <Pressable
-              style={styles.buttonContainer}
-              onPress={() => onSave(settings)}>
-              <Text style={styles.buttonText}>{strings.save}</Text>
-            </Pressable>
-          </View>
-          <View style={styles.divider} />
+          <ScreenHeader
+            leftIcon={images.crossImage}
+            leftIconPress={closeModal}
+            title={title}
+            isRightIconText
+            rightButtonText={strings.save}
+            onRightButtonPress={() => onSave(settings)}
+          />
           <View style={styles.container}>{getScreen(title)}</View>
         </View>
       </View>

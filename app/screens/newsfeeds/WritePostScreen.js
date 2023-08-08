@@ -485,7 +485,7 @@ const WritePostScreen = ({navigation, route}) => {
         entity_type: jsonData?.entity_type,
       });
     }
-    console.log(tagsOfEntity, 'from entity');
+
     setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
     setLetModalVisible(false);
     textInputRef.current.focus();
@@ -502,7 +502,6 @@ const WritePostScreen = ({navigation, route}) => {
   const renderTagUsersAndGroups = ({item}) => (
     <TouchableOpacity
       onPress={() => {
-        console.log(JSON.stringify(item));
         onTagPress(item);
       }}
       style={styles.userListStyle}>
@@ -837,6 +836,7 @@ const WritePostScreen = ({navigation, route}) => {
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -25}
         style={{flex: 1}}>
         <View style={styles.container}>
           <View style={styles.userDetailView}>
@@ -932,7 +932,6 @@ const WritePostScreen = ({navigation, route}) => {
             <TouchableOpacity
               style={[styles.icon, {marginHorizontal: 10}]}
               onPress={() => {
-                console.log(postData, 'Frompost');
                 navigation.navigate('UserTagSelectionListScreen', {
                   postData,
                   routeParams: route.params.isRepost ? {...route.params} : {},
@@ -955,7 +954,10 @@ const WritePostScreen = ({navigation, route}) => {
         isVisible={visibleWhoModal}
         closeModal={() => setVisibleWhoModal(false)}
         modalType={ModalTypes.style2}
-        containerStyle={{paddingTop: 15, paddingHorizontal: 30}}>
+        containerStyle={{
+          paddingTop: 15,
+          paddingHorizontal: 30,
+        }}>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -1074,7 +1076,6 @@ const styles = StyleSheet.create({
   },
   userListContainer: {
     zIndex: 100,
-
     backgroundColor: colors.whiteColor,
     maxHeight: 280,
     width: Dimensions.get('window').width - 30,

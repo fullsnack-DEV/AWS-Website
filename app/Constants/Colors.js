@@ -160,5 +160,8 @@ const colors = {
   linkGrey: '#727272',
   pagingBgColor: 'rgba(153, 153, 153, 0.6)',
   chatBubbleContainer: '#FFE7CB',
+  inputBgOpacityColor: 'rgba(242, 242, 242, 0.9)',
+  shdowColorToolKit: 'rgba(0, 0, 0, 0.16)',
+  bhirthdaybgcolor: 'rgba(255,255,255,0.9)',
 };
 export default colors;

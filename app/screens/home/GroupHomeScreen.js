@@ -1,5 +1,12 @@
 // @flow
-import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -8,7 +15,6 @@ import {
   Text,
   BackHandler,
 } from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {format} from 'react-string-format';
@@ -79,25 +85,30 @@ const GroupHomeScreen = ({
   const [refereeSettingObject, setRefereeSettingObject] = useState();
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
+  const backButtonHandler = useCallback(() => {
+    if (route.params.comeFrom === Verbs.INCOMING_CHALLENGE_SCREEN) {
+      navigation.navigate('Account', {
+        screen: 'AccountScreen',
+      });
+    } else {
+      navigation.goBack();
+    }
+    return true;
+  }, [navigation, route.params.comeFrom]);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backButtonHandler);
+    };
+  }, [backButtonHandler]);
+
   useEffect(() => {
     if (groupData?.group_id) {
       setCurrentUserData(groupData);
     }
   }, [groupData]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const handleBackButton = () => {
-        navigation.navigate('AccountScreen');
-        return true;
-      };
-
-      BackHandler.addEventListener('hardwareBackPress', handleBackButton);
-
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
-    }, [navigation]),
-  );
 
   const createPostAfterUpload = (dataParams) => {
     let body = dataParams;
@@ -356,7 +367,11 @@ const GroupHomeScreen = ({
         obj?.game_type
       ) {
         if (myGroupDetail.is_pause === true) {
-          Alert.alert(format(strings.groupPaused, myGroupDetail.group_name));
+          Alert.alert(
+            format(strings.groupPaused, myGroupDetail.group_name, [
+              {text: strings.okTitleText},
+            ]),
+          );
         } else {
           navigation.navigate('InviteChallengeScreen', {
             setting: obj,
@@ -379,7 +394,9 @@ const GroupHomeScreen = ({
                 text: strings.okTitleText,
                 onPress: () => {
                   if (currentUserData?.is_pause === true) {
-                    Alert.alert(strings.yourTeamPaused);
+                    Alert.alert(strings.yourTeamPaused, '', [
+                      {text: strings.okTitleText},
+                    ]);
                   } else {
                     navigation.navigate('ManageChallengeScreen', {
                       groupObj: currentUserData,
@@ -399,22 +416,28 @@ const GroupHomeScreen = ({
         'player_deactivated' in myGroupDetail &&
         myGroupDetail?.player_deactivated
       ) {
-        Alert.alert(strings.playerDeactivatedSport);
+        Alert.alert(strings.playerDeactivatedSport, '', [
+          {text: strings.okTitleText},
+        ]);
       } else if (
         'player_leaved' in currentUserData ||
         currentUserData?.player_leaved
       ) {
         Alert.alert(
           format(strings.groupHaveNo2Player, currentUserData?.group_name),
+          '',
+          [{text: strings.okTitleText}],
         );
       } else if (
         'player_leaved' in myGroupDetail ||
         myGroupDetail?.player_leaved
       ) {
-        Alert.alert(strings.youHaveNo2Player);
+        Alert.alert(strings.youHaveNo2Player, '', [
+          {text: strings.okTitleText},
+        ]);
       }
     } else if (myGroupDetail.is_pause === true) {
-      Alert.alert(strings.yourTeamPaused);
+      Alert.alert(strings.yourTeamPaused, '', [{text: strings.okTitleText}]);
     } else {
       navigation.navigate('InviteChallengeScreen', {
         setting: obj,
@@ -459,26 +482,34 @@ const GroupHomeScreen = ({
           groupObj: currentUserData,
         });
       } else {
-        Alert.alert(strings.teamHaveNoCompletedSetting);
+        Alert.alert(strings.teamHaveNoCompletedSetting, '', [
+          {text: strings.okTitleText},
+        ]);
       }
     } else if (currentUserData.sport_type === Verbs.doubleSport) {
       if (
         'player_deactivated' in currentUserData &&
         currentUserData?.player_deactivated
       ) {
-        Alert.alert(strings.playerDeactivatedSport);
+        Alert.alert(strings.playerDeactivatedSport, '', [
+          {text: strings.okTitleText},
+        ]);
       } else if (
         'player_leaved' in currentUserData &&
         currentUserData?.player_leaved
       ) {
         Alert.alert(
           format(strings.groupHaveNo2Player, currentUserData?.group_name),
+          '',
+          [{text: strings.okTitleText}],
         );
       } else if (
         'player_leaved' in myGroupDetail &&
         myGroupDetail?.player_leaved
       ) {
-        Alert.alert(strings.youHaveNo2Player);
+        Alert.alert(strings.youHaveNo2Player, '', [
+          {text: strings.okTitleText},
+        ]);
       }
     } else {
       navigation.navigate('ChallengeScreen', {
@@ -517,7 +548,7 @@ const GroupHomeScreen = ({
           label = strings.alertTitle4;
         }
         setTimeout(() => {
-          Alert.alert(label);
+          Alert.alert(label, '', [{text: strings.okTitleText}]);
         }, 10);
       })
       .catch((error) => {
@@ -615,7 +646,9 @@ const GroupHomeScreen = ({
             //   strings.alertmessagetitle,
             //   format(strings.alertTitle2, groupData.group_name),
             // );
-            Alert.alert('', response.payload.user_message);
+            Alert.alert('', response.payload.user_message, [
+              {text: strings.okTitleText},
+            ]);
           } else if (
             response.payload.error_code ===
             ErrorCodes.MEMBERALREADYREQUESTERRORCODE
@@ -625,14 +658,33 @@ const GroupHomeScreen = ({
             //   strings.alertmessagetitle,
             //   format(strings.alertTitle2, groupData.group_name),
             // );
-            Alert.alert('', response.payload.user_message);
+            Alert.alert('', response.payload.user_message, [
+              {text: strings.okTitleText},
+            ]);
           } else {
-            Alert.alert('', response.payload.user_message);
+            setLoading(false);
+            Alert.alert('', response.payload.user_message, [
+              {text: strings.okTitleText},
+            ]);
           }
+        } else if (response.payload.action === Verbs.requestVerb) {
+          const obj = {
+            ...currentUserData,
+            invite_request: inviteRequest,
+          };
+          setCurrentUserData(obj);
+          setLoading(false);
+          Alert.alert(
+            strings.alertmessagetitle,
+            format(strings.alreadySendRequestMsg, groupData.group_name),
+            [{text: strings.okTitleText}],
+          );
         } else {
           setCurrentGroupData(Verbs.joinVerb);
           setLoading(false);
-          Alert.alert(format(strings.alertTitle1, groupData.group_name));
+          Alert.alert(format(strings.alertTitle1, groupData.group_name), '', [
+            {text: strings.okTitleText},
+          ]);
         }
       })
       .catch((error) => {
@@ -648,8 +700,8 @@ const GroupHomeScreen = ({
     const params = {};
     leaveTeam(params, groupId, authContext)
       .then(() => {
-        setLoading(false);
         setCurrentGroupData(Verbs.leaveVerb);
+        setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
@@ -678,6 +730,8 @@ const GroupHomeScreen = ({
         setTimeout(() => {
           Alert.alert(
             `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`,
+            '',
+            [{text: strings.okTitleText}],
           );
         }, 10);
       })
@@ -689,6 +743,24 @@ const GroupHomeScreen = ({
       });
   };
 
+  const getAlertTitle = () => {
+    if (
+      groupData.entity_type === Verbs.entityTypeClub &&
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
+      return strings.alertTitle6;
+    }
+
+    if (
+      groupData.entity_type === Verbs.entityTypeTeam &&
+      authContext.entity.role === Verbs.entityTypeClub
+    ) {
+      return strings.alertTitle7;
+    }
+
+    return strings.alertTitle1;
+  };
+
   const onAccept = (requestId) => {
     setLoading(true);
     acceptRequest({}, requestId, authContext)
@@ -698,18 +770,27 @@ const GroupHomeScreen = ({
           ...currentUserData,
           is_joined: true,
         };
+        if (
+          currentUserData?.entity_type === Verbs.entityTypeClub &&
+          authContext.entity.role === Verbs.entityTypeTeam
+        ) {
+          group.joined_teams = [...group.joined_teams, authContext.entity.obj];
+        }
+        if (
+          currentUserData?.entity_type === Verbs.entityTypeTeam &&
+          authContext.entity.role === Verbs.entityTypeClub
+        ) {
+          group.parent_groups = [
+            ...group.parent_groups,
+            authContext.entity.uid,
+          ];
+        }
         setCurrentUserData(group);
         setLoading(false);
         setTimeout(() => {
-          Alert.alert(
-            format(
-              groupData.entity_type === Verbs.entityTypeClub &&
-                authContext.entity.role === Verbs.entityTypeTeam
-                ? strings.alertTitle6
-                : strings.alertTitle1,
-              groupData.group_name,
-            ),
-          );
+          Alert.alert(format(getAlertTitle(), groupData.group_name), '', [
+            {text: strings.okTitleText},
+          ]);
         }, 10);
       })
       .catch((error) => {
@@ -733,7 +814,7 @@ const GroupHomeScreen = ({
           },
         });
         setTimeout(() => {
-          Alert.alert(strings.alertTitle5);
+          Alert.alert(strings.alertTitle5, '', [{text: strings.okTitleText}]);
         }, 10);
       })
       .catch((error) => {
@@ -876,7 +957,9 @@ const GroupHomeScreen = ({
           setRefereeSettingObject(refereeSetting);
         } else {
           setTimeout(() => {
-            Alert.alert(strings.configureYourRefereeSetting);
+            Alert.alert(strings.configureYourRefereeSetting, '', [
+              {text: strings.okTitleText},
+            ]);
           }, 10);
         }
       })
@@ -1017,7 +1100,9 @@ const GroupHomeScreen = ({
         setScorekeeperSettingObject(scorekeeperSetting);
       } else {
         setTimeout(() => {
-          Alert.alert(strings.cannotSendOfferSettingConfigure);
+          Alert.alert(strings.cannotSendOfferSettingConfigure, '', [
+            {text: strings.okTitleText},
+          ]);
         }, 10);
       }
     });
@@ -1183,6 +1268,7 @@ const GroupHomeScreen = ({
 
       case strings.acceptInvite:
       case strings.acceptRequest:
+      case strings.acceptRequet:
         onAccept(currentUserData.invite_request.activity_id);
         break;
 

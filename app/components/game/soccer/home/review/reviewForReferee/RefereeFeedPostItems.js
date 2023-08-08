@@ -26,7 +26,8 @@ import {Text} from 'react-native-elements';
 import ActionSheet from 'react-native-actionsheet';
 
 import Share from 'react-native-share';
-import Clipboard from '@react-native-community/clipboard';
+// eslint-disable-next-line import/no-unresolved
+import Clipboard from '@react-native-clipboard/clipboard';
 // import RNUrlPreview from 'react-native-url-preview';
 import Carousel from 'react-native-snap-carousel';
 import ActivityLoader from '../../../../../loader/ActivityLoader';

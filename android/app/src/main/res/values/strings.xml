@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Townscup</string>
-    <string name="facebook_app_id">462439657892341</string>
+    <string name="facebook_app_id">462439657892341</string> 
+    <string name="facebook_client_token">db828e5d811307cfe0b33f1a4e211d47</string>
 
 </resources>

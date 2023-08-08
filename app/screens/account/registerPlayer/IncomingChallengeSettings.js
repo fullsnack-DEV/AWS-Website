@@ -279,6 +279,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
                     isEntityCreated: true,
                     groupName: response.payload.group_name,
                     entityObj: response.payload,
+                    comeFrom: Verbs.INCOMING_CHALLENGE_SCREEN,
                   });
                 })
                 .catch((e) => {
@@ -337,6 +338,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
                 isEntityCreated: true,
                 groupName: response.payload.group_name,
                 entityObj: response.payload,
+                comeFrom: Verbs.INCOMING_CHALLENGE_SCREEN,
               });
             })
             .catch((e) => {

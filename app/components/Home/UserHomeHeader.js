@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, View, Text, Image, Pressable} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
+import {format} from 'react-string-format';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -51,7 +52,7 @@ const UserHomeHeader = ({
           } else if (
             currentUserData.invite_request?.action === Verbs.inviteVerb
           ) {
-            name = strings.inviteSent;
+            name = strings.requestSent;
           } else {
             name = strings.invite;
           }
@@ -119,11 +120,8 @@ const UserHomeHeader = ({
         onAction(Verbs.inviteVerb);
         break;
 
-      case strings.inviteSent:
-        setOptions([
-          strings.acceptInvitateRequest,
-          strings.declineMemberRequest,
-        ]);
+      case strings.requestSent:
+        setOptions([strings.cancelRequestText]);
         setShowModal(true);
         break;
 
@@ -133,7 +131,12 @@ const UserHomeHeader = ({
         break;
 
       case strings.member:
-        setOptions([strings.removeMemberFromTeamText]);
+        setOptions([
+          format(
+            strings.removeMemberFromTeamText,
+            loggedInEntity.role === Verbs.entityTypeTeam ? 'Team' : 'Club',
+          ),
+        ]);
         setShowModal(true);
         break;
 
@@ -212,6 +215,7 @@ const UserHomeHeader = ({
       </View>
       <BottomSheet
         isVisible={showModal}
+        type="ios"
         closeModal={() => setShowModal(false)}
         optionList={options}
         onSelect={handleOptions}
