@@ -552,6 +552,7 @@ const images = {
   deleteChat: require('../assets/images/delete-chat.png'),
   verficationPlane: require('../assets/images/verificationPlane.png'),
   townsCupLogoNew: require('../assets/images/TownsCupNewLogo.png'),
+  newchatIcon: require('../assets/images/newchaticon.png'),
 };
 
 export default images;

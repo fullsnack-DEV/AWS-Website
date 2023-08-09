@@ -360,7 +360,10 @@ const HomeScreen = ({navigation, route}) => {
                     : currentUserData.group_id;
                 onMessageButtonPress(id);
               }}>
-              <Image source={images.tab_message} style={styles.image} />
+              <Image
+                source={images.newchatIcon}
+                style={{width: 25, height: 25, resizeMode: 'contain'}}
+              />
             </Pressable>
           ) : null}
 

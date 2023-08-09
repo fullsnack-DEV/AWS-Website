@@ -6,10 +6,18 @@ import {updateUserProfile} from '../api/Users';
 import Verbs from '../Constants/Verbs';
 
 export const generateUserStreamToken = async (authContext) => {
-  await getUserToken(authContext).then(async (responseChat) => {
-    updateUserProfile({streamChatToken: responseChat.payload}, authContext);
+  try {
+    const responseChat = await getUserToken(authContext);
+
+    await updateUserProfile(
+      {streamChatToken: responseChat.payload},
+      authContext,
+    );
+
     await authContext.setStreamChatToken(responseChat.payload);
-  });
+  } catch (error) {
+    console.error('Error in generateUserStreamToken:', error);
+  }
 };
 
 export const getStreamChatIdBasedOnRole = async (authContext) => {
