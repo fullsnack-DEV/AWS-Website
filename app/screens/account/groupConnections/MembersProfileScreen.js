@@ -364,7 +364,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const deleteMemberValidations = (groupId, memberId) => {
     const adminCount = members.filter((item) => item.is_admin === true);
-    console.log('member ==>', memberDetail);
+
     if (
       members.length === 1 &&
       adminCount.length === 1 &&

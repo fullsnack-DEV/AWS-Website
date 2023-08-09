@@ -3,6 +3,7 @@ import {
   Alert,
   FlatList,
   Image,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -206,9 +207,9 @@ const MessageNewGroupScreen = ({route, navigation}) => {
             }
             style={[styles.image, {borderRadius: 40}]}
           />
-          <View style={styles.absoluteCameraIcon}>
+          {/* <View style={styles.absoluteCameraIcon}>
             <Image source={images.certificateUpload} style={styles.image} />
-          </View>
+          </View> */}
         </TouchableOpacity>
       </View>
 
@@ -216,7 +217,13 @@ const MessageNewGroupScreen = ({route, navigation}) => {
         <Text style={styles.chatRoomName}>
           {strings.chatroomName.toUpperCase()}
         </Text>
-        <View style={styles.inputContainer}>
+        <View
+          style={[
+            styles.inputContainer,
+            Platform.OS === 'android'
+              ? {padding: 0, paddingHorizontal: 10, paddingVertical: 0}
+              : {},
+          ]}>
           <TextInput
             placeholder={strings.newGroup}
             placeholderTextColor={colors.userPostTimeColor}
@@ -292,13 +299,13 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
-  absoluteCameraIcon: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    height: 25,
-    width: 25,
-  },
+  // absoluteCameraIcon: {
+  //   position: 'absolute',
+  //   bottom: 0,
+  //   right: 0,
+  //   height: 25,
+  //   width: 25,
+  // },
   chatRoomName: {
     fontSize: 16,
     lineHeight: 19,

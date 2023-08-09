@@ -298,6 +298,7 @@ const GroupHomeScreen = ({
     const params = {
       entity_type: currentUserData.entity_type,
     };
+    setLoading(true);
     followGroup(params, groupId, authContext)
       .then(() => {
         const obj = {
@@ -306,8 +307,10 @@ const GroupHomeScreen = ({
           follower_count: currentUserData.follower_count + 1,
         };
         setCurrentUserData(obj);
+        setLoading(false);
       })
       .catch((error) => {
+        setLoading(false);
         if (!silentlyCall) {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, error.message);
@@ -320,6 +323,7 @@ const GroupHomeScreen = ({
     const params = {
       entity_type: currentUserData.entity_type,
     };
+    setLoading(true);
     unfollowGroup(params, groupId, authContext)
       .then(() => {
         const obj = {
@@ -331,8 +335,10 @@ const GroupHomeScreen = ({
               : 0,
         };
         setCurrentUserData(obj);
+        setLoading(false);
       })
       .catch((error) => {
+        setLoading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -582,6 +588,7 @@ const GroupHomeScreen = ({
       ) {
         if (type === Verbs.joinVerb) {
           obj.is_joined = true;
+          obj.is_following = true;
           obj.member_count += 1;
           obj.joined_members =
             currentUserData.joined_members?.length > 0
@@ -603,6 +610,12 @@ const GroupHomeScreen = ({
       if (type === Verbs.joinVerb) {
         obj.is_joined = true;
         obj.member_count += 1;
+        if (
+          authContext.entity.role === Verbs.entityTypePlayer ||
+          authContext.entity.role === Verbs.entityTypeUser
+        ) {
+          obj.is_following = true;
+        }
       }
       if (type === Verbs.leaveVerb) {
         obj.is_joined = false;
@@ -724,16 +737,28 @@ const GroupHomeScreen = ({
           invited_id: groupId,
           action: request.action,
         };
-        const obj = {...currentUserData, invite_request: inviteRequest};
-        setCurrentUserData(obj);
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(
-            `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`,
-            '',
-            [{text: strings.okTitleText}],
-          );
-        }, 10);
+
+        if (request.error_code) {
+          const obj = {
+            ...currentUserData,
+            invite_request: inviteRequest,
+          };
+          setCurrentUserData(obj);
+          setLoading(false);
+
+          Alert.alert('', request.user_message, [{text: strings.okTitleText}]);
+        } else {
+          const obj = {...currentUserData, invite_request: inviteRequest};
+          setCurrentUserData(obj);
+          setLoading(false);
+          setTimeout(() => {
+            Alert.alert(
+              `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`,
+              '',
+              [{text: strings.okTitleText}],
+            );
+          }, 10);
+        }
       })
       .catch((error) => {
         setLoading(false);
@@ -885,7 +910,6 @@ const GroupHomeScreen = ({
     Promise.all(promiseArr)
       .then(async ([gameList, eventList]) => {
         setLoading(false);
-        console.log({gameList, eventList});
         for (const game of gameList) {
           game.isAvailable = true;
           eventList.forEach((slot) => {
@@ -1243,6 +1267,7 @@ const GroupHomeScreen = ({
         break;
 
       case strings.following:
+      case strings.unfollowText:
         callUnfollowGroup();
         break;
 

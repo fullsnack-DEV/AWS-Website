@@ -37,6 +37,7 @@ const ChatGroupDetails = ({
   const [members, setMembers] = useState([]);
   const [showUpdateInfoModal, setShowUpdateInfoModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [isChannelOwner, setIsChannelOwner] = useState(false);
 
   useEffect(() => {
     if (isVisible) {
@@ -44,6 +45,16 @@ const ChatGroupDetails = ({
       setMembers(list);
     }
   }, [isVisible, channel, streamUserId]);
+
+  useEffect(() => {
+    if (channel.state.members) {
+      const userData = channel.state.members[streamUserId];
+
+      if (userData) {
+        setIsChannelOwner(userData.role === 'owner');
+      }
+    }
+  }, [channel.state.members, streamUserId]);
 
   const getIconUrl = (item) => {
     if (item.members?.length === 1) {
@@ -77,7 +88,7 @@ const ChatGroupDetails = ({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeModal}
-      modalType={ModalTypes.default}
+      modalType={ModalTypes.style2}
       containerStyle={{height: '98%'}}>
       <ActivityLoader visible={loading} />
       {members.length > 1 ? (
@@ -87,13 +98,16 @@ const ChatGroupDetails = ({
           </Text>
           <TouchableOpacity
             style={[styles.row, {justifyContent: 'space-between'}]}
-            onPress={() => setShowUpdateInfoModal(true)}>
+            onPress={() =>
+              isChannelOwner ? setShowUpdateInfoModal(true) : {}
+            }>
             <View style={[styles.row, {flex: 1}]}>
               <View style={{marginRight: 10}}>
                 <CustomAvatar
                   channel={channel}
                   imageStyle={{width: 30, height: 30}}
                   placeHolderStyle={{width: 8, height: 8}}
+                  iconTextStyle={{fontSize: 10, marginTop: 1}}
                 />
               </View>
 
@@ -103,9 +117,11 @@ const ChatGroupDetails = ({
                 </Text>
               </View>
             </View>
-            <View style={styles.iconContainer}>
-              <Image source={images.nextArrow} style={styles.icon} />
-            </View>
+            {isChannelOwner ? (
+              <View style={styles.iconContainer}>
+                <Image source={images.nextArrow} style={styles.icon} />
+              </View>
+            ) : null}
           </TouchableOpacity>
           <View style={styles.separator} />
         </>
@@ -142,7 +158,10 @@ const ChatGroupDetails = ({
               style={styles.listItem}
               onPress={() => setShowInviteModal(true)}>
               <View style={styles.addIconContainer}>
-                <Image source={images.plusInvoice} style={styles.addIcon} />
+                <Image
+                  source={images.plus_round_orange}
+                  style={styles.addIcon}
+                />
               </View>
               <Text style={[styles.listText, {color: colors.tabFontColor}]}>
                 {strings.invite}

@@ -172,7 +172,8 @@ const MessageInviteScreen = ({navigation}) => {
         }}
         isRightIconText
         rightButtonText={
-          selectedInvitees.length > 1 ? strings.next : strings.create
+          // selectedInvitees.length > 1 ? strings.next : strings.create
+          strings.create
         }
         rightButtonTextStyle={
           selectedInvitees.length === 0 ? {color: colors.userPostTimeColor} : {}

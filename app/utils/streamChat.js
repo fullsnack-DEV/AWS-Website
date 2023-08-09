@@ -81,6 +81,10 @@ export const getChannelAvatar = (channel = {}, streamUserId = '') => {
       },
     ];
   }
+
+  if (channel.data?.channel_type === 'Auto') {
+    return [{imageUrl: '', entityType: channel.data.group_type}];
+  }
   const membersList = getChannelMembers(channel, streamUserId);
 
   let profiles = [];

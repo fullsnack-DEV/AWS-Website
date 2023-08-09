@@ -957,7 +957,8 @@ const WritePostScreen = ({navigation, route}) => {
         containerStyle={{
           paddingTop: 15,
           paddingHorizontal: 30,
-        }}>
+        }}
+        ratio={1.5}>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
         <FlatList
           showsVerticalScrollIndicator={false}

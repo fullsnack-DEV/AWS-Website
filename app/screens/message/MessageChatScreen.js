@@ -229,6 +229,10 @@ const MessageChatScreen = ({navigation, route}) => {
       ? member.id.split('@')[0]
       : member.id;
 
+    if (memberId === authContext.entity.uid) {
+      return;
+    }
+
     const obj = {
       id: memberId,
       name: member.group_name ?? member.name,

@@ -37,6 +37,8 @@ const CustomModalWrapper = ({
   showBackButton = false,
   ratio = 2.5,
   parentStyle = {},
+  isFullTitle = false,
+  headerLeftIconStyle = {},
 }) => {
   const [isFullHeight, setIsFullHeight] = useState(isSwipeUp);
   const translateY = new Animated.Value(0);
@@ -105,6 +107,8 @@ const CustomModalWrapper = ({
             onRightButtonPress={onRightButtonPress}
             loading={loading}
             containerStyle={styles.headerStyle}
+            isFullTitle={isFullTitle}
+            leftIconStyle={headerLeftIconStyle}
           />
         );
 

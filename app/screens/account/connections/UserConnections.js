@@ -129,10 +129,14 @@ export default function UserConnections({navigation, route}) {
   const handleFollow = (entityData = {}) => {
     setLoading(true);
     if (
-      entityData.entity_type === Verbs.entityTypePlayer ||
-      entityData.entity_type === Verbs.entityTypeUser
+      authContext.entity.role === Verbs.entityTypePlayer ||
+      authContext.entity.role === Verbs.entityTypeUser
     ) {
-      followUser({entity_type: entityType}, entityData.user_id, authContext)
+      followUser(
+        {entity_type: authContext.entity.role},
+        entityData.user_id ?? entityData.group_id,
+        authContext,
+      )
         .then(() => {
           getData();
           setLoading(false);
@@ -174,6 +178,7 @@ export default function UserConnections({navigation, route}) {
       };
       unfollowGroup(params, entityData.group_id, authContext)
         .then(() => {
+          getData();
           setLoading(false);
         })
         .catch((err) => {
@@ -210,7 +215,10 @@ export default function UserConnections({navigation, route}) {
                   }}>
                   <GroupIcon
                     imageUrl={item.full_image}
-                    entityType={Verbs.entityTypePlayer}
+                    entityType={item.entity_type}
+                    groupName={item.group_name}
+                    // showPlaceholder={false}
+                    textstyle={{fontSize: 12}}
                     containerStyle={styles.iconContainer}
                   />
                   <View style={{marginLeft: 10}}>
@@ -222,8 +230,9 @@ export default function UserConnections({navigation, route}) {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                {authContext.entity.role === Verbs.entityTypeUser ||
-                authContext.entity.role === Verbs.entityTypePlayer ? (
+                {authContext.entity.uid === item.user_id &&
+                (authContext.entity.role === Verbs.entityTypeUser ||
+                  authContext.entity.role === Verbs.entityTypePlayer) ? (
                   <TouchableOpacity
                     style={styles.buttonContainer}
                     onPress={() => {
@@ -335,7 +344,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 40,
     height: 40,
-    borderWidth: 0,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   userName: {
     fontSize: 16,
