@@ -3071,6 +3071,10 @@ export default {
   deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
   viewAll: 'en_View all',
   byUser: 'en_By {0}',
+  bookRefereeMessage:
+    "en_You don't have a confirmed match to book this referee for.",
+  bookScorekeeperMessage:
+    "en_Your team doesn't have a confirmed match to book this scorekeeper for.",
   chatroomText: 'en_Chatroom',
   ratingText:
     'en_Ratings shows the average ratings that the referee received from teams regarding their matches. The following questions are used to collect ratings from teams.',

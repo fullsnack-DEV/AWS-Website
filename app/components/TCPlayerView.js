@@ -177,8 +177,8 @@ function TCPlayerView({
                   sports[0].sport_name?.slice(1)}
               {sports.length > 1 &&
                 `${
-                  sports[0].sport_name.charAt(0).toUpperCase() +
-                  sports[0].sport_name.slice(1)
+                  sports[0].sport_name?.charAt(0).toUpperCase() +
+                  sports[0].sport_name?.slice(1)
                 } & ${sports.length - 1} ${strings.moreText}`}
             </Text>
           ) : (
