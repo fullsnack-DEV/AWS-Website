@@ -551,9 +551,10 @@ const images = {
   emojiLove: require('../assets/images/emoji-love.png'),
   deleteChat: require('../assets/images/delete-chat.png'),
   verficationPlane: require('../assets/images/verificationPlane.png'),
-  townsCupLogoNew: require('../assets/images/TownsCupNewLogo.png'),
+  townsCupLogoNew: require('../assets/images/TowncupSingle.png'),
   autoChannelBadge: require('../assets/images/auto_channel_badge.png'),
   newchatIcon: require('../assets/images/newchaticon.png'),
+  allsportlogo: require('../assets/images/allsportinworld.png'),
 };
 
 export default images;

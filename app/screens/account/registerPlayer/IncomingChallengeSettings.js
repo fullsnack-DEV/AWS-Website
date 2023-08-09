@@ -616,6 +616,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           setShowMatchFeeReminderModal(false);
           handleOptions(strings.gameFee);
         }}
+        onCloseModal={() => setShowMatchFeeReminderModal(false)}
         onContinue={() => {
           setShowMatchFeeReminderModal(false);
           if (fromCreateTeam) {

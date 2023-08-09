@@ -77,7 +77,11 @@ function LocalHomeScreen({navigation, route}) {
     authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
       authContext?.entity?.obj?.city?.slice(1),
   );
-  const [selectedSport, setSelectedSport] = useState(strings.allType);
+  const [selectedSport, setSelectedSport] = useState(
+    authContext.entity.obj.entity_type === Verbs.entityTypeTeam
+      ? authContext.entity.obj.sport
+      : strings.allType,
+  );
   const [sportType, setSportType] = useState(strings.allType);
   const [settingPopup, setSettingPopup] = useState(false);
   const [recentMatch, setRecentMatch] = useState([]);
@@ -301,7 +305,6 @@ function LocalHomeScreen({navigation, route}) {
 
   useEffect(() => {
     getSportsForHome(authContext, setSportHandler, sports, setSportIconLoader);
-    setSelectedSport(strings.allType);
   }, [authContext.entity]);
 
   useEffect(() => {
@@ -448,6 +451,11 @@ function LocalHomeScreen({navigation, route}) {
       setBottomSheet(true);
     }
     if (item.title === strings.createEventhomeTitle) {
+      navigation.navigate('Schedule', {
+        screen: 'EventScheduleScreen',
+      });
+    }
+    if (item.title === strings.createevents) {
       navigation.navigate('Schedule', {
         screen: 'EventScheduleScreen',
       });
@@ -933,7 +941,7 @@ function LocalHomeScreen({navigation, route}) {
       />
 
       <BottomSheet
-        optionList={[strings.createTeamText, strings.addTeamClub]}
+        optionList={[strings.createTeamText, strings.inviteTeam]}
         isVisible={showBottomSheet}
         closeModal={() => setBottomSheet(false)}
         onSelect={(option) => {

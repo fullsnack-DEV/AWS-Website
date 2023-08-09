@@ -1785,7 +1785,11 @@ export default function EntitySearchScreen({navigation, route}) {
         } else if (
           response.payload.error_code === ErrorCodes.MEMBERALREADYERRORCODE
         ) {
-          Alert.alert(strings.alertmessagetitle, response.payload.user_message);
+          Alert.alert(
+            strings.alertmessagetitle,
+            response.payload.user_message,
+            [{text: strings.okTitleText}],
+          );
         } else if (
           response.payload.error_code ===
           ErrorCodes.MEMBERALREADYINVITEERRORCODE
@@ -1813,17 +1817,25 @@ export default function EntitySearchScreen({navigation, route}) {
         ) {
           Alert.alert(strings.alertmessagetitle, response.payload.user_message);
         } else if (response.payload.action === Verbs.joinVerb) {
-          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage, [
+            {text: strings.okTitleText},
+          ]);
         } else if (response.payload.action === Verbs.requestVerb) {
-          Alert.alert(strings.alertmessagetitle, strings.sendRequest);
+          Alert.alert(strings.alertmessagetitle, strings.sendRequest, [
+            {text: strings.okTitleText},
+          ]);
         } else {
-          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage, [
+            {text: strings.okTitleText},
+          ]);
         }
       })
       .catch((error) => {
         setloading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
+          Alert.alert(strings.alertmessagetitle, error.message, [
+            {text: strings.okTitleText},
+          ]);
         }, 10);
       });
   };

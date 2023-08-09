@@ -3081,4 +3081,5 @@ export default {
   signUpPasswordText: 'en_Your password must be at least 8 characters.',
   Minimum: 'en_Minimum',
   writePostText: 'en_Write a post...',
+  inviteTeam: 'en_Invite Team'
 };

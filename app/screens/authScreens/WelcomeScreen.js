@@ -656,80 +656,83 @@ export default function WelcomeScreen({navigation}) {
           resizeMode={'cover'}
           source={images.townsCupLogoNew}
         />
+        <FastImage
+          style={{height: 22, width: 146}}
+          resizeMode="contain"
+          source={images.allsportlogo}
+        />
       </View>
 
-      <View style={{flex: 1, marginTop: 87}}>
-        <View style={{marginBottom: 2}}>
-          <AppleButton
-            onPress={() => {
-              if (authContext.networkConnected) onAppleButtonPress();
-              else authContext.showNetworkAlert();
-            }}
+      <View style={{marginTop: Dimensions.get('screen').height * 0.08}}>
+        <AppleButton
+          onPress={() => {
+            if (authContext.networkConnected) onAppleButtonPress();
+            else authContext.showNetworkAlert();
+          }}
+        />
+
+        <FacebookButton
+          onPress={() => {
+            if (authContext.networkConnected) onFacebookButtonPress();
+            else authContext.showNetworkAlert();
+          }}
+        />
+
+        <GoogleButton
+          onPress={() => {
+            if (authContext.networkConnected) onGoogleButtonPress();
+            else authContext.showNetworkAlert();
+          }}
+        />
+
+        <TouchableOpacity
+          testID="signup-button"
+          style={styles.allButton}
+          onPress={() => {
+            navigation.navigate('SignupScreen');
+          }}>
+          <FastImage
+            source={images.email}
+            resizeMode={'contain'}
+            style={styles.signUpImg}
           />
+          <Text style={styles.signUpText}>{strings.signUpText}</Text>
+        </TouchableOpacity>
 
-          <FacebookButton
-            onPress={() => {
-              if (authContext.networkConnected) onFacebookButtonPress();
-              else authContext.showNetworkAlert();
-            }}
-          />
-
-          <GoogleButton
-            onPress={() => {
-              if (authContext.networkConnected) onGoogleButtonPress();
-              else authContext.showNetworkAlert();
-            }}
-          />
-
-          <TouchableOpacity
-            testID="signup-button"
-            style={styles.allButton}
-            onPress={() => {
-              navigation.navigate('SignupScreen');
-            }}>
-            <FastImage
-              source={images.email}
-              resizeMode={'contain'}
-              style={styles.signUpImg}
-            />
-            <Text style={styles.signUpText}>{strings.signUpText}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            testID={'login-lable'}
-            hitSlop={getHitSlop(15)}
-            onPress={() => navigation.navigate('LoginScreen')}
-            style={styles.alreadyView}>
-            <Text style={styles.alreadyMemberText}>
-              {strings.alreadyMember}
-              <Text> </Text>
-              <Text
-                style={{
-                  textDecorationLine: 'underline',
-                  fontFamily: fonts.RBold,
-                }}>
-                {strings.loginText}
-              </Text>
+        <TouchableOpacity
+          testID={'login-lable'}
+          hitSlop={getHitSlop(15)}
+          onPress={() => navigation.navigate('LoginScreen')}
+          style={styles.alreadyView}>
+          <Text style={styles.alreadyMemberText}>
+            {strings.alreadyMember}
+            <Text> </Text>
+            <Text
+              style={{
+                textDecorationLine: 'underline',
+                fontFamily: fonts.RBold,
+              }}>
+              {strings.loginText}
             </Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.privacyText}>
-          {strings.byCountinueSignUp}
-          {'\n'}
-          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
-            {strings.termsOfService}
-          </Text>{' '}
-          {strings.weWillManageInformation}{' '}
-          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
-            {strings.privacyPolicy}
-          </Text>{' '}
-          {strings.andText}{' '}
-          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
-            {strings.cookiePolicy}
           </Text>
-          .
-        </Text>
+        </TouchableOpacity>
       </View>
+      <Text style={styles.privacyText}>
+        {strings.byCountinueSignUp}
+        {'\n'}
+        <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
+          {strings.termsOfService}
+        </Text>{' '}
+        {strings.weWillManageInformation}{' '}
+        <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
+          {strings.privacyPolicy}
+        </Text>{' '}
+        {strings.andText}{' '}
+        <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
+          {strings.cookiePolicy}
+        </Text>
+        .
+      </Text>
     </SafeAreaView>
   );
 }
@@ -754,14 +757,16 @@ const styles = StyleSheet.create({
   alreadyView: {
     marginVertical: 10,
     alignSelf: 'center',
+    marginTop: 20,
   },
   privacyText: {
     textAlign: 'center',
     fontSize: 12,
     fontFamily: fonts.RLight,
     color: colors.whiteColor,
-    width: '80%',
+    width: '90%',
     alignSelf: 'center',
+    marginTop: '10%',
   },
   background: {
     height: windowHeight,
@@ -771,17 +776,15 @@ const styles = StyleSheet.create({
   },
   logo: {
     alignContent: 'center',
-    height: 83,
-    width: 280,
+    height: 65,
+    width: 265,
   },
   logoContainer: {
     alignItems: 'center',
-    flexDirection: 'column',
-    marginTop: 204,
+    marginTop: Dimensions.get('screen').height * 0.23,
   },
 
   signUpImg: {
-    flex: 0.2,
     alignSelf: 'center',
     height: 20,
     width: 20,

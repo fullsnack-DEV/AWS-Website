@@ -2,7 +2,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {
   StyleSheet,
-  FlatList,
   View,
   Pressable,
   Image,
@@ -10,6 +9,7 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
@@ -214,6 +214,7 @@ const SwitchAccountModal = ({
       title={strings.switchAccount}
       containerStyle={styles.modalContainer}>
       <ScreenHeader title={strings.switchAccount} />
+
       {isFetchingList ? (
         <SwitchAccountShimmer />
       ) : (

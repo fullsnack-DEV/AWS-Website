@@ -644,7 +644,9 @@ export default function GroupMembersScreen({navigation, route}) {
         }}
         pointerEvents={pointEvent}>
         <ScreenHeader
-          leftIcon={images.backArrow}
+          leftIcon={
+            currentRoute !== 'GroupMembersScreen' ? images.backArrow : null
+          }
           leftIconPress={() => navigation.goBack()}
           title={strings.membersTitle}
           rightIcon1={switchUser.uid === groupID ? images.createMember : null}
