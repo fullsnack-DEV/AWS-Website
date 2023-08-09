@@ -134,7 +134,7 @@ const InviteModal = ({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeModal}
-      modalType={ModalTypes.style4}
+      modalType={ModalTypes.style1}
       title={strings.invite}
       headerRightButtonText={strings.create}
       containerStyle={styles.parent}

@@ -1,15 +1,17 @@
 import React, {useContext} from 'react';
-import {View, StyleSheet, Pressable, Text} from 'react-native';
+import {View, StyleSheet, Pressable, Text, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
 import fonts from '../../../Constants/Fonts';
 import CustomAvatar from './CustomAvatar';
 import {getChannelName, getLastMessageTime} from '../../../utils/streamChat';
+import images from '../../../Constants/ImagePath';
+import Verbs from '../../../Constants/Verbs';
 import AuthContext from '../../../auth/context';
 
 const ChannelView = ({channel, latestMessagePreview}) => {
-  const {state} = channel;
+  const {state, data} = channel;
   const {navigate} = useNavigation();
   const authContext = useContext(AuthContext);
 
@@ -34,9 +36,16 @@ const ChannelView = ({channel, latestMessagePreview}) => {
       <View style={styles.userDetails}>
         <CustomAvatar channel={channel} />
         <View style={{flex: 1}}>
-          <Text style={styles.channelTitle} numberOfLines={1}>
-            {getChannelName(channel, authContext.chatClient.userID)}
-          </Text>
+          <View style={styles.channelNameContainer}>
+            <Text style={styles.channelTitle} numberOfLines={1}>
+              {getChannelName(channel, authContext.chatClient.userID)}
+            </Text>
+            {data.channel_type === Verbs.channelTypeAuto ? (
+              <View style={styles.channelBadgeContainer}>
+                <Image source={images.autoChannelBadge} style={styles.image} />
+              </View>
+            ) : null}
+          </View>
           <Text style={styles.channelLowerText} numberOfLines={1}>
             {getLastMessage()}
           </Text>
@@ -62,6 +71,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 15,
     paddingVertical: 20,
+  },
+  channelNameContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   userDetails: {
     flex: 1,
@@ -100,6 +114,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     textAlign: 'center',
+  },
+  channelBadgeContainer: {
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
 });
 

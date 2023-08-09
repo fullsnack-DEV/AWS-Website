@@ -60,12 +60,13 @@ const BottomSheet = ({
                     <Text
                       style={[
                         styles.modalButtonText,
-                        item.includes('Delete') ? {color: colors.redColor} : {},
+                        item?.includes('Delete') ? {color: colors.redColor} : {},
                         textStyle,
                       ]}>
                       {item}
                     </Text>
                   </Pressable>
+                  
                   <View
                     style={[styles.modalLineSeparator, separatorLineStyle]}
                   />

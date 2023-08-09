@@ -68,6 +68,7 @@ const MessageChatScreen = ({navigation, route}) => {
   const [showSearchInput, setShowSearchInput] = useState(false);
   // eslint-disable-next-line no-unused-vars
   const [messages, setMessages] = useState([]);
+  const [deleteOptions, setDeleteOptions] = useState([]);
   const timeoutRef = useRef();
 
   const CustomImageUploadPreview = () => {
@@ -285,7 +286,7 @@ const MessageChatScreen = ({navigation, route}) => {
         title={getChannelName(channel, authContext.chatClient.userID)}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          navigation.goBack();
+          navigation.replace('MessageMainScreen');
         }}
         rightIcon2={images.vertical3Dot}
         rightIcon2Press={() => {
@@ -333,8 +334,17 @@ const MessageChatScreen = ({navigation, route}) => {
           MessageActionList={() => (
             <CustomMessageActionList
               channel={channel}
+              streamChatUserId={authContext.chatClient.userID}
               deleteMessageAction={(messageObj = {}) => {
                 setDeleteMessageObject(messageObj);
+                if (messageObj.user.id === authContext.chatClient.userID) {
+                  setDeleteOptions([
+                    strings.deleteForEveryOneOption,
+                    strings.deleteForMeOption,
+                  ]);
+                } else {
+                  setDeleteOptions([strings.deleteForMeOption]);
+                }
                 setDeleteMessageModal(true);
               }}
             />
@@ -389,10 +399,7 @@ const MessageChatScreen = ({navigation, route}) => {
 
         <BottomSheet
           type="ios"
-          optionList={[
-            strings.deleteForEveryOneOption,
-            strings.deleteForMeOption,
-          ]}
+          optionList={deleteOptions}
           isVisible={deleteMessageModal}
           closeModal={() => setDeleteMessageModal(false)}
           onSelect={handleMessageDeletion}

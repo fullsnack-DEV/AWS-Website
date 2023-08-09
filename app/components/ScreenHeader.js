@@ -58,7 +58,9 @@ const ScreenHeader = ({
         )
       )}
 
-      <Text style={[styles.headerTitle, labelStyle]}>{title}</Text>
+      <Text style={[styles.headerTitle, labelStyle]} numberOfLines={1}>
+        {title}
+      </Text>
     </View>
 
     <View style={{width: 80}}>

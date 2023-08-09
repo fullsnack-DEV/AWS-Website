@@ -41,10 +41,10 @@ const ChatGroupDetails = ({
 
   useEffect(() => {
     if (isVisible) {
-      const list = getChannelMembers(channel, streamUserId);
+      const list = getChannelMembers(channel);
       setMembers(list);
     }
-  }, [isVisible, channel, streamUserId]);
+  }, [isVisible, channel]);
 
   useEffect(() => {
     if (channel.state.members) {
@@ -117,7 +117,8 @@ const ChatGroupDetails = ({
                 </Text>
               </View>
             </View>
-            {isChannelOwner ? (
+            {isChannelOwner &&
+            channel.data?.channel_type !== Verbs.channelTypeAuto ? (
               <View style={styles.iconContainer}>
                 <Image source={images.nextArrow} style={styles.icon} />
               </View>
@@ -153,7 +154,8 @@ const ChatGroupDetails = ({
           );
         }}
         ListHeaderComponent={() =>
-          channel.data?.channel_type !== 'Auto' && members.length !== 1 ? (
+          channel.data?.channel_type !== Verbs.channelTypeAuto &&
+          members.length !== 1 ? (
             <TouchableOpacity
               style={styles.listItem}
               onPress={() => setShowInviteModal(true)}>
@@ -170,15 +172,17 @@ const ChatGroupDetails = ({
           ) : null
         }
       />
-
-      <TouchableOpacity
-        style={styles.bottomContainer}
-        onPress={handleLeaveChat}>
-        <View style={[styles.iconContainer, {marginLeft: 0, marginRight: 10}]}>
-          <Image source={images.leave_chat_room} style={styles.icon} />
-        </View>
-        <Text style={styles.buttonText}>{strings.leaveChatRoom}</Text>
-      </TouchableOpacity>
+      {channel.data?.channel_type !== Verbs.channelTypeAuto ? (
+        <TouchableOpacity
+          style={styles.bottomContainer}
+          onPress={handleLeaveChat}>
+          <View
+            style={[styles.iconContainer, {marginLeft: 0, marginRight: 10}]}>
+            <Image source={images.leave_chat_room} style={styles.icon} />
+          </View>
+          <Text style={styles.buttonText}>{strings.leaveChatRoom}</Text>
+        </TouchableOpacity>
+      ) : null}
 
       <UpdateChannelInfo
         isVisible={showUpdateInfoModal}

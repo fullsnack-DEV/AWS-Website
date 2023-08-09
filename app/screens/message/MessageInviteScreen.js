@@ -48,9 +48,7 @@ const MessageInviteScreen = ({navigation}) => {
         const response = [...users, ...groupsList];
 
         const data = response.filter(
-          (item) =>
-            item.group_id !== authContext.entity.uid ||
-            item.user_id !== authContext.entity.uid,
+          (item) => item.group_id ?? item.user_id !== authContext.entity.uid,
         );
 
         const newList = data.map((item) => ({
@@ -147,7 +145,7 @@ const MessageInviteScreen = ({navigation}) => {
         .then(async (channel) => {
           if (channel !== null) {
             await channel.watch();
-            navigation.replace('MessageChatScreen', {
+            navigation.navigate('MessageChatScreen', {
               channel,
             });
           }
@@ -156,7 +154,7 @@ const MessageInviteScreen = ({navigation}) => {
           Alert.alert(strings.alertmessagetitle, err.message);
         });
     } else if (selectedInvitees.length > 1) {
-      navigation.replace('MessageNewGroupScreen', {
+      navigation.navigate('MessageNewGroupScreen', {
         selectedInviteesData: selectedInvitees,
       });
     }
@@ -198,7 +196,7 @@ const MessageInviteScreen = ({navigation}) => {
       {selectedInvitees.length > 0 ? (
         <View style={{marginBottom: 15, paddingHorizontal: 15}}>
           <FlatList
-            data={selectedInvitees}
+            data={selectedInvitees.reverse()}
             renderItem={({item}) => (
               <SelectedInviteeCard
                 item={item}

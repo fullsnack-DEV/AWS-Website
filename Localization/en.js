@@ -3048,7 +3048,7 @@ export default {
   emptyChatMessage: 'en_No Message',
 
   deleteForMeOption: 'en_Delete for Me',
-  deleteForEveryOneOption: 'en_Delete for EveryOne',
+  deleteForEveryOneOption: 'en_Delete for Everyone',
   deleteForMeText: 'en_This message will be deleted from only your device',
   deleteForEveryOneText:
     "en_This message will be deleted from everyone's device",
@@ -3067,7 +3067,7 @@ export default {
   viewText: 'en_View',
   leaveChatAlertText: 'en_Are you sure you want to leave this chatroom?',
   editChatRoom: 'en_Edit ChatRoom Name & Photo',
-  deleteForMe: 'en_The message will be deleted from from only your device.',
+  deleteForMe: 'en_The message will be deleted from only your device.',
   deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
   viewAll: 'en_View all',
   byUser: 'en_By {0}',

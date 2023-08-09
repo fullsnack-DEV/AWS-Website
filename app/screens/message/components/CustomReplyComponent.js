@@ -58,17 +58,29 @@ const CustomReplyComponent = () => {
                   }}
                 />
               )}
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: colors.placeHolderColor,
-                  marginTop: 5,
-                  marginBottom: 5,
-                }}>
-                {message.quoted_message.attachments.length > 0
-                  ? attachementType
-                  : message.quoted_message.text}
-              </Text>
+              {message.quoted_message.type === 'deleted' ? (
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: colors.placeHolderColor,
+                    marginTop: 5,
+                    marginBottom: 5,
+                  }}>
+                  {strings.messageDeletedText}
+                </Text>
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: colors.placeHolderColor,
+                    marginTop: 5,
+                    marginBottom: 5,
+                  }}>
+                  {message.quoted_message.attachments.length > 0
+                    ? attachementType
+                    : message.quoted_message.text}
+                </Text>
+              )}
             </View>
           </View>
         </View>
