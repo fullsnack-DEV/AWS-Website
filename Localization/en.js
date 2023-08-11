@@ -2400,6 +2400,8 @@ export default {
   specifications: 'en_specifications',
   emailInvitationSent: '{0} en_invitation were sent',
   oneemailInvitationSent: '{0} en_invitation was sent',
+  oneemailInvitationWasSent: '{0} en_invitation email was sent',
+  multiEmailInvitationWereSent: '{0} en_invitation emails were sent',
   basicInfoRequestSent: 'en_requests for basic info were sent',
   editSpecification: 'en_Edit Specifications',
 
@@ -3081,5 +3083,7 @@ export default {
   signUpPasswordText: 'en_Your password must be at least 8 characters.',
   Minimum: 'en_Minimum',
   writePostText: 'en_Write a post...',
-  inviteTeam: 'en_Invite Team'
+  inviteTeam: 'en_Invite Team',
+  otherCurrecy:
+    "en_Please Select Some Other Currency. This Currency is not Supported by now'",
 };

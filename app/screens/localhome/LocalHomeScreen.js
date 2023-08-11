@@ -59,6 +59,7 @@ import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 import BottomSheet from '../../components/modals/BottomSheet';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
+import InviteMemberModal from '../../components/InviteMemberModal';
 
 const defaultPageSize = 10;
 
@@ -127,6 +128,7 @@ function LocalHomeScreen({navigation, route}) {
   const [owners, setOwners] = useState([]);
   const [sportIconLoader, setSportIconLoader] = useState(false);
   const [cardLoader, setCardLoader] = useState(false);
+  const [showInviteMember, setShowInviteMember] = useState(false);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -461,7 +463,7 @@ function LocalHomeScreen({navigation, route}) {
       });
     }
     if (item.title === strings.inviteMemberClub) {
-      navigation.navigate('InviteMembersBySearchScreen');
+      setShowInviteMember(true);
     }
   };
 
@@ -938,6 +940,10 @@ function LocalHomeScreen({navigation, route}) {
             console.log({option});
           }
         }}
+      />
+      <InviteMemberModal
+        isVisible={showInviteMember}
+        closeModal={() => setShowInviteMember(false)}
       />
 
       <BottomSheet

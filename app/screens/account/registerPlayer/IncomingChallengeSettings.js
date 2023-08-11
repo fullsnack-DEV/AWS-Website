@@ -31,10 +31,12 @@ import uploadImages from '../../../utils/imageAction';
 import {createGroup, createGroupRequest} from '../../../api/Groups';
 
 import SendRequestModal from '../../../components/SendRequestModal/SendRequestModal';
-import {DEFAULT_NTRP} from '../../../Constants/GeneralConstants';
+import {DEFAULT_NTRP, currencyList} from '../../../Constants/GeneralConstants';
 import {getUnreadNotificationCount} from '../../../utils/accountUtils';
 import useSwitchAccount from '../../../hooks/useSwitchAccount';
 import SwitchAccountLoader from '../../../components/account/SwitchAccountLoader';
+import {getCountry} from 'country-currency-map';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
@@ -48,6 +50,8 @@ export default function IncomingChallengeSettings({navigation, route}) {
 
   const [visibleRequestModal, setVisibleRequestModal] = useState(false);
   const {onSwitchProfile} = useSwitchAccount();
+
+  const Focused = useIsFocused();
 
   const {
     playerData,
@@ -86,6 +90,25 @@ export default function IncomingChallengeSettings({navigation, route}) {
       setSettingObject({...settingObject, ...route.params.settingObj});
     }
   }, [route.params.settingObj]);
+
+  const [currency, setCurrency] = useState();
+
+  useEffect(() => {
+    const gettingCurrency = getCountry(authContext.entity.obj.country);
+
+    if (!currencyList.some((i) => i.currency === gettingCurrency.currency)) {
+      setCurrency(Verbs.usd);
+    } else {
+      setSettingObject({
+        ...settingObject,
+        game_fee: {
+          ...settingObject.game_fee,
+          currency_type: gettingCurrency.currency,
+          fee: 0,
+        },
+      });
+    }
+  }, [Focused]);
 
   const handleOptions = (option) => {
     if (settingObject) {
@@ -445,7 +468,6 @@ export default function IncomingChallengeSettings({navigation, route}) {
             if (show_Double) {
               onCreateDoubleTeamPress();
             } else if (fromRespondToInvite) {
-              // patchIncomingSetting();
               navigation.navigate('RespondToInviteScreen', {
                 incomingchallengeSettings: settingObject,
               });

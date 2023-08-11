@@ -205,7 +205,11 @@ export default function TopTileSection({
 
   const RenderInviteMemberbutton = () => (
     <Pressable
-      onPress={() => navigation.navigate('InviteMembersBySearchScreen')}
+      onPress={() =>
+        handleTileClick({
+          title: strings.inviteMemberClub,
+        })
+      }
       style={styles.memberInviteButton}>
       <FastImage
         source={images.invitememberbuttonicon}

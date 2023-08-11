@@ -1,7 +1,7 @@
 // @flow
-import React, {useState, useContext, useEffect} from 'react';
+import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
-import {getCountry} from 'country-currency-map';
+
 import {format} from 'react-string-format';
 import {strings} from '../../../../../Localization/translation';
 import GameDurationDetails from '../../../../components/GameDurationDetails';
@@ -10,29 +10,12 @@ import Verbs from '../../../../Constants/Verbs';
 import styles from '../IncomingChallengeSettingsStyles';
 import VenuesList from './VenuesList';
 
-import AuthContext from '../../../../auth/context';
-import {currencyList} from '../../../../Constants/GeneralConstants';
-
 const SettingsMenuItem = ({
   item,
   settingObject,
   sportName,
   handleOptions = () => {},
 }) => {
-  const authContext = useContext(AuthContext);
-
-  const [currency, setCurrency] = useState();
-
-  useEffect(() => {
-    const gettingCurrency = getCountry(authContext.entity.obj.country);
-
-    if (!currencyList.some((i) => i.currency === gettingCurrency.currency)) {
-      setCurrency('USD');
-    } else {
-      setCurrency(gettingCurrency.currency);
-    }
-  }, []);
-
   const getSettingValue = (key) => {
     if (settingObject) {
       switch (key) {
@@ -54,9 +37,9 @@ const SettingsMenuItem = ({
           // console.log('settings==>', settingObject);
           return (
             <Text style={styles.normalStyle}>
-              {`${settingObject.game_fee?.fee || 0} ${currency || Verbs.usd}/${
-                strings.match
-              }`}
+              {`${settingObject.game_fee?.fee || 0} ${
+                settingObject.game_fee?.currency_type || Verbs.usd
+              }/${strings.match}`}
             </Text>
           );
 
