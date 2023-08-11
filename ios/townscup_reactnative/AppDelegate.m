@@ -2,6 +2,7 @@
 
 #import "Orientation.h"
 #import <Firebase.h>
+#import <FBSDKCoreKit/FBSDKCoreKit-swift.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
@@ -41,6 +42,9 @@ static void InitializeFlipper(UIApplication *application) {
   if ([FIRApp defaultApp] == nil) {
     [FIRApp configure];
   }
+
+     [[FBSDKApplicationDelegate sharedInstance] application:application
+                       didFinishLaunchingWithOptions:launchOptions];
   
 //  NSString *filePath;
 //  filePath = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];

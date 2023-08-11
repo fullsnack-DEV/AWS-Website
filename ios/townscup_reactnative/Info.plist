@@ -23,8 +23,7 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+		
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>fb462439657892341</string>
@@ -52,7 +51,9 @@
 	<key>FacebookAppID</key>
 	<string>462439657892341</string>
 	<key>FacebookDisplayName</key>
-	<string>Towns Cup</string>
+	<string>Towns Cup</string> 
+	<key>FacebookClientToken</key>
+<string>6d1da51496f7033ec61643ec7fff3c54</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>mailto</string>
