@@ -89,9 +89,12 @@ const CustomMessageFooter = ({onPress = () => {}}) => {
           onPress={onPress}
         />
         {message.user.group_name ? (
-          <Text style={[styles.time, {marginRight: 10}]} numberOfLines={1}>
-            {format(strings.byUser, message.user.name)}
-          </Text>
+          <View style={{maxWidth: '80%'}}>
+            <Text style={[styles.time, {marginRight: 10}]} numberOfLines={1}>
+              {format(strings.byUser, message.user.name)} sldfijskdjf lksjdflk
+              nasdkcnkjweof
+            </Text>
+          </View>
         ) : null}
         <View>
           <Text style={styles.time}>

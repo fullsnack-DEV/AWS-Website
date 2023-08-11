@@ -13,6 +13,7 @@ import {
   Image,
   Alert,
   TextInput,
+  BackHandler,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {
@@ -56,8 +57,7 @@ import fonts from '../../Constants/Fonts';
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
   const authContext = useContext(AuthContext);
-  const {addMembersToChannel, isMemberAdding, createChannel} =
-    useStreamChatUtils();
+  const {createChannel} = useStreamChatUtils();
 
   const [isVisible, setIsVisible] = useState(false);
   const [allReaction, setAllReaction] = useState([]);
@@ -69,7 +69,34 @@ const MessageChatScreen = ({navigation, route}) => {
   // eslint-disable-next-line no-unused-vars
   const [messages, setMessages] = useState([]);
   const [deleteOptions, setDeleteOptions] = useState([]);
+  const [channelName, setChannelName] = useState('');
   const timeoutRef = useRef();
+
+  useEffect(() => {
+    const backAction = () => {
+      if (showSearchInput) {
+        setShowSearchInput(false);
+      } else if (!route.params?.disableGoBack) {
+        navigation.goBack();
+      }
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [showSearchInput, navigation, route.params?.disableGoBack]);
+
+  useEffect(() => {
+    if (channel) {
+      const name = getChannelName(channel, authContext.chatClient.userID);
+
+      setChannelName(name);
+    }
+  }, [channel, authContext.chatClient.userID]);
 
   const CustomImageUploadPreview = () => {
     const {imageUploads, setImageUploads, numberOfUploads, removeImage} =
@@ -224,8 +251,12 @@ const MessageChatScreen = ({navigation, route}) => {
   const handleTagPress = (mentions = [], mentionText = '') => {
     const entity_name = mentionText.slice(1);
     const member = mentions.find(
-      (item) => item.group_name === entity_name || item.name === entity_name,
+      (item) => item.group_name ?? item.name === entity_name,
     );
+
+    if (!member) {
+      return;
+    }
     const memberId = member.id.includes('@')
       ? member.id.split('@')[0]
       : member.id;
@@ -283,7 +314,7 @@ const MessageChatScreen = ({navigation, route}) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
-        title={getChannelName(channel, authContext.chatClient.userID)}
+        title={channelName}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.replace('MessageMainScreen');
@@ -303,7 +334,7 @@ const MessageChatScreen = ({navigation, route}) => {
           <View style={styles.floatingInput}>
             <View style={styles.inputContainer}>
               <TextInput
-                placeholderTextColor={strings.searchText}
+                placeholderTextColor={colors.userPostTimeColor}
                 style={styles.textInputStyle}
                 value={searchText}
                 onChangeText={(text) => {
@@ -362,6 +393,8 @@ const MessageChatScreen = ({navigation, route}) => {
                 <CustomAvatar
                   channel={channel}
                   imageStyle={{width: 30, height: 30}}
+                  iconTextStyle={{fontSize: 12, marginTop: 1}}
+                  placeHolderStyle={{width: 12, height: 12}}
                 />
               )}
               myMessageTheme={myMessageTheme}
@@ -412,12 +445,6 @@ const MessageChatScreen = ({navigation, route}) => {
           channel={channel}
           streamUserId={authContext.chatClient.userID}
           leaveChannel={handleChannelLeave}
-          addMembers={(members = []) => {
-            addMembersToChannel({channel, newMembers: members}).catch((err) => {
-              Alert.alert(strings.alertmessagetitle, err.message);
-            });
-          }}
-          loading={isMemberAdding}
         />
       </View>
     </SafeAreaView>

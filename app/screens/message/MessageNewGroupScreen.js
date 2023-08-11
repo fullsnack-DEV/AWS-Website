@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext,useRef} from 'react';
 import {
   Alert,
   FlatList,
@@ -29,6 +29,7 @@ const NUM_OF_COLS = 5;
 
 const MessageNewGroupScreen = ({route, navigation}) => {
   const authContext = useContext(AuthContext);
+   const timeoutRef = useRef();
 
   const {selectedInviteesData} = route.params;
   const [selectedInvitees, setSelectedInvitees] = useState([]);
@@ -58,17 +59,13 @@ const MessageNewGroupScreen = ({route, navigation}) => {
     }
   }, [route?.params?.dialog]);
 
-  const toggleSelection = (isChecked, user) => {
-    const data = selectedInvitees;
-    if (isChecked) {
-      const uIndex = data.findIndex(({id}) => user.id === id);
-      if (uIndex !== -1) data.splice(uIndex, 1);
-    } else {
-      data.push(user);
-    }
-    setSelectedInvitees([...data]);
-    if (data.length === 0) {
+  const removeSelectedEntity = (user) => {
+    const data = [...selectedInvitees];
+    const updatedData = data.filter((item) => user.id !== item.id);
+    if (updatedData.length === 0) {
       navigation.navigate('MessageInviteScreen');
+    } else {
+      setSelectedInvitees([...updatedData, {}]);
     }
   };
 
@@ -107,10 +104,12 @@ const MessageNewGroupScreen = ({route, navigation}) => {
 
     createChannel(list, profileImage, groupName, 'General')
       .then((channel) => {
+        setLoading(false);
+        // console.log({channel});
         if (channel !== null) {
-          setLoading(false);
-          navigation.replace('MessageChatScreen', {
+          navigation.push('MessageChatScreen', {
             channel,
+            disableGoBack: true,
           });
         }
       })
@@ -196,8 +195,8 @@ const MessageNewGroupScreen = ({route, navigation}) => {
               ]);
             } else {
               setBottomSheetOptions([strings.camera, strings.album]);
-              setShowBottomSheet(true);
             }
+            setShowBottomSheet(true);
           }}>
           <Image
             source={
@@ -207,9 +206,9 @@ const MessageNewGroupScreen = ({route, navigation}) => {
             }
             style={[styles.image, {borderRadius: 40}]}
           />
-          {/* <View style={styles.absoluteCameraIcon}>
+          <View style={styles.absoluteCameraIcon}>
             <Image source={images.certificateUpload} style={styles.image} />
-          </View> */}
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -231,9 +230,15 @@ const MessageNewGroupScreen = ({route, navigation}) => {
             style={styles.input}
             onChangeText={(text) => setGroupName(text)}
           />
-          <TouchableOpacity style={styles.closeIcon}>
-            <Image source={images.closeRound} style={styles.image} />
+            {groupName.length > 0 && (
+           <TouchableOpacity
+            onPress={() => {
+              clearTimeout(timeoutRef.current);
+              setGroupName('');
+            }}>
+            <Image source={images.closeRound} style={styles.closeIcon} />
           </TouchableOpacity>
+        )}
         </View>
       </View>
 
@@ -255,7 +260,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
                   <SelectedInviteeCard
                     item={item}
                     onCancel={() => {
-                      toggleSelection(true, item);
+                      removeSelectedEntity(item);
                     }}
                     containerStyle={{marginRight: 0}}
                   />
@@ -299,13 +304,13 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
-  // absoluteCameraIcon: {
-  //   position: 'absolute',
-  //   bottom: 0,
-  //   right: 0,
-  //   height: 25,
-  //   width: 25,
-  // },
+  absoluteCameraIcon: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    height: 25,
+    width: 25,
+  },
   chatRoomName: {
     fontSize: 16,
     lineHeight: 19,
@@ -329,8 +334,6 @@ const styles = StyleSheet.create({
   closeIcon: {
     width: 15,
     height: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   participantsCard: {
     flex: 1,

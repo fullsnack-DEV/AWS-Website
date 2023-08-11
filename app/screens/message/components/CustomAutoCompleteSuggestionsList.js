@@ -85,7 +85,8 @@ const CustomAutoCompleteSuggestionsList = ({
 
 const styles = StyleSheet.create({
   parent: {
-    padding: 15,
+    paddingTop: 10,
+    paddingHorizontal: 15,
     maxHeight: 150,
   },
 });

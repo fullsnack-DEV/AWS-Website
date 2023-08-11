@@ -31,6 +31,7 @@ const InviteModal = ({
   isVisible = false,
   closeModal = () => {},
   addMembers = () => {},
+  members = [],
 }) => {
   const authContext = useContext(AuthContext);
   const [list, setList] = useState([]);
@@ -58,14 +59,25 @@ const InviteModal = ({
             item.group_id !== authContext.entity.uid ||
             item.user_id !== authContext.entity.uid,
         );
+        let selectedMembers = [];
+        members.forEach((item) => {
+          const ids = item.members.map((ele) => ele.user_id);
+          selectedMembers = [...selectedMembers, ...ids];
+        });
 
-        const newList = data.map((item) => ({
-          id: item.group_id ?? item.user_id,
-          name: item.group_name ?? item.full_name,
-          image: item.full_image ?? item.thumbnail,
-          entityType: item.entity_type,
-          city: item.city,
-        }));
+        const newList = data.map((item) => {
+          const entityId = item.group_id ?? item.user_id;
+          if (selectedMembers.includes(entityId)) {
+            return false;
+          }
+          return {
+            id: item.group_id ?? item.user_id,
+            name: item.group_name ?? item.full_name,
+            image: item.full_image ?? item.thumbnail,
+            entityType: item.entity_type,
+            city: item.city,
+          };
+        });
 
         setList(_.sortBy(newList, 'name'));
         setLoading(false);
@@ -73,12 +85,17 @@ const InviteModal = ({
       .catch(() => {
         setLoading(false);
       });
-  }, [authContext.entity.uid]);
+  }, [authContext.entity.uid, members]);
 
   useEffect(() => {
     if (isVisible) {
       getInviteesData();
     }
+
+    return () => {
+      setSelectedInvitees([]);
+      setCurrentTab(strings.peopleTitleText);
+    };
   }, [isVisible, getInviteesData]);
 
   const getInviteeList = (option) => {
@@ -105,7 +122,7 @@ const InviteModal = ({
     if (searchText.length > 0) {
       const filteredData = list.filter(
         (item) =>
-          item.name.toLowerCase().includes(searchText.toLowerCase()) &&
+          item.name?.toLowerCase().includes(searchText.toLowerCase()) &&
           item.entityType ===
             (currentTab === strings.peopleTitleText
               ? Verbs.entityTypePlayer || Verbs.entityTypeUser

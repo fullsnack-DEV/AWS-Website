@@ -71,6 +71,7 @@ const UpdateChannelInfo = ({
   const deleteImage = () => {
     setGroupProfile({thumbnail: '', full_image: ''});
     setProfileImageChanged(false);
+    setShowBottomSheet(false);
   };
 
   const handleBottomSheetOption = (option) => {
@@ -151,7 +152,6 @@ const UpdateChannelInfo = ({
       title={strings.editChatRoom}
       containerStyle={{height: '90%'}}
       onRightButtonPress={onSaveButtonClicked}
-      isFullTitle
       headerLeftIconStyle={{width: 50}}>
       <ActivityLoader visible={loading} />
       <View style={styles.avatarContainer}>

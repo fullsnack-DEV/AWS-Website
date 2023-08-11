@@ -3084,6 +3084,8 @@ export default {
   Minimum: 'en_Minimum',
   writePostText: 'en_Write a post...',
   inviteTeam: 'en_Invite Team',
+  sendAMessage: 'en_Send a message',
+  createdChatRoom: 'en_{0} created this chatroom.',
   otherCurrecy:
     "en_Please Select Some Other Currency. This Currency is not Supported by now'",
 };

@@ -24,6 +24,7 @@ import {getChannelMembers, getChannelName} from '../../../utils/streamChat';
 import CustomAvatar from './CustomAvatar';
 import InviteModal from './InviteModal';
 import UpdateChannelInfo from './UpdateChannelInfo';
+import useStreamChatUtils from '../../../hooks/useStreamChatUtils';
 
 const ChatGroupDetails = ({
   isVisible = false,
@@ -31,13 +32,12 @@ const ChatGroupDetails = ({
   channel = {},
   streamUserId = '',
   leaveChannel = () => {},
-  addMembers = () => {},
-  loading = false,
 }) => {
   const [members, setMembers] = useState([]);
   const [showUpdateInfoModal, setShowUpdateInfoModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [isChannelOwner, setIsChannelOwner] = useState(false);
+  const {addMembersToChannel, isMemberAdding} = useStreamChatUtils();
 
   useEffect(() => {
     if (isVisible) {
@@ -81,6 +81,7 @@ const ChatGroupDetails = ({
           onPress: leaveChannel,
         },
       ],
+      {cancelable: true},
     );
   };
 
@@ -90,7 +91,7 @@ const ChatGroupDetails = ({
       closeModal={closeModal}
       modalType={ModalTypes.style2}
       containerStyle={{height: '98%'}}>
-      <ActivityLoader visible={loading} />
+      <ActivityLoader visible={isMemberAdding} />
       {members.length > 1 ? (
         <>
           <Text style={[styles.sectionTitle, {marginBottom: 10}]}>
@@ -131,7 +132,6 @@ const ChatGroupDetails = ({
       <Text style={[styles.sectionTitle, {marginBottom: 15}]}>
         {strings.participants}
       </Text>
-
       <FlatList
         data={members}
         keyExtractor={(item, index) => index.toString()}
@@ -160,10 +160,7 @@ const ChatGroupDetails = ({
               style={styles.listItem}
               onPress={() => setShowInviteModal(true)}>
               <View style={styles.addIconContainer}>
-                <Image
-                  source={images.plus_round_orange}
-                  style={styles.addIcon}
-                />
+                <Image source={images.plusInvoice} style={styles.addIcon} />
               </View>
               <Text style={[styles.listText, {color: colors.tabFontColor}]}>
                 {strings.invite}
@@ -193,9 +190,18 @@ const ChatGroupDetails = ({
       <InviteModal
         isVisible={showInviteModal}
         closeModal={() => setShowInviteModal(false)}
+        members={members}
         addMembers={(memberList) => {
           setShowInviteModal(false);
-          addMembers(memberList);
+
+          addMembersToChannel({channel, newMembers: memberList})
+            .then(() => {
+              const list = getChannelMembers(channel);
+              setMembers(list);
+            })
+            .catch((err) => {
+              Alert.alert(strings.alertmessagetitle, err.message);
+            });
         }}
       />
     </CustomModalWrapper>

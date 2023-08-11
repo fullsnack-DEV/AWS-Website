@@ -32,7 +32,11 @@ const BottomSheet = ({
   if (optionList.length > 0) {
     if (sheetType === 'ios') {
       return (
-        <Modal visible={isVisible} transparent animationType="slide">
+        <Modal
+          visible={isVisible}
+          transparent
+          animationType="slide"
+          onRequestClose={closeModal}>
           <Pressable style={styles.modalParent} onPress={closeModal}>
             <Pressable style={[styles.card, cardStyle]} onPress={() => {}}>
               {title ? (
@@ -40,7 +44,7 @@ const BottomSheet = ({
                   <View
                     style={[
                       styles.modalButtonContainer,
-                      {paddingVertical: 15,},
+                      {paddingVertical: 15},
                       headerStyle,
                     ]}>
                     <Text style={[styles.modalTitle, headerTitleStyle]}>
@@ -60,13 +64,15 @@ const BottomSheet = ({
                     <Text
                       style={[
                         styles.modalButtonText,
-                        item?.includes('Delete') ? {color: colors.redColor} : {},
+                        item?.includes('Delete')
+                          ? {color: colors.redColor}
+                          : {},
                         textStyle,
                       ]}>
                       {item}
                     </Text>
                   </Pressable>
-                  
+
                   <View
                     style={[styles.modalLineSeparator, separatorLineStyle]}
                   />
@@ -131,7 +137,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'flex-end',
-   
   },
   card: {
     marginHorizontal: 15,
@@ -139,19 +144,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightWhite,
     opacity: 0.96,
     borderRadius: 13,
-    
   },
   cardAndroid: {
     backgroundColor: colors.lightWhite,
     paddingVertical: 15,
     paddingHorizontal: 18,
-    
   },
   modalButtonContainer: {
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
-
   },
   modalButtonContainerAndroid: {
     paddingVertical: 8,
@@ -163,20 +165,17 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.eventBlueColor,
-  
   },
   modalButtonTextAndroid: {
     fontSize: 16,
     lineHeight: 24,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-
   },
   modalLineSeparator: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#09141F',
     opacity: 0.5,
-    
   },
   modalCancelButton: {
     backgroundColor: colors.whiteColor,

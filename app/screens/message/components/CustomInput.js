@@ -9,6 +9,7 @@ import * as Progress from 'react-native-progress';
 import colors from '../../../Constants/Colors';
 import {widthPercentageToDP as wp} from '../../../utils';
 import images from '../../../Constants/ImagePath';
+import {strings} from '../../../../Localization/translation';
 
 const CancelFileUpload = (files, removeFile) => {
   files.forEach((item) => {
@@ -107,7 +108,9 @@ const CustomInput = () => {
 
         <View style={styles.inputContainer}>
           <View style={{flex: 1}}>
-            <AutoCompleteInput />
+            <AutoCompleteInput
+              additionalTextInputProps={{placeholder: strings.sendAMessage}}
+            />
           </View>
           <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
             <Image style={{width: 17, height: 19}} source={images.chatBtn} />

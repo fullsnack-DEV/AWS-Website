@@ -33,10 +33,13 @@ import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import CongratulationsModal from '../account/registerPlayer/modals/CongratulationsModal';
 import * as Utility from '../../utils';
 import SwitchAccountModal from '../../components/account/SwitchAccountModal';
+import useStreamChatUtils from '../../hooks/useStreamChatUtils';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
+  const {createChannel, isCreatingChannel} = useStreamChatUtils();
 
   const [pointEvent] = useState('auto');
   const [isAdmin, setIsAdmin] = useState(false);
@@ -248,11 +251,31 @@ const HomeScreen = ({navigation, route}) => {
     return null;
   };
 
-  const onMessageButtonPress = (entityId) => {
-    navigation.push('MessageChat', {
-      screen: 'MessageChat',
-      params: {userId: entityId},
-    });
+  const onMessageButtonPress = (entityData = {}) => {
+    const invitee = [
+      {
+        id: entityData.group_id ?? entityData.user_id,
+        name: entityData.group_name ?? entityData.full_name,
+        image: entityData.full_image ?? entityData.thumbnail,
+        entityType: entityData.entity_type,
+        city: entityData.city,
+      },
+    ];
+
+    if (invitee[0]?.id) {
+      createChannel(invitee)
+        .then(async (channel) => {
+          if (channel) {
+            await channel.watch();
+            navigation.navigate('MessageChatScreen', {
+              channel,
+            });
+          }
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    }
   };
 
   const sendInvitation = (userids) => {
@@ -353,12 +376,7 @@ const HomeScreen = ({navigation, route}) => {
             <Pressable
               style={styles.imageContainer}
               onPress={() => {
-                const id =
-                  route.params.role === Verbs.entityTypePlayer ||
-                  route.params.role === Verbs.entityTypeUser
-                    ? currentUserData.user_id
-                    : currentUserData.group_id;
-                onMessageButtonPress(id);
+                onMessageButtonPress(currentUserData);
               }}>
               <Image
                 source={images.newchatIcon}
@@ -376,6 +394,7 @@ const HomeScreen = ({navigation, route}) => {
           </Pressable>
         </View>
       </View>
+      <ActivityLoader visible={isCreatingChannel} />
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       {getShimmer()}
       {renderScreen()}

@@ -124,9 +124,9 @@ const useStreamChatUtils = () => {
   const addMembersToChannel = async ({channel = {}, newMembers = []}) => {
     setLoading(true);
     const members = await fetchMembers(newMembers);
-    await channel.addMembers([...members]);
+    const response = await channel.addMembers([...members]);
     setLoading(false);
-    return true;
+    return response;
   };
 
   return {

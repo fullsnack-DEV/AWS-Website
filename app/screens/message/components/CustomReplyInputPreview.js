@@ -2,9 +2,9 @@ import React from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useMessageInputContext} from 'stream-chat-react-native';
 import {strings} from '../../../../Localization/translation';
-
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
+import {widthPercentageToDP as wp} from '../../../utils';
 
 const CustomReplyInputPreview = () => {
   const {quotedMessage, clearQuotedMessageState} = useMessageInputContext();
@@ -15,9 +15,10 @@ const CustomReplyInputPreview = () => {
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
-          alignItems: 'center',
+
           paddingHorizontal: 5,
           paddingVertical: 5,
+     
         }}>
         <View
           style={{
@@ -48,7 +49,7 @@ const CustomReplyInputPreview = () => {
               clearQuotedMessageState();
             }}>
             <Image
-              style={{width: 12, height: 12}}
+              style={{width: 12, height: 12,}}
               source={images.crossSingle}
             />
           </TouchableOpacity>
@@ -59,6 +60,13 @@ const CustomReplyInputPreview = () => {
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+   chatSeparateLine: {
+    borderColor: colors.writePostSepratorColor,
+    marginTop: 5,
+    borderWidth: 0.5,
+    width: wp(95),
+  },
+});
 
 export default CustomReplyInputPreview;
