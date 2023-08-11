@@ -108,7 +108,7 @@ export default function FollowTeams({route, navigation}) {
     <View>
       <View style={styles.listItem}>
         <View style={styles.listItemContainer}>
-          <View style={{flex: 0.2}}>
+          <View style={{}}>
             <TCProfileImage
               entityType={teams[index].entity_type}
               source={{uri: teams[index].thumbnail}}
@@ -118,13 +118,14 @@ export default function FollowTeams({route, navigation}) {
           </View>
           <View
             style={{
-              flex: 0.8,
+              width: 180,
+              marginHorizontal: 13,
               paddingHorizontal: 0,
             }}>
-            <Text style={styles.teamNameText}>
+            <Text style={styles.teamNameText} numberOfLines={1}>
               {teams[index].group_name ?? teams[index].full_name}
             </Text>
-            <Text style={styles.cityText}>
+            <Text style={styles.cityText} numberOfLines={1}>
               {teams[index].city}, {teams[index].state_abbr},{' '}
               {teams[index].country}
             </Text>
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 25,
     justifyContent: 'center',
-    width: 80,
+    paddingHorizontal: 8,
   },
   followText: {
     color: colors.whiteColor,
@@ -352,7 +353,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     justifyContent: 'center',
-    width: 80,
+    paddingHorizontal: 8,
   },
   followingText: {
     color: colors.themeColor,

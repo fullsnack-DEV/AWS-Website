@@ -454,16 +454,24 @@ function LocalHomeScreen({navigation, route}) {
     }
     if (item.title === strings.createEventhomeTitle) {
       navigation.navigate('Schedule', {
-        screen: 'EventScheduleScreen',
+        screen: 'CreateEventScreen',
+        params: {
+          comeName: '',
+        },
       });
     }
     if (item.title === strings.createevents) {
       navigation.navigate('Schedule', {
-        screen: 'EventScheduleScreen',
+        screen: 'CreateEventScreen',
+        params: {
+          comeName: '',
+        },
       });
     }
     if (item.title === strings.inviteMemberClub) {
+
       setShowInviteMember(true);
+
     }
   };
 

@@ -1,16 +1,16 @@
 import axios from 'axios';
+
 import NetInfo from '@react-native-community/netinfo';
-import {Alert} from 'react-native';
+
+// eslint-disable-next-line import/no-cycle
+import {showAlert} from '.';
+
 import {strings} from '../../Localization/translation';
 
 const apiCall = async ({method, url, data, headers, params, responseType}) =>
   NetInfo.fetch().then(async (netStat) => {
     if (!netStat || !netStat.isConnected) {
-      Alert.alert(
-        strings.alertmessagetitle,
-        strings.networkConnectivityErrorMessage,
-      );
-      throw new Error('no-internet');
+      showAlert(strings.networkConnectivityErrorMessage);
     }
     const options = {
       method,
