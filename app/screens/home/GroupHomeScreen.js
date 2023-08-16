@@ -695,9 +695,11 @@ const GroupHomeScreen = ({
         } else {
           setCurrentGroupData(Verbs.joinVerb);
           setLoading(false);
-          Alert.alert(format(strings.alertTitle1, groupData.group_name), '', [
-            {text: strings.okTitleText},
-          ]);
+          Alert.alert(
+            strings.alertmessagetitle,
+            format(strings.alertTitle1, groupData.group_name),
+            [{text: strings.okTitleText}],
+          );
         }
       })
       .catch((error) => {
@@ -753,8 +755,8 @@ const GroupHomeScreen = ({
           setLoading(false);
           setTimeout(() => {
             Alert.alert(
-              `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`,
               '',
+              `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`,
               [{text: strings.okTitleText}],
             );
           }, 10);
@@ -813,9 +815,11 @@ const GroupHomeScreen = ({
         setCurrentUserData(group);
         setLoading(false);
         setTimeout(() => {
-          Alert.alert(format(getAlertTitle(), groupData.group_name), '', [
-            {text: strings.okTitleText},
-          ]);
+          Alert.alert(
+            strings.alertmessagetitle,
+            format(getAlertTitle(), groupData.group_name),
+            [{text: strings.okTitleText}],
+          );
         }, 10);
       })
       .catch((error) => {

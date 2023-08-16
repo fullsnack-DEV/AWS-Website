@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext,useRef} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {
   Alert,
   FlatList,
@@ -24,12 +24,13 @@ import ScreenHeader from '../../components/ScreenHeader';
 import SelectedInviteeCard from './components/SelectedInviteeCard';
 import BottomSheet from '../../components/modals/BottomSheet';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
+import Verbs from '../../Constants/Verbs';
 
 const NUM_OF_COLS = 5;
 
 const MessageNewGroupScreen = ({route, navigation}) => {
   const authContext = useContext(AuthContext);
-   const timeoutRef = useRef();
+  const timeoutRef = useRef();
 
   const {selectedInviteesData} = route.params;
   const [selectedInvitees, setSelectedInvitees] = useState([]);
@@ -102,10 +103,10 @@ const MessageNewGroupScreen = ({route, navigation}) => {
   const onDonePress = async (profileImage = '') => {
     const list = selectedInvitees.filter((invitee) => invitee.id);
 
-    createChannel(list, profileImage, groupName, 'General')
+    createChannel(list, profileImage, groupName, Verbs.channelTypeGeneral)
       .then((channel) => {
         setLoading(false);
-        // console.log({channel});
+
         if (channel !== null) {
           navigation.push('MessageChatScreen', {
             channel,
@@ -230,15 +231,15 @@ const MessageNewGroupScreen = ({route, navigation}) => {
             style={styles.input}
             onChangeText={(text) => setGroupName(text)}
           />
-            {groupName.length > 0 && (
-           <TouchableOpacity
-            onPress={() => {
-              clearTimeout(timeoutRef.current);
-              setGroupName('');
-            }}>
-            <Image source={images.closeRound} style={styles.closeIcon} />
-          </TouchableOpacity>
-        )}
+          {groupName.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                clearTimeout(timeoutRef.current);
+                setGroupName('');
+              }}>
+              <Image source={images.closeRound} style={styles.closeIcon} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 

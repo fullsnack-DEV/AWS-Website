@@ -3068,7 +3068,7 @@ export default {
   whenyouTerminateAccount: 'en_When you Pause the team:',
   viewText: 'en_View',
   leaveChatAlertText: 'en_Are you sure you want to leave this chatroom?',
-  editChatRoom: 'en_Edit ChatRoom Name & Photo',
+  editChatRoom: 'en_Edit Chatroom Name & Photo',
   deleteForMe: 'en_The message will be deleted from only your device.',
   deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
   viewAll: 'en_View all',
@@ -3088,4 +3088,6 @@ export default {
   createdChatRoom: 'en_{0} created this chatroom.',
   otherCurrecy:
     "en_Please Select Some Other Currency. This Currency is not Supported by now'",
+  chatWith: 'en_Chat with {0}',
+  goToHomeOf: 'en_Go to Home of {0}',
 };

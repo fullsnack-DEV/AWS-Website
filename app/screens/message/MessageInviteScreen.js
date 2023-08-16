@@ -109,15 +109,15 @@ const MessageInviteScreen = ({navigation}) => {
   };
 
   const toggleSelection = (isChecked, user) => {
+    let newData = [];
     if (isChecked) {
-      const uIndex = selectedInvitees.findIndex(
-        (item) => user?.id === item?.id,
-      );
-      if (uIndex !== -1) selectedInvitees.splice(uIndex, 1);
+      newData = selectedInvitees
+        .reverse()
+        .filter((item) => item.id !== user.id);
     } else {
-      selectedInvitees.push(user);
+      newData = [...selectedInvitees, user];
     }
-    setSelectedInvitees([...selectedInvitees]);
+    setSelectedInvitees([...newData]);
   };
 
   const ListEmptyComponent = () => (
@@ -170,8 +170,7 @@ const MessageInviteScreen = ({navigation}) => {
         }}
         isRightIconText
         rightButtonText={
-          // selectedInvitees.length > 1 ? strings.next : strings.create
-          strings.create
+          selectedInvitees.length > 1 ? strings.next : strings.create
         }
         rightButtonTextStyle={
           selectedInvitees.length === 0 ? {color: colors.userPostTimeColor} : {}

@@ -267,8 +267,11 @@ const HomeScreen = ({navigation, route}) => {
         .then(async (channel) => {
           if (channel) {
             await channel.watch();
-            navigation.navigate('MessageChatScreen', {
-              channel,
+            navigation.navigate('Message', {
+              screen: 'MessageChatScreen',
+              params: {
+                channel,
+              },
             });
           }
         })
@@ -350,6 +353,11 @@ const HomeScreen = ({navigation, route}) => {
             onPress={() => {
               if (route.params?.comeFrom === 'IncomingChallengeSettings') {
                 navigation.navigate('AccountScreen');
+              } else if (route.params?.comeFrom === 'MessageChatScreen') {
+                navigation.navigate('Message', {
+                  screen: 'MessageChatScreen',
+                  params: {...route.params.routeParams},
+                });
               } else if (route.params?.isEntityCreated) {
                 navigation.pop(4);
               } else {

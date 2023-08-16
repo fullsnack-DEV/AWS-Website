@@ -26,6 +26,7 @@ import {
   ImageGallery,
 } from 'stream-chat-react-native';
 import * as Progress from 'react-native-progress';
+import {format} from 'react-string-format';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -70,6 +71,9 @@ const MessageChatScreen = ({navigation, route}) => {
   const [messages, setMessages] = useState([]);
   const [deleteOptions, setDeleteOptions] = useState([]);
   const [channelName, setChannelName] = useState('');
+  const [showTagOptions, setShowTagOptions] = useState(false);
+  const [tagOptions, setTagOptions] = useState([]);
+  const [selectedTagMember, setSelectedTagMember] = useState({});
   const timeoutRef = useRef();
 
   useEffect(() => {
@@ -258,32 +262,56 @@ const MessageChatScreen = ({navigation, route}) => {
       return;
     }
     const memberId = member.id.includes('@')
-      ? member.id.split('@')[0]
-      : member.id;
+      ? selectedTagMember.id.split('@')[0]
+      : selectedTagMember.id;
 
     if (memberId === authContext.entity.uid) {
       return;
     }
 
-    const obj = {
-      id: memberId,
-      name: member.group_name ?? member.name,
-      image: member.image,
-      entityType: member.entityType,
-    };
+    const options = [
+      format(strings.chatWith, entity_name),
+      format(strings.goToHomeOf, entity_name),
+    ];
 
-    createChannel([obj])
-      .then(async (channelObj) => {
-        if (channelObj !== null) {
-          await channelObj.watch();
-          navigation.replace('MessageChatScreen', {
-            channel: channelObj,
-          });
-        }
-      })
-      .catch((err) => {
-        Alert.alert(strings.alertmessagetitle, err.message);
+    setSelectedTagMember(member);
+    setTagOptions(options);
+    setShowTagOptions(true);
+  };
+
+  const handleTagOptions = (option) => {
+    setShowTagOptions(false);
+    const memberId = selectedTagMember.id.includes('@')
+      ? selectedTagMember.id.split('@')[0]
+      : selectedTagMember.id;
+    if (option === tagOptions[0]) {
+      const obj = {
+        id: memberId,
+        name: selectedTagMember.group_name ?? selectedTagMember.name,
+        image: selectedTagMember.image,
+        entityType: selectedTagMember.entityType,
+      };
+
+      createChannel([obj])
+        .then(async (channelObj) => {
+          if (channelObj !== null) {
+            await channelObj.watch();
+            navigation.replace('MessageChatScreen', {
+              channel: channelObj,
+            });
+          }
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    } else if (option === tagOptions[1]) {
+      navigation.navigate('HomeScreen', {
+        uid: memberId,
+        role: selectedTagMember.entityType,
+        comeFrom: 'MessageChatScreen',
+        routeParams: {channel},
       });
+    }
   };
 
   const getSearchData = useCallback(
@@ -445,6 +473,14 @@ const MessageChatScreen = ({navigation, route}) => {
           channel={channel}
           streamUserId={authContext.chatClient.userID}
           leaveChannel={handleChannelLeave}
+        />
+
+        <BottomSheet
+          type="ios"
+          optionList={tagOptions}
+          isVisible={showTagOptions}
+          closeModal={() => setShowTagOptions(false)}
+          onSelect={handleTagOptions}
         />
       </View>
     </SafeAreaView>

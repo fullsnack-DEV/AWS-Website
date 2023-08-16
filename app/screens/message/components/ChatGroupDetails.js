@@ -6,11 +6,11 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  FlatList,
   Dimensions,
   Alert,
   Platform,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {strings} from '../../../../Localization/translation';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import GroupIcon from '../../../components/GroupIcon';
@@ -92,7 +92,9 @@ const ChatGroupDetails = ({
       modalType={ModalTypes.style2}
       containerStyle={{height: '98%'}}>
       <ActivityLoader visible={isMemberAdding} />
-      {members.length > 1 ? (
+
+      {channel.data?.group_type === Verbs.channelTypeGeneral ||
+      channel.data?.channel_type === Verbs.channelTypeAuto ? (
         <>
           <Text style={[styles.sectionTitle, {marginBottom: 10}]}>
             {strings.chatroomName.toUpperCase()}
@@ -118,8 +120,8 @@ const ChatGroupDetails = ({
                 </Text>
               </View>
             </View>
-            {isChannelOwner &&
-            channel.data?.channel_type !== Verbs.channelTypeAuto ? (
+            {channel.data?.channel_type !== Verbs.channelTypeAuto &&
+            isChannelOwner ? (
               <View style={styles.iconContainer}>
                 <Image source={images.nextArrow} style={styles.icon} />
               </View>
@@ -160,7 +162,10 @@ const ChatGroupDetails = ({
               style={styles.listItem}
               onPress={() => setShowInviteModal(true)}>
               <View style={styles.addIconContainer}>
-                <Image source={images.plusInvoice} style={styles.addIcon} />
+                <Image
+                  source={images.plus_round_orange}
+                  style={styles.addIcon}
+                />
               </View>
               <Text style={[styles.listText, {color: colors.tabFontColor}]}>
                 {strings.invite}

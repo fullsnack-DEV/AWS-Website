@@ -205,7 +205,8 @@ const CustomModalWrapper = ({
             modalType === ModalTypes.default) && (
             <PanGestureHandler
               onGestureEvent={onPanGestureEvent}
-              onHandlerStateChange={onPanGestureStateChange}>
+              onHandlerStateChange={onPanGestureStateChange}
+              shouldCancelWhenOutside={false}>
               <Animated.View
                 style={[
                   getCardStyle(),

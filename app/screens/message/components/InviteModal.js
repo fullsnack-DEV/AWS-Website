@@ -153,7 +153,7 @@ const InviteModal = ({
       closeModal={closeModal}
       modalType={ModalTypes.style1}
       title={strings.invite}
-      headerRightButtonText={strings.create}
+      headerRightButtonText={strings.done}
       containerStyle={styles.parent}
       onRightButtonPress={() => {
         if (selectedInvitees.length > 0) {

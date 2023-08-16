@@ -230,7 +230,7 @@ export default function UserConnections({navigation, route}) {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                {authContext.entity.uid === item.user_id &&
+                {authContext.entity.uid !== item.user_id &&
                 (authContext.entity.role === Verbs.entityTypeUser ||
                   authContext.entity.role === Verbs.entityTypePlayer) ? (
                   <TouchableOpacity

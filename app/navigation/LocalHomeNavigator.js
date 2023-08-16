@@ -1091,21 +1091,7 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="GroupMembersScreen"
       component={GroupMembersScreen}
-      options={{
-        title: strings.membersTitle,
-        headerShown: false,
-        headerTitleAlign: 'center',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontFamily: fonts.RMedium,
-          fontSize: 16,
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen

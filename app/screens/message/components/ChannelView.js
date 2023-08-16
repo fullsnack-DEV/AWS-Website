@@ -69,15 +69,17 @@ const ChannelView = ({channel, latestMessagePreview}) => {
                 </View>
               ) : null}
 
-              <Text
-                style={[
-                  styles.memberCount,
-                  data.channel_type === Verbs.channelTypeAuto
-                    ? {}
-                    : {marginLeft: 10},
-                ]}>
-                {memberCount}
-              </Text>
+              {memberCount > 2 && (
+                <Text
+                  style={[
+                    styles.memberCount,
+                    data.channel_type === Verbs.channelTypeAuto
+                      ? {}
+                      : {marginLeft: 10},
+                  ]}>
+                  {memberCount}
+                </Text>
+              )}
             </View>
             <Text style={styles.channelLowerText} numberOfLines={1}>
               {getLastMessage()}
