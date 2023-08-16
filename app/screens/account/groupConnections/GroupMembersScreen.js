@@ -60,6 +60,7 @@ export default function GroupMembersScreen({navigation, route}) {
   // For activity indigator
   const [loading, setloading] = useState(true);
   const [searchMember, setSearchMember] = useState();
+  const [searchText, setSearchText] = useState('');
 
   const [members, setMembers] = useState([]);
 
@@ -67,6 +68,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const [pointEvent] = useState('auto');
   const [active, setActive] = useState(true);
+  const [noResults, setNoResults] = useState(false);
 
   const [groupObjNew, setGroupObjNew] = useState({});
   const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
@@ -150,16 +152,27 @@ export default function GroupMembersScreen({navigation, route}) {
   }, [authContext, getGroupsLoggedInUser, groupID]);
 
   const searchFilterFunction = (text) => {
-    const filteredData = members.filter((item) => {
-      const fullName = `${item.first_name}${item.last_name}`.toLowerCase();
+    const searchTexts = text.toLowerCase();
 
-      return fullName.includes(text);
+    if (text.length === 0) {
+      setMembers(searchMember);
+      setSearchText(text);
+      setNoResults(false); // Reset noResults
+      return;
+    }
+
+    const filteredData = members.filter((item) => {
+      const fullName = `${item.first_name} ${item.last_name}`.toLowerCase();
+      return fullName.includes(searchTexts);
     });
 
-    if (text.length > 0) {
-      setMembers(filteredData);
+    setMembers(filteredData);
+    setSearchText(text);
+
+    if (filteredData.length === 0) {
+      setNoResults(true);
     } else {
-      setMembers(searchMember);
+      setNoResults(false);
     }
   };
 
@@ -659,13 +672,21 @@ export default function GroupMembersScreen({navigation, route}) {
         {SearchBox()}
 
         {/* eslint-disable-next-line no-nested-ternary */}
-        {members.length > 0 ? (
+        {members.length > 0 || noResults ? (
           <FlatList
             extraData={members}
             style={{marginTop: -10}}
             data={members}
             renderItem={renderMembers}
             showsVerticalScrollIndicator={false}
+            ListEmptyComponent={() => (
+              <View style={styles.listemptyView}>
+                <Text style={{textAlign: 'center'}}>
+                  {' '}
+                  {strings.liseemptyText}{' '}
+                </Text>
+              </View>
+            )}
             keyExtractor={(item, index) => `${item.first_name}/${index}`}
           />
         ) : (
@@ -794,5 +815,11 @@ const styles = StyleSheet.create({
     padding: 6,
 
     borderRadius: 5,
+  },
+  listemptyView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 300,
   },
 });

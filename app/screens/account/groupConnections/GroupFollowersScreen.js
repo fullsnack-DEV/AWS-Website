@@ -27,6 +27,7 @@ import {displayLocation} from '../../../utils';
 const GroupFollowersScreen = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const [followersList, setFollowersList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const authContext = useContext(AuthContext);
 
@@ -70,9 +71,13 @@ const GroupFollowersScreen = ({navigation, route}) => {
 
   const renderList = () => {
     if (followersList.length > 0) {
+      const filteredList = followersList.filter((item) => {
+        const itemName = item.group_name ?? item.full_name;
+        return itemName.toLowerCase().includes(searchQuery.toLowerCase());
+      });
       return (
         <FlatList
-          data={followersList}
+          data={filteredList}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           renderItem={({item}) => (
@@ -142,6 +147,7 @@ const GroupFollowersScreen = ({navigation, route}) => {
           placeholder={strings.searchText}
           placeholderTextColor={colors.placeHolderColor}
           style={styles.input}
+          onChangeText={setSearchQuery}
         />
         {loading ? <UserListShimmer /> : renderList()}
       </View>

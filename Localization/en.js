@@ -3088,6 +3088,10 @@ export default {
   createdChatRoom: 'en_{0} created this chatroom.',
   otherCurrecy:
     "en_Please Select Some Other Currency. This Currency is not Supported by now'",
+
+  liseemptyText: 'en_No members found',
+
   chatWith: 'en_Chat with {0}',
   goToHomeOf: 'en_Go to Home of {0}',
+
 };

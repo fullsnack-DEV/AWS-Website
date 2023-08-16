@@ -37,7 +37,7 @@ import GroupIcon from '../../../components/GroupIcon';
 import {displayLocation} from '../../../utils';
 import {unfollowGroup} from '../../../api/Groups';
 
-const tabList = [strings.followerTitleText, strings.following];
+const tabList = [strings.following, strings.followerTitleText];
 
 const obj = {
   following: {
@@ -58,6 +58,7 @@ export default function UserConnections({navigation, route}) {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(obj);
   const [selectedTab, setSelectedTab] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -103,8 +104,7 @@ export default function UserConnections({navigation, route}) {
         setData({...newData});
         setLoading(false);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setLoading(false);
       });
   }, [authContext, userId]);
@@ -196,6 +196,11 @@ export default function UserConnections({navigation, route}) {
       list = [...data.following.data];
     }
 
+    list = list.filter((item) => {
+      const itemName = item.group_name ?? item.full_name;
+      return itemName.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+
     if (list.length > 0) {
       return (
         <FlatList
@@ -233,6 +238,7 @@ export default function UserConnections({navigation, route}) {
                 {authContext.entity.uid !== item.user_id &&
                 (authContext.entity.role === Verbs.entityTypeUser ||
                   authContext.entity.role === Verbs.entityTypePlayer) ? (
+                  // eslint-disable-next-line react/jsx-indent
                   <TouchableOpacity
                     style={styles.buttonContainer}
                     onPress={() => {
@@ -307,6 +313,7 @@ export default function UserConnections({navigation, route}) {
           placeholder={strings.searchText}
           placeholderTextColor={colors.placeHolderColor}
           style={styles.input}
+          onChangeText={setSearchQuery}
         />
 
         {loading ? <UserListShimmer /> : renderList(selectedTab)}
