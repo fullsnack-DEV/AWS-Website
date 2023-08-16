@@ -367,6 +367,7 @@ const EditBasicInfoComponent = ({
             {strings.addPhone}
           </Text>
         </Pressable>
+
         <View style={{marginBottom: 35}}>
           <Text style={styles.titleText}>
             {strings.mailingAddressText.toUpperCase()}

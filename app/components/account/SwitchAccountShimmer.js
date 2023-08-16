@@ -7,7 +7,7 @@ const SwitchAccountShimmer = () =>
   Array(8)
     .fill('')
     .map((item, index) => (
-      <View key={index}>
+      <View style={{paddingHorizontal: 15, marginTop: 15}} key={index}>
         <View
           key={index}
           style={[styles.row, {justifyContent: 'space-between'}]}>

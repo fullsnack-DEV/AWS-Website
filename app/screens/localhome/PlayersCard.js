@@ -1,5 +1,5 @@
 import {View, Text, Pressable, StyleSheet, Platform, Image} from 'react-native';
-import React from 'react';
+import React, {memo} from 'react';
 
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
@@ -9,17 +9,33 @@ import {convertToKFormat} from './LocalHomeUtils';
 
 import {strings} from '../../../Localization/translation';
 
-export default function PlayersCard({
+function PlayersCard({
   item = {},
   selectedSport,
   scoreKeeper = false,
   refree = false,
   hiring = false,
+  playeravail = false,
   onPress = () => {},
 }) {
   const getEntityName = () => item.full_name;
 
   const getName = () => {
+    // players available
+    if (playeravail && selectedSport === strings.allSport) {
+      const singleSport = item?.registered_sports?.find(
+        (sport) => sport.sport_type === 'single',
+      );
+      return singleSport?.sport_name ?? null;
+    }
+
+    if (playeravail && selectedSport !== strings.allSport) {
+      const singleSport = item?.registered_sports?.find(
+        (sport) => sport.sport_type === 'single',
+      );
+      return singleSport?.sport_name ?? null;
+    }
+
     if (hiring && selectedSport !== strings.allType) {
       const filteredSports = item.registered_sports.find(
         (i) => i.sport.toLowerCase() === selectedSport.toLowerCase(),
@@ -94,16 +110,7 @@ export default function PlayersCard({
             : images.defaultPlayerBg
         }
         blurRadius={4}>
-        <Text
-          numberOfLines={1}
-          style={{
-            fontFamily: fonts.RBold,
-            fontSize: 14,
-            lineHeight: 21,
-            color: colors.whiteColor,
-            marginTop: 10,
-            alignSelf: 'center',
-          }}>
+        <Text numberOfLines={1} style={styles.nameStyle}>
           {getName()}
           {/* {sportText} */}
         </Text>
@@ -227,4 +234,14 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
   },
+  nameStyle: {
+    fontFamily: fonts.RBold,
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.whiteColor,
+    marginTop: 10,
+    alignSelf: 'center',
+  },
 });
+
+export default memo(PlayersCard);

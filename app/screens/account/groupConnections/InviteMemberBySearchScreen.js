@@ -45,11 +45,13 @@ export default function InviteMembersBySearchScreen({navigation}) {
   const [pageFrom, setPageFrom] = useState(0);
   const [filters, setFilters] = useState();
   const [searchText, setSearchText] = useState('');
+  const [playerTagList, setPlayerTagList] = useState([]);
 
   const selectedPlayers = [];
   useEffect(() => {
     getUsers(filters);
-  }, []);
+  }, [filters]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -76,6 +78,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
       userIds: selectedList,
       uid: entity.uid,
     };
+    console.log(selectedList.length, 'from semd Invite');
 
     sendInvitationInGroup(obj, authContext)
       .then(() => {
@@ -130,12 +133,11 @@ export default function InviteMembersBySearchScreen({navigation}) {
       }
       getUserIndex(membersQuery)
         .then((response) => {
-          console.log('User list:->', response);
           setloading(false);
           if (response.length > 0) {
             const result = response.map((obj) => {
               // eslint-disable-next-line no-param-reassign
-              obj.isChecked = false;
+              obj.isChecked = selectedList.includes(obj.user_id);
               return obj;
             });
             setPlayers([...players, ...result]);
@@ -150,16 +152,21 @@ export default function InviteMembersBySearchScreen({navigation}) {
     },
     [pageFrom, pageSize, players],
   );
+
   const selectPlayer = ({item, index}) => {
     players[index].isChecked = !item.isChecked;
     setPlayers([...players]);
-    players.map((obj) => {
+
+    setPlayerTagList([...players]);
+
+    playerTagList.map((obj) => {
       if (obj.isChecked) {
         selectedPlayers.push(obj.user_id);
       }
       return obj;
     });
-    setSelectedList(selectedPlayers);
+    setSelectedList([...selectedPlayers]);
+    console.log(selectedList, 'from selcted list');
   };
 
   const renderPlayer = ({item, index}) => (
@@ -183,9 +190,13 @@ export default function InviteMembersBySearchScreen({navigation}) {
     });
   };
 
-  const applyFilter = useCallback((fil) => {
-    getUsers(fil);
-  }, []);
+  const applyFilter = useCallback(
+    (fil) => {
+      getUsers(fil);
+    },
+    [filters],
+  );
+
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text
@@ -244,13 +255,13 @@ export default function InviteMembersBySearchScreen({navigation}) {
             </View>
           )}
 
-        {selectedList.length > 0 && (
+        {playerTagList.length > 0 && (
           <View
             style={{
               marginTop: 15,
             }}>
             <TCProfileTag
-              dataSource={players}
+              dataSource={playerTagList}
               onTagCancelPress={handleTagPress}
               style={{
                 marginLeft: 10,
@@ -262,7 +273,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
         <TCThinDivider />
       </View>
     ),
-    [players],
+    [playerTagList],
   );
 
   const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
@@ -295,24 +306,24 @@ export default function InviteMembersBySearchScreen({navigation}) {
         }}
       />
 
+      {listHeaderComponent()}
+
       {players.length === 0 ? (
         <InviteListShimmer />
       ) : (
         <FlatList
           extraData={players}
-          ListHeaderComponent={listHeaderComponent}
           showsVerticalScrollIndicator={false}
           data={players}
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={ItemSeparatorComponent}
           renderItem={renderPlayer}
+          ListEmptyComponent={listEmptyComponent}
           onScroll={onScrollHandler}
-          onEndReachedThreshold={0.01}
           onScrollBeginDrag={() => {
             stopFetchMore = false;
           }}
-          stickyHeaderIndices={[0]}
-          ListEmptyComponent={listEmptyComponent}
+          onEndReachedThreshold={0.01}
         />
       )}
     </View>

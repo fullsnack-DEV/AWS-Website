@@ -506,7 +506,7 @@ const AccountScreen = ({navigation, route}) => {
           navigation.navigate('NotificationsListScreen')
         }
       />
-      <ActivityLoader visible={onLoad || loading} />
+      <ActivityLoader visible={onLoad} />
 
       {accountMenu.length === 0 ? (
         <AccountShimmer />

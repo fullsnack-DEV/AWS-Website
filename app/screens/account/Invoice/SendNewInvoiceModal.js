@@ -444,20 +444,7 @@ const SendNewInvoiceModal = ({
               }}>
               {strings.recipients.toUpperCase()}
             </Text>
-            {/* {selectedRecipients.length > 0 && (
-              <Text
-                style={{
-                  color: colors.orangeColorCard,
-                  fontSize: 16,
-                  textAlign: 'left',
-                  fontFamily: fonts.RBold,
-                  lineHeight: 24,
-                }}>
-                {' ('}
-                {selectedRecipients.length}
-                {')'}
-              </Text>
-            )} */}
+
             <Text style={{marginTop: 4, color: 'red'}}> {strings.star}</Text>
           </View>
           <TouchableOpacity onPress={() => showRecipientsClicked()}>
@@ -507,89 +494,6 @@ const SendNewInvoiceModal = ({
             setShowCurrencyModal(false);
           }}
         />
-
-        {/* <Modal visible={showCurrencyModal} transparent animationType="slide">
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.6)',
-              justifyContent: 'flex-end',
-            }}>
-            <View
-              style={{
-                backgroundColor: colors.whiteColor,
-                borderTopRightRadius: 20,
-                borderTopLeftRadius: 20,
-              }}>
-              <View style={modalStyles.headerRow}>
-                <View style={{flex: 1}} />
-                <View style={modalStyles.headerTitleContainer}>
-                  <Text style={modalStyles.headerTitle}>
-                    {strings.currencySetting}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    alignItems: 'flex-end',
-                    justifyContent: 'center',
-                  }}>
-                  <Pressable
-                    style={{width: 26, height: 26}}
-                    onPress={() => setShowCurrencyModal(false)}>
-                    <Image
-                      source={images.crossImage}
-                      style={modalStyles.image}
-                    />
-                  </Pressable>
-                </View>
-              </View>
-              <View style={modalStyles.divider} />
-              <View style={{paddingHorizontal: 15, paddingVertical: 19}}>
-                <FlatList
-                  data={DataSource.CurrencyType}
-                  keyExtractor={(item, index) => index}
-                  renderItem={({item}) => (
-                    <>
-                      <Pressable
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          paddingVertical: 10,
-                          paddingHorizontal: 10,
-                        }}
-                        onPress={() => {
-                          setCurrency(item.value);
-                          setShowCurrencyModal(false);
-                        }}>
-                        <View style={{flex: 1}}>
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              lineHeight: 24,
-                              fontFamily: fonts.RMedium,
-                            }}>
-                            {item.label}
-                          </Text>
-                        </View>
-                        <Image
-                          source={
-                            currency === item.value
-                              ? images.radioCheckYellow
-                              : images.radioUnselect
-                          }
-                          style={{height: 22, width: 22}}
-                        />
-                      </Pressable>
-                      <View style={modalStyles.divider} />
-                    </>
-                  )}
-                />
-              </View>
-            </View>
-          </View>
-        </Modal> */}
 
         <AddRecipientsModal
           isVisible={showRecipientsModal}

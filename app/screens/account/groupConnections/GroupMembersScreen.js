@@ -51,6 +51,7 @@ import Verbs from '../../../Constants/Verbs';
 import Header from '../../../components/Home/Header';
 import GroupMemberShimmer from './GroupMemberShimmer';
 import ScreenHeader from '../../../components/ScreenHeader';
+import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
 
 export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -76,6 +77,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const currentRoute = routes[0].name;
   const [userJoinedGrpList, setUserJoinedGrpList] = useState();
   const [clubToCheckAdmin, setClubToCheckAdmin] = useState(false);
+  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -693,6 +695,7 @@ export default function GroupMembersScreen({navigation, route}) {
           <GroupMemberShimmer />
         )}
       </View>
+
       <ActionSheet
         ref={actionSheet}
         options={[
@@ -726,11 +729,18 @@ export default function GroupMembersScreen({navigation, route}) {
               groupID,
             });
           } else if (index === 1) {
-            Alert.alert(strings.underDevelopment);
+            Alert.alert('Pressed');
+            setTimeout(() => {
+              SetSendNewInvoice(true);
+            }, [100]);
           } else if (index === 2) {
             navigation.navigate('MembersViewPrivacyScreen', {groupID});
           }
         }}
+      />
+      <SendNewInvoiceModal
+        isVisible={sendNewInvoice}
+        onClose={() => SetSendNewInvoice(false)}
       />
     </SafeAreaView>
   );

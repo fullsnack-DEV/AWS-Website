@@ -134,7 +134,9 @@ export default function NavigationMainContainer() {
         <NavigationContainer theme={navigationTheme}>
           <Host>
             {authContext.entity?.isLoggedIn ? (
-              <Stack.Navigator initialRouteName="App">
+              <Stack.Navigator
+                initialRouteName="App"
+                detachInactiveScreens={true}>
                 <Stack.Screen
                   name="App"
                   component={AppNavigator}

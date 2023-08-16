@@ -22,7 +22,7 @@ import {getUserIndex} from '../../api/elasticSearch';
 import TCThinDivider from '../../components/TCThinDivider';
 import {UserActionTiles, tilesArray} from '../../utils/constant';
 
-export default function TopTileSection({
+function TopTileSection({
   handleTileClick,
   onRegisterAsTilePress,
   visibleSportsModalForTeam,
@@ -422,3 +422,5 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
+
+export default React.memo(TopTileSection);

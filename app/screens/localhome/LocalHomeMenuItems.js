@@ -63,9 +63,13 @@ const LocalHomeMenuItems = memo(
     const [playerDetail, setPlayerDetail] = useState();
     const [imageBaseUrl, setImageBaseUrl] = useState('');
     useEffect(() => {
-      getStorage('appSetting').then((setting) => {
-        setImageBaseUrl(setting.base_url_sporticon);
-      });
+      try {
+        getStorage('appSetting').then((setting) => {
+          setImageBaseUrl(setting.base_url_sporticon);
+        });
+      } catch (error) {
+        console.log(error.message, 'from error message');
+      }
     }, []);
     const sportsView = (item) => (
       <Pressable
@@ -538,7 +542,7 @@ const LocalHomeMenuItems = memo(
                         selectedSport={selectedSport}
                         sportType={sportType}
                         item={item}
-                        hiring={true}
+                        playeravail={true}
                         onPress={() => onCardPress(items, item)}
                       />
                     )}
@@ -859,4 +863,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LocalHomeMenuItems;
+export default React.memo(LocalHomeMenuItems);

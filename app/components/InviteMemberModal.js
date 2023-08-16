@@ -6,8 +6,9 @@ import {
   Pressable,
   Image,
   Alert,
+  ScrollView,
 } from 'react-native';
-import React, {useState, useCallback, useEffect, useContext} from 'react';
+import React, {useState, useCallback, useEffect, useContext, memo} from 'react';
 import {format} from 'react-string-format';
 import ClipboardToast from 'react-native-clipboard-toast';
 import CustomModalWrapper from './CustomModalWrapper';
@@ -32,7 +33,7 @@ import InviteMemberbyEmailModal from './InviteMemberByEmail';
 
 let stopFetchMore = true;
 
-export default function InviteMemberModal({isVisible, closeModal = () => {}}) {
+function InviteMemberModal({isVisible, closeModal = () => {}}) {
   const [loading, setloading] = useState(true);
   const authContext = useContext(AuthContext);
   const [players, setPlayers] = useState([]);
@@ -49,6 +50,51 @@ export default function InviteMemberModal({isVisible, closeModal = () => {}}) {
     getUsers(filters);
     setPageFrom(10);
   }, [isVisible, filters]);
+
+  const getUsers = useCallback(
+    (filterPlayer) => {
+      const membersQuery = {
+        size: pageSize,
+        from: pageFrom,
+        query: {
+          bool: {
+            must: [],
+          },
+        },
+      };
+      if (filterPlayer?.searchText?.length > 0) {
+        membersQuery.query.bool.must.push({
+          query_string: {
+            query: `*${filterPlayer?.searchText}*`,
+            fields: ['full_name'],
+          },
+        });
+      }
+      console.log(membersQuery);
+
+      getUserIndex(membersQuery)
+        .then((response) => {
+          setloading(false);
+          console.log(membersQuery);
+          console.log(response);
+          if (response.length > 0) {
+            const result = response.map((obj) => {
+              // eslint-disable-next-line no-param-reassign
+              obj.isChecked = false;
+              return obj;
+            });
+            setPlayers([...players, ...result]);
+            setPageFrom(pageFrom + pageSize);
+            stopFetchMore = true;
+          }
+        })
+        .catch((error) => {
+          setloading(false);
+          console.log(error.message);
+        });
+    },
+    [pageFrom, pageSize, players],
+  );
 
   const sendInvitation = () => {
     setloading(true);
@@ -93,51 +139,12 @@ export default function InviteMemberModal({isVisible, closeModal = () => {}}) {
   };
 
   const onCloseModal = () => {
+    setSearchText('');
     setSelectedList([]);
     setPlayers([]);
     closeModal();
+    setFilters();
   };
-
-  const getUsers = useCallback(
-    (filterPlayer) => {
-      const membersQuery = {
-        size: pageSize,
-        from: pageFrom,
-        query: {
-          bool: {
-            must: [],
-          },
-        },
-      };
-      if (filterPlayer?.searchText?.length > 0) {
-        membersQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filterPlayer?.searchText}*`,
-            fields: ['full_name'],
-          },
-        });
-      }
-      getUserIndex(membersQuery)
-        .then((response) => {
-          setloading(false);
-          if (response.length > 0) {
-            const result = response.map((obj) => {
-              // eslint-disable-next-line no-param-reassign
-              obj.isChecked = false;
-              return obj;
-            });
-            setPlayers([...players, ...result]);
-            setPageFrom(pageFrom + pageSize);
-            stopFetchMore = true;
-          }
-        })
-        .catch((error) => {
-          setloading(false);
-          console.log(error.message);
-        });
-    },
-    [pageFrom, pageSize, players],
-  );
 
   const selectPlayer = ({item, index}) => {
     players[index].isChecked = !item.isChecked;
@@ -191,57 +198,54 @@ export default function InviteMemberModal({isVisible, closeModal = () => {}}) {
     </View>
   );
 
-  const listHeaderComponent = useCallback(
-    () => (
-      <View
-        style={{
-          backgroundColor: colors.whiteColor,
-        }}>
-        {players.filter((obj) => obj.isChecked).length <= 0 &&
-          searchText.length <= 0 && (
-            <View
-              style={{
-                marginTop: 25,
-              }}>
-              <Pressable
-                style={styles.inviteEmailStyle}
-                onPress={() => {
-                  setShowInvitwByEmail(true);
-                }}>
-                <Image source={images.inviteEmail} style={styles.imageIcon} />
-                <Text style={styles.textTitle}>{strings.inviteByEmail}</Text>
-              </Pressable>
-
-              <TCThinDivider />
-              <View style={styles.imageTextContainer}>
-                <Image source={images.copyUrl} style={styles.imageIcon} />
-
-                <ClipboardToast
-                  textToShow={strings.copyInviteUrl}
-                  textToCopy={'Hello is underdevelopment'}
-                  toastText={'Text copied to clipboard!'}
-                  containerStyle={styles.textTitle}
-                  textStyle={{
-                    fontSize: 16,
-                    fontFamily: fonts.RRegular,
-                    color: colors.lightBlackColor,
-                  }}
-                  toastDuration={2000}
-                  toastPosition={'bottom'}
-                  toastDelay={1000}
-                  toastOnShow={() => {
-                    console.log('Is Copied');
-                  }}
-                />
-              </View>
-            </View>
-          )}
-
-        {selectedList.length > 0 && (
+  const listHeaderComponent = () => (
+    <View
+      style={{
+        backgroundColor: colors.whiteColor,
+      }}>
+      {players.filter((obj) => obj.isChecked).length <= 0 &&
+        searchText.length <= 0 && (
           <View
             style={{
-              marginTop: 15,
+              marginTop: 25,
             }}>
+            <Pressable
+              style={styles.inviteEmailStyle}
+              onPress={() => {
+                setShowInvitwByEmail(true);
+              }}>
+              <Image source={images.inviteEmail} style={styles.imageIcon} />
+              <Text style={styles.textTitle}>{strings.inviteByEmail}</Text>
+            </Pressable>
+
+            <TCThinDivider />
+            <View style={styles.imageTextContainer}>
+              <Image source={images.copyUrl} style={styles.imageIcon} />
+
+              <ClipboardToast
+                textToShow={strings.copyInviteUrl}
+                textToCopy={'Hello is underdevelopment'}
+                toastText={'Text copied to clipboard!'}
+                containerStyle={styles.textTitle}
+                textStyle={{
+                  fontSize: 16,
+                  fontFamily: fonts.RRegular,
+                  color: colors.lightBlackColor,
+                }}
+                toastDuration={2000}
+                toastPosition={'bottom'}
+                toastDelay={1000}
+              />
+            </View>
+          </View>
+        )}
+
+      {selectedList.length > 0 && (
+        <View
+          style={{
+            marginTop: 15,
+          }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <TCProfileTag
               dataSource={players}
               onTagCancelPress={handleTagPress}
@@ -250,12 +254,11 @@ export default function InviteMemberModal({isVisible, closeModal = () => {}}) {
                 marginRight: 0,
               }}
             />
-          </View>
-        )}
-        <TCThinDivider />
-      </View>
-    ),
-    [players],
+          </ScrollView>
+        </View>
+      )}
+      <TCThinDivider />
+    </View>
   );
 
   const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
@@ -366,3 +369,5 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
 });
+
+export default memo(InviteMemberModal);

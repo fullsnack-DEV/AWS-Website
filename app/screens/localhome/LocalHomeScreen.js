@@ -469,9 +469,7 @@ function LocalHomeScreen({navigation, route}) {
       });
     }
     if (item.title === strings.inviteMemberClub) {
-
       setShowInviteMember(true);
-
     }
   };
 

@@ -228,6 +228,12 @@ const SwitchAccountModal = ({
               <Pressable
                 style={styles.row}
                 onPress={() => {
+                  if (
+                    authContext.entity.uid === item.user_id ||
+                    authContext.entity.uid === item.group_id
+                  ) {
+                    return;
+                  }
                   handleSwitchAccount(item);
                 }}>
                 <AccountCard
@@ -239,6 +245,13 @@ const SwitchAccountModal = ({
                     authContext,
                   )}
                   onPress={() => {
+                    if (
+                      authContext.entity.uid === item.user_id ||
+                      authContext.entity.uid === item.group_id
+                    ) {
+                      return;
+                    }
+                    //
                     handleSwitchAccount(item);
                   }}
                   onPressCancelRequest={() => {

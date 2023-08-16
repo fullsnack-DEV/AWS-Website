@@ -135,44 +135,42 @@ export default function ReservationScreen({navigation}) {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
 
-      <TCScrollableTabs>
-        <View tabLabel={strings.upcomingTitleText} style={{flex: 1}}>
-          {/* eslint-disable-next-line no-nested-ternary */}
-          {firstTimeLoading ? (
-            <ReservationMainScreenShimmer />
-          ) : upcoming.length === 0 && loading === false ? (
-            <TCNoDataView title={strings.noReservationFountText} />
-          ) : (
-            <FlatList
-              data={upcoming}
-              keyExtractor={keyExtractor}
-              renderItem={matchReservationView}
-              style={{paddingTop: 15}}
-              ListFooterComponent={
-                <SafeAreaView forceInset={{bottom: 'always'}} />
-              }
-            />
-          )}
-        </View>
-        <View tabLabel={strings.past} style={{flex: 1}}>
-          {/* eslint-disable-next-line no-nested-ternary */}
-          {firstTimeLoading ? (
-            <ReservationMainScreenShimmer />
-          ) : past.length === 0 && loading === false ? (
-            <TCNoDataView title={strings.noReservationFountText} />
-          ) : (
-            <FlatList
-              data={past}
-              keyExtractor={keyExtractor}
-              renderItem={matchReservationView}
-              style={{paddingTop: 15}}
-              ListFooterComponent={
-                <SafeAreaView forceInset={{bottom: 'always'}} />
-              }
-            />
-          )}
-        </View>
-      </TCScrollableTabs>
+      <View tabLabel={strings.upcomingTitleText} style={{flex: 1}}>
+        {/* eslint-disable-next-line no-nested-ternary */}
+        {firstTimeLoading ? (
+          <ReservationMainScreenShimmer />
+        ) : upcoming.length === 0 && loading === false ? (
+          <TCNoDataView title={strings.noReservationFountText} />
+        ) : (
+          <FlatList
+            data={upcoming}
+            keyExtractor={keyExtractor}
+            renderItem={matchReservationView}
+            style={{paddingTop: 15}}
+            ListFooterComponent={
+              <SafeAreaView forceInset={{bottom: 'always'}} />
+            }
+          />
+        )}
+      </View>
+      <View tabLabel={strings.past} style={{flex: 1}}>
+        {/* eslint-disable-next-line no-nested-ternary */}
+        {firstTimeLoading ? (
+          <ReservationMainScreenShimmer />
+        ) : past.length === 0 && loading === false ? (
+          <TCNoDataView title={strings.noReservationFountText} />
+        ) : (
+          <FlatList
+            data={past}
+            keyExtractor={keyExtractor}
+            renderItem={matchReservationView}
+            style={{paddingTop: 15}}
+            ListFooterComponent={
+              <SafeAreaView forceInset={{bottom: 'always'}} />
+            }
+          />
+        )}
+      </View>
     </View>
   );
 }

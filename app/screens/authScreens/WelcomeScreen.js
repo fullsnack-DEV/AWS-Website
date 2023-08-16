@@ -127,7 +127,7 @@ export default function WelcomeScreen({navigation}) {
         Utility.setStorage('loggedInEntity', entity),
         authContext.setUser({...townscupUser}),
         authContext.setEntity({...entity}),
-        generateUserStreamToken(entity),
+        //  generateUserStreamToken(entity),
       ])
         .then(() => {
           getRedirectionScreenName(townscupUser)
@@ -143,7 +143,7 @@ export default function WelcomeScreen({navigation}) {
                 Utility.setStorage('authContextEntity', {...entity}),
                 Utility.setStorage('loggedInEntity', {...entity}),
                 authContext.setEntity({...entity}),
-                generateUserStreamToken(entity),
+                //    generateUserStreamToken(entity),
               ])
                 .then(() => {
                   setloading(false);

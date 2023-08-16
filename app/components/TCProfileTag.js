@@ -11,7 +11,8 @@ export default function TCProfileTag({dataSource, onTagCancelPress, style}) {
 
   const renderTags = ({item, index}) => (
     <View style={{alignItems: 'center', marginLeft: 7}}>
-      <View
+      <Pressable
+        onPress={() => onTagCancelPress({item, index})}
         style={{borderRadius: 90, overflow: 'hidden', height: 45, width: 45}}>
         <FastImage
           source={
@@ -19,7 +20,7 @@ export default function TCProfileTag({dataSource, onTagCancelPress, style}) {
           }
           style={styles.profileImage}
         />
-      </View>
+      </Pressable>
       <Pressable
         style={styles.closeButton}
         onPress={() => onTagCancelPress({item, index})}>
