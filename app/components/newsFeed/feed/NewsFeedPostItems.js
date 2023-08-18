@@ -24,7 +24,6 @@ const NewsFeedPostItems = memo(
     caller_id,
     onDeletePost,
     onImageProfilePress,
-    onEditPressDone,
     updateCommentCount,
     isNewsFeedScreen,
     openProfilId,
@@ -87,8 +86,7 @@ const NewsFeedPostItems = memo(
       switch (selectedOption) {
         case strings.edit:
           navigation.navigate('EditPostScreen', {
-            data: item,
-            onPressDone: onEditPressDone,
+            postData: item,
           });
           setShowMoreOptions(false);
           break;

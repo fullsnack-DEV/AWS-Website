@@ -13,7 +13,7 @@ const addStr = (str, index, stringToAdd) =>
 const CustomURLPreview = ({text}) => {
   let desc = text;
 
-  const position = desc?.search(urlRegex);
+  const position = desc?.search && desc?.search(urlRegex);
   if (position !== -1 && desc?.substring(position)?.startsWith('www')) {
     desc = addStr(text, position, 'http://');
   }

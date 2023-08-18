@@ -2,7 +2,6 @@ import React, {
   useState,
   useRef,
   useEffect,
-  useMemo,
   useCallback,
   useContext,
 } from 'react';
@@ -18,25 +17,18 @@ import {
   Platform,
   FlatList,
   Alert,
+  Dimensions,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-
-import ImagePicker from 'react-native-image-crop-picker';
+import {useIsFocused} from '@react-navigation/native';
+import Video from 'react-native-video';
 import ParsedText from 'react-native-parsed-text';
+import ImageCropPicker from 'react-native-image-crop-picker';
 import _ from 'lodash';
-import ImageButton from '../../components/WritePost/ImageButton';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import EditSelectedImages from '../../components/WritePost/EditSelectedImages';
-
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import {getTaggedEntityData} from '../../utils';
-import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
-import TCGameCard from '../../components/TCGameCard';
+import {displayLocation, getTaggedEntityData} from '../../utils';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
@@ -46,21 +38,34 @@ import {
 } from '../../utils/constant';
 import ScreenHeader from '../../components/ScreenHeader';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
-import {ModalTypes, tagRegex, urlRegex} from '../../Constants/GeneralConstants';
+import {
+  hashTagRegex,
+  ModalTypes,
+  tagRegex,
+  urlRegex,
+} from '../../Constants/GeneralConstants';
+import GroupIcon from '../../components/GroupIcon';
+import CustomURLPreview from '../../components/account/CustomURLPreview';
+import Verbs from '../../Constants/Verbs';
+import MatchCard from './MatchCard';
+import {MAX_UPLOAD_POST_ASSETS, getPickedData} from '../../utils/imageAction';
+import {ImageUploadContext} from '../../context/ImageUploadContext';
+import {updatePost} from '../../api/NewsFeeds';
 
 const EditPostScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
-
-  const {
-    params: {data, onPressDone},
-  } = route;
+  const videoPlayerRef = useRef();
   const textInputRef = useRef();
+  const isFocused = useIsFocused();
+  const imageUploadContext = useContext(ImageUploadContext);
+  const {postData} = route.params;
+
   let postText = '';
   let postAttachments = [];
-  if (data && data.object) {
-    postText = JSON.parse(data.object).text;
-    if (JSON.parse(data.object).attachments) {
-      postAttachments = JSON.parse(data.object).attachments;
+  if (postData && postData.object) {
+    postText = JSON.parse(postData.object).text;
+    if (JSON.parse(postData.object).attachments) {
+      postAttachments = JSON.parse(postData.object).attachments;
     }
   }
   const [searchText, setSearchText] = useState(postText);
@@ -70,9 +75,7 @@ const EditPostScreen = ({navigation, route}) => {
   const [letModalVisible, setLetModalVisible] = useState(false);
   const [searchFieldHeight, setSearchFieldHeight] = useState(0);
 
-  const [tagsOfEntity, setTagsOfEntity] = useState(
-    JSON.parse(route?.params?.data?.object)?.format_tagged_data || [],
-  );
+  const [tagsOfEntity, setTagsOfEntity] = useState([]);
   const [searchTag, setSearchTag] = useState();
   const [searchUsers, setSearchUsers] = useState([]);
   const [currentTextInputIndex, setCurrentTextInputIndex] = useState(0);
@@ -80,14 +83,35 @@ const EditPostScreen = ({navigation, route}) => {
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
-  const [privacySetting, setPrivacySetting] = useState(
-    JSON.parse(route?.params?.data?.object)?.who_can_see ?? {
-      text: strings.everyoneTitleText,
-      value: 0,
-    },
-  );
+  const [privacySetting, setPrivacySetting] = useState({});
+  const [showPreviewForUrl, setShowPreviewForUrl] = useState(true);
+  const [tagsOfGame, setTagsOfGame] = useState([]);
 
   useEffect(() => {
+    if (isFocused && postData?.id) {
+      const obj = JSON.parse(postData.object);
+      setTagsOfEntity(obj.format_tagged_data);
+      setPrivacySetting(
+        obj.who_can_see ?? {
+          text: strings.everyoneTitleText,
+          value: 0,
+        },
+      );
+    }
+  }, [isFocused, postData]);
+
+  useEffect(() => {
+    if (isFocused && route.params?.selectedMatchTags?.length > 0) {
+      const matchList = route.params.selectedMatchTags.map((match) => ({
+        matchData: {...match},
+        game_id: match.game_id,
+        entity_type: Verbs.entityTypeGame,
+      }));
+      setTagsOfGame(matchList);
+    }
+  }, [isFocused, route.params?.selectedMatchTags]);
+
+  const getList = useCallback(() => {
     const userQuery = {
       size: 1000,
       query: {
@@ -124,6 +148,12 @@ const EditPostScreen = ({navigation, route}) => {
         Alert.alert('', e.messages);
       });
   }, []);
+
+  useEffect(() => {
+    if (isFocused) {
+      getList();
+    }
+  }, [isFocused, getList]);
 
   useEffect(() => {
     if (searchText[currentTextInputIndex - 1] === '@')
@@ -181,7 +211,9 @@ const EditPostScreen = ({navigation, route}) => {
   );
 
   useEffect(() => {
-    if (letModalVisible) searchFilterFunction(searchTag?.replace('@', ''));
+    if (letModalVisible) {
+      searchFilterFunction(searchTag?.replace('@', ''));
+    }
   }, [letModalVisible, searchTag, searchFilterFunction]);
 
   const removeStr = (str, fromIndex, toIndex) =>
@@ -262,154 +294,141 @@ const EditPostScreen = ({navigation, route}) => {
 
   useEffect(() => {
     let tagName = '';
-    const tagsArray = [];
-    if (route?.params?.selectedTagList?.length > 0) {
-      route.params.selectedTagList.map((tagItem) => {
-        let joinedString = '@';
-        const entity_text = ['player', 'user']?.includes(tagItem.entity_type)
-          ? 'user_id'
-          : 'group_id';
-        let entity_data = {};
-        let entity_name = '';
-        const isExist = tagsOfEntity.some(
-          (item) => item?.entity_id === tagItem[entity_text],
+
+    if (route.params.selectedTagList?.length > 0) {
+      const tagsArray = [...route.params.selectedTagList];
+      tagsArray.forEach((tag) => {
+        const obj = tagsOfEntity.find(
+          (item) => item.entity_id === tag.entity_id,
         );
-
-        const jsonData = {entity_type: '', entity_data, entity_id: ''};
-        jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type)
-          ? 'player'
-          : tagItem?.entity_type;
-        jsonData.entity_id = tagItem?.[entity_text];
-        if (tagItem?.group_name) {
-          entity_name = _.startCase(_.toLower(tagItem?.group_name))?.replace(
-            / /g,
-            '',
-          );
-        } else {
-          const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(
-            / /g,
-            '',
-          );
-          const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(
-            / /g,
-            '',
-          );
-          entity_name = `${fName}${lName}`;
+        if (!obj) {
+          tagName += `${tag.entity_data.tagged_formatted_name} `;
         }
-        joinedString += `${entity_name} `;
-        entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
-        entity_data = getTaggedEntityData(entity_data, tagItem);
-        if (!isExist)
-          tagsArray.push({
-            entity_data,
-            entity_id: jsonData?.entity_id,
-            entity_type: jsonData?.entity_type,
-          });
-        tagName = `${tagName} ${joinedString}`;
-
-        textInputRef.current.focus();
-        return null;
       });
+
+      setTagsOfEntity(tagsArray);
       setLetModalVisible(false);
-      setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
+
       const modifiedSearch = searchText;
       const output = [
         modifiedSearch.slice(0, currentTextInputIndex - 1),
         tagName,
         modifiedSearch.slice(currentTextInputIndex - 1),
       ].join('');
+
       setSearchText(output);
     }
-  }, [route?.params, currentTextInputIndex, searchText, tagsOfEntity]);
-
-  let userImage = '';
-  let userName = '';
-  if (data && data.actor && data.actor.data) {
-    userName = data.actor.data.full_name;
-    userImage = data.actor.data.thumbnail;
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.params, currentTextInputIndex]);
 
   const renderTagText = useCallback(
-    (matchingString) => (
-      <Text
-        style={{
-          ...styles.username,
-          color: colors.tagColor,
-        }}>{`${matchingString}`}</Text>
-    ),
-    [],
+    (matchingString) => {
+      const isExists = tagsOfEntity.find(
+        (item) =>
+          item.entity_data?.tagged_formatted_name.trim() === matchingString,
+      );
+
+      return isExists ? (
+        <Text style={styles.tagText}>{`${matchingString}`}</Text>
+      ) : null;
+    },
+    [tagsOfEntity],
   );
 
   const addStr = (str, index, stringToAdd) =>
     str.substring(0, index) + stringToAdd + str.substring(index, str.length);
 
-  const renderUrlPreview = useMemo(() => {
-    if (searchText?.length > 0) {
+  const renderUrlPreview = () => {
+    if (searchText.length > 0) {
       let desc = searchText;
       const position = desc.search(urlRegex);
-      if (position !== -1 && desc.substring(position)?.startsWith('www'))
+      if (position !== -1 && desc.substring(position)?.startsWith('www')) {
         desc = addStr(desc, position, 'http://');
-      return null;
-      // return (
-      //   <UrlPreview text={desc} containerStyle={styles.previewContainerStyle} />
-      // );
+      }
+
+      return desc &&
+        showPreviewForUrl &&
+        selectImage.length === 0 &&
+        position !== -1 ? (
+        // eslint-disable-next-line react/jsx-indent
+        <View style={{flex: 1, paddingHorizontal: 15}}>
+          <CustomURLPreview text={desc} />
+          <TouchableOpacity
+            style={styles.closeIcon}
+            onPress={() => setShowPreviewForUrl(false)}>
+            <Image source={images.roundCross} style={styles.image} />
+          </TouchableOpacity>
+        </View>
+      ) : null;
     }
     return null;
-  }, [searchText]);
+  };
 
-  const renderTagUsersAndGroups = useCallback(
-    ({item}) => (
-      <TouchableOpacity
-        onPress={() => onTagPress(item)}
-        style={styles.userListStyle}>
-        <Image
-          source={
-            item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
-          }
-          style={{borderRadius: 13, height: 25, width: 25}}
-        />
-        <Text style={styles.userTextStyle}>
-          {item?.group_name
-            ? item?.group_name
-            : `${item.first_name} ${item.last_name}`}
-        </Text>
-        <Text
-          style={
-            styles.locationTextStyle
-          }>{`${item.city}, ${item.state_abbr}`}</Text>
-      </TouchableOpacity>
-    ),
-    [onTagPress],
+  const renderTagUsersAndGroups = ({item}) => (
+    <TouchableOpacity
+      onPress={() => {
+        onTagPress(item);
+      }}
+      style={styles.userListStyle}>
+      <Image
+        source={
+          item?.thumbnail ? {uri: item?.thumbnail} : images.profilePlaceHolder
+        }
+        style={{borderRadius: 13, height: 25, width: 25}}
+      />
+      <View style={{flexDirection: 'row', flex: 1}}>
+        <View style={{maxWidth: '80%'}}>
+          <Text style={styles.userTextStyle} numberOfLines={1}>
+            {item?.group_name
+              ? item?.group_name
+              : `${item.first_name} ${item.last_name}`}{' '}
+          </Text>
+        </View>
+        <View style={{flex: 1}}>
+          <Text numberOfLines={1} style={styles.locationTextStyle}>
+            {displayLocation(item)}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 
-  const renderModalTagEntity = useMemo(
-    () =>
-      letModalVisible &&
-      [...users, ...groups]?.length > 0 && (
+  const renderModalTagEntity = () => {
+    const arr = [];
+    const data = [...users, ...groups];
+    data.forEach((obj) => {
+      const item =
+        tagsOfEntity.length > 0
+          ? tagsOfEntity.filter(
+              (temp) =>
+                ![temp?.group_id, temp?.user_id, temp?.entity_id].includes(
+                  obj?.group_id || obj?.user_id || obj?.entity_id,
+                ),
+            )
+          : null;
+      if (item) {
+        arr.push(obj);
+      }
+    });
+
+    if (letModalVisible && arr.length > 0) {
+      return (
         <View
           style={[
             styles.userListContainer,
-            {marginTop: searchFieldHeight + 20},
+            {marginTop: searchFieldHeight + 5},
           ]}>
           <FlatList
-            showsVerticalScrollIndicator={false}
-            data={[...users, ...groups]}
+            data={arr}
             keyboardShouldPersistTaps={'always'}
-            style={{paddingTop: hp(1)}}
-            ListFooterComponent={() => <View style={{height: hp(6)}} />}
             renderItem={renderTagUsersAndGroups}
             keyExtractor={(item, index) => index.toString()}
           />
         </View>
-      ),
-    [
-      groups,
-      letModalVisible,
-      renderTagUsersAndGroups,
-      searchFieldHeight,
-      users,
-    ],
-  );
+      );
+    }
+    return null;
+  };
 
   const onKeyPress = useCallback(
     ({nativeEvent}) => {
@@ -428,138 +447,86 @@ const EditPostScreen = ({navigation, route}) => {
     setCurrentTextInputIndex(e?.nativeEvent?.selection?.end);
   }, []);
 
-  const onImagePress = useCallback(() => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 400,
-      multiple: true,
-      maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage?.length ?? 0),
-    }).then((image) => {
-      const pickedData = getPickedData(image, selectImage?.length);
-      let allSelectData = [];
-      const secondData = [];
-      if (selectImage.length > 0) {
-        pickedData.filter((dataItem) => {
-          // const filter_data = selectImage.filter((imageItem) => imageItem.filename === dataItem.filename);
-          // if (filter_data.length === 0) {
-          secondData.push(dataItem);
-          // }
-          return null;
-        });
-        allSelectData = [...selectImage, ...secondData];
-        setSelectImage(allSelectData);
-      } else {
-        setSelectImage(pickedData);
+  const onImageItemPress = useCallback(
+    (item) => {
+      const imgs = [...selectImage];
+      const idx = imgs.indexOf(item);
+      if (idx > -1) {
+        imgs.splice(idx, 1);
       }
-    });
-  }, [selectImage]);
-
-  const onSelectMatch = useCallback(
-    (selectedMatch) => {
-      const tagsArray = [];
-      if (selectedMatch?.length > 0) {
-        selectedMatch.map((gameTagItem) => {
-          const entity_data = {};
-          const jsonData = {
-            entity_type: 'game',
-            entity_id: gameTagItem?.game_id,
-          };
-          jsonData.entity_data = getTaggedEntityData(
-            entity_data,
-            gameTagItem,
-            'game',
-          );
-          const isExist = tagsOfEntity.some(
-            (item) => item?.entity_id === gameTagItem?.game_id,
-          );
-          if (!isExist) tagsArray.push(jsonData);
-          textInputRef.current.focus();
-          return null;
-        });
-        setLetModalVisible(false);
-        setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
-      }
+      setSelectImage(imgs);
     },
-    [tagsOfEntity],
-  );
-
-  const removeTaggedGame = useCallback(
-    (taggedGame) => {
-      const gData = _.cloneDeep(tagsOfEntity);
-      const filterData = gData?.filter(
-        (item) => item?.entity_id !== taggedGame?.entity_id,
-      );
-      setTagsOfEntity([...filterData]);
-    },
-    [tagsOfEntity],
-  );
-
-  const renderSelectedGame = useCallback(
-    ({item}) => (
-      <View style={{marginRight: 15}}>
-        <TCGameCard
-          onPress={() => removeTaggedGame(item)}
-          isSelected={true}
-          data={item?.entity_data}
-          showSelectionCheckBox={true}
-        />
-      </View>
-    ),
-    [removeTaggedGame],
-  );
-
-  const renderGameTags = useMemo(
-    () => (
-      <FlatList
-        style={{paddingVertical: 15}}
-        bounces={false}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{paddingHorizontal: 15, marginVertical: 15}}
-        pagingEnabled={true}
-        horizontal={true}
-        data={
-          tagsOfEntity?.length > 0
-            ? tagsOfEntity.filter((item) => item?.entity_type === 'game')
-            : []
-        }
-        renderItem={renderSelectedGame}
-        keyExtractor={(item) => item?.entity_id}
-      />
-    ),
-    [renderSelectedGame, tagsOfEntity],
-  );
-
-  const renderSelectedImageList = useMemo(
-    () =>
-      selectImage.length > 0 && (
-        <FlatList
-          data={selectImage}
-          horizontal={true}
-          // scrollEnabled={true}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({item, index}) => (
-            <EditSelectedImages
-              data={item}
-              itemNumber={index + 1}
-              totalItemNumber={selectImage.length}
-              onItemPress={() => {
-                const imgs = [...selectImage];
-                const idx = imgs.indexOf(item);
-                if (idx > -1) {
-                  imgs.splice(idx, 1);
-                }
-                setSelectImage(imgs);
-              }}
-            />
-          )}
-          ItemSeparatorComponent={() => <View style={{width: wp('1%')}} />}
-          style={{paddingVertical: 10, marginHorizontal: wp('3%')}}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      ),
     [selectImage],
   );
+
+  const renderSelectedImageList = () =>
+    selectImage.length > 0 ? (
+      <FlatList
+        data={selectImage}
+        keyExtractor={(item, index) => index.toString()}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={({item, index}) => {
+          const type = item.type ?? item.mime;
+          const mediaType = type.split('/')[0];
+          if (mediaType === Verbs.mediaTypeImage) {
+            return (
+              <View
+                style={[
+                  styles.selectImage,
+                  index === 0 ? {marginLeft: 15} : {},
+                ]}>
+                <Image
+                  style={[
+                    styles.image,
+                    {resizeMode: 'cover', borderRadius: 10},
+                  ]}
+                  source={{uri: item.path ?? item.thumbnail}}
+                />
+                <TouchableOpacity
+                  style={[styles.closeIcon, {top: 5, right: 5}]}
+                  onPress={() => onImageItemPress(item)}>
+                  <Image source={images.roundCross} style={styles.image} />
+                </TouchableOpacity>
+              </View>
+            );
+          }
+          if (mediaType === Verbs.mediaTypeVideo) {
+            return (
+              <View
+                style={[
+                  styles.selectImage,
+                  index === 0 ? {marginLeft: 15} : {},
+                ]}>
+                <Video
+                  ref={videoPlayerRef}
+                  paused
+                  muted
+                  source={{uri: item.path || item.thumbnail}}
+                  style={[
+                    styles.image,
+                    {resizeMode: 'cover', borderRadius: 10},
+                  ]}
+                  resizeMode={'cover'}
+                  onLoad={() => {
+                    videoPlayerRef.current.seek(0);
+                  }}
+                />
+                <TouchableOpacity
+                  style={[styles.closeIcon, {top: 5, right: 5, zIndex: 1}]}
+                  onPress={() => onImageItemPress(item)}>
+                  <Image source={images.roundCross} style={styles.image} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.playPauseBtn}>
+                  <Image source={images.videoPlayIcon} style={styles.image} />
+                </TouchableOpacity>
+              </View>
+            );
+          }
+          return null;
+        }}
+      />
+    ) : null;
   const renderWhoCan = ({item}) => (
     <>
       <TouchableOpacity
@@ -584,6 +551,143 @@ const EditPostScreen = ({navigation, route}) => {
     </>
   );
 
+  const updatePostAfterUpload = (dataParams) => {
+    updatePost(dataParams, authContext)
+      .then(() => {
+        setloading(false);
+        navigation.goBack();
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages);
+        setloading(false);
+      });
+  };
+
+  const handleDone = () => {
+    if (searchText.trim().length === 0 && selectImage.length === 0) {
+      Alert.alert(strings.writeText);
+    } else {
+      setloading(true);
+
+      let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
+      tagData = tagData?.map((tag) => ({
+        ...tag,
+        entity_type: 'publictimeline',
+      }));
+
+      const format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity));
+      format_tagged_data.map(async (item, index) => {
+        const isThere =
+          item?.entity_type !== Verbs.entityTypeGame
+            ? searchText.includes(
+                item?.entity_data?.tagged_formatted_name?.replace(/ /g, ''),
+              )
+            : true;
+        if (!isThere) format_tagged_data.splice(index, 1);
+        return null;
+      });
+      // eslint-disable-next-line no-param-reassign
+      tagData.forEach((tData) => delete tData.entity_data);
+
+      const who_can_see = {...privacySetting};
+      if (privacySetting.value === 2) {
+        if (
+          [
+            Verbs.entityTypeTeam,
+            Verbs.entityTypeClub,
+            Verbs.entityTypeLeague,
+          ].includes(authContext.entity.role)
+        ) {
+          who_can_see.group_ids = [authContext.entity.uid];
+        }
+      }
+
+      const alreadyUrlDone = [];
+      const createUrlData = [];
+
+      if (searchText.trim().length > 0 && selectImage.length === 0) {
+        const dataParams = {
+          activity_id: postData.id,
+          text: searchText,
+          tagged: tagData ?? [],
+          format_tagged_data,
+        };
+        updatePostAfterUpload(dataParams);
+      } else if (selectImage) {
+        if (selectImage.length > 0) {
+          selectImage.map((dataItem) => {
+            if (dataItem.thumbnail) {
+              alreadyUrlDone.push(dataItem);
+            } else {
+              createUrlData.push(dataItem);
+            }
+            return null;
+          });
+        }
+        const dataParams = {
+          activity_id: postData.id,
+          text: searchText,
+          tagged: tagData ?? [],
+          attachments: [...alreadyUrlDone],
+          format_tagged_data,
+        };
+        if (createUrlData?.length > 0) {
+          const imageArray = createUrlData.map((dataItem) => dataItem);
+          imageUploadContext.uploadData(
+            authContext,
+            dataParams,
+            imageArray,
+            updatePostAfterUpload,
+          );
+        } else {
+          updatePostAfterUpload(dataParams);
+        }
+      }
+    }
+  };
+
+  const onImagePress = () => {
+    ImageCropPicker.openPicker({
+      showsSelectedCount: true,
+      multiple: true,
+      maxFiles: MAX_UPLOAD_POST_ASSETS - (selectImage.length ?? 0),
+    })
+      .then((data) => {
+        let temp = [];
+        temp = data.map((obj) => {
+          if (obj?.filename?.includes('.MOV') && Platform.OS === 'ios') {
+            return {
+              ...obj,
+              width: obj.height,
+              height: obj.width,
+            };
+          }
+          return obj;
+        });
+
+        const pickedData = getPickedData(temp, selectImage.length);
+
+        let allSelectData = [];
+        const secondData = [];
+        if (selectImage.length > 0) {
+          pickedData.map((dataItem) => {
+            // const filter_data = selectImage.filter((imageItem) => imageItem?.path === dataItem?.path);
+            // if (filter_data?.length === 0) {
+            secondData.push(dataItem);
+            // }
+            return null;
+          });
+          allSelectData = [...selectImage, ...secondData];
+          setSelectImage(allSelectData);
+        } else {
+          setSelectImage(pickedData);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -592,140 +696,115 @@ const EditPostScreen = ({navigation, route}) => {
         leftIconPress={() => navigation.goBack()}
         isRightIconText
         rightButtonText={strings.done}
-        onRightButtonPress={() => {
-          if (searchText.trim().length === 0 && selectImage.length === 0) {
-            Alert.alert(strings.writeText);
-          } else {
-            setloading(false);
-
-            const tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-            const format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity));
-            format_tagged_data.map(async (item, index) => {
-              const isThere =
-                item?.entity_type !== 'game'
-                  ? searchText.includes(
-                      item?.entity_data?.tagged_formatted_name?.replace(
-                        / /g,
-                        '',
-                      ),
-                    )
-                  : true;
-              if (!isThere) format_tagged_data.splice(index, 1);
-              return null;
-            });
-            // eslint-disable-next-line no-param-reassign
-            tagData.forEach((tData) => delete tData.entity_data);
-            navigation.goBack();
-
-            const who_can_see = {...privacySetting};
-            if (privacySetting.value === 2) {
-              if (
-                ['team', 'club', 'league'].includes(authContext.entity.role)
-              ) {
-                who_can_see.group_ids = [authContext.entity.uid];
-              }
-            }
-
-            onPressDone(
-              selectImage,
-              searchText,
-              data,
-              tagData,
-              who_can_see,
-              format_tagged_data,
-            );
-          }
-        }}
+        onRightButtonPress={handleDone}
       />
 
       <ActivityLoader visible={loading} />
 
       <KeyboardAvoidingView
-        style={{flex: 1}}
-        behavior={Platform.OS === 'android' ? 'padding' : 'height'}>
-        <View style={styles.userDetailView}>
-          <Image
-            style={styles.background}
-            source={userImage ? {uri: userImage} : images.profilePlaceHolder}
-          />
-          <View style={styles.userTxtView}>
-            <Text style={styles.userTxt}>{userName}</Text>
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -25}
+        style={{flex: 1}}>
+        <View style={styles.container}>
+          <View style={styles.userDetailView}>
+            <GroupIcon
+              imageUrl={postData.actor.data.thumbnail}
+              entityType={postData.actor.data.entity_type}
+              groupName={postData.actor.data.group_name}
+              textstyle={{fontSize: 12}}
+              containerStyle={styles.profileImage}
+            />
+            <View style={{flex: 0.9}}>
+              <Text style={styles.userTxt}>
+                {postData.actor.data.full_name ??
+                  postData.actor.data.gorup_name}
+              </Text>
+            </View>
+          </View>
+          <View style={{paddingHorizontal: 15, marginBottom: 15, zIndex: 100}}>
+            <TextInput
+              ref={textInputRef}
+              onLayout={(event) =>
+                setSearchFieldHeight(event?.nativeEvent?.layout?.height)
+              }
+              placeholder={strings.whatsGoingText}
+              placeholderTextColor={colors.userPostTimeColor}
+              onSelectionChange={onSelectionChange}
+              onKeyPress={onKeyPress}
+              onChangeText={(text) => setSearchText(text)}
+              style={styles.textInputField}
+              multiline={true}
+              textAlignVertical={'top'}
+              maxLength={4000}>
+              <ParsedText
+                parse={[
+                  {pattern: tagRegex, renderText: renderTagText},
+                  {pattern: hashTagRegex, renderText: renderTagText},
+                  {pattern: urlRegex, renderText: renderTagText},
+                ]}
+                childrenProps={{allowFontScaling: false}}>
+                {searchText}
+              </ParsedText>
+            </TextInput>
+            {renderModalTagEntity()}
+          </View>
+
+          {renderUrlPreview()}
+          {renderSelectedImageList()}
+          <View>
+            {tagsOfGame.length > 0 ? (
+              <FlatList
+                data={tagsOfGame}
+                keyExtractor={(item, index) => index.toString()}
+                bounces={false}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{paddingHorizontal: 15}}
+                horizontal
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      width: Dimensions.get('window').width - 30,
+                      flex: 1,
+                      marginRight: 15,
+                    }}>
+                    <MatchCard item={item.matchData} />
+                  </View>
+                )}
+              />
+            ) : null}
           </View>
         </View>
-        <View style={{paddingHorizontal: 15, marginBottom: 15, zIndex: 100}}>
-          <TextInput
-            ref={textInputRef}
-            onLayout={(event) =>
-              setSearchFieldHeight(event?.nativeEvent?.layout?.height)
-            }
-            placeholder={strings.whatsGoingText}
-            placeholderTextColor={colors.userPostTimeColor}
-            onSelectionChange={onSelectionChange}
-            onKeyPress={onKeyPress}
-            onChangeText={(text) => setSearchText(text)}
-            style={styles.textInputField}
-            multiline={true}
-            autoCapitalize="none"
-            textAlignVertical={'top'}>
-            <ParsedText
-              parse={[{pattern: tagRegex, renderText: renderTagText}]}
-              childrenProps={{allowFontScaling: false}}>
-              {searchText}
-            </ParsedText>
-          </TextInput>
-        </View>
-
-        {renderUrlPreview}
-        {renderSelectedImageList}
-        {renderGameTags}
-        {renderModalTagEntity}
 
         <View style={styles.bottomSafeAreaStyle}>
-          <View style={styles.bottomImgView}>
-            <TouchableOpacity
-              style={styles.onlyMeViewStyle}
-              onPress={() => setVisibleWhoModal(true)}>
-              <ImageButton
-                source={images.lock}
-                imageStyle={{width: 30, height: 30}}
-                onImagePress={() => setVisibleWhoModal(true)}
-              />
-              <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
-            </TouchableOpacity>
-            <View
-              style={[
-                styles.onlyMeViewStyle,
-                {flex: 1, justifyContent: 'flex-end'},
-              ]}>
-              {selectImage?.length < MAX_UPLOAD_POST_ASSETS && (
-                <ImageButton
-                  source={images.pickImage}
-                  imageStyle={{width: 30, height: 30}}
-                  onImagePress={onImagePress}
-                />
-              )}
-              <ImageButton
-                source={images.tagImage}
-                imageStyle={{width: 30, height: 30, marginLeft: 10}}
-                onImagePress={() => {
-                  navigation.navigate('UserTagSelectionListScreen', {
-                    data,
-                    onPressDone,
-                    route,
-                    comeFrom: 'EditPostScreen',
-                    onSelectMatch,
-                    taggedData: JSON.parse(JSON.stringify(tagsOfEntity)).map(
-                      (obj) => ({
-                        city: obj.entity_data.city,
-                        full_name: obj.entity_data.full_name,
-                        entity_id: obj.entity_id,
-                        entity_type: obj.entity_type,
-                      }),
-                    ),
-                  });
-                }}
-              />
+          <TouchableOpacity
+            style={styles.onlyMeViewStyle}
+            onPress={() => setVisibleWhoModal(true)}>
+            <View style={styles.icon}>
+              <Image source={images.lock} style={styles.image} />
             </View>
+            <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
+          </TouchableOpacity>
+
+          <View
+            style={[styles.onlyMeViewStyle, {justifyContent: 'space-between'}]}>
+            <TouchableOpacity
+              style={[styles.icon, {marginHorizontal: 10}]}
+              onPress={() => {
+                navigation.navigate('UserTagSelectionListScreen', {
+                  postData,
+                  routeParams: route.params.isRepost ? {...route.params} : {},
+                  gameTags: tagsOfGame,
+                  tagsOfEntity,
+                  comeFrom: 'EditPostScreen',
+                });
+              }}>
+              <Image source={images.tagImage} style={styles.image} />
+            </TouchableOpacity>
+            {route.params.isRepost ? null : (
+              <TouchableOpacity style={styles.icon} onPress={onImagePress}>
+                <Image source={images.pickImage} style={styles.image} />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -734,7 +813,16 @@ const EditPostScreen = ({navigation, route}) => {
         isVisible={visibleWhoModal}
         closeModal={() => setVisibleWhoModal(false)}
         modalType={ModalTypes.style2}
-        containerStyle={{paddingTop: 15, paddingHorizontal: 30}}>
+        containerStyle={{
+          paddingTop: 15,
+          paddingHorizontal: 30,
+        }}
+        ratio={
+          authContext.entity.role === Verbs.entityTypeClub ||
+          authContext.entity.role === Verbs.entityTypeTeam
+            ? 1.7
+            : 1.5
+        }>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -752,94 +840,64 @@ const EditPostScreen = ({navigation, route}) => {
 };
 
 const styles = StyleSheet.create({
-  background: {
-    borderRadius: hp('3%'),
-    height: hp('6%'),
-    resizeMode: 'stretch',
-    width: hp('6%'),
-  },
-  bottomImgView: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    paddingVertical: hp('1%'),
-    paddingHorizontal: 10,
-  },
-
-  onlyMeTextStyle: {
-    color: colors.googleColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 15,
-    marginLeft: wp('2%'),
-  },
-  onlyMeViewStyle: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    width: wp('46%'),
-  },
-
-  textInputField: {
-    alignSelf: 'center',
-    fontSize: 16,
-    maxHeight: hp('15%'),
-    width: wp('92%'),
-    marginBottom: 10,
+  container: {
+    flex: 1,
+    paddingTop: 20,
   },
   userDetailView: {
     flexDirection: 'row',
-    margin: wp('3%'),
+    alignItems: 'center',
+    marginBottom: 15,
+    paddingHorizontal: 15,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
   },
   userTxt: {
-    fontFamily: fonts.RBold,
     fontSize: 16,
-    marginLeft: wp('4%'),
+    lineHeight: 24,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RBold,
   },
-  userTxtView: {
+  tagText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.tagColor,
+    fontFamily: fonts.RRegular,
+  },
+  textInputField: {
+    padding: 0,
+    fontSize: 16,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  onlyMeTextStyle: {
+    fontSize: 15,
+    lineHeight: 18,
+    color: colors.googleColor,
+    fontFamily: fonts.RRegular,
+    marginLeft: 5,
+  },
+  onlyMeViewStyle: {
+    // flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'center',
   },
-
   bottomSafeAreaStyle: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.whiteColor,
+    padding: 10,
     elevation: 9,
     shadowColor: colors.blackColor,
     shadowOpacity: 0.1608,
-  },
-  userListStyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 15,
-  },
-  userListContainer: {
-    zIndex: 1,
-    backgroundColor: 'white',
-    maxHeight: 300,
-    width: 300,
-    alignSelf: 'center',
-    position: 'absolute',
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 5,
-    borderRadius: 5,
-  },
-  userTextStyle: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    marginLeft: 10,
-    paddingVertical: hp(1),
-  },
-  locationTextStyle: {
-    fontSize: 12,
-    fontFamily: fonts.RRegular,
-    color: colors.userPostTimeColor,
-    marginLeft: 10,
-    paddingVertical: hp(1),
+    shadowOffset: {
+      height: -3,
+      width: 0,
+    },
   },
   icon: {
     width: 30,
@@ -860,6 +918,49 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginBottom: 15,
   },
+  userTextStyle: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginLeft: 10,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  locationTextStyle: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: fonts.RLight,
+    color: colors.lightBlackColor,
+    marginTop: 4,
+    marginLeft: 5,
+  },
+  userListStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginBottom: 15,
+  },
+  userListContainer: {
+    zIndex: 100,
+    backgroundColor: colors.whiteColor,
+    maxHeight: 280,
+    width: Dimensions.get('window').width - 30,
+    position: 'absolute',
+    left: 15,
+    top: 0,
+    shadowColor: colors.googleColor,
+    shadowOffset: {width: 0, height: 0},
+    shadowOpacity: 0.1608,
+    shadowRadius: 5,
+    elevation: 5,
+    borderRadius: 5,
+    padding: 9,
+  },
+  languageList: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
   listItem: {
     paddingVertical: 15,
     paddingHorizontal: 5,
@@ -870,11 +971,38 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
   },
-  languageList: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
+  closeIcon: {
+    width: 17,
+    height: 17,
+    position: 'absolute',
+    right: 25,
+    top: 10,
+  },
+  selectImage: {
+    width: 111,
+    height: 111,
+    borderRadius: 10,
+
+    marginLeft: 10,
+  },
+  // repostContainer: {
+  //   marginLeft: 5,
+  //   paddingLeft: 12,
+  //   borderLeftWidth: 3,
+  //   borderLeftColor: colors.grayBackgroundColor,
+  // },
+  // repostText: {
+  //   fontSize: 12,
+  //   lineHeight: 17,
+  //   color: colors.userPostTimeColor,
+  //   fontFamily: fonts.RRegular,
+  // },
+  playPauseBtn: {
+    width: 25,
+    height: 25,
+    position: 'absolute',
+    top: 40,
+    alignSelf: 'center',
   },
 });
 export default EditPostScreen;

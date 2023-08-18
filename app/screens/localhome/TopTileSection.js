@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   miniCards: {
-    width: 80,
+    minWidth: 80,
     height: 45,
     backgroundColor: '#FFFFFF',
     borderRadius: 5,

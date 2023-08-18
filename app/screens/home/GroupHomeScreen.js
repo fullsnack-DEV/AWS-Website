@@ -1336,13 +1336,12 @@ const GroupHomeScreen = ({
           <HomeFeed
             onFeedScroll={handleMainRefOnScroll}
             refs={mainFlatListRef}
-            homeFeedHeaderComponent={ListHeader}
-            currentTab={0}
+            userID={route.params.uid ?? authContext.entity.uid}
+            navigation={navigation}
             currentUserData={currentUserData}
             isAdmin={route.params.uid === authContext.entity.uid}
-            navigation={navigation}
-            setGalleryData={() => {}}
-            userID={route.params.uid ?? authContext.entity.uid}
+            homeFeedHeaderComponent={ListHeader}
+            currentTab={0}
           />
         </View>
 

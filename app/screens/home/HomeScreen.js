@@ -271,6 +271,8 @@ const HomeScreen = ({navigation, route}) => {
               screen: 'MessageChatScreen',
               params: {
                 channel,
+                comeFrom: 'HomeScreen',
+                routeParams: {...route.params},
               },
             });
           }

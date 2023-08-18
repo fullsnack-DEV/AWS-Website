@@ -143,7 +143,6 @@ const WritePostScreen = ({navigation, route}) => {
   };
 
   const handleDone = async () => {
-    // const uploadTimeout = selectImage.length * 300;
     if (searchText.trim().length === 0 && selectImage.length === 0) {
       Alert.alert(strings.writeTextOrImage);
     } else {
@@ -255,59 +254,20 @@ const WritePostScreen = ({navigation, route}) => {
 
   useEffect(() => {
     let tagName = '';
-    const tagsArray = [];
+
     if (route.params.selectedTagList?.length > 0) {
-      route.params.selectedTagList.map((tagItem) => {
-        let joinedString = '@';
-        const entity_text = ['player', 'user']?.includes(tagItem.entity_type)
-          ? 'user_id'
-          : 'group_id';
-        let entity_data = {};
-        let entity_name = '';
-        const isExist = tagsOfEntity.some(
-          (item) => item?.entity_id === tagItem[entity_text],
+      const tagsArray = [...route.params.selectedTagList];
+      tagsArray.forEach((tag) => {
+        const obj = tagsOfEntity.find(
+          (item) => item.entity_id === tag.entity_id,
         );
-
-        const jsonData = {entity_type: '', entity_data, entity_id: ''};
-
-        jsonData.entity_type = ['player', 'user']?.includes(tagItem.entity_type)
-          ? 'player'
-          : tagItem?.entity_type;
-
-        jsonData.entity_id = tagItem?.[entity_text];
-
-        if (tagItem?.group_name) {
-          entity_name = _.startCase(_.toLower(tagItem?.group_name))?.replace(
-            / /g,
-            '',
-          );
-        } else {
-          const fName = _.startCase(_.toLower(tagItem?.first_name))?.replace(
-            / /g,
-            '',
-          );
-          const lName = _.startCase(_.toLower(tagItem?.last_name))?.replace(
-            / /g,
-            '',
-          );
-          entity_name = `${fName}${lName}`;
+        if (!obj) {
+          tagName += `${tag.entity_data.tagged_formatted_name} `;
         }
-        joinedString += `${entity_name} `;
-        entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
-        entity_data = getTaggedEntityData(entity_data, tagItem);
-        if (!isExist) {
-          tagsArray.push({
-            entity_data,
-            entity_id: jsonData?.entity_id,
-            entity_type: jsonData?.entity_type,
-          });
-        }
-        tagName = `${tagName} ${joinedString}`;
-        textInputRef.current.focus();
-        return null;
       });
+
+      setTagsOfEntity(tagsArray);
       setLetModalVisible(false);
-      setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
 
       const modifiedSearch = searchText;
       const output = [
@@ -318,7 +278,8 @@ const WritePostScreen = ({navigation, route}) => {
 
       setSearchText(output);
     }
-  }, [route.params]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.params, currentTextInputIndex]);
 
   useEffect(() => {
     if (route.params?.selectedMatchTags?.length > 0) {
@@ -937,6 +898,7 @@ const WritePostScreen = ({navigation, route}) => {
                   routeParams: route.params.isRepost ? {...route.params} : {},
                   gameTags: tagsOfGame,
                   tagsOfEntity,
+                  comeFrom: 'WritePostScreen',
                 });
               }}>
               <Image source={images.tagImage} style={styles.image} />
@@ -958,7 +920,12 @@ const WritePostScreen = ({navigation, route}) => {
           paddingTop: 15,
           paddingHorizontal: 30,
         }}
-        ratio={1.5}>
+        ratio={
+          authContext.entity.role === Verbs.entityTypeClub ||
+          authContext.entity.role === Verbs.entityTypeTeam
+            ? 1.7
+            : 1.5
+        }>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
         <FlatList
           showsVerticalScrollIndicator={false}

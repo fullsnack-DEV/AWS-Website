@@ -2637,3 +2637,16 @@ export const getPostData = (post = {}) => {
   }
   return {};
 };
+
+export const prepareTagName = (data = {}) => {
+  let tagName = '';
+  if (data.group_name) {
+    tagName = _.startCase(_.toLower(data.group_name))?.replace(/ /g, '');
+  } else {
+    const fName = _.startCase(_.toLower(data.first_name))?.replace(/ /g, '');
+    const lName = _.startCase(_.toLower(data.last_name))?.replace(/ /g, '');
+    tagName = `${fName}${lName}`;
+  }
+
+  return `@${tagName} `;
+};

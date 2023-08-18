@@ -80,6 +80,10 @@ const MessageChatScreen = ({navigation, route}) => {
     const backAction = () => {
       if (showSearchInput) {
         setShowSearchInput(false);
+      } else if (route.params?.comeFrom) {
+        navigation.navigate(route.params.comeFrom, {
+          ...route.params.routeParams,
+        });
       } else if (!route.params?.disableGoBack) {
         navigation.goBack();
       }
@@ -92,7 +96,7 @@ const MessageChatScreen = ({navigation, route}) => {
     );
 
     return () => backHandler.remove();
-  }, [showSearchInput, navigation, route.params?.disableGoBack]);
+  }, [showSearchInput, navigation, route.params]);
 
   useEffect(() => {
     if (channel) {
@@ -345,7 +349,13 @@ const MessageChatScreen = ({navigation, route}) => {
         title={channelName}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          navigation.replace('MessageMainScreen');
+          if (route.params?.comeFrom) {
+            navigation.navigate(route.params.comeFrom, {
+              ...route.params.routeParams,
+            });
+          } else {
+            navigation.replace('MessageMainScreen');
+          }
         }}
         rightIcon2={images.vertical3Dot}
         rightIcon2Press={() => {
