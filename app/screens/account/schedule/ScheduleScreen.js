@@ -192,8 +192,6 @@ export default function ScheduleScreen({navigation, route}) {
   const [filterCancelled, setFilterCancelled] = useState(false);
   const [isAdmin] = useState(route?.params?.isAdmin);
   const [isFromHomeScreen] = useState(route?.params?.isFromHomeScreen);
-  console.log('isFromHomeScreen', route?.params?.isFromHomeScreen);
-  console.log('isAdmin', isAdmin);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({

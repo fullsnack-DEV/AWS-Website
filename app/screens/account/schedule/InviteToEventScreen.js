@@ -37,6 +37,8 @@ export default function InviteToEventScreen({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [filteredList, setFilteredList] = useState([]);
 
+  const {start_datetime, end_datetime, eventId} = route.params;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -45,20 +47,14 @@ export default function InviteToEventScreen({navigation, route}) {
 
   const getUsers = useCallback(() => {
     const membersQuery = {
+      size: 10000,
       query: {
         bool: {
           must: [],
         },
       },
     };
-    // if (filterPlayer.searchText) {
-    //   membersQuery.query.bool.must.push({
-    //     query_string: {
-    //       query: `*${filterPlayer.searchText}*`,
-    //       fields: ['full_name'],
-    //     },
-    //   });
-    // }
+
     getUserIndex(membersQuery)
       .then((response) => {
         setloading(false);
@@ -90,15 +86,15 @@ export default function InviteToEventScreen({navigation, route}) {
     setloading(true);
     const data = {
       userIds: selectedList,
-      start_datetime: route.params.start_datetime,
-      end_datetime: route.params.end_datetime,
+      start_datetime,
+      end_datetime,
     };
-    inviteToEvent(route.params.eventId, data, authContext)
-      .then((response) => {
+    inviteToEvent(eventId, data, authContext)
+      .then(() => {
         setloading(false);
         Alert.alert(
-          response.payload.to.length > 1
-            ? format(strings.nInvitationSent, response.payload.to.length)
+          selectedList.length > 1
+            ? format(strings.nInvitationSent, selectedList.length)
             : strings.inviteWasSendText,
           '',
           [
