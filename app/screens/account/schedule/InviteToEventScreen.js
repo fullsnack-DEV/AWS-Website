@@ -137,17 +137,19 @@ export default function InviteToEventScreen({navigation, route}) {
         <Pressable
           style={[
             styles.row,
-            {paddingHorizontal: 5, justifyContent: 'space-between'},
+            {flex: 1, paddingHorizontal: 5, justifyContent: 'space-between'},
           ]}
           onPress={() => selectPlayer(item)}>
-          <View style={styles.row}>
+          <View style={[styles.row, {flex: 1}]}>
             <GroupIcon
               imageUrl={item.thumbnail}
               entityType={Verbs.entityTypePlayer}
               containerStyle={styles.playerProfile}
             />
-            <View>
-              <Text style={styles.name}>{item.full_name}</Text>
+            <View style={{flex: 1, marginRight: 15}}>
+              <Text style={styles.name} numberOfLines={1}>
+                {item.full_name}
+              </Text>
               <Text style={styles.city}>{item.city}</Text>
             </View>
           </View>

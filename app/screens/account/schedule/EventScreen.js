@@ -270,9 +270,9 @@ export default function EventScreen({navigation, route}) {
   }, [eventData, authContext]);
 
   const checkIsGoing = () => {
-    if (!['user', 'player'].includes(authContext.entity.role)) {
-      return false;
-    }
+    // if (!['user', 'player'].includes(authContext.entity.role)) {
+    //   return false;
+    // }
 
     if (eventData.who_can_join?.value === 0) {
       return true;
@@ -304,9 +304,9 @@ export default function EventScreen({navigation, route}) {
   };
 
   const checkIsInvite = () => {
-    if (eventData.owner_type === 'groups') {
-      return false;
-    }
+    // if (eventData.owner_type === 'groups') {
+    //   return false;
+    // }
 
     if (['user', 'player'].includes(authContext.entity.role)) {
       if (eventData.who_can_invite?.value === 0) {

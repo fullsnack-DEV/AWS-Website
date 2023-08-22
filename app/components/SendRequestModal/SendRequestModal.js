@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import React from 'react';
 import Modal from 'react-native-modal';
@@ -46,7 +47,7 @@ const SendRequestModal = ({
         leftIconStyle={{width: 50}}
       />
 
-      <View style={{paddingTop: 75, paddingBottom: 60, alignItems: 'center'}}>
+      <View style={{paddingVertical: 50, alignItems: 'center'}}>
         <GroupIcon
           groupName={groupData?.group_name}
           entityType={Verbs.entityTypeTeam}
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 15,
-    marginBottom: 50,
+    marginBottom: Platform.OS === 'android' ? 15 : 50,
   },
   buttonText: {
     fontSize: 16,

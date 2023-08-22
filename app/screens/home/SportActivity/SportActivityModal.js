@@ -45,13 +45,13 @@ const SportActivityModal = ({
   continueToChallenge = () => {},
   bookReferee = () => {},
   bookScoreKeeper = () => {},
-  handleMoreOptions = ()=>{}
+  handleMoreOptions = () => {},
 }) => {
   const authContext = useContext(AuthContext);
   const [matchList, setMatchList] = useState([]);
   const [isFetchingMatchList, setIsFetchingMatchList] = useState(false);
   const [sportIcon, setSportIcon] = useState('');
-   const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [availabilityList, setAvailabilityList] = useState([]);
   const [fetchingAvailability, setFectchingAavailability] = useState(false);
   const [statsObject, setStatsObject] = useState({
@@ -60,9 +60,9 @@ const SportActivityModal = ({
     totalDraws: 0,
     totalMatches: 0,
   });
-  const [options,setOptions]=useState([])
+  const [options, setOptions] = useState([]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (isAdmin) {
       if (entityType === Verbs.entityTypePlayer) {
         if (sportObj?.sport_type === Verbs.singleSport) {
@@ -90,7 +90,6 @@ const SportActivityModal = ({
       ]);
     }
   }, [isAdmin, sportObj?.sport_type, entityType]);
-
 
   const getMatchList = useCallback(() => {
     setIsFetchingMatchList(true);
@@ -220,15 +219,15 @@ const SportActivityModal = ({
             sportIcon={sportIcon}
             title={`${getHeaderTitle(entityType)} ${sportName}`}
             rightIcon2={images.chat3Dot}
-            rightIcon2Press={()=>setShowMoreOptions(true)}
+            rightIcon2Press={() => setShowMoreOptions(true)}
             leftIcon={images.backArrow}
             leftIconPress={closeModal}
             containerStyle={{
               borderBottomWidth: 3,
               borderBottomColor: getProgressBarColor(entityType),
-              padding:0,
-              paddingHorizontal:10,
-              paddingVertical:2
+              padding: 0,
+              paddingHorizontal: 10,
+              paddingVertical: 2,
             }}
           />
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -305,15 +304,15 @@ const SportActivityModal = ({
           </ScrollView>
         </View>
         <BottomSheet
-        isVisible={showMoreOptions}
-        closeModal={() => {
-          setShowMoreOptions(false);
-        }}
-        optionList={options}
-        onSelect={(option) => {
-          handleMoreOptions(option);
-        }}
-      />
+          isVisible={showMoreOptions}
+          closeModal={() => {
+            setShowMoreOptions(false);
+          }}
+          optionList={options}
+          onSelect={(option) => {
+            handleMoreOptions(option);
+          }}
+        />
       </View>
     </Modal>
   );

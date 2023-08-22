@@ -651,6 +651,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
             onSave();
           }
         }}
+        isDoubleSport={sportType === Verbs.doubleSport}
       />
 
       <WrapperModal

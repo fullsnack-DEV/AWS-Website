@@ -480,7 +480,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.blackColor,
     borderTopColor: colors.grayBackgroundColor,
     borderTopWidth: 0.5,
-    marginVertical: 10,
+    marginVertical: Platform.OS === 'android' ? 0 : 10,
   },
   inputContainer: {
     flexDirection: 'row',
