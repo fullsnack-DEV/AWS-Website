@@ -468,7 +468,7 @@ export default function RefereesListScreen({navigation, route}) {
               sportName: sportObject.sport,
             });
           } else {
-            Alert.alert(strings.alertmessagetitle, strings.bookRefereeMessage);
+            Alert.alert(strings.alertmessagetitle, strings.bookRefereeMessage,'',[{text:strings.okTitleText}]);
           }
         })
         .catch((e) => {

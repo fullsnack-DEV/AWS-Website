@@ -267,6 +267,7 @@ const GroupHomeScreen = ({
             fromProfile: true,
           });
         }}
+        isDoubleTeam={currentUserData.sport_type === Verbs.doubleSport}
       />
       <GroupHomeButton
         groupData={currentUserData}

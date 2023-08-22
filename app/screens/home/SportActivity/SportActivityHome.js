@@ -557,6 +557,7 @@ const SportActivityHome = ({navigation, route}) => {
             sportName: sportObj?.sport,
           });
         }}
+        handleMoreOptions={handleMoreOptions}
       />
     </SafeAreaView>
   );

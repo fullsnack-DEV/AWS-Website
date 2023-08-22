@@ -22,6 +22,7 @@ import Venues from '../../screens/home/SportActivity/components/Venues';
 import TeamCard from '../TeamCard';
 import BottomSheet from '../modals/BottomSheet';
 import {getGroupDetails} from '../../api/Groups';
+import EditHomeFacilityScreen from '../../screens/home/SportActivity/contentScreens/EditHomeFacilityScreen';
 
 const teamOptions = [
   strings.bio,
@@ -61,7 +62,7 @@ export default function GroupInfo({
   const [selectedOption, setSelectedOption] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalOptions, setModalOptions] = useState([]);
-  const [clubTeams, setClubTeams] = useState([]);
+  const [clubTeams, setClubTeams] = useState([])
 
   useEffect(() => {
     if (groupDetails.entity_type) {
@@ -108,7 +109,7 @@ export default function GroupInfo({
         break;
 
       case strings.homeFacility:
-        optionList = [strings.privacySettingText];
+        optionList = [format(strings.editOption,strings.homeFacility),strings.privacySettingText];
         break;
 
       case strings.membersTitle:
@@ -122,7 +123,7 @@ export default function GroupInfo({
         break;
 
       case strings.matchVenues:
-        optionList = [format(strings.editOption, strings.matchVenues)];
+        optionList = [format(strings.editOption, strings.matchVenues), strings.privacySettingText];
         break;
 
       case strings.clubsTitleText:
@@ -191,8 +192,8 @@ export default function GroupInfo({
         return <GroupBasicInfo groupDetails={groupDetails} />;
 
       case strings.homeFacility:
-        return null;
-
+        return <EditHomeFacilityScreen />
+        
       case strings.membersTitle:
         return (
           <MemberList
@@ -487,6 +488,7 @@ export default function GroupInfo({
       />
       <BottomSheet
         isVisible={showModal}
+        type='ios'
         closeModal={() => {
           setShowModal(false);
         }}

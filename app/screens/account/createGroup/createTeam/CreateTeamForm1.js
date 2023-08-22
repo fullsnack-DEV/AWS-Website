@@ -448,7 +448,6 @@ export default function CreateTeamForm1({navigation, route}) {
         return false;
       }
     }
-
     if (languagesName === '') {
       showAlertWithoutTitle(strings.pleaseSelectLanguage);
       return false;

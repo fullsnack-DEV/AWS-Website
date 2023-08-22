@@ -116,12 +116,15 @@ const UserInfo = ({
         //   onSeeMoreBlocked={onMore}>
         //   {description}
         // </ReadMore>
+        <>
+        <Text style={styles.title}>{strings.infoTitle}</Text> 
         <Text style={styles.description}>
           {description}{' '}
           <TouchableOpacity onPress={onMore}>
             <Text style={styles.moreText}>{strings.moreText}</Text>
           </TouchableOpacity>
         </Text>
+        </>
       ) : null}
     </View>
   );
@@ -131,6 +134,12 @@ const styles = StyleSheet.create({
     // marginBottom: 25,
   },
   name: {
+    fontSize: 20,
+    lineHeight: 25,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  title: {
     fontSize: 20,
     lineHeight: 25,
     fontFamily: fonts.RMedium,
@@ -178,6 +187,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     marginTop: 7,
     alignSelf: 'baseline',
+  marginBottom:25,
   },
   lookingForClubText: {
     fontSize: 12,

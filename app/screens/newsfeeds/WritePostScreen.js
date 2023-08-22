@@ -19,7 +19,9 @@ import {
   Alert,
   KeyboardAvoidingView,
   Dimensions,
+  Keyboard,
 } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
 import ImagePicker from 'react-native-image-crop-picker';
 import _ from 'lodash';
@@ -60,6 +62,7 @@ const WritePostScreen = ({navigation, route}) => {
   const textInputRef = useRef();
   const videoPlayerRef = useRef();
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
 
   const {postData} = route.params;
 
@@ -242,6 +245,18 @@ const WritePostScreen = ({navigation, route}) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (isFocused) {
+      setTimeout(() => {
+        textInputRef.current.focus();
+      }, 100);
+    }
+
+    return () => {
+      Keyboard.dismiss();
+    };
+  }, [isFocused]);
 
   useEffect(() => {
     if (searchText[currentTextInputIndex - 1] === '@') {

@@ -367,11 +367,7 @@ const CommentModal = ({
           showsVerticalScrollIndicator={false}
         />
 
-        <View
-          style={[
-            styles.bottomContainer,
-            Platform.OS === 'ios' ? {paddingBottom: 20} : {},
-          ]}>
+        <View style={[styles.bottomContainer, {paddingBottom: 20}]}>
           <GroupIcon
             imageUrl={authContext.entity.obj.thumbnail}
             groupName={authContext.entity.obj.group_name}
@@ -484,6 +480,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.blackColor,
     borderTopColor: colors.grayBackgroundColor,
     borderTopWidth: 0.5,
+    marginVertical: 10,
   },
   inputContainer: {
     flexDirection: 'row',

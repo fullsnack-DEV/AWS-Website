@@ -2512,9 +2512,9 @@ export default {
   addScorekeeperFee: 'en_ADD SCOREKEEPER FEE',
   continueWithNoScorekeeperFee: 'en_CONTINUE WITH NO SCOREKEEPER FEE',
   refereeCongratsModalTitle:
-    'Congratulations! \nYou are now registered as\n a referee in\n',
+    'Congratulations! \nYou are now registered as\n a referee in',
   scoreKeeperCongratsModalTitle:
-    'Congratulations! \nYou are now registered as\n a scorekeeper in\n',
+    'Congratulations! \nYou are now registered as\n a scorekeeper in',
   scoreKeeperCongratulationsModal:
     'en_You can now receive scorekeeper booking requests from {0}, and also can sent offers to {0}.',
   teamsAndPlayers: 'en_teams and players',
@@ -3093,5 +3093,4 @@ export default {
 
   chatWith: 'en_Chat with {0}',
   goToHomeOf: 'en_Go to Home of {0}',
-
 };

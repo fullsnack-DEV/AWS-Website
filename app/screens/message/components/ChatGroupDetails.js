@@ -162,10 +162,7 @@ const ChatGroupDetails = ({
               style={styles.listItem}
               onPress={() => setShowInviteModal(true)}>
               <View style={styles.addIconContainer}>
-                <Image
-                  source={images.plus_round_orange}
-                  style={styles.addIcon}
-                />
+                <Image source={images.invitePlusIcon} style={styles.addIcon} />
               </View>
               <Text style={[styles.listText, {color: colors.tabFontColor}]}>
                 {strings.invite}
@@ -292,7 +289,6 @@ const styles = StyleSheet.create({
   addIcon: {
     width: '100%',
     height: '100%',
-    tintColor: colors.tabFontColor,
     resizeMode: 'contain',
   },
 });

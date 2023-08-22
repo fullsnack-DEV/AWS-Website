@@ -1481,12 +1481,13 @@ export default function CreateEventScreen({navigation, route}) {
       <CustomModalWrapper
         isVisible={visibleWhoModal}
         closeModal={() => setVisibleWhoModal(false)}
-        modalType={ModalTypes.style3}
+        modalType={ModalTypes.style2}
         title={whoOption === join ? strings.whoCanJoin : strings.whoCanSee}
         containerStyle={{
           padding: 15,
           marginBottom: Platform.OS === 'ios' ? 35 : 0,
-        }}>
+        }}
+        ratio={0.5}>
         <FlatList
           data={getOptions()}
           renderItem={renderWhoCan}

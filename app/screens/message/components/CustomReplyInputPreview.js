@@ -50,7 +50,7 @@ const CustomReplyInputPreview = () => {
             }}>
             <Image
               style={{width: 12, height: 12,}}
-              source={images.crossSingle}
+              source={images.crossImage}
             />
           </TouchableOpacity>
         </View>
@@ -62,7 +62,7 @@ const CustomReplyInputPreview = () => {
 
 const styles = StyleSheet.create({
    chatSeparateLine: {
-    borderColor: colors.writePostSepratorColor,
+    borderColor: colors.grayBackgroundColor,
     marginTop: 5,
     borderWidth: 0.5,
     width: wp(95),

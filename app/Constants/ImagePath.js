@@ -257,6 +257,7 @@ const images = {
   sendButton: require('../assets/images/sendButton.png'),
   groupUsers: require('../assets/images/groupUsers.png'),
   plus_round_orange: require('../assets/images/plus_round_orange.png'),
+  invitePlusIcon: require('../assets/images/invitePlusIcon.png'),
 
   // Game Module
   leave_chat_room: require('../assets/images/leave_chat_room.png'),

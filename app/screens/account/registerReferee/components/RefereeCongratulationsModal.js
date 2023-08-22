@@ -1,16 +1,8 @@
 // @flow
 import {useIsFocused} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Modal,
-  Text,
-  Dimensions,
-  Pressable,
-  Image,
-  FlatList,
-} from 'react-native';
+import {View, StyleSheet, Text, Pressable} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import {strings} from '../../../../../Localization/translation';
 import {
@@ -18,15 +10,15 @@ import {
   getGroupIndex,
   getUserIndex,
 } from '../../../../api/elasticSearch';
-
 import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
-import images from '../../../../Constants/ImagePath';
 import Verbs from '../../../../Constants/Verbs';
 import {getTCDate} from '../../../../utils';
 import ListShimmer from './ListShimmer';
 import MatchCard from './MatchCard';
+import CustomModalWrapper from '../../../../components/CustomModalWrapper';
+import {ModalTypes} from '../../../../Constants/GeneralConstants';
 
 const RefereeCongratulationsModal = ({
   isVisible,
@@ -202,93 +194,57 @@ const RefereeCongratulationsModal = ({
   }, [sport, authContext.sports]);
 
   return (
-    <Modal
-      visible={isVisible}
-      transparent
-      onRequestClose={() => {
-        closeModal();
-      }}>
-      <View style={styles.parent}>
-        <View style={styles.card}>
-          <View style={styles.closeButtonContainer}>
-            <Pressable style={styles.closeIcon} onPress={closeModal}>
-              <Image source={images.crossImage} style={styles.image} />
-            </Pressable>
-          </View>
-          <View style={{marginHorizontal: 35, marginTop: 70, marginBottom: 25}}>
-            <Text style={styles.congratsText}>
-              {entityType === Verbs.entityTypeReferee
-                ? strings.refereeCongratsModalTitle
-                : strings.scoreKeeperCongratsModalTitle}
-              <Text style={styles.congratsSportText}> {sportName}.</Text>
-            </Text>
-          </View>
-          <Pressable
-            style={styles.buttonContainer}
-            onPress={() => {
-              goToSportActivityHome();
-            }}>
-            <Text style={styles.buttonText}>
-              {strings.goToSportActivityHomeText}
-            </Text>
-          </Pressable>
-
-          <Text style={styles.description}>
-            {entityType === Verbs.entityTypeReferee
-              ? format(
-                  strings.refereeCongratulationsModal,
-                  isTeamSport ? strings.teams : strings.teamsAndPlayers,
-                )
-              : format(
-                  strings.scoreKeeperCongratulationsModal,
-                  isTeamSport ? strings.teams : strings.teamsAndPlayers,
-                )}
+    <CustomModalWrapper
+      isVisible={isVisible}
+      closeModal={closeModal}
+      modalType={ModalTypes.style2}
+      containerStyle={{paddingHorizontal: 0, height: '98%'}}>
+      <View style={{paddingHorizontal: 35}}>
+        <Text style={styles.congratsText}>
+          {entityType === Verbs.entityTypeReferee
+            ? strings.refereeCongratsModalTitle
+            : strings.scoreKeeperCongratsModalTitle}
+          <Text style={[styles.congratsText, {color: colors.darkYellowColor}]}>
+            {' '}
+            {sportName}.
           </Text>
-          <View style={styles.dividor} />
-          {renderList()}
-        </View>
+        </Text>
       </View>
-    </Modal>
+      <View style={{paddingHorizontal: 25}}>
+        <Pressable
+          style={styles.buttonContainer}
+          onPress={() => {
+            goToSportActivityHome();
+          }}>
+          <Text style={styles.buttonText}>
+            {strings.goToSportActivityHomeText}
+          </Text>
+        </Pressable>
+
+        <Text style={styles.description}>
+          {entityType === Verbs.entityTypeReferee
+            ? format(
+                strings.refereeCongratulationsModal,
+                isTeamSport ? strings.teams : strings.teamsAndPlayers,
+              )
+            : format(
+                strings.scoreKeeperCongratulationsModal,
+                isTeamSport ? strings.teams : strings.teamsAndPlayers,
+              )}
+        </Text>
+      </View>
+      <View style={styles.dividor} />
+      <View style={{flex: 1}}>{renderList()}</View>
+    </CustomModalWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  parent: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'flex-end',
-  },
-  card: {
-    backgroundColor: colors.whiteColor,
-    height: Dimensions.get('window').height - 50,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 15,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
   congratsText: {
-    alignSelf: 'center',
+    fontSize: 25,
+    lineHeight: 35,
+    fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    lineHeight: 35,
-    paddingBottom: 10,
-  },
-  congratsSportText: {
-    alignSelf: 'center',
-    color: colors.darkYellowColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    lineHeight: 35,
-    paddingBottom: 10,
   },
   buttonContainer: {
     alignItems: 'center',
@@ -296,7 +252,7 @@ const styles = StyleSheet.create({
     padding: 8,
     backgroundColor: colors.lightGrey,
     borderRadius: 5,
-    marginHorizontal: 25,
+    marginTop: 25,
     marginBottom: 20,
   },
   buttonText: {
@@ -310,21 +266,11 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    marginHorizontal: 25,
   },
   dividor: {
     height: 1,
     marginVertical: 25,
     backgroundColor: colors.grayBackgroundColor,
-  },
-  closeButtonContainer: {
-    position: 'absolute',
-    right: 15,
-    top: 20,
-  },
-  closeIcon: {
-    width: 25,
-    height: 25,
   },
   listTitle: {
     fontSize: 16,

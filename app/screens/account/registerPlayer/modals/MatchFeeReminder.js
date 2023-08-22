@@ -98,7 +98,7 @@ const MatchFeeReminder = ({
             </Text>
 
             <Text style={[styles.description, {marginBottom: 23}]}>
-              {'Venue\nReferees\nScorekeepers'}
+              {`${strings.venueText}\n${strings.refereesTitle}\n${strings.scorekeeperTitle}`}
             </Text>
 
             <TouchableOpacity

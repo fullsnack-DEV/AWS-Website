@@ -999,10 +999,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="IncomingChallengeSettings"
       component={IncomingChallengeSettings}
-      options={{
-        title: strings.registerAsPlayerTitle,
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RegisterReferee"
