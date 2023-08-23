@@ -336,11 +336,11 @@ const FeedsScreen = ({navigation}) => {
   const RenderTopHeader = () => (
     <View style={styles.headerRow}>
       <View>
-        <Text style={styles.headerTitle}>{strings.feedTitleText}</Text>
+       <Text style={styles.headerTitle}>{strings.feedTitleText}</Text>
       </View>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{flexDirection: 'row', alignItems: 'center',}}>
         <TouchableOpacity
-          style={[styles.headerIconContainer, {marginRight: 10}]}
+          style={[styles.headerIconContainer, {marginRight: 5}]}
           onPress={() => {
             navigation.navigate('WritePostScreen', {
               postData: currentUserDetail,
@@ -356,7 +356,7 @@ const FeedsScreen = ({navigation}) => {
               sportsArray: sportArr,
             });
           }}
-          style={styles.headerIconContainer}>
+          style={[styles.headerIconContainer,{marginLeft: 5,}]}>
           <Image source={images.searchIcon} style={styles.icon} />
         </TouchableOpacity>
       </View>

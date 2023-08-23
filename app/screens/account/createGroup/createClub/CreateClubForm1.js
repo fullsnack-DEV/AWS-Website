@@ -203,6 +203,7 @@ export default function CreateClubForm1({navigation, route}) {
                 isEntityCreated: true,
                 groupName: response.payload.group_name,
                 entityObj: response.payload,
+                restrictReturn: true,
               });
 
               setShowSwitchScreen(false);
@@ -242,6 +243,7 @@ export default function CreateClubForm1({navigation, route}) {
             isEntityCreated: true,
             groupName: response.payload.group_name,
             entityObj: response.payload,
+            restrictReturn: true,
           });
 
           setShowSwitchScreen(false);

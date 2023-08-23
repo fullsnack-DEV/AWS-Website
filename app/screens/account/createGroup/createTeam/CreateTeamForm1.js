@@ -434,21 +434,21 @@ export default function CreateTeamForm1({navigation, route}) {
   );
 
   const checkTeamValidations = () => {
-    if (teamName === '') {
+    if (!teamName) {
       showAlertWithoutTitle(strings.pleaseFillTeanName);
       return false;
     }
-    if (homeCity === '') {
+    if (!homeCity) {
       showAlertWithoutTitle(strings.pleaseFillHomeCity);
       return false;
     }
     if (!showDouble) {
-      if (gender === '') {
+      if (!gender) {
         showAlertWithoutTitle(strings.pleaseFillPlayerGender);
         return false;
       }
     }
-    if (languagesName === '') {
+    if (!languagesName) {
       showAlertWithoutTitle(strings.pleaseSelectLanguage);
       return false;
     }

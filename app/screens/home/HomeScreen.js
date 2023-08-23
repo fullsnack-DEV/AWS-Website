@@ -245,6 +245,7 @@ const HomeScreen = ({navigation, route}) => {
           pointEvent={pointEvent}
           isAccountDeactivated={authContext.isAccountDeactivated}
           groupData={currentUserData}
+          restrictReturn={route.params?.restrictReturn}
         />
       );
     }

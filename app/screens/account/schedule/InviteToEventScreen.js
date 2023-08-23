@@ -124,7 +124,7 @@ export default function InviteToEventScreen({navigation, route}) {
     if (isChecked) {
       newList = selectedList.filter((ele) => ele !== item.user_id);
     } else {
-      newList.push(item.user_id);
+      newList = [item.user_id, ...newList];
     }
 
     setSelectedList(newList);

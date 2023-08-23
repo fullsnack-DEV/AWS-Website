@@ -2357,6 +2357,7 @@ export default {
   respond: 'en_respond',
   invite: 'en_Invite',
   editEvent: 'en_Edit Event',
+  deleteEvent: 'en_Delete Event',
   createAnEvent: 'en_Create an Event',
   matchRecord: 'en_Match Records',
   bookaRefree: 'en_Book a referee',
@@ -2942,8 +2943,6 @@ export default {
   reportText: 'en_Report This Event',
   blockEventOrganiser: 'en_Block Event Organiser',
   recuringoptionOne: 'en_This event Only',
-  recurringOptionTwo: 'en_This and all following events',
-  recurringOptionThree: 'en_All events',
   gameSingular: 'en_Game',
   gameWith: 'en_Game With',
   eventsViewSettings: 'en_Events View Settings',
@@ -3088,9 +3087,8 @@ export default {
   createdChatRoom: 'en_{0} created this chatroom.',
   otherCurrecy:
     "en_Please Select Some Other Currency. This Currency is not Supported by now'",
-
   liseemptyText: 'en_No members found',
-
   chatWith: 'en_Chat with {0}',
   goToHomeOf: 'en_Go to Home of {0}',
+  alertMessageDeleteEvent: 'en_Are you sure you want to delete this event?',
 };

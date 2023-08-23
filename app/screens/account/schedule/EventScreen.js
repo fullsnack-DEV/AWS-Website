@@ -75,7 +75,7 @@ export default function EventScreen({navigation, route}) {
       value: FUTUREEVENT,
     },
     {
-      ext: strings.recurringOptionThree,
+      text: strings.recurringOptionThree,
       value: ALLEVENT,
     },
   ];
@@ -187,7 +187,7 @@ export default function EventScreen({navigation, route}) {
       from: 0,
       query: {
         terms: {
-          'user_id.keyword': [...goingData, eventData.created_by.uid],
+          'user_id.keyword': [...goingData],
         },
       },
     };
@@ -387,15 +387,13 @@ export default function EventScreen({navigation, route}) {
   };
 
   const renderDeleteRecurringOptions = ({item}) => (
-    <View
-      style={{
-        flexDirection: 'row',
-        marginVertical: 10,
-        justifyContent: 'center',
-        marginLeft: 15,
-        marginRight: 15,
-      }}>
-      <View>
+    <>
+      <View
+        style={{
+          paddingVertical: 16,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
         <Text
           style={styles.filterTitle}
           onPress={() => {
@@ -407,7 +405,8 @@ export default function EventScreen({navigation, route}) {
           {item.text}
         </Text>
       </View>
-    </View>
+      <View style={styles.separator} />
+    </>
   );
 
   return (
@@ -960,12 +959,11 @@ export default function EventScreen({navigation, route}) {
 
       <ActionSheet
         ref={actionSheet}
-        options={[strings.edit, strings.delete, strings.cancel]}
+        options={[strings.editEvent, strings.deleteEvent, strings.cancel]}
         cancelButtonIndex={2}
         destructiveButtonIndex={1}
         onPress={(index) => {
           if (index === 0) {
-            // editactionsheet.current.show();
             if (route && route.params && eventData) {
               navigation.navigate('EditEventScreen', {
                 data: eventData,
@@ -974,7 +972,17 @@ export default function EventScreen({navigation, route}) {
             }
           } else if (index === 1) {
             if (eventData.rrule) {
-              setRecurringEditModal(true);
+              Alert.alert(strings.alertMessageDeleteEvent, '', [
+                {
+                  text: strings.cancel,
+                  style: 'cancel',
+                },
+                {
+                  text: strings.delete,
+                  style: 'destructive',
+                  onPress: () => setRecurringEditModal(true),
+                },
+              ]);
             } else {
               handleDeleteEvent();
             }
@@ -1005,42 +1013,14 @@ export default function EventScreen({navigation, route}) {
         style={{
           margin: 0,
         }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 4,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 10,
-            borderTopRightRadius: 10,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 10,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-              }}>
-              {strings.deleteRecurringEvent}{' '}
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalHeaderText}>
+              {strings.updateRecurringEvent}
             </Text>
           </View>
-          {/* <TCThinDivider width="92%" /> */}
+          <View style={styles.separator} />
           <FlatList
-            // ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
             showsVerticalScrollIndicator={false}
             data={recurringEditList}
             keyExtractor={(item, index) => index.toString()}
@@ -1198,9 +1178,11 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   filterTitle: {
-    fontSize: 16,
+    fontSize: 20,
+    lineHeight: 25,
+    color: colors.eventBlueColor,
     fontFamily: fonts.RRegular,
-    color: '#0093FF',
+    textAlign: 'center',
   },
   moreLessText: {
     fontSize: 12,
@@ -1261,5 +1243,38 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+  },
+  modalContainer: {
+    width: '100%',
+    height: Dimensions.get('window').height * 0.35,
+    backgroundColor: colors.lightWhite,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 15,
+    paddingHorizontal: 15,
+  },
+  modalHeader: {
+    paddingTop: 17,
+    paddingBottom: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalHeaderText: {
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.bgColor,
   },
 });

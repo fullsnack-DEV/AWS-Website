@@ -147,7 +147,7 @@ const WritePostScreen = ({navigation, route}) => {
 
   const handleDone = async () => {
     if (searchText.trim().length === 0 && selectImage.length === 0) {
-      Alert.alert(strings.writeTextOrImage);
+      Alert.alert(strings.writeTextOrImage,'',[{text:strings.okTitleText}]);
     } else {
       let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
       tagData = tagData?.map((tag) => ({
@@ -590,15 +590,15 @@ const WritePostScreen = ({navigation, route}) => {
       if (idx > -1) {
         imgs.splice(idx, 1);
       }
-      setSelectImage(imgs);
+      setSelectImage(imgs);     
     },
-    [selectImage],
+    [selectImage],   
   );
-
+ 
   const renderSelectedImageList = () =>
     selectImage.length > 0 ? (
       <FlatList
-        data={selectImage}
+        data={selectImage.reverse()}
         keyExtractor={(item, index) => index.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}

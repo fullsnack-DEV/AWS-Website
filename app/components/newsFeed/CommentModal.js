@@ -11,13 +11,13 @@ import {
   Alert,
   TouchableOpacity,
   TextInput,
-  FlatList,
   Text,
   Platform,
 } from 'react-native';
 import {format} from 'react-string-format';
 import ParsedText from 'react-native-parsed-text';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {FlatList} from 'react-native-gesture-handler';
 import {
   createReaction,
   getReactions,
@@ -204,6 +204,7 @@ const CommentModal = ({
           data: response?.payload,
         });
         setLoading(false);
+        fetchReactions();
       })
       .catch((e) => {
         Alert.alert('', e.messages);
@@ -230,6 +231,7 @@ const CommentModal = ({
           .then((response) => {
             setLoading(false);
             setCommentData(response.payload.reverse());
+            setReplyParams({});
           })
           .catch((e) => {
             Alert.alert('', e.messages);

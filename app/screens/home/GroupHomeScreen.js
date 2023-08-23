@@ -60,6 +60,7 @@ const GroupHomeScreen = ({
   pointEvent = 'auto',
   isAccountDeactivated = false,
   groupData = {},
+  restrictReturn = false,
 }) => {
   const authContext = useContext(AuthContext);
 
@@ -90,11 +91,11 @@ const GroupHomeScreen = ({
       navigation.navigate('Account', {
         screen: 'AccountScreen',
       });
-    } else {
+    } else if (!restrictReturn) {
       navigation.goBack();
     }
     return true;
-  }, [navigation, route.params.comeFrom]);
+  }, [navigation, route.params.comeFrom, restrictReturn]);
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
