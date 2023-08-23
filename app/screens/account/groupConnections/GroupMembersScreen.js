@@ -52,6 +52,7 @@ import Header from '../../../components/Home/Header';
 import GroupMemberShimmer from './GroupMemberShimmer';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
+import InviteMemberModal from '../../../components/InviteMemberModal';
 
 export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -62,6 +63,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const [loading, setloading] = useState(true);
   const [searchMember, setSearchMember] = useState();
   const [searchText, setSearchText] = useState('');
+  const [showInviteMember, setShowInviteMember] = useState(false);
 
   const [members, setMembers] = useState([]);
 
@@ -707,7 +709,7 @@ export default function GroupMembersScreen({navigation, route}) {
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
-            navigation.navigate('InviteMembersBySearchScreen');
+            setShowInviteMember(true);
           } else if (index === 1) {
             navigation.navigate('CreateMemberProfileForm1');
           }
@@ -741,6 +743,11 @@ export default function GroupMembersScreen({navigation, route}) {
       <SendNewInvoiceModal
         isVisible={sendNewInvoice}
         onClose={() => SetSendNewInvoice(false)}
+      />
+
+      <InviteMemberModal
+        isVisible={showInviteMember}
+        closeModal={() => setShowInviteMember(false)}
       />
     </SafeAreaView>
   );

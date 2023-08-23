@@ -1,3 +1,4 @@
+/* eslint-disable no-else-return */
 import {
   StyleSheet,
   Text,
@@ -10,6 +11,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import React, {useState, useCallback, useEffect, useContext, memo} from 'react';
 import {format} from 'react-string-format';
 import ClipboardToast from 'react-native-clipboard-toast';
@@ -21,31 +23,27 @@ import ActivityLoader from './loader/ActivityLoader';
 import InviteListShimmer from '../screens/account/groupConnections/InviteListShimmer';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
-import ProfileCheckView from './groupConnections/ProfileCheckView';
 import {showAlert} from '../utils';
 import {sendInvitationInGroup} from '../api/Users';
 import AuthContext from '../auth/context';
 import {getUserIndex} from '../api/elasticSearch';
-import TCProfileTag from './TCProfileTag';
 import images from '../Constants/ImagePath';
-
 import TCThinDivider from './TCThinDivider';
 import InviteMemberbyEmailModal from './InviteMemberByEmail';
-
-let stopFetchMore = true;
+import GroupIcon from './GroupIcon';
+import Verbs from '../Constants/Verbs';
 
 function InviteMemberModal({isVisible, closeModal = () => {}}) {
   const [loading, setloading] = useState(true);
   const authContext = useContext(AuthContext);
   const [players, setPlayers] = useState([]);
   const [selectedList, setSelectedList] = useState([]);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(10000);
   const [pageFrom, setPageFrom] = useState(0);
   const [filters, setFilters] = useState();
   const [searchText, setSearchText] = useState('');
   const [showInviteByEmail, setShowInvitwByEmail] = useState(false);
-
-  const selectedPlayers = [];
+  const [filteredList, setFilteredList] = useState([]);
 
   useEffect(() => {
     getUsers(filters);
@@ -56,7 +54,7 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
     (filterPlayer) => {
       const membersQuery = {
         size: pageSize,
-        from: pageFrom,
+
         query: {
           bool: {
             must: [],
@@ -71,23 +69,13 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
           },
         });
       }
-      console.log(membersQuery);
 
       getUserIndex(membersQuery)
         .then((response) => {
           setloading(false);
-          console.log(membersQuery);
-          console.log(response);
-          if (response.length > 0) {
-            const result = response.map((obj) => {
-              // eslint-disable-next-line no-param-reassign
-              obj.isChecked = false;
-              return obj;
-            });
-            setPlayers([...players, ...result]);
-            setPageFrom(pageFrom + pageSize);
-            stopFetchMore = true;
-          }
+
+          setPlayers([...response]);
+          setFilteredList([...response]);
         })
         .catch((error) => {
           setloading(false);
@@ -100,6 +88,7 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
   const sendInvitation = () => {
     setloading(true);
     const entity = authContext.entity;
+
     const obj = {
       entity_type: entity.role,
       userIds: selectedList,
@@ -132,13 +121,6 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
       });
   };
 
-  const onScrollHandler = () => {
-    if (!stopFetchMore) {
-      getUsers(filters);
-      stopFetchMore = true;
-    }
-  };
-
   const onCloseModal = () => {
     setSearchText('');
     setSelectedList([]);
@@ -147,45 +129,96 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
     setFilters();
   };
 
-  const selectPlayer = ({item, index}) => {
-    players[index].isChecked = !item.isChecked;
-    setPlayers([...players]);
-    players.map((obj) => {
-      if (obj.isChecked) {
-        selectedPlayers.push(obj.user_id);
-      }
-      return obj;
-    });
-    setSelectedList(selectedPlayers);
+  const RenderSportDetail = (item) => {
+    const sportname = item.registered_sports?.[0].sport;
+    const numOfSports = item.registered_sports?.length - 1;
+    const emptyString = '';
+
+    const capitalizeLetter =
+      sportname?.charAt(0).toUpperCase() + sportname?.slice(1);
+
+    if (sportname === undefined || !numOfSports === 0) {
+      return `${emptyString}`;
+    } else if (numOfSports === 0) {
+      return `${capitalizeLetter}`;
+    } else {
+      return `${capitalizeLetter} and ${numOfSports} more`;
+    }
   };
 
-  const renderPlayer = ({item, index}) => (
-    <ProfileCheckView
-      playerDetail={item}
-      isChecked={item.isChecked}
-      onPress={() => {
-        selectPlayer({item, index});
-      }}
-    />
-  );
+  const renderPlayer = ({item}) => {
+    const isChecked = selectedList.includes(item.user_id);
+    return (
+      <Pressable
+        onPress={() => selectPlayer(item)}
+        style={styles.topViewContainer}>
+        <View style={{flexDirection: 'row'}}>
+          <View style={{marginTop: 15}}>
+            <GroupIcon
+              imageUrl={item.thumbnail}
+              entityType={Verbs.entityTypePlayer}
+              containerStyle={styles.playerProfile}
+            />
+          </View>
 
-  const handleTagPress = ({index}) => {
-    players[index].isChecked = false;
-    setPlayers([...players]);
-    players.map((obj) => {
-      if (obj.isChecked) {
-        selectedPlayers.push(obj.user_id);
-      }
-      return obj;
-    });
+          <View style={styles.topTextContainer}>
+            <Text style={styles.whiteNameText} numberOfLines={1}>
+              {item.full_name}
+            </Text>
+            <Text style={styles.whiteLocationText} numberOfLines={1}>
+              {item.city}
+            </Text>
+            <Text
+              style={[styles.locationText, {textTransform: 'capitalize'}]}
+              numberOfLines={1}>
+              {RenderSportDetail(item)}
+            </Text>
+          </View>
+        </View>
+        <Pressable
+          style={{
+            height: 22,
+            width: 22,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderRadius: 7,
+            borderColor: colors.veryLightGray,
+
+            alignSelf: 'center',
+          }}>
+          <Image
+            source={isChecked ? images.orangeCheckBox : images.uncheckBox}
+            style={styles.checkGreenImage}
+          />
+        </Pressable>
+      </Pressable>
+    );
   };
 
-  const applyFilter = useCallback(
-    (fil) => {
-      getUsers(fil);
-    },
-    [getUsers],
-  );
+  const selectPlayer = (item) => {
+    let newList = [...selectedList];
+
+    const isChecked = newList.includes(item.user_id);
+
+    if (isChecked) {
+      newList = selectedList.filter((ele) => ele !== item.user_id);
+    } else {
+      newList.push(item.user_id);
+    }
+
+    setSelectedList(newList);
+  };
+
+  useEffect(() => {
+    if (searchText) {
+      const list = players.filter((item) =>
+        item.full_name.toLowerCase().includes(searchText.toLowerCase()),
+      );
+      setFilteredList(list);
+    } else {
+      setFilteredList(players);
+    }
+  }, [players, searchText]);
+
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text
@@ -199,70 +232,101 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
     </View>
   );
 
+  const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
+
   const listHeaderComponent = () => (
     <View
       style={{
         backgroundColor: colors.whiteColor,
       }}>
-      {players.filter((obj) => obj.isChecked).length <= 0 &&
-        searchText.length <= 0 && (
-          <View
-            style={{
-              marginTop: 25,
-            }}>
-            <Pressable
-              style={styles.inviteEmailStyle}
-              onPress={() => {
-                setShowInvitwByEmail(true);
-              }}>
-              <Image source={images.inviteEmail} style={styles.imageIcon} />
-              <Text style={styles.textTitle}>{strings.inviteByEmail}</Text>
-            </Pressable>
-
-            <TCThinDivider />
-            <View style={styles.imageTextContainer}>
-              <Image source={images.copyUrl} style={styles.imageIcon} />
-
-              <ClipboardToast
-                textToShow={strings.copyInviteUrl}
-                textToCopy={'Hello is underdevelopment'}
-                toastText={'Text copied to clipboard!'}
-                containerStyle={styles.textTitle}
-                textStyle={{
-                  fontSize: 16,
-                  fontFamily: fonts.RRegular,
-                  color: colors.lightBlackColor,
-                }}
-                toastDuration={2000}
-                toastPosition={'bottom'}
-                toastDelay={1000}
-              />
-            </View>
-          </View>
-        )}
-
-      {selectedList.length > 0 && (
+      {!selectedList.length > 0 && (
         <View
           style={{
-            marginTop: 15,
+            marginTop: 25,
           }}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <TCProfileTag
-              dataSource={players}
-              onTagCancelPress={handleTagPress}
-              style={{
-                marginLeft: 10,
-                marginRight: 0,
+          <Pressable
+            style={styles.inviteEmailStyle}
+            onPress={() => {
+              setShowInvitwByEmail(true);
+            }}>
+            <FastImage source={images.inviteEmail} style={styles.imageIcon} />
+
+            <Text style={styles.textTitle}>{strings.inviteByEmail}</Text>
+          </Pressable>
+
+          <TCThinDivider />
+          <View style={styles.imageTextContainer}>
+            <FastImage source={images.copyUrl} style={styles.imageIcon} />
+
+            <ClipboardToast
+              textToShow={strings.copyInviteUrl}
+              textToCopy={'Hello is underdevelopment'}
+              toastText={'Text copied to clipboard!'}
+              containerStyle={styles.textTitle}
+              textStyle={{
+                fontSize: 16,
+                fontFamily: fonts.RRegular,
+                color: colors.lightBlackColor,
               }}
+              toastDuration={2000}
+              toastPosition={'bottom'}
+              toastDelay={1000}
             />
-          </ScrollView>
+          </View>
+          <TCThinDivider />
         </View>
       )}
-      <TCThinDivider />
+
+      <ScrollView
+        horizontal
+        contentContainerStyle={{
+          marginLeft: 18,
+          marginBottom: 5,
+        }}
+        showsHorizontalScrollIndicator={false}>
+        {selectedList.length > 0 ? (
+          <View style={[styles.row, {marginTop: 15, marginRight: 26}]}>
+            {selectedList.map((item, index) => {
+              const user = players.find((obj) => obj.user_id === item);
+              return (
+                <View style={{alignItems: 'center', marginLeft: 7}} key={index}>
+                  <Pressable
+                    onPress={() => {
+                      selectPlayer(user);
+                    }}
+                    style={{
+                      borderRadius: 90,
+                      overflow: 'hidden',
+                      height: 45,
+                      width: 45,
+                    }}>
+                    <GroupIcon
+                      imageUrl={item.thumbnail}
+                      entityType={Verbs.entityTypePlayer}
+                      containerStyle={styles.playerProfile}
+                    />
+                  </Pressable>
+                  <Pressable
+                    style={styles.closeButton}
+                    onPress={() => {
+                      selectPlayer(user);
+                    }}>
+                    <Image
+                      source={images.closeRound}
+                      style={styles.closeIcon}
+                    />
+                  </Pressable>
+                  <Text style={styles.tagTitleText} numberOfLines={2}>
+                    {`${user.first_name} ${user.last_name}`}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        ) : null}
+      </ScrollView>
     </View>
   );
-
-  const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
 
   return (
     <CustomModalWrapper
@@ -286,19 +350,6 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
               style={styles.textInputStyle}
               value={searchText}
               onChangeText={(text) => {
-                const tempFilter = {...filters};
-
-                if (text?.length > 0) {
-                  tempFilter.searchText = text;
-                } else {
-                  delete tempFilter.searchText;
-                }
-                setFilters({
-                  ...tempFilter,
-                });
-                setPageFrom(0);
-                setPlayers([]);
-                applyFilter(tempFilter);
                 setSearchText(text);
               }}
               placeholder={strings.searchText}
@@ -321,18 +372,13 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
           <InviteListShimmer />
         ) : (
           <FlatList
-            extraData={players}
+            extraData={filteredList}
+            ItemSeparatorComponent={ItemSeparatorComponent}
             ListHeaderComponent={listHeaderComponent}
             showsVerticalScrollIndicator={false}
-            data={players}
+            data={filteredList}
             keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={ItemSeparatorComponent}
             renderItem={renderPlayer}
-            onScroll={onScrollHandler}
-            onEndReachedThreshold={0.01}
-            onScrollBeginDrag={() => {
-              stopFetchMore = false;
-            }}
             stickyHeaderIndices={[0]}
             ListEmptyComponent={listEmptyComponent}
           />
@@ -385,6 +431,82 @@ const styles = StyleSheet.create({
     margin: 25,
     marginBottom: 15,
     marginTop: 0,
+  },
+
+  closeButton: {
+    width: 15,
+    height: 15,
+    resizeMode: 'contain',
+    position: 'absolute',
+    right: 2,
+    top: 0,
+    zIndex: 1,
+  },
+  closeIcon: {
+    width: 15,
+    height: 15,
+    resizeMode: 'contain',
+  },
+  tagTitleText: {
+    marginTop: 5,
+    fontFamily: fonts.RRegular,
+    fontSize: 12,
+    color: colors.lightBlackColor,
+    width: 50,
+    textAlign: 'center',
+  },
+
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  topViewContainer: {
+    flexDirection: 'row',
+    height: 60,
+    width: '90%',
+    alignSelf: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 10,
+    paddingLeft: 10,
+    marginBottom: 20,
+    marginTop: 12,
+    borderRadius: 10,
+  },
+
+  topTextContainer: {
+    marginLeft: 10,
+    marginTop: 20,
+    alignSelf: 'center',
+    width: 220,
+  },
+
+  whiteNameText: {
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RBold,
+  },
+  locationText: {
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RLight,
+  },
+  whiteLocationText: {
+    fontSize: 14,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RLight,
+  },
+
+  checkGreenImage: {
+    height: 22,
+    width: 22,
+    resizeMode: 'cover',
+    alignSelf: 'center',
+  },
+  playerProfile: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
   },
   inputContainer: {
     flexDirection: 'row',
