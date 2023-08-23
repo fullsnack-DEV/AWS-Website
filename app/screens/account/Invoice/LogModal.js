@@ -105,7 +105,7 @@ export default function LogModal({
       title={
         mode === LogType.Payment ? strings.logaPayment : strings.logaRefund
       }
-      containerStyle={{padding: 0, width: '100%', height: '100%'}}>
+      containerStyle={{padding: 0}}>
       <ActivityLoader visible={loading} />
       <View
         style={{
@@ -221,7 +221,6 @@ export default function LogModal({
             />
           </TouchableOpacity>
         </View>
-        {/* Notes  */}
 
         <View>
           <TCLabel

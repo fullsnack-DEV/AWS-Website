@@ -7,6 +7,8 @@ import {
   Image,
   Alert,
   ScrollView,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useState, useCallback, useEffect, useContext, memo} from 'react';
 import {format} from 'react-string-format';
@@ -14,7 +16,6 @@ import ClipboardToast from 'react-native-clipboard-toast';
 import CustomModalWrapper from './CustomModalWrapper';
 import {ModalTypes} from '../Constants/GeneralConstants';
 import {strings} from '../../Localization/translation';
-import TCSearchBox from './TCSearchBox';
 import ActivityLoader from './loader/ActivityLoader';
 
 import InviteListShimmer from '../screens/account/groupConnections/InviteListShimmer';
@@ -277,27 +278,44 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
         <Text style={styles.infoTextStyle}>
           {format(strings.inviteSearchText, authContext.entity.role)}
         </Text>
-        <TCSearchBox
-          width={'90%'}
-          placeholderText={strings.searchText}
-          alignSelf="center"
-          onChangeText={(text) => {
-            const tempFilter = {...filters};
 
-            if (text?.length > 0) {
-              tempFilter.searchText = text;
-            } else {
-              delete tempFilter.searchText;
-            }
-            setFilters({
-              ...tempFilter,
-            });
-            setPageFrom(0);
-            setPlayers([]);
-            applyFilter(tempFilter);
-            setSearchText(text);
-          }}
-        />
+        <View style={styles.floatingInput}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholderTextColor={colors.userPostTimeColor}
+              style={styles.textInputStyle}
+              value={searchText}
+              onChangeText={(text) => {
+                const tempFilter = {...filters};
+
+                if (text?.length > 0) {
+                  tempFilter.searchText = text;
+                } else {
+                  delete tempFilter.searchText;
+                }
+                setFilters({
+                  ...tempFilter,
+                });
+                setPageFrom(0);
+                setPlayers([]);
+                applyFilter(tempFilter);
+                setSearchText(text);
+              }}
+              placeholder={strings.searchText}
+            />
+            {searchText.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  setSearchText('');
+                }}>
+                <Image
+                  source={images.closeRound}
+                  style={{height: 15, width: 15}}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
 
         {players.length === 0 ? (
           <InviteListShimmer />
@@ -367,6 +385,28 @@ const styles = StyleSheet.create({
     margin: 25,
     marginBottom: 15,
     marginTop: 0,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    paddingHorizontal: 15,
+    borderRadius: 25,
+    backgroundColor: colors.inputBgOpacityColor,
+    height: 45,
+  },
+  textInputStyle: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    padding: 0,
+  },
+  floatingInput: {
+    alignSelf: 'center',
+    zIndex: 1,
+    width: '90%',
   },
 });
 

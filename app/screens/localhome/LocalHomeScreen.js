@@ -307,6 +307,18 @@ function LocalHomeScreen({navigation, route}) {
 
   useEffect(() => {
     getSportsForHome(authContext, setSportHandler, sports, setSportIconLoader);
+    if (
+      authContext.enity === Verbs.entityTypeUser ||
+      authContext.enity === Verbs.entityTypePlayer
+    ) {
+      setSelectedSport(strings.allSport);
+    }
+    if (
+      authContext.entity.role === Verbs.entityTypeClub &&
+      authContext.entity.obj.sports.length !== 1
+    ) {
+      setSelectedSport(strings.allSport);
+    }
   }, [authContext.entity]);
 
   useEffect(() => {

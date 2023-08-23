@@ -368,7 +368,7 @@ const HomeScreen = ({navigation, route}) => {
             }}>
             <Image source={images.backArrow} style={styles.image} />
           </Pressable>
-          <View style={{flex: 1}}>
+          <View style={{flex: 1, marginLeft: 10}}>
             <Text style={styles.title} numberOfLines={1}>
               {currentUserData.full_name ?? currentUserData.group_name}
             </Text>
@@ -390,7 +390,7 @@ const HomeScreen = ({navigation, route}) => {
               }}>
               <Image
                 source={images.newchatIcon}
-                style={{width: 25, height: 25, resizeMode: 'contain'}}
+                style={{width: 25, height: 25}}
               />
             </Pressable>
           ) : null}
@@ -400,7 +400,10 @@ const HomeScreen = ({navigation, route}) => {
             onPress={() => {
               setKebabButtonOptions();
             }}>
-            <Image source={images.chat3Dot} style={styles.image} />
+            <Image
+              source={images.chat3Dot}
+              style={[styles.image, {marginLeft: 5}]}
+            />
           </Pressable>
         </View>
       </View>

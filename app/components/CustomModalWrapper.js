@@ -53,7 +53,6 @@ const CustomModalWrapper = ({
       listener: (event) => {
         if (event.nativeEvent.translationY <= 0) {
           translateY.setValue(0);
-
           if (isSwipeUp && event.nativeEvent.translationY < -SWIPE_THRESHOLD) {
             setIsFullHeight(true);
             translateY.setValue(0);
@@ -178,8 +177,9 @@ const CustomModalWrapper = ({
 
       case ModalTypes.style2:
       case ModalTypes.style3:
+        return [styles.card, {flex: 1}];
       case ModalTypes.style4:
-        return styles.card;
+        return [styles.card, {flex: 1}];
 
       case ModalTypes.style5:
         return [styles.card, {height: screenHeight * 0.66}];
