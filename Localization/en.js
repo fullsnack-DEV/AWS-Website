@@ -1128,6 +1128,7 @@ export default {
   registerRefereeTitle: 'en_Register as Referee',
   registeredRefreeTitle: 'en_Registered as Referee',
   registerScorekeeperTitle: 'en_Register as Scorekeeper',
+  registeredScorekeeperTitle: 'en_Registered as Scorekeeper',
   inviteYouToJoinEventText: 'en_invited you to join the event.',
   createTeamText: 'en_Create Team',
   createClubText: 'en_Create Club',
@@ -3091,4 +3092,5 @@ export default {
   chatWith: 'en_Chat with {0}',
   goToHomeOf: 'en_Go to Home of {0}',
   alertMessageDeleteEvent: 'en_Are you sure you want to delete this event?',
+  venuesAndCheckInPoint: 'en_Venues & Check-in Point',
 };

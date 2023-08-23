@@ -19,7 +19,7 @@ const TeamsListNearYou = ({
   list = [],
   joinTeam = () => {},
   searchTeam = () => {},
-  createTeam = () => {},
+  // createTeam = () => {},
   onUserClick = () => {},
   onChanllenge = () => {},
   fromCreateTeam = false,
@@ -122,7 +122,7 @@ const TeamsListNearYou = ({
                 </TouchableOpacity>
                 <View style={styles.dividor} />
 
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={[styles.row, {justifyContent: 'flex-start'}]}
                   onPress={createTeam}>
                   <View
@@ -138,7 +138,7 @@ const TeamsListNearYou = ({
                   <Text style={[styles.name, {marginLeft: 10}]}>
                     {strings.createTeamText}
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <View style={styles.dividor} />
               </>
             ) : null

@@ -97,7 +97,9 @@ const getTitleForRegister = (
         : strings.registerRefereeTitle;
 
     case Verbs.entityTypeScorekeeper:
-      return strings.registerScorekeeperTitle;
+      return forHome
+        ? strings.registeredScorekeeperTitle
+        : strings.registerScorekeeperTitle;
 
     default:
       return '';

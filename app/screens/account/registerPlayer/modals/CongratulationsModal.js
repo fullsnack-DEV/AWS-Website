@@ -38,7 +38,7 @@ const CongratulationsModal = ({
   onUserClick = () => {},
   joinTeam = () => {},
   searchTeam = () => {},
-  createTeam = () => {},
+  // createTeam = () => {},
   goToSportActivityHome = () => {},
   onInviteClick = () => {},
   listloading = false,
@@ -295,10 +295,10 @@ const CongratulationsModal = ({
           closeModal();
           joinTeam();
         }}
-        createTeam={() => {
-          closeModal();
-          createTeam();
-        }}
+        // createTeam={() => {
+        //   closeModal();
+        //   createTeam();
+        // }}
         onUserClick={(item) => {
           closeModal();
           onUserClick(item);

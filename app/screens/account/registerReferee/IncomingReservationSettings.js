@@ -166,6 +166,8 @@ const IncomingReservationSettings = ({navigation, route}) => {
             ? strings.registerRefereeTitle
             : strings.registerScorekeeperTitle
         }
+        isFullTitle
+        leftIconStyle={{width:40}}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.goBack();

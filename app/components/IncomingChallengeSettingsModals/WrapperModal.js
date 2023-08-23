@@ -214,7 +214,9 @@ const WrapperModal = ({
           <ScreenHeader
             leftIcon={images.crossImage}
             leftIconPress={closeModal}
-            title={title}
+            title={
+              title === strings.venue ? strings.venuesAndCheckInPoint : title
+            }
             isRightIconText
             rightButtonText={strings.save}
             onRightButtonPress={() => onSave(settings)}

@@ -27,7 +27,7 @@ import EditHomeFacilityScreen from '../../screens/home/SportActivity/contentScre
 const teamOptions = [
   strings.bio,
   strings.basicInfoText,
-  strings.homeFacility,
+  // strings.homeFacility,
   strings.membersTitle,
   strings.tcLevelPointsText,
   strings.tcranking,
@@ -62,7 +62,7 @@ export default function GroupInfo({
   const [selectedOption, setSelectedOption] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalOptions, setModalOptions] = useState([]);
-  const [clubTeams, setClubTeams] = useState([])
+  const [clubTeams, setClubTeams] = useState([]);
 
   useEffect(() => {
     if (groupDetails.entity_type) {
@@ -109,7 +109,10 @@ export default function GroupInfo({
         break;
 
       case strings.homeFacility:
-        optionList = [format(strings.editOption,strings.homeFacility),strings.privacySettingText];
+        optionList = [
+          format(strings.editOption, strings.homeFacility),
+          strings.privacySettingText,
+        ];
         break;
 
       case strings.membersTitle:
@@ -123,7 +126,10 @@ export default function GroupInfo({
         break;
 
       case strings.matchVenues:
-        optionList = [format(strings.editOption, strings.matchVenues), strings.privacySettingText];
+        optionList = [
+          format(strings.editOption, strings.matchVenues),
+          strings.privacySettingText,
+        ];
         break;
 
       case strings.clubsTitleText:
@@ -192,8 +198,8 @@ export default function GroupInfo({
         return <GroupBasicInfo groupDetails={groupDetails} />;
 
       case strings.homeFacility:
-        return <EditHomeFacilityScreen />
-        
+        return <EditHomeFacilityScreen />;
+
       case strings.membersTitle:
         return (
           <MemberList
@@ -291,6 +297,9 @@ export default function GroupInfo({
           <View>
             {clubTeams.length > 0
               ? clubTeams.map((item, index) => {
+                  if (authContext.entity.uid === item.group_id) {
+                    return null;
+                  }
                   if (index > 2) {
                     return null;
                   }
@@ -469,6 +478,15 @@ export default function GroupInfo({
                     </TouchableOpacity>
                   ) : null}
 
+                  {item === strings.matchVenues &&
+                  !isAdmin &&
+                  authContext.entity.role === Verbs.entityTypeTeam &&
+                  authContext.entity.obj.sport === groupDetails.sport ? (
+                    <TouchableOpacity style={styles.buttonContainer}>
+                      <Text style={styles.buttonText}>{strings.challenge}</Text>
+                    </TouchableOpacity>
+                  ) : null}
+
                   {isAdmin &&
                   item !== strings.tcLevelPointsText &&
                   item !== strings.tcranking ? (
@@ -488,7 +506,7 @@ export default function GroupInfo({
       />
       <BottomSheet
         isVisible={showModal}
-        type='ios'
+        type="ios"
         closeModal={() => {
           setShowModal(false);
         }}
@@ -556,5 +574,18 @@ const styles = StyleSheet.create({
   },
   col: {
     flex: 1,
+  },
+  buttonContainer: {
+    padding: 7,
+    backgroundColor: colors.themeColor,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    fontSize: 15,
+    lineHeight: 15,
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
   },
 });
