@@ -193,6 +193,7 @@ const Verbs = {
   channelTypeAuto: 'Auto',
   channelTypeGeneral: 'General',
   channelTypeMessaging: 'messaging',
+  clap: 'clap',
 };
 
 export default Verbs;

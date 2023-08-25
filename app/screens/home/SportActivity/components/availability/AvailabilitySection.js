@@ -7,12 +7,14 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import {strings} from '../../../../../../Localization/translation';
 import colors from '../../../../../Constants/Colors';
 import fonts from '../../../../../Constants/Fonts';
 import {getJSDate} from '../../../../../utils';
 import AvailabilityBar from './AvailabilityBar';
+import images from '../../../../../Constants/ImagePath';
 
 const AvailabilitySection = ({
   list = [],
@@ -81,8 +83,11 @@ const AvailabilitySection = ({
     <View style={styles.parent}>
       <View style={styles.row}>
         <Text style={styles.title}>{strings.availability}</Text>
-        <TouchableOpacity onPress={onSeeAll}>
+        {/* <TouchableOpacity onPress={onSeeAll}>
           <Text style={styles.buttonText}>{strings.seeAllText}</Text>
+        </TouchableOpacity> */}
+        <TouchableOpacity style={styles.nextIcon} onPress={onSeeAll}>
+          <Image source={images.rightArrow} style={styles.image} />
         </TouchableOpacity>
       </View>
       {loading ? (
@@ -129,16 +134,16 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
-  buttonText: {
-    fontSize: 12,
-    lineHeight: 18,
-    color: colors.themeColor,
-    fontFamily: fonts.RRegular,
-  },
+  // buttonText: {
+  //   fontSize: 12,
+  //   lineHeight: 18,
+  //   color: colors.themeColor,
+  //   fontFamily: fonts.RRegular,
+  // },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     marginBottom: 5,
   },
   label: {
@@ -155,6 +160,21 @@ const styles = StyleSheet.create({
     minHeight: 150,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  nextIcon: {
+    width: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    padding: 4,
+    backgroundColor: colors.grayBackgroundColor,
+    marginLeft: 5,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
 });
 export default AvailabilitySection;

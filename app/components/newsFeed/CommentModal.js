@@ -13,6 +13,7 @@ import {
   TextInput,
   Text,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import {format} from 'react-string-format';
 import ParsedText from 'react-native-parsed-text';
@@ -23,6 +24,7 @@ import {
   getReactions,
   deleteReactions,
   createCommentReaction,
+  getNextReactions,
 } from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
 
@@ -75,6 +77,7 @@ const CommentModal = ({
   const [showLikeModal, setShowLikeModal] = useState(false);
   const [replyParams, setReplyParams] = useState({});
   const [showAllReplies, setShowAllReplies] = useState(false);
+  const [isMoreLoading, setIsMoreLoading] = useState(true);
 
   const fetchReactions = useCallback(() => {
     const params = {
@@ -84,9 +87,10 @@ const CommentModal = ({
 
     getReactions(params, authContext)
       .then((response) => {
-        setCommentData(response.payload.reverse());
+        setCommentData(response.payload);
       })
       .catch((e) => {
+        setIsMoreLoading(false);
         Alert.alert('', e.messages);
       });
   }, [authContext, postId]);
@@ -344,6 +348,27 @@ const CommentModal = ({
     </View>
   );
 
+  const onEndReached = () => {
+    if (commentData.length === 0 || !isMoreLoading) return;
+    const params = {
+      activity_id: postId,
+      reaction_type: Verbs.comment,
+    };
+
+    const id_lt = commentData[commentData.length - 1].id;
+    getNextReactions(params, id_lt, authContext)
+      .then((response) => {
+        setCommentData([...commentData, ...response.payload]);
+        if (response.payload.length === 0) {
+          setIsMoreLoading(false);
+        }
+      })
+      .catch((e) => {
+        setIsMoreLoading(false);
+        Alert.alert('', e.messages);
+      });
+  };
+
   return (
     <CustomModalWrapper
       isVisible={showCommentModal}
@@ -367,6 +392,22 @@ const CommentModal = ({
           renderItem={renderComments}
           ListEmptyComponent={listEmptyComponent}
           showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          removeClippedSubviews={true}
+          legacyImplementation={true}
+          maxToRenderPerBatch={10}
+          initialNumToRender={5}
+          onEndReachedThreshold={0.3}
+          refreshing={false}
+          onEndReached={onEndReached}
+          onRefresh={() => fetchReactions()}
+          ListFooterComponent={() =>
+            isMoreLoading ? (
+              <View>
+                <ActivityIndicator size={'small'} />
+              </View>
+            ) : null
+          }
         />
 
         <View style={[styles.bottomContainer, {paddingBottom: 20}]}>

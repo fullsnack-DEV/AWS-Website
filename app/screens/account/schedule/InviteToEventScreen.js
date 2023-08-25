@@ -74,7 +74,7 @@ export default function InviteToEventScreen({navigation, route}) {
   useEffect(() => {
     if (searchText) {
       const list = players.filter((item) =>
-        item.full_name.includes(searchText),
+        item.full_name.toLowerCase().includes(searchText.toLowerCase()),
       );
       setFilteredList(list);
     } else {
@@ -191,36 +191,46 @@ export default function InviteToEventScreen({navigation, route}) {
         />
 
         {selectedList.length > 0 ? (
-          <View style={[styles.row, {marginBottom: 25}]}>
-            {selectedList.map((item, index) => {
-              const user = players.find((obj) => obj.user_id === item);
-              return (
-                <View key={index} style={styles.tag}>
-                  <View
-                    style={{
-                      paddingHorizontal: 10,
-                      borderRightWidth: 1,
-                      borderRightColor: colors.bgColor,
-                    }}>
-                    <Text style={styles.tagLabel}>{user.full_name}</Text>
-                  </View>
-                  <View
-                    style={{
-                      paddingHorizontal: 5,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <Pressable
-                      style={{width: 10, height: 10}}
-                      onPress={() => {
-                        selectPlayer(user);
+          <View>
+            <FlatList
+              data={selectedList}
+              keyExtractor={(item, index) => index.toString()}
+              horizontal
+              contentContainerStyle={{marginBottom: 25}}
+              showsHorizontalScrollIndicator={false}
+              renderItem={({item}) => {
+                const user = players.find((obj) => obj.user_id === item);
+                return (
+                  <View style={styles.tag}>
+                    <View
+                      style={{
+                        paddingHorizontal: 10,
+                        borderRightWidth: 1,
+                        borderRightColor: colors.bgColor,
                       }}>
-                      <Image source={images.crossImage} style={styles.image} />
-                    </Pressable>
+                      <Text style={styles.tagLabel}>{user.full_name}</Text>
+                    </View>
+                    <View
+                      style={{
+                        paddingHorizontal: 5,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Pressable
+                        style={{width: 10, height: 10}}
+                        onPress={() => {
+                          selectPlayer(user);
+                        }}>
+                        <Image
+                          source={images.crossImage}
+                          style={styles.image}
+                        />
+                      </Pressable>
+                    </View>
                   </View>
-                </View>
-              );
-            })}
+                );
+              }}
+            />
           </View>
         ) : null}
 

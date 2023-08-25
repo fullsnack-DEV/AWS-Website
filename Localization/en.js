@@ -2200,6 +2200,7 @@ export default {
   addressValidation: 'en_Please fill address field',
   profileCreated: 'en_The member profile has been created in your {0}.',
   registerAsPlayerTitle: 'en_Register as Player',
+  registeredAsPlayerTitle: 'en_Registered as Player',
   multipleRequestSent: '{0} en_Requests for basic info were sent.',
   removeMemberFromGroup: 'en_Remove this member from team',
   basicInfoRequestText:
@@ -3096,4 +3097,6 @@ export default {
   eventSendMessage: 'en_Send Message',
   alertMessageDeleteEvent: 'en_Are you sure you want to delete this event?',
   venuesAndCheckInPoint: 'en_Venues & Check-in Point',
+  sendInvoice: 'en_Send Invoice',
+  sendMessage: 'en_Send Message',
 };

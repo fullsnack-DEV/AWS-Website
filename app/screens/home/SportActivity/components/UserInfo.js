@@ -78,7 +78,11 @@ const UserInfo = ({
             style={styles.image}
           />
         </View>
-        <View style={{flex: 1}}>
+        <View
+          style={{
+            flex: 1,
+            marginBottom: getLookingForContainer() === null ? 25 : 0,
+          }}>
           <Text style={styles.name}>{user.full_name}</Text>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text style={styles.location}>{displayLocation(user)}</Text>
@@ -105,27 +109,36 @@ const UserInfo = ({
           </TouchableOpacity>
         ) : null}
       </Pressable>
-      {screenType === Verbs.screenTypeMainScreen ? (
+      {screenType === Verbs.screenTypeMainScreen ? null : (
+        // <Text style={styles.description}>
+        //   {description}{' '}
+        //   <TouchableOpacity onPress={onMore}>
+        //     <Text style={styles.moreText}>{strings.moreText}</Text>
+        //   </TouchableOpacity>
+        // </Text>
         <>
-          <Text style={styles.title}>{strings.infoTitle}</Text>
-          <Text style={styles.description}>
-            {description}{' '}
-            <TouchableOpacity onPress={onMore}>
-              <Text style={styles.moreText}>{strings.moreText}</Text>
+          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+            <View>
+              <Text style={styles.title}>{strings.infoTitle}</Text>
+            </View>
+            <TouchableOpacity style={styles.nextIcon} onPress={onMore}>
+              <Image
+                source={images.rightArrow}
+                style={[styles.image, {borderRadius: 0}]}
+              />
             </TouchableOpacity>
-          </Text>
+          </View>
+          <ReadMore
+            style={styles.description}
+            numberOfLines={3}
+            seeMoreText={strings.moreText}
+            seeLessText={strings.lessText}
+            seeLessStyle={styles.moreText}
+            seeMoreStyle={styles.moreText}
+            onSeeMoreBlocked={onMore}>
+            {description}
+          </ReadMore>
         </>
-      ) : (
-        <ReadMore
-          style={styles.description}
-          numberOfLines={3}
-          seeMoreText={strings.moreText}
-          seeLessText={strings.lessText}
-          seeLessStyle={styles.moreText}
-          seeMoreStyle={styles.moreText}
-          onSeeMoreBlocked={onMore}>
-          {description}
-        </ReadMore>
       )}
     </View>
   );
@@ -222,6 +235,16 @@ const styles = StyleSheet.create({
     lineHeight: 14,
     fontFamily: fonts.RMedium,
     color: colors.yellowColor,
+  },
+  nextIcon: {
+    width: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    padding: 4,
+    backgroundColor: colors.grayBackgroundColor,
+    marginLeft: 5,
   },
 });
 export default UserInfo;

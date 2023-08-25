@@ -19,6 +19,13 @@ const CustomReplyComponent = () => {
     }
   }
 
+  if (
+    message?.deleted_for_me?.status &&
+    message.deleted_for_me.user_id.includes(authContext.entity.uid)
+  ) {
+    return null;
+  }
+
   return (
     <>
       {message.quoted_message && (

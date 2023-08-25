@@ -29,6 +29,7 @@ import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
 import {getSportsList} from '../../api/Games'; // getRecentGameDetails
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
+import Verbs from '../../Constants/Verbs';
 
 const FeedsScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
@@ -227,7 +228,7 @@ const FeedsScreen = ({navigation}) => {
   const onLikePress = useCallback(
     (item) => {
       const bodyParams = {
-        reaction_type: 'clap',
+        reaction_type: Verbs.clap,
         activity_id: item.id,
       };
       createReaction(bodyParams, authContext)
@@ -336,11 +337,11 @@ const FeedsScreen = ({navigation}) => {
   const RenderTopHeader = () => (
     <View style={styles.headerRow}>
       <View>
-       <Text style={styles.headerTitle}>{strings.feedTitleText}</Text>
+        <Text style={styles.headerTitle}>{strings.feedTitleText}</Text>
       </View>
-      <View style={{flexDirection: 'row', alignItems: 'center',}}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <TouchableOpacity
-          style={[styles.headerIconContainer, {marginRight: 5}]}
+          style={[styles.headerIconContainer, {marginRight: 8}]}
           onPress={() => {
             navigation.navigate('WritePostScreen', {
               postData: currentUserDetail,
@@ -356,7 +357,7 @@ const FeedsScreen = ({navigation}) => {
               sportsArray: sportArr,
             });
           }}
-          style={[styles.headerIconContainer,{marginLeft: 5,}]}>
+          style={[styles.headerIconContainer, {marginLeft: 7}]}>
           <Image source={images.searchIcon} style={styles.icon} />
         </TouchableOpacity>
       </View>

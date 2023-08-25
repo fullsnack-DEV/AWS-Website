@@ -1,11 +1,12 @@
 // @flow
 import React from 'react';
-import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
 import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import Verbs from '../../../../Constants/Verbs';
 import StatsGraph from './StatsGraph';
+import images from '../../../../Constants/ImagePath';
 
 const StatSection = ({
   onSeeAll = () => {},
@@ -16,20 +17,23 @@ const StatSection = ({
   totalDraws = 0,
 }) => (
   <View style={styles.parent}>
-    <View style={styles.row}>
+    <View style={[styles.row, {justifyContent: 'space-between'}]}>
       <View style={[styles.row, {marginBottom: 0}]}>
         <Text style={styles.title}>{strings.statsTitle}</Text>
-        <Text
-          style={[
-            styles.buttonText,
-            {color: colors.userPostTimeColor, marginLeft: 10},
-          ]}>
-          {strings.past6Months}
-        </Text>
+        <TouchableOpacity style={styles.nextIcon} onPress={onSeeAll}>
+          <Image source={images.rightArrow} style={styles.image} />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={onSeeAll}>
+      <Text
+        style={[
+          styles.buttonText,
+          {color: colors.userPostTimeColor, marginLeft: 10},
+        ]}>
+        {strings.past6Months}
+      </Text>
+      {/* <TouchableOpacity onPress={onSeeAll}>
         <Text style={styles.buttonText}>{strings.seeAllText}</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
     {sportType === Verbs.singleSport ? (
       <StatsGraph
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     marginBottom: 15,
   },
   container: {
@@ -86,6 +90,21 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: colors.googleColor,
     fontFamily: fonts.RMedium,
+  },
+  nextIcon: {
+    width: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    padding: 4,
+    backgroundColor: colors.grayBackgroundColor,
+    marginLeft: 5,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
 });
 export default StatSection;

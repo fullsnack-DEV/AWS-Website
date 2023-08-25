@@ -89,7 +89,9 @@ const getTitleForRegister = (
 ) => {
   switch (entityType) {
     case Verbs.entityTypePlayer:
-      return strings.registerAsPlayerTitle;
+      return forHome
+        ? strings.registeredAsPlayerTitle
+        : strings.registerAsPlayerTitle;
 
     case Verbs.entityTypeReferee:
       return forHome

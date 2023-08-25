@@ -81,10 +81,16 @@ const MessageChatScreen = ({navigation, route}) => {
       if (showSearchInput) {
         setShowSearchInput(false);
       } else if (route.params?.comeFrom) {
-        navigation.navigate(route.params.comeFrom, {
-          ...route.params.routeParams,
-        });
-      } else if (!route.params?.disableGoBack) {
+        if (route.params.comeFrom === 'MessageMainScreen') {
+          navigation.push(route.params.comeFrom, {
+            ...route.params.routeParams,
+          });
+        } else {
+          navigation.navigate(route.params.comeFrom, {
+            ...route.params.routeParams,
+          });
+        }
+      } else {
         navigation.goBack();
       }
       return true;

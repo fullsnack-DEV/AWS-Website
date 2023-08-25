@@ -200,10 +200,11 @@ const NewsFeedPostItems = memo(
               setMoreOptions(option);
               setShowMoreOptions(true);
             }}
-            showMoreOptions={
-              authContext.entity.role === Verbs.entityTypePlayer ||
-              authContext.entity.role === Verbs.entityTypeUser
-            }
+            // showMoreOptions={
+            //   authContext.entity.role === Verbs.entityTypePlayer ||
+            //   authContext.entity.role === Verbs.entityTypeUser
+            // }
+            showMoreOptions
           />
         ) : (
           <Post

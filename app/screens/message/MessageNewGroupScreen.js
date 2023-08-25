@@ -110,7 +110,8 @@ const MessageNewGroupScreen = ({route, navigation}) => {
         if (channel !== null) {
           navigation.push('MessageChatScreen', {
             channel,
-            disableGoBack: true,
+            comeFrom: 'MessageMainScreen',
+            routeParams: {},
           });
         }
       })
@@ -146,6 +147,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
 
   const deleteImage = () => {
     setGroupProfile({thumbnail: '', full_image: ''});
+    setShowBottomSheet(false);
     setProfileImageChanged(false);
   };
 

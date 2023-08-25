@@ -1,4 +1,4 @@
-import React, {useRef, useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -18,7 +18,6 @@ import Modal from 'react-native-modal';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import ReadMore from '@fawazahmed/react-native-read-more';
-import ActionSheet from 'react-native-actionsheet';
 
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
@@ -46,10 +45,9 @@ import {getGroupMembers} from '../../../api/Groups';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
 import {InvoiceType} from '../../../Constants/GeneralConstants';
+import BottomSheet from '../../../components/modals/BottomSheet';
 
 export default function EventScreen({navigation, route}) {
-  const actionSheet = useRef();
-  const userActionSheet = useRef();
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [sendNewInvoice, SetSendNewInvoice] = useState(false);
@@ -64,6 +62,8 @@ export default function EventScreen({navigation, route}) {
   const [infoModal, setInfoModal] = useState(false);
   const [infoType, setInfoType] = useState('');
   const [recurringEditModal, setRecurringEditModal] = useState(false);
+  const [moreOptions, setMoreOptions] = useState([]);
+  const [showActionSheet, setShowActionSheet] = useState(false);
   const THISEVENT = 0;
   const FUTUREEVENT = 1;
   const ALLEVENT = 2;
@@ -273,9 +273,9 @@ export default function EventScreen({navigation, route}) {
   }, [eventData, authContext]);
 
   const checkIsGoing = () => {
-    // if (!['user', 'player'].includes(authContext.entity.role)) {
-    //   return false;
-    // }
+    if (!['user', 'player'].includes(authContext.entity.role)) {
+      return false;
+    }
 
     if (eventData.who_can_join?.value === 0) {
       return true;
@@ -412,6 +412,53 @@ export default function EventScreen({navigation, route}) {
     </>
   );
 
+  const handleActions = (option) => {
+    switch (option) {
+      case strings.sendInvoice:
+        SetSendNewInvoice(true);
+        break;
+
+      case strings.sendMessage:
+        break;
+
+      case strings.editEvent:
+        if (route && route.params && eventData) {
+          navigation.navigate('EditEventScreen', {
+            data: eventData,
+            gameData: route.params.gameData,
+          });
+        }
+        break;
+
+      case strings.deleteEvent:
+        if (eventData.rrule) {
+          Alert.alert(strings.alertMessageDeleteEvent, '', [
+            {
+              text: strings.cancel,
+              style: 'cancel',
+            },
+            {
+              text: strings.delete,
+              style: 'destructive',
+              onPress: () => setRecurringEditModal(true),
+            },
+          ]);
+        } else {
+          handleDeleteEvent();
+        }
+        break;
+
+      case strings.reportText:
+        break;
+
+      case strings.blockEventOrganiser:
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.mainContainerStyle}>
       <ScreenHeader
@@ -421,11 +468,19 @@ export default function EventScreen({navigation, route}) {
           navigation.goBack();
         }}
         rightIcon2={images.vertical3Dot}
-        rightIcon2Press={() =>
-          isOrganizer
-            ? actionSheet.current.show()
-            : userActionSheet.current.show()
-        }
+        rightIcon2Press={() => {
+          if (isOrganizer) {
+            setMoreOptions([
+              strings.sendInvoice,
+              strings.sendMessage,
+              strings.editEvent,
+              strings.deleteEvent,
+            ]);
+          } else {
+            setMoreOptions([strings.reportText, strings.blockEventOrganiser]);
+          }
+          setShowActionSheet(true);
+        }}
         // loading={loading}
       />
       <ActivityLoader visible={loading} />
@@ -959,59 +1014,16 @@ export default function EventScreen({navigation, route}) {
           </>
         ) : null}
       </ScrollView>
-
-      <ActionSheet
-        ref={actionSheet}
-        options={[
-          strings.eventSendInvoice,
-          strings.eventSendMessage,
-          strings.edit,
-          strings.delete,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={4}
-        destructiveButtonIndex={4}
-        onPress={(index) => {
-          if (index === 0) {
-            SetSendNewInvoice(true);
-          }
-          if (index === 2) {
-            // editactionsheet.current.show();
-            if (route && route.params && eventData) {
-              navigation.navigate('EditEventScreen', {
-                data: eventData,
-                gameData: route.params.gameData,
-              });
-            }
-          } else if (index === 3) {
-            if (eventData.rrule) {
-              Alert.alert(strings.alertMessageDeleteEvent, '', [
-                {
-                  text: strings.cancel,
-                  style: 'cancel',
-                },
-                {
-                  text: strings.delete,
-                  style: 'destructive',
-                  onPress: () => setRecurringEditModal(true),
-                },
-              ]);
-            } else {
-              handleDeleteEvent();
-            }
-          }
-        }}
-      />
-      <ActionSheet
-        ref={userActionSheet}
-        options={[
-          strings.reportText,
-          strings.blockEventOrganiser,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={2}
-        // destructiveButtonIndex={1}
-        onPress={() => {}}
+      <BottomSheet
+        type="ios"
+        isVisible={showActionSheet}
+        closeModal={() => setShowActionSheet(false)}
+        optionList={moreOptions}
+        onSelect={handleActions}
+        cardStyle={
+          isOrganizer ? {backgroundColor: colors.bottomSheetBgColor} : {}
+        }
+        cancelButtonTextStyle={isOrganizer ? {fontFamily: fonts.RBold} : {}}
       />
 
       <Modal

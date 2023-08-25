@@ -229,6 +229,7 @@ const SportActivityModal = ({
               paddingHorizontal: 10,
               paddingVertical: 2,
             }}
+            leftIconStyle={{width: 70}}
           />
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{padding: 15, flex: 1}}>

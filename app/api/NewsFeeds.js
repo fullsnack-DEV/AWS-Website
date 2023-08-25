@@ -37,6 +37,14 @@ export const getReactions = async (params, authContext) =>
     authContext,
   });
 
+export const getNextReactions = async (params, idLt, authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}/reactions?id_lt=${idLt}`,
+    params,
+    authContext,
+  });
+
 export const deleteReactions = async (reaction_id, authContext) =>
   makeAPIRequest({
     method: 'delete',

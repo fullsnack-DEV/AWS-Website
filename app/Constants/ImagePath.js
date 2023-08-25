@@ -556,6 +556,7 @@ const images = {
   autoChannelBadge: require('../assets/images/auto_channel_badge.png'),
   newchatIcon: require('../assets/images/newchaticon.png'),
   allsportlogo: require('../assets/images/allsportinworld.png'),
+  replyCancelImage: require('../assets/images/replyCancelImage.png'),
 };
 
 export default images;

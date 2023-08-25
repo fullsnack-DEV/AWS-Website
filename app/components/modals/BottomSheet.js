@@ -18,6 +18,8 @@ const BottomSheet = ({
   headerTitleStyle = {},
   separatorLineStyle = {},
   textStyle = {},
+  cancelButtonContainerStyle = {},
+  cancelButtonTextStyle = {},
 }) => {
   const [sheetType, setSheetType] = useState('default');
 
@@ -79,8 +81,12 @@ const BottomSheet = ({
                 </View>
               ))}
             </Pressable>
-            <Pressable style={styles.modalCancelButton} onPress={closeModal}>
-              <Text style={styles.modalButtonText}>{strings.cancel}</Text>
+            <Pressable
+              style={[styles.modalCancelButton, cancelButtonContainerStyle]}
+              onPress={closeModal}>
+              <Text style={[styles.modalButtonText, cancelButtonTextStyle]}>
+                {strings.cancel}
+              </Text>
             </Pressable>
           </Pressable>
         </Modal>

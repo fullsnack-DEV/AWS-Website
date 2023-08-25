@@ -89,7 +89,7 @@ export default function UserConnections({navigation, route}) {
     });
 
     Promise.all(list)
-      .then(([follower, following]) => {
+      .then(([following, follower]) => {
         const newData = {};
         newData.following = {
           count: following.payload.length ?? 0,
@@ -207,62 +207,65 @@ export default function UserConnections({navigation, route}) {
           data={list}
           keyExtractor={(item, index) => index.toString()}
           style={{paddingHorizontal: 15}}
-          renderItem={({item}) => (
-            <>
-              <View style={[styles.row, {justifyContent: 'space-between'}]}>
-                <TouchableOpacity
-                  style={styles.row}
-                  onPress={() => {
-                    navigation.navigate('HomeScreen', {
-                      uid: item.user_id ?? item.group_id,
-                      role: item.entity_type,
-                    });
-                  }}>
-                  <GroupIcon
-                    imageUrl={item.full_image}
-                    entityType={item.entity_type}
-                    groupName={item.group_name}
-                    // showPlaceholder={false}
-                    textstyle={{fontSize: 12}}
-                    containerStyle={styles.iconContainer}
-                  />
-                  <View style={{marginLeft: 10}}>
-                    <Text style={styles.userName}>
-                      {item.group_name ?? item.full_name}
-                    </Text>
-                    <Text style={styles.locationText}>
-                      {displayLocation(item)}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                {authContext.entity.uid !== item.user_id &&
-                (authContext.entity.role === Verbs.entityTypeUser ||
-                  authContext.entity.role === Verbs.entityTypePlayer) ? (
-                  // eslint-disable-next-line react/jsx-indent
+          renderItem={({item}) =>
+            authContext.entity.uid ===
+            (item.user_id ?? item.group_id) ? null : (
+              <>
+                <View style={[styles.row, {justifyContent: 'space-between'}]}>
                   <TouchableOpacity
-                    style={styles.buttonContainer}
+                    style={styles.row}
                     onPress={() => {
-                      if (item.is_following) {
-                        handleUnfollow(item);
-                      } else {
-                        handleFollow(item);
-                      }
+                      navigation.navigate('HomeScreen', {
+                        uid: item.user_id ?? item.group_id,
+                        role: item.entity_type,
+                      });
                     }}>
-                    <Text
-                      style={[
-                        styles.buttonText,
-                        item.is_following
-                          ? {color: colors.lightBlackColor}
-                          : {},
-                      ]}>
-                      {item.is_following ? strings.following : strings.follow}
-                    </Text>
+                    <GroupIcon
+                      imageUrl={item.full_image}
+                      entityType={item.entity_type}
+                      groupName={item.group_name}
+                      // showPlaceholder={false}
+                      textstyle={{fontSize: 12}}
+                      containerStyle={styles.iconContainer}
+                    />
+                    <View style={{marginLeft: 10}}>
+                      <Text style={styles.userName}>
+                        {item.group_name ?? item.full_name}
+                      </Text>
+                      <Text style={styles.locationText}>
+                        {displayLocation(item)}
+                      </Text>
+                    </View>
                   </TouchableOpacity>
-                ) : null}
-              </View>
-              <View style={styles.separator} />
-            </>
-          )}
+                  {authContext.entity.uid !== item.user_id &&
+                  (authContext.entity.role === Verbs.entityTypeUser ||
+                    authContext.entity.role === Verbs.entityTypePlayer) ? (
+                    // eslint-disable-next-line react/jsx-indent
+                    <TouchableOpacity
+                      style={styles.buttonContainer}
+                      onPress={() => {
+                        if (item.is_following) {
+                          handleUnfollow(item);
+                        } else {
+                          handleFollow(item);
+                        }
+                      }}>
+                      <Text
+                        style={[
+                          styles.buttonText,
+                          item.is_following
+                            ? {color: colors.lightBlackColor}
+                            : {},
+                        ]}>
+                        {item.is_following ? strings.following : strings.follow}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
+                <View style={styles.separator} />
+              </>
+            )
+          }
         />
       );
     }

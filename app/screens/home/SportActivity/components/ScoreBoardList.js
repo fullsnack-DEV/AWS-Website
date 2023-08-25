@@ -178,8 +178,11 @@ const ScoreBoardList = ({
     <View style={styles.parent}>
       <View style={styles.row}>
         <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity onPress={onSeeAll}>
+        {/* <TouchableOpacity onPress={onSeeAll}>
           <Text style={styles.buttonText}>{strings.seeAllText}</Text>
+        </TouchableOpacity> */}
+        <TouchableOpacity style={styles.nextIcon} onPress={onSeeAll}>
+          <Image source={images.rightArrow} style={styles.image} />
         </TouchableOpacity>
       </View>
       <Text
@@ -208,16 +211,16 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
-  buttonText: {
-    fontSize: 12,
-    lineHeight: 18,
-    color: colors.themeColor,
-    fontFamily: fonts.RRegular,
-  },
+  // buttonText: {
+  //   fontSize: 12,
+  //   lineHeight: 18,
+  //   color: colors.themeColor,
+  //   fontFamily: fonts.RRegular,
+  // },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     marginBottom: 15,
   },
   text: {
@@ -241,6 +244,21 @@ const styles = StyleSheet.create({
     minHeight: 150,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  nextIcon: {
+    width: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    padding: 4,
+    backgroundColor: colors.grayBackgroundColor,
+    marginLeft: 5,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
 });
 export default ScoreBoardList;

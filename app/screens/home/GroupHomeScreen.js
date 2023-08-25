@@ -608,23 +608,34 @@ const GroupHomeScreen = ({
           );
         }
       }
-    } else if (groupData.entity_type === Verbs.entityTypeTeam) {
-      if (type === Verbs.joinVerb) {
-        obj.is_joined = true;
-        obj.member_count += 1;
-        if (
-          authContext.entity.role === Verbs.entityTypePlayer ||
-          authContext.entity.role === Verbs.entityTypeUser
-        ) {
-          obj.is_following = true;
+    } else if (currentUserData.entity_type === Verbs.entityTypeTeam) {
+      if (
+        authContext.entity.role === Verbs.entityTypePlayer ||
+        authContext.entity.role === Verbs.entityTypeUser
+      ) {
+        if (type === Verbs.joinVerb) {
+          obj.is_joined = true;
+          obj.member_count += 1;
+          if (
+            authContext.entity.role === Verbs.entityTypePlayer ||
+            authContext.entity.role === Verbs.entityTypeUser
+          ) {
+            obj.is_following = true;
+          }
         }
-      }
-      if (type === Verbs.leaveVerb) {
-        obj.is_joined = false;
-        obj.member_count =
-          currentUserData.member_count > 0
-            ? currentUserData.member_count - 1
-            : 0;
+        if (type === Verbs.leaveVerb) {
+          obj.is_joined = false;
+          obj.member_count =
+            currentUserData.member_count > 0
+              ? currentUserData.member_count - 1
+              : 0;
+        }
+      } else if (authContext.entity.role === Verbs.entityTypeClub) {
+        if (type === Verbs.leaveVerb) {
+          obj.parent_groups = currentUserData.parent_groups.filter(
+            (item) => item !== authContext.entity.uid,
+          );
+        }
       }
     }
 

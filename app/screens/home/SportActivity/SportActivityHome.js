@@ -416,6 +416,7 @@ const SportActivityHome = ({navigation, route}) => {
         rightIcon2Press={() => {
           setShowMoreOptions(true);
         }}
+        leftIconStyle={{width: 70}}
       />
 
       <UserInfo

@@ -322,7 +322,9 @@ export default function CreateTeamForm1({navigation, route}) {
                 }
               })
               .catch((e) => {
-                Alert.alert(e);
+                Alert.alert(strings.alertmessagetitle, e.message, [
+                  {text: strings.okTitleText},
+                ]);
               });
             break;
           case RESULTS.BLOCKED:
@@ -334,7 +336,9 @@ export default function CreateTeamForm1({navigation, route}) {
         }
       })
       .catch((error) => {
-        Alert.alert(error);
+        Alert.alert(strings.alertmessagetitle, error.message, [
+          {text: strings.okTitleText},
+        ]);
       });
   };
 
@@ -351,11 +355,10 @@ export default function CreateTeamForm1({navigation, route}) {
     setState(locations.state);
     setCountry(locations.country);
     setStatefull(locations.state_full);
-    setHomeCity(
-      [locations.city, locations.state, locations.country]
-        .filter((v) => v)
-        .join(', '),
-    );
+    const location = [locations.city, locations.state, locations.country]
+      .filter((v) => v)
+      .join(', ');
+    setHomeCity(location);
   };
 
   const onBGImageClicked = () => {
