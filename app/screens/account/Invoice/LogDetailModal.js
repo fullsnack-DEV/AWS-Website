@@ -151,7 +151,7 @@ export default function LogDetailModal({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeList}
-      modalType={ModalTypes.style3}
+      modalType={ModalTypes.style8}
       headerRightButtonText={strings.done}
       title={strings.log}
       containerStyle={{

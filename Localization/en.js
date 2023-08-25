@@ -3091,6 +3091,9 @@ export default {
   liseemptyText: 'en_No members found',
   chatWith: 'en_Chat with {0}',
   goToHomeOf: 'en_Go to Home of {0}',
+
+  eventSendInvoice: 'en_Send Invoice',
+  eventSendMessage: 'en_Send Message',
   alertMessageDeleteEvent: 'en_Are you sure you want to delete this event?',
   venuesAndCheckInPoint: 'en_Venues & Check-in Point',
 };

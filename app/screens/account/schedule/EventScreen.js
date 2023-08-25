@@ -44,12 +44,15 @@ import {
 import {getUserFollowerFollowing} from '../../../api/Users';
 import {getGroupMembers} from '../../../api/Groups';
 import ScreenHeader from '../../../components/ScreenHeader';
+import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
+import {InvoiceType} from '../../../Constants/GeneralConstants';
 
 export default function EventScreen({navigation, route}) {
   const actionSheet = useRef();
   const userActionSheet = useRef();
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
+  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
 
   const [loading, setloading] = useState(false);
   const [organizer, setOrganizer] = useState({});
@@ -959,18 +962,28 @@ export default function EventScreen({navigation, route}) {
 
       <ActionSheet
         ref={actionSheet}
-        options={[strings.editEvent, strings.deleteEvent, strings.cancel]}
-        cancelButtonIndex={2}
-        destructiveButtonIndex={1}
+        options={[
+          strings.eventSendInvoice,
+          strings.eventSendMessage,
+          strings.edit,
+          strings.delete,
+          strings.cancel,
+        ]}
+        cancelButtonIndex={4}
+        destructiveButtonIndex={4}
         onPress={(index) => {
           if (index === 0) {
+            SetSendNewInvoice(true);
+          }
+          if (index === 2) {
+            // editactionsheet.current.show();
             if (route && route.params && eventData) {
               navigation.navigate('EditEventScreen', {
                 data: eventData,
                 gameData: route.params.gameData,
               });
             }
-          } else if (index === 1) {
+          } else if (index === 3) {
             if (eventData.rrule) {
               Alert.alert(strings.alertMessageDeleteEvent, '', [
                 {
@@ -1028,6 +1041,14 @@ export default function EventScreen({navigation, route}) {
           />
         </View>
       </Modal>
+
+      <SendNewInvoiceModal
+        isVisible={sendNewInvoice}
+        invoiceType={InvoiceType.Event}
+        eventID={eventData.cal_id}
+        member={going}
+        onClose={() => SetSendNewInvoice(false)}
+      />
 
       {/* Modal Style 3 */}
       <Modal

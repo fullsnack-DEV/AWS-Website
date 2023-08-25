@@ -81,6 +81,10 @@ export default function BatchDetailScreen({navigation, route}) {
     updateTabs();
   }, [batchData]);
 
+  const navigateBack = () => {
+    navigation.goBack();
+  };
+
   const updateTabs = () => {
     const allTitle = format(
       strings.allNInvoice,
@@ -171,7 +175,9 @@ export default function BatchDetailScreen({navigation, route}) {
         leftIconPress={() => {
           navigation.goBack();
         }}
-        rightIcon2={images.vertical3Dot}
+        rightIcon2={
+          batchData.invoices[0].is_single_invoice ? null : images.vertical3Dot
+        }
         rightIcon2Press={() => batchActionsheet.current.show()}
       />
       <ScrollView
@@ -353,6 +359,7 @@ export default function BatchDetailScreen({navigation, route}) {
           <CancelInvoivebybatchModal
             visible={showCancelInvoices}
             batchData={batchData}
+            navigateBack={() => navigateBack()}
             onCancelInvoice={() => {
               setTimeout(() => {
                 setIsApiCalled(true);

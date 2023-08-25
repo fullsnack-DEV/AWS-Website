@@ -359,8 +359,6 @@ export default function SenderInvoiceDetailScreen({navigation, route}) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    // backgroundColor: colors.grayBackgroundColor,
-    // backgroundColor: 'red',
   },
 
   townsCupSettingIcon: {

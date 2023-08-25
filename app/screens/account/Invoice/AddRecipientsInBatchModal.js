@@ -39,6 +39,8 @@ import ResendInvoiceCell from './ResendInvoiceCell';
 import ResendRecipientCell from './ResendRecipientCell';
 import AddResendRecipientsModal from './AddResendRecipientsModal';
 
+import {getUserIndex} from '../../../api/elasticSearch';
+
 export default function AddRecipientsInBatchModal({
   visible,
   closeModal,
@@ -62,24 +64,69 @@ export default function AddRecipientsInBatchModal({
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    console.log(currentInvoice, 'from Current Inovice');
-
     if (visible) {
       setResendMessage();
       if (invoiceAction === InvoiceActionType.AddRecipient) {
         setMLoading(true);
-        addRecipientList(batchData.batch_id, authContext)
-          .then((response) => {
-            setMLoading(false);
-            setNewMembers(response.payload.members ?? []);
-            setNewTeams(response.payload.teams ?? []);
-          })
-          .catch((e) => {
-            setMLoading(false);
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, e.message);
-            }, 10);
-          });
+
+        if (currentInvoice.invoice_type === InvoiceType.Invoice) {
+          addRecipientList(batchData.batch_id, authContext)
+            .then((response) => {
+              setMLoading(false);
+
+              setNewMembers(response.payload.members ?? []);
+              setNewTeams(response.payload.teams ?? []);
+            })
+            .catch((e) => {
+              setMLoading(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            });
+        } else {
+          setMLoading(false);
+
+          (async () => {
+            try {
+              setMLoading(true);
+
+              const addRecipientListResponse = await addRecipientList(
+                batchData.batch_id,
+                authContext,
+              );
+
+              const goingData = addRecipientListResponse.payload.members ?? [];
+
+              const getUserDetailQuery = {
+                size: 1000,
+                from: 0,
+                query: {
+                  terms: {
+                    'user_id.keyword': [...goingData],
+                  },
+                },
+              };
+
+              const getUserIndexResponse = await getUserIndex(
+                getUserDetailQuery,
+              );
+
+              const updatedMembers = getUserIndexResponse.map((member) => ({
+                ...member,
+                connected: true,
+              }));
+
+              setNewMembers(updatedMembers);
+
+              setMLoading(false);
+            } catch (e) {
+              setMLoading(false);
+              setTimeout(() => {
+                Alert.alert(strings.alertmessagetitle, e.message);
+              }, 10);
+            }
+          })();
+        }
       }
     }
   }, [visible]);
@@ -178,7 +225,9 @@ export default function AddRecipientsInBatchModal({
         }
         return {entity_id: entity.group_id, entity_type: entity.entity_type};
       });
-
+      if (currentInvoice.invoice_type === InvoiceType.Event) {
+        body.event_id = currentInvoice.event_id;
+      }
       body.receivers = recipients;
 
       createBatchInvoice(batchData.batch_id, body, authContext)
@@ -225,6 +274,7 @@ export default function AddRecipientsInBatchModal({
     const body = {};
     body.email_sent = true;
     body.resend_msg = resendMessage;
+
     resendInvoice(currentInvoice.invoice_id, body, authContext)
       .then(() => {
         setMLoading(false);

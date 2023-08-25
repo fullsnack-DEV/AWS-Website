@@ -37,7 +37,7 @@ import {createInvoice} from '../../../api/Invoice';
 import AuthContext from '../../../auth/context';
 import Verbs from '../../../Constants/Verbs';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {getTCDate} from '../../../utils';
+import {getTCDate, showAlert} from '../../../utils';
 import RecipientCell from './RecipientCell';
 import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
 
@@ -47,6 +47,9 @@ const SendNewInvoiceModal = ({
   onClose = () => {},
   refreshInvoices = () => {},
   invoiceType = InvoiceType.Invoice,
+  isSingleInvoice = false,
+  member = [],
+  eventID,
 }) => {
   const authContext = useContext(AuthContext);
   const [invoiceTitle, setInvoiceTitle] = useState('');
@@ -75,6 +78,32 @@ const SendNewInvoiceModal = ({
     setSelectedDueDate(new Date(date));
     setDueDateVisible(false);
   };
+  useEffect(() => {
+    if (isSingleInvoice) {
+      setSelectedRecipients([member]);
+    }
+
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam &&
+      invoiceType === InvoiceType.Event
+    ) {
+      const updatedMembers = member.map((members) => ({
+        ...members,
+        connected: true,
+      }));
+
+      setRecipientMemberData(updatedMembers);
+      setIsRecipientDataFetched(true);
+    }
+
+    if (eventID) {
+      const updatedMembers = member.map((members) => ({
+        ...members,
+        connected: true,
+      }));
+      setSelectedRecipients(updatedMembers);
+    }
+  }, [isVisible, isSingleInvoice, eventID]);
 
   const handleCancelDueDatePress = () => {
     setDueDateVisible(false);
@@ -112,8 +141,6 @@ const SendNewInvoiceModal = ({
           },
         );
       }
-    } else if (invoiceType === InvoiceType.Event) {
-      setLoading(false);
     }
   };
 
@@ -181,10 +208,13 @@ const SendNewInvoiceModal = ({
       body.currency_type = currency;
       body.invoice_description = description;
       body.invoice_type = invoiceType;
+      body.event_id = eventID;
+
       body.email_sent = false;
       body.sender_name = authContext.entity.obj.group_name
         ? authContext.entity.obj.group_name
         : authContext.entity.obj.full_name;
+      body.is_single_invoice = isSingleInvoice;
 
       createInvoice(body, authContext)
         .then(() => {
@@ -212,7 +242,7 @@ const SendNewInvoiceModal = ({
         .catch((e) => {
           setLoading(false);
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
+            showAlert(e.message);
           }, 10);
         });
     }
@@ -447,22 +477,25 @@ const SendNewInvoiceModal = ({
 
             <Text style={{marginTop: 4, color: 'red'}}> {strings.star}</Text>
           </View>
-          <TouchableOpacity onPress={() => showRecipientsClicked()}>
-            <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
-              <Text
-                style={{
-                  color: colors.orangeColorCard,
-                  fontSize: 16,
-                  textAlign: 'right',
-                  fontFamily: fonts.RRegular,
-                  paddingEnd: 8,
-                  lineHeight: 24,
-                }}>
-                {strings.addText}
-              </Text>
-              <Image source={images.nextArrow} style={styles.nextArrow} />
-            </View>
-          </TouchableOpacity>
+
+          {isSingleInvoice ? null : (
+            <TouchableOpacity onPress={() => showRecipientsClicked()}>
+              <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
+                <Text
+                  style={{
+                    color: colors.orangeColorCard,
+                    fontSize: 16,
+                    textAlign: 'right',
+                    fontFamily: fonts.RRegular,
+                    paddingEnd: 8,
+                    lineHeight: 24,
+                  }}>
+                  {strings.addText}
+                </Text>
+                <Image source={images.nextArrow} style={styles.nextArrow} />
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
         {/* recipient lists */}
         <FlatList

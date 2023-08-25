@@ -68,6 +68,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const [members, setMembers] = useState([]);
 
   const [switchUser] = useState(authContext.entity);
+  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
 
   const [pointEvent] = useState('auto');
   const [active, setActive] = useState(true);
@@ -79,7 +80,6 @@ export default function GroupMembersScreen({navigation, route}) {
   const currentRoute = routes[0].name;
   const [userJoinedGrpList, setUserJoinedGrpList] = useState();
   const [clubToCheckAdmin, setClubToCheckAdmin] = useState(false);
-  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -731,10 +731,9 @@ export default function GroupMembersScreen({navigation, route}) {
               groupID,
             });
           } else if (index === 1) {
-            Alert.alert('Pressed');
             setTimeout(() => {
               SetSendNewInvoice(true);
-            }, [100]);
+            }, 20);
           } else if (index === 2) {
             navigation.navigate('MembersViewPrivacyScreen', {groupID});
           }

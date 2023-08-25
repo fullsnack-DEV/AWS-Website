@@ -664,6 +664,7 @@ export default function CreateEventScreen({navigation, route}) {
           })
           .catch((e) => {
             setTimeout(() => {
+              console.log(e);
               Alert.alert(strings.appName, e.messages);
             }, 0.1);
           });
