@@ -9,6 +9,7 @@ import {
   FlatList,
   ScrollView,
   Image,
+  ImageBackground,
 } from 'react-native';
 import moment from 'moment';
 import {strings} from '../../../../../Localization/translation';
@@ -119,10 +120,17 @@ const ScoreBoardList = ({
       );
     }
     return (
-      <Image
-        style={{height: 188, width: '100%', marginTop: 10}}
-        source={images.noScoreboardImage}
-      />
+      <ImageBackground
+        style={{
+          height: 188,
+          width: '100%',
+          marginTop: 10,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        source={images.noScoreboardImage}>
+        <Text style={styles.warningText}>{strings.noMatchText}</Text>
+      </ImageBackground>
     );
   };
 

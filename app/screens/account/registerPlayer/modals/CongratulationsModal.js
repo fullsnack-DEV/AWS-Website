@@ -207,16 +207,22 @@ const CongratulationsModal = ({
     setLoading(true);
     getGroupIndex(queryParams)
       .then((response) => {
+        const newList =
+          response.length > 0
+            ? response.filter(
+                (item) => item.group_id !== authContext.entity.uid,
+              )
+            : [];
         setTimeout(() => {
           setLoading(false);
         }, 20);
-        setTeamsList(response);
+        setTeamsList(newList);
       })
       .catch((e) => {
         console.log(e);
         setLoading(false);
       });
-  }, [authContext.entity.auth.user, sport, sportType]);
+  }, [authContext.entity, sport, sportType]);
 
   useEffect(() => {
     if (!isFocused) return;
@@ -438,9 +444,12 @@ const CongratulationsModal = ({
                 <Text style={styles.normalText}>
                   ({strings.youWillBeChallenger})
                 </Text>
-                <Text style={[styles.normalText, {marginTop: 8}]}>
-                  $ 20 CAD / match
-                </Text>
+                {selectedUser.setting?.game_fee?.fee > 0 && (
+                  <Text style={[styles.normalText, {marginTop: 8}]}>
+                    $ {selectedUser.setting.game_fee.fee}{' '}
+                    {selectedUser.setting.game_fee.currency_type} / match
+                  </Text>
+                )}
               </TouchableOpacity>
               <View style={styles.separator} />
               <TouchableOpacity

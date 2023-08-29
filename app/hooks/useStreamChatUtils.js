@@ -153,6 +153,7 @@ const useStreamChatUtils = () => {
     isCreatingChannel: loading,
     addMembersToChannel,
     isMemberAdding: loading,
+    fetchMembers,
   };
 };
 

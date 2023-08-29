@@ -70,7 +70,7 @@ const TeamsListNearYou = ({
           {fromCreateTeam ? (
             <TouchableOpacity
               style={styles.buttonContainerChallenge}
-              onPress={onChanllenge}>
+              onPress={() => onChanllenge(item)}>
               <Text style={styles.buttonTextChallenge}>
                 {strings.challenge}
               </Text>

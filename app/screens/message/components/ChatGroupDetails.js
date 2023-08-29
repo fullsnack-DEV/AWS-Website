@@ -1,5 +1,5 @@
 // @flow
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -20,11 +20,17 @@ import fonts from '../../../Constants/Fonts';
 import {ModalTypes} from '../../../Constants/GeneralConstants';
 import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
-import {getChannelMembers, getChannelName} from '../../../utils/streamChat';
+import {
+  createStreamChatChannel,
+  generateUUID,
+  getChannelMembers,
+  getChannelName,
+} from '../../../utils/streamChat';
 import CustomAvatar from './CustomAvatar';
 import InviteModal from './InviteModal';
 import UpdateChannelInfo from './UpdateChannelInfo';
 import useStreamChatUtils from '../../../hooks/useStreamChatUtils';
+import AuthContext from '../../../auth/context';
 
 const ChatGroupDetails = ({
   isVisible = false,
@@ -32,12 +38,16 @@ const ChatGroupDetails = ({
   channel = {},
   streamUserId = '',
   leaveChannel = () => {},
+  newChannelCreated = () => {},
 }) => {
   const [members, setMembers] = useState([]);
   const [showUpdateInfoModal, setShowUpdateInfoModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [isChannelOwner, setIsChannelOwner] = useState(false);
-  const {addMembersToChannel, isMemberAdding} = useStreamChatUtils();
+  const {addMembersToChannel, isMemberAdding, fetchMembers} =
+    useStreamChatUtils();
+  const authContext = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isVisible) {
@@ -85,13 +95,56 @@ const ChatGroupDetails = ({
     );
   };
 
+  const createNewChannel = async (memberList = []) => {
+    setLoading(true);
+    const newMembers = await fetchMembers(memberList, true);
+    let oldMembers = [];
+    members.forEach((item) => {
+      const data = item.members.map((ele) => ({
+        user_id: ele.user_id,
+        channel_role: 'channel_moderator',
+      }));
+      oldMembers = [...oldMembers, ...data];
+    });
+    const channelMembers = [...newMembers, ...oldMembers];
+    const channelId = generateUUID();
+    const createdChannel = await createStreamChatChannel({
+      authContext,
+      channelId,
+      members: channelMembers,
+      groupType: Verbs.channelTypeGeneral,
+    });
+
+    setLoading(false);
+    if (createdChannel !== null) {
+      newChannelCreated(createdChannel);
+    }
+  };
+
+  const handleAddMembers = (memberList = []) => {
+    setShowInviteModal(false);
+
+    if (members.length === 2) {
+      createNewChannel(memberList);
+    } else {
+      addMembersToChannel({channel, newMembers: memberList})
+        .then(() => {
+          const list = getChannelMembers(channel);
+          setMembers(list);
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    }
+  };
+
   return (
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeModal}
       modalType={ModalTypes.style2}
       containerStyle={{height: '98%'}}>
-      <ActivityLoader visible={isMemberAdding} />
+      <ActivityLoader visible={isMemberAdding || loading} />
 
       {channel.data?.group_type === Verbs.channelTypeGeneral ||
       channel.data?.channel_type === Verbs.channelTypeAuto ? (
@@ -193,18 +246,7 @@ const ChatGroupDetails = ({
         isVisible={showInviteModal}
         closeModal={() => setShowInviteModal(false)}
         members={members}
-        addMembers={(memberList) => {
-          setShowInviteModal(false);
-
-          addMembersToChannel({channel, newMembers: memberList})
-            .then(() => {
-              const list = getChannelMembers(channel);
-              setMembers(list);
-            })
-            .catch((err) => {
-              Alert.alert(strings.alertmessagetitle, err.message);
-            });
-        }}
+        addMembers={handleAddMembers}
       />
     </CustomModalWrapper>
   );

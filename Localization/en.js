@@ -1124,7 +1124,7 @@ export default {
   scorekeepingTitleText: 'en_Scorekeeping',
   addSportsTitle: 'en_Add Sport',
   congratsModalTitle:
-    'en_Congratulations!\nYou are now registered\nas a player in\n ',
+    'en_Congratulations!\nYou are now registered\nas a player in',
   registerRefereeTitle: 'en_Register as Referee',
   registeredRefreeTitle: 'en_Registered as Referee',
   registerScorekeeperTitle: 'en_Register as Scorekeeper',
@@ -2515,9 +2515,9 @@ export default {
   addScorekeeperFee: 'en_ADD SCOREKEEPER FEE',
   continueWithNoScorekeeperFee: 'en_CONTINUE WITH NO SCOREKEEPER FEE',
   refereeCongratsModalTitle:
-    'Congratulations! \nYou are now registered as\n a referee in',
+    'en_Congratulations!\nYou are now registered as\n a referee in',
   scoreKeeperCongratsModalTitle:
-    'Congratulations! \nYou are now registered as\n a scorekeeper in',
+    'en_Congratulations!\nYou are now registered as\n a scorekeeper in',
   scoreKeeperCongratulationsModal:
     'en_You can now receive scorekeeper booking requests from {0}, and also can sent offers to {0}.',
   teamsAndPlayers: 'en_teams and players',
@@ -2572,7 +2572,7 @@ export default {
   congratesSubTitle: 'en_Your account has been switched to {0}.  ',
   whoDoYouwantToCreateTeamWith:
     'en_Who do you want to create the new team with?',
-  congratulationsTitle: 'en_Congratulations! \n',
+  congratulationsTitle: 'en_Congratulations!\n',
   hasBeenCreated: ' en_has been created.',
   jerseyValidation: 'en_Jersey Number is not valid!',
   clubModalTitle: 'en_Which sports does the new club will be involved in?',

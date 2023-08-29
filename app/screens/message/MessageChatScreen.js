@@ -489,6 +489,12 @@ const MessageChatScreen = ({navigation, route}) => {
           channel={channel}
           streamUserId={authContext.chatClient.userID}
           leaveChannel={handleChannelLeave}
+          newChannelCreated={async (channelObj) => {
+            await channelObj.watch();
+            navigation.replace('MessageChatScreen', {
+              channel: channelObj,
+            });
+          }}
         />
 
         <BottomSheet

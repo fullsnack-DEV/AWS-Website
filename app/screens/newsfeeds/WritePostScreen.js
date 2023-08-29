@@ -147,7 +147,7 @@ const WritePostScreen = ({navigation, route}) => {
 
   const handleDone = async () => {
     if (searchText.trim().length === 0 && selectImage.length === 0) {
-      Alert.alert(strings.writeTextOrImage,'',[{text:strings.okTitleText}]);
+      Alert.alert(strings.writeTextOrImage, '', [{text: strings.okTitleText}]);
     } else {
       let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
       tagData = tagData?.map((tag) => ({
@@ -286,9 +286,9 @@ const WritePostScreen = ({navigation, route}) => {
 
       const modifiedSearch = searchText;
       const output = [
-        modifiedSearch.slice(0, currentTextInputIndex - 1),
+        modifiedSearch.slice(0, currentTextInputIndex),
         tagName,
-        modifiedSearch.slice(currentTextInputIndex - 1),
+        modifiedSearch.slice(currentTextInputIndex),
       ].join('');
 
       setSearchText(output);
@@ -590,11 +590,11 @@ const WritePostScreen = ({navigation, route}) => {
       if (idx > -1) {
         imgs.splice(idx, 1);
       }
-      setSelectImage(imgs);     
+      setSelectImage(imgs);
     },
-    [selectImage],   
+    [selectImage],
   );
- 
+
   const renderSelectedImageList = () =>
     selectImage.length > 0 ? (
       <FlatList
@@ -1008,7 +1008,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.whiteColor,
-    padding: 10,
+    padding: 15,
     elevation: 9,
     shadowColor: colors.blackColor,
     shadowOpacity: 0.1608,

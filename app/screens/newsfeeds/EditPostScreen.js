@@ -311,9 +311,9 @@ const EditPostScreen = ({navigation, route}) => {
 
       const modifiedSearch = searchText;
       const output = [
-        modifiedSearch.slice(0, currentTextInputIndex - 1),
+        modifiedSearch.slice(0, currentTextInputIndex),
         tagName,
-        modifiedSearch.slice(currentTextInputIndex - 1),
+        modifiedSearch.slice(currentTextInputIndex),
       ].join('');
 
       setSearchText(output);
@@ -611,6 +611,7 @@ const EditPostScreen = ({navigation, route}) => {
           text: searchText,
           tagged: tagData ?? [],
           format_tagged_data,
+          who_can_see,
         };
         updatePostAfterUpload(dataParams);
       } else if (selectImage) {
@@ -630,6 +631,7 @@ const EditPostScreen = ({navigation, route}) => {
           tagged: tagData ?? [],
           attachments: [...alreadyUrlDone],
           format_tagged_data,
+          who_can_see,
         };
         if (createUrlData?.length > 0) {
           const imageArray = createUrlData.map((dataItem) => dataItem);

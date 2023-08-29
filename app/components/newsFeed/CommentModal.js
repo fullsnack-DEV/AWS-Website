@@ -88,6 +88,9 @@ const CommentModal = ({
     getReactions(params, authContext)
       .then((response) => {
         setCommentData(response.payload);
+        if (response.payload.length === 0) {
+          setIsMoreLoading(false);
+        }
       })
       .catch((e) => {
         setIsMoreLoading(false);
@@ -239,11 +242,13 @@ const CommentModal = ({
           })
           .catch((e) => {
             Alert.alert('', e.messages);
+            setReplyParams({});
             setLoading(false);
           });
       })
       .catch((e) => {
         Alert.alert('', e.messages);
+        setReplyParams({});
         setLoading(false);
       });
   };
@@ -349,18 +354,23 @@ const CommentModal = ({
   );
 
   const onEndReached = () => {
-    if (commentData.length === 0 || !isMoreLoading) return;
+    if (commentData.length === 0 || !isMoreLoading) {
+      setIsMoreLoading(false);
+      return;
+    }
     const params = {
       activity_id: postId,
       reaction_type: Verbs.comment,
     };
 
     const id_lt = commentData[commentData.length - 1].id;
+
     getNextReactions(params, id_lt, authContext)
       .then((response) => {
-        setCommentData([...commentData, ...response.payload]);
         if (response.payload.length === 0) {
           setIsMoreLoading(false);
+        } else {
+          setCommentData([...commentData, ...response.payload]);
         }
       })
       .catch((e) => {

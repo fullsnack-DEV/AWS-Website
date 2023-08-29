@@ -85,6 +85,15 @@ export const prepareChannelId = (entityId, inviteeId) => {
 };
 
 export const getChannelAvatar = (channel = {}, streamUserId = '') => {
+  if (channel.data?.channel_type === Verbs.channelTypeAuto) {
+    return [
+      {
+        imageUrl: channel.data?.image ?? '',
+        entityType: channel.data.group_type,
+      },
+    ];
+  }
+
   if (channel.data.image) {
     return [
       {
@@ -94,9 +103,6 @@ export const getChannelAvatar = (channel = {}, streamUserId = '') => {
     ];
   }
 
-  if (channel.data?.channel_type === Verbs.channelTypeAuto) {
-    return [{imageUrl: '', entityType: channel.data.group_type}];
-  }
   const membersList = getChannelMembers(channel);
   const members = [];
   membersList.forEach((ele) => {

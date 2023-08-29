@@ -56,7 +56,7 @@ const MatchFeeModal = ({
         style={[
           styles.greyContainer,
           styles.row,
-          {paddingVertical: 6, marginTop: 0},
+          {paddingVertical: 6, marginTop: 0, height: 40},
         ]}>
         <View />
         <TextInput

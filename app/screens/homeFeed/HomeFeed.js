@@ -122,7 +122,7 @@ const HomeFeed = ({
   const onLikePress = useCallback(
     (item) => {
       const bodyParams = {
-        reaction_type: 'like',
+        reaction_type: Verbs.clap,
         activity_id: item.id,
       };
       createReaction(bodyParams, authContext)

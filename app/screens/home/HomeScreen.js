@@ -369,18 +369,26 @@ const HomeScreen = ({navigation, route}) => {
             }}>
             <Image source={images.backArrow} style={styles.image} />
           </Pressable>
-          <View style={{flex: 1, marginLeft: 10}}>
-            <Text style={styles.title} numberOfLines={1}>
-              {currentUserData.full_name ?? currentUserData.group_name}
-            </Text>
+          <View
+            style={{
+              flex: 1,
+              marginLeft: 10,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <View>
+              <Text style={styles.title} numberOfLines={1}>
+                {currentUserData.full_name ?? currentUserData.group_name}
+              </Text>
+            </View>
+            {isAdmin ? (
+              <Pressable
+                style={[styles.dropDownImage, {marginLeft: 5}]}
+                onPress={() => setShowSwitchAccountModal(true)}>
+                <Image source={images.path} style={styles.image} />
+              </Pressable>
+            ) : null}
           </View>
-          {isAdmin ? (
-            <Pressable
-              style={[styles.dropDownImage, {marginLeft: 5}]}
-              onPress={() => setShowSwitchAccountModal(true)}>
-              <Image source={images.path} style={styles.image} />
-            </Pressable>
-          ) : null}
         </View>
         <View style={[styles.row, {marginLeft: 22}]}>
           {!isAdmin ? (
