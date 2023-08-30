@@ -2637,3 +2637,10 @@ export const getPostData = (post = {}) => {
   }
   return {};
 };
+export const getClubRegisterSportsList = (authContext) => {
+  const clubSports = authContext.entity.obj.sports.map((obj) => ({
+    ...obj,
+    sport_name: getSportName(obj, authContext),
+  }));
+  return clubSports;
+};

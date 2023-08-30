@@ -1,7 +1,6 @@
 /* eslint-disable no-shadow */
 import {
   View,
-  FlatList,
   Alert,
   Text,
   ScrollView,
@@ -9,6 +8,8 @@ import {
   Pressable,
   Image,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
+
 import React, {useContext, memo, useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import TCTitleWithArrow from '../../components/TCTitleWithArrow';
@@ -62,6 +63,7 @@ const LocalHomeMenuItems = memo(
     const [playerDetailPopup, setPlayerDetailPopup] = useState();
     const [playerDetail, setPlayerDetail] = useState();
     const [imageBaseUrl, setImageBaseUrl] = useState('');
+
     useEffect(() => {
       getStorage('appSetting').then((setting) => {
         setImageBaseUrl(setting.base_url_sporticon);
@@ -111,6 +113,38 @@ const LocalHomeMenuItems = memo(
         </View>
       </Pressable>
     );
+    const navigateAndSetDataForSportActivityView = (uid, role, sportsList) => {
+      if (sportsList.length > 1) {
+        setPlayerDetailPopup(true);
+        setPlayerDetail({
+          user_id: uid,
+          entity_type: role,
+          sports: sportsList,
+        });
+      } else {
+        console.log('sport', sportsList[0]?.sport);
+        console.log('sport_type', sportsList[0]?.sport_type);
+        console.log('uid', uid);
+        console.log('entityType', role);
+
+        navigation.navigate('SportActivityHome', {
+          sport: sportsList[0]?.sport,
+          sportType: sportsList[0]?.sport_type,
+          uid,
+          entityType: role,
+          showPreview: true,
+          backScreen: 'LocalHomeScreen',
+        });
+      }
+    };
+    const navigateToHomeScreen = (uid, role) => {
+      navigation.navigate('HomeScreen', {
+        uid,
+        role,
+        backButtonVisible: true,
+        menuBtnVisible: false,
+      });
+    };
 
     const onCardPress = (card, item) => {
       if (
@@ -139,32 +173,29 @@ const LocalHomeMenuItems = memo(
         switch (card.key) {
           case strings.refreesAvailable:
             sportsList = item.referee_data ?? [];
+            navigateAndSetDataForSportActivityView(uid, role, sportsList);
             break;
 
           case strings.scorekeepersAvailable:
             sportsList = item.scorekeeper_data ?? [];
+            navigateAndSetDataForSportActivityView(uid, role, sportsList);
             break;
-
+          case strings.playersAvailableforChallenge:
+            sportsList = item.registered_sports ?? [];
+            navigateAndSetDataForSportActivityView(uid, role, sportsList);
+            break;
           case strings.lookingForTeamTitle:
             sportsList = item.registered_sports ?? [];
+            navigateAndSetDataForSportActivityView(uid, role, sportsList);
+            break;
+          case strings.hiringPlayerTitle:
+            navigateToHomeScreen(uid, role);
+            break;
+          case strings.teamAvailableforChallenge:
+            navigateToHomeScreen(uid, role);
             break;
           default:
             console.log('Pressed');
-        }
-        if (sportsList.length > 1) {
-          setPlayerDetailPopup(true);
-          setPlayerDetail({
-            user_id: uid,
-            entity_type: role,
-            sports: sportsList,
-          });
-        } else {
-          navigation.navigate('HomeScreen', {
-            uid,
-            role,
-            backButtonVisible: true,
-            menuBtnVisible: false,
-          });
         }
       }
     };
@@ -203,20 +234,22 @@ const LocalHomeMenuItems = memo(
         case strings.completedMatches:
         case strings.upcomingMatchesTitle:
           // eslint-disable-next-line no-case-declarations
-          const filters = {
-            location,
-            locationOption: selectedLocationOption,
-            teamSportData: data.teamSportData,
-          };
 
           if (authContext.entity.role === Verbs.entityTypeTeam) {
+            const teamData = getDataForNextScreen(
+              Verbs.TEAM_DATA,
+              filter,
+              location,
+              selectedLocationOption,
+              authContext,
+            );
             navigation.navigate(
               item.key === strings.completedMatches
                 ? 'RecentMatchScreen'
                 : 'UpcomingMatchScreen',
               {
-                filters,
-                teamSportData: data.teamSportData,
+                filters: teamData.filters,
+                teamSportData: teamData.teamSportData,
               },
             );
           } else {
@@ -232,17 +265,40 @@ const LocalHomeMenuItems = memo(
           break;
 
         case strings.teamAvailableforChallenge:
-          navigation.navigate('LookingForChallengeScreen', {
-            filters: data,
-            teamSportData: data.teamSportData,
-            registerFavSports: sports,
-          });
+          {
+            const teamData = getDataForNextScreen(
+              Verbs.TEAM_DATA,
+              filter,
+              location,
+              selectedLocationOption,
+              authContext,
+            );
+            navigation.navigate('LookingForChallengeScreen', {
+              filters: teamData.filters,
+              teamSportData: teamData.teamSportData,
+              registerFavSports: sports,
+            });
+          }
           break;
 
         case strings.lookingForTeamTitle:
-          navigation.navigate('LookingTeamScreen', {
-            filters: data,
-          });
+          if (authContext.entity.role === Verbs.entityTypeTeam) {
+            const teamData = getDataForNextScreen(
+              Verbs.TEAM_DATA,
+              filter,
+              location,
+              selectedLocationOption,
+              authContext,
+            );
+            navigation.navigate('LookingTeamScreen', {
+              filters: teamData.filters,
+              teamSportData: teamData.teamSportData,
+            });
+          } else {
+            navigation.navigate('LookingTeamScreen', {
+              filters: data,
+            });
+          }
           break;
 
         case strings.eventHometitle:

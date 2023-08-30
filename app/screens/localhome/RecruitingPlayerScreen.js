@@ -18,6 +18,7 @@ import {
   Alert,
   TextInput,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
@@ -82,6 +83,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   const [myGroupDetail] = useState(
     authContext.entity.role === Verbs.entityTypeTeam && authContext.entity.obj,
   );
+  const [smallLoader, setSmallLoader] = useState(false);
 
   useEffect(() => {
     const defaultSport = [
@@ -214,6 +216,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
   };
   const getRecruitingPlayer = useCallback(
     (filerdata) => {
+      setSmallLoader(true);
       const recruitingPlayersQuery = {
         size: pageSize,
         from: pageFrom,
@@ -300,6 +303,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
       // Looking Challengee query
       getEntityIndex(recruitingPlayersQuery)
         .then((entity) => {
+          setSmallLoader(false);
           if (entity.length > 0) {
             const modifiedResult =
               modifiedClubAndTeamElasticSearchResult(entity);
@@ -309,6 +313,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           }
         })
         .catch((e) => {
+          setSmallLoader(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -448,14 +453,22 @@ export default function RecruitingPlayerScreen({navigation, route}) {
 
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text
-        style={{
-          fontFamily: fonts.RRegular,
-          color: colors.grayColor,
-          fontSize: 26,
-        }}>
-        {strings.noTeamsOrPlayer}
-      </Text>
+      {smallLoader ? (
+        <ActivityIndicator
+          style={styles.loaderStyle}
+          size="small"
+          color="#000000"
+        />
+      ) : (
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            color: colors.grayColor,
+            fontSize: 26,
+          }}>
+          {strings.noTeamsOrPlayer}
+        </Text>
+      )}
     </View>
   );
 
@@ -503,7 +516,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         title={strings.groupsRecruitingMembers}
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
-        // labelStyle={{width: 300, backgroundColor: colors.red}}
+        isFullTitle={true}
       />
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
@@ -974,5 +987,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+  },
+  loaderStyle: {
+    height: 25,
+    width: 25,
+    marginBottom: 10,
+    marginTop: 5,
   },
 });

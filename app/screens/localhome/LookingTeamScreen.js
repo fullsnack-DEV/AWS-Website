@@ -4,7 +4,6 @@ import React, {useCallback, useState, useEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
-  FlatList,
   Image,
   Text,
   TouchableWithoutFeedback,
@@ -13,7 +12,9 @@ import {
   TextInput,
   SafeAreaView,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import {format} from 'react-string-format';
@@ -72,6 +73,7 @@ export default function LookingTeamScreen({navigation, route}) {
   const [imageBaseUrl, setImageBaseUrl] = useState('');
   const [playerDetailPopup, setPlayerDetailPopup] = useState();
   const [playerDetail, setPlayerDetail] = useState();
+  const [smallLoader, setSmallLoader] = useState(false);
 
   useEffect(() => {
     getStorage('appSetting').then((setting) => {
@@ -86,7 +88,8 @@ export default function LookingTeamScreen({navigation, route}) {
     ];
 
     if (authContext.entity.role === Verbs.entityTypeClub) {
-      setSports([...defaultSport, ...authContext.entity.obj.sports]);
+      const clubSports = Utility.getClubRegisterSportsList(authContext);
+      setSports([...defaultSport, ...clubSports]);
     } else {
       setSports([
         ...defaultSport,
@@ -113,6 +116,7 @@ export default function LookingTeamScreen({navigation, route}) {
   const getLookingEntity = useCallback(
     (filerLookingEntity) => {
       // Looking team query
+      setSmallLoader(true);
       const lookingQuery = {
         size: pageSize,
         from: pageFrom,
@@ -144,7 +148,7 @@ export default function LookingTeamScreen({navigation, route}) {
         lookingQuery.query.bool.must.push({
           multi_match: {
             query: `${filerLookingEntity.location}`,
-            fields: ['city', 'country', 'state_abbr'],
+            fields: ['city', 'country', 'state_abbr', 'state'],
           },
         });
       }
@@ -167,7 +171,7 @@ export default function LookingTeamScreen({navigation, route}) {
         if (route.params.teamSportData?.sport) {
           lookingQuery.query.bool.must[0].nested.query.bool.must.push({
             term: {
-              'registered_sports.sport_name.keyword': {
+              'registered_sports.sport.keyword': {
                 value: `${route.params.teamSportData.sport.toLowerCase()}`,
                 case_insensitive: true,
               },
@@ -175,13 +179,71 @@ export default function LookingTeamScreen({navigation, route}) {
           });
         }
       }
-      if (filerLookingEntity?.searchText?.length > 0) {
-        lookingQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filerLookingEntity?.searchText}*`,
-            fields: ['full_name'],
-          },
-        });
+      // if (filerLookingEntity?.searchText?.length > 0) {
+      //   lookingQuery.query.bool.must.push({
+      //     query_string: {
+      //       query: `*${filerLookingEntity?.searchText}*`,
+      //       fields: ['full_name'],
+      //     },
+      //   });
+      // }
+      // Search filter
+
+      if (filerLookingEntity.searchText) {
+        if (
+          filerLookingEntity.sport === strings.allSport &&
+          filerLookingEntity.location === strings.worldTitleText
+        ) {
+          lookingQuery.query.bool.must.push({
+            bool: {
+              should: [
+                {
+                  query_string: {
+                    query: `*${filerLookingEntity.searchText.toLowerCase()}*`,
+                    fields: [
+                      'full_name',
+                      'city',
+                      'country',
+                      'state',
+                      'state_abbr',
+                    ],
+                  },
+                },
+                {
+                  nested: {
+                    path: 'registered_sports',
+                    query: {
+                      term: {
+                        'registered_sports.sport.keyword': `${filerLookingEntity.searchText.toLowerCase()}`,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          });
+        } else if (filerLookingEntity.sport === strings.allSport) {
+          lookingQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerLookingEntity.searchText.toLowerCase()}*`,
+              fields: ['full_name', 'registered_sports.sport'],
+            },
+          });
+        } else if (filerLookingEntity.location === strings.worldTitleText) {
+          lookingQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerLookingEntity.searchText.toLowerCase()}*`,
+              fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
+            },
+          });
+        } else {
+          lookingQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerLookingEntity.searchText.toLowerCase()}*`,
+              fields: ['full_name'],
+            },
+          });
+        }
       }
       console.log('Looking for team/club query:', JSON.stringify(lookingQuery));
 
@@ -189,6 +251,7 @@ export default function LookingTeamScreen({navigation, route}) {
 
       getUserIndex(lookingQuery)
         .then((res) => {
+          setSmallLoader(false);
           if (res.length > 0) {
             const fetchData = [...lookingEntity, ...res];
             const filterData = fetchData.filter(
@@ -200,6 +263,7 @@ export default function LookingTeamScreen({navigation, route}) {
           }
         })
         .catch((e) => {
+          setSmallLoader(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -303,14 +367,22 @@ export default function LookingTeamScreen({navigation, route}) {
 
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text
-        style={{
-          fontFamily: fonts.RRegular,
-          color: colors.grayColor,
-          fontSize: 26,
-        }}>
-        {strings.noGroups}
-      </Text>
+      {smallLoader ? (
+        <ActivityIndicator
+          style={styles.loaderStyle}
+          size="small"
+          color="#000000"
+        />
+      ) : (
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            color: colors.grayColor,
+            fontSize: 26,
+          }}>
+          {strings.noGroups}
+        </Text>
+      )}
     </View>
   );
 
@@ -410,6 +482,7 @@ export default function LookingTeamScreen({navigation, route}) {
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
         title={strings.individualsLookingforGroups}
+        isFullTitle={true}
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
       />
@@ -928,5 +1001,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 5,
+  },
+  loaderStyle: {
+    height: 25,
+    width: 25,
+    marginBottom: 10,
+    marginTop: 5,
   },
 });

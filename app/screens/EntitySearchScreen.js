@@ -11,7 +11,6 @@ import React, {
 import {
   View,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Text,
   SafeAreaView,
@@ -21,7 +20,10 @@ import {
   Platform,
   ScrollView,
   Pressable,
+  TextInput,
+  ActivityIndicator,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
@@ -42,7 +44,6 @@ import TCThinDivider from '../components/TCThinDivider';
 import TCTeamSearchView from '../components/TCTeamSearchView';
 import TCRecentMatchCard from '../components/TCRecentMatchCard';
 import TCTagsFilter from '../components/TCTagsFilter';
-import TCSearchBox from '../components/TCSearchBox';
 import ActivityLoader from '../components/loader/ActivityLoader';
 import {joinTeam} from '../api/Groups';
 import {inviteUser} from '../api/Users';
@@ -195,6 +196,8 @@ export default function EntitySearchScreen({navigation, route}) {
   const [imageBaseUrl, setImageBaseUrl] = useState('');
   const [playerDetailPopup, setPlayerDetailPopup] = useState();
   const [playerDetail, setPlayerDetail] = useState();
+  const [searchText, setSearchText] = useState('');
+  const [smallLoader, setSmallLoader] = useState(false);
 
   useEffect(() => {
     getStorage('appSetting').then((setting) => {
@@ -318,6 +321,7 @@ export default function EntitySearchScreen({navigation, route}) {
     return modifiedData;
   };
   const getGeneralList = useCallback(() => {
+    setSmallLoader(true);
     const generalsQuery = {
       size: pageSize,
       from: generalPageFrom,
@@ -336,9 +340,9 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-
     getUserIndex(generalsQuery)
       .then((res) => {
+        setSmallLoader(false);
         if (res.length > 0) {
           const fetchedData = [...generalList, ...res];
           setGeneralList(fetchedData);
@@ -347,6 +351,7 @@ export default function EntitySearchScreen({navigation, route}) {
         }
       })
       .catch((e) => {
+        setSmallLoader(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -354,6 +359,7 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [generalFilter, pageSize, generalPageFrom, generalList]);
 
   const getPlayersList = useCallback(() => {
+    setSmallLoader(true);
     const playersQuery = {
       size: pageSize,
       from: pageFrom,
@@ -421,28 +427,6 @@ export default function EntitySearchScreen({navigation, route}) {
         playerFilter.sport === strings.allSport &&
         playerFilter.location === strings.worldTitleText
       ) {
-        // playersQuery.query.bool.should.push({
-        //   query_string: {
-        //     query: `*${playerFilter.searchText.toLowerCase()}*`,
-        //     fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
-        //   },
-        // });
-        // playersQuery.query.bool.must.push({
-        //   nested: {
-        //     path: 'registered_sports',
-        //     query: {
-        //       query_string: {
-        //         query: `*${playerFilter.searchText.toLowerCase()}*`,
-        //         fields: [
-        //           'registered_sports.sport',
-        //           'registered_sports.sport_type.keyword',
-        //           'registered_sports.sport_name.keyword',
-        //         ],
-        //       },
-        //     },
-        //   },
-        // });
-
         playersQuery.query.bool.must.push({
           bool: {
             should: [
@@ -468,20 +452,6 @@ export default function EntitySearchScreen({navigation, route}) {
                   },
                 },
               },
-              // {
-              //   nested: {
-              //     path: 'registered_sports',
-              //     query: {
-              //       query_string: {
-              //         query: `*${playerFilter.searchText.toLowerCase()}*`,
-              //         fields: [
-              //           'registered_sports.sport',
-              //           'registered_sports.sport_name.keyword',
-              //         ],
-              //       },
-              //     },
-              //   },
-              // },
             ],
           },
         });
@@ -511,6 +481,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
     getUserIndex(playersQuery)
       .then((res) => {
+        setSmallLoader(false);
         if (res.length > 0) {
           const result = modifiedPlayerElasticSearchResult(res);
           const fetchedData = [...playerList, ...result];
@@ -520,6 +491,7 @@ export default function EntitySearchScreen({navigation, route}) {
         }
       })
       .catch((e) => {
+        setSmallLoader(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -527,6 +499,7 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [playerFilter, pageSize, pageFrom, playerList]);
 
   const getRefereesList = useCallback(() => {
+    setSmallLoader(true);
     const refereeQuery = {
       size: pageSize,
       from: refereesPageFrom,
@@ -655,6 +628,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
     getUserIndex(refereeQuery)
       .then((res) => {
+        setSmallLoader(false);
         if (res.length > 0) {
           const modifiedResult = modifiedRefereeElasticSearchResult(res);
           const fetchedData = [...referees, ...modifiedResult];
@@ -664,6 +638,7 @@ export default function EntitySearchScreen({navigation, route}) {
         }
       })
       .catch((e) => {
+        setSmallLoader(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -671,6 +646,7 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [pageSize, refereesPageFrom, referees, refereeFilters]);
 
   const getScoreKeepersList = useCallback(() => {
+    setSmallLoader(true);
     // Score keeper query
     const scoreKeeperQuery = {
       size: pageSize,
@@ -793,6 +769,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
     getUserIndex(scoreKeeperQuery)
       .then((res) => {
+        setSmallLoader(false);
         if (res.length > 0) {
           const modifiedResult = modifiedScoreKeeperElasticSearchResult(res);
           const fetchedData = [...scorekeepers, ...modifiedResult];
@@ -802,6 +779,7 @@ export default function EntitySearchScreen({navigation, route}) {
         }
       })
       .catch((e) => {
+        setSmallLoader(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.messagee);
         }, 10);
@@ -809,6 +787,7 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [pageSize, scorekeeperPageFrom, scorekeepers, scoreKeeperFilters]);
 
   const getTeamList = useCallback(() => {
+    setSmallLoader(true);
     const teamsQuery = {
       size: pageSize,
       from: teamsPageFrom,
@@ -888,6 +867,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
     getGroupIndex(teamsQuery)
       .then((res) => {
+        setSmallLoader(false);
         if (res.length > 0) {
           const modifiedResult = modifiedTeamElasticSearchResult(res);
           const fetchedData = [...teams, ...modifiedResult];
@@ -898,6 +878,7 @@ export default function EntitySearchScreen({navigation, route}) {
         }
       })
       .catch((e) => {
+        setSmallLoader(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -905,6 +886,7 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [pageSize, teamsPageFrom, teams, teamFilters]);
 
   const getClubList = useCallback(() => {
+    setSmallLoader(true);
     // const clubsQuery = bodybuilder()
     //   .query('match', 'entity_type', 'club')
     //   .build();
@@ -995,6 +977,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
     getGroupIndex(clubsQuery)
       .then((res) => {
+        setSmallLoader(false);
         if (res.length > 0) {
           const modifiedResult = modifiedClubElasticSearchResult(res);
           const fetchedData = [...clubs, ...modifiedResult];
@@ -1004,6 +987,7 @@ export default function EntitySearchScreen({navigation, route}) {
         }
       })
       .catch((e) => {
+        setSmallLoader(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
@@ -1011,6 +995,7 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [pageSize, clubsPageFrom, clubs, clubFilters]);
 
   const getCompletedGamesList = useCallback(() => {
+    setSmallLoader(true);
     // Recent match query
     const completedGameQuery = {
       size: pageSize,
@@ -1116,6 +1101,7 @@ export default function EntitySearchScreen({navigation, route}) {
     }
     getGameIndex(completedGameQuery).then((games) => {
       Utility.getGamesList(games).then((gamedata) => {
+        setSmallLoader(false);
         if (games.length > 0) {
           const fetchedData = [...completedGame, ...gamedata];
           setCompletedGame(fetchedData);
@@ -1126,6 +1112,7 @@ export default function EntitySearchScreen({navigation, route}) {
     });
   }, [pageSize, completedGamePageFrom, completedGame, completedGameFilters]);
   const getUpcomingGameList = useCallback(() => {
+    setSmallLoader(true);
     // Upcoming match query
     const upcomingMatchQuery = {
       size: pageSize,
@@ -1174,6 +1161,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
     getGameIndex(upcomingMatchQuery).then((games) => {
       Utility.getGamesList(games).then((gamedata) => {
+        setSmallLoader(false);
         if (games.length > 0) {
           const fetchedData = [...upcomingGame, ...gamedata];
           setUpcomingGame(fetchedData);
@@ -1196,14 +1184,22 @@ export default function EntitySearchScreen({navigation, route}) {
     );
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text
-        style={{
-          fontFamily: fonts.RRegular,
-          color: colors.grayColor,
-          fontSize: 15,
-        }}>
-        {strings.noRecordFoundText}
-      </Text>
+      {smallLoader ? (
+        <ActivityIndicator
+          style={styles.loaderStyle}
+          size="small"
+          color="#000000"
+        />
+      ) : (
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            color: colors.grayColor,
+            fontSize: 15,
+          }}>
+          {strings.noRecordFoundText}
+        </Text>
+      )}
     </View>
   );
 
@@ -1964,9 +1960,11 @@ export default function EntitySearchScreen({navigation, route}) {
                   (currentSubTab === strings.refereesTitle &&
                     refereeFilters.sport !== strings.allSport) ||
                   (currentSubTab === strings.scorekeeperTitle &&
-                    scoreKeeperFilters.sport !== strings.allSport)
-                    ? 91
-                    : 70,
+                    scoreKeeperFilters.sport !== strings.allSport) ||
+                  (currentSubTab === strings.playerTitle &&
+                    playerFilter.sport !== strings.allSport)
+                    ? 96
+                    : 75,
               },
             ]}>
             <View style={[styles.separator, {flex: 1}]}>
@@ -2084,7 +2082,7 @@ export default function EntitySearchScreen({navigation, route}) {
           <View
             style={[
               styles.topViewContainer,
-              {height: currentSubTab === strings.teamsTitleText ? 91 : 70},
+              {height: currentSubTab === strings.teamsTitleText ? 96 : 75},
             ]}>
             <View style={[styles.separator, {flex: 1}]}>
               <TCTeamSearchView
@@ -2231,15 +2229,49 @@ export default function EntitySearchScreen({navigation, route}) {
         leftIconPress={() => navigation.goBack()}
       />
       <ActivityLoader visible={loading} />
-      <View style={styles.searchBarView}>
+      {/* <View style={styles.searchBarView}>
         <TCSearchBox
           testID={'entity-search-input'}
           textInputRef={searchBoxRef}
           editable={true}
+          value={searchText}
           onChangeText={(text) => {
+            setSearchText(text);
             searchFilterFunction(text);
           }}
+          onPressClear={(text) => {
+            console.log('search call', text);
+            setSearchText('');
+            searchFilterFunction('');
+          }}
         />
+      </View> */}
+      <View style={styles.floatingInput}>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholderTextColor={colors.userPostTimeColor}
+            style={styles.textInputStyle}
+            value={searchText}
+            onChangeText={(text) => {
+              setSearchText(text);
+              searchFilterFunction(text);
+            }}
+            placeholder={strings.searchHereText}
+            ref={searchBoxRef}
+          />
+          {searchText.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchText('');
+                searchFilterFunction('');
+              }}>
+              <Image
+                source={images.closeRound}
+                style={{height: 15, width: 15}}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
       <View style={{backgroundColor: '#FFFFFF'}}>
         <CustomScrollTabs
@@ -2751,17 +2783,17 @@ export default function EntitySearchScreen({navigation, route}) {
   );
 }
 const styles = StyleSheet.create({
-  searchBarView: {
-    flexDirection: 'row',
-    marginLeft: 15,
-    marginTop: 20,
-    marginBottom: 0,
-    marginRight: 15,
-  },
+  // searchBarView: {
+  //   flexDirection: 'row',
+  //   marginLeft: 15,
+  //   marginTop: 20,
+  //   marginBottom: 0,
+  //   marginRight: 15,
+  // },
   topViewContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 72,
+    height: 75,
   },
   settingImage: {
     height: 25,
@@ -2895,5 +2927,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 5,
+  },
+  loaderStyle: {
+    height: 25,
+    width: 25,
+    marginBottom: 10,
+    marginTop: 5,
+  },
+  // ========//
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    paddingHorizontal: 15,
+    borderRadius: 25,
+    backgroundColor: colors.inputBgOpacityColor,
+    height: 45,
+  },
+  textInputStyle: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    padding: 0,
+  },
+  floatingInput: {
+    alignSelf: 'center',
+    zIndex: 1,
+    width: '90%',
+    marginTop: 20,
   },
 });

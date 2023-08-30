@@ -135,9 +135,11 @@ function LocalHomeScreen({navigation, route}) {
   useEffect(() => {
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       setSelectedSport(authContext.entity.obj.sport);
+      setSportType(authContext.entity.obj.sport_type);
     }
   }, [
     authContext.entity.obj.sport,
+    authContext.entity.obj.sport_type,
     authContext.entity.role,
     showSwitchAccountModal,
   ]);
@@ -379,18 +381,14 @@ function LocalHomeScreen({navigation, route}) {
   const navigateToRefreeScreen = () => {
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       const data = getDataForNextScreen(
-        'teamData',
+        Verbs.TEAM_DATA,
         filters,
         location,
         selectedLocationOption,
         authContext,
       );
-
       navigation.navigate('RefereesListScreen', {
-        filters: {
-          location: data.location,
-          locationOption: data.locationOption,
-        },
+        filters: data.filters,
         teamSportData: data.teamSportData,
       });
     } else {
@@ -417,10 +415,7 @@ function LocalHomeScreen({navigation, route}) {
         authContext,
       );
       navigation.navigate('ScorekeeperListScreen', {
-        filters: {
-          location: data.location,
-          locationOption: data.locationOption,
-        },
+        filters: data.filters,
         teamSportData: data.teamSportData,
       });
     } else {

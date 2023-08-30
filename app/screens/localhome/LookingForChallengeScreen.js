@@ -10,7 +10,6 @@ import React, {
 import {
   View,
   StyleSheet,
-  FlatList,
   Image,
   Text,
   TouchableWithoutFeedback,
@@ -19,7 +18,11 @@ import {
   TextInput,
   SafeAreaView,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
+
+import {FlatList} from 'react-native-gesture-handler';
+
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
@@ -86,6 +89,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
   const [playerDetail, setPlayerDetail] = useState();
 
   const [imageBaseUrl, setImageBaseUrl] = useState('');
+  const [smallLoader, setSmallLoader] = useState(false);
 
   useEffect(() => {
     getStorage('appSetting').then((setting) => {
@@ -150,6 +154,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
   };
   const getPlayerAvailableForChallenge = useCallback(
     (filerdata) => {
+      setSmallLoader(true);
       // Looking Challengee query
       const availableForchallengeQuery = {
         size: pageSize,
@@ -270,6 +275,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
       getUserIndex(availableForchallengeQuery)
         .then((res) => {
+          setSmallLoader(false);
           if (res.length > 0) {
             const modifiedResult = modifiedPlayerElasticSearchResult(res);
             const fetchedData = [...availableChallenge, ...modifiedResult];
@@ -282,6 +288,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
           }
         })
         .catch((e) => {
+          setSmallLoader(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -292,6 +299,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   const getTeamAvailableForChallenge = useCallback(
     (filerdata) => {
+      setSmallLoader(true);
       // Looking Challengee query
       const availableForchallengeQuery = {
         size: pageSize,
@@ -307,6 +315,21 @@ export default function LookingForChallengeScreen({navigation, route}) {
         },
       };
 
+      availableForchallengeQuery.query.bool.must.push({
+        term: {
+          'sport.keyword': {
+            value: `${route.params.teamSportData.sport.toLowerCase()}`,
+          },
+        },
+      });
+      availableForchallengeQuery.query.bool.must.push({
+        term: {
+          'sport_type.keyword': {
+            value: `${route.params.teamSportData.sport.toLowerCase()}`,
+          },
+        },
+      });
+
       if (filerdata.location !== strings.worldTitleText) {
         availableForchallengeQuery.query.bool.must.push({
           multi_match: {
@@ -316,75 +339,51 @@ export default function LookingForChallengeScreen({navigation, route}) {
         });
       }
 
-      if (filerdata?.sport !== strings.allSport) {
-        availableForchallengeQuery.query.bool.must.push({
-          term: {
-            'sport.keyword': {
-              value: `${route.params.teamSportData.sport.toLowerCase()}`,
+      if (filerdata.searchText) {
+        // No filter case
+        if (
+          filerdata.sport === strings.allSport &&
+          filerdata.location === strings.worldTitleText
+        ) {
+          availableForchallengeQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerdata.searchText.toLowerCase()}*`,
+              fields: [
+                'group_name',
+                'city',
+                'country',
+                'state',
+                'state_abbr',
+                'sport',
+              ],
             },
-          },
-        });
-
-        if (filerdata.searchText) {
-          // No filter case
-          if (
-            filerdata.sport === strings.allSport &&
-            filerdata.location === strings.worldTitleText
-          ) {
-            availableForchallengeQuery.query.bool.must.push({
-              query_string: {
-                query: `*${filerdata.searchText.toLowerCase()}*`,
-                fields: [
-                  'group_name',
-                  'city',
-                  'country',
-                  'state',
-                  'state_abbr',
-                  'sport',
-                ],
-              },
-            });
-          }
-          // Sport filter case
-          else if (filerdata.sport === strings.allSport) {
-            availableForchallengeQuery.query.bool.must.push({
-              query_string: {
-                query: `*${filerdata.searchText.toLowerCase()}*`,
-                fields: ['group_name', 'sport'],
-              },
-            });
-          } // location filter case
-          else if (filerdata.location === strings.worldTitleText) {
-            availableForchallengeQuery.query.bool.must.push({
-              query_string: {
-                query: `*${filerdata.searchText.toLowerCase()}*`,
-                fields: [
-                  'group_name',
-                  'city',
-                  'country',
-                  'state',
-                  'state_abbr',
-                ],
-              },
-            });
-          } else {
-            // Default case
-            availableForchallengeQuery.query.bool.must.push({
-              query_string: {
-                query: `*${filerdata.searchText.toLowerCase()}*`,
-                fields: ['group_name'],
-              },
-            });
-          }
+          });
         }
-
-        availableForchallengeQuery.query.bool.must.push({
-          term: {
-            'sport_type.keyword': {
-              value: `${route.params.teamSportData.sport.toLowerCase()}`,
+        // Sport filter case
+        else if (filerdata.sport === strings.allSport) {
+          availableForchallengeQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerdata.searchText.toLowerCase()}*`,
+              fields: ['group_name', 'sport'],
             },
-          },
-        });
+          });
+        } // location filter case
+        else if (filerdata.location === strings.worldTitleText) {
+          availableForchallengeQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerdata.searchText.toLowerCase()}*`,
+              fields: ['group_name', 'city', 'country', 'state', 'state_abbr'],
+            },
+          });
+        } else {
+          // Default case
+          availableForchallengeQuery.query.bool.must.push({
+            query_string: {
+              query: `*${filerdata.searchText.toLowerCase()}*`,
+              fields: ['group_name'],
+            },
+          });
+        }
       }
 
       console.log(
@@ -395,6 +394,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
       getGroupIndex(availableForchallengeQuery)
         .then((res) => {
+          setSmallLoader(false);
           if (res.length > 0) {
             const modifiedResult = modifiedTeamElasticSearchResult(res);
             const fetchedData = [...availableChallenge, ...modifiedResult];
@@ -407,6 +407,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
           }
         })
         .catch((e) => {
+          setSmallLoader(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -748,14 +749,22 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text
-        style={{
-          fontFamily: fonts.RRegular,
-          color: colors.grayColor,
-          fontSize: 26,
-        }}>
-        {strings.noTeamsOrPlayer}
-      </Text>
+      {smallLoader ? (
+        <ActivityIndicator
+          style={styles.loaderStyle}
+          size="small"
+          color="#000000"
+        />
+      ) : (
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            color: colors.grayColor,
+            fontSize: 26,
+          }}>
+          {strings.noTeamsOrPlayer}
+        </Text>
+      )}
     </View>
   );
   const sportsView = (item) => (
@@ -1348,5 +1357,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 5,
+  },
+  loaderStyle: {
+    height: 25,
+    width: 25,
+    marginBottom: 10,
+    marginTop: 5,
   },
 });

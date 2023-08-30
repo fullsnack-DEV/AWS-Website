@@ -12,6 +12,7 @@ import {
   Alert,
   TextInput,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
@@ -47,6 +48,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
   const [loadMore, setLoadMore] = useState(false);
   const [searchData, setSearchData] = useState();
   const [location, setLocation] = useState(route.params?.filters?.location);
+  const [smallLoader, setSmallLoader] = useState(false);
 
   useEffect(() => {
     const defaultSport = [
@@ -59,7 +61,8 @@ export default function UpcomingMatchScreen({navigation, route}) {
     if (authContext.entity.role === Verbs.entityTypeUser) {
       setSports([...defaultSport, ...getSportList(authContext.sports)]);
     } else if (authContext.entity.role === Verbs.entityTypeClub) {
-      setSports([...defaultSport, ...authContext.entity.obj.sports]);
+      const clubSports = Utility.getClubRegisterSportsList(authContext);
+      setSports([...defaultSport, ...clubSports]);
     }
   }, [authContext]);
 
@@ -80,6 +83,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
 
   const getUpcomingGames = useCallback(
     (filerGames) => {
+      setSmallLoader(true);
       // Upcoming match query
       const upcomingMatchQuery = {
         size: pageSize,
@@ -204,6 +208,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
       console.log('upcomingMatchQuery ==>', JSON.stringify(upcomingMatchQuery));
       getGameIndex(upcomingMatchQuery)
         .then((games) => {
+          setSmallLoader(false);
           if (games.length > 0) {
             Utility.getGamesList(games).then((gamedata) => {
               const fetchedData = [...upcomingMatch, ...gamedata];
@@ -215,6 +220,7 @@ export default function UpcomingMatchScreen({navigation, route}) {
           }
         })
         .catch((e) => {
+          setSmallLoader(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -322,14 +328,22 @@ export default function UpcomingMatchScreen({navigation, route}) {
 
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text
-        style={{
-          fontFamily: fonts.RRegular,
-          color: colors.grayColor,
-          fontSize: 26,
-        }}>
-        {strings.noGames}
-      </Text>
+      {smallLoader ? (
+        <ActivityIndicator
+          style={styles.loaderStyle}
+          size="small"
+          color="#000000"
+        />
+      ) : (
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            color: colors.grayColor,
+            fontSize: 26,
+          }}>
+          {strings.noGames}
+        </Text>
+      )}
     </View>
   );
 
@@ -471,5 +485,11 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontSize: widthPercentageToDP('3.8%'),
     width: widthPercentageToDP('75%'),
+  },
+  loaderStyle: {
+    height: 25,
+    width: 25,
+    marginBottom: 10,
+    marginTop: 5,
   },
 });
