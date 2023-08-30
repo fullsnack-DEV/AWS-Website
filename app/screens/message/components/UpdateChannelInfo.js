@@ -71,6 +71,7 @@ const UpdateChannelInfo = ({
   const deleteImage = () => {
     setGroupProfile({thumbnail: '', full_image: ''});
     setProfileImageChanged(false);
+    setShowBottomSheet(false);
   };
 
   const handleBottomSheetOption = (option) => {
@@ -126,14 +127,18 @@ const UpdateChannelInfo = ({
     }
   };
 
-  const onDonePress = async (profileImage = '') => {
+  const onDonePress = async (
+    profileImage = {thumbnail: '', full_image: ''},
+  ) => {
     const obj = {};
 
-    if (profileImage) {
-      obj.image = profileImage;
-    }
+    obj.image = profileImage;
     obj.name = groupName;
-    await channel.updatePartial({set: obj});
+    try {
+      await channel.updatePartial({set: obj});
+    } catch (error) {
+      console.log('error ==>', error);
+    }
     setLoading(false);
     closeModal();
   };
@@ -142,11 +147,12 @@ const UpdateChannelInfo = ({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeModal}
-      modalType={ModalTypes.style4}
+      modalType={ModalTypes.style1}
       headerRightButtonText={strings.save}
       title={strings.editChatRoom}
       containerStyle={{height: '90%'}}
-      onRightButtonPress={onSaveButtonClicked}>
+      onRightButtonPress={onSaveButtonClicked}
+      headerLeftIconStyle={{width: 50}}>
       <ActivityLoader visible={loading} />
       <View style={styles.avatarContainer}>
         <TouchableOpacity
@@ -160,12 +166,12 @@ const UpdateChannelInfo = ({
               ]);
             } else {
               setBottomSheetOptions([strings.camera, strings.album]);
-              setShowBottomSheet(true);
             }
+            setShowBottomSheet(true);
           }}>
           <Image
             source={
-              groupProfile.thumbnail
+              groupProfile?.thumbnail
                 ? {uri: groupProfile.thumbnail}
                 : images.groupUsers
             }

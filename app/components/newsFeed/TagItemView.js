@@ -22,7 +22,7 @@ const TagItemView = ({
   useEffect(() => {
     if (selectedList.length > 0) {
       const isItemSelected = selectedList.some(
-        (item) => item.user_id === entityId || item.group_id === entityId,
+        (item) => item.entity_id === entityId,
       );
 
       setIsSelected(isItemSelected);

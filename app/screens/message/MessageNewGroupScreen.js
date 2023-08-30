@@ -1,8 +1,9 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {
   Alert,
   FlatList,
   Image,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -23,11 +24,13 @@ import ScreenHeader from '../../components/ScreenHeader';
 import SelectedInviteeCard from './components/SelectedInviteeCard';
 import BottomSheet from '../../components/modals/BottomSheet';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
+import Verbs from '../../Constants/Verbs';
 
 const NUM_OF_COLS = 5;
 
 const MessageNewGroupScreen = ({route, navigation}) => {
   const authContext = useContext(AuthContext);
+  const timeoutRef = useRef();
 
   const {selectedInviteesData} = route.params;
   const [selectedInvitees, setSelectedInvitees] = useState([]);
@@ -57,17 +60,13 @@ const MessageNewGroupScreen = ({route, navigation}) => {
     }
   }, [route?.params?.dialog]);
 
-  const toggleSelection = (isChecked, user) => {
-    const data = selectedInvitees;
-    if (isChecked) {
-      const uIndex = data.findIndex(({id}) => user.id === id);
-      if (uIndex !== -1) data.splice(uIndex, 1);
-    } else {
-      data.push(user);
-    }
-    setSelectedInvitees([...data]);
-    if (data.length === 0) {
+  const removeSelectedEntity = (user) => {
+    const data = [...selectedInvitees];
+    const updatedData = data.filter((item) => user.id !== item.id);
+    if (updatedData.length === 0) {
       navigation.navigate('MessageInviteScreen');
+    } else {
+      setSelectedInvitees([...updatedData, {}]);
     }
   };
 
@@ -104,12 +103,15 @@ const MessageNewGroupScreen = ({route, navigation}) => {
   const onDonePress = async (profileImage = '') => {
     const list = selectedInvitees.filter((invitee) => invitee.id);
 
-    createChannel(list, profileImage, groupName, 'General')
+    createChannel(list, profileImage, groupName, Verbs.channelTypeGeneral)
       .then((channel) => {
+        setLoading(false);
+
         if (channel !== null) {
-          setLoading(false);
-          navigation.replace('MessageChatScreen', {
+          navigation.push('MessageChatScreen', {
             channel,
+            comeFrom: 'MessageMainScreen',
+            routeParams: {},
           });
         }
       })
@@ -145,6 +147,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
 
   const deleteImage = () => {
     setGroupProfile({thumbnail: '', full_image: ''});
+    setShowBottomSheet(false);
     setProfileImageChanged(false);
   };
 
@@ -195,8 +198,8 @@ const MessageNewGroupScreen = ({route, navigation}) => {
               ]);
             } else {
               setBottomSheetOptions([strings.camera, strings.album]);
-              setShowBottomSheet(true);
             }
+            setShowBottomSheet(true);
           }}>
           <Image
             source={
@@ -216,7 +219,13 @@ const MessageNewGroupScreen = ({route, navigation}) => {
         <Text style={styles.chatRoomName}>
           {strings.chatroomName.toUpperCase()}
         </Text>
-        <View style={styles.inputContainer}>
+        <View
+          style={[
+            styles.inputContainer,
+            Platform.OS === 'android'
+              ? {padding: 0, paddingHorizontal: 10, paddingVertical: 0}
+              : {},
+          ]}>
           <TextInput
             placeholder={strings.newGroup}
             placeholderTextColor={colors.userPostTimeColor}
@@ -224,9 +233,15 @@ const MessageNewGroupScreen = ({route, navigation}) => {
             style={styles.input}
             onChangeText={(text) => setGroupName(text)}
           />
-          <TouchableOpacity style={styles.closeIcon}>
-            <Image source={images.closeRound} style={styles.image} />
-          </TouchableOpacity>
+          {groupName.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                clearTimeout(timeoutRef.current);
+                setGroupName('');
+              }}>
+              <Image source={images.closeRound} style={styles.closeIcon} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -248,7 +263,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
                   <SelectedInviteeCard
                     item={item}
                     onCancel={() => {
-                      toggleSelection(true, item);
+                      removeSelectedEntity(item);
                     }}
                     containerStyle={{marginRight: 0}}
                   />
@@ -322,8 +337,6 @@ const styles = StyleSheet.create({
   closeIcon: {
     width: 15,
     height: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   participantsCard: {
     flex: 1,

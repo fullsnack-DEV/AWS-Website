@@ -257,6 +257,7 @@ const images = {
   sendButton: require('../assets/images/sendButton.png'),
   groupUsers: require('../assets/images/groupUsers.png'),
   plus_round_orange: require('../assets/images/plus_round_orange.png'),
+  invitePlusIcon: require('../assets/images/invitePlusIcon.png'),
 
   // Game Module
   leave_chat_room: require('../assets/images/leave_chat_room.png'),
@@ -551,7 +552,11 @@ const images = {
   emojiLove: require('../assets/images/emoji-love.png'),
   deleteChat: require('../assets/images/delete-chat.png'),
   verficationPlane: require('../assets/images/verificationPlane.png'),
-  townsCupLogoNew: require('../assets/images/TownsCupNewLogo.png'),
+  townsCupLogoNew: require('../assets/images/TowncupSingle.png'),
+  autoChannelBadge: require('../assets/images/auto_channel_badge.png'),
+  newchatIcon: require('../assets/images/newchaticon.png'),
+  allsportlogo: require('../assets/images/allsportinworld.png'),
+  replyCancelImage: require('../assets/images/replyCancelImage.png'),
 };
 
 export default images;

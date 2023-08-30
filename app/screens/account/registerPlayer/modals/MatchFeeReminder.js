@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 
 import colors from '../../../../Constants/Colors';
@@ -20,6 +21,7 @@ const MatchFeeReminder = ({
   onContinue = () => {},
   entityType = Verbs.entityTypePlayer,
   onCloseModal = () => {},
+  isDoubleSport = false,
 }) => {
   const getTitle = () => {
     switch (entityType) {
@@ -60,71 +62,98 @@ const MatchFeeReminder = ({
       containerStyle={{width: '100%', height: '100%', paddingHorizontal: 20}}>
       <View style={{flex: 1}}>
         {entityType === Verbs.entityTypePlayer ? (
-          <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-            <Text style={styles.title}>
-              {strings.warningTextForFee}
-              <Text style={[styles.title, {color: colors.themeColor}]}>
-                {' '}
-                {getTitle()}
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+            contentContainerStyle={{
+              flex: 1,
+              justifyContent: 'space-between',
+              paddingBottom: Platform.OS === 'android' ? 6 : 50,
+            }}>
+            <View>
+              <Text style={styles.title}>
+                {strings.warningTextForFee}
+                <Text style={[styles.title, {color: colors.themeColor}]}>
+                  {' '}
+                  {getTitle()}
+                </Text>
               </Text>
-            </Text>
 
-            <Text style={[styles.description, {marginBottom: 23}]}>
-              {strings.matchFeeModalInfo}
-            </Text>
-
-            <Text
-              style={[
-                styles.description,
-                {fontFamily: fonts.RBold, marginBottom: 8},
-              ]}>
-              {strings.matchHostChallengeText}:
-            </Text>
-
-            <Text style={[styles.description, {marginBottom: 18}]}>
-              {strings.matchFeeModalInfo1}
-            </Text>
-
-            <Text
-              style={[
-                styles.description,
-                {fontFamily: fonts.RBold, marginBottom: 8},
-              ]}>
-              {strings.whatMatchHostDo}
-            </Text>
-
-            <Text style={[styles.description, {marginBottom: 8}]}>
-              {strings.matchFeeModalInfo2}
-            </Text>
-
-            <Text style={[styles.description, {marginBottom: 23}]}>
-              {'Venue\nReferees\nScorekeepers'}
-            </Text>
-
-            <TouchableOpacity
-              style={[
-                styles.buttonContainer,
-                {marginBottom: 15, backgroundColor: colors.themeColor},
-              ]}
-              onPress={onAddMatchFee}>
-              <Text style={[styles.buttonText, {color: colors.whiteColor}]}>
-                {strings.addMatchFeeText}
+              <Text style={[styles.description, {marginBottom: 23}]}>
+                {strings.matchFeeModalInfo}
               </Text>
-            </TouchableOpacity>
+              {!isDoubleSport ? (
+                <>
+                  <Text
+                    style={[
+                      styles.description,
+                      {fontFamily: fonts.RBold, marginBottom: 8},
+                    ]}>
+                    {strings.matchHostChallengeText}:
+                  </Text>
 
-            <TouchableOpacity
-              style={[
-                styles.buttonContainer,
-                {
-                  marginBottom: 15,
-                  backgroundColor: colors.grayBackgroundColor,
-                },
-              ]}
-              onPress={onContinue}>
-              <Text style={styles.buttonText}>
-                {strings.continueWithNoMatchFeeText}
+                  <Text style={[styles.description, {marginBottom: 18}]}>
+                    {strings.matchFeeModalInfo1}
+                  </Text>
+                </>
+              ) : null}
+
+              <Text
+                style={[
+                  styles.description,
+                  {fontFamily: fonts.RBold, marginBottom: 8},
+                ]}>
+                {strings.whatMatchHostDo}
               </Text>
-            </TouchableOpacity>
+
+              <Text style={[styles.description, {marginBottom: 8}]}>
+                {strings.matchFeeModalInfo2}
+              </Text>
+              <View style={{marginBottom: 23}}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <View style={styles.dotContainer} />
+                  <Text style={styles.description}>{strings.venueText}</Text>
+                </View>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <View style={styles.dotContainer} />
+                  <Text style={styles.description}>
+                    {strings.refereesTitle}
+                  </Text>
+                </View>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <View style={styles.dotContainer} />
+                  <Text style={styles.description}>
+                    {strings.scorekeeperTitle}
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View>
+              <TouchableOpacity
+                style={[
+                  styles.buttonContainer,
+                  {marginBottom: 15, backgroundColor: colors.themeColor},
+                ]}
+                onPress={onAddMatchFee}>
+                <Text style={[styles.buttonText, {color: colors.whiteColor}]}>
+                  {strings.addMatchFeeText}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.buttonContainer,
+                  {
+                    marginBottom: 15,
+                    backgroundColor: colors.grayBackgroundColor,
+                  },
+                ]}
+                onPress={onContinue}>
+                <Text style={styles.buttonText}>
+                  {strings.continueWithNoMatchFeeText}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </ScrollView>
         ) : (
           <View
@@ -237,6 +266,14 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
+  },
+  dotContainer: {
+    width: 5,
+    height: 5,
+    backgroundColor: colors.lightBlackColor,
+    borderRadius: 3,
+    marginRight: 10,
+    marginTop: 3,
   },
 });
 export default MatchFeeReminder;

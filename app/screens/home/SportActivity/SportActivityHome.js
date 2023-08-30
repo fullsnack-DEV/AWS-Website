@@ -416,6 +416,7 @@ const SportActivityHome = ({navigation, route}) => {
         rightIcon2Press={() => {
           setShowMoreOptions(true);
         }}
+        leftIconStyle={{width: 70}}
       />
 
       <UserInfo
@@ -557,6 +558,7 @@ const SportActivityHome = ({navigation, route}) => {
             sportName: sportObj?.sport,
           });
         }}
+        handleMoreOptions={handleMoreOptions}
       />
     </SafeAreaView>
   );

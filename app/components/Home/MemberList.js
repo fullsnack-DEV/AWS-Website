@@ -12,6 +12,7 @@ const MemberList = ({
   onPressMore = () => {},
   addMember = () => {},
   containerStyle = {},
+  isDoubleTeam = false,
 }) => {
   const [members, setMembers] = useState([]);
 
@@ -25,6 +26,72 @@ const MemberList = ({
   }, [list]);
 
   if (list?.length > 0) {
+    if (isDoubleTeam) {
+      return (
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginHorizontal: 15,
+            marginTop: 20,
+            marginBottom: 25,
+          }}>
+          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+            <Pressable
+              style={[styles.memberIcon, {width: 25, height: 25}]}
+              onPress={() => onPressMember(list[0])}>
+              <Image
+                source={
+                  list[0].thumbnail
+                    ? {uri: list[0].thumbnail}
+                    : images.profilePlaceHolder
+                }
+                style={styles.image}
+              />
+            </Pressable>
+            <View style={{flex: 1, marginLeft: 5}}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  lineHeight: 24,
+                  color: colors.lightBlackColor,
+                  fontFamily: fonts.RMedium,
+                }}
+                numberOfLines={
+                  1
+                }>{`${list[0].first_name} ${list[0].last_name}`}</Text>
+            </View>
+          </View>
+          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+            <Pressable
+              style={[styles.memberIcon, {width: 25, height: 25}]}
+              onPress={() => onPressMember(list[1])}>
+              <Image
+                source={
+                  list[1].thumbnail
+                    ? {uri: list[1].thumbnail}
+                    : images.profilePlaceHolder
+                }
+                style={styles.image}
+              />
+            </Pressable>
+            <View style={{flex: 1, marginLeft: 5}}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  lineHeight: 24,
+                  color: colors.lightBlackColor,
+                  fontFamily: fonts.RMedium,
+                }}
+                numberOfLines={
+                  1
+                }>{`${list[1].first_name} ${list[1].last_name}`}</Text>
+            </View>
+          </View>
+        </View>
+      );
+    }
     return (
       <View
         style={[

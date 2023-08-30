@@ -56,6 +56,7 @@ const UserHomeScreen = ({
     const params = {
       entity_type: Verbs.entityTypePlayer,
     };
+    setloading(true);
     followUser(params, userID, authContext)
       .then(() => {
         const obj = {
@@ -64,8 +65,10 @@ const UserHomeScreen = ({
           follower_count: currentUserData.follower_count + 1,
         };
         setCurrentUserData(obj);
+        setloading(false);
       })
       .catch((error) => {
+        setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -76,6 +79,7 @@ const UserHomeScreen = ({
     const params = {
       entity_type: Verbs.entityTypePlayer,
     };
+    setloading(true);
     unfollowUser(params, userID, authContext)
       .then(() => {
         const obj = {
@@ -87,8 +91,10 @@ const UserHomeScreen = ({
               : 0,
         };
         setCurrentUserData(obj);
+        setloading(false);
       })
       .catch((error) => {
+        setloading(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -482,13 +488,12 @@ const UserHomeScreen = ({
           <HomeFeed
             onFeedScroll={handleMainRefOnScroll}
             refs={mainFlatListRef}
-            homeFeedHeaderComponent={userDetailsSection}
-            currentTab={0}
+            userID={route.params.uid ?? authContext.entity.uid}
+            navigation={navigation}
             currentUserData={currentUserData}
             isAdmin={route.params.uid === authContext.entity.uid}
-            navigation={navigation}
-            setGalleryData={() => {}}
-            userID={route.params.uid ?? authContext.entity.uid}
+            homeFeedHeaderComponent={userDetailsSection}
+            currentTab={0}
           />
         </View>
 

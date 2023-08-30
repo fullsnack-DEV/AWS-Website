@@ -121,23 +121,22 @@ const NewsFeedDescription = ({
       const startTagIndex = descriptions?.indexOf(
         matchData?.input?.substr(matchData?.index, descriptions?.length),
       );
-      let color = colors.black;
-      let isTagName = false;
 
-      if (tagData && tagData.length > 0) {
-        isTagName =
-          tagData.filter(
-            (item) => item.entity_data?.tagged_formatted_name === match,
-          ).length > 0;
-        if (isTagName) color = colors.tagColor;
+      const isTagName = tagData.find(
+        (item) => item.entity_data?.tagged_formatted_name.trim() === match,
+      );
+
+      if (!isTagName) {
+        return null;
       }
-
       return (
-        <Text
-          onPress={() => isTagName && handleNamePress(match, startTagIndex)}
-          style={{...styles.username, color, ...tagStyle}}>
-          {match}
-        </Text>
+        <TouchableOpacity
+          onPress={() => isTagName && handleNamePress(match, startTagIndex)}>
+          <Text
+            style={{...styles.username, color: colors.tagColor, ...tagStyle}}>
+            {match}
+          </Text>
+        </TouchableOpacity>
       );
     },
     [descriptions, handleNamePress, tagData, tagStyle],
@@ -217,7 +216,7 @@ const NewsFeedDescription = ({
                   <MatchCard item={item.matchData} />
                 </TouchableOpacity>
               )}
-              keyExtractor={(item) => item?.entity_id}
+              keyExtractor={(item, index) => index.toString()}
             />
           </>
         )}

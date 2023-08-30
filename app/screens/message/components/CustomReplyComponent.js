@@ -19,6 +19,13 @@ const CustomReplyComponent = () => {
     }
   }
 
+  if (
+    message?.deleted_for_me?.status &&
+    message.deleted_for_me.user_id.includes(authContext.entity.uid)
+  ) {
+    return null;
+  }
+
   return (
     <>
       {message.quoted_message && (
@@ -58,17 +65,29 @@ const CustomReplyComponent = () => {
                   }}
                 />
               )}
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: colors.placeHolderColor,
-                  marginTop: 5,
-                  marginBottom: 5,
-                }}>
-                {message.quoted_message.attachments.length > 0
-                  ? attachementType
-                  : message.quoted_message.text}
-              </Text>
+              {message.quoted_message.type === 'deleted' ? (
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: colors.placeHolderColor,
+                    marginTop: 5,
+                    marginBottom: 5,
+                  }}>
+                  {strings.messageDeletedText}
+                </Text>
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: colors.placeHolderColor,
+                    marginTop: 5,
+                    marginBottom: 5,
+                  }}>
+                  {message.quoted_message.attachments.length > 0
+                    ? attachementType
+                    : message.quoted_message.text}
+                </Text>
+              )}
             </View>
           </View>
         </View>

@@ -37,7 +37,7 @@ import GroupIcon from '../../../components/GroupIcon';
 import {displayLocation} from '../../../utils';
 import {unfollowGroup} from '../../../api/Groups';
 
-const tabList = [strings.followerTitleText, strings.following];
+const tabList = [strings.following, strings.followerTitleText];
 
 const obj = {
   following: {
@@ -58,6 +58,7 @@ export default function UserConnections({navigation, route}) {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(obj);
   const [selectedTab, setSelectedTab] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -88,7 +89,7 @@ export default function UserConnections({navigation, route}) {
     });
 
     Promise.all(list)
-      .then(([follower, following]) => {
+      .then(([following, follower]) => {
         const newData = {};
         newData.following = {
           count: following.payload.length ?? 0,
@@ -103,8 +104,7 @@ export default function UserConnections({navigation, route}) {
         setData({...newData});
         setLoading(false);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
         setLoading(false);
       });
   }, [authContext, userId]);
@@ -129,10 +129,14 @@ export default function UserConnections({navigation, route}) {
   const handleFollow = (entityData = {}) => {
     setLoading(true);
     if (
-      entityData.entity_type === Verbs.entityTypePlayer ||
-      entityData.entity_type === Verbs.entityTypeUser
+      authContext.entity.role === Verbs.entityTypePlayer ||
+      authContext.entity.role === Verbs.entityTypeUser
     ) {
-      followUser({entity_type: entityType}, entityData.user_id, authContext)
+      followUser(
+        {entity_type: authContext.entity.role},
+        entityData.user_id ?? entityData.group_id,
+        authContext,
+      )
         .then(() => {
           getData();
           setLoading(false);
@@ -174,6 +178,7 @@ export default function UserConnections({navigation, route}) {
       };
       unfollowGroup(params, entityData.group_id, authContext)
         .then(() => {
+          getData();
           setLoading(false);
         })
         .catch((err) => {
@@ -191,63 +196,76 @@ export default function UserConnections({navigation, route}) {
       list = [...data.following.data];
     }
 
+    list = list.filter((item) => {
+      const itemName = item.group_name ?? item.full_name;
+      return itemName.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+
     if (list.length > 0) {
       return (
         <FlatList
           data={list}
           keyExtractor={(item, index) => index.toString()}
           style={{paddingHorizontal: 15}}
-          renderItem={({item}) => (
-            <>
-              <View style={[styles.row, {justifyContent: 'space-between'}]}>
-                <TouchableOpacity
-                  style={styles.row}
-                  onPress={() => {
-                    navigation.navigate('HomeScreen', {
-                      uid: item.user_id ?? item.group_id,
-                      role: item.entity_type,
-                    });
-                  }}>
-                  <GroupIcon
-                    imageUrl={item.full_image}
-                    entityType={Verbs.entityTypePlayer}
-                    containerStyle={styles.iconContainer}
-                  />
-                  <View style={{marginLeft: 10}}>
-                    <Text style={styles.userName}>
-                      {item.group_name ?? item.full_name}
-                    </Text>
-                    <Text style={styles.locationText}>
-                      {displayLocation(item)}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                {authContext.entity.role === Verbs.entityTypeUser ||
-                authContext.entity.role === Verbs.entityTypePlayer ? (
+          renderItem={({item}) =>
+            authContext.entity.uid ===
+            (item.user_id ?? item.group_id) ? null : (
+              <>
+                <View style={[styles.row, {justifyContent: 'space-between'}]}>
                   <TouchableOpacity
-                    style={styles.buttonContainer}
+                    style={styles.row}
                     onPress={() => {
-                      if (item.is_following) {
-                        handleUnfollow(item);
-                      } else {
-                        handleFollow(item);
-                      }
+                      navigation.navigate('HomeScreen', {
+                        uid: item.user_id ?? item.group_id,
+                        role: item.entity_type,
+                      });
                     }}>
-                    <Text
-                      style={[
-                        styles.buttonText,
-                        item.is_following
-                          ? {color: colors.lightBlackColor}
-                          : {},
-                      ]}>
-                      {item.is_following ? strings.following : strings.follow}
-                    </Text>
+                    <GroupIcon
+                      imageUrl={item.full_image}
+                      entityType={item.entity_type}
+                      groupName={item.group_name}
+                      // showPlaceholder={false}
+                      textstyle={{fontSize: 12}}
+                      containerStyle={styles.iconContainer}
+                    />
+                    <View style={{marginLeft: 10}}>
+                      <Text style={styles.userName}>
+                        {item.group_name ?? item.full_name}
+                      </Text>
+                      <Text style={styles.locationText}>
+                        {displayLocation(item)}
+                      </Text>
+                    </View>
                   </TouchableOpacity>
-                ) : null}
-              </View>
-              <View style={styles.separator} />
-            </>
-          )}
+                  {authContext.entity.uid !== item.user_id &&
+                  (authContext.entity.role === Verbs.entityTypeUser ||
+                    authContext.entity.role === Verbs.entityTypePlayer) ? (
+                    // eslint-disable-next-line react/jsx-indent
+                    <TouchableOpacity
+                      style={styles.buttonContainer}
+                      onPress={() => {
+                        if (item.is_following) {
+                          handleUnfollow(item);
+                        } else {
+                          handleFollow(item);
+                        }
+                      }}>
+                      <Text
+                        style={[
+                          styles.buttonText,
+                          item.is_following
+                            ? {color: colors.lightBlackColor}
+                            : {},
+                        ]}>
+                        {item.is_following ? strings.following : strings.follow}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
+                <View style={styles.separator} />
+              </>
+            )
+          }
         />
       );
     }
@@ -298,6 +316,7 @@ export default function UserConnections({navigation, route}) {
           placeholder={strings.searchText}
           placeholderTextColor={colors.placeHolderColor}
           style={styles.input}
+          onChangeText={setSearchQuery}
         />
 
         {loading ? <UserListShimmer /> : renderList(selectedTab)}
@@ -335,7 +354,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 40,
     height: 40,
-    borderWidth: 0,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   userName: {
     fontSize: 16,

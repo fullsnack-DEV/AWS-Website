@@ -13,6 +13,7 @@ import {
   Image,
   Alert,
   TextInput,
+  BackHandler,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {
@@ -25,6 +26,7 @@ import {
   ImageGallery,
 } from 'stream-chat-react-native';
 import * as Progress from 'react-native-progress';
+import {format} from 'react-string-format';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -56,8 +58,7 @@ import fonts from '../../Constants/Fonts';
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
   const authContext = useContext(AuthContext);
-  const {addMembersToChannel, isMemberAdding, createChannel} =
-    useStreamChatUtils();
+  const {createChannel} = useStreamChatUtils();
 
   const [isVisible, setIsVisible] = useState(false);
   const [allReaction, setAllReaction] = useState([]);
@@ -68,7 +69,48 @@ const MessageChatScreen = ({navigation, route}) => {
   const [showSearchInput, setShowSearchInput] = useState(false);
   // eslint-disable-next-line no-unused-vars
   const [messages, setMessages] = useState([]);
+  const [deleteOptions, setDeleteOptions] = useState([]);
+  const [channelName, setChannelName] = useState('');
+  const [showTagOptions, setShowTagOptions] = useState(false);
+  const [tagOptions, setTagOptions] = useState([]);
+  const [selectedTagMember, setSelectedTagMember] = useState({});
   const timeoutRef = useRef();
+
+  useEffect(() => {
+    const backAction = () => {
+      if (showSearchInput) {
+        setShowSearchInput(false);
+      } else if (route.params?.comeFrom) {
+        if (route.params.comeFrom === 'MessageMainScreen') {
+          navigation.push(route.params.comeFrom, {
+            ...route.params.routeParams,
+          });
+        } else {
+          navigation.navigate(route.params.comeFrom, {
+            ...route.params.routeParams,
+          });
+        }
+      } else {
+        navigation.goBack();
+      }
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [showSearchInput, navigation, route.params]);
+
+  useEffect(() => {
+    if (channel) {
+      const name = getChannelName(channel, authContext.chatClient.userID);
+
+      setChannelName(name);
+    }
+  }, [channel, authContext.chatClient.userID]);
 
   const CustomImageUploadPreview = () => {
     const {imageUploads, setImageUploads, numberOfUploads, removeImage} =
@@ -223,31 +265,63 @@ const MessageChatScreen = ({navigation, route}) => {
   const handleTagPress = (mentions = [], mentionText = '') => {
     const entity_name = mentionText.slice(1);
     const member = mentions.find(
-      (item) => item.group_name === entity_name || item.name === entity_name,
+      (item) => item.group_name ?? item.name === entity_name,
     );
+
+    if (!member) {
+      return;
+    }
     const memberId = member.id.includes('@')
-      ? member.id.split('@')[0]
-      : member.id;
+      ? selectedTagMember.id.split('@')[0]
+      : selectedTagMember.id;
 
-    const obj = {
-      id: memberId,
-      name: member.group_name ?? member.name,
-      image: member.image,
-      entityType: member.entityType,
-    };
+    if (memberId === authContext.entity.uid) {
+      return;
+    }
 
-    createChannel([obj])
-      .then(async (channelObj) => {
-        if (channelObj !== null) {
-          await channelObj.watch();
-          navigation.replace('MessageChatScreen', {
-            channel: channelObj,
-          });
-        }
-      })
-      .catch((err) => {
-        Alert.alert(strings.alertmessagetitle, err.message);
+    const options = [
+      format(strings.chatWith, entity_name),
+      format(strings.goToHomeOf, entity_name),
+    ];
+
+    setSelectedTagMember(member);
+    setTagOptions(options);
+    setShowTagOptions(true);
+  };
+
+  const handleTagOptions = (option) => {
+    setShowTagOptions(false);
+    const memberId = selectedTagMember.id.includes('@')
+      ? selectedTagMember.id.split('@')[0]
+      : selectedTagMember.id;
+    if (option === tagOptions[0]) {
+      const obj = {
+        id: memberId,
+        name: selectedTagMember.group_name ?? selectedTagMember.name,
+        image: selectedTagMember.image,
+        entityType: selectedTagMember.entityType,
+      };
+
+      createChannel([obj])
+        .then(async (channelObj) => {
+          if (channelObj !== null) {
+            await channelObj.watch();
+            navigation.replace('MessageChatScreen', {
+              channel: channelObj,
+            });
+          }
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    } else if (option === tagOptions[1]) {
+      navigation.navigate('HomeScreen', {
+        uid: memberId,
+        role: selectedTagMember.entityType,
+        comeFrom: 'MessageChatScreen',
+        routeParams: {channel},
       });
+    }
   };
 
   const getSearchData = useCallback(
@@ -278,10 +352,16 @@ const MessageChatScreen = ({navigation, route}) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
-        title={getChannelName(channel, authContext.chatClient.userID)}
+        title={channelName}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          navigation.goBack();
+          if (route.params?.comeFrom) {
+            navigation.navigate(route.params.comeFrom, {
+              ...route.params.routeParams,
+            });
+          } else {
+            navigation.replace('MessageMainScreen');
+          }
         }}
         rightIcon2={images.vertical3Dot}
         rightIcon2Press={() => {
@@ -298,7 +378,7 @@ const MessageChatScreen = ({navigation, route}) => {
           <View style={styles.floatingInput}>
             <View style={styles.inputContainer}>
               <TextInput
-                placeholderTextColor={strings.searchText}
+                placeholderTextColor={colors.userPostTimeColor}
                 style={styles.textInputStyle}
                 value={searchText}
                 onChangeText={(text) => {
@@ -329,8 +409,17 @@ const MessageChatScreen = ({navigation, route}) => {
           MessageActionList={() => (
             <CustomMessageActionList
               channel={channel}
+              streamChatUserId={authContext.chatClient.userID}
               deleteMessageAction={(messageObj = {}) => {
                 setDeleteMessageObject(messageObj);
+                if (messageObj.user.id === authContext.chatClient.userID) {
+                  setDeleteOptions([
+                    strings.deleteForEveryOneOption,
+                    strings.deleteForMeOption,
+                  ]);
+                } else {
+                  setDeleteOptions([strings.deleteForMeOption]);
+                }
                 setDeleteMessageModal(true);
               }}
             />
@@ -348,6 +437,8 @@ const MessageChatScreen = ({navigation, route}) => {
                 <CustomAvatar
                   channel={channel}
                   imageStyle={{width: 30, height: 30}}
+                  iconTextStyle={{fontSize: 12, marginTop: 1}}
+                  placeHolderStyle={{width: 12, height: 12}}
                 />
               )}
               myMessageTheme={myMessageTheme}
@@ -385,10 +476,7 @@ const MessageChatScreen = ({navigation, route}) => {
 
         <BottomSheet
           type="ios"
-          optionList={[
-            strings.deleteForEveryOneOption,
-            strings.deleteForMeOption,
-          ]}
+          optionList={deleteOptions}
           isVisible={deleteMessageModal}
           closeModal={() => setDeleteMessageModal(false)}
           onSelect={handleMessageDeletion}
@@ -401,12 +489,20 @@ const MessageChatScreen = ({navigation, route}) => {
           channel={channel}
           streamUserId={authContext.chatClient.userID}
           leaveChannel={handleChannelLeave}
-          addMembers={(members = []) => {
-            addMembersToChannel({channel, newMembers: members}).catch((err) => {
-              Alert.alert(strings.alertmessagetitle, err.message);
+          newChannelCreated={async (channelObj) => {
+            await channelObj.watch();
+            navigation.replace('MessageChatScreen', {
+              channel: channelObj,
             });
           }}
-          loading={isMemberAdding}
+        />
+
+        <BottomSheet
+          type="ios"
+          optionList={tagOptions}
+          isVisible={showTagOptions}
+          closeModal={() => setShowTagOptions(false)}
+          onSelect={handleTagOptions}
         />
       </View>
     </SafeAreaView>

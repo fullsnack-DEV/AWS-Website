@@ -110,7 +110,8 @@ const AccountEntity = ({
           entity.entity_type === Verbs.entityTypeUser
             ? entity.full_image
             : entity.background_full_image,
-      }}>
+      }}
+      imageStyle={{resizeMode: 'stretch'}}>
       {renderView()}
     </ImageBackground>
   ) : (

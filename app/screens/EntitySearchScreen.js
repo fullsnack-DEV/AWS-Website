@@ -1172,6 +1172,84 @@ export default function EntitySearchScreen({navigation, route}) {
     });
   }, [pageSize, upcomingGamePageFrom, upcomingGame, upcomingGameFilters]);
 
+  const getGamesForBookARefereeOrScoreKeeper = useCallback(
+    (refereeObj, sportObject, isReferee) => {
+      const gameListWithFilter = {
+        query: {
+          bool: {
+            must: [
+              {
+                bool: {
+                  should: [
+                    {term: {'home_team.keyword': authContext.entity.uid}},
+                    {term: {'away_team.keyword': authContext.entity.uid}},
+                  ],
+                },
+              },
+              {
+                range: {
+                  end_datetime: {
+                    gt: parseFloat(new Date().getTime() / 1000).toFixed(0),
+                  },
+                },
+              },
+              {term: {'status.keyword': 'accepted'}},
+            ],
+          },
+        },
+        sort: [{start_datetime: 'asc'}],
+      };
+
+      if (isReferee) {
+        gameListWithFilter.query.bool.must.push({
+          term: {
+            'challenge_referee.who_secure.responsible_team_id.keyword':
+              authContext.entity.uid,
+          },
+        });
+      } else {
+        gameListWithFilter.query.bool.must.push({
+          term: {
+            'challenge_scorekeepers.who_secure.responsible_team_id.keyword':
+              authContext.entity.uid,
+          },
+        });
+      }
+      console.log('gameListWithFilter==>', JSON.stringify(gameListWithFilter));
+      getGameIndex(gameListWithFilter)
+        .then((res) => {
+          if (res.length > 0) {
+            if (isReferee) {
+              navigation.navigate('RefereeBookingDateAndTime', {
+                settingObj: sportObject.setting,
+                userData: refereeObj,
+                showMatches: true,
+                sportName: sportObject.sport,
+              });
+            } else {
+              navigation.navigate('ScorekeeperBookingDateAndTime', {
+                settingObj: sportObject.setting,
+                userData: refereeObj,
+                showMatches: true,
+                sportName: sportObject.sport,
+              });
+            }
+          } else {
+            const msg = isReferee
+              ? strings.bookRefereeMessage
+              : strings.bookScorekeeperMessage;
+            Alert.alert(strings.alertmessagetitle, msg);
+          }
+        })
+        .catch((e) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    },
+    [authContext.entity.uid, navigation],
+  );
+
   const renderSeparator = () =>
     currentTab !== 2 && (
       <TCThinDivider
@@ -1703,7 +1781,11 @@ export default function EntitySearchScreen({navigation, route}) {
         } else if (
           response.payload.error_code === ErrorCodes.MEMBERALREADYERRORCODE
         ) {
-          Alert.alert(strings.alertmessagetitle, response.payload.user_message);
+          Alert.alert(
+            strings.alertmessagetitle,
+            response.payload.user_message,
+            [{text: strings.okTitleText}],
+          );
         } else if (
           response.payload.error_code ===
           ErrorCodes.MEMBERALREADYINVITEERRORCODE
@@ -1731,17 +1813,25 @@ export default function EntitySearchScreen({navigation, route}) {
         ) {
           Alert.alert(strings.alertmessagetitle, response.payload.user_message);
         } else if (response.payload.action === Verbs.joinVerb) {
-          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage, [
+            {text: strings.okTitleText},
+          ]);
         } else if (response.payload.action === Verbs.requestVerb) {
-          Alert.alert(strings.alertmessagetitle, strings.sendRequest);
+          Alert.alert(strings.alertmessagetitle, strings.sendRequest, [
+            {text: strings.okTitleText},
+          ]);
         } else {
-          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
+          Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage, [
+            {text: strings.okTitleText},
+          ]);
         }
       })
       .catch((error) => {
         setloading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
+          Alert.alert(strings.alertmessagetitle, error.message, [
+            {text: strings.okTitleText},
+          ]);
         }, 10);
       });
   };
@@ -2043,12 +2133,12 @@ export default function EntitySearchScreen({navigation, route}) {
                       sportObject.setting?.refund_policy &&
                       sportObject.setting?.available_area
                     ) {
-                      navigation.navigate('RefereeBookingDateAndTime', {
-                        settingObj: sportObject.setting,
-                        userData: refereeObj,
-                        showMatches: true,
-                        sportName: sportObject.sport,
-                      });
+                      const isReferee = true;
+                      getGamesForBookARefereeOrScoreKeeper(
+                        refereeObj,
+                        sportObject,
+                        isReferee,
+                      );
                     } else {
                       Alert.alert(strings.refereeSettingNotConfigureValidation);
                     }
@@ -2059,12 +2149,12 @@ export default function EntitySearchScreen({navigation, route}) {
                       sportObject.setting?.refund_policy &&
                       sportObject.setting?.available_area
                     ) {
-                      navigation.navigate('ScorekeeperBookingDateAndTime', {
-                        settingObj: sportObject.setting,
-                        userData: refereeObj,
-                        showMatches: true,
-                        sportName: sportObject.sport,
-                      });
+                      const isReferee = false;
+                      getGamesForBookARefereeOrScoreKeeper(
+                        refereeObj,
+                        sportObject,
+                        isReferee,
+                      );
                     } else {
                       Alert.alert(strings.scorekeeperSetiingNotValidation);
                     }
@@ -2427,10 +2517,6 @@ export default function EntitySearchScreen({navigation, route}) {
             tempFilter.location = strings.worldTitleText;
             setSettingPopup(false);
           } else if (filterData.locationOption === locationType.HOME_CITY) {
-            // setLocation(
-            //   authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
-            //     authContext?.entity?.obj?.city.slice(1),
-            // );
             tempFilter.location =
               authContext?.entity?.obj?.city.charAt(0).toUpperCase() +
               authContext?.entity?.obj?.city.slice(1);

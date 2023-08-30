@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
-// import ReadMore from '@fawazahmed/react-native-read-more';
+import ReadMore from '@fawazahmed/react-native-read-more';
 import {strings} from '../../../../../Localization/translation';
 import LevelBars from '../../../../components/LevelBars';
 import {ShimmerView} from '../../../../components/shimmer/commonComponents/ShimmerCommonComponents';
@@ -78,7 +78,11 @@ const UserInfo = ({
             style={styles.image}
           />
         </View>
-        <View style={{flex: 1}}>
+        <View
+          style={{
+            flex: 1,
+            marginBottom: getLookingForContainer() === null ? 25 : 0,
+          }}>
           <Text style={styles.name}>{user.full_name}</Text>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text style={styles.location}>{displayLocation(user)}</Text>
@@ -105,24 +109,37 @@ const UserInfo = ({
           </TouchableOpacity>
         ) : null}
       </Pressable>
-      {screenType !== Verbs.screenTypeMainScreen ? (
-        // <ReadMore
-        //   style={styles.description}
-        //   numberOfLines={7}
-        //   seeMoreText={strings.moreText}
-        //   seeLessText={strings.lessText}
-        //   seeLessStyle={styles.moreText}
-        //   seeMoreStyle={styles.moreText}
-        //   onSeeMoreBlocked={onMore}>
-        //   {description}
-        // </ReadMore>
-        <Text style={styles.description}>
-          {description}{' '}
-          <TouchableOpacity onPress={onMore}>
-            <Text style={styles.moreText}>{strings.moreText}</Text>
-          </TouchableOpacity>
-        </Text>
-      ) : null}
+      {screenType === Verbs.screenTypeMainScreen ? null : (
+        // <Text style={styles.description}>
+        //   {description}{' '}
+        //   <TouchableOpacity onPress={onMore}>
+        //     <Text style={styles.moreText}>{strings.moreText}</Text>
+        //   </TouchableOpacity>
+        // </Text>
+        <>
+          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+            <View>
+              <Text style={styles.title}>{strings.infoTitle}</Text>
+            </View>
+            <TouchableOpacity style={styles.nextIcon} onPress={onMore}>
+              <Image
+                source={images.rightArrow}
+                style={[styles.image, {borderRadius: 0}]}
+              />
+            </TouchableOpacity>
+          </View>
+          <ReadMore
+            style={styles.description}
+            numberOfLines={3}
+            seeMoreText={strings.moreText}
+            seeLessText={strings.lessText}
+            seeLessStyle={styles.moreText}
+            seeMoreStyle={styles.moreText}
+            onSeeMoreBlocked={onMore}>
+            {description}
+          </ReadMore>
+        </>
+      )}
     </View>
   );
 };
@@ -131,6 +148,12 @@ const styles = StyleSheet.create({
     // marginBottom: 25,
   },
   name: {
+    fontSize: 20,
+    lineHeight: 25,
+    fontFamily: fonts.RMedium,
+    color: colors.lightBlackColor,
+  },
+  title: {
     fontSize: 20,
     lineHeight: 25,
     fontFamily: fonts.RMedium,
@@ -178,6 +201,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     marginTop: 7,
     alignSelf: 'baseline',
+    marginBottom: 25,
   },
   lookingForClubText: {
     fontSize: 12,
@@ -211,6 +235,16 @@ const styles = StyleSheet.create({
     lineHeight: 14,
     fontFamily: fonts.RMedium,
     color: colors.yellowColor,
+  },
+  nextIcon: {
+    width: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    padding: 4,
+    backgroundColor: colors.grayBackgroundColor,
+    marginLeft: 5,
   },
 });
 export default UserInfo;

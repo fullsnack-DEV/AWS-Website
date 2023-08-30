@@ -37,7 +37,7 @@ import {createInvoice} from '../../../api/Invoice';
 import AuthContext from '../../../auth/context';
 import Verbs from '../../../Constants/Verbs';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {getTCDate} from '../../../utils';
+import {getTCDate, showAlert} from '../../../utils';
 import RecipientCell from './RecipientCell';
 import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
 
@@ -47,6 +47,9 @@ const SendNewInvoiceModal = ({
   onClose = () => {},
   refreshInvoices = () => {},
   invoiceType = InvoiceType.Invoice,
+  isSingleInvoice = false,
+  member = [],
+  eventID,
 }) => {
   const authContext = useContext(AuthContext);
   const [invoiceTitle, setInvoiceTitle] = useState('');
@@ -75,6 +78,32 @@ const SendNewInvoiceModal = ({
     setSelectedDueDate(new Date(date));
     setDueDateVisible(false);
   };
+  useEffect(() => {
+    if (isSingleInvoice) {
+      setSelectedRecipients([member]);
+    }
+
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam &&
+      invoiceType === InvoiceType.Event
+    ) {
+      const updatedMembers = member.map((members) => ({
+        ...members,
+        connected: true,
+      }));
+
+      setRecipientMemberData(updatedMembers);
+      setIsRecipientDataFetched(true);
+    }
+
+    if (eventID) {
+      const updatedMembers = member.map((members) => ({
+        ...members,
+        connected: true,
+      }));
+      setSelectedRecipients(updatedMembers);
+    }
+  }, [isVisible, isSingleInvoice, eventID]);
 
   const handleCancelDueDatePress = () => {
     setDueDateVisible(false);
@@ -112,8 +141,6 @@ const SendNewInvoiceModal = ({
           },
         );
       }
-    } else if (invoiceType === InvoiceType.Event) {
-      setLoading(false);
     }
   };
 
@@ -181,10 +208,13 @@ const SendNewInvoiceModal = ({
       body.currency_type = currency;
       body.invoice_description = description;
       body.invoice_type = invoiceType;
+      body.event_id = eventID;
+
       body.email_sent = false;
       body.sender_name = authContext.entity.obj.group_name
         ? authContext.entity.obj.group_name
         : authContext.entity.obj.full_name;
+      body.is_single_invoice = isSingleInvoice;
 
       createInvoice(body, authContext)
         .then(() => {
@@ -212,7 +242,7 @@ const SendNewInvoiceModal = ({
         .catch((e) => {
           setLoading(false);
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
+            showAlert(e.message);
           }, 10);
         });
     }
@@ -444,38 +474,28 @@ const SendNewInvoiceModal = ({
               }}>
               {strings.recipients.toUpperCase()}
             </Text>
-            {/* {selectedRecipients.length > 0 && (
-              <Text
-                style={{
-                  color: colors.orangeColorCard,
-                  fontSize: 16,
-                  textAlign: 'left',
-                  fontFamily: fonts.RBold,
-                  lineHeight: 24,
-                }}>
-                {' ('}
-                {selectedRecipients.length}
-                {')'}
-              </Text>
-            )} */}
+
             <Text style={{marginTop: 4, color: 'red'}}> {strings.star}</Text>
           </View>
-          <TouchableOpacity onPress={() => showRecipientsClicked()}>
-            <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
-              <Text
-                style={{
-                  color: colors.orangeColorCard,
-                  fontSize: 16,
-                  textAlign: 'right',
-                  fontFamily: fonts.RRegular,
-                  paddingEnd: 8,
-                  lineHeight: 24,
-                }}>
-                {strings.addText}
-              </Text>
-              <Image source={images.nextArrow} style={styles.nextArrow} />
-            </View>
-          </TouchableOpacity>
+
+          {isSingleInvoice ? null : (
+            <TouchableOpacity onPress={() => showRecipientsClicked()}>
+              <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
+                <Text
+                  style={{
+                    color: colors.orangeColorCard,
+                    fontSize: 16,
+                    textAlign: 'right',
+                    fontFamily: fonts.RRegular,
+                    paddingEnd: 8,
+                    lineHeight: 24,
+                  }}>
+                  {strings.addText}
+                </Text>
+                <Image source={images.nextArrow} style={styles.nextArrow} />
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
         {/* recipient lists */}
         <FlatList
@@ -507,89 +527,6 @@ const SendNewInvoiceModal = ({
             setShowCurrencyModal(false);
           }}
         />
-
-        {/* <Modal visible={showCurrencyModal} transparent animationType="slide">
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.6)',
-              justifyContent: 'flex-end',
-            }}>
-            <View
-              style={{
-                backgroundColor: colors.whiteColor,
-                borderTopRightRadius: 20,
-                borderTopLeftRadius: 20,
-              }}>
-              <View style={modalStyles.headerRow}>
-                <View style={{flex: 1}} />
-                <View style={modalStyles.headerTitleContainer}>
-                  <Text style={modalStyles.headerTitle}>
-                    {strings.currencySetting}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    alignItems: 'flex-end',
-                    justifyContent: 'center',
-                  }}>
-                  <Pressable
-                    style={{width: 26, height: 26}}
-                    onPress={() => setShowCurrencyModal(false)}>
-                    <Image
-                      source={images.crossImage}
-                      style={modalStyles.image}
-                    />
-                  </Pressable>
-                </View>
-              </View>
-              <View style={modalStyles.divider} />
-              <View style={{paddingHorizontal: 15, paddingVertical: 19}}>
-                <FlatList
-                  data={DataSource.CurrencyType}
-                  keyExtractor={(item, index) => index}
-                  renderItem={({item}) => (
-                    <>
-                      <Pressable
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          paddingVertical: 10,
-                          paddingHorizontal: 10,
-                        }}
-                        onPress={() => {
-                          setCurrency(item.value);
-                          setShowCurrencyModal(false);
-                        }}>
-                        <View style={{flex: 1}}>
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              lineHeight: 24,
-                              fontFamily: fonts.RMedium,
-                            }}>
-                            {item.label}
-                          </Text>
-                        </View>
-                        <Image
-                          source={
-                            currency === item.value
-                              ? images.radioCheckYellow
-                              : images.radioUnselect
-                          }
-                          style={{height: 22, width: 22}}
-                        />
-                      </Pressable>
-                      <View style={modalStyles.divider} />
-                    </>
-                  )}
-                />
-              </View>
-            </View>
-          </View>
-        </Modal> */}
 
         <AddRecipientsModal
           isVisible={showRecipientsModal}

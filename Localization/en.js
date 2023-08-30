@@ -1124,10 +1124,11 @@ export default {
   scorekeepingTitleText: 'en_Scorekeeping',
   addSportsTitle: 'en_Add Sport',
   congratsModalTitle:
-    'en_Congratulations!\nYou are now registered\nas a player in\n ',
+    'en_Congratulations!\nYou are now registered\nas a player in',
   registerRefereeTitle: 'en_Register as Referee',
   registeredRefreeTitle: 'en_Registered as Referee',
   registerScorekeeperTitle: 'en_Register as Scorekeeper',
+  registeredScorekeeperTitle: 'en_Registered as Scorekeeper',
   inviteYouToJoinEventText: 'en_invited you to join the event.',
   createTeamText: 'en_Create Team',
   createClubText: 'en_Create Club',
@@ -2199,6 +2200,7 @@ export default {
   addressValidation: 'en_Please fill address field',
   profileCreated: 'en_The member profile has been created in your {0}.',
   registerAsPlayerTitle: 'en_Register as Player',
+  registeredAsPlayerTitle: 'en_Registered as Player',
   multipleRequestSent: '{0} en_Requests for basic info were sent.',
   removeMemberFromGroup: 'en_Remove this member from team',
   basicInfoRequestText:
@@ -2357,6 +2359,7 @@ export default {
   respond: 'en_respond',
   invite: 'en_Invite',
   editEvent: 'en_Edit Event',
+  deleteEvent: 'en_Delete Event',
   createAnEvent: 'en_Create an Event',
   matchRecord: 'en_Match Records',
   bookaRefree: 'en_Book a referee',
@@ -2392,7 +2395,7 @@ export default {
   gameType: 'en_Game Type',
   refundPolicies: 'en_Refund Policies',
   gameRules: 'en_Game Rules',
-  availability: 'en_Availibility',
+  availability: 'en_Availability',
   // gameDuration: 'en_Game Duration',
   setPointDuration: 'en_Sets, points & Duration',
   logText: 'en_log',
@@ -2400,6 +2403,8 @@ export default {
   specifications: 'en_specifications',
   emailInvitationSent: '{0} en_invitation were sent',
   oneemailInvitationSent: '{0} en_invitation was sent',
+  oneemailInvitationWasSent: '{0} en_invitation email was sent',
+  multiEmailInvitationWereSent: '{0} en_invitation emails were sent',
   basicInfoRequestSent: 'en_requests for basic info were sent',
   editSpecification: 'en_Edit Specifications',
 
@@ -2510,9 +2515,9 @@ export default {
   addScorekeeperFee: 'en_ADD SCOREKEEPER FEE',
   continueWithNoScorekeeperFee: 'en_CONTINUE WITH NO SCOREKEEPER FEE',
   refereeCongratsModalTitle:
-    'Congratulations! \nYou are now registered as\n a referee in\n',
+    'en_Congratulations!\nYou are now registered as\n a referee in',
   scoreKeeperCongratsModalTitle:
-    'Congratulations! \nYou are now registered as\n a scorekeeper in\n',
+    'en_Congratulations!\nYou are now registered as\n a scorekeeper in',
   scoreKeeperCongratulationsModal:
     'en_You can now receive scorekeeper booking requests from {0}, and also can sent offers to {0}.',
   teamsAndPlayers: 'en_teams and players',
@@ -2567,7 +2572,7 @@ export default {
   congratesSubTitle: 'en_Your account has been switched to {0}.  ',
   whoDoYouwantToCreateTeamWith:
     'en_Who do you want to create the new team with?',
-  congratulationsTitle: 'en_Congratulations! \n',
+  congratulationsTitle: 'en_Congratulations!\n',
   hasBeenCreated: ' en_has been created.',
   jerseyValidation: 'en_Jersey Number is not valid!',
   clubModalTitle: 'en_Which sports does the new club will be involved in?',
@@ -2940,8 +2945,6 @@ export default {
   reportText: 'en_Report This Event',
   blockEventOrganiser: 'en_Block Event Organiser',
   recuringoptionOne: 'en_This event Only',
-  recurringOptionTwo: 'en_This and all following events',
-  recurringOptionThree: 'en_All events',
   gameSingular: 'en_Game',
   gameWith: 'en_Game With',
   eventsViewSettings: 'en_Events View Settings',
@@ -3048,7 +3051,7 @@ export default {
   emptyChatMessage: 'en_No Message',
 
   deleteForMeOption: 'en_Delete for Me',
-  deleteForEveryOneOption: 'en_Delete for EveryOne',
+  deleteForEveryOneOption: 'en_Delete for Everyone',
   deleteForMeText: 'en_This message will be deleted from only your device',
   deleteForEveryOneText:
     "en_This message will be deleted from everyone's device",
@@ -3066,15 +3069,45 @@ export default {
   whenyouTerminateAccount: 'en_When you Pause the team:',
   viewText: 'en_View',
   leaveChatAlertText: 'en_Are you sure you want to leave this chatroom?',
-  editChatRoom: 'en_Edit ChatRoom Name & Photo',
-  deleteForMe: 'en_The message will be deleted from from only your device.',
+  editChatRoom: 'en_Edit Chatroom Name & Photo',
+  deleteForMe: 'en_The message will be deleted from only your device.',
   deleteForEveryOne: 'en_The message will be deleted from everyone’s device.',
   viewAll: 'en_View all',
   byUser: 'en_By {0}',
+  bookRefereeMessage:
+    "en_You don't have a confirmed match to book this referee for.",
+  bookScorekeeperMessage:
+    "en_Your team doesn't have a confirmed match to book this scorekeeper for.",
   chatroomText: 'en_Chatroom',
   ratingText:
     'en_Ratings shows the average ratings that the referee received from teams regarding their matches. The following questions are used to collect ratings from teams.',
   signUpPasswordText: 'en_Your password must be at least 8 characters.',
   Minimum: 'en_Minimum',
   writePostText: 'en_Write a post...',
+  inviteTeam: 'en_Invite Team',
+  sendAMessage: 'en_Send a message',
+  createdChatRoom: 'en_{0} created this chatroom.',
+  otherCurrecy:
+    "en_Please Select Some Other Currency. This Currency is not Supported by now'",
+  liseemptyText: 'en_No members found',
+  chatWith: 'en_Chat with {0}',
+  goToHomeOf: 'en_Go to Home of {0}',
+
+  eventSendInvoice: 'en_Send Invoice',
+  eventSendMessage: 'en_Send Message',
+  alertMessageDeleteEvent: 'en_Are you sure you want to delete this event?',
+  venuesAndCheckInPoint: 'en_Venues & Check-in Point',
+
+  sendInvoice: 'en_Send Invoice',
+  sendMessage: 'en_Send Message',
+
+  settingModaltitle: 'en_Upto 20 sports will be displayed in the filter bar. ',
+  limitedPermossionerror:
+    'en_The permission is limited: some actions are possible',
+  permissionDeniedandNotrequestable:
+    'en_The permission is denied and not requestable anymore',
+  addOrDelete: 'en_Add or Delete',
+  editFavSportTitle: 'en_Edit Favorite Sports',
+  addorDeleteFavSportTitle: 'en_Add or Delete Favorite Sports',
+  only20SportsAlert: 'en_You can select up to 20 sports',
 };

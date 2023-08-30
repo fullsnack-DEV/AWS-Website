@@ -28,6 +28,9 @@ const MenuItem = ({
           strings.areasText
         }`;
 
+      case strings.scorekeeperFee:
+        return `${settingsObj.game_fee?.fee} ${settingsObj.game_fee?.currency_type}`;
+
       default:
         return strings.incomplete;
     }

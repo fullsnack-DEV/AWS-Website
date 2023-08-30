@@ -372,7 +372,6 @@ export default function ChooseSportsScreen({navigation, route}) {
           authEntity.obj = createdUser?.payload;
           authEntity.auth.user = createdUser?.payload;
           authEntity.role = 'user';
-          console.log({authEntity});
           setDummyAuthContext('entity', authEntity);
           setDummyAuthContext('user', createdUser?.payload);
           await wholeSignUpProcessComplete(createdUser?.payload);

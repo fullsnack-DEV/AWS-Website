@@ -83,7 +83,12 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
               placeholder={strings.venueNamePlaceholder}
               style={[
                 styles.greyContainer,
-                {marginBottom: 5, height: 40, marginTop: 10},
+                {
+                  marginBottom: 5,
+                  height: 40,
+                  paddingVertical: 0,
+                  marginTop: 10,
+                },
               ]}
               onChangeText={(text) => {
                 const list = [...venues];
@@ -97,7 +102,7 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
               placeholder={strings.addressPlaceholder}
               style={[
                 styles.greyContainer,
-                {marginTop: 8, marginBottom: 5, height: 40},
+                {marginTop: 8, marginBottom: 5, height: 40, paddingVertical: 0},
               ]}
               onFocus={() => {
                 Keyboard.dismiss();

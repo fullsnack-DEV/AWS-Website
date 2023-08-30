@@ -11,18 +11,20 @@ import {
   Alert,
   TouchableOpacity,
   TextInput,
-  FlatList,
   Text,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import {format} from 'react-string-format';
 import ParsedText from 'react-native-parsed-text';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {FlatList} from 'react-native-gesture-handler';
 import {
   createReaction,
   getReactions,
   deleteReactions,
   createCommentReaction,
+  getNextReactions,
 } from '../../api/NewsFeeds';
 import images from '../../Constants/ImagePath';
 
@@ -75,6 +77,7 @@ const CommentModal = ({
   const [showLikeModal, setShowLikeModal] = useState(false);
   const [replyParams, setReplyParams] = useState({});
   const [showAllReplies, setShowAllReplies] = useState(false);
+  const [isMoreLoading, setIsMoreLoading] = useState(true);
 
   const fetchReactions = useCallback(() => {
     const params = {
@@ -84,9 +87,13 @@ const CommentModal = ({
 
     getReactions(params, authContext)
       .then((response) => {
-        setCommentData(response.payload.reverse());
+        setCommentData(response.payload);
+        if (response.payload.length === 0) {
+          setIsMoreLoading(false);
+        }
       })
       .catch((e) => {
+        setIsMoreLoading(false);
         Alert.alert('', e.messages);
       });
   }, [authContext, postId]);
@@ -204,6 +211,7 @@ const CommentModal = ({
           data: response?.payload,
         });
         setLoading(false);
+        fetchReactions();
       })
       .catch((e) => {
         Alert.alert('', e.messages);
@@ -230,14 +238,17 @@ const CommentModal = ({
           .then((response) => {
             setLoading(false);
             setCommentData(response.payload.reverse());
+            setReplyParams({});
           })
           .catch((e) => {
             Alert.alert('', e.messages);
+            setReplyParams({});
             setLoading(false);
           });
       })
       .catch((e) => {
         Alert.alert('', e.messages);
+        setReplyParams({});
         setLoading(false);
       });
   };
@@ -342,6 +353,32 @@ const CommentModal = ({
     </View>
   );
 
+  const onEndReached = () => {
+    if (commentData.length === 0 || !isMoreLoading) {
+      setIsMoreLoading(false);
+      return;
+    }
+    const params = {
+      activity_id: postId,
+      reaction_type: Verbs.comment,
+    };
+
+    const id_lt = commentData[commentData.length - 1].id;
+
+    getNextReactions(params, id_lt, authContext)
+      .then((response) => {
+        if (response.payload.length === 0) {
+          setIsMoreLoading(false);
+        } else {
+          setCommentData([...commentData, ...response.payload]);
+        }
+      })
+      .catch((e) => {
+        setIsMoreLoading(false);
+        Alert.alert('', e.messages);
+      });
+  };
+
   return (
     <CustomModalWrapper
       isVisible={showCommentModal}
@@ -365,13 +402,25 @@ const CommentModal = ({
           renderItem={renderComments}
           ListEmptyComponent={listEmptyComponent}
           showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          removeClippedSubviews={true}
+          legacyImplementation={true}
+          maxToRenderPerBatch={10}
+          initialNumToRender={5}
+          onEndReachedThreshold={0.3}
+          refreshing={false}
+          onEndReached={onEndReached}
+          onRefresh={() => fetchReactions()}
+          ListFooterComponent={() =>
+            isMoreLoading ? (
+              <View>
+                <ActivityIndicator size={'small'} />
+              </View>
+            ) : null
+          }
         />
 
-        <View
-          style={[
-            styles.bottomContainer,
-            Platform.OS === 'ios' ? {paddingBottom: 20} : {},
-          ]}>
+        <View style={[styles.bottomContainer, {paddingBottom: 20}]}>
           <GroupIcon
             imageUrl={authContext.entity.obj.thumbnail}
             groupName={authContext.entity.obj.group_name}
@@ -484,6 +533,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.blackColor,
     borderTopColor: colors.grayBackgroundColor,
     borderTopWidth: 0.5,
+    marginVertical: Platform.OS === 'android' ? 0 : 10,
   },
   inputContainer: {
     flexDirection: 'row',

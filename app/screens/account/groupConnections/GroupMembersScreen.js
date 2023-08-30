@@ -51,6 +51,8 @@ import Verbs from '../../../Constants/Verbs';
 import Header from '../../../components/Home/Header';
 import GroupMemberShimmer from './GroupMemberShimmer';
 import ScreenHeader from '../../../components/ScreenHeader';
+import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
+import InviteMemberModal from '../../../components/InviteMemberModal';
 
 export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -60,13 +62,17 @@ export default function GroupMembersScreen({navigation, route}) {
   // For activity indigator
   const [loading, setloading] = useState(true);
   const [searchMember, setSearchMember] = useState();
+  const [searchText, setSearchText] = useState('');
+  const [showInviteMember, setShowInviteMember] = useState(false);
 
   const [members, setMembers] = useState([]);
 
   const [switchUser] = useState(authContext.entity);
+  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
 
   const [pointEvent] = useState('auto');
   const [active, setActive] = useState(true);
+  const [noResults, setNoResults] = useState(false);
 
   const [groupObjNew, setGroupObjNew] = useState({});
   const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
@@ -150,16 +156,27 @@ export default function GroupMembersScreen({navigation, route}) {
   }, [authContext, getGroupsLoggedInUser, groupID]);
 
   const searchFilterFunction = (text) => {
-    const filteredData = members.filter((item) => {
-      const fullName = `${item.first_name}${item.last_name}`.toLowerCase();
+    const searchTexts = text.toLowerCase();
 
-      return fullName.includes(text);
+    if (text.length === 0) {
+      setMembers(searchMember);
+      setSearchText(text);
+      setNoResults(false); // Reset noResults
+      return;
+    }
+
+    const filteredData = members.filter((item) => {
+      const fullName = `${item.first_name} ${item.last_name}`.toLowerCase();
+      return fullName.includes(searchTexts);
     });
 
-    if (text.length > 0) {
-      setMembers(filteredData);
+    setMembers(filteredData);
+    setSearchText(text);
+
+    if (filteredData.length === 0) {
+      setNoResults(true);
     } else {
-      setMembers(searchMember);
+      setNoResults(false);
     }
   };
 
@@ -644,7 +661,9 @@ export default function GroupMembersScreen({navigation, route}) {
         }}
         pointerEvents={pointEvent}>
         <ScreenHeader
-          leftIcon={images.backArrow}
+          leftIcon={
+            currentRoute !== 'GroupMembersScreen' ? images.backArrow : null
+          }
           leftIconPress={() => navigation.goBack()}
           title={strings.membersTitle}
           rightIcon1={switchUser.uid === groupID ? images.createMember : null}
@@ -657,19 +676,28 @@ export default function GroupMembersScreen({navigation, route}) {
         {SearchBox()}
 
         {/* eslint-disable-next-line no-nested-ternary */}
-        {members.length > 0 ? (
+        {members.length > 0 || noResults ? (
           <FlatList
             extraData={members}
             style={{marginTop: -10}}
             data={members}
             renderItem={renderMembers}
             showsVerticalScrollIndicator={false}
+            ListEmptyComponent={() => (
+              <View style={styles.listemptyView}>
+                <Text style={{textAlign: 'center'}}>
+                  {' '}
+                  {strings.liseemptyText}{' '}
+                </Text>
+              </View>
+            )}
             keyExtractor={(item, index) => `${item.first_name}/${index}`}
           />
         ) : (
           <GroupMemberShimmer />
         )}
       </View>
+
       <ActionSheet
         ref={actionSheet}
         options={[
@@ -681,7 +709,7 @@ export default function GroupMembersScreen({navigation, route}) {
         cancelButtonIndex={2}
         onPress={(index) => {
           if (index === 0) {
-            navigation.navigate('InviteMembersBySearchScreen');
+            setShowInviteMember(true);
           } else if (index === 1) {
             navigation.navigate('CreateMemberProfileForm1');
           }
@@ -703,11 +731,22 @@ export default function GroupMembersScreen({navigation, route}) {
               groupID,
             });
           } else if (index === 1) {
-            Alert.alert(strings.underDevelopment);
+            setTimeout(() => {
+              SetSendNewInvoice(true);
+            }, 20);
           } else if (index === 2) {
             navigation.navigate('MembersViewPrivacyScreen', {groupID});
           }
         }}
+      />
+      <SendNewInvoiceModal
+        isVisible={sendNewInvoice}
+        onClose={() => SetSendNewInvoice(false)}
+      />
+
+      <InviteMemberModal
+        isVisible={showInviteMember}
+        closeModal={() => setShowInviteMember(false)}
       />
     </SafeAreaView>
   );
@@ -792,5 +831,11 @@ const styles = StyleSheet.create({
     padding: 6,
 
     borderRadius: 5,
+  },
+  listemptyView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 300,
   },
 });

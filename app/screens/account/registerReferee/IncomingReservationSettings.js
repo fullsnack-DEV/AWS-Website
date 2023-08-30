@@ -1,4 +1,5 @@
 // @flow
+/* eslint-disable */
 import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
@@ -8,7 +9,10 @@ import {
   FlatList,
   Alert,
 } from 'react-native';
+import {getCountry} from 'country-currency-map';
+import {useIsFocused} from '@react-navigation/native';
 import {strings} from '../../../../Localization/translation';
+
 import {patchRegisterRefereeDetails} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import WrapperModal from '../../../components/IncomingChallengeSettingsModals/WrapperModal';
@@ -22,6 +26,8 @@ import {getTCDate, setAuthContextData} from '../../../utils';
 import MatchFeeReminder from '../registerPlayer/modals/MatchFeeReminder';
 import MenuItem from './components/MenuItem';
 import RefereeCongratulationsModal from './components/RefereeCongratulationsModal';
+
+import {currencyList} from '../../../Constants/GeneralConstants';
 
 const IncomingReservationSettings = ({navigation, route}) => {
   const [settingsObject, setSettingObject] = useState({});
@@ -49,12 +55,25 @@ const IncomingReservationSettings = ({navigation, route}) => {
     {key: strings.refundPolicy},
     {key: strings.servicableAreas},
   ];
+  const [currency, setCurrency] = useState();
+  const Focused = useIsFocused();
 
   useEffect(() => {
-    if (settingObj) {
-      setSettingObject({...settingObj});
+    const gettingCurrency = getCountry(authContext.entity.obj.country);
+
+    if (!currencyList.some((i) => i.currency === gettingCurrency.currency)) {
+      setCurrency(Verbs.usd);
+    } else {
+      setSettingObject({
+        ...settingObj,
+        game_fee: {
+          ...settingObj.game_fee,
+          currency_type: gettingCurrency.currency,
+          fee: 0,
+        },
+      });
     }
-  }, [settingObj]);
+  }, [Focused]);
 
   const handleEditOption = (section) => {
     switch (section) {
@@ -147,6 +166,8 @@ const IncomingReservationSettings = ({navigation, route}) => {
             ? strings.registerRefereeTitle
             : strings.registerScorekeeperTitle
         }
+        isFullTitle
+        leftIconStyle={{width:40}}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.goBack();

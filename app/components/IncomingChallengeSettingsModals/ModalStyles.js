@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     marginVertical: 35,
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
-    height: 35,
+    paddingVertical: 12,
   },
   bottomContainer: {
     flex: 1,

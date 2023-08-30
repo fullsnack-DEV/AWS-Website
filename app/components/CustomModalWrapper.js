@@ -37,6 +37,8 @@ const CustomModalWrapper = ({
   showBackButton = false,
   ratio = 2.5,
   parentStyle = {},
+  isFullTitle = false,
+  headerLeftIconStyle = {},
 }) => {
   const [isFullHeight, setIsFullHeight] = useState(isSwipeUp);
   const translateY = new Animated.Value(0);
@@ -51,7 +53,6 @@ const CustomModalWrapper = ({
       listener: (event) => {
         if (event.nativeEvent.translationY <= 0) {
           translateY.setValue(0);
-
           if (isSwipeUp && event.nativeEvent.translationY < -SWIPE_THRESHOLD) {
             setIsFullHeight(true);
             translateY.setValue(0);
@@ -105,6 +106,8 @@ const CustomModalWrapper = ({
             onRightButtonPress={onRightButtonPress}
             loading={loading}
             containerStyle={styles.headerStyle}
+            isFullTitle={isFullTitle}
+            leftIconStyle={headerLeftIconStyle}
           />
         );
 
@@ -173,9 +176,12 @@ const CustomModalWrapper = ({
         return [styles.card, {flex: 1}, parentStyle];
 
       case ModalTypes.style2:
+        return [styles.card];
+
       case ModalTypes.style3:
+        return [styles.card, {flex: 1}];
       case ModalTypes.style4:
-        return styles.card;
+        return [styles.card, {flex: 1}];
 
       case ModalTypes.style5:
         return [styles.card, {height: screenHeight * 0.66}];
@@ -191,7 +197,7 @@ const CustomModalWrapper = ({
       collapsable
       transparent
       animationType="fade"
-      onRequestClose={handleCloseModal}>
+      onRequestClose={() => handleCloseModal()}>
       <GestureHandlerRootView style={{flex: 1}}>
         <Pressable
           style={[styles.parent, {paddingTop: Top}]}

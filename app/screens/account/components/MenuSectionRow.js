@@ -39,7 +39,9 @@ const MenuSectionRow = ({
           <Image source={item.icon} style={styles.icon} />
         </View>
         <View>
-          <Text style={styles.label}>{item.key}</Text>
+          <Text textBreakStrategy="simple" style={styles.label}>
+            {item.key}
+          </Text>
         </View>
       </View>
       <View style={styles.arrowIcon}>

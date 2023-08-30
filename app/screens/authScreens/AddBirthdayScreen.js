@@ -141,8 +141,9 @@ export default function AddBirthdayScreen({navigation, route}) {
             shadowOffset: {width: 0, height: 3},
             shadowOpacity: 1,
             shadowRadius: 6,
-            height: 334,
-            paddingVertical: 10,
+            height: 315,
+            paddingTop: 15,
+            paddingBottom: 15,
           }}>
           <Text style={styles.whyAskingText}>{strings.whyAskingText}</Text>
         </Tooltip>

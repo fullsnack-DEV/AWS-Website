@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-} from 'react-native';
+import {StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
@@ -13,12 +7,10 @@ import {strings} from '../../Localization/translation';
 
 function AppleButton({onPress}) {
   return (
-    <SafeAreaView>
-      <TouchableOpacity style={styles.allButton} onPress={onPress}>
-        <Image source={images.appleLogo} style={styles.googleImg} />
-        <Text style={styles.googleText}>{strings.appleText}</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+    <TouchableOpacity style={styles.allButton} onPress={onPress}>
+      <Image source={images.appleLogo} style={styles.googleImg} />
+      <Text style={styles.googleText}>{strings.appleText}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -33,9 +25,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
   },
   googleImg: {
     flex: 0.2,

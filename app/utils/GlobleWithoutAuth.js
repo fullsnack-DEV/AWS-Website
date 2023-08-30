@@ -4,6 +4,8 @@ import NetInfo from '@react-native-community/netinfo';
 import firebase from '@react-native-firebase/app';
 
 import {strings} from '../../Localization/translation';
+// eslint-disable-next-line import/no-cycle
+import {showAlert} from '.';
 
 const prepareHeader = (headers) => {
   let apiHeaders = {
@@ -34,9 +36,10 @@ const makeAPIWithoutAuthRequest = async ({
   params,
   responseType,
 }) =>
+  // eslint-disable-next-line consistent-return
   NetInfo.fetch().then(async (netStat) => {
     if (!netStat || !netStat.isConnected) {
-      throw new Error(strings.networkConnectivityErrorMessage);
+      showAlert(strings.networkConnectivityErrorMessage);
     } else {
       return new Promise((resolve, reject) =>
         getRefereshToken()

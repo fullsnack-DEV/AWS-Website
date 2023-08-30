@@ -19,7 +19,11 @@ const FeedProfile = ({
 }) => (
   <View style={styles.mainContainer}>
     <TouchableOpacity
-      style={{flexDirection: 'row', alignItems: 'flex-start'}}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        flex: 1,
+      }}
       onPress={onImageProfilePress}>
       <GroupIcon
         imageUrl={data.full_image ?? data.thumbnail}
@@ -28,7 +32,7 @@ const FeedProfile = ({
         containerStyle={styles.imageMainContainer}
         textstyle={{fontSize: 12}}
       />
-      <View style={{width: 290}}>
+      <View style={{flex: 1}}>
         <Text
           numberOfLines={2}
           style={styles.userNameTxt}

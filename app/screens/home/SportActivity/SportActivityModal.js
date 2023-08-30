@@ -28,6 +28,7 @@ import {
   getProgressBarColor,
   getScoreboardListTitle,
 } from '../../../utils/sportsActivityUtils';
+import BottomSheet from '../../../components/modals/BottomSheet';
 
 const SportActivityModal = ({
   sport,
@@ -44,11 +45,13 @@ const SportActivityModal = ({
   continueToChallenge = () => {},
   bookReferee = () => {},
   bookScoreKeeper = () => {},
+  handleMoreOptions = () => {},
 }) => {
   const authContext = useContext(AuthContext);
   const [matchList, setMatchList] = useState([]);
   const [isFetchingMatchList, setIsFetchingMatchList] = useState(false);
   const [sportIcon, setSportIcon] = useState('');
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [availabilityList, setAvailabilityList] = useState([]);
   const [fetchingAvailability, setFectchingAavailability] = useState(false);
   const [statsObject, setStatsObject] = useState({
@@ -57,6 +60,36 @@ const SportActivityModal = ({
     totalDraws: 0,
     totalMatches: 0,
   });
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      if (entityType === Verbs.entityTypePlayer) {
+        if (sportObj?.sport_type === Verbs.singleSport) {
+          setOptions([
+            strings.incomingChallengeSettingsTitle,
+            strings.lookingForClubText,
+            strings.deactivateActivityText,
+          ]);
+        } else {
+          setOptions([
+            strings.lookingForTeamText,
+            strings.deactivateActivityText,
+          ]);
+        }
+      } else {
+        setOptions([
+          strings.incomingReservationSettings,
+          strings.deactivateActivityText,
+        ]);
+      }
+    } else {
+      setOptions([
+        strings.reportThisSportActivityPage,
+        strings.blockUserAccount,
+      ]);
+    }
+  }, [isAdmin, sportObj?.sport_type, entityType]);
 
   const getMatchList = useCallback(() => {
     setIsFetchingMatchList(true);
@@ -185,12 +218,18 @@ const SportActivityModal = ({
           <ScreenHeader
             sportIcon={sportIcon}
             title={`${getHeaderTitle(entityType)} ${sportName}`}
-            rightIcon2={images.crossImage}
-            rightIcon2Press={closeModal}
+            rightIcon2={images.chat3Dot}
+            rightIcon2Press={() => setShowMoreOptions(true)}
+            leftIcon={images.backArrow}
+            leftIconPress={closeModal}
             containerStyle={{
               borderBottomWidth: 3,
               borderBottomColor: getProgressBarColor(entityType),
+              padding: 0,
+              paddingHorizontal: 10,
+              paddingVertical: 2,
             }}
+            leftIconStyle={{width: 70}}
           />
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{padding: 15, flex: 1}}>
@@ -265,6 +304,16 @@ const SportActivityModal = ({
             </View>
           </ScrollView>
         </View>
+        <BottomSheet
+          isVisible={showMoreOptions}
+          closeModal={() => {
+            setShowMoreOptions(false);
+          }}
+          optionList={options}
+          onSelect={(option) => {
+            handleMoreOptions(option);
+          }}
+        />
       </View>
     </Modal>
   );

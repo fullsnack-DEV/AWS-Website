@@ -1,7 +1,7 @@
 // @flow
 import ReadMore from '@fawazahmed/react-native-read-more';
 import React, {useEffect, useState} from 'react';
-import {View, Text, Image, Pressable} from 'react-native';
+import {View, Text, Image, Pressable, StyleSheet} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 import Verbs from '../../Constants/Verbs';
@@ -48,7 +48,10 @@ const GroupHomeHeader = ({
           <GroupIcon
             imageUrl={groupData.thumbnail}
             groupName={groupData.group_name}
-            containerStyle={{marginRight: 7}}
+            containerStyle={{
+              marginRight: 7,
+              borderWidth: StyleSheet.hairlineWidth,
+            }}
             entityType={groupData.entity_type}
           />
         </View>

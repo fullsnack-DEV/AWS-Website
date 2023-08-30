@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
@@ -105,7 +105,9 @@ const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
     }
   };
   return (
-    <View>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{flexGrow: 1, marginBottom: 0, paddingBottom: 0}}>
       <Text style={styles.title}>{strings.chooseCancellationPolicyTitle}</Text>
 
       {policiesTypeList.map((item, index) => (
@@ -132,7 +134,7 @@ const CancellationPolicyModal = ({refundPolicy = '', onChange = () => {}}) => {
         </View>
       ))}
       <View style={styles.greyContainer}>{getDescription()}</View>
-    </View>
+    </ScrollView>
   );
 };
 

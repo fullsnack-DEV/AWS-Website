@@ -1,4 +1,4 @@
-import React, {useRef, useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -18,7 +18,6 @@ import Modal from 'react-native-modal';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import ReadMore from '@fawazahmed/react-native-read-more';
-import ActionSheet from 'react-native-actionsheet';
 
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
@@ -44,12 +43,14 @@ import {
 import {getUserFollowerFollowing} from '../../../api/Users';
 import {getGroupMembers} from '../../../api/Groups';
 import ScreenHeader from '../../../components/ScreenHeader';
+import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
+import {InvoiceType} from '../../../Constants/GeneralConstants';
+import BottomSheet from '../../../components/modals/BottomSheet';
 
 export default function EventScreen({navigation, route}) {
-  const actionSheet = useRef();
-  const userActionSheet = useRef();
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
+  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
 
   const [loading, setloading] = useState(false);
   const [organizer, setOrganizer] = useState({});
@@ -61,6 +62,8 @@ export default function EventScreen({navigation, route}) {
   const [infoModal, setInfoModal] = useState(false);
   const [infoType, setInfoType] = useState('');
   const [recurringEditModal, setRecurringEditModal] = useState(false);
+  const [moreOptions, setMoreOptions] = useState([]);
+  const [showActionSheet, setShowActionSheet] = useState(false);
   const THISEVENT = 0;
   const FUTUREEVENT = 1;
   const ALLEVENT = 2;
@@ -75,7 +78,7 @@ export default function EventScreen({navigation, route}) {
       value: FUTUREEVENT,
     },
     {
-      ext: strings.recurringOptionThree,
+      text: strings.recurringOptionThree,
       value: ALLEVENT,
     },
   ];
@@ -187,7 +190,7 @@ export default function EventScreen({navigation, route}) {
       from: 0,
       query: {
         terms: {
-          'user_id.keyword': [...goingData, eventData.created_by.uid],
+          'user_id.keyword': [...goingData],
         },
       },
     };
@@ -304,9 +307,9 @@ export default function EventScreen({navigation, route}) {
   };
 
   const checkIsInvite = () => {
-    if (eventData.owner_type === 'groups') {
-      return false;
-    }
+    // if (eventData.owner_type === 'groups') {
+    //   return false;
+    // }
 
     if (['user', 'player'].includes(authContext.entity.role)) {
       if (eventData.who_can_invite?.value === 0) {
@@ -387,15 +390,13 @@ export default function EventScreen({navigation, route}) {
   };
 
   const renderDeleteRecurringOptions = ({item}) => (
-    <View
-      style={{
-        flexDirection: 'row',
-        marginVertical: 10,
-        justifyContent: 'center',
-        marginLeft: 15,
-        marginRight: 15,
-      }}>
-      <View>
+    <>
+      <View
+        style={{
+          paddingVertical: 16,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
         <Text
           style={styles.filterTitle}
           onPress={() => {
@@ -407,8 +408,56 @@ export default function EventScreen({navigation, route}) {
           {item.text}
         </Text>
       </View>
-    </View>
+      <View style={styles.separator} />
+    </>
   );
+
+  const handleActions = (option) => {
+    switch (option) {
+      case strings.sendInvoice:
+        SetSendNewInvoice(true);
+        break;
+
+      case strings.sendMessage:
+        break;
+
+      case strings.editEvent:
+        if (route && route.params && eventData) {
+          navigation.navigate('EditEventScreen', {
+            data: eventData,
+            gameData: route.params.gameData,
+          });
+        }
+        break;
+
+      case strings.deleteEvent:
+        if (eventData.rrule) {
+          Alert.alert(strings.alertMessageDeleteEvent, '', [
+            {
+              text: strings.cancel,
+              style: 'cancel',
+            },
+            {
+              text: strings.delete,
+              style: 'destructive',
+              onPress: () => setRecurringEditModal(true),
+            },
+          ]);
+        } else {
+          handleDeleteEvent();
+        }
+        break;
+
+      case strings.reportText:
+        break;
+
+      case strings.blockEventOrganiser:
+        break;
+
+      default:
+        break;
+    }
+  };
 
   return (
     <SafeAreaView style={styles.mainContainerStyle}>
@@ -419,11 +468,19 @@ export default function EventScreen({navigation, route}) {
           navigation.goBack();
         }}
         rightIcon2={images.vertical3Dot}
-        rightIcon2Press={() =>
-          isOrganizer
-            ? actionSheet.current.show()
-            : userActionSheet.current.show()
-        }
+        rightIcon2Press={() => {
+          if (isOrganizer) {
+            setMoreOptions([
+              strings.sendInvoice,
+              strings.sendMessage,
+              strings.editEvent,
+              strings.deleteEvent,
+            ]);
+          } else {
+            setMoreOptions([strings.reportText, strings.blockEventOrganiser]);
+          }
+          setShowActionSheet(true);
+        }}
         // loading={loading}
       />
       <ActivityLoader visible={loading} />
@@ -957,40 +1014,16 @@ export default function EventScreen({navigation, route}) {
           </>
         ) : null}
       </ScrollView>
-
-      <ActionSheet
-        ref={actionSheet}
-        options={[strings.edit, strings.delete, strings.cancel]}
-        cancelButtonIndex={2}
-        destructiveButtonIndex={1}
-        onPress={(index) => {
-          if (index === 0) {
-            // editactionsheet.current.show();
-            if (route && route.params && eventData) {
-              navigation.navigate('EditEventScreen', {
-                data: eventData,
-                gameData: route.params.gameData,
-              });
-            }
-          } else if (index === 1) {
-            if (eventData.rrule) {
-              setRecurringEditModal(true);
-            } else {
-              handleDeleteEvent();
-            }
-          }
-        }}
-      />
-      <ActionSheet
-        ref={userActionSheet}
-        options={[
-          strings.reportText,
-          strings.blockEventOrganiser,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={2}
-        // destructiveButtonIndex={1}
-        onPress={() => {}}
+      <BottomSheet
+        type="ios"
+        isVisible={showActionSheet}
+        closeModal={() => setShowActionSheet(false)}
+        optionList={moreOptions}
+        onSelect={handleActions}
+        cardStyle={
+          isOrganizer ? {backgroundColor: colors.bottomSheetBgColor} : {}
+        }
+        cancelButtonTextStyle={isOrganizer ? {fontFamily: fonts.RBold} : {}}
       />
 
       <Modal
@@ -1005,42 +1038,14 @@ export default function EventScreen({navigation, route}) {
         style={{
           margin: 0,
         }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 4,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 10,
-            borderTopRightRadius: 10,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 10,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-              }}>
-              {strings.deleteRecurringEvent}{' '}
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalHeaderText}>
+              {strings.updateRecurringEvent}
             </Text>
           </View>
-          {/* <TCThinDivider width="92%" /> */}
+          <View style={styles.separator} />
           <FlatList
-            // ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
             showsVerticalScrollIndicator={false}
             data={recurringEditList}
             keyExtractor={(item, index) => index.toString()}
@@ -1048,6 +1053,14 @@ export default function EventScreen({navigation, route}) {
           />
         </View>
       </Modal>
+
+      <SendNewInvoiceModal
+        isVisible={sendNewInvoice}
+        invoiceType={InvoiceType.Event}
+        eventID={eventData.cal_id}
+        member={going}
+        onClose={() => SetSendNewInvoice(false)}
+      />
 
       {/* Modal Style 3 */}
       <Modal
@@ -1198,9 +1211,11 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   filterTitle: {
-    fontSize: 16,
+    fontSize: 20,
+    lineHeight: 25,
+    color: colors.eventBlueColor,
     fontFamily: fonts.RRegular,
-    color: '#0093FF',
+    textAlign: 'center',
   },
   moreLessText: {
     fontSize: 12,
@@ -1261,5 +1276,38 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+  },
+  modalContainer: {
+    width: '100%',
+    height: Dimensions.get('window').height * 0.35,
+    backgroundColor: colors.lightWhite,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 15,
+    paddingHorizontal: 15,
+  },
+  modalHeader: {
+    paddingTop: 17,
+    paddingBottom: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalHeaderText: {
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: 'center',
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.bgColor,
   },
 });

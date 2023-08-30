@@ -7,18 +7,17 @@ import {
   Text,
   Image,
   Platform,
+  SafeAreaView,
+  Dimensions,
 } from 'react-native';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
 import ActionSheet from 'react-native-actionsheet';
 
 import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
-import LinearGradient from 'react-native-linear-gradient';
+
 import TCKeyboardView from '../../components/TCKeyboardView';
 
 import * as Utility from '../../utils/index';
@@ -28,6 +27,8 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCTextField from '../../components/TCTextField';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+
+const windowHeight = Dimensions.get('window').height;
 
 export default function SignupScreen({navigation, route}) {
   const [fName, setFName] = useState(
@@ -45,6 +46,7 @@ export default function SignupScreen({navigation, route}) {
   const actionSheetWithDelete = useRef();
 
   const actionSheet = useRef();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -255,7 +257,110 @@ export default function SignupScreen({navigation, route}) {
   };
 
   return (
-    <>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#FF8A01'}}>
+      <ActivityLoader visible={loading} />
+      <FastImage style={styles.background} source={images.loginBg} />
+      <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
+
+      <TCKeyboardView>
+        <View
+          style={{
+            marginTop: 61,
+          }}>
+          <TouchableOpacity
+            style={styles.profile}
+            onPress={() => {
+              onProfileImageClicked();
+            }}>
+            {profilePic ? (
+              <FastImage
+                resizeMode={'contain'}
+                source={
+                  profilePic?.path
+                    ? {uri: profilePic?.path}
+                    : images.profilePlaceHolder
+                }
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 30,
+                  backgroundColor: '#FED378',
+                }}
+              />
+            ) : (
+              <View>
+                {providerPic ? (
+                  <FastImage
+                    resizeMode={'contain'}
+                    source={
+                      providerPic
+                        ? {uri: providerPic}
+                        : images.profilePlaceHolder
+                    }
+                    style={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: 30,
+                      backgroundColor: '#FED378',
+                    }}
+                  />
+                ) : (
+                  <FastImage
+                    resizeMode={'contain'}
+                    source={images.profilePlaceHolder}
+                    style={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: 30,
+                      backgroundColor: '#FED378',
+                    }}
+                  />
+                )}
+              </View>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.profileCameraButtonStyle}
+            onPress={() => {
+              onProfileImageClicked();
+            }}>
+            <FastImage
+              source={images.certificateUpload}
+              style={styles.cameraIcon}
+            />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            marginTop: 35,
+            marginLeft: 35,
+            marginRight: 35,
+          }}>
+          <TCTextField
+            testID={'fname-signup-input'}
+            focus={true}
+            placeholderTextColor={colors.darkYellowColor}
+            style={styles.textFieldStyle}
+            height={40}
+            placeholder={strings.fnameText}
+            value={fName}
+            onChangeText={(text) => setFName(text)}
+            autoCapitalize="none"
+          />
+
+          <TCTextField
+            testID="lname-signup-input"
+            placeholderTextColor={colors.darkYellowColor}
+            style={{...styles.textFieldStyle}}
+            placeholder={strings.lnameText}
+            onChangeText={(text) => setLName(text)}
+            value={lName}
+            height={40}
+            autoCapitalize={'words'}
+          />
+        </View>
+      </TCKeyboardView>
+
       <ActionSheet
         ref={actionSheet}
         // title={'News Feed Post'}
@@ -294,123 +399,16 @@ export default function SignupScreen({navigation, route}) {
           }
         }}
       />
-      <LinearGradient
-        colors={[colors.themeColor1, colors.themeColor3]}
-        style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
-        <FastImage style={styles.background} source={images.loginBg} />
-        <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
-
-        <TCKeyboardView>
-          <View
-            style={{
-              marginTop: 61,
-            }}>
-            <TouchableOpacity
-              style={styles.profile}
-              onPress={() => {
-                onProfileImageClicked();
-              }}>
-              {profilePic ? (
-                <FastImage
-                  resizeMode={'contain'}
-                  source={
-                    profilePic?.path
-                      ? {uri: profilePic?.path}
-                      : images.profilePlaceHolder
-                  }
-                  style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: 30,
-                    backgroundColor: '#FED378',
-                  }}
-                />
-              ) : (
-                <View>
-                  {providerPic ? (
-                    <FastImage
-                      resizeMode={'contain'}
-                      source={
-                        providerPic
-                          ? {uri: providerPic}
-                          : images.profilePlaceHolder
-                      }
-                      style={{
-                        width: 60,
-                        height: 60,
-                        borderRadius: 30,
-                        backgroundColor: '#FED378',
-                      }}
-                    />
-                  ) : (
-                    <FastImage
-                      resizeMode={'contain'}
-                      source={images.profilePlaceHolder}
-                      style={{
-                        width: 60,
-                        height: 60,
-                        borderRadius: 30,
-                        backgroundColor: '#FED378',
-                      }}
-                    />
-                  )}
-                </View>
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.profileCameraButtonStyle}
-              onPress={() => {
-                onProfileImageClicked();
-              }}>
-              <FastImage
-                source={images.certificateUpload}
-                style={styles.cameraIcon}
-              />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              marginTop: 35,
-              marginLeft: 35,
-              marginRight: 35,
-            }}>
-            <TCTextField
-              testID="fname-signup-input"
-              placeholderTextColor={colors.darkYellowColor}
-              style={styles.textFieldStyle}
-              height={40}
-              placeholder={strings.fnameText}
-              value={fName}
-              onChangeText={(text) => setFName(text)}
-              autoCapitalize={'words'}
-            />
-            <TCTextField
-              testID="lname-signup-input"
-              placeholderTextColor={colors.darkYellowColor}
-              style={{...styles.textFieldStyle}}
-              placeholder={strings.lnameText}
-              onChangeText={(text) => setLName(text)}
-              value={lName}
-              height={40}
-              autoCapitalize={'words'}
-            />
-          </View>
-        </TCKeyboardView>
-      </LinearGradient>
-    </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   background: {
-    height: hp('100%'),
     position: 'absolute',
-    width: wp('100%'),
-  },
-  mainContainer: {
-    flex: 1,
-    paddingTop: 25,
+    width: '100%',
+    height: windowHeight,
+    resizeMode: 'cover',
   },
 
   profile: {
@@ -424,11 +422,7 @@ const styles = StyleSheet.create({
 
   textFieldStyle: {
     alignSelf: 'center',
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
+    backgroundColor: colors.bhirthdaybgcolor,
     marginBottom: 10,
     paddingHorizontal: 5,
     marginHorizontal: 0,
@@ -455,7 +449,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 25,
     marginLeft: 25,
-    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
+    marginTop: 50,
     textAlign: 'left',
   },
 });

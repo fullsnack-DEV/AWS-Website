@@ -22,7 +22,7 @@ import {getUserIndex} from '../../api/elasticSearch';
 import TCThinDivider from '../../components/TCThinDivider';
 import {UserActionTiles, tilesArray} from '../../utils/constant';
 
-export default function TopTileSection({
+function TopTileSection({
   handleTileClick,
   onRegisterAsTilePress,
   visibleSportsModalForTeam,
@@ -79,7 +79,16 @@ export default function TopTileSection({
       authContext,
       Verbs.entityTypeTeam,
     );
-    setTeamSport(TeamSportList);
+
+    const OnlyTeamSport = TeamSportList.filter(
+      (item) => item.sport === item.sport_type,
+    );
+
+    setTeamSport(
+      authContext.entity.role === Verbs.entityTypeClub
+        ? OnlyTeamSport
+        : TeamSportList,
+    );
 
     const subscription = Dimensions.addEventListener('change', updateWidth);
     return () => {
@@ -205,7 +214,11 @@ export default function TopTileSection({
 
   const RenderInviteMemberbutton = () => (
     <Pressable
-      onPress={() => navigation.navigate('InviteMembersBySearchScreen')}
+      onPress={() =>
+        handleTileClick({
+          title: strings.inviteMemberClub,
+        })
+      }
       style={styles.memberInviteButton}>
       <FastImage
         source={images.invitememberbuttonicon}
@@ -383,7 +396,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   miniCards: {
-    width: 80,
+    minWidth: 80,
     height: 45,
     backgroundColor: '#FFFFFF',
     borderRadius: 5,
@@ -418,3 +431,5 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
+
+export default React.memo(TopTileSection);

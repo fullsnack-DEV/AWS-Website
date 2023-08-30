@@ -499,18 +499,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="GroupMembersScreen"
       component={GroupMembersScreen}
-      options={{
-        title: strings.membersTitle,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       component={GroupFollowersScreen}

@@ -1,8 +1,9 @@
 // @flow
 /* eslint-disable no-nested-ternary */
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {View, Modal} from 'react-native';
+import {getCountry} from 'country-currency-map';
 import {strings} from '../../../Localization/translation';
 import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
@@ -17,6 +18,9 @@ import SetsGamesDurationModal from './SetsGamesDurationModal';
 import VenueModal from './VenueModal';
 import styles from './WrapperModalStyles';
 import ScreenHeader from '../ScreenHeader';
+import AuthContext from '../../auth/context';
+
+import {currencyList} from '../../Constants/GeneralConstants';
 
 const WrapperModal = ({
   isVisible = false,
@@ -29,6 +33,20 @@ const WrapperModal = ({
   show_Double = 'false',
 }) => {
   const [settings, setSettings] = useState({});
+
+  const authContext = useContext(AuthContext);
+
+  const [currency, setCurrency] = useState();
+
+  useEffect(() => {
+    const gettingCurrency = getCountry(authContext.entity.obj.country);
+
+    if (!currencyList.some((i) => i.currency === gettingCurrency.currency)) {
+      setCurrency('USD');
+    } else {
+      setCurrency(gettingCurrency.currency);
+    }
+  }, []);
 
   useEffect(() => {
     if (settingsObj) {
@@ -85,7 +103,7 @@ const WrapperModal = ({
                 },
               });
             }}
-            currency={settings?.game_fee?.currency_type ?? Verbs.cad}
+            currency={currency ?? Verbs.cad}
             entityType={entityType}
           />
         );
@@ -190,13 +208,19 @@ const WrapperModal = ({
   };
 
   return (
-    <Modal visible={isVisible} transparent animationType="slide">
+    <Modal
+      visible={isVisible}
+      transparent
+      animationType="slide"
+      onRequestClose={closeModal}>
       <View style={styles.parent}>
         <View style={styles.card}>
           <ScreenHeader
             leftIcon={images.crossImage}
             leftIconPress={closeModal}
-            title={title}
+            title={
+              title === strings.venue ? strings.venuesAndCheckInPoint : title
+            }
             isRightIconText
             rightButtonText={strings.save}
             onRightButtonPress={() => onSave(settings)}

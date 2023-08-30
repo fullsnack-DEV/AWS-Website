@@ -294,27 +294,29 @@ export default function RecentMatchScreen({navigation, route}) {
     }, 10);
   };
 
-  const getLocation = () => {
-    // setloading(true);
-    getGeocoordinatesWithPlaceName(Platform.OS)
-      .then((currentLocation) => {
-        setloading(false);
-        if (currentLocation.position) {
-          setLocation(
-            currentLocation.city?.charAt(0).toUpperCase() +
-              currentLocation.city?.slice(1),
-          );
-          setFilters({...filters, locationOption: 2});
-        }
-      })
-      .catch((e) => {
-        setloading(false);
-        if (e.message !== strings.userdeniedgps) {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        }
-      });
+  const getLocation = async () => {
+    try {
+      // setloading(true);
+      const currentLocation = await getGeocoordinatesWithPlaceName(Platform.OS);
+      let loc = '';
+      if (currentLocation.position) {
+        loc =
+          currentLocation.city?.charAt(0).toUpperCase() +
+          currentLocation.city?.slice(1);
+      }
+      setloading(false);
+      setSettingPopup(false);
+      return loc;
+    } catch (error) {
+      setloading(false);
+      setSettingPopup(false);
+      if (error.message !== strings.userdeniedgps) {
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      }
+      return null;
+    }
   };
   const applyFilter = useCallback((fil) => {
     getRecentGames(fil);
@@ -408,7 +410,7 @@ export default function RecentMatchScreen({navigation, route}) {
         sports={sports}
         filterObject={filters}
         isVisible={settingPopup}
-        onPressApply={(filterData) => {
+        onPressApply={async (filterData) => {
           setloading(false);
           let tempFilter = {};
           tempFilter = {...filterData};
@@ -429,8 +431,8 @@ export default function RecentMatchScreen({navigation, route}) {
           } else if (
             filterData.locationOption === locationType.CURRENT_LOCATION
           ) {
-            getLocation();
-            tempFilter.location = location;
+            const loc = await getLocation();
+            tempFilter.location = loc;
           } else if (filterData.locationOption === locationType.SEARCH_CITY) {
             setLocation(filterData.searchCityLoc);
             tempFilter.location = filterData.searchCityLoc;

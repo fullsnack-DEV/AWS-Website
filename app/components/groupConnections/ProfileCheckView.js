@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 15,
     alignSelf: 'center',
+    width: 220,
   },
 
   mediumNameText: {

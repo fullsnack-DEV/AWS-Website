@@ -17,11 +17,15 @@ function TCTextField({
   leftView,
   editable = true,
   width,
+
+  focus = false,
+  refrance = null,
   ...otherProps
 }) {
   return (
     <View style={[styles.textContainer, style, {height, width}]}>
       <TextInput
+        ref={refrance}
         testID={testID}
         style={[styles.textInput, textStyle, {height}]}
         placeholder={placeholder}
@@ -29,6 +33,7 @@ function TCTextField({
         autoCapitalize={'none'}
         autoCorrect={false}
         editable={editable}
+        autoFocus={focus}
         secureTextEntry={secureText}
         keyboardType={keyboardType}
         multiline={multiline}

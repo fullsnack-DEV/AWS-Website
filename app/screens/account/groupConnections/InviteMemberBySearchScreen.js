@@ -14,6 +14,8 @@ import {
   Image,
   Pressable,
   TouchableWithoutFeedback,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
 
 import ClipboardToast from 'react-native-clipboard-toast';
@@ -23,7 +25,6 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import TCSearchBox from '../../../components/TCSearchBox';
 import {sendInvitationInGroup} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ProfileCheckView from '../../../components/groupConnections/ProfileCheckView';
@@ -45,11 +46,13 @@ export default function InviteMembersBySearchScreen({navigation}) {
   const [pageFrom, setPageFrom] = useState(0);
   const [filters, setFilters] = useState();
   const [searchText, setSearchText] = useState('');
+  const [playerTagList, setPlayerTagList] = useState([]);
 
   const selectedPlayers = [];
   useEffect(() => {
     getUsers(filters);
-  }, []);
+  }, [filters]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -76,6 +79,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
       userIds: selectedList,
       uid: entity.uid,
     };
+    console.log(selectedList.length, 'from semd Invite');
 
     sendInvitationInGroup(obj, authContext)
       .then(() => {
@@ -130,12 +134,11 @@ export default function InviteMembersBySearchScreen({navigation}) {
       }
       getUserIndex(membersQuery)
         .then((response) => {
-          console.log('User list:->', response);
           setloading(false);
           if (response.length > 0) {
             const result = response.map((obj) => {
               // eslint-disable-next-line no-param-reassign
-              obj.isChecked = false;
+              obj.isChecked = selectedList.includes(obj.user_id);
               return obj;
             });
             setPlayers([...players, ...result]);
@@ -150,16 +153,21 @@ export default function InviteMembersBySearchScreen({navigation}) {
     },
     [pageFrom, pageSize, players],
   );
+
   const selectPlayer = ({item, index}) => {
     players[index].isChecked = !item.isChecked;
     setPlayers([...players]);
-    players.map((obj) => {
+
+    setPlayerTagList([...players]);
+
+    playerTagList.map((obj) => {
       if (obj.isChecked) {
         selectedPlayers.push(obj.user_id);
       }
       return obj;
     });
-    setSelectedList(selectedPlayers);
+    setSelectedList([...selectedPlayers]);
+    console.log(selectedList, 'from selcted list');
   };
 
   const renderPlayer = ({item, index}) => (
@@ -183,9 +191,13 @@ export default function InviteMembersBySearchScreen({navigation}) {
     });
   };
 
-  const applyFilter = useCallback((fil) => {
-    getUsers(fil);
-  }, []);
+  const applyFilter = useCallback(
+    (fil) => {
+      getUsers(fil);
+    },
+    [filters],
+  );
+
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text
@@ -244,13 +256,13 @@ export default function InviteMembersBySearchScreen({navigation}) {
             </View>
           )}
 
-        {selectedList.length > 0 && (
+        {playerTagList.length > 0 && (
           <View
             style={{
               marginTop: 15,
             }}>
             <TCProfileTag
-              dataSource={players}
+              dataSource={playerTagList}
               onTagCancelPress={handleTagPress}
               style={{
                 marginLeft: 10,
@@ -262,7 +274,7 @@ export default function InviteMembersBySearchScreen({navigation}) {
         <TCThinDivider />
       </View>
     ),
-    [players],
+    [playerTagList],
   );
 
   const ItemSeparatorComponent = useCallback(() => <TCThinDivider />, []);
@@ -273,46 +285,63 @@ export default function InviteMembersBySearchScreen({navigation}) {
       <Text style={styles.infoTextStyle}>
         {format(strings.inviteSearchText, authContext.entity.role)}
       </Text>
-      <TCSearchBox
-        width={'90%'}
-        placeholderText={strings.searchText}
-        alignSelf="center"
-        onChangeText={(text) => {
-          const tempFilter = {...filters};
 
-          if (text?.length > 0) {
-            tempFilter.searchText = text;
-          } else {
-            delete tempFilter.searchText;
-          }
-          setFilters({
-            ...tempFilter,
-          });
-          setPageFrom(0);
-          setPlayers([]);
-          applyFilter(tempFilter);
-          setSearchText(text);
-        }}
-      />
+      <View style={styles.floatingInput}>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholderTextColor={colors.userPostTimeColor}
+            style={styles.textInputStyle}
+            value={searchText}
+            onChangeText={(text) => {
+              const tempFilter = {...filters};
+
+              if (text?.length > 0) {
+                tempFilter.searchText = text;
+              } else {
+                delete tempFilter.searchText;
+              }
+              setFilters({
+                ...tempFilter,
+              });
+              setPageFrom(0);
+              setPlayers([]);
+              applyFilter(tempFilter);
+              setSearchText(text);
+            }}
+            placeholder={strings.searchText}
+          />
+          {searchText.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchText('');
+              }}>
+              <Image
+                source={images.closeRound}
+                style={{height: 15, width: 15}}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+      {listHeaderComponent()}
 
       {players.length === 0 ? (
         <InviteListShimmer />
       ) : (
         <FlatList
           extraData={players}
-          ListHeaderComponent={listHeaderComponent}
           showsVerticalScrollIndicator={false}
           data={players}
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={ItemSeparatorComponent}
           renderItem={renderPlayer}
+          ListEmptyComponent={listEmptyComponent}
           onScroll={onScrollHandler}
-          onEndReachedThreshold={0.01}
           onScrollBeginDrag={() => {
             stopFetchMore = false;
           }}
-          stickyHeaderIndices={[0]}
-          ListEmptyComponent={listEmptyComponent}
+          onEndReachedThreshold={0.01}
         />
       )}
     </View>
@@ -366,5 +395,27 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     resizeMode: 'contain',
     tintColor: colors.blackColor,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    paddingHorizontal: 15,
+    borderRadius: 25,
+    backgroundColor: colors.inputBgOpacityColor,
+    height: 45,
+  },
+  textInputStyle: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    padding: 0,
+  },
+  floatingInput: {
+    alignSelf: 'center',
+    zIndex: 1,
+    width: '90%',
   },
 });

@@ -33,10 +33,13 @@ import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import CongratulationsModal from '../account/registerPlayer/modals/CongratulationsModal';
 import * as Utility from '../../utils';
 import SwitchAccountModal from '../../components/account/SwitchAccountModal';
+import useStreamChatUtils from '../../hooks/useStreamChatUtils';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
+  const {createChannel, isCreatingChannel} = useStreamChatUtils();
 
   const [pointEvent] = useState('auto');
   const [isAdmin, setIsAdmin] = useState(false);
@@ -242,17 +245,43 @@ const HomeScreen = ({navigation, route}) => {
           pointEvent={pointEvent}
           isAccountDeactivated={authContext.isAccountDeactivated}
           groupData={currentUserData}
+          restrictReturn={route.params?.restrictReturn}
         />
       );
     }
     return null;
   };
 
-  const onMessageButtonPress = (entityId) => {
-    navigation.push('MessageChat', {
-      screen: 'MessageChat',
-      params: {userId: entityId},
-    });
+  const onMessageButtonPress = (entityData = {}) => {
+    const invitee = [
+      {
+        id: entityData.group_id ?? entityData.user_id,
+        name: entityData.group_name ?? entityData.full_name,
+        image: entityData.full_image ?? entityData.thumbnail,
+        entityType: entityData.entity_type,
+        city: entityData.city,
+      },
+    ];
+
+    if (invitee[0]?.id) {
+      createChannel(invitee)
+        .then(async (channel) => {
+          if (channel) {
+            await channel.watch();
+            navigation.navigate('Message', {
+              screen: 'MessageChatScreen',
+              params: {
+                channel,
+                comeFrom: 'HomeScreen',
+                routeParams: {...route.params},
+              },
+            });
+          }
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    }
   };
 
   const sendInvitation = (userids) => {
@@ -327,6 +356,11 @@ const HomeScreen = ({navigation, route}) => {
             onPress={() => {
               if (route.params?.comeFrom === 'IncomingChallengeSettings') {
                 navigation.navigate('AccountScreen');
+              } else if (route.params?.comeFrom === 'MessageChatScreen') {
+                navigation.navigate('Message', {
+                  screen: 'MessageChatScreen',
+                  params: {...route.params.routeParams},
+                });
               } else if (route.params?.isEntityCreated) {
                 navigation.pop(4);
               } else {
@@ -335,32 +369,38 @@ const HomeScreen = ({navigation, route}) => {
             }}>
             <Image source={images.backArrow} style={styles.image} />
           </Pressable>
-          <View style={{flex: 1}}>
-            <Text style={styles.title} numberOfLines={1}>
-              {currentUserData.full_name ?? currentUserData.group_name}
-            </Text>
+          <View
+            style={{
+              flex: 1,
+              marginLeft: 10,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <View>
+              <Text style={styles.title} numberOfLines={1}>
+                {currentUserData.full_name ?? currentUserData.group_name}
+              </Text>
+            </View>
+            {isAdmin ? (
+              <Pressable
+                style={[styles.dropDownImage, {marginLeft: 5}]}
+                onPress={() => setShowSwitchAccountModal(true)}>
+                <Image source={images.path} style={styles.image} />
+              </Pressable>
+            ) : null}
           </View>
-          {isAdmin ? (
-            <Pressable
-              style={[styles.dropDownImage, {marginLeft: 5}]}
-              onPress={() => setShowSwitchAccountModal(true)}>
-              <Image source={images.path} style={styles.image} />
-            </Pressable>
-          ) : null}
         </View>
         <View style={[styles.row, {marginLeft: 22}]}>
           {!isAdmin ? (
             <Pressable
               style={styles.imageContainer}
               onPress={() => {
-                const id =
-                  route.params.role === Verbs.entityTypePlayer ||
-                  route.params.role === Verbs.entityTypeUser
-                    ? currentUserData.user_id
-                    : currentUserData.group_id;
-                onMessageButtonPress(id);
+                onMessageButtonPress(currentUserData);
               }}>
-              <Image source={images.tab_message} style={styles.image} />
+              <Image
+                source={images.newchatIcon}
+                style={{width: 18, height: 18, marginTop: 4}}
+              />
             </Pressable>
           ) : null}
 
@@ -369,10 +409,14 @@ const HomeScreen = ({navigation, route}) => {
             onPress={() => {
               setKebabButtonOptions();
             }}>
-            <Image source={images.chat3Dot} style={styles.image} />
+            <Image
+              source={images.chat3Dot}
+              style={[styles.image, {marginLeft: 5}]}
+            />
           </Pressable>
         </View>
       </View>
+      <ActivityLoader visible={isCreatingChannel} />
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       {getShimmer()}
       {renderScreen()}

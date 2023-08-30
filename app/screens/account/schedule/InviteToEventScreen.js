@@ -37,6 +37,8 @@ export default function InviteToEventScreen({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [filteredList, setFilteredList] = useState([]);
 
+  const {start_datetime, end_datetime, eventId} = route.params;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -45,20 +47,14 @@ export default function InviteToEventScreen({navigation, route}) {
 
   const getUsers = useCallback(() => {
     const membersQuery = {
+      size: 10000,
       query: {
         bool: {
           must: [],
         },
       },
     };
-    // if (filterPlayer.searchText) {
-    //   membersQuery.query.bool.must.push({
-    //     query_string: {
-    //       query: `*${filterPlayer.searchText}*`,
-    //       fields: ['full_name'],
-    //     },
-    //   });
-    // }
+
     getUserIndex(membersQuery)
       .then((response) => {
         setloading(false);
@@ -78,7 +74,7 @@ export default function InviteToEventScreen({navigation, route}) {
   useEffect(() => {
     if (searchText) {
       const list = players.filter((item) =>
-        item.full_name.includes(searchText),
+        item.full_name.toLowerCase().includes(searchText.toLowerCase()),
       );
       setFilteredList(list);
     } else {
@@ -90,15 +86,15 @@ export default function InviteToEventScreen({navigation, route}) {
     setloading(true);
     const data = {
       userIds: selectedList,
-      start_datetime: route.params.start_datetime,
-      end_datetime: route.params.end_datetime,
+      start_datetime,
+      end_datetime,
     };
-    inviteToEvent(route.params.eventId, data, authContext)
-      .then((response) => {
+    inviteToEvent(eventId, data, authContext)
+      .then(() => {
         setloading(false);
         Alert.alert(
-          response.payload.to.length > 1
-            ? format(strings.nInvitationSent, response.payload.to.length)
+          selectedList.length > 1
+            ? format(strings.nInvitationSent, selectedList.length)
             : strings.inviteWasSendText,
           '',
           [
@@ -128,7 +124,7 @@ export default function InviteToEventScreen({navigation, route}) {
     if (isChecked) {
       newList = selectedList.filter((ele) => ele !== item.user_id);
     } else {
-      newList.push(item.user_id);
+      newList = [item.user_id, ...newList];
     }
 
     setSelectedList(newList);
@@ -141,17 +137,19 @@ export default function InviteToEventScreen({navigation, route}) {
         <Pressable
           style={[
             styles.row,
-            {paddingHorizontal: 5, justifyContent: 'space-between'},
+            {flex: 1, paddingHorizontal: 5, justifyContent: 'space-between'},
           ]}
           onPress={() => selectPlayer(item)}>
-          <View style={styles.row}>
+          <View style={[styles.row, {flex: 1}]}>
             <GroupIcon
               imageUrl={item.thumbnail}
               entityType={Verbs.entityTypePlayer}
               containerStyle={styles.playerProfile}
             />
-            <View>
-              <Text style={styles.name}>{item.full_name}</Text>
+            <View style={{flex: 1, marginRight: 15}}>
+              <Text style={styles.name} numberOfLines={1}>
+                {item.full_name}
+              </Text>
               <Text style={styles.city}>{item.city}</Text>
             </View>
           </View>
@@ -193,36 +191,46 @@ export default function InviteToEventScreen({navigation, route}) {
         />
 
         {selectedList.length > 0 ? (
-          <View style={[styles.row, {marginBottom: 25}]}>
-            {selectedList.map((item, index) => {
-              const user = players.find((obj) => obj.user_id === item);
-              return (
-                <View key={index} style={styles.tag}>
-                  <View
-                    style={{
-                      paddingHorizontal: 10,
-                      borderRightWidth: 1,
-                      borderRightColor: colors.bgColor,
-                    }}>
-                    <Text style={styles.tagLabel}>{user.full_name}</Text>
-                  </View>
-                  <View
-                    style={{
-                      paddingHorizontal: 5,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    <Pressable
-                      style={{width: 10, height: 10}}
-                      onPress={() => {
-                        selectPlayer(user);
+          <View>
+            <FlatList
+              data={selectedList}
+              keyExtractor={(item, index) => index.toString()}
+              horizontal
+              contentContainerStyle={{marginBottom: 25}}
+              showsHorizontalScrollIndicator={false}
+              renderItem={({item}) => {
+                const user = players.find((obj) => obj.user_id === item);
+                return (
+                  <View style={styles.tag}>
+                    <View
+                      style={{
+                        paddingHorizontal: 10,
+                        borderRightWidth: 1,
+                        borderRightColor: colors.bgColor,
                       }}>
-                      <Image source={images.crossImage} style={styles.image} />
-                    </Pressable>
+                      <Text style={styles.tagLabel}>{user.full_name}</Text>
+                    </View>
+                    <View
+                      style={{
+                        paddingHorizontal: 5,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <Pressable
+                        style={{width: 10, height: 10}}
+                        onPress={() => {
+                          selectPlayer(user);
+                        }}>
+                        <Image
+                          source={images.crossImage}
+                          style={styles.image}
+                        />
+                      </Pressable>
+                    </View>
                   </View>
-                </View>
-              );
-            })}
+                );
+              }}
+            />
           </View>
         ) : null}
 
