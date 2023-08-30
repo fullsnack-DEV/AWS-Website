@@ -106,7 +106,7 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
     if (settingObject) {
       switch (item) {
         case strings.availability:
-          return settingObject.referee_availibility ?? Verbs.on;
+          return settingObject.scorekeeper_availibility ?? Verbs.on;
 
         case strings.refereeFee:
           return `${settingObject.game_fee?.fee || 0} ${
@@ -282,6 +282,7 @@ export default function ScorekeeperReservationSetting({navigation, route}) {
         {...modalObj}
         onSave={(settings) => {
           setShowModal(false);
+          console.log(settings, 'From settinf');
           onSave(settings);
         }}
         entityType={Verbs.entityTypeScorekeeper}

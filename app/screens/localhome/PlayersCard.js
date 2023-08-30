@@ -8,6 +8,7 @@ import colors from '../../Constants/Colors';
 import {convertToKFormat} from './LocalHomeUtils';
 
 import {strings} from '../../../Localization/translation';
+import Verbs from '../../Constants/Verbs';
 
 function PlayersCard({
   item = {},
@@ -21,18 +22,20 @@ function PlayersCard({
   const getEntityName = () => item.full_name;
 
   const getName = () => {
-    // players available
     if (playeravail && selectedSport === strings.allSport) {
       const singleSport = item?.registered_sports?.find(
-        (sport) => sport.sport_type === 'single',
+        (sport) => sport.sport_type === Verbs.sportTypeSingle,
       );
       return singleSport?.sport_name ?? null;
     }
 
     if (playeravail && selectedSport !== strings.allSport) {
       const singleSport = item?.registered_sports?.find(
-        (sport) => sport.sport_type === 'single',
+        (sport) =>
+          sport.sport_type === Verbs.sportTypeSingle &&
+          sport.sport_name.toLowerCase() === selectedSport.toLowerCase(),
       );
+
       return singleSport?.sport_name ?? null;
     }
 
@@ -41,10 +44,6 @@ function PlayersCard({
         (i) => i.sport.toLowerCase() === selectedSport.toLowerCase(),
       );
       return filteredSports ? filteredSports.sport_name : '';
-    }
-
-    if (selectedSport === strings.allType) {
-      return item?.sports?.[0]?.sport_name ?? null;
     }
 
     if (scoreKeeper && selectedSport !== strings.allType) {
@@ -67,7 +66,84 @@ function PlayersCard({
       return filteredSportNames;
     }
 
+    if (refree && selectedSport === strings.allType) {
+      if (item.referee_data.length > 1) {
+        return item.referee_data[0].sport;
+      }
+
+      return item.referee_data.map((d) => d.sport);
+    }
+
+    if (scoreKeeper && selectedSport === strings.allType) {
+      if (item.scorekeeper_data.length > 1) {
+        return item.scorekeeper_data[0].sport;
+      }
+      return item.scorekeeper_data.map((d) => d.sport);
+    }
+
     return item?.sports[0]?.sport_name;
+  };
+
+  // eslint-disable-next-line consistent-return
+  const getCurrencyAndGameFee = () => {
+    if (refree && selectedSport === strings.allType) {
+      if (item.referee_data.length > 1) {
+        return `${convertToKFormat(
+          item.referee_data[0]?.setting.game_fee.fee,
+        )} ${item.referee_data[0]?.setting.game_fee.currency_type}`;
+      }
+      return `${convertToKFormat(item.referee_data[0]?.setting.game_fee.fee)} ${
+        item.referee_data[0]?.setting.game_fee.currency_type
+      }`;
+    }
+    if (refree && selectedSport !== strings.allType) {
+      const filteredSportNames = item.referee_data
+        .filter(
+          (i) => i.sport_name.toLowerCase() === selectedSport.toLowerCase(),
+        )
+        .map((i) => i.setting.game_fee);
+
+      return `${convertToKFormat(filteredSportNames[0]?.fee)} ${
+        filteredSportNames[0]?.currency_type
+      }`;
+    }
+    if (scoreKeeper && selectedSport === strings.allType) {
+      if (item.scorekeeper_data.length > 1) {
+        return `${convertToKFormat(
+          item.scorekeeper_data[0]?.setting.game_fee.fee,
+        )} ${item.scorekeeper_data[0]?.setting.game_fee.currency_type}`;
+      }
+      return `${convertToKFormat(
+        item.scorekeeper_data[0]?.setting.game_fee.fee,
+      )} ${item.scorekeeper_data[0]?.setting.game_fee.currency_type}`;
+    }
+    if (scoreKeeper && selectedSport !== strings.allType) {
+      const filteredSportNames = item.scorekeeper_data
+        .filter(
+          (i) => i.sport_name.toLowerCase() === selectedSport.toLowerCase(),
+        )
+        .map((i) => i);
+
+      return `${convertToKFormat(
+        filteredSportNames[0]?.setting.game_fee?.fee,
+      )} ${filteredSportNames[0]?.setting.game_fee?.currency_type}`;
+    }
+    if (playeravail && selectedSport === strings.allSport) {
+      const singleSport = item?.registered_sports?.find(
+        (sport) => sport.sport_type === Verbs.sportTypeSingle,
+      );
+      return `${convertToKFormat(singleSport?.setting.game_fee.fee)} ${
+        singleSport?.setting.game_fee.currency_type
+      }`;
+    }
+    if (playeravail && selectedSport !== strings.allSport) {
+      const singleSport = item?.registered_sports?.find(
+        (sport) => sport.sport_type === Verbs.sportTypeSingle,
+      );
+      return `${convertToKFormat(singleSport?.setting?.game_fee?.fee)} ${
+        singleSport?.setting?.game_fee?.currency_type
+      }`;
+    }
   };
 
   const getFooterComponent = () => (
@@ -93,7 +169,7 @@ function PlayersCard({
         3.2
       </Text>
 
-      <Text style={styles.levelText}>{convertToKFormat(50)} CAD</Text>
+      <Text style={styles.levelText}>{getCurrencyAndGameFee()}</Text>
     </View>
   );
 

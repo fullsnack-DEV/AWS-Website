@@ -79,7 +79,16 @@ function TopTileSection({
       authContext,
       Verbs.entityTypeTeam,
     );
-    setTeamSport(TeamSportList);
+
+    const OnlyTeamSport = TeamSportList.filter(
+      (item) => item.sport === item.sport_type,
+    );
+
+    setTeamSport(
+      authContext.entity.role === Verbs.entityTypeClub
+        ? OnlyTeamSport
+        : TeamSportList,
+    );
 
     const subscription = Dimensions.addEventListener('change', updateWidth);
     return () => {

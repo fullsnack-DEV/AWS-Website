@@ -2395,7 +2395,7 @@ export default {
   gameType: 'en_Game Type',
   refundPolicies: 'en_Refund Policies',
   gameRules: 'en_Game Rules',
-  availability: 'en_Availibility',
+  availability: 'en_Availability',
   // gameDuration: 'en_Game Duration',
   setPointDuration: 'en_Sets, points & Duration',
   logText: 'en_log',
@@ -3097,6 +3097,13 @@ export default {
   eventSendMessage: 'en_Send Message',
   alertMessageDeleteEvent: 'en_Are you sure you want to delete this event?',
   venuesAndCheckInPoint: 'en_Venues & Check-in Point',
+
   sendInvoice: 'en_Send Invoice',
   sendMessage: 'en_Send Message',
+
+  settingModaltitle: 'en_Upto 20 sports will be displayed in the filter bar. ',
+  limitedPermossionerror:
+    'en_The permission is limited: some actions are possible',
+  permissionDeniedandNotrequestable:
+    'en_The permission is denied and not requestable anymore',
 };

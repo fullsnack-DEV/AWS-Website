@@ -39,10 +39,10 @@ const styles = StyleSheet.create({
   },
   greyContainer: {
     paddingHorizontal: 10,
-    paddingVertical: 15,
     marginVertical: 35,
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
+    paddingVertical: 12,
   },
   bottomContainer: {
     flex: 1,

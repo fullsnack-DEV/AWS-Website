@@ -176,6 +176,7 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
           </View>
         </View>
         <Pressable
+          onPress={() => selectPlayer(item)}
           style={{
             height: 22,
             width: 22,
@@ -200,9 +201,9 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
     const isChecked = newList.includes(item.user_id);
 
     if (isChecked) {
-      newList = selectedList.filter((ele) => ele !== item.user_id);
+      newList = newList.filter((ele) => ele !== item.user_id);
     } else {
-      newList.push(item.user_id);
+      newList.unshift(item.user_id);
     }
 
     setSelectedList(newList);
@@ -301,7 +302,7 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
                       width: 45,
                     }}>
                     <GroupIcon
-                      imageUrl={item.thumbnail}
+                      imageUrl={user.thumbnail}
                       entityType={Verbs.entityTypePlayer}
                       containerStyle={styles.playerProfile}
                     />
@@ -316,7 +317,7 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
                       style={styles.closeIcon}
                     />
                   </Pressable>
-                  <Text style={styles.tagTitleText} numberOfLines={2}>
+                  <Text style={styles.tagTitleText} numberOfLines={1}>
                     {`${user.first_name} ${user.last_name}`}
                   </Text>
                 </View>

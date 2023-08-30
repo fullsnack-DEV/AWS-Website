@@ -36,7 +36,11 @@ import fonts from '../../../../Constants/Fonts';
 
 import TCLabel from '../../../../components/TCLabel';
 
-import {deleteConfirmation, showAlertWithoutTitle} from '../../../../utils';
+import {
+  deleteConfirmation,
+  showAlert,
+  showAlertWithoutTitle,
+} from '../../../../utils';
 
 import styles from './style';
 import LocationModal from '../../../../components/LocationModal/LocationModal';
@@ -311,12 +315,9 @@ export default function CreateClubForm1({navigation, route}) {
       cropping: true,
       cropperCircleOverlay: cropCircle,
     }).then((data) => {
-      // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
-        // setGroupProfile({ ...groupProfile, thumbnail: data.path })
         setThumbnail(data.path);
       } else {
-        // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
         setBackgroundThumbnail(data.path);
       }
     });
@@ -324,12 +325,8 @@ export default function CreateClubForm1({navigation, route}) {
 
   const deleteImage = () => {
     if (currentImageSelection === 1) {
-      // 1 means profile image
-      // setGroupProfile({ ...groupProfile, thumbnail: '', full_image: '' })
       setThumbnail();
     } else {
-      // 0 means profile image
-      // setGroupProfile({ ...groupProfile, background_thumbnail: '', background_full_image: '' })
       setBackgroundThumbnail();
     }
   };
@@ -340,64 +337,62 @@ export default function CreateClubForm1({navigation, route}) {
         ios: PERMISSIONS.IOS.CAMERA,
         android: PERMISSIONS.ANDROID.CAMERA,
       }),
-    ).then((result) => {
-      switch (result) {
-        case RESULTS.UNAVAILABLE:
-          Alert.alert(
-            'This feature is not available (on this device / in this context)',
-          );
-          break;
-        case RESULTS.DENIED:
-          request(PERMISSIONS.IOS.CAMERA).then(() => {
+    )
+      .then((result) => {
+        switch (result) {
+          case RESULTS.UNAVAILABLE:
+            showAlert(strings.thisFeaturesNotAvailableText);
+            break;
+          case RESULTS.DENIED:
+            request(PERMISSIONS.IOS.CAMERA).then(() => {
+              ImagePicker.openCamera({
+                width,
+                height,
+                cropping: true,
+              })
+                .then((data) => {
+                  if (currentImageSelection === 1) {
+                    setThumbnail(data.path);
+                  } else {
+                    setBackgroundThumbnail(data.path);
+                  }
+                })
+                .catch((e) => {
+                  showAlert(e.message);
+                });
+            });
+            break;
+          case RESULTS.LIMITED:
+            showAlert(strings.limitedPermossionerror);
+            break;
+          case RESULTS.GRANTED:
             ImagePicker.openCamera({
               width,
               height,
               cropping: true,
             })
               .then((data) => {
-                // 1 means profile, 0 - means background
                 if (currentImageSelection === 1) {
-                  // setGroupProfile({ ...groupProfile, thumbnail: data.path })
                   setThumbnail(data.path);
                 } else {
-                  // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
                   setBackgroundThumbnail(data.path);
                 }
               })
-              .catch(() => {});
-          });
-          break;
-        case RESULTS.LIMITED:
-          console.log('The permission is limited: some actions are possible');
-          break;
-        case RESULTS.GRANTED:
-          ImagePicker.openCamera({
-            width,
-            height,
-            cropping: true,
-          })
-            .then((data) => {
-              // 1 means profile, 0 - means background
-              if (currentImageSelection === 1) {
-                // setGroupProfile({ ...groupProfile, thumbnail: data.path })
-                setThumbnail(data.path);
-              } else {
-                // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
-                setBackgroundThumbnail(data.path);
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-          break;
-        case RESULTS.BLOCKED:
-          console.log('The permission is denied and not requestable anymore');
-          break;
+              .catch((e) => {
+                showAlert(e.message);
+              });
+            break;
+          case RESULTS.BLOCKED:
+            showAlert(strings.permissionDeniedandNotrequestable);
+            break;
 
-        default:
-          break;
-      }
-    });
+          default:
+            break;
+        }
+      })
+      .catch((error) => {
+        showAlert(error.message);
+      });
   };
 
   const animWidthPrecent = animProgress.interpolate({

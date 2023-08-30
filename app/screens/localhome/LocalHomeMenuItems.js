@@ -258,6 +258,29 @@ const LocalHomeMenuItems = memo(
       }
     };
 
+    function expandUsersWithSports(users) {
+      const expandedData = [];
+
+      for (const user of users) {
+        if (user.registered_sports && user.registered_sports.length > 0) {
+          for (const sport of user.registered_sports) {
+            if (
+              sport.sport_type === Verbs.sportTypeSingle &&
+              sport.setting.availibility === Verbs.on
+            ) {
+              const newUser = {...user};
+              newUser.registered_sports = [sport];
+              expandedData.push(newUser);
+            }
+          }
+        } else {
+          expandedData.push(user);
+        }
+      }
+
+      return expandedData;
+    }
+
     const RenderMenuItem = (items) => {
       switch (items.key) {
         case strings.rankingInWorld:
@@ -517,6 +540,9 @@ const LocalHomeMenuItems = memo(
           );
 
         case strings.playersAvailableforChallenge:
+          // eslint-disable-next-line no-case-declarations
+          const modifiedPlayers = expandUsersWithSports(items.data);
+
           return (
             <>
               {((authContext.entity.role === Verbs.entityTypeUser &&
@@ -532,7 +558,16 @@ const LocalHomeMenuItems = memo(
                     onPress={() => onTitlePress(item)}
                   />
                   <FlatList
-                    data={items.data}
+                    data={
+                      selectedSport === strings.allSport
+                        ? modifiedPlayers
+                        : items.data
+                    }
+                    extraData={
+                      selectedSport === strings.allSport
+                        ? modifiedPlayers
+                        : items.data
+                    }
                     horizontal={true}
                     scrollEnabled={items.data.length > 0}
                     contentContainerStyle={{paddingVertical: 6}}

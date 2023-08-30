@@ -208,7 +208,11 @@ const WrapperModal = ({
   };
 
   return (
-    <Modal visible={isVisible} transparent animationType="slide">
+    <Modal
+      visible={isVisible}
+      transparent
+      animationType="slide"
+      onRequestClose={closeModal}>
       <View style={styles.parent}>
         <View style={styles.card}>
           <ScreenHeader

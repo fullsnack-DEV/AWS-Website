@@ -176,6 +176,8 @@ const CustomModalWrapper = ({
         return [styles.card, {flex: 1}, parentStyle];
 
       case ModalTypes.style2:
+        return [styles.card];
+
       case ModalTypes.style3:
         return [styles.card, {flex: 1}];
       case ModalTypes.style4:
@@ -195,7 +197,7 @@ const CustomModalWrapper = ({
       collapsable
       transparent
       animationType="fade"
-      onRequestClose={handleCloseModal}>
+      onRequestClose={() => handleCloseModal()}>
       <GestureHandlerRootView style={{flex: 1}}>
         <Pressable
           style={[styles.parent, {paddingTop: Top}]}

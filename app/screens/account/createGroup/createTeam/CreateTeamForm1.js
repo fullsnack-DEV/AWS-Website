@@ -13,7 +13,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   FlatList,
   Text,
   Dimensions,
@@ -47,6 +46,7 @@ import {
   getHitSlop,
   groupMemberGenderItems,
   languageList,
+  showAlert,
   showAlertWithoutTitle,
 } from '../../../../utils';
 
@@ -251,12 +251,9 @@ export default function CreateTeamForm1({navigation, route}) {
       cropping: true,
       cropperCircleOverlay: cropCircle,
     }).then((data) => {
-      // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
-        // setGroupProfile({ ...groupProfile, thumbnail: data.path })
         setThumbnail(data.path);
       } else {
-        // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
         setBackgroundThumbnail(data.path);
       }
     });
@@ -277,7 +274,8 @@ export default function CreateTeamForm1({navigation, route}) {
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            Alert.alert(strings.thisFeaturesNotAvailableText);
+            showAlert(strings.thisFeaturesNotAvailableText);
+
             break;
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
@@ -289,15 +287,13 @@ export default function CreateTeamForm1({navigation, route}) {
                 .then((data) => {
                   // 1 means profile, 0 - means background
                   if (currentImageSelection === 1) {
-                    // setGroupProfile({ ...groupProfile, thumbnail: data.path })
                     setThumbnail(data.path);
                   } else {
-                    // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
                     setBackgroundThumbnail(data.path);
                   }
                 })
                 .catch((e) => {
-                  console.log(e);
+                  showAlert(e.message);
                 });
             });
             break;
@@ -314,17 +310,15 @@ export default function CreateTeamForm1({navigation, route}) {
               .then((data) => {
                 // 1 means profile, 0 - means background
                 if (currentImageSelection === 1) {
-                  // setGroupProfile({ ...groupProfile, thumbnail: data.path })
                   setThumbnail(data.path);
                 } else {
-                  // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
                   setBackgroundThumbnail(data.path);
                 }
               })
               .catch((e) => {
-                Alert.alert(strings.alertmessagetitle, e.message, [
-                  {text: strings.okTitleText},
-                ]);
+
+                showAlert(e.message);
+
               });
             break;
           case RESULTS.BLOCKED:
@@ -336,9 +330,9 @@ export default function CreateTeamForm1({navigation, route}) {
         }
       })
       .catch((error) => {
-        Alert.alert(strings.alertmessagetitle, error.message, [
-          {text: strings.okTitleText},
-        ]);
+
+        showAlert(error.message);
+
       });
   };
 

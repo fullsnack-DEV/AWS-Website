@@ -399,7 +399,7 @@ const HomeScreen = ({navigation, route}) => {
               }}>
               <Image
                 source={images.newchatIcon}
-                style={{width: 25, height: 25}}
+                style={{width: 18, height: 18, marginTop: 4}}
               />
             </Pressable>
           ) : null}

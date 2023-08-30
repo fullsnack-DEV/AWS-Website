@@ -703,6 +703,10 @@ const getSportsForHome = (
 };
 
 const convertToKFormat = (number) => {
+  if (typeof number === 'undefined') {
+    return '';
+  }
+
   if (number >= 1000) {
     const suffixes = ['', 'k', 'm', 'b', 't'];
     const suffixNum = Math.floor(`${number}`?.length / 3);
@@ -714,9 +718,9 @@ const convertToKFormat = (number) => {
     }
     return shortValue + suffixes[suffixNum];
   }
+
   return number.toString();
 };
-
 const getEventOccuranceFromRule = (event) => {
   const ruleObj = RRule.parseString(event.rrule);
   ruleObj.dtstart = getJSDate(event.start_datetime);

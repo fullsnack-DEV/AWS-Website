@@ -32,7 +32,6 @@ import {widthPercentageToDP} from '../../utils';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
 import {getUserSettings} from '../../api/Users';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import LocationModal from '../../components/LocationModal/LocationModal';
@@ -141,6 +140,19 @@ function LocalHomeScreen({navigation, route}) {
   useEffect(() => {
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       setSelectedSport(authContext.entity.obj.sport);
+    }
+    if (
+      authContext.entity.role === Verbs.entityTypeUser ||
+      authContext.entity.role === Verbs.entityTypePlayer
+    ) {
+      setSelectedSport(strings.allSport);
+      return;
+    }
+    if (
+      authContext.entity.role === Verbs.entityTypeClub &&
+      authContext.entity.obj.sports.length !== 1
+    ) {
+      setSelectedSport(strings.allSport);
     }
   }, [
     authContext.entity.obj.sport,
@@ -302,23 +314,12 @@ function LocalHomeScreen({navigation, route}) {
   }, [route.params?.locationText]);
 
   const setSportHandler = (data) => {
-    setSports(data);
+    const filteredData = data.filter((item) => item.sport !== undefined);
+    setSports(filteredData);
   };
 
   useEffect(() => {
     getSportsForHome(authContext, setSportHandler, sports, setSportIconLoader);
-    if (
-      authContext.enity === Verbs.entityTypeUser ||
-      authContext.enity === Verbs.entityTypePlayer
-    ) {
-      setSelectedSport(strings.allSport);
-    }
-    if (
-      authContext.entity.role === Verbs.entityTypeClub &&
-      authContext.entity.obj.sports.length !== 1
-    ) {
-      setSelectedSport(strings.allSport);
-    }
   }, [authContext.entity]);
 
   useEffect(() => {
@@ -552,9 +553,11 @@ function LocalHomeScreen({navigation, route}) {
 
   const getLocation = () => {
     setloading(true);
+
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
         setloading(false);
+
         if (currentLocation.position) {
           setLocation(
             currentLocation.city?.charAt(0).toUpperCase() +
@@ -566,7 +569,6 @@ function LocalHomeScreen({navigation, route}) {
               currentLocation.city?.charAt(0).toUpperCase() +
               currentLocation.city?.slice(1),
           });
-          setSelectedLocationOption(0);
         }
       })
       .catch((e) => {
@@ -680,7 +682,6 @@ function LocalHomeScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ActivityLoader visible={loading} />
       <View
         pointerEvents={pointEvent}
         style={{
@@ -768,8 +769,11 @@ function LocalHomeScreen({navigation, route}) {
         <TouchableWithoutFeedback
           onPress={() => {
             navigation.setParams({locationText: null});
+            setSelectedLocationOption(0);
             getLocation();
+
             setTimeout(() => {
+              // getLocation();
               setLocationPopup(false);
             }, 300);
           }}>
@@ -802,6 +806,7 @@ function LocalHomeScreen({navigation, route}) {
         <TouchableWithoutFeedback
           onPress={() => {
             setSelectedLocationOption(1);
+
             setLocation(
               authContext.entity.obj.city?.charAt(0).toUpperCase() +
                 authContext.entity.obj.city?.slice(1),
@@ -836,6 +841,7 @@ function LocalHomeScreen({navigation, route}) {
         <TouchableWithoutFeedback
           onPress={() => {
             setSelectedLocationOption(2);
+
             navigation.setParams({locationText: null});
             setLocation(strings.worldTitleText);
             setFilters({

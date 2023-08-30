@@ -426,14 +426,14 @@ export default function WelcomeScreen({navigation}) {
       setloading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // sign in was cancelled
-        Alert.alert(strings.signInCancelled);
+        Utility.showAlert(strings.signInCancelled);
       } else if (error.code === statusCodes.IN_PROGRESS) {
         // operation in progress already
-        Alert.alert(strings.inProgress);
+        Utility.showAlert(strings.strings.inProgress);
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert(strings.playServiceNotAvailable);
+        Utility.showAlert(strings.playServiceNotAvailable);
       } else {
-        Alert.alert(strings.defaultError, error.toString());
+        Utility.showAlert(error.toString());
       }
     }
   };
@@ -455,14 +455,14 @@ export default function WelcomeScreen({navigation}) {
       setloading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // sign in was cancelled
-        Alert.alert(strings.signInCancelled);
+        Utility.showAlert(strings.signInCancelled);
       } else if (error.code === statusCodes.IN_PROGRESS) {
+        Utility.showAlert(strings.inProgress);
         // operation in progress already
-        Alert.alert(strings.inProgress);
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert(strings.playServiceNotAvailable);
+        Utility.showAlert(strings.playServiceNotAvailable);
       } else {
-        Alert.alert(strings.defaultError, error.toString());
+        Utility.showAlert(error.toString());
       }
     }
   };
@@ -511,7 +511,7 @@ export default function WelcomeScreen({navigation}) {
   const handleIOSAppleLogin = async () => {
     try {
       if (!appleAuth.isSupported) {
-        Alert.alert(strings.appleLoginNotSupported);
+        Utility.showAlert(strings.appleLoginNotSupported);
       } else {
         setloading(true);
         const appleAuthRequestResponse = await appleAuth.performRequest({
@@ -523,7 +523,7 @@ export default function WelcomeScreen({navigation}) {
         if (!appleAuthRequestResponse?.identityToken) {
           setloading(false);
           setTimeout(() => {
-            Alert.alert(strings.appleSignInFailed);
+            Utility.showAlert(strings.appleSignInFailed);
           }, 10);
         } else {
           const {identityToken, nonce} = appleAuthRequestResponse;
@@ -555,7 +555,8 @@ export default function WelcomeScreen({navigation}) {
   async function handleAndroidAppleLogin() {
     try {
       if (!appleAuthAndroid?.isSupported) {
-        Alert.alert(strings.appleLoginNotSupported);
+        Utility.showAlert(strings.appleLoginNotSupported);
+
         setloading(false);
       } else {
         // Generate secure, random values for state and nonce
@@ -606,7 +607,7 @@ export default function WelcomeScreen({navigation}) {
     } catch (e) {
       setloading(false);
 
-      Alert.alert(e.message);
+      Utility.showAlert(e.message);
     }
     // Send the authorization code to your backend for verification
   }
