@@ -4,7 +4,6 @@ import React, {useCallback, useState, useEffect, useContext} from 'react';
 import {
   View,
   StyleSheet,
-  FlatList,
   Image,
   Text,
   TouchableWithoutFeedback,
@@ -13,7 +12,9 @@ import {
   TextInput,
   SafeAreaView,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
@@ -52,6 +53,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
   const [imageBaseUrl, setImageBaseUrl] = useState('');
   const [playerDetailPopup, setPlayerDetailPopup] = useState();
   const [playerDetail, setPlayerDetail] = useState();
+  const [smallLoader, setSmallLoader] = useState(false);
 
   useEffect(() => {
     getStorage('appSetting').then((setting) => {
@@ -71,7 +73,8 @@ export default function ScorekeeperListScreen({navigation, route}) {
         ...getSportList(authContext.sports, Verbs.entityTypeReferee),
       ]);
     } else if (authContext.entity.role === Verbs.entityTypeClub) {
-      setSports([...defaultSport, ...authContext.entity.obj.sports]);
+      const clubSports = Utility.getClubRegisterSportsList(authContext);
+      setSports([...defaultSport, ...clubSports]);
     }
   }, [authContext]);
 
@@ -104,6 +107,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
   };
   const getScorekeepers = useCallback(
     (filerScorekeeper) => {
+      setSmallLoader(true);
       const scorekeeperQuery = {
         size: pageSize,
         from: pageFrom,
@@ -180,6 +184,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
       // Scorekeeper query
       getUserIndex(scorekeeperQuery)
         .then((res) => {
+          setSmallLoader(false);
           if (res.length > 0) {
             const modifiedResult = modifiedScoreKeeperElasticSearchResult(res);
             const fetchedData = [...scorekeepers, ...modifiedResult];
@@ -192,6 +197,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
           }
         })
         .catch((e) => {
+          setSmallLoader(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -403,14 +409,22 @@ export default function ScorekeeperListScreen({navigation, route}) {
 
   const listEmptyComponent = () => (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text
-        style={{
-          fontFamily: fonts.RRegular,
-          color: colors.grayColor,
-          fontSize: 26,
-        }}>
-        {strings.noScorekeeper}
-      </Text>
+      {smallLoader ? (
+        <ActivityIndicator
+          style={styles.loaderStyle}
+          size="small"
+          color="#000000"
+        />
+      ) : (
+        <Text
+          style={{
+            fontFamily: fonts.RRegular,
+            color: colors.grayColor,
+            fontSize: 26,
+          }}>
+          {strings.noScorekeeper}
+        </Text>
+      )}
     </View>
   );
   const sportsView = (item) => (
@@ -667,5 +681,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 5,
+  },
+  loaderStyle: {
+    height: 25,
+    width: 25,
+    marginBottom: 10,
+    marginTop: 5,
   },
 });

@@ -76,6 +76,12 @@ const getDataForNextScreen = (
   }
 
   if (type === 'teamData' && authContext.entity.role === Verbs.entityTypeTeam) {
+    const filterObject = {
+      sport: filters.sport,
+      sport_type: filters.sport_type,
+      location,
+      locationOption: getLocation(),
+    };
     const data = {
       teamSportData: {
         sport:
@@ -91,8 +97,7 @@ const getDataForNextScreen = (
             ? setSportName()
             : filters.sport_name,
       },
-      location,
-      locationOption: getLocation(),
+      filters: filterObject,
     };
     return data;
   }

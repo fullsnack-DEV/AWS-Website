@@ -2638,6 +2638,13 @@ export const getPostData = (post = {}) => {
   return {};
 };
 
+export const getClubRegisterSportsList = (authContext) => {
+  const clubSports = authContext.entity.obj.sports.map((obj) => ({
+    ...obj,
+    sport_name: getSportName(obj, authContext),
+  }));
+  return clubSports;
+};
 export const prepareTagName = (data = {}) => {
   let tagName = '';
   if (data.group_name) {
@@ -2649,4 +2656,5 @@ export const prepareTagName = (data = {}) => {
   }
 
   return `@${tagName} `;
+
 };

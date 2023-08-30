@@ -2,7 +2,6 @@ import React, {useState, useCallback, useEffect, useMemo} from 'react';
 import {
   View,
   StyleSheet,
-  FlatList,
   Image,
   TouchableOpacity,
   Text,
@@ -16,6 +15,7 @@ import {
   Pressable,
   SectionList,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import FastImage from 'react-native-fast-image';
@@ -40,7 +40,6 @@ import fonts from '../../Constants/Fonts';
 import {widthPercentageToDP, getJSDate} from '../../utils';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
-
 const SearchModal = ({
   favoriteSportsList,
   fType,
@@ -621,6 +620,8 @@ const SearchModal = ({
                         }}>
                         <View style={styles.searchCityContainer}>
                           <Text
+                            ellipsizeMode="tail"
+                            numberOfLines={1}
                             style={[
                               styles.searchCityText,
                               {
@@ -1294,8 +1295,10 @@ const styles = StyleSheet.create({
     height: 40,
     paddingLeft: 15,
     paddingRight: 15,
-    width: 300,
+    // width: 300,
     justifyContent: 'center',
+    flex: 1,
+    marginRight: 13,
   },
   sportsContainer: {
     backgroundColor: colors.lightGrey,
