@@ -3106,4 +3106,8 @@ export default {
     'en_The permission is limited: some actions are possible',
   permissionDeniedandNotrequestable:
     'en_The permission is denied and not requestable anymore',
+  addOrDelete: 'en_Add or Delete',
+  editFavSportTitle: 'en_Edit Favorite Sports',
+  addorDeleteFavSportTitle: 'en_Add or Delete Favorite Sports',
+  only20SportsAlert: 'en_You can select up to 20 sports',
 };

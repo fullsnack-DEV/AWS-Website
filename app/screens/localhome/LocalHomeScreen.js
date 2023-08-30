@@ -492,6 +492,7 @@ function LocalHomeScreen({navigation, route}) {
 
       if (item.sport === strings.editType) {
         // Handle editType logic
+        setSettingPopup(true);
       } else {
         setSelectedSport(item.sport);
         setSportType(item.sport_type);
@@ -922,6 +923,12 @@ function LocalHomeScreen({navigation, route}) {
       <EditFilterModal
         visible={settingPopup}
         onClose={() => setSettingPopup(false)}
+        sportList={sports}
+        image_base_url={image_base_url}
+        authContext={authContext}
+        onApplyPress={(sport) => {
+          setSports([...sport]);
+        }}
       />
 
       {/* Sport List Modal */}
