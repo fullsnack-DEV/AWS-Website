@@ -67,6 +67,8 @@ import TCTextField from '../../../components/TCTextField';
 import MemberProfileShimmer from './MemberProfileShimmer';
 import SwitchAccountLoader from '../../../components/account/SwitchAccountLoader';
 import useSwitchAccount from '../../../hooks/useSwitchAccount';
+import {InvoiceType} from '../../../Constants/GeneralConstants';
+import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
@@ -75,6 +77,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const isFocused = useIsFocused();
   const [loading, setloading] = useState(false);
+  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
   const [firstTimeLoad, setFirstTimeLoad] = useState(true);
   const [editProfile, setEditProfile] = useState(false);
   const [editBasicInfo, setEditBasicInfo] = useState(false);
@@ -117,7 +120,7 @@ export default function MembersProfileScreen({navigation, route}) {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => SetSendNewInvoice(true)}>
               <Image
                 source={images.invoiceIcon}
                 style={[
@@ -364,7 +367,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const deleteMemberValidations = (groupId, memberId) => {
     const adminCount = members.filter((item) => item.is_admin === true);
-    console.log('member ==>', memberDetail);
+
     if (
       members.length === 1 &&
       adminCount.length === 1 &&
@@ -1756,6 +1759,14 @@ export default function MembersProfileScreen({navigation, route}) {
           )}
         </>
       )}
+
+      <SendNewInvoiceModal
+        isVisible={sendNewInvoice}
+        invoiceType={InvoiceType.SingleInvoice}
+        onClose={() => SetSendNewInvoice(false)}
+        isSingleInvoice={true}
+        member={memberDetail}
+      />
     </SafeAreaView>
   );
 }

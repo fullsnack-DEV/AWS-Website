@@ -1,6 +1,14 @@
 /* eslint-disable array-callback-return */
 import React, {useState, useEffect, useContext} from 'react';
-import {View, StyleSheet, Alert, Text, Image, FlatList} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Alert,
+  Text,
+  Image,
+  FlatList,
+  SafeAreaView,
+} from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -102,7 +110,6 @@ export default function PaymentMethodsScreen({navigation, route}) {
                 setloading(false);
               })
               .catch((e) => {
-                console.log('error in payment method onDeleteCard', e);
                 setloading(false);
                 setTimeout(() => {
                   Alert.alert(strings.alertmessagetitle, e.message);
@@ -307,7 +314,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
   );
 
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <ScreenHeader
         title={strings.paymentMethod}
@@ -347,7 +354,7 @@ export default function PaymentMethodsScreen({navigation, route}) {
           showsHorizontalScrollIndicator={false}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

@@ -36,6 +36,7 @@ import UserListShimmer from '../../components/shimmer/commonComponents/UserListS
 import {getGroupSportName} from '../../utils/sportsActivityUtils';
 import Verbs from '../../Constants/Verbs';
 import SelectedMatchList from '../../components/newsFeed/SelectedMatchList';
+import {getTaggedEntityData, prepareTagName} from '../../utils';
 
 const tabList = [
   strings.peopleTitleText,
@@ -137,15 +138,16 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   }, [isFocused, fetchData]);
 
   useEffect(() => {
-    if (isFocused && route.params.gameTags && route.params.tagsOfEntity) {
-      const entityDataArray = route.params.tagsOfEntity.map(
-        (item) => item.entity_data,
-      );
-      setSeletedEntity([...entityDataArray]);
-
+    if (isFocused && route.params.gameTags?.length > 0) {
       setSelectedMatch([...route.params.gameTags]);
     }
-  }, [isFocused, route.params]);
+  }, [isFocused, route.params.gameTags]);
+
+  useEffect(() => {
+    if (isFocused && route.params.tagsOfEntity?.length > 0) {
+      setSeletedEntity([...route.params.tagsOfEntity]);
+    }
+  }, [isFocused, route.params.tagsOfEntity]);
 
   const filterData = (searchValue = '') => {
     if (!searchValue) {
@@ -278,10 +280,25 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           newList = newList.filter((item) => item.group_id !== data.group_id);
         }
       } else {
-        newList = [...list, data];
+        const entity_data = getTaggedEntityData({}, data);
+        entity_data.tagged_formatted_name = prepareTagName(data);
+        const finalObj = {
+          entity_data,
+          entity_type: data.entity_type ?? Verbs.entityTypePlayer,
+          entity_id: data.user_id ?? data.group_id,
+        };
+
+        newList = [...list, finalObj];
       }
     } else {
-      newList.push(data);
+      const entity_data = getTaggedEntityData({}, data);
+      entity_data.tagged_formatted_name = prepareTagName(data);
+      const finalObj = {
+        entity_data,
+        entity_type: data.entity_type ?? Verbs.entityTypePlayer,
+        entity_id: data.user_id ?? data.group_id,
+      };
+      newList.push(finalObj);
     }
 
     setSeletedEntity([...newList]);
@@ -352,7 +369,12 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       <SelectedTagList
         dataSource={seletedEntity}
         onTagCancelPress={({item}) => {
-          handleSelection(item);
+          const list =
+            currentTab === strings.matchesTitleText ? [] : [...seletedEntity];
+          const newList = list.filter(
+            (ele) => ele.entity_id !== item.entity_id,
+          );
+          setSeletedEntity([...newList]);
         }}
       />
     ) : null;
@@ -376,12 +398,12 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         isRightIconText
         rightButtonText={strings.done}
         onRightButtonPress={() =>
-          navigation.navigate('WritePostScreen', {
-            postData,
+          navigation.navigate(route.params.comeFrom, {
             selectedImageList: [],
+            ...route.params.routeParams,
+            postData,
             selectedTagList: seletedEntity,
             selectedMatchTags: selectedMatch,
-            ...route.params.routeParams,
           })
         }
       />

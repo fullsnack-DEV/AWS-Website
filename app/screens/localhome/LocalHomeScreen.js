@@ -32,7 +32,6 @@ import {widthPercentageToDP} from '../../utils';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
 import {getUserSettings} from '../../api/Users';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import LocationModal from '../../components/LocationModal/LocationModal';
@@ -59,6 +58,7 @@ import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 import BottomSheet from '../../components/modals/BottomSheet';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
+import InviteMemberModal from '../../components/InviteMemberModal';
 
 const defaultPageSize = 10;
 
@@ -77,7 +77,11 @@ function LocalHomeScreen({navigation, route}) {
     authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
       authContext?.entity?.obj?.city?.slice(1),
   );
-  const [selectedSport, setSelectedSport] = useState(strings.allType);
+  const [selectedSport, setSelectedSport] = useState(
+    authContext.entity.obj.entity_type === Verbs.entityTypeTeam
+      ? authContext.entity.obj.sport
+      : strings.allType,
+  );
   const [sportType, setSportType] = useState(strings.allType);
   const [settingPopup, setSettingPopup] = useState(false);
   const [recentMatch, setRecentMatch] = useState([]);
@@ -123,6 +127,7 @@ function LocalHomeScreen({navigation, route}) {
   const [owners, setOwners] = useState([]);
   const [sportIconLoader, setSportIconLoader] = useState(false);
   const [cardLoader, setCardLoader] = useState(false);
+  const [showInviteMember, setShowInviteMember] = useState(false);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -136,6 +141,19 @@ function LocalHomeScreen({navigation, route}) {
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       setSelectedSport(authContext.entity.obj.sport);
       setSportType(authContext.entity.obj.sport_type);
+    }
+    if (
+      authContext.entity.role === Verbs.entityTypeUser ||
+      authContext.entity.role === Verbs.entityTypePlayer
+    ) {
+      setSelectedSport(strings.allSport);
+      return;
+    }
+    if (
+      authContext.entity.role === Verbs.entityTypeClub &&
+      authContext.entity.obj.sports.length !== 1
+    ) {
+      setSelectedSport(strings.allSport);
     }
   }, [
     authContext.entity.obj.sport,
@@ -298,12 +316,12 @@ function LocalHomeScreen({navigation, route}) {
   }, [route.params?.locationText]);
 
   const setSportHandler = (data) => {
-    setSports(data);
+    const filteredData = data.filter((item) => item.sport !== undefined);
+    setSports(filteredData);
   };
 
   useEffect(() => {
     getSportsForHome(authContext, setSportHandler, sports, setSportIconLoader);
-    setSelectedSport(strings.allType);
   }, [authContext.entity]);
 
   useEffect(() => {
@@ -444,11 +462,22 @@ function LocalHomeScreen({navigation, route}) {
     }
     if (item.title === strings.createEventhomeTitle) {
       navigation.navigate('Schedule', {
-        screen: 'EventScheduleScreen',
+        screen: 'CreateEventScreen',
+        params: {
+          comeName: '',
+        },
+      });
+    }
+    if (item.title === strings.createevents) {
+      navigation.navigate('Schedule', {
+        screen: 'CreateEventScreen',
+        params: {
+          comeName: '',
+        },
       });
     }
     if (item.title === strings.inviteMemberClub) {
-      navigation.navigate('InviteMembersBySearchScreen');
+      setShowInviteMember(true);
     }
   };
 
@@ -458,6 +487,7 @@ function LocalHomeScreen({navigation, route}) {
 
       if (item.sport === strings.editType) {
         // Handle editType logic
+        setSettingPopup(true);
       } else {
         setSelectedSport(item.sport);
         setSportType(item.sport_type);
@@ -519,9 +549,11 @@ function LocalHomeScreen({navigation, route}) {
 
   const getLocation = () => {
     setloading(true);
+
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((currentLocation) => {
         setloading(false);
+
         if (currentLocation.position) {
           setLocation(
             currentLocation.city?.charAt(0).toUpperCase() +
@@ -533,7 +565,6 @@ function LocalHomeScreen({navigation, route}) {
               currentLocation.city?.charAt(0).toUpperCase() +
               currentLocation.city?.slice(1),
           });
-          setSelectedLocationOption(0);
         }
       })
       .catch((e) => {
@@ -647,7 +678,6 @@ function LocalHomeScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ActivityLoader visible={loading} />
       <View
         pointerEvents={pointEvent}
         style={{
@@ -735,8 +765,11 @@ function LocalHomeScreen({navigation, route}) {
         <TouchableWithoutFeedback
           onPress={() => {
             navigation.setParams({locationText: null});
+            setSelectedLocationOption(0);
             getLocation();
+
             setTimeout(() => {
+              // getLocation();
               setLocationPopup(false);
             }, 300);
           }}>
@@ -769,6 +802,7 @@ function LocalHomeScreen({navigation, route}) {
         <TouchableWithoutFeedback
           onPress={() => {
             setSelectedLocationOption(1);
+
             setLocation(
               authContext.entity.obj.city?.charAt(0).toUpperCase() +
                 authContext.entity.obj.city?.slice(1),
@@ -803,6 +837,7 @@ function LocalHomeScreen({navigation, route}) {
         <TouchableWithoutFeedback
           onPress={() => {
             setSelectedLocationOption(2);
+
             navigation.setParams({locationText: null});
             setLocation(strings.worldTitleText);
             setFilters({
@@ -883,6 +918,12 @@ function LocalHomeScreen({navigation, route}) {
       <EditFilterModal
         visible={settingPopup}
         onClose={() => setSettingPopup(false)}
+        sportList={sports}
+        image_base_url={image_base_url}
+        authContext={authContext}
+        onApplyPress={(sport) => {
+          setSports([...sport]);
+        }}
       />
 
       {/* Sport List Modal */}
@@ -926,9 +967,13 @@ function LocalHomeScreen({navigation, route}) {
           }
         }}
       />
+      <InviteMemberModal
+        isVisible={showInviteMember}
+        closeModal={() => setShowInviteMember(false)}
+      />
 
       <BottomSheet
-        optionList={[strings.createTeamText, strings.addTeamClub]}
+        optionList={[strings.createTeamText, strings.inviteTeam]}
         isVisible={showBottomSheet}
         closeModal={() => setBottomSheet(false)}
         onSelect={(option) => {

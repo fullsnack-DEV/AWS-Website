@@ -2637,10 +2637,24 @@ export const getPostData = (post = {}) => {
   }
   return {};
 };
+
 export const getClubRegisterSportsList = (authContext) => {
   const clubSports = authContext.entity.obj.sports.map((obj) => ({
     ...obj,
     sport_name: getSportName(obj, authContext),
   }));
   return clubSports;
+};
+export const prepareTagName = (data = {}) => {
+  let tagName = '';
+  if (data.group_name) {
+    tagName = _.startCase(_.toLower(data.group_name))?.replace(/ /g, '');
+  } else {
+    const fName = _.startCase(_.toLower(data.first_name))?.replace(/ /g, '');
+    const lName = _.startCase(_.toLower(data.last_name))?.replace(/ /g, '');
+    tagName = `${fName}${lName}`;
+  }
+
+  return `@${tagName} `;
+
 };

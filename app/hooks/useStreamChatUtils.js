@@ -14,7 +14,11 @@ const useStreamChatUtils = () => {
   const entity = {...authContext.entity.obj};
   const entityId = entity.user_id ?? entity.group_id;
 
-  const fetchEntityMember = async (entity_id, entityType) => {
+  const fetchEntityMember = async (
+    entity_id,
+    entityType,
+    isGeneralChat = false,
+  ) => {
     let list = [];
     if (
       entityType === Verbs.entityTypePlayer ||
@@ -24,7 +28,9 @@ const useStreamChatUtils = () => {
         {
           user_id: entity_id,
           channel_role:
-            entityId === entity_id ? 'channel_moderator' : 'channel_member',
+            entityId === entity_id || isGeneralChat
+              ? 'channel_moderator'
+              : 'channel_member',
         },
       ];
     } else {
@@ -43,7 +49,9 @@ const useStreamChatUtils = () => {
             groupMembers.push({
               user_id: adminId,
               channel_role:
-                entityId === entity_id ? 'channel_moderator' : 'channel_member',
+                entityId === entity_id || isGeneralChat
+                  ? 'channel_moderator'
+                  : 'channel_member',
             });
           }
         }
@@ -55,9 +63,9 @@ const useStreamChatUtils = () => {
     return list;
   };
 
-  const fetchMembers = async (inviteeData = []) => {
+  const fetchMembers = async (inviteeData = [], isGeneralChat = false) => {
     const promisesArr = inviteeData.map((invitee) =>
-      fetchEntityMember(invitee.id, invitee.entityType),
+      fetchEntityMember(invitee.id, invitee.entityType, isGeneralChat),
     );
     const inviteeMembers = await Promise.all(promisesArr);
 
@@ -104,8 +112,15 @@ const useStreamChatUtils = () => {
         ? generateUUID()
         : prepareChannelId(entityId, inviteeId);
 
-    const entityList = await fetchEntityMember(entityId, entity.entity_type);
-    const members = await fetchMembers(inviteesList);
+    const entityList = await fetchEntityMember(
+      entityId,
+      entity.entity_type,
+      groupType === Verbs.channelTypeGeneral,
+    );
+    const members = await fetchMembers(
+      inviteesList,
+      groupType === Verbs.channelTypeGeneral,
+    );
     const memberList = [...entityList, ...members];
 
     const channel = await createStreamChatChannel({
@@ -121,12 +136,16 @@ const useStreamChatUtils = () => {
     return channel;
   };
 
-  const addMembersToChannel = async ({channel = {}, newMembers = []}) => {
+  const addMembersToChannel = async ({
+    channel = {},
+    newMembers = [],
+    isGeneralChat = false,
+  }) => {
     setLoading(true);
-    const members = await fetchMembers(newMembers);
-    await channel.addMembers([...members]);
+    const members = await fetchMembers(newMembers, isGeneralChat);
+    const response = await channel.addMembers([...members]);
     setLoading(false);
-    return true;
+    return response;
   };
 
   return {
@@ -134,6 +153,7 @@ const useStreamChatUtils = () => {
     isCreatingChannel: loading,
     addMembersToChannel,
     isMemberAdding: loading,
+    fetchMembers,
   };
 };
 

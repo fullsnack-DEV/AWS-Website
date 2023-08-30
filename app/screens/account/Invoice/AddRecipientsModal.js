@@ -59,7 +59,10 @@ const AddRecipientsModal = ({
       setSearchText('');
       setSearchPeoples(recipientMembers);
       setSearchTeams(recipientTeams);
-      if (invoiceType === InvoiceType.Invoice) {
+      if (
+        invoiceType === InvoiceType.Invoice ||
+        invoiceType === InvoiceType.Event
+      ) {
         const l_selectedPeoples = [];
         const l_selectedTeams = [];
         recipientMembers.forEach((recipient) => {
@@ -113,11 +116,14 @@ const AddRecipientsModal = ({
 
   const showSelectedRecipientsText = () => {
     let returnStr = '';
-    if (invoiceType === InvoiceType.Invoice) {
+    if (
+      invoiceType === InvoiceType.Invoice ||
+      invoiceType === InvoiceType.Event
+    ) {
       if (selectedPeoples.length > 0) {
         returnStr =
           selectedPeoples.length === 1
-            ? `1 ${strings.Person}`
+            ? `1 ${strings.person}`
             : `${selectedPeoples.length} ${strings.PeopleText}`;
       }
 
@@ -134,8 +140,6 @@ const AddRecipientsModal = ({
       } else if (returnStr.length > 0) {
         returnStr = `${returnStr} ${strings.selected}`;
       }
-    } else if (invoiceType === InvoiceType.Event) {
-      returnStr = `${selectedAttendees.length} ${strings.people}`;
     }
 
     if (returnStr.length > 0) {
@@ -200,7 +204,10 @@ const AddRecipientsModal = ({
   };
 
   const selectCurrentEntity = ({item, index}) => {
-    if (invoiceType === InvoiceType.Invoice) {
+    if (
+      invoiceType === InvoiceType.Invoice ||
+      invoiceType === InvoiceType.Event
+    ) {
       if (
         selectedPeoples.length + selectedTeams.length >
           Verbs.MAXIMUM_RECIPIENT_INVOICE - 1 &&
@@ -237,7 +244,7 @@ const AddRecipientsModal = ({
   };
 
   const selectMembers = () => {
-    if (invoiceType === InvoiceType.Invoice) {
+    if (invoiceType === InvoiceType.Event) {
       if (currentTab === InvoiceRecipientTabType.Teams) {
         const l_selectedTeams = [];
         if (selectedTeams.length !== recipientTeams.length) {
@@ -374,7 +381,11 @@ const AddRecipientsModal = ({
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
       title={modalTitle || strings.newRecipents}
-      containerStyle={{padding: 0, width: '100%', height: '100%'}}
+      containerStyle={{
+        padding: 0,
+        width: '100%',
+        height: '100%',
+      }}
       headerRightButtonText={rightbuttonText || strings.done}
       onRightButtonPress={() => onAddRecipients()}
       Top={75}>
@@ -423,7 +434,8 @@ const AddRecipientsModal = ({
 
       {showCurrentGroupAllMember()}
 
-      {invoiceType === InvoiceType.Invoice && (
+      {(invoiceType === InvoiceType.Invoice ||
+        invoiceType === InvoiceType.Event) && (
         <FlatList
           extraData={
             currentTab === InvoiceRecipientTabType.People

@@ -106,6 +106,7 @@ export default function LanguageSettingScreen({navigation}) {
         </View>
         <Text style={styles.label}>{strings.appLanguage}</Text>
         <TouchableOpacity
+          style={{opacity: isEnabled ? 0.3 : 1}}
           disabled={isEnabled}
           onPress={() => setVisibleLanguageModal(true)}>
           <View style={styles.searchView}>
@@ -122,6 +123,7 @@ export default function LanguageSettingScreen({navigation}) {
         containerStyle={{paddingHorizontal: 30}}
         headerRightButtonText={strings.apply}
         onRightButtonPress={() => {
+          setVisibleLanguageModal(false);
           setConfirmLanguage(languageSelection);
         }}>
         <FlatList

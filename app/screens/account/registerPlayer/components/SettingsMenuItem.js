@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
+
 import {format} from 'react-string-format';
 import {strings} from '../../../../../Localization/translation';
 import GameDurationDetails from '../../../../components/GameDurationDetails';
@@ -37,7 +38,7 @@ const SettingsMenuItem = ({
           return (
             <Text style={styles.normalStyle}>
               {`${settingObject.game_fee?.fee || 0} ${
-                settingObject.game_fee?.currency_type || Verbs.cad
+                settingObject.game_fee?.currency_type || Verbs.usd
               }/${strings.match}`}
             </Text>
           );

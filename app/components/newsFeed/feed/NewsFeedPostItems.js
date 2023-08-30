@@ -24,7 +24,6 @@ const NewsFeedPostItems = memo(
     caller_id,
     onDeletePost,
     onImageProfilePress,
-    onEditPressDone,
     updateCommentCount,
     isNewsFeedScreen,
     openProfilId,
@@ -87,8 +86,7 @@ const NewsFeedPostItems = memo(
       switch (selectedOption) {
         case strings.edit:
           navigation.navigate('EditPostScreen', {
-            data: item,
-            onPressDone: onEditPressDone,
+            postData: item,
           });
           setShowMoreOptions(false);
           break;
@@ -202,10 +200,11 @@ const NewsFeedPostItems = memo(
               setMoreOptions(option);
               setShowMoreOptions(true);
             }}
-            showMoreOptions={
-              authContext.entity.role === Verbs.entityTypePlayer ||
-              authContext.entity.role === Verbs.entityTypeUser
-            }
+            // showMoreOptions={
+            //   authContext.entity.role === Verbs.entityTypePlayer ||
+            //   authContext.entity.role === Verbs.entityTypeUser
+            // }
+            showMoreOptions
           />
         ) : (
           <Post

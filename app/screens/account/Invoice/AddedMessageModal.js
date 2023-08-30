@@ -56,8 +56,7 @@ export default function AddedMessagesModal({isVisible, closeList, Messages}) {
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeList}
-      modalType={ModalTypes.style3}
-      onRightButtonPress={() => console.log('NextPressed')}
+      modalType={ModalTypes.style8}
       headerRightButtonText={strings.done}
       title={format(strings.addedMeesages, Messages?.length)}
       containerStyle={{padding: 0, width: '100%', height: '90%'}}

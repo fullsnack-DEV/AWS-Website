@@ -19,7 +19,7 @@ export default function SelectedTagList({dataSource, onTagCancelPress}) {
         onPress={() => onTagCancelPress({item, index})}>
         <View>
           <Text style={styles.tagTitleText}>
-            {item.full_name ?? item.group_name}
+            {item.entity_data?.full_name ?? item.entity_data?.group_name}
           </Text>
         </View>
         <View style={styles.dividerImage} />

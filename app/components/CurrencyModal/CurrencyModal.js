@@ -9,13 +9,19 @@ import React, {useState, useContext, useEffect} from 'react';
 
 import {getCountry} from 'country-currency-map';
 import CustomModalWrapper from '../CustomModalWrapper';
-import {currencyList, ModalTypes} from '../../Constants/GeneralConstants';
+import {
+  activeCurerncy,
+  currencyList,
+  ModalTypes,
+} from '../../Constants/GeneralConstants';
 import {strings} from '../../../Localization/translation';
 
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../TCThinDivider';
 import AuthContext from '../../auth/context';
+import Verbs from '../../Constants/Verbs';
+import {showAlert} from '../../utils';
 
 export default function CurrencyModal({
   isVisible,
@@ -24,12 +30,12 @@ export default function CurrencyModal({
   existedCurrency = '',
 }) {
   const authContext = useContext(AuthContext);
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [selectedCurrency, setSelectedCurrency] = useState(Verbs.usd);
   const [currencydata, setCurrencydata] = useState();
 
   useEffect(() => {
     setCurrencydata(currencyList);
-    setSelectedCurrency('USD');
+    setSelectedCurrency(Verbs.usd);
 
     const currency = getCountry(authContext.entity.obj.country);
 
@@ -37,6 +43,7 @@ export default function CurrencyModal({
       const index = currencyList.findIndex(
         (i) => i.currency === currency.currency,
       );
+      currency.countryName = authContext.entity.obj.country;
 
       if (index !== -1) {
         const removedItem = currencyList.splice(index, 1);
@@ -44,7 +51,8 @@ export default function CurrencyModal({
         setCurrencydata([...currencyList]);
         setSelectedCurrency(currency.currency);
       } else {
-        currencyList.unshift(currency.currency);
+        currencyList.unshift(currency);
+
         setSelectedCurrency(currency.currency);
       }
     }
@@ -53,9 +61,13 @@ export default function CurrencyModal({
   const RendeCurrencies = ({item, index}) => (
     <TouchableWithoutFeedback
       onPress={() => {
-        setSelectedCurrency(item.currency);
-        onNext(item.currency);
-        closeList();
+        if (activeCurerncy.includes(item.currency)) {
+          setSelectedCurrency(item.currency);
+          onNext(item.currency);
+          closeList();
+        } else {
+          showAlert(strings.otherCurrecy);
+        }
       }}>
       <View
         style={{

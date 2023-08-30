@@ -15,7 +15,6 @@ const MatchFeeModal = ({
   entityType = Verbs.entityTypePlayer,
 }) => {
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
-  const [selectedcurrency, setSelectedCurrency] = useState(currency);
 
   const getTitle = () => {
     switch (entityType) {
@@ -57,7 +56,7 @@ const MatchFeeModal = ({
         style={[
           styles.greyContainer,
           styles.row,
-          {paddingVertical: 6, marginTop: 0},
+          {paddingVertical: 6, marginTop: 0, height: 40},
         ]}>
         <View />
         <TextInput
@@ -74,7 +73,7 @@ const MatchFeeModal = ({
         <Text
           style={
             styles.label
-          }>{`${selectedcurrency}/${strings.matchText}`}</Text>
+          }>{`${gameFee.currency_type}/${strings.matchText}`}</Text>
       </View>
 
       <TouchableOpacity
@@ -90,7 +89,6 @@ const MatchFeeModal = ({
         closeList={() => setShowCurrencyModal(false)}
         selectedcurrency={currency}
         onNext={(item) => {
-          setSelectedCurrency(item);
           onChangeCurrency(item);
           setShowCurrencyModal(false);
         }}

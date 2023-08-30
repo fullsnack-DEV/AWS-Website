@@ -6,10 +6,18 @@ import {updateUserProfile} from '../api/Users';
 import Verbs from '../Constants/Verbs';
 
 export const generateUserStreamToken = async (authContext) => {
-  await getUserToken(authContext).then(async (responseChat) => {
-    updateUserProfile({streamChatToken: responseChat.payload}, authContext);
+  try {
+    const responseChat = await getUserToken(authContext);
+
+    await updateUserProfile(
+      {streamChatToken: responseChat.payload},
+      authContext,
+    );
+
     await authContext.setStreamChatToken(responseChat.payload);
-  });
+  } catch (error) {
+    console.error('Error in generateUserStreamToken:', error);
+  }
 };
 
 export const getStreamChatIdBasedOnRole = async (authContext) => {
@@ -49,12 +57,16 @@ export const createStreamChatChannel = async ({
   groupType = '',
   channelAvatar = '',
 }) => {
-  const channel = authContext.chatClient.channel('messaging', channelId, {
-    name: channelName,
-    members,
-    image: channelAvatar,
-    group_type: groupType,
-  });
+  const channel = authContext.chatClient.channel(
+    Verbs.channelTypeMessaging,
+    channelId,
+    {
+      name: channelName,
+      members,
+      image: channelAvatar,
+      group_type: groupType,
+    },
+  );
   return channel;
 };
 
@@ -73,6 +85,15 @@ export const prepareChannelId = (entityId, inviteeId) => {
 };
 
 export const getChannelAvatar = (channel = {}, streamUserId = '') => {
+  if (channel.data?.channel_type === Verbs.channelTypeAuto) {
+    return [
+      {
+        imageUrl: channel.data?.image ?? '',
+        entityType: channel.data.group_type,
+      },
+    ];
+  }
+
   if (channel.data.image) {
     return [
       {
@@ -81,13 +102,21 @@ export const getChannelAvatar = (channel = {}, streamUserId = '') => {
       },
     ];
   }
-  const membersList = getChannelMembers(channel, streamUserId);
+
+  const membersList = getChannelMembers(channel);
+  const members = [];
+  membersList.forEach((ele) => {
+    const obj = ele.members.find((item) => item.user_id === streamUserId);
+    if (!obj) {
+      members.push(ele);
+    }
+  });
 
   let profiles = [];
-  if (membersList.length === 0) {
+  if (members.length === 0) {
     profiles.push({imageUrl: '', entityType: channel.data.group_type});
   } else {
-    membersList.forEach((item) => {
+    members.forEach((item) => {
       profiles = [...profiles, ...item.profiles];
     });
   }
@@ -98,13 +127,20 @@ export const getChannelAvatar = (channel = {}, streamUserId = '') => {
 export const getChannelName = (channel = {}, streamUserId = '') => {
   const {data} = channel;
   if (
-    data?.channel_type === 'Auto' ||
-    (data?.group_type === 'General' && data.name)
+    data?.channel_type === Verbs.channelTypeAuto ||
+    (data?.group_type === Verbs.channelTypeGeneral && data.name)
   ) {
     return data.name;
   }
 
-  const members = getChannelMembers(channel, streamUserId);
+  const membersData = getChannelMembers(channel);
+  const members = [];
+  membersData.forEach((ele) => {
+    const obj = ele.members.find((item) => item.user_id === streamUserId);
+    if (!obj) {
+      members.push(ele);
+    }
+  });
   let channelName = '';
   if (members.length === 1) {
     channelName = members[0].memberName;
@@ -139,13 +175,11 @@ export const getLastMessageTime = (channel = {}) => {
   return moment(data.updated_at).format('DD MMM');
 };
 
-export const getChannelMembers = (channel = {}, streamUserId = '') => {
+export const getChannelMembers = (channel = {}) => {
   const {state} = channel;
   const keys = Object.keys(state.members);
 
-  const admins = keys.filter(
-    (memberId) => memberId.includes('@') && memberId !== streamUserId,
-  );
+  const admins = keys.filter((memberId) => memberId.includes('@'));
 
   const groupIds = [];
   admins.forEach((item) => {
@@ -183,11 +217,7 @@ export const getChannelMembers = (channel = {}, streamUserId = '') => {
   const str = admins.join('_');
   const membersList = [];
   keys.forEach((memberId) => {
-    if (
-      !memberId.includes('@') &&
-      !str.includes(memberId) &&
-      memberId !== streamUserId
-    ) {
+    if (!memberId.includes('@') && !str.includes(memberId)) {
       const obj = {
         profiles: [
           {

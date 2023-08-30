@@ -38,7 +38,7 @@ const RefreeModal = ({refreeCount = 0, onChange = () => {}}) => {
       </View>
 
       <View style={[styles.row, {marginTop: 23, paddingHorizontal: 10}]}>
-        <Text style={styles.label}>Minimum</Text>
+        <Text style={styles.label}>{strings.Minimum}</Text>
         <CustomDropDown
           selectedValue={refreeCount}
           prefix={strings.refereeText}

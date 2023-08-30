@@ -5,6 +5,7 @@ import {useMessageContext, useOverlayContext} from 'stream-chat-react-native';
 import colors from '../../../Constants/Colors';
 import CustomMessageActionListItem from './CustomMessageActionListItem';
 import CustomReactionComponent from './CustomReactionComponent';
+import {strings} from '../../../../Localization/translation';
 
 const CustomMessageActionList = ({
   deleteMessageAction = () => {},
@@ -20,7 +21,7 @@ const CustomMessageActionList = ({
         setOverlay('none');
       },
       actionType: 'quotedReply',
-      title: 'Reply',
+      title: strings.reply,
     },
     {
       action() {
@@ -28,7 +29,7 @@ const CustomMessageActionList = ({
         setOverlay('none');
       },
       actionType: 'deleteMessage',
-      title: 'Delete',
+      title: strings.delete,
     },
   ];
 

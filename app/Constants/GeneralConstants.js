@@ -179,6 +179,8 @@ export const currencyList = [
   },
 ];
 
+export const activeCurerncy = ['CAD', 'INR', 'KRW', 'THB', 'USD'];
+
 export const DEFAULT_NTRP = '5.0';
 export const DEFAULT_LATITUDE = 35.6762;
 export const DEFAULT_LONGITUDE = 139.6503;

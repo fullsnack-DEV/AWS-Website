@@ -1,4 +1,11 @@
-import {View, Text, Pressable, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useContext} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
@@ -56,7 +63,7 @@ export default function LocalHomeHeader({
         }
         rightComponent={
           <View style={styles.rightHeaderView}>
-            <Pressable
+            <TouchableOpacity
               onPress={() => {
                 navigation.navigate('EntitySearchScreen', {
                   sportsList: customSports,
@@ -64,10 +71,10 @@ export default function LocalHomeHeader({
                 });
               }}>
               <Image source={images.home_search} style={styles.townsCupIcon} />
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
-              hitSlop={getHitSlop(10)}
+            <TouchableOpacity
+              hitSlop={getHitSlop(8)}
               style={{}}
               onPress={() => navigation.navigate('NotificationsListScreen')}>
               <Image
@@ -81,7 +88,7 @@ export default function LocalHomeHeader({
                   </Text>
                 </View>
               )}
-            </Pressable>
+            </TouchableOpacity>
           </View>
         }
       />

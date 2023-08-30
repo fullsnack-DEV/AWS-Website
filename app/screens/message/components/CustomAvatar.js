@@ -9,6 +9,7 @@ const CustomAvatar = ({
   channel = {},
   imageStyle = {},
   placeHolderStyle = {},
+  iconTextStyle = {},
 }) => {
   const [profileList, setProfileList] = useState([]);
   const authContext = useContext(AuthContext);
@@ -16,7 +17,7 @@ const CustomAvatar = ({
   useEffect(() => {
     if (!data.image?.thumbnail) {
       const list = getChannelAvatar(channel, authContext.chatClient.userID);
-      setProfileList(list);
+      setProfileList(list.slice(0, 2));
     }
   }, [data, channel, authContext.chatClient.userID]);
 
@@ -26,6 +27,7 @@ const CustomAvatar = ({
         imageUrl={data.image.thumbnail}
         groupName={getChannelName(channel, authContext.chatClient.userID)}
         showPlaceholder={false}
+        textstyle={[{fontSize: 12}, iconTextStyle]}
         containerStyle={[styles.imageContainer, {marginRight: 10}, imageStyle]}
       />
     );
@@ -44,6 +46,7 @@ const CustomAvatar = ({
               groupName={getChannelName(channel, authContext.chatClient.userID)}
               containerStyle={[styles.imageContainer, imageStyle]}
               placeHolderStyle={placeHolderStyle}
+              textstyle={iconTextStyle}
             />
           </View>
         ))}

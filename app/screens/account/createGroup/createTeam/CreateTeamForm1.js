@@ -13,7 +13,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   FlatList,
   Text,
   Dimensions,
@@ -47,6 +46,7 @@ import {
   getHitSlop,
   groupMemberGenderItems,
   languageList,
+  showAlert,
   showAlertWithoutTitle,
 } from '../../../../utils';
 
@@ -251,12 +251,9 @@ export default function CreateTeamForm1({navigation, route}) {
       cropping: true,
       cropperCircleOverlay: cropCircle,
     }).then((data) => {
-      // 1 means profile, 0 - means background
       if (currentImageSelection === 1) {
-        // setGroupProfile({ ...groupProfile, thumbnail: data.path })
         setThumbnail(data.path);
       } else {
-        // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
         setBackgroundThumbnail(data.path);
       }
     });
@@ -277,7 +274,8 @@ export default function CreateTeamForm1({navigation, route}) {
       .then((result) => {
         switch (result) {
           case RESULTS.UNAVAILABLE:
-            Alert.alert(strings.thisFeaturesNotAvailableText);
+            showAlert(strings.thisFeaturesNotAvailableText);
+
             break;
           case RESULTS.DENIED:
             request(PERMISSIONS.IOS.CAMERA).then(() => {
@@ -289,15 +287,13 @@ export default function CreateTeamForm1({navigation, route}) {
                 .then((data) => {
                   // 1 means profile, 0 - means background
                   if (currentImageSelection === 1) {
-                    // setGroupProfile({ ...groupProfile, thumbnail: data.path })
                     setThumbnail(data.path);
                   } else {
-                    // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
                     setBackgroundThumbnail(data.path);
                   }
                 })
                 .catch((e) => {
-                  console.log(e);
+                  showAlert(e.message);
                 });
             });
             break;
@@ -314,15 +310,15 @@ export default function CreateTeamForm1({navigation, route}) {
               .then((data) => {
                 // 1 means profile, 0 - means background
                 if (currentImageSelection === 1) {
-                  // setGroupProfile({ ...groupProfile, thumbnail: data.path })
                   setThumbnail(data.path);
                 } else {
-                  // setGroupProfile({ ...groupProfile, background_thumbnail: data.path })
                   setBackgroundThumbnail(data.path);
                 }
               })
               .catch((e) => {
-                Alert.alert(e);
+
+                showAlert(e.message);
+
               });
             break;
           case RESULTS.BLOCKED:
@@ -334,7 +330,9 @@ export default function CreateTeamForm1({navigation, route}) {
         }
       })
       .catch((error) => {
-        Alert.alert(error);
+
+        showAlert(error.message);
+
       });
   };
 
@@ -351,11 +349,10 @@ export default function CreateTeamForm1({navigation, route}) {
     setState(locations.state);
     setCountry(locations.country);
     setStatefull(locations.state_full);
-    setHomeCity(
-      [locations.city, locations.state, locations.country]
-        .filter((v) => v)
-        .join(', '),
-    );
+    const location = [locations.city, locations.state, locations.country]
+      .filter((v) => v)
+      .join(', ');
+    setHomeCity(location);
   };
 
   const onBGImageClicked = () => {
@@ -434,22 +431,21 @@ export default function CreateTeamForm1({navigation, route}) {
   );
 
   const checkTeamValidations = () => {
-    if (teamName === '') {
+    if (!teamName) {
       showAlertWithoutTitle(strings.pleaseFillTeanName);
       return false;
     }
-    if (homeCity === '') {
+    if (!homeCity) {
       showAlertWithoutTitle(strings.pleaseFillHomeCity);
       return false;
     }
     if (!showDouble) {
-      if (gender === '') {
+      if (!gender) {
         showAlertWithoutTitle(strings.pleaseFillPlayerGender);
         return false;
       }
     }
-
-    if (languagesName === '') {
+    if (!languagesName) {
       showAlertWithoutTitle(strings.pleaseSelectLanguage);
       return false;
     }

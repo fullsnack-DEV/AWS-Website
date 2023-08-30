@@ -104,8 +104,8 @@ const ReviewsContentScreen = ({
                     defaultRating={ratings[item.name] ?? 0}
                     showRating={false}
                     size={23}
-                    selectedColor={colors.grayBackgroundColor}
                     isDisabled
+                    unSelectedColor={colors.grayBackgroundColor}
                   />
                   <Text
                     style={[

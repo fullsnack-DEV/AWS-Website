@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-} from 'react-native';
+import {StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
@@ -14,15 +8,13 @@ import {getHitSlop} from '../utils';
 
 function GoogleButton({onPress}) {
   return (
-    <SafeAreaView>
-      <TouchableOpacity
-        style={styles.allButton}
-        onPress={onPress}
-        hitSlop={getHitSlop(15)}>
-        <Image source={images.signUpGoogle} style={styles.googleImg} />
-        <Text style={styles.googleText}>{strings.googleText}</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+    <TouchableOpacity
+      style={styles.allButton}
+      onPress={onPress}
+      hitSlop={getHitSlop(15)}>
+      <Image source={images.signUpGoogle} style={styles.googleImg} />
+      <Text style={styles.googleText}>{strings.googleText}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -37,9 +29,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
   },
   googleImg: {
     flex: 0.2,

@@ -32,9 +32,10 @@ const ScreenHeader = ({
   containerStyle = {},
   labelStyle = {},
   rightButtonTextStyle = {},
+  leftIconStyle = {},
 }) => (
   <View style={[styles.headerRow, containerStyle]}>
-    <View style={{width: 80}}>
+    <View style={[{width: 80}, leftIconStyle]}>
       {leftIcon ? (
         <TouchableOpacity style={styles.iconContainer} onPress={leftIconPress}>
           <Image source={leftIcon} style={styles.image} />
@@ -57,7 +58,9 @@ const ScreenHeader = ({
         )
       )}
 
-      <Text style={[styles.headerTitle, labelStyle]}>{title}</Text>
+      <Text style={[styles.headerTitle, labelStyle]} numberOfLines={1}>
+        {title}
+      </Text>
     </View>
 
     <View style={{width: 80}}>

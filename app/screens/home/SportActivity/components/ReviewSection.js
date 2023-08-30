@@ -1,17 +1,21 @@
 // @flow
 import React from 'react';
-import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
 import {AirbnbRating} from 'react-native-ratings';
 import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
+import images from '../../../../Constants/ImagePath';
 
 const ReviewSection = ({onSeeAll = () => {}, ratings = 0}) => (
   <View style={styles.parent}>
     <View style={styles.row}>
       <Text style={styles.title}>{strings.reviews}</Text>
-      <TouchableOpacity onPress={onSeeAll}>
+      {/* <TouchableOpacity onPress={onSeeAll}>
         <Text style={styles.buttonText}>{strings.seeAllText}</Text>
+      </TouchableOpacity> */}
+      <TouchableOpacity style={styles.nextIcon} onPress={onSeeAll}>
+        <Image source={images.rightArrow} style={styles.image} />
       </TouchableOpacity>
     </View>
 
@@ -56,16 +60,16 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
-  buttonText: {
-    fontSize: 12,
-    lineHeight: 18,
-    color: colors.themeColor,
-    fontFamily: fonts.RRegular,
-  },
+  // buttonText: {
+  //   fontSize: 12,
+  //   lineHeight: 18,
+  //   color: colors.themeColor,
+  //   fontFamily: fonts.RRegular,
+  // },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     marginBottom: 15,
   },
   label: {
@@ -73,6 +77,21 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+  },
+  nextIcon: {
+    width: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    padding: 4,
+    backgroundColor: colors.grayBackgroundColor,
+    marginLeft: 5,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
 });
 export default ReviewSection;

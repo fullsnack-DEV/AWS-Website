@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 
 import {
-  Platform,
   SectionList,
   StyleSheet,
   Text,
@@ -9,6 +8,7 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
@@ -192,30 +192,28 @@ const TaggedModal = ({
   );
 
   return (
-    <View>
-      <CustomModalWrapper
-        closeModal={onBackdropPress}
-        isVisible={showTaggedModal}
-        modalType={ModalTypes.style2}
-        isSwipeUp={true}
-        containerStyle={{
-          padding: 0,
-        }}>
-        <View style={styles.bottomPopupContainer}>
-          {ModalHeader()}
-          <SectionList
-            sections={sections}
-            stickyHeaderHiddenOnScroll={false}
-            StickyHeaderComponent={false}
-            scrollEnabled
-            showsVerticalScrollIndicator={true}
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => item + index}
-            renderSectionHeader={renderSectionHeader}
-          />
-        </View>
-      </CustomModalWrapper>
-    </View>
+    <CustomModalWrapper
+      closeModal={onBackdropPress}
+      isVisible={showTaggedModal}
+      modalType={ModalTypes.style2}
+      isSwipeUp={true}
+      containerStyle={{padding: 0}}>
+      {ModalHeader()}
+      <ScrollView style={{flex: 1}}>
+        <SectionList
+          style={{paddingBottom: 40}}
+          sections={sections}
+          renderToHardwareTextureAndroid
+          scrollEnabled
+          nestedScrollEnabled
+          keyboardShouldPersistTaps="handled"
+          stickyHeaderHiddenOnScroll={false}
+          stickySectionHeadersEnabled={true}
+          keyExtractor={(item, index) => item + index}
+          renderSectionHeader={renderSectionHeader}
+        />
+      </ScrollView>
+    </CustomModalWrapper>
   );
 };
 
@@ -258,12 +256,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
     height: 2,
   },
-  bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
+
   grpIconContainer: {
     width: 40,
     height: 40,

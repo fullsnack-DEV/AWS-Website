@@ -127,7 +127,7 @@ export default function WelcomeScreen({navigation}) {
         Utility.setStorage('loggedInEntity', entity),
         authContext.setUser({...townscupUser}),
         authContext.setEntity({...entity}),
-        generateUserStreamToken(entity),
+        //  generateUserStreamToken(entity),
       ])
         .then(() => {
           getRedirectionScreenName(townscupUser)
@@ -143,7 +143,7 @@ export default function WelcomeScreen({navigation}) {
                 Utility.setStorage('authContextEntity', {...entity}),
                 Utility.setStorage('loggedInEntity', {...entity}),
                 authContext.setEntity({...entity}),
-                generateUserStreamToken(entity),
+                //    generateUserStreamToken(entity),
               ])
                 .then(() => {
                   setloading(false);
@@ -426,14 +426,14 @@ export default function WelcomeScreen({navigation}) {
       setloading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // sign in was cancelled
-        Alert.alert(strings.signInCancelled);
+        Utility.showAlert(strings.signInCancelled);
       } else if (error.code === statusCodes.IN_PROGRESS) {
         // operation in progress already
-        Alert.alert(strings.inProgress);
+        Utility.showAlert(strings.strings.inProgress);
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert(strings.playServiceNotAvailable);
+        Utility.showAlert(strings.playServiceNotAvailable);
       } else {
-        Alert.alert(strings.defaultError, error.toString());
+        Utility.showAlert(error.toString());
       }
     }
   };
@@ -455,14 +455,14 @@ export default function WelcomeScreen({navigation}) {
       setloading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // sign in was cancelled
-        Alert.alert(strings.signInCancelled);
+        Utility.showAlert(strings.signInCancelled);
       } else if (error.code === statusCodes.IN_PROGRESS) {
+        Utility.showAlert(strings.inProgress);
         // operation in progress already
-        Alert.alert(strings.inProgress);
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert(strings.playServiceNotAvailable);
+        Utility.showAlert(strings.playServiceNotAvailable);
       } else {
-        Alert.alert(strings.defaultError, error.toString());
+        Utility.showAlert(error.toString());
       }
     }
   };
@@ -511,7 +511,7 @@ export default function WelcomeScreen({navigation}) {
   const handleIOSAppleLogin = async () => {
     try {
       if (!appleAuth.isSupported) {
-        Alert.alert(strings.appleLoginNotSupported);
+        Utility.showAlert(strings.appleLoginNotSupported);
       } else {
         setloading(true);
         const appleAuthRequestResponse = await appleAuth.performRequest({
@@ -523,7 +523,7 @@ export default function WelcomeScreen({navigation}) {
         if (!appleAuthRequestResponse?.identityToken) {
           setloading(false);
           setTimeout(() => {
-            Alert.alert(strings.appleSignInFailed);
+            Utility.showAlert(strings.appleSignInFailed);
           }, 10);
         } else {
           const {identityToken, nonce} = appleAuthRequestResponse;
@@ -555,7 +555,8 @@ export default function WelcomeScreen({navigation}) {
   async function handleAndroidAppleLogin() {
     try {
       if (!appleAuthAndroid?.isSupported) {
-        Alert.alert(strings.appleLoginNotSupported);
+        Utility.showAlert(strings.appleLoginNotSupported);
+
         setloading(false);
       } else {
         // Generate secure, random values for state and nonce
@@ -606,7 +607,7 @@ export default function WelcomeScreen({navigation}) {
     } catch (e) {
       setloading(false);
 
-      Alert.alert(e.message);
+      Utility.showAlert(e.message);
     }
     // Send the authorization code to your backend for verification
   }
@@ -656,80 +657,83 @@ export default function WelcomeScreen({navigation}) {
           resizeMode={'cover'}
           source={images.townsCupLogoNew}
         />
+        <FastImage
+          style={{height: 22, width: 146}}
+          resizeMode="contain"
+          source={images.allsportlogo}
+        />
       </View>
 
-      <View style={{flex: 1, marginTop: 87}}>
-        <View style={{marginBottom: 2}}>
-          <AppleButton
-            onPress={() => {
-              if (authContext.networkConnected) onAppleButtonPress();
-              else authContext.showNetworkAlert();
-            }}
+      <View style={{marginTop: Dimensions.get('screen').height * 0.08}}>
+        <AppleButton
+          onPress={() => {
+            if (authContext.networkConnected) onAppleButtonPress();
+            else authContext.showNetworkAlert();
+          }}
+        />
+
+        <FacebookButton
+          onPress={() => {
+            if (authContext.networkConnected) onFacebookButtonPress();
+            else authContext.showNetworkAlert();
+          }}
+        />
+
+        <GoogleButton
+          onPress={() => {
+            if (authContext.networkConnected) onGoogleButtonPress();
+            else authContext.showNetworkAlert();
+          }}
+        />
+
+        <TouchableOpacity
+          testID="signup-button"
+          style={styles.allButton}
+          onPress={() => {
+            navigation.navigate('SignupScreen');
+          }}>
+          <FastImage
+            source={images.email}
+            resizeMode={'contain'}
+            style={styles.signUpImg}
           />
+          <Text style={styles.signUpText}>{strings.signUpText}</Text>
+        </TouchableOpacity>
 
-          <FacebookButton
-            onPress={() => {
-              if (authContext.networkConnected) onFacebookButtonPress();
-              else authContext.showNetworkAlert();
-            }}
-          />
-
-          <GoogleButton
-            onPress={() => {
-              if (authContext.networkConnected) onGoogleButtonPress();
-              else authContext.showNetworkAlert();
-            }}
-          />
-
-          <TouchableOpacity
-            testID="signup-button"
-            style={styles.allButton}
-            onPress={() => {
-              navigation.navigate('SignupScreen');
-            }}>
-            <FastImage
-              source={images.email}
-              resizeMode={'contain'}
-              style={styles.signUpImg}
-            />
-            <Text style={styles.signUpText}>{strings.signUpText}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            testID={'login-lable'}
-            hitSlop={getHitSlop(15)}
-            onPress={() => navigation.navigate('LoginScreen')}
-            style={styles.alreadyView}>
-            <Text style={styles.alreadyMemberText}>
-              {strings.alreadyMember}
-              <Text> </Text>
-              <Text
-                style={{
-                  textDecorationLine: 'underline',
-                  fontFamily: fonts.RBold,
-                }}>
-                {strings.loginText}
-              </Text>
+        <TouchableOpacity
+          testID={'login-lable'}
+          hitSlop={getHitSlop(15)}
+          onPress={() => navigation.navigate('LoginScreen')}
+          style={styles.alreadyView}>
+          <Text style={styles.alreadyMemberText}>
+            {strings.alreadyMember}
+            <Text> </Text>
+            <Text
+              style={{
+                textDecorationLine: 'underline',
+                fontFamily: fonts.RBold,
+              }}>
+              {strings.loginText}
             </Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.privacyText}>
-          {strings.byCountinueSignUp}
-          {'\n'}
-          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
-            {strings.termsOfService}
-          </Text>{' '}
-          {strings.weWillManageInformation}{' '}
-          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
-            {strings.privacyPolicy}
-          </Text>{' '}
-          {strings.andText}{' '}
-          <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
-            {strings.cookiePolicy}
           </Text>
-          .
-        </Text>
+        </TouchableOpacity>
       </View>
+      <Text style={styles.privacyText}>
+        {strings.byCountinueSignUp}
+        {'\n'}
+        <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
+          {strings.termsOfService}
+        </Text>{' '}
+        {strings.weWillManageInformation}{' '}
+        <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
+          {strings.privacyPolicy}
+        </Text>{' '}
+        {strings.andText}{' '}
+        <Text onPress={() => {}} style={{textDecorationLine: 'underline'}}>
+          {strings.cookiePolicy}
+        </Text>
+        .
+      </Text>
     </SafeAreaView>
   );
 }
@@ -754,14 +758,16 @@ const styles = StyleSheet.create({
   alreadyView: {
     marginVertical: 10,
     alignSelf: 'center',
+    marginTop: 20,
   },
   privacyText: {
     textAlign: 'center',
     fontSize: 12,
     fontFamily: fonts.RLight,
     color: colors.whiteColor,
-    width: '80%',
+    width: '90%',
     alignSelf: 'center',
+    marginTop: '10%',
   },
   background: {
     height: windowHeight,
@@ -771,17 +777,15 @@ const styles = StyleSheet.create({
   },
   logo: {
     alignContent: 'center',
-    height: 83,
-    width: 280,
+    height: 65,
+    width: 265,
   },
   logoContainer: {
     alignItems: 'center',
-    flexDirection: 'column',
-    marginTop: 204,
+    marginTop: Dimensions.get('screen').height * 0.23,
   },
 
   signUpImg: {
-    flex: 0.2,
     alignSelf: 'center',
     height: 20,
     width: 20,

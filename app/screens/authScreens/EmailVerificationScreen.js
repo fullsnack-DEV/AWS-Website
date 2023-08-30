@@ -226,10 +226,10 @@ export default function EmailVerificationScreen({navigation, route}) {
 }
 const styles = StyleSheet.create({
   background: {
-    position: 'absolute',
-    width: '100%',
     height: windowHeight,
-    resizeMode: 'cover',
+    position: 'absolute',
+    resizeMode: 'stretch',
+    width: '100%',
   },
 
   ihaveverfied: {
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
   ihaveVerfiedButton: {
     borderRadius: 50,
-    marginTop: 210,
+    marginTop: 180,
     height: 45,
     marginLeft: 25,
     marginRight: 25,

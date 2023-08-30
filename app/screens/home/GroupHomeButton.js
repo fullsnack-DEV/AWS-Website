@@ -261,6 +261,9 @@ const GroupHomeButton = ({
             buttons.btn1 === strings.challenge
               ? {marginRight: 7, backgroundColor: colors.themeColor}
               : {},
+            groupData.sport_type === Verbs.doubleSport
+              ? {height: 25, paddingVertical: 0}
+              : {},
           ]}
           onPress={() => handleButtonPress(buttons.btn1)}>
           <Text
@@ -292,6 +295,9 @@ const GroupHomeButton = ({
             styles.buttonContainer,
             {flex: 1},
             buttons.btn3 ? {marginHorizontal: 7} : {marginLeft: 7},
+            groupData.sport_type === Verbs.doubleSport
+              ? {height: 25, paddingVertical: 0}
+              : {},
           ]}
           onPress={() => {
             handleButtonPress(buttons.btn2);
@@ -299,7 +305,7 @@ const GroupHomeButton = ({
           <Text
             style={[
               styles.buttonText,
-              buttons.btn1 === strings.follow ? {color: colors.themeColor} : {},
+              buttons.btn2 === strings.follow ? {color: colors.themeColor} : {},
             ]}>
             {buttons.btn2}
           </Text>
@@ -311,7 +317,13 @@ const GroupHomeButton = ({
 
       {buttons.btn3 ? (
         <TouchableOpacity
-          style={[styles.buttonContainer, {paddingHorizontal: 8}]}
+          style={[
+            styles.buttonContainer,
+            {paddingHorizontal: 8},
+            groupData.sport_type === Verbs.doubleSport
+              ? {height: 25, paddingVertical: 0}
+              : {},
+          ]}
           onPress={() => {
             setShowOptions3(true);
           }}>
@@ -372,7 +384,7 @@ const GroupHomeButton = ({
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    paddingVertical: 7,
+    paddingVertical: 5,
     backgroundColor: colors.grayBackgroundColor,
     alignItems: 'center',
     justifyContent: 'center',

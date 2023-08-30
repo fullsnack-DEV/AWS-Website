@@ -23,6 +23,7 @@ export default function CancelInvoivebybatchModal({
   visible,
   closeModal,
   batchData,
+  navigateBack = () => {},
   onCancelInvoice = () => {},
 }) {
   const [recipients, setRecipients] = useState([]);
@@ -140,10 +141,16 @@ export default function CancelInvoivebybatchModal({
     const body = {};
     body.receiver_ids = selectedRecipients.map((obj) => obj.receiver_id);
     body.email_sent = false;
+
     cancelBatchInvoice(batchData.batch_id, body, authContext)
       .then(() => {
         setLoading(false);
-        onCancelInvoice();
+
+        if (batchData.invoices.length === body.receiver_ids.length) {
+          navigateBack();
+        } else {
+          onCancelInvoice();
+        }
       })
       .catch((e) => {
         setLoading(false);
@@ -259,6 +266,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 22,
   },
+
   searchSectionStyle: {
     backgroundColor: colors.textFieldBackground,
     marginTop: 10,

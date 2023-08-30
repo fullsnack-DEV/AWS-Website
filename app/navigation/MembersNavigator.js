@@ -248,21 +248,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="GroupMembersScreen"
       component={GroupMembersScreen}
-      options={{
-        title: strings.membersTitle,
-        headerShown: false,
-        headerTitleAlign: 'center',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontFamily: fonts.RMedium,
-          fontSize: 16,
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       component={GroupFollowersScreen}
@@ -1013,10 +999,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="IncomingChallengeSettings"
       component={IncomingChallengeSettings}
-      options={{
-        title: strings.registerAsPlayerTitle,
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="RegisterReferee"

@@ -28,7 +28,6 @@ const NewsFeedList = ({
   footerLoading = false,
   scrollEnabled,
   ListHeaderComponent,
-  onEditPressDone = () => {},
   onRefreshPress = () => {},
   onDeletePost = () => {},
   pullRefresh = false,
@@ -82,7 +81,6 @@ const NewsFeedList = ({
           item={item}
           navigation={navigation}
           caller_id={userID}
-          onEditPressDone={onEditPressDone}
           onImageProfilePress={() => onProfilePress(item)}
           onLikePress={onLikeButtonPress}
           onDeletePost={onDeleteButtonPress}

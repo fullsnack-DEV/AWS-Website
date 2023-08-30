@@ -190,6 +190,10 @@ const Verbs = {
   VIEW_POSITION: 0.9,
   PASSWORD_LENGTH: 8,
   INCOMING_CHALLENGE_SCREEN: 'IncomingChallengeScreen',
+  channelTypeAuto: 'Auto',
+  channelTypeGeneral: 'General',
+  channelTypeMessaging: 'messaging',
+  clap: 'clap',
 };
 
 export default Verbs;

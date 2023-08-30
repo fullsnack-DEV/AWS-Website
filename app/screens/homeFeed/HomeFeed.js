@@ -15,14 +15,11 @@ import {
   deletePost,
   getTimeline,
   getUserPosts,
-  updatePost,
 } from '../../api/NewsFeeds';
 import NewsFeedList from '../newsfeeds/NewsFeedList';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import {getGallery} from '../../api/Users';
 import WritePost from '../../components/newsFeed/WritePost';
-import {ImageUploadContext} from '../../context/ImageUploadContext';
 import Verbs from '../../Constants/Verbs';
 
 let onEndReachedCalledDuringMomentum = true;
@@ -31,7 +28,6 @@ const HomeFeed = ({
   onFeedScroll,
   refs,
   userID,
-  setGalleryData,
   navigation,
   currentUserData,
   isAdmin,
@@ -39,7 +35,6 @@ const HomeFeed = ({
   currentTab,
 }) => {
   const authContext = useContext(AuthContext);
-  const imageUploadContext = useContext(ImageUploadContext);
   const [fullScreenLoading, setFullScreenLoading] = useState(false);
   const [feedCalled, setFeedCalled] = useState(false);
 
@@ -90,74 +85,6 @@ const HomeFeed = ({
     }
   }, [postData, totalUserPostCount, isNextDataLoading]);
 
-  const updatePostAfterUpload = useCallback(
-    (dataParams) => {
-      updatePost(dataParams, authContext)
-        .then((response) => {
-          const pData = [...postData];
-          const pDataIndex = postData?.findIndex(
-            (item) => item?.id === dataParams?.activity_id,
-          );
-          pData[pDataIndex] = response?.payload;
-          setPostData([...pData]);
-          getGallery(userID, authContext).then((res) => {
-            setGalleryData(res.payload);
-          });
-        })
-        .catch((e) => {
-          Alert.alert('', e.messages);
-        });
-    },
-    [authContext, postData, setGalleryData, userID],
-  );
-
-  const editPostDoneCall = useCallback(
-    (data, postDesc, selectEditItem, tagData, format_tagged_data = []) => {
-      const alreadyUrlDone = [];
-      const createUrlData = [];
-
-      if (postDesc.trim().length > 0 && data?.length === 0) {
-        const dataParams = {
-          activity_id: selectEditItem.id,
-          text: postDesc,
-          tagged: tagData ?? [],
-          format_tagged_data,
-        };
-        updatePostAfterUpload(dataParams);
-      } else if (data) {
-        if (data.length > 0) {
-          data.map((dataItem) => {
-            if (dataItem.thumbnail) {
-              alreadyUrlDone.push(dataItem);
-            } else {
-              createUrlData.push(dataItem);
-            }
-            return null;
-          });
-        }
-        const dataParams = {
-          activity_id: selectEditItem.id,
-          text: postDesc,
-          tagged: tagData ?? [],
-          attachments: [...alreadyUrlDone],
-          format_tagged_data,
-        };
-        if (createUrlData?.length > 0) {
-          const imageArray = createUrlData.map((dataItem) => dataItem);
-          imageUploadContext.uploadData(
-            authContext,
-            dataParams,
-            imageArray,
-            updatePostAfterUpload,
-          );
-        } else {
-          updatePostAfterUpload(dataParams);
-        }
-      }
-    },
-    [authContext, imageUploadContext, updatePostAfterUpload],
-  );
-
   const onDeletePost = useCallback(
     (item) => {
       setFullScreenLoading(true);
@@ -195,7 +122,7 @@ const HomeFeed = ({
   const onLikePress = useCallback(
     (item) => {
       const bodyParams = {
-        reaction_type: 'like',
+        reaction_type: Verbs.clap,
         activity_id: item.id,
       };
       createReaction(bodyParams, authContext)
@@ -336,7 +263,6 @@ const HomeFeed = ({
         scrollEnabled={true}
         onDeletePost={onDeletePost}
         postData={currentTab === 0 ? postData : []}
-        onEditPressDone={editPostDoneCall}
         onLikePress={onLikePress}
         onEndReached={onEndReached}
         fetchFeeds={getTimeLine}

@@ -65,9 +65,13 @@ const LocalHomeMenuItems = memo(
     const [imageBaseUrl, setImageBaseUrl] = useState('');
 
     useEffect(() => {
-      getStorage('appSetting').then((setting) => {
-        setImageBaseUrl(setting.base_url_sporticon);
-      });
+      try {
+        getStorage('appSetting').then((setting) => {
+          setImageBaseUrl(setting.base_url_sporticon);
+        });
+      } catch (error) {
+        console.log(error.message, 'from error message');
+      }
     }, []);
     const sportsView = (item) => (
       <Pressable
@@ -304,6 +308,29 @@ const LocalHomeMenuItems = memo(
           console.log('Pressed');
       }
     };
+
+    function expandUsersWithSports(users) {
+      const expandedData = [];
+
+      for (const user of users) {
+        if (user.registered_sports && user.registered_sports.length > 0) {
+          for (const sport of user.registered_sports) {
+            if (
+              sport.sport_type === Verbs.sportTypeSingle &&
+              sport.setting.availibility === Verbs.on
+            ) {
+              const newUser = {...user};
+              newUser.registered_sports = [sport];
+              expandedData.push(newUser);
+            }
+          }
+        } else {
+          expandedData.push(user);
+        }
+      }
+
+      return expandedData;
+    }
 
     const RenderMenuItem = (items) => {
       switch (items.key) {
@@ -564,6 +591,9 @@ const LocalHomeMenuItems = memo(
           );
 
         case strings.playersAvailableforChallenge:
+          // eslint-disable-next-line no-case-declarations
+          const modifiedPlayers = expandUsersWithSports(items.data);
+
           return (
             <>
               {((authContext.entity.role === Verbs.entityTypeUser &&
@@ -579,7 +609,16 @@ const LocalHomeMenuItems = memo(
                     onPress={() => onTitlePress(item)}
                   />
                   <FlatList
-                    data={items.data}
+                    data={
+                      selectedSport === strings.allSport
+                        ? modifiedPlayers
+                        : items.data
+                    }
+                    extraData={
+                      selectedSport === strings.allSport
+                        ? modifiedPlayers
+                        : items.data
+                    }
                     horizontal={true}
                     scrollEnabled={items.data.length > 0}
                     contentContainerStyle={{paddingVertical: 6}}
@@ -589,7 +628,7 @@ const LocalHomeMenuItems = memo(
                         selectedSport={selectedSport}
                         sportType={sportType}
                         item={item}
-                        hiring={true}
+                        playeravail={true}
                         onPress={() => onCardPress(items, item)}
                       />
                     )}
@@ -910,4 +949,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LocalHomeMenuItems;
+export default React.memo(LocalHomeMenuItems);

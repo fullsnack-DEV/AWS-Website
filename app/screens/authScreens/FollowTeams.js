@@ -10,15 +10,10 @@ import {
   TouchableOpacity,
   Alert,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-
 import FastImage from 'react-native-fast-image';
-import LinearGradient from 'react-native-linear-gradient';
 import Config from 'react-native-config';
 import messaging from '@react-native-firebase/messaging';
 import {createUser} from '../../api/Users';
@@ -33,6 +28,8 @@ import {strings} from '../../../Localization/translation';
 import TCProfileImage from '../../components/TCProfileImage';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import apiCall from '../../utils/apiCall';
+
+const windowHeight = Dimensions.get('window').height;
 
 export default function FollowTeams({route, navigation}) {
   const [teams, setTeams] = useState(['1']);
@@ -105,50 +102,50 @@ export default function FollowTeams({route, navigation}) {
   };
 
   const renderItem = ({item, index}) => (
-    <View>
-      <View style={styles.listItem}>
-        <View style={styles.listItemContainer}>
-          <View style={{flex: 0.2}}>
-            <TCProfileImage
-              entityType={teams[index].entity_type}
-              source={{uri: teams[index].thumbnail}}
-              containerStyle={styles.imageContainer}
-              intialChar={teams[index].group_name?.charAt(0)?.toUpperCase()}
-            />
-          </View>
+    <>
+      <View style={styles.listItemContainer}>
+        <View style={{flexDirection: 'row'}}>
+          <TCProfileImage
+            entityType={teams[index].entity_type}
+            source={{uri: teams[index].thumbnail}}
+            containerStyle={styles.imageContainer}
+            intialChar={teams[index].group_name?.charAt(0)?.toUpperCase()}
+          />
           <View
             style={{
-              flex: 0.8,
+              width: 180,
+              marginHorizontal: 13,
               paddingHorizontal: 0,
             }}>
-            <Text style={styles.teamNameText}>
+            <Text style={styles.teamNameText} numberOfLines={1}>
               {teams[index].group_name ?? teams[index].full_name}
             </Text>
-            <Text style={styles.cityText}>
+            <Text style={styles.cityText} numberOfLines={1}>
               {teams[index].city}, {teams[index].state_abbr},{' '}
               {teams[index].country}
             </Text>
           </View>
-          <View>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                followUnfollowClicked({item, index});
-              }}>
-              {teams[index].follow ? (
-                <View style={styles.followBtn}>
-                  <Text style={styles.followText}>{strings.following}</Text>
-                </View>
-              ) : (
-                <View style={styles.followingBtn}>
-                  <Text style={styles.followingText}>{strings.follow}</Text>
-                </View>
-              )}
-            </TouchableWithoutFeedback>
-          </View>
         </View>
-        <Separator />
+
+        <View>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              followUnfollowClicked({item, index});
+            }}>
+            {teams[index].follow ? (
+              <View style={styles.followBtn}>
+                <Text style={styles.followText}>{strings.following}</Text>
+              </View>
+            ) : (
+              <View style={styles.followingBtn}>
+                <Text style={styles.followingText}>{strings.follow}</Text>
+              </View>
+            )}
+          </TouchableWithoutFeedback>
+        </View>
       </View>
-    </View>
+      <Separator />
+    </>
   );
 
   const signUpLastStep = async () => {
@@ -285,46 +282,42 @@ export default function FollowTeams({route, navigation}) {
   };
 
   return (
-    <LinearGradient
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <FastImage
         resizeMode={'stretch'}
         style={styles.background}
         source={images.loginBg}
       />
-      <SafeAreaView style={styles.container}>
-        <Text testID="followteam-signup-text" style={styles.sportText}>
-          {strings.followSportTeam}
-        </Text>
-        <FlatList
-          style={{
-            padding: 0,
-            bottom: 0,
-            marginLeft: 15,
-            marginRight: 15,
-            marginTop: -15,
-          }}
-          data={teams}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-        />
-      </SafeAreaView>
-    </LinearGradient>
+
+      <Text testID="followteam-signup-text" style={styles.sportText}>
+        {strings.followSportTeam}
+      </Text>
+      <FlatList
+        style={{
+          width: Dimensions.get('window').width - 60,
+          marginTop: -15,
+          alignSelf: 'center',
+        }}
+        data={teams}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+      />
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   background: {
-    height: hp('100%'),
     position: 'absolute',
-    width: wp('100%'),
+    width: '100%',
+    height: windowHeight,
+    resizeMode: 'cover',
   },
   cityText: {
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
-    fontSize: wp('3.5%'),
+    fontSize: 14,
     textAlign: 'left',
     textAlignVertical: 'center',
   },
@@ -337,7 +330,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 25,
     justifyContent: 'center',
-    width: 80,
+    paddingHorizontal: 8,
   },
   followText: {
     color: colors.whiteColor,
@@ -352,29 +345,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     justifyContent: 'center',
-    width: 80,
+    paddingHorizontal: 8,
   },
   followingText: {
     color: colors.themeColor,
     fontFamily: fonts.RBlack,
     fontSize: 12,
   },
-  listItem: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 10,
-  },
+
   listItemContainer: {
-    flex: 1,
     alignItems: 'center',
     flexDirection: 'row',
     paddingVertical: 20,
+    justifyContent: 'space-between',
   },
   mainContainer: {
     flex: 1,
     paddingTop: 25,
+    backgroundColor: colors.reservationAmountColor,
   },
 
   sportText: {
@@ -399,9 +387,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
     color: colors.whiteColor,
   },
-  container: {
-    flex: 1,
-  },
+
   imageContainer: {
     backgroundColor: colors.whiteColor,
   },

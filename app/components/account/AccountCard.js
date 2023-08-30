@@ -1,6 +1,13 @@
 // @flow
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text, Pressable, Image, ActivityIndicator} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Pressable,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -8,7 +15,15 @@ import images from '../../Constants/ImagePath';
 import {getSportsLabel} from '../../utils/accountUtils';
 import GroupIcon from '../GroupIcon';
 
-const AccountCard = ({entityData = {}, sportList = [], onPress = () => {}, containerStyle = {}, notificationCount = 0, onPressCancelRequest = () => {}, loading = false}) => {
+const AccountCard = ({
+  entityData = {},
+  sportList = [],
+  onPress = () => {},
+  containerStyle = {},
+  notificationCount = 0,
+  onPressCancelRequest = () => {},
+  loading = false,
+}) => {
   const [sportsName, setSportsName] = useState('');
 
   useEffect(() => {
@@ -36,7 +51,13 @@ const AccountCard = ({entityData = {}, sportList = [], onPress = () => {}, conta
 
   return (
     <Pressable style={[styles.parent, containerStyle]} onPress={onPress}>
-      <GroupIcon entityType={entityData.entity_type} groupName={entityData.group_name} imageUrl={entityData.thumbnail} containerStyle={styles.profileIcon} textstyle={{fontSize: 12}} />
+      <GroupIcon
+        entityType={entityData.entity_type}
+        groupName={entityData.group_name}
+        imageUrl={entityData.thumbnail}
+        containerStyle={styles.profileIcon}
+        textstyle={{fontSize: 12}}
+      />
       <View style={{marginLeft: 15, flex: 1}}>
         <View style={{flex: 1}}>
           <Text style={styles.entityName} numberOfLines={1}>
@@ -54,13 +75,23 @@ const AccountCard = ({entityData = {}, sportList = [], onPress = () => {}, conta
               <View style={styles.notificationIcon}>
                 <Image source={images.tab_notification} style={styles.image} />
               </View>
-              <Text style={styles.count}>{notificationCount > 99 ? '99+' : notificationCount}</Text>
+              <Text style={styles.count}>
+                {notificationCount > 99 ? '99+' : notificationCount}
+              </Text>
             </View>
           ) : null}
         </View>
         {entityData?.request_id && (
-          <Pressable style={styles.buttonView} onPress={() => (loading ? {} : onPressCancelRequest())}>
-            {loading ? <ActivityIndicator /> : <Text style={styles.textStyle}>{strings.teamCreationRequestSend}</Text>}
+          <Pressable
+            style={styles.buttonView}
+            onPress={() => (loading ? {} : onPressCancelRequest())}>
+            {loading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text style={styles.textStyle}>
+                {strings.teamCreationRequestSend}
+              </Text>
+            )}
           </Pressable>
         )}
         {renderDeactivateFlag()}

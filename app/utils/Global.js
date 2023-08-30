@@ -51,9 +51,10 @@ const makeAPIRequest = async ({
   authContext,
   cancelToken,
 }) =>
+  // eslint-disable-next-line consistent-return
   NetInfo.fetch().then(async (netStat) => {
     if (!netStat || !netStat.isConnected) {
-      throw new Error(strings.networkConnectivityErrorMessage);
+      Utility.showAlert(strings.networkConnectivityErrorMessage);
     } else {
       let withRenewToken = false;
       const tokenData = authContext?.tokenData;

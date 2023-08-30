@@ -19,7 +19,7 @@ const CustomMessageText = ({onTagPress = () => {}}) => {
   );
 
   const renderMentions = () => {
-    const mentionRegex = /@\S+(\s+\S+)*/g;
+    const mentionRegex = /@\S+(\s+\S+)*/;
     const matchIndex = message.text.indexOf('@');
     const wordsArray = message.text.split(/\s+/);
     let processedText = '';
@@ -30,7 +30,13 @@ const CustomMessageText = ({onTagPress = () => {}}) => {
         const match = word.match(mentionRegex);
 
         if (match) {
-          const mention = `${match[0]} ${wordsArray[index + 1]}`;
+          const entityName = message.mentioned_users.find((item) =>
+            item.name?.includes(match[0].slice(1)),
+          );
+          const mention = entityName
+            ? `@${entityName.name}`
+            : `${match[0]} ${wordsArray[index + 1]}`;
+
           return (
             <Text
               key={index}

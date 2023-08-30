@@ -397,6 +397,7 @@ export default function SignupScreen({navigation}) {
           }}>
           <TCTextField
             testID={'email-signup-input'}
+            focus={true}
             placeholderTextColor={colors.darkYellowColor}
             style={styles.textFieldStyle}
             height={40}

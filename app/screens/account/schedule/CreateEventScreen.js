@@ -59,7 +59,6 @@ import {
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
-import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
 import uploadImages from '../../../utils/imageAction';
 import Verbs from '../../../Constants/Verbs';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -75,6 +74,7 @@ import {getSportList} from '../../../utils/sportsActivityUtils';
 import SportsListModal from '../registerPlayer/modals/SportsListModal';
 import AddressWithMapModal from '../../../components/AddressWithMap/AddressWithMapModal';
 import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
+import GroupList from '../../../components/Schedule/GroupEvent/GroupList';
 
 export default function CreateEventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -143,7 +143,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [sportsData, setSportsData] = useState([]);
   const [groupsSeeList, setGroupsSeeList] = useState([]);
   const [groupsJoinList, setGroupsJoinList] = useState([]);
-  const [isAll, setIsAll] = useState(false);
+
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
@@ -315,56 +315,6 @@ export default function CreateEventScreen({navigation, route}) {
         </View>
       </View>
     </TouchableOpacity>
-  );
-
-  const getImage = (item) => {
-    if (item.thumbnail) {
-      return {uri: item.thumbnail};
-    }
-    if (item.entity_type === Verbs.entityTypeTeam) {
-      return images.teamPlaceholder;
-    }
-    return images.clubPlaceholder;
-  };
-
-  const renderSeeGroups = ({item, index}) => (
-    <GroupEventItems
-      eventImageSource={
-        item.entity_type === Verbs.entityTypeTeam
-          ? images.teamPatch
-          : images.clubPatch
-      }
-      eventText={item.group_name}
-      groupImageSource={getImage(item)}
-      checkBoxImage={
-        item.isSelected ? images.orangeCheckBox : images.uncheckWhite
-      }
-      onCheckBoxPress={() => {
-        groupsSeeList[index].isSelected = !groupsSeeList[index].isSelected;
-        setGroupsSeeList([...groupsSeeList]);
-        setIsAll(false);
-      }}
-    />
-  );
-
-  const renderJoinGroups = ({item, index}) => (
-    <GroupEventItems
-      eventImageSource={
-        item.entity_type === Verbs.entityTypeTeam
-          ? images.teamPatch
-          : images.clubPatch
-      }
-      eventText={item.group_name}
-      groupImageSource={getImage(item)}
-      checkBoxImage={
-        item.isSelected ? images.orangeCheckBox : images.uncheckWhite
-      }
-      onCheckBoxPress={() => {
-        groupsJoinList[index].isSelected = !groupsJoinList[index].isSelected;
-        setGroupsJoinList([...groupsJoinList]);
-        setIsAll(false);
-      }}
-    />
   );
 
   const onBGImageClicked = () => {
@@ -664,6 +614,7 @@ export default function CreateEventScreen({navigation, route}) {
           })
           .catch((e) => {
             setTimeout(() => {
+              console.log(e);
               Alert.alert(strings.appName, e.messages);
             }, 0.1);
           });
@@ -1252,43 +1203,27 @@ export default function CreateEventScreen({navigation, route}) {
                   />
                 </View>
               </TouchableOpacity>
-            </View>
 
-            {whoCanSeeOption.value === indexThree &&
-              authContext.entity.role === Verbs.entityTypeUser && (
-                <View>
-                  <View style={styles.allStyle}>
-                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setIsAll(!isAll);
-                        const groups = groupsSeeList.map((obj) => ({
-                          ...obj,
-                          isSelected: !isAll,
-                        }));
-                        setGroupsSeeList([...groups]);
-                      }}>
-                      <Image
-                        source={
-                          isAll ? images.orangeCheckBox : images.uncheckWhite
-                        }
-                        style={styles.imageStyle}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <FlatList
-                    scrollEnabled={false}
-                    data={[...groupsSeeList]}
-                    showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={() => (
-                      <View style={{height: wp('4%')}} />
-                    )}
-                    renderItem={renderSeeGroups}
-                    keyExtractor={(item, index) => index.toString()}
-                    style={styles.listStyle}
-                  />
-                </View>
-              )}
+              {whoCanSeeOption.value === indexThree &&
+              authContext.entity.role === Verbs.entityTypeUser ? (
+                <GroupList
+                  list={groupsSeeList}
+                  onCheck={(index) => {
+                    groupsSeeList[index].isSelected =
+                      !groupsSeeList[index].isSelected;
+                    setGroupsSeeList([...groupsSeeList]);
+                  }}
+                  onAllPress={(isAllSelected) => {
+                    const newList = groupsSeeList.map((item) => ({
+                      ...item,
+                      isSelected: !isAllSelected,
+                    }));
+                    setGroupsSeeList([...newList]);
+                  }}
+                  containerStyle={{marginTop: 20}}
+                />
+              ) : null}
+            </View>
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>
@@ -1307,42 +1242,27 @@ export default function CreateEventScreen({navigation, route}) {
                   />
                 </View>
               </TouchableOpacity>
+
+              {whoCanJoinOption.value === 2 &&
+              authContext.entity.role === Verbs.entityTypeUser ? (
+                <GroupList
+                  list={groupsJoinList}
+                  onCheck={(index) => {
+                    groupsJoinList[index].isSelected =
+                      !groupsJoinList[index].isSelected;
+                    setGroupsJoinList([...groupsJoinList]);
+                  }}
+                  onAllPress={(isAllSelected) => {
+                    const newList = groupsJoinList.map((item) => ({
+                      ...item,
+                      isSelected: !isAllSelected,
+                    }));
+                    setGroupsJoinList([...newList]);
+                  }}
+                  containerStyle={{marginTop: 20}}
+                />
+              ) : null}
             </View>
-            {whoCanJoinOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser && (
-                <View>
-                  <View style={styles.allStyle}>
-                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setIsAll(!isAll);
-                        const groups = groupsJoinList.map((obj) => ({
-                          ...obj,
-                          isSelected: !isAll,
-                        }));
-                        setGroupsJoinList([...groups]);
-                      }}>
-                      <Image
-                        source={
-                          isAll ? images.orangeCheckBox : images.uncheckWhite
-                        }
-                        style={styles.imageStyle}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <FlatList
-                    scrollEnabled={false}
-                    data={[...groupsJoinList]}
-                    showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={() => (
-                      <View style={{height: wp('4%')}} />
-                    )}
-                    renderItem={renderJoinGroups}
-                    keyExtractor={(item, index) => index.toString()}
-                    style={styles.listStyle}
-                  />
-                </View>
-              )}
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>{strings.whoCanInvite}</Text>
@@ -1361,42 +1281,27 @@ export default function CreateEventScreen({navigation, route}) {
                   />
                 </View>
               </TouchableOpacity>
+
+              {whoCanInviteOption.value === 2 &&
+              authContext.entity.role === Verbs.entityTypeUser ? (
+                <GroupList
+                  list={groupsSeeList}
+                  onCheck={(index) => {
+                    groupsSeeList[index].isSelected =
+                      !groupsSeeList[index].isSelected;
+                    setGroupsSeeList([...groupsSeeList]);
+                  }}
+                  onAllPress={(isAllSelected) => {
+                    const newList = groupsSeeList.map((item) => ({
+                      ...item,
+                      isSelected: !isAllSelected,
+                    }));
+                    setGroupsSeeList([...newList]);
+                  }}
+                  containerStyle={{marginTop: 20}}
+                />
+              ) : null}
             </View>
-            {whoCanInviteOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser && (
-                <View>
-                  <View style={styles.allStyle}>
-                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setIsAll(!isAll);
-                        const groups = groupsSeeList.map((obj) => ({
-                          ...obj,
-                          isSelected: !isAll,
-                        }));
-                        setGroupsSeeList([...groups]);
-                      }}>
-                      <Image
-                        source={
-                          isAll ? images.orangeCheckBox : images.uncheckWhite
-                        }
-                        style={styles.imageStyle}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <FlatList
-                    scrollEnabled={false}
-                    data={[...groupsSeeList]}
-                    showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={() => (
-                      <View style={{height: wp('4%')}} />
-                    )}
-                    renderItem={renderSeeGroups}
-                    keyExtractor={(item, index) => index.toString()}
-                    style={styles.listStyle}
-                  />
-                </View>
-              )}
 
             <View style={styles.containerStyle}>
               <View style={{flexDirection: 'row'}}>
@@ -1481,12 +1386,13 @@ export default function CreateEventScreen({navigation, route}) {
       <CustomModalWrapper
         isVisible={visibleWhoModal}
         closeModal={() => setVisibleWhoModal(false)}
-        modalType={ModalTypes.style3}
+        modalType={ModalTypes.style2}
         title={whoOption === join ? strings.whoCanJoin : strings.whoCanSee}
         containerStyle={{
           padding: 15,
           marginBottom: Platform.OS === 'ios' ? 35 : 0,
-        }}>
+        }}
+        ratio={0.5}>
         <FlatList
           data={getOptions()}
           renderItem={renderWhoCan}
@@ -1683,33 +1589,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     marginTop: 10,
-  },
-  allStyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: 15,
-    marginTop: 0,
-    marginBottom: 0,
-  },
-  titleTextStyle: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginRight: 15,
-  },
-
-  imageStyle: {
-    width: wp('5.5%'),
-    resizeMode: 'contain',
-    marginRight: 10,
-  },
-  listStyle: {
-    marginBottom: 15,
-    marginTop: 15,
-    paddingBottom: 10,
   },
   activeEventPricacy: {
     paddingVertical: 4,

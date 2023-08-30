@@ -51,6 +51,42 @@ const EditBasicInfoComponent = ({
     setLanguages(arr);
   }, []);
 
+  const getLanguageName = (language = []) => {
+    let language_name = '';
+    if (language.length > 0) {
+      language.forEach((item, index) => {
+        if (item) {
+          language_name += `${item}${
+            index === language.length - 1 ? '' : ', '
+          }`;
+        }
+      });
+    }
+    return language_name;
+  };
+
+  useEffect(() => {
+    if (userInfo.language?.length > 0) {
+      const name = getLanguageName(userInfo.language);
+      setLanguageName(name);
+
+      const newList = languageList.map((item) => {
+        const lang = userInfo.language.find((ele) => ele === item.language);
+        const obj = {...item};
+        if (lang) {
+          obj.isChecked = true;
+        } else {
+          obj.isChecked = false;
+        }
+        return obj;
+      });
+      setLanguages(newList);
+
+      const list = newList.filter((item) => item.isChecked);
+      setSelectedLanguages([...list]);
+    }
+  }, [userInfo.language]);
+
   const handleLanguageSelection = (lang) => {
     const newList = languages.map((item) => ({
       ...item,
@@ -367,6 +403,7 @@ const EditBasicInfoComponent = ({
             {strings.addPhone}
           </Text>
         </Pressable>
+
         <View style={{marginBottom: 35}}>
           <Text style={styles.titleText}>
             {strings.mailingAddressText.toUpperCase()}
@@ -409,11 +446,8 @@ const EditBasicInfoComponent = ({
           onApply={() => {
             setShowLanguageModal(false);
             if (selectedLanguages.length > 0) {
-              let name = '';
-              selectedLanguages.forEach((item) => {
-                name += name ? `, ${item.language}` : item.language;
-              });
-              setLanguageName(name);
+              const list = selectedLanguages.map((item) => item.language);
+              setUserInfo({...userInfo, language: list});
             }
           }}
         />

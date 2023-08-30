@@ -113,7 +113,11 @@ const SportsListModal = ({
         } else {
           onNext(selectedSport);
         }
-      }}>
+      }}
+      isFullTitle={title === strings.registerScorekeeperTitle}
+      headerLeftIconStyle={
+        title === strings.registerScorekeeperTitle ? {width: 50} : {}
+      }>
       <View style={{flex: 1}}>
         {getQuestionAndDescription().question ? (
           <Text style={styles.title}>

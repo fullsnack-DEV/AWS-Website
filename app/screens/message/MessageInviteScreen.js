@@ -48,9 +48,7 @@ const MessageInviteScreen = ({navigation}) => {
         const response = [...users, ...groupsList];
 
         const data = response.filter(
-          (item) =>
-            item.group_id !== authContext.entity.uid ||
-            item.user_id !== authContext.entity.uid,
+          (item) => item.group_id ?? item.user_id !== authContext.entity.uid,
         );
 
         const newList = data.map((item) => ({
@@ -111,15 +109,15 @@ const MessageInviteScreen = ({navigation}) => {
   };
 
   const toggleSelection = (isChecked, user) => {
+    let newData = [];
     if (isChecked) {
-      const uIndex = selectedInvitees.findIndex(
-        (item) => user?.id === item?.id,
-      );
-      if (uIndex !== -1) selectedInvitees.splice(uIndex, 1);
+      newData = selectedInvitees
+        .reverse()
+        .filter((item) => item.id !== user.id);
     } else {
-      selectedInvitees.push(user);
+      newData = [...selectedInvitees, user];
     }
-    setSelectedInvitees([...selectedInvitees]);
+    setSelectedInvitees([...newData]);
   };
 
   const ListEmptyComponent = () => (
@@ -147,7 +145,7 @@ const MessageInviteScreen = ({navigation}) => {
         .then(async (channel) => {
           if (channel !== null) {
             await channel.watch();
-            navigation.replace('MessageChatScreen', {
+            navigation.navigate('MessageChatScreen', {
               channel,
             });
           }
@@ -156,7 +154,7 @@ const MessageInviteScreen = ({navigation}) => {
           Alert.alert(strings.alertmessagetitle, err.message);
         });
     } else if (selectedInvitees.length > 1) {
-      navigation.replace('MessageNewGroupScreen', {
+      navigation.navigate('MessageNewGroupScreen', {
         selectedInviteesData: selectedInvitees,
       });
     }
@@ -197,7 +195,7 @@ const MessageInviteScreen = ({navigation}) => {
       {selectedInvitees.length > 0 ? (
         <View style={{marginBottom: 15, paddingHorizontal: 15}}>
           <FlatList
-            data={selectedInvitees}
+            data={selectedInvitees.reverse()}
             renderItem={({item}) => (
               <SelectedInviteeCard
                 item={item}

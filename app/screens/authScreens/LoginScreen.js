@@ -298,6 +298,20 @@ const LoginScreen = ({navigation}) => {
     });
   };
 
+  const displayAlert = (message) => {
+    Alert.alert(
+      strings.appName,
+      message,
+      [
+        {
+          text: strings.okTitleText,
+          onPress: () => {},
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
   const login = useCallback(async () => {
     await Utility.clearStorage();
 
@@ -328,8 +342,7 @@ const LoginScreen = ({navigation}) => {
         if (error.code === 'auth/network-request-failed') {
           message = strings.networkConnectivityErrorMessage;
         }
-        if (message !== '')
-          setTimeout(() => Alert.alert(strings.appName, message), 100);
+        if (message !== '') setTimeout(() => displayAlert(message), 100);
       });
   }, [email, onAuthStateChanged, password]);
 

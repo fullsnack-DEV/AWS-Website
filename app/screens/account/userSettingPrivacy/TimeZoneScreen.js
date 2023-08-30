@@ -1,7 +1,16 @@
 // @flow
 import moment from 'moment';
 import React from 'react';
-import {View, StyleSheet, SafeAreaView, Text, Pressable} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  SafeAreaView,
+  Text,
+  Pressable,
+  TouchableOpacity,
+  Platform,
+  Alert,
+} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import ScreenHeader from '../../../components/ScreenHeader';
 import colors from '../../../Constants/Colors';
@@ -29,6 +38,29 @@ const TimeZoneScreen = ({navigation}) => (
           {moment().format('MMMM DD, YYYY, hh:mmA')}
         </Text>
       </Pressable>
+      <View style={styles.linkButton}>
+        <Text style={styles.timeZoneText}>
+          {' '}
+          {`${strings.time} ${strings.zone}  `}
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              Platform.OS === 'android' ? '' : strings.datetimesetting,
+              Platform.OS === 'android' ? strings.datetimesetting : '',
+              [
+                {
+                  text: strings.okTitleText,
+                },
+              ],
+            );
+          }}>
+          <Text style={styles.timeZoneUnderlineText}>
+            {Intl.DateTimeFormat()?.resolvedOptions().timeZone.split('/').pop()}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   </SafeAreaView>
 );
@@ -59,6 +91,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.textFieldBackground,
     marginTop: 13,
+  },
+  timeZoneText: {
+    marginTop: 3,
+    fontSize: 14,
+    lineHeight: 23,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RLight,
+  },
+  timeZoneUnderlineText: {
+    marginTop: 3,
+    fontSize: 14,
+    lineHeight: 23,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    textDecorationLine: 'underline',
+  },
+  linkButton: {
+    flexDirection: 'row',
+    alignSelf: 'flex-end',
+    marginRight: 15,
   },
 });
 export default TimeZoneScreen;

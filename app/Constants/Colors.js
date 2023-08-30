@@ -163,5 +163,6 @@ const colors = {
   inputBgOpacityColor: 'rgba(242, 242, 242, 0.9)',
   shdowColorToolKit: 'rgba(0, 0, 0, 0.16)',
   bhirthdaybgcolor: 'rgba(255,255,255,0.9)',
+  bottomSheetBgColor: 'rgba(237, 237, 237, 0.8)',
 };
 export default colors;
