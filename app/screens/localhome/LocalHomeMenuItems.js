@@ -122,11 +122,6 @@ const LocalHomeMenuItems = memo(
           sports: sportsList,
         });
       } else {
-        console.log('sport', sportsList[0]?.sport);
-        console.log('sport_type', sportsList[0]?.sport_type);
-        console.log('uid', uid);
-        console.log('entityType', role);
-
         navigation.navigate('SportActivityHome', {
           sport: sportsList[0]?.sport,
           sportType: sportsList[0]?.sport_type,
