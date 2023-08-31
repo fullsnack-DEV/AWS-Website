@@ -92,6 +92,7 @@ const WritePostScreen = ({navigation, route}) => {
   });
 
   const imageUploadContext = useContext(ImageUploadContext);
+  const flatListRef = useRef();
 
   const createPostAfterUpload = (dataParams) => {
     let body = dataParams;
@@ -598,10 +599,14 @@ const WritePostScreen = ({navigation, route}) => {
   const renderSelectedImageList = () =>
     selectImage.length > 0 ? (
       <FlatList
-        data={selectImage.reverse()}
+        data={selectImage}
         keyExtractor={(item, index) => index.toString()}
+        ref={flatListRef}
         horizontal
         showsHorizontalScrollIndicator={false}
+        onContentSizeChange={() => {
+          flatListRef.current.scrollToEnd({animated: true});
+        }}
         renderItem={({item, index}) => {
           const type = item.type ?? item.mime;
           const mediaType = type.split('/')[0];
@@ -611,6 +616,7 @@ const WritePostScreen = ({navigation, route}) => {
                 style={[
                   styles.selectImage,
                   index === 0 ? {marginLeft: 15} : {},
+                  index === selectImage.length - 1 ? {marginRight: 15} : {},
                 ]}>
                 <Image
                   style={[

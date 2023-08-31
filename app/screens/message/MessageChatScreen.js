@@ -356,6 +356,7 @@ const MessageChatScreen = ({navigation, route}) => {
         leftIcon={images.backArrow}
         leftIconPress={() => {
           if (route.params?.comeFrom) {
+            navigation.setOptions({});
             navigation.navigate(route.params.comeFrom, {
               ...route.params.routeParams,
             });

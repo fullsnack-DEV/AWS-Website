@@ -167,7 +167,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
             : strings.registerScorekeeperTitle
         }
         isFullTitle
-        leftIconStyle={{width:40}}
+        leftIconStyle={{width: 40}}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.goBack();
@@ -244,7 +244,9 @@ const IncomingReservationSettings = ({navigation, route}) => {
         closeModal={() => {
           setShowCongratulationsModal(false);
           if (route.params?.comeFrom) {
-            navigation.navigate(route.params.comeFrom);
+            navigation.navigate(route.params.comeFrom, {
+              ...route.params.routeParams,
+            });
           } else {
             navigation.navigate('AccountScreen', {
               createdSportName: sportName,

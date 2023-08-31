@@ -86,7 +86,7 @@ const SportActivitiesScreen = ({navigation, route}) => {
         comeFrom: 'SportActivitiesScreen',
         routeParams: {
           isAdmin,
-          uid: uid ?? authContext.uid,
+          uid: uid ?? authContext.entity.uid,
         },
         ...sport,
       });
@@ -146,6 +146,7 @@ const SportActivitiesScreen = ({navigation, route}) => {
 
       <BottomSheet
         isVisible={showMoreOptions}
+        type="ios"
         closeModal={() => setShowMoreOptions(false)}
         optionList={[strings.editOrder, strings.hideUnhide]}
         onSelect={(option) => {

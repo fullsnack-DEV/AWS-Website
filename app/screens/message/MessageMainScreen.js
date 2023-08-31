@@ -80,7 +80,7 @@ const MessageMainScreen = ({navigation}) => {
       </View>
 
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
-      {streamChatId ? (
+      {streamChatId && authContext.chatClient ? (
         <View style={{flex: 1}}>
           <ChatOverlayProvider>
             <Chat client={authContext.chatClient}>

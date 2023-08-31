@@ -61,10 +61,14 @@ const RegisterReferee = ({navigation, route}) => {
         isValid = isValid && true;
       } else if (item.url && !item.title) {
         isValid = false;
-        Alert.alert(strings.warningCertificateTitleText,'',[{text:strings.okTitleText}]);
+        Alert.alert(strings.warningCertificateTitleText, '', [
+          {text: strings.okTitleText},
+        ]);
       } else if (item.title && !item.url) {
         isValid = false;
-        Alert.alert(strings.warningCertificateImageText,'',[{text:strings.okTitleText}]);
+        Alert.alert(strings.warningCertificateImageText, '', [
+          {text: strings.okTitleText},
+        ]);
       }
     });
     return isValid;
@@ -112,6 +116,7 @@ const RegisterReferee = ({navigation, route}) => {
         sportName: selectedSport.sport_name,
         sport: selectedSport.sport,
         comeFrom: route.params?.comeFrom ?? '',
+        routeParams: route.params?.routeParams ?? {},
       });
     }
   };

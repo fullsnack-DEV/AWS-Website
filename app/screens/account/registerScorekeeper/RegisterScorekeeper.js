@@ -122,6 +122,7 @@ const RegisterScorekeeper = ({navigation, route}) => {
         sportName: selectedSport.sport_name,
         sport: selectedSport.sport,
         comeFrom: route.params?.comeFrom ?? '',
+        routeParams: route.params?.routeParams ?? {},
       });
     }
   };
@@ -170,9 +171,9 @@ const RegisterScorekeeper = ({navigation, route}) => {
   return (
     <TCKeyboardView style={{flex: 1}}>
       <ScreenHeader
-        title={strings.registerScorekeeperTitle}  
+        title={strings.registerScorekeeperTitle}
         leftIcon={images.backArrow}
-        leftIconStyle={{width:40}}
+        leftIconStyle={{width: 40}}
         leftIconPress={() => {
           if (route.params?.comeFrom) {
             navigation.navigate(route.params.comeFrom, {

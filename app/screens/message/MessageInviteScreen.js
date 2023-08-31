@@ -1,4 +1,10 @@
-import React, {useState, useEffect, useContext, useCallback} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useRef,
+} from 'react';
 import {
   Alert,
   FlatList,
@@ -33,6 +39,8 @@ const MessageInviteScreen = ({navigation}) => {
   const [searchText, setSearchText] = useState('');
   const [list, setList] = useState([]);
   const [searchedList, setSearchedList] = useState([]);
+
+  const flatListRef = useRef();
 
   const getInviteesData = useCallback(() => {
     setLoading(true);
@@ -111,9 +119,7 @@ const MessageInviteScreen = ({navigation}) => {
   const toggleSelection = (isChecked, user) => {
     let newData = [];
     if (isChecked) {
-      newData = selectedInvitees
-        .reverse()
-        .filter((item) => item.id !== user.id);
+      newData = selectedInvitees.filter((item) => item.id !== user.id);
     } else {
       newData = [...selectedInvitees, user];
     }
@@ -195,7 +201,7 @@ const MessageInviteScreen = ({navigation}) => {
       {selectedInvitees.length > 0 ? (
         <View style={{marginBottom: 15, paddingHorizontal: 15}}>
           <FlatList
-            data={selectedInvitees.reverse()}
+            data={selectedInvitees}
             renderItem={({item}) => (
               <SelectedInviteeCard
                 item={item}
@@ -205,6 +211,10 @@ const MessageInviteScreen = ({navigation}) => {
             keyExtractor={(item, index) => index.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
+            ref={flatListRef}
+            onContentSizeChange={() => {
+              flatListRef.current.scrollToEnd({animated: true});
+            }}
           />
         </View>
       ) : null}
