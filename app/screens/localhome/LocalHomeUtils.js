@@ -12,6 +12,7 @@ import {
   getTCDate,
   getEventsSlots,
   groupBy,
+  getStorage,
 } from '../../utils';
 import {locationType} from '../../utils/constant';
 import {
@@ -622,41 +623,135 @@ const getSportsForHome = (
 ) => {
   setSportIconLoader(true);
 
-  if (authContext.entity.auth.user?.favouriteSport?.length > 1) {
-    setSportIconLoader(false);
+  getStorage('sportSetting')
+    .then((setting) => {
+      if (setting === null) {
+        setSportIconLoader(false);
+        const playerSport =
+          authContext?.entity?.auth?.user?.registered_sports || [];
+        const followedSport = authContext?.entity?.obj?.sports;
 
-    setSportHandler(authContext.entity.auth.user.favouriteSport);
-    return;
-  }
-  setSportIconLoader(false);
-  const playerSport = authContext?.entity?.auth?.user?.registered_sports || [];
+        const combineSoprts =
+          authContext.entity.role === Verbs.entityTypeClub
+            ? [...followedSport]
+            : [...playerSport, ...followedSport];
 
-  const followedSport = authContext?.entity?.obj?.sports;
+        const res = combineSoprts.map((obj) => ({
+          sport: obj.sport,
+          sport_type: obj.sport_type,
+          sport_name: obj.sport_name,
+        }));
+        const result = res.reduce((unique, o) => {
+          if (
+            !unique.some(
+              (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
+            )
+          ) {
+            unique.push(o);
+          }
 
-  const combineSoprts =
-    authContext.entity.role === Verbs.entityTypeClub
-      ? [...followedSport]
-      : [...playerSport, ...followedSport];
+          return unique;
+        }, []);
 
-  const res = combineSoprts.map((obj) => ({
-    sport: obj.sport,
-    sport_type: obj.sport_type,
-    sport_name: obj.sport_name,
-  }));
-  const result = res.reduce((unique, o) => {
-    if (
-      !unique.some(
-        (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
-      )
-    ) {
-      unique.push(o);
-    }
+        setSportHandler(result);
+      }
+      const arr = [];
+      for (const sport of sports) {
+        const isFound = setting.filter((obj) => obj.sport === sport.sport);
+        if (isFound?.length > 0) {
+          arr.push(sport);
+        }
+      }
 
-    return unique;
-  }, []);
+      const allSport = [
+        ...arr,
+        ...setting,
+        ...authContext?.entity?.auth?.user?.registered_sports,
+      ];
+      const uniqSports = {};
+      const uniqueSports = allSport.filter(
+        // eslint-disable-next-line no-return-assign
+        (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
+      );
 
-  setSportHandler(result);
+      return [...uniqueSports];
+    })
+    // eslint-disable-next-line no-unused-vars
+    .catch((e) => {
+      const playerSport =
+        authContext?.entity?.auth?.user?.registered_sports || [];
+      const followedSport = authContext?.entity?.obj?.sports;
+      const res = ([...playerSport, ...followedSport] || []).map((obj) => ({
+        sport: obj.sport,
+        sport_type: obj.sport_type,
+        sport_name: obj.sport_name,
+        player_image: obj.player_image,
+      }));
+      const result = res.reduce((unique, o) => {
+        if (
+          !unique.some(
+            (obj) =>
+              obj.sport === o.sport &&
+              obj.sport_type === o.sport_type &&
+              obj.sport_name === o.sport_name &&
+              obj.player_image === o.player_image,
+          )
+        ) {
+          unique.push(o);
+        }
+        return unique;
+      }, []);
+
+      return result;
+
+      // setSportHandler(result);
+    });
 };
+
+// const getSportsForHome = (
+//   authContext,
+//   setSportHandler,
+//   sports,
+//   setSportIconLoader,
+// ) => {
+//   setSportIconLoader(true);
+
+//   if (authContext.entity.auth.user?.favouriteSport?.length > 1) {
+//     setSportIconLoader(false);
+
+//     setSportHandler(authContext.entity.auth.user.favouriteSport);
+//     return;
+//   }
+//   setSportIconLoader(false);
+
+//   const playerSport = authContext?.entity?.auth?.user?.registered_sports || [];
+
+//   const followedSport = authContext?.entity?.obj?.sports;
+
+//   const combineSoprts =
+//     authContext.entity.role === Verbs.entityTypeClub
+//       ? [...followedSport]
+//       : [...playerSport, ...followedSport];
+
+//   const res = combineSoprts.map((obj) => ({
+//     sport: obj.sport,
+//     sport_type: obj.sport_type,
+//     sport_name: obj.sport_name,
+//   }));
+//   const result = res.reduce((unique, o) => {
+//     if (
+//       !unique.some(
+//         (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
+//       )
+//     ) {
+//       unique.push(o);
+//     }
+
+//     return unique;
+//   }, []);
+
+//   setSportHandler(result);
+// };
 
 const convertToKFormat = (number) => {
   if (typeof number === 'undefined') {
