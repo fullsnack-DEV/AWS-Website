@@ -507,7 +507,7 @@ const styles = StyleSheet.create({
   playerProfile: {
     width: 40,
     height: 40,
-    marginRight: 10,
+    marginRight: 5,
   },
   inputContainer: {
     flexDirection: 'row',

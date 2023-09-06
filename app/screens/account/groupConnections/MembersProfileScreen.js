@@ -68,6 +68,7 @@ import SwitchAccountLoader from '../../../components/account/SwitchAccountLoader
 import useSwitchAccount from '../../../hooks/useSwitchAccount';
 import {InvoiceType} from '../../../Constants/GeneralConstants';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
+import EditMemberModal from './editMemberProfile/EditMemberModal';
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
@@ -104,6 +105,7 @@ export default function MembersProfileScreen({navigation, route}) {
   });
   const [textInputHeight, setTextInputHeight] = useState(100);
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
+  const [visibleEditMemberModal, setVisibleEditMemberModal] = useState(false);
   const {onSwitchProfile} = useSwitchAccount();
   entity = authContext.entity;
 
@@ -528,7 +530,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const getMemberPhoneNumber = () => {
     let numbersString;
-    console.log(JSON.stringify(memberDetail), 'From pon');
+
     if (memberDetail.phone_numbers) {
       const numbers = memberDetail?.phone_numbers.map(
         (e) =>
@@ -1153,8 +1155,8 @@ export default function MembersProfileScreen({navigation, route}) {
           right: 0,
           left: 0,
 
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
         }}>
         <View style={styles.titlePopup}>
           <Text style={styles.startTime}>
@@ -1216,25 +1218,7 @@ export default function MembersProfileScreen({navigation, route}) {
       style={{
         margin: 0,
       }}>
-      <View
-        behavior="height"
-        enabled={false}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          position: 'absolute',
-          bottom: 0,
-          right: 0,
-          left: 0,
-          shadowColor: '#000',
-          shadowOffset: {width: 0, height: 1},
-          shadowOpacity: 0.5,
-          shadowRadius: 5,
-          elevation: 15,
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          flex: 1,
-        }}>
+      <View behavior="height" enabled={false} style={styles.modalStyles}>
         <View style={styles.privellegtitle}>
           <TouchableOpacity
             hitSlop={getHitSlop(15)}
@@ -1365,9 +1349,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   {!memberDetail.connected && (
                     <TouchableOpacity
                       onPress={() => {
-                        navigation.navigate('EditMemberInfoScreen', {
-                          memberInfo: memberDetail,
-                        });
+                        setVisibleEditMemberModal(true);
                       }}>
                       <Image
                         source={images.editProfilePencil}
@@ -1765,6 +1747,16 @@ export default function MembersProfileScreen({navigation, route}) {
         </>
       )}
 
+      <EditMemberModal
+        isVisible={visibleEditMemberModal}
+        closeModal={() => {
+          setVisibleEditMemberModal(false);
+          getMemberInformation();
+          getMembers();
+        }}
+        Info={memberDetail}
+      />
+
       <SendNewInvoiceModal
         isVisible={sendNewInvoice}
         invoiceType={InvoiceType.SingleInvoice}
@@ -1993,5 +1985,21 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginTop: 35,
     paddingHorizontal: 15,
+  },
+  modalStyles: {
+    width: '100%',
+    backgroundColor: 'white',
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    left: 0,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 15,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    flex: 1,
   },
 });

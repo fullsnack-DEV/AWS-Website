@@ -56,6 +56,9 @@ import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
 import InviteMemberModal from '../../../components/InviteMemberModal';
 import RequestBasicInfoModal from './RequestBasicInfoModal';
 
+import GroupPrivacyModal from './GroupPrivacyModal';
+
+
 export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
   const actionSheetPlus = useRef();
@@ -82,6 +85,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const currentRoute = routes[0].name;
   const [userJoinedGrpList, setUserJoinedGrpList] = useState();
   const [clubToCheckAdmin, setClubToCheckAdmin] = useState(false);
+  const [visiblePrivacyModal, setVisiblePrivacyModal] = useState(false);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -744,10 +748,17 @@ export default function GroupMembersScreen({navigation, route}) {
               SetSendNewInvoice(true);
             }, 20);
           } else if (index === 2) {
-            navigation.navigate('MembersViewPrivacyScreen', {groupID});
+            setVisiblePrivacyModal(true);
+            // navigation.navigate('MembersViewPrivacyScreen', {groupID});
           }
         }}
       />
+      <GroupPrivacyModal
+        isVisible={visiblePrivacyModal}
+        closeModal={() => setVisiblePrivacyModal(false)}
+        grpId={groupID}
+      />
+
       <SendNewInvoiceModal
         isVisible={sendNewInvoice}
         onClose={() => SetSendNewInvoice(false)}

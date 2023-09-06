@@ -9,7 +9,7 @@ import {
   Image,
   Platform,
   TouchableOpacity,
-  TouchableWithoutFeedback,
+
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
@@ -164,12 +164,12 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         </Text>
       ),
       headerLeft: () => (
-        <TouchableWithoutFeedback
+        <TouchableOpacity
           onPress={() => {
             navigation.goBack();
           }}>
           <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
       ),
     });
   }, [navigation, memberInfo, role, phoneNumber, showDate]);
@@ -273,6 +273,9 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       marginBottom={2}
       placeholder={strings.selectCode}
       value={item.country_code}
+
+      from={!(phoneNumber.length > 1)}
+
       numberValue={item.phone_number}
       onValueChange={(value) => {
         const tempCode = [...phoneNumber];
