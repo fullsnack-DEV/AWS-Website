@@ -20,6 +20,8 @@ import {
   KeyboardAvoidingView,
   Dimensions,
   Keyboard,
+  BackHandler,
+  ScrollView,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -738,7 +740,7 @@ const WritePostScreen = ({navigation, route}) => {
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
-  const handleBackPress = () => {
+  const handleBackPress = useCallback (() => {
     if (route.params.isRepost) {
       Alert.alert('', strings.discardRepostText, [
         {
@@ -770,7 +772,18 @@ const WritePostScreen = ({navigation, route}) => {
     } else {
       navigation.goBack();
     }
-  };
+  },[navigation,route.params.isRepost,searchText, selectImage, tagsOfEntity]);
+
+  useEffect(() => {
+    const backAction = ()=>{
+      handleBackPress()
+      return true
+    }
+    const backHandler = BackHandler.addEventListener('hardwareBackPress',backAction)
+  
+    return () => backHandler.remove()
+  }, [handleBackPress])
+  
 
   const renderPost = () => {
     const repostData = route.params.repostData;
@@ -824,7 +837,7 @@ const WritePostScreen = ({navigation, route}) => {
           <View style={styles.userDetailView}>
             <GroupIcon
               imageUrl={postData.thumbnail}
-              entityType={postData.entity_type}
+              // entityType={postData.entity_type}
               groupName={postData.group_name}
               textstyle={{fontSize: 12}}
               containerStyle={styles.profileImage}
@@ -835,7 +848,8 @@ const WritePostScreen = ({navigation, route}) => {
               </Text>
             </View>
           </View>
-          <View style={{paddingHorizontal: 15, marginBottom: 15, zIndex: 100}}>
+          
+          <ScrollView style={{paddingHorizontal: 15, marginBottom: 15}}>
             <TextInput
               ref={textInputRef}
               onLayout={(event) =>
@@ -861,7 +875,7 @@ const WritePostScreen = ({navigation, route}) => {
               </ParsedText>
             </TextInput>
             {renderModalTagEntity()}
-          </View>
+          </ScrollView>
           {route.params?.isRepost ? (
             renderPost()
           ) : (
@@ -893,6 +907,7 @@ const WritePostScreen = ({navigation, route}) => {
             </>
           )}
         </View>
+        
         <View style={styles.bottomSafeAreaStyle}>
           <TouchableOpacity
             style={styles.onlyMeViewStyle}
@@ -973,6 +988,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     paddingHorizontal: 15,
+    
   },
   profileImage: {
     width: 40,
@@ -984,6 +1000,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
+    
   },
   tagText: {
     fontSize: 16,
@@ -1022,6 +1039,7 @@ const styles = StyleSheet.create({
       height: -3,
       width: 0,
     },
+    // backgroundColor:'black',
   },
   icon: {
     width: 30,
@@ -1041,6 +1059,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     marginBottom: 15,
+   
   },
   userTextStyle: {
     fontSize: 16,
@@ -1048,6 +1067,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+    
   },
   locationTextStyle: {
     fontSize: 12,
@@ -1062,10 +1082,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     marginBottom: 15,
+    
   },
   userListContainer: {
     zIndex: 100,
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.lightGrayBackground,
     maxHeight: 280,
     width: Dimensions.get('window').width - 30,
     position: 'absolute',

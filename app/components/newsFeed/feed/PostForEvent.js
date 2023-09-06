@@ -1,14 +1,7 @@
 // @flow
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Image,
-  Dimensions,
-  TouchableOpacity,
-} from 'react-native';
+import {View, StyleSheet, Text, Image, Dimensions} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -54,9 +47,6 @@ const PostForEvent = ({
             style={styles.backgroundImage}
           />
           <View style={styles.maskView}>
-            <TouchableOpacity style={styles.dotImage}>
-              <Image source={images.threeDotIcon} style={styles.icon} />
-            </TouchableOpacity>
             <Text style={styles.title} numberOfLines={1}>
               {eventData.text}
             </Text>
@@ -138,20 +128,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.maskColor,
     width: '100%',
     height: '100%',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingHorizontal: 15,
     paddingTop: 15,
     paddingBottom: 5,
-  },
-  dotImage: {
-    width: 3,
-    height: 15,
-    alignSelf: 'flex-end',
-  },
-  icon: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
   },
   title: {
     fontSize: 16,

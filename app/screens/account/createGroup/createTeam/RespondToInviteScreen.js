@@ -29,6 +29,7 @@ import TeamStatus from './TeamStatus';
 
 import images from '../../../../Constants/ImagePath';
 import Verbs from '../../../../Constants/Verbs';
+import useSwitchAccount from '../../../../hooks/useSwitchAccount';
 
 export default function RespondToInviteScreen({navigation, route}) {
   const [teamObject, SetteamObject] = useState(route.params.teamObject);
@@ -40,6 +41,7 @@ export default function RespondToInviteScreen({navigation, route}) {
   const [sportsetting, Setsportsetting] = useState(
     route.params?.incomingchallengeSettings,
   );
+  const {onSwitchProfile, loading: switchingAccount} = useSwitchAccount();
 
   useEffect(() => {
     SetteamObject(route.params.teamObject);
@@ -73,15 +75,21 @@ export default function RespondToInviteScreen({navigation, route}) {
         setloading(false);
 
         if (type === 'accept') {
-          navigation.push('HomeScreen', {
-            uid: response.payload.group_id,
-            role: response.payload.entity_type,
-            backButtonVisible: false,
-            menuBtnVisible: false,
-            isEntityCreated: true,
-            groupName: response.payload.group_name,
-            entityObj: response.payload,
-          });
+          onSwitchProfile(response.payload)
+            .then(() => {
+              navigation.push('HomeScreen', {
+                uid: response.payload.group_id,
+                role: response.payload.entity_type,
+                backButtonVisible: false,
+                menuBtnVisible: false,
+                isEntityCreated: true,
+                groupName: response.payload.group_name,
+                entityObj: response.payload,
+              });
+            })
+            .catch((err) => {
+              console.log({err});
+            });
         } else {
           Alert.alert(
             strings.requestWasDeclined,
@@ -251,7 +259,7 @@ export default function RespondToInviteScreen({navigation, route}) {
           </View>
         </View>
 
-        <ActivityLoader visible={loading} />
+        <ActivityLoader visible={loading || switchingAccount} />
 
         <TCInfoField
           title={strings.sportsEventsTitle}

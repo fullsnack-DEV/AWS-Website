@@ -1,17 +1,20 @@
 // @flow
 import _ from 'lodash';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState,useRef} from 'react';
 import {
   View,
   StyleSheet,
   Text,
   TextInput,
+  Image,
   FlatList,
+  Pressable,
   TouchableOpacity,
 } from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import AuthContext from '../../../auth/context';
+import images from '../../../Constants/ImagePath';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import UserListShimmer from '../../../components/shimmer/commonComponents/UserListShimmer';
 import colors from '../../../Constants/Colors';
@@ -20,6 +23,8 @@ import {ModalTypes} from '../../../Constants/GeneralConstants';
 import Verbs from '../../../Constants/Verbs';
 import InviteeCard from './InviteeCard';
 import SelectedInviteeCard from './SelectedInviteeCard';
+
+
 
 const TAB_ITEMS = [
   strings.peopleTitleText,
@@ -40,6 +45,9 @@ const InviteModal = ({
   const [currentTab, setCurrentTab] = useState(strings.peopleTitleText);
   const [loading, setLoading] = useState(false);
   const [searchedList, setSearchedList] = useState([]);
+
+  const inputRef = useRef();
+  const searchRef = useRef();
 
   const getInviteesData = useCallback(() => {
     setLoading(true);
@@ -120,6 +128,8 @@ const InviteModal = ({
 
   useEffect(() => {
     if (searchText.length > 0) {
+       clearTimeout(searchRef.current);
+      searchRef.current = setTimeout(() => {
       const filteredData = list.filter(
         (item) =>
           item.name?.toLowerCase().includes(searchText.toLowerCase()) &&
@@ -130,9 +140,11 @@ const InviteModal = ({
       );
 
       setSearchedList(filteredData);
+       }, 300);
     } else {
       setSearchedList([]);
     }
+     return () => clearTimeout(searchRef.current);
   }, [searchText, list, currentTab]);
 
   const toggleSelection = (isChecked, user) => {
@@ -160,13 +172,26 @@ const InviteModal = ({
           addMembers(selectedInvitees);
         }
       }}>
+      <Pressable
+        style={styles.textInputStyle}
+        onPress={() => inputRef.current.focus()}>
       <TextInput
+       ref={inputRef}
         value={searchText}
         onChangeText={(text) => setSearchText(text)}
-        style={styles.textInputStyle}
+        style={styles.textInput}
         placeholder={strings.searchText}
       />
-
+      {searchText.length > 0 && (
+        <Pressable
+          onPress={() => {
+            clearTimeout(searchRef.current);
+            setSearchText('');
+          }}>
+          <Image source={images.closeRound} style={styles.closeIcon} />
+        </Pressable>
+        )}
+    </Pressable>
       {selectedInvitees.length > 0 ? (
         <View style={{marginBottom: 15, paddingHorizontal: 15}}>
           <FlatList
@@ -258,15 +283,23 @@ const styles = StyleSheet.create({
     height: '92%',
     padding: 15,
   },
+  
   textInputStyle: {
+    backgroundColor: colors.textFieldBackground,
+    // paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    margin: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+   textInput: {
     fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    backgroundColor: colors.textFieldBackground,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    marginBottom: 15,
+    // paddingVertical: 10,
+    flex: 1,
   },
   row: {
     flexDirection: 'row',
@@ -294,6 +327,10 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: colors.tabFontColor,
     fontFamily: fonts.RBold,
+  },
+  closeIcon: {
+    width: 15,
+    height: 15,
   },
 });
 export default InviteModal;

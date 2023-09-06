@@ -13,6 +13,7 @@ import React, {
   useCallback,
 } from 'react';
 import {
+  BackHandler,
   Text,
   View,
   StyleSheet,
@@ -68,7 +69,9 @@ import SwitchAccountLoader from '../../../components/account/SwitchAccountLoader
 import useSwitchAccount from '../../../hooks/useSwitchAccount';
 import {InvoiceType} from '../../../Constants/GeneralConstants';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
+import useStreamChatUtils from '../../../hooks/useStreamChatUtils';
 import EditMemberModal from './editMemberProfile/EditMemberModal';
+
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
@@ -108,6 +111,34 @@ export default function MembersProfileScreen({navigation, route}) {
   const [visibleEditMemberModal, setVisibleEditMemberModal] = useState(false);
   const {onSwitchProfile} = useSwitchAccount();
   entity = authContext.entity;
+
+  const handleBackPress = useCallback(() => {
+    if (route.params?.comeFrom === 'HomeScreen') {
+      navigation.setOptions({});
+      navigation.navigate('Account', {
+        screen: 'HomeScreen',
+        params: {...route.params?.routeParams},
+      });
+    } else {
+      navigation.navigate('GroupMembersScreen', {
+        ...route.params?.routeParams,
+      });
+    }
+  }, [navigation, route.params]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -149,13 +180,7 @@ export default function MembersProfileScreen({navigation, route}) {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            if (from === 'CreateMemberProfileTeamForm3') {
-              navigation.navigate('GroupMembersScreen');
-            } else if (from === 'CreateMemberProfileClubForm3') {
-              navigation.navigate('GroupMembersScreen');
-            } else {
-              navigation.navigate('GroupMembersScreen');
-            }
+            handleBackPress();
           }}>
           <Image source={images.backArrow} style={styles.backArrowStyle} />
         </TouchableOpacity>
@@ -173,6 +198,7 @@ export default function MembersProfileScreen({navigation, route}) {
     whoSeeID,
     from,
     showSwitchScreen,
+    handleBackPress,
   ]);
 
   const editTeamProfile = useCallback(() => {
@@ -516,7 +542,9 @@ export default function MembersProfileScreen({navigation, route}) {
             {cancelable: false},
           );
         } else {
-          navigation.navigate('GroupMembersScreen');
+          navigation.navigate('GroupMembersScreen', {
+            ...route.params?.routeParams,
+          });
         }
       })
       .catch((e) => {
@@ -1303,6 +1331,42 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const placeHolder = images.profilePlaceHolder;
 
+  const {createChannel, isCreatingChannel} = useStreamChatUtils();
+  const onMessageButtonPress = (entityData = {}) => {
+    if (entityData.is_admin) {
+      return;
+    }
+    const invitee = [
+      {
+        id: entityData.user_id,
+        name: entityData.full_name,
+        image: entityData.thumbnail,
+        entityType: Verbs.entityTypeUser,
+        city: entityData.city,
+      },
+    ];
+
+    if (invitee[0]?.id) {
+      createChannel(invitee)
+        .then(async (channel) => {
+          if (channel) {
+            await channel.watch();
+            navigation.navigate('Message', {
+              screen: 'MessageChatScreen',
+              params: {
+                channel,
+                comeFrom: 'MembersProfileScreen',
+                routeParams: {...route.params},
+              },
+            });
+          }
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    }
+  };
+
   return (
     <SafeAreaView>
       <SwitchAccountLoader
@@ -1310,14 +1374,14 @@ export default function MembersProfileScreen({navigation, route}) {
         entityName={authContext.user?.full_name}
         entityType={Verbs.entityTypePlayer}
         entityImage={
-          authContext.user.thumbnail || ''
+          authContext.user?.thumbnail
             ? {uri: authContext.user.thumbnail}
             : placeHolder
         }
         stopLoading={() => {}}
       />
 
-      <ActivityLoader visible={loading} />
+      <ActivityLoader visible={loading || isCreatingChannel} />
 
       {firstTimeLoad ? (
         <MemberProfileShimmer />
@@ -1403,10 +1467,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     showArrow={false}
                     onPressProfile={() => {
                       if (memberDetail.connected) {
-                        navigation.push('MessageChat', {
-                          screen: 'MessageChat',
-                          params: {userId: memberDetail.user_id},
-                        });
+                        onMessageButtonPress(memberDetail);
                       } else {
                         Linking.canOpenURL('mailto:')
                           .then((supported) => {

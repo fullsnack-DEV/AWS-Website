@@ -663,7 +663,7 @@ export default function ScheduleScreen({navigation, route}) {
               name: authContext.entity?.obj?.group_name,
             },
           ];
-          if (response?.payload && response?.payload.length > 0) {
+          if (response?.payload && response?.payload?.length > 0) {
             response?.payload.forEach((item) => {
               teams.push(item.group_id);
               const temp = {};
@@ -687,7 +687,7 @@ export default function ScheduleScreen({navigation, route}) {
               name: authContext?.user?.full_name,
             },
           ];
-          if (response?.payload && response?.payload?.clubs.length > 0) {
+          if (response?.payload && response?.payload?.clubs?.length > 0) {
             response?.payload?.clubs.forEach((item) => {
               const temp = {};
               temp.id = item.group_id;
@@ -695,7 +695,7 @@ export default function ScheduleScreen({navigation, route}) {
               group_data.push(temp);
             });
           }
-          if (response?.payload && response?.payload?.teams.length > 0) {
+          if (response?.payload && response?.payload?.teams?.length > 0) {
             response?.payload?.teams.forEach((item) => {
               const temp = {};
               temp.id = item.group_id;

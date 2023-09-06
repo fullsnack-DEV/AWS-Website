@@ -55,7 +55,6 @@ import UserSettingPrivacyScreen from '../screens/account/userSettingPrivacy/User
 import ChangePasswordScreen from '../screens/account/userSettingPrivacy/ChangePasswordScreen';
 import PersonalInformationScreen from '../screens/account/userSettingPrivacy/PersonalInformationScreen';
 
-import MembersProfileScreen from '../screens/account/groupConnections/MembersProfileScreen';
 import InviteMembersByEmailScreen from '../screens/account/groupConnections/InviteMembersByEmailScreen';
 import InviteMembersBySearchScreen from '../screens/account/groupConnections/InviteMemberBySearchScreen';
 import InvitationSentScreen from '../screens/account/groupConnections/InvitationSentScreen';
@@ -79,7 +78,6 @@ import EventScreen from '../screens/account/schedule/EventScreen';
 import CreateEventScreen from '../screens/account/schedule/CreateEventScreen';
 import DefaultColorScreen from '../screens/account/schedule/DefaultColorScreen';
 import GroupEventScreen from '../screens/account/schedule/GroupEventScreen';
-import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 
 // Create challenge
 
@@ -495,11 +493,6 @@ const AccountNavigator = () => (
         title: ' ',
         headerTintColor: colors.whiteColor,
       }}
-    />
-    <Stack.Screen
-      name="GroupMembersScreen"
-      component={GroupMembersScreen}
-      options={{headerShown: false}}
     />
     <Stack.Screen
       component={GroupFollowersScreen}
@@ -1414,22 +1407,7 @@ const AccountNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name="MembersProfileScreen"
-      component={MembersProfileScreen}
-      options={{
-        title: strings.memberProfile,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
+
     <Stack.Screen
       name="InviteMembersByEmailScreen"
       component={InviteMembersByEmailScreen}

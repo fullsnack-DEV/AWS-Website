@@ -201,10 +201,12 @@ export const getChannelMembers = (channel = {}) => {
     const groupName = objList.find((member) => member.user.group_name)?.user
       .group_name;
 
-    const profiles = objList.map((member) => ({
-      imageUrl: member.user.image ?? '',
-      entityType: member.user.entityType,
-    }));
+    const profiles = [
+      {
+        imageUrl: objList[0].user.group_image ?? '',
+        entityType: objList[0].user.entityType,
+      },
+    ];
 
     const obj = {
       profiles,

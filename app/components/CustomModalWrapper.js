@@ -1,5 +1,5 @@
 // @flow
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -199,6 +199,9 @@ const CustomModalWrapper = ({
     }
   };
 
+  const panRef = useRef();
+  const scrollRef = useRef();
+
   return (
     <Modal
       visible={isVisible}
@@ -215,8 +218,10 @@ const CustomModalWrapper = ({
             modalType === ModalTypes.style2 ||
             modalType === ModalTypes.default) && (
             <PanGestureHandler
+              ref={panRef}
               onGestureEvent={onPanGestureEvent}
-              onHandlerStateChange={onPanGestureStateChange}>
+              onHandlerStateChange={onPanGestureStateChange}
+              simultaneousHandlers={scrollRef}>
               <Animated.View
                 style={[
                   getCardStyle(),

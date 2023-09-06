@@ -1,4 +1,10 @@
-import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import {
   Image,
   StyleSheet,
@@ -7,6 +13,7 @@ import {
   Alert,
   SafeAreaView,
   Pressable,
+  BackHandler,
 } from 'react-native';
 import {format} from 'react-string-format';
 import {useIsFocused} from '@react-navigation/native';
@@ -181,9 +188,13 @@ const HomeScreen = ({navigation, route}) => {
         break;
 
       case strings.recruitingMembers:
-        navigation.navigate('GroupMembersScreen', {
-          groupID: route.params.uid,
-          groupObj: currentUserData,
+        navigation.navigate('News Feed', {
+          screen: 'GroupMembersScreen',
+          params: {
+            groupID: route.params.uid,
+            groupObj: currentUserData,
+            showBackArrow: true,
+          },
         });
         navigation.navigate('RecruitingMemberScreen', {
           comeFrom: 'HomeScreen',
@@ -271,12 +282,17 @@ const HomeScreen = ({navigation, route}) => {
         .then(async (channel) => {
           if (channel) {
             await channel.watch();
+            const routeParams = {...route.params};
+            if (route.params?.comeFrom === 'EntitySearchScreen') {
+              routeParams.comeFrom = 'EntitySearchScreen';
+            }
+
             navigation.navigate('Message', {
               screen: 'MessageChatScreen',
               params: {
                 channel,
                 comeFrom: 'HomeScreen',
-                routeParams: {...route.params},
+                routeParams,
               },
             });
           }
@@ -350,26 +366,35 @@ const HomeScreen = ({navigation, route}) => {
     }
   };
 
+  const handleBackPress = useCallback(() => {
+    if (route.params?.comeFrom === 'IncomingChallengeSettings') {
+      navigation.navigate('AccountScreen');
+    } else if (route.params?.comeFrom === 'EntitySearchScreen') {
+      navigation.push('EntitySearchScreen');
+    } else if (route.params?.isEntityCreated) {
+      navigation.pop(4);
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={[styles.headerRow, {width: '100%'}]}>
         <View style={[styles.row, {flex: 1}]}>
-          <Pressable
-            style={styles.imageContainer}
-            onPress={() => {
-              if (route.params?.comeFrom === 'IncomingChallengeSettings') {
-                navigation.navigate('AccountScreen');
-              } else if (route.params?.comeFrom === 'MessageChatScreen') {
-                navigation.navigate('Message', {
-                  screen: 'MessageChatScreen',
-                  params: {...route.params.routeParams},
-                });
-              } else if (route.params?.isEntityCreated) {
-                navigation.pop(4);
-              } else {
-                navigation.goBack();
-              }
-            }}>
+          <Pressable style={styles.imageContainer} onPress={handleBackPress}>
             <Image source={images.backArrow} style={styles.image} />
           </Pressable>
           <View

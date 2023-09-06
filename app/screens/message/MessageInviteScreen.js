@@ -8,6 +8,8 @@ import React, {
 import {
   Alert,
   FlatList,
+  Image,
+  Pressable,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -29,7 +31,7 @@ import InviteeCard from './components/InviteeCard';
 import SelectedInviteeCard from './components/SelectedInviteeCard';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 
-const MessageInviteScreen = ({navigation}) => {
+const MessageInviteScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const {createChannel, isCreatingChannel} = useStreamChatUtils();
 
@@ -40,7 +42,8 @@ const MessageInviteScreen = ({navigation}) => {
   const [list, setList] = useState([]);
   const [searchedList, setSearchedList] = useState([]);
 
-  const flatListRef = useRef();
+  const inputRef = useRef();
+  const searchRef = useRef();
 
   const getInviteesData = useCallback(() => {
     setLoading(true);
@@ -81,17 +84,45 @@ const MessageInviteScreen = ({navigation}) => {
     getInviteesData();
   }, [getInviteesData]);
 
+  const getConditionsForSearch = useCallback(
+    (entityType) => {
+      switch (currentTab) {
+        case strings.peopleTitleText:
+          return (
+            entityType === (Verbs.entityTypePlayer || Verbs.entityTypeUser)
+          );
+
+        case strings.teamsTitleText:
+          return entityType === Verbs.entityTypeTeam;
+
+        case strings.clubsTitleText:
+          return entityType === Verbs.entityTypeClub;
+
+        default:
+          return true;
+      }
+    },
+    [currentTab],
+  );
+
   useEffect(() => {
     if (searchText.length > 0) {
-      const filteredData = list.filter((item) =>
-        item.name.toLowerCase().includes(searchText.toLowerCase()),
-      );
+      clearTimeout(searchRef.current);
+      searchRef.current = setTimeout(() => {
+        const filteredData = list.filter(
+          (item) =>
+            item.name.toLowerCase().includes(searchText.toLowerCase()) &&
+            getConditionsForSearch(item.entityType),
+        );
 
-      setSearchedList(filteredData);
+        setSearchedList(filteredData);
+      }, 300);
     } else {
       setSearchedList([]);
     }
-  }, [searchText, list]);
+
+    return () => clearTimeout(searchRef.current);
+  }, [searchText, list, getConditionsForSearch]);
 
   const getInviteeList = (option) => {
     switch (option) {
@@ -121,7 +152,7 @@ const MessageInviteScreen = ({navigation}) => {
     if (isChecked) {
       newData = selectedInvitees.filter((item) => item.id !== user.id);
     } else {
-      newData = [...selectedInvitees, user];
+      newData = [user, ...selectedInvitees];
     }
     setSelectedInvitees([...newData]);
   };
@@ -166,6 +197,12 @@ const MessageInviteScreen = ({navigation}) => {
     }
   };
 
+  useEffect(() => {
+    if (route.params?.selectedInviteesData) {
+      setSelectedInvitees([...route.params.selectedInviteesData]);
+    }
+  }, [route.params?.selectedInviteesData]);
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ScreenHeader
@@ -188,14 +225,26 @@ const MessageInviteScreen = ({navigation}) => {
         }}
         loading={isCreatingChannel}
       />
-
-      <TextInput
-        // autoFocus={true}
-        value={searchText}
-        onChangeText={(text) => setSearchText(text)}
+      <Pressable
         style={styles.textInputStyle}
-        placeholder={strings.searchText}
-      />
+        onPress={() => inputRef.current.focus()}>
+        <TextInput
+          ref={inputRef}
+          value={searchText}
+          onChangeText={(text) => setSearchText(text)}
+          style={styles.textInput}
+          placeholder={strings.searchText}
+        />
+        {searchText.length > 0 && (
+        <Pressable
+          onPress={() => {
+            clearTimeout(searchRef.current);
+            setSearchText('');
+          }}>
+          <Image source={images.closeRound} style={styles.closeIcon} />
+        </Pressable>
+        )}
+      </Pressable>
 
       {/* Selected invitees list */}
       {selectedInvitees.length > 0 ? (
@@ -211,10 +260,6 @@ const MessageInviteScreen = ({navigation}) => {
             keyExtractor={(item, index) => index.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
-            ref={flatListRef}
-            onContentSizeChange={() => {
-              flatListRef.current.scrollToEnd({animated: true});
-            }}
           />
         </View>
       ) : null}
@@ -261,14 +306,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textInputStyle: {
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
     backgroundColor: colors.textFieldBackground,
-    paddingVertical: 10,
+    // paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 20,
     margin: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  textInput: {
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    paddingVertical: 10,
+    flex: 1,
+  },
+  closeIcon: {
+    width: 15,
+    height: 15,
   },
 });
 export default MessageInviteScreen;

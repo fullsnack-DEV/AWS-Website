@@ -61,6 +61,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const intervalRef = useRef();
+ const scrollRef = useRef();
 
   const fetchData = useCallback(() => {
     const query = {
@@ -154,10 +155,10 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       fetchData();
     } else {
       const userList = userData.filter((item) =>
-        item.full_name.includes(searchValue),
+        item.full_name.toLowerCase().includes(searchValue.toLowerCase()),
       );
       const groupList = groupData.filter((item) =>
-        item.group_name.includes(searchValue),
+        item.group_name.toLowerCase().includes(searchValue.toLowerCase()),
       );
 
       setUserData([...userList]);
@@ -424,12 +425,17 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       <View>
         <ScrollView
           horizontal
+          ref={scrollRef}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
             alignItems: 'flex-start',
             flexGrow: 1,
             paddingRight: 15,
-          }}>
+          }}
+          onContentSizeChange={() => {
+          scrollRef.current.scrollToEnd({animated: true});
+        }}
+          >
           <View style={styles.scrollStyle}>
             {renderSelectedEntity()}
             {renderSelectedMatchList()}
@@ -482,9 +488,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBlack,
   },
   sperateLine: {
-    borderWidth: 1,
+    height:1,
     marginVertical: 15,
-    borderColor: colors.grayBackgroundColor,
+    backgroundColor:colors.grayBackgroundColor,
   },
   noDataText: {
     fontSize: 16,

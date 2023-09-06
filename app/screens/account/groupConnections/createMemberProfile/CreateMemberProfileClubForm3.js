@@ -123,15 +123,19 @@ export default function CreateMemberProfileClubForm3({navigation, route}) {
     createMemberProfile(entity.uid, params, authContext)
       .then((response) => {
         setloading(false);
-        console.log('Response :', response.payload);
 
         if (response?.payload?.user_id && response?.payload?.group_id) {
-          navigation.navigate('MembersProfileScreen', {
-            from: 'CreateMemberProfileClubForm3',
+          const routeData = {
             memberID: response.payload.user_id,
             whoSeeID: response.payload.group_id,
             groupID: authContext.entity.uid,
-          });
+          };
+          if (route.params?.comeFrom === 'HomeScreen') {
+            routeData.comeFrom = 'HomeScreen';
+            routeData.routeParams = {...route.params?.routeParams};
+            routeData.showBackArrow = true;
+          }
+          navigation.navigate('MembersProfileScreen', routeData);
 
           setTimeout(() => {
             showAlert(format(strings.profileCreated, authContext.entity.role));

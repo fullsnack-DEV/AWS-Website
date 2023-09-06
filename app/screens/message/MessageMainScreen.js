@@ -48,7 +48,7 @@ const MessageMainScreen = ({navigation}) => {
     }
   }, [isFocused, getUserChannel]);
 
-  const LiseEmptyComponent = () => (
+  const ListEmptyComponent = () => (
     <View style={styles.centerMsgContainer}>
       <Text style={styles.noMsgText}>{strings.noChat}</Text>
       <Text style={styles.msgAppearText}>{strings.newChatsAppear}</Text>
@@ -89,7 +89,7 @@ const MessageMainScreen = ({navigation}) => {
                 sort={[{last_message_at: -1}]}
                 Preview={ChannelView}
                 LoadingIndicator={() => <UserListShimmer />}
-                EmptyStateIndicator={() => LiseEmptyComponent()}
+                EmptyStateIndicator={() => ListEmptyComponent()}
               />
             </Chat>
           </ChatOverlayProvider>

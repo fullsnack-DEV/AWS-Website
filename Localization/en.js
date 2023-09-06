@@ -3113,4 +3113,7 @@ export default {
   addorDeleteFavSportTitle: 'en_Add or Delete Favorite Sports',
   only20SportsAlert: 'en_You can select up to 20 sports',
   homeCountry: 'en_Home Country',
+  doYouWantToExit: 'en_Are you sure you want to go back?',
+  holdOn: 'en_Hold on!',
+  likedBy :'en_Liked by',
 };

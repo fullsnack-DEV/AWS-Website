@@ -18,6 +18,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  BackHandler,
 } from 'react-native';
 import {
   useFocusEffect,
@@ -82,10 +83,34 @@ export default function GroupMembersScreen({navigation, route}) {
   const [groupObjNew, setGroupObjNew] = useState({});
   const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
   const routes = useNavigationState((state) => state.routes);
-  const currentRoute = routes[0].name;
   const [userJoinedGrpList, setUserJoinedGrpList] = useState();
   const [clubToCheckAdmin, setClubToCheckAdmin] = useState(false);
   const [visiblePrivacyModal, setVisiblePrivacyModal] = useState(false);
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(strings.holdOn, strings.doYouWantToExit, [
+        {
+          text: strings.cancel,
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {
+          text: strings.yes,
+          onPress: () => BackHandler.exitApp(),
+          style: 'destructive',
+        },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -117,7 +142,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
         setActive(false);
       }
-    }, [isFocused, currentRoute]),
+    }, [isFocused]),
   );
 
   const getMembers = async () => {
@@ -185,9 +210,10 @@ export default function GroupMembersScreen({navigation, route}) {
         whoSeeID: item?.group_id,
         groupID,
         members,
+        routeParams: {...route.params},
       });
     },
-    [navigation, groupID, members],
+    [navigation, groupID, members, route.params],
   );
 
   const callFollowUser = useCallback(
@@ -668,6 +694,30 @@ export default function GroupMembersScreen({navigation, route}) {
     </View>
   );
 
+  const handleBackPress = useCallback(() => {
+    if (route.params?.comeFrom === 'HomeScreen') {
+      navigation.setOptions({});
+      navigation.navigate('Account', {
+        screen: 'HomeScreen',
+        params: {...route.params?.routeParams},
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [route.params, navigation]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View
@@ -676,10 +726,8 @@ export default function GroupMembersScreen({navigation, route}) {
         }}
         pointerEvents={pointEvent}>
         <ScreenHeader
-          leftIcon={
-            currentRoute !== 'GroupMembersScreen' ? images.backArrow : null
-          }
-          leftIconPress={() => navigation.goBack()}
+          leftIcon={route.params?.showBackArrow ? images.backArrow : null}
+          leftIconPress={handleBackPress}
           title={strings.membersTitle}
           rightIcon1={switchUser.uid === groupID ? images.createMember : null}
           rightIcon2={switchUser.uid === groupID ? images.vertical3Dot : null}
@@ -726,7 +774,9 @@ export default function GroupMembersScreen({navigation, route}) {
           if (index === 0) {
             setShowInviteMember(true);
           } else if (index === 1) {
-            navigation.navigate('CreateMemberProfileForm1');
+            navigation.navigate('CreateMemberProfileForm1', {
+              routeParams: {...route.params},
+            });
           }
         }}
       />
@@ -743,6 +793,10 @@ export default function GroupMembersScreen({navigation, route}) {
         onPress={(index) => {
           if (index === 0) {
             setShowInfoModal(true);
+            // navigation.navigate('RequestMultipleBasicInfoScreen', {
+            //   groupID,
+            //   routeParams: {...route.params},
+            // });
           } else if (index === 1) {
             setTimeout(() => {
               SetSendNewInvoice(true);

@@ -170,10 +170,14 @@ export default function CreateMemberProfileForm2({navigation, route}) {
           entity.obj.sport === 'soccer'
             ? {...membersAuthority, dominant_foot: dominant}
             : membersAuthority,
+        comeFrom: route.params?.comeFrom ?? '',
+        routeParams: {...(route.params?.routeParams ?? {})},
       });
     } else if (entity.role === Verbs.entityTypeClub) {
       navigation.navigate('CreateMemberProfileClubForm3', {
         form2: membersAuthority,
+        comeFrom: route.params?.comeFrom ?? '',
+        routeParams: {...(route.params?.routeParams ?? {})},
       });
     }
   }, [
@@ -186,8 +190,8 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     postalCode,
     birthday,
     dominant,
-    phoneNumber,
     memberInfo,
+    route.params,
   ]);
 
   useLayoutEffect(() => {
@@ -214,6 +218,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     birthday,
     dominant,
     pressedNext,
+    route.params,
   ]);
 
   const handleDonePress = (date) => {

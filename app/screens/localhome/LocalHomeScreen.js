@@ -17,6 +17,7 @@ import {
   Pressable,
   SafeAreaView,
   ActivityIndicator,
+  BackHandler,
 } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
@@ -126,6 +127,31 @@ function LocalHomeScreen({navigation, route}) {
   const [sportIconLoader, setSportIconLoader] = useState(false);
   const [cardLoader, setCardLoader] = useState(false);
   const [showInviteMember, setShowInviteMember] = useState(false);
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert(strings.holdOn, strings.doYouWantToExit, [
+        {
+          text: strings.cancel,
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {
+          text: strings.yes,
+          onPress: () => BackHandler.exitApp(),
+          style: 'destructive',
+        },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({

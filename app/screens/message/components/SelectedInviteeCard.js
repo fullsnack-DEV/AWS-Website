@@ -23,7 +23,7 @@ const SelectedInviteeCard = ({
       groupName={item.name}
       textstyle={{fontSize: 12}}
     />
-    <Text style={styles.nameText} numberOfLines={2}>
+    <Text style={styles.nameText} numberOfLines={1}>
       {item.name}
     </Text>
   </View>

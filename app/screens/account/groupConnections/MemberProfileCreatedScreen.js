@@ -134,6 +134,7 @@ export default function MemberProfileCreatedScreen({navigation, route}) {
           navigation.navigate('GroupMembersScreen', {
             groupID: entity.uid,
             groupObj: entity.obj,
+            showBackArrow: true,
           })
         }
         fontSize={16}

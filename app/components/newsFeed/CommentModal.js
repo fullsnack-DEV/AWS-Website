@@ -79,6 +79,8 @@ const CommentModal = ({
   const [showAllReplies, setShowAllReplies] = useState(false);
   const [isMoreLoading, setIsMoreLoading] = useState(true);
 
+  const inputRef = useRef();
+
   const fetchReactions = useCallback(() => {
     const params = {
       activity_id: postId,
@@ -143,7 +145,8 @@ const CommentModal = ({
     };
 
     setReplyParams(bodyParams);
-    setCommentText(`@${data.user.data.full_name.replace(/ /g, '')}`);
+    setCommentText(`@${data.user.data.full_name.replace(/ /g, '')} `);
+    inputRef.current.focus();
   };
 
   const deleteComment = (data = {}) => {
@@ -234,15 +237,14 @@ const CommentModal = ({
         const params = {
           activity_id: postId,
         };
+        setReplyParams({});
         getReactions(params, authContext)
           .then((response) => {
             setLoading(false);
             setCommentData(response.payload.reverse());
-            setReplyParams({});
           })
           .catch((e) => {
             Alert.alert('', e.messages);
-            setReplyParams({});
             setLoading(false);
           });
       })
@@ -354,8 +356,7 @@ const CommentModal = ({
   );
 
   const onEndReached = () => {
-    if (commentData.length === 0 || !isMoreLoading) {
-      setIsMoreLoading(false);
+    if (!isMoreLoading) {
       return;
     }
     const params = {
@@ -363,7 +364,7 @@ const CommentModal = ({
       reaction_type: Verbs.comment,
     };
 
-    const id_lt = commentData[commentData.length - 1].id;
+    const id_lt = commentData[commentData.length - 1]?.id;
 
     getNextReactions(params, id_lt, authContext)
       .then((response) => {
@@ -432,8 +433,12 @@ const CommentModal = ({
               textAlignVertical="center"
               placeholder={strings.leaveComment}
               placeholderTextColor={colors.userPostTimeColor}
+              ref={inputRef}
               onChangeText={(text) => {
                 setCommentText(text);
+                if (!text) {
+                  setReplyParams({});
+                }
               }}
               style={styles.writeCommectStyle}>
               <ParsedText
