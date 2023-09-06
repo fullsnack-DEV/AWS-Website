@@ -8,6 +8,7 @@ import {
   FlatList,
   Keyboard,
   Alert,
+  StyleSheet,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Modal from 'react-native-modal';
@@ -219,15 +220,28 @@ const AddressLocationModal = ({
           <View style={locationModalStyles.separatorLine} />
           {!addressManual ? (
             <View>
-              <View style={locationModalStyles.searchSectionStyle}>
-                <TextInput
-                  testID="choose-location-input"
-                  style={locationModalStyles.searchTextInput}
-                  placeholder={strings.searchForAddress}
-                  clearButtonMode="always"
-                  placeholderTextColor={colors.userPostTimeColor}
-                  onChangeText={(text) => setSearchText(text)}
-                />
+              <View style={styles.floatingInput}>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    testID="choose-location-input"
+                    style={locationModalStyles.searchTextInput}
+                    placeholder={strings.searchForAddress}
+                    value={searchText}
+                    placeholderTextColor={colors.userPostTimeColor}
+                    onChangeText={(text) => setSearchText(text)}
+                  />
+                  {searchText.length > 0 && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSearchText('');
+                      }}>
+                      <Image
+                        source={images.closeRound}
+                        style={{height: 15, width: 15}}
+                      />
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
 
               {searchText.length < 3 && (
@@ -306,5 +320,24 @@ const AddressLocationModal = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    paddingHorizontal: 15,
+    borderRadius: 25,
+    backgroundColor: colors.inputBgOpacityColor,
+    height: 45,
+  },
+  floatingInput: {
+    alignSelf: 'center',
+    zIndex: 1,
+    width: '90%',
+    marginTop: 20,
+  },
+});
 
 export default AddressLocationModal;

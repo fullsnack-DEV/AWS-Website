@@ -1765,7 +1765,7 @@ export default {
   set: 'en_set',
   sets: 'en_sets',
   lessThanDollerFee: 'en_User should not allow less than $1 match fee.',
-  changeCurrency: 'en_Change currency',
+  changeCurrency: 'en_Change Currency',
   currencySetting: 'en_Currency Setting',
   nOverTime: 'en_{0} Overtime',
   Overtime: 'en_OVERTIME',
@@ -2202,7 +2202,9 @@ export default {
   registerAsPlayerTitle: 'en_Register as Player',
   registeredAsPlayerTitle: 'en_Registered as Player',
   multipleRequestSent: '{0} en_Requests for basic info were sent.',
+  requestforBasicInfoWasSent: '{0} en_Request for basic info was sent',
   removeMemberFromGroup: 'en_Remove this member from team',
+  removeMemberFromClub: 'en_Remove this member from club',
   basicInfoRequestText:
     'en_{0} wants to collect your basic info. You may choose the items you want to send or edit each items before you send the information.',
 
@@ -2400,7 +2402,7 @@ export default {
   setPointDuration: 'en_Sets, points & Duration',
   logText: 'en_log',
   deactivateActivity: 'en_Deactivate Activity',
-  specifications: 'en_specifications',
+  specifications: 'en_Specifications',
   emailInvitationSent: '{0} en_invitation were sent',
   oneemailInvitationSent: '{0} en_invitation was sent',
   oneemailInvitationWasSent: '{0} en_invitation email was sent',
@@ -3110,4 +3112,5 @@ export default {
   editFavSportTitle: 'en_Edit Favorite Sports',
   addorDeleteFavSportTitle: 'en_Add or Delete Favorite Sports',
   only20SportsAlert: 'en_You can select up to 20 sports',
+  homeCountry: 'en_Home Country',
 };

@@ -1,4 +1,10 @@
-import React, {useLayoutEffect, useState, useContext, useEffect} from 'react';
+import React, {
+  useLayoutEffect,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -26,7 +32,11 @@ import TCPicker from '../../../../components/TCPicker';
 import DataSource from '../../../../Constants/DataSource';
 import TCLabel from '../../../../components/TCLabel';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
-import {monthNames, widthPercentageToDP} from '../../../../utils';
+import {
+  countryCode as countryCodeList,
+  monthNames,
+  widthPercentageToDP,
+} from '../../../../utils';
 import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../../components/TCMessageButton';
 
@@ -68,22 +78,47 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   const [country, setCountry] = useState();
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
 
+  const [countrycode, setCountryCode] = useState();
+
+  useEffect(() => {
+    const selectedCountryItem = countryCodeList.find(
+      (item) =>
+        item.name.toLowerCase() === authContext.user.country.toLowerCase(),
+    );
+
+    let dialCode = selectedCountryItem.dial_code;
+
+    if (dialCode.startsWith('+')) {
+      dialCode = dialCode.substring(1);
+    }
+
+    const countryOBJ = {
+      country: selectedCountryItem.name,
+      code: dialCode,
+      iso: selectedCountryItem.code,
+    };
+
+    setCountryCode(countryOBJ);
+    setPhoneNumber([
+      {
+        id: 0,
+        phone_number: {},
+        country_code: countryOBJ,
+      },
+    ]);
+  }, [isFocused]);
+
+  const [phoneNumber, setPhoneNumber] = useState();
+
   const addPhoneNumber = () => {
     const obj = {
       id: phoneNumber.length === 0 ? 0 : phoneNumber.length,
       code: '',
       number: '',
+      country_code: countrycode,
     };
     setPhoneNumber([...phoneNumber, obj]);
   };
-
-  const [phoneNumber, setPhoneNumber] = useState([
-    {
-      id: 0,
-      phone_number: '',
-      country_code: '',
-    },
-  ]);
 
   useEffect(() => {
     const mindate = new Date();
@@ -114,32 +149,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     }
   }, [isFocused]);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text style={styles.nextButtonStyle} onPress={() => pressedNext()}>
-          {strings.next}
-        </Text>
-      ),
-      headerLeft: () => (
-        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-          <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableWithoutFeedback>
-      ),
-    });
-  }, [
-    navigation,
-    gender,
-    location,
-    city,
-    state,
-    country,
-    postalCode,
-    birthday,
-    dominant,
-  ]);
-
-  const pressedNext = () => {
+  const pressedNext = useCallback(() => {
     const membersAuthority = {
       ...memberInfo,
       ...route.params.form1,
@@ -166,7 +176,45 @@ export default function CreateMemberProfileForm2({navigation, route}) {
         form2: membersAuthority,
       });
     }
-  };
+  }, [
+    navigation,
+    gender,
+    location,
+    city,
+    state,
+    country,
+    postalCode,
+    birthday,
+    dominant,
+    phoneNumber,
+    memberInfo,
+  ]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Text style={styles.nextButtonStyle} onPress={() => pressedNext()}>
+          {strings.next}
+        </Text>
+      ),
+      headerLeft: () => (
+        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+          <Image source={images.backArrow} style={styles.backArrowStyle} />
+        </TouchableWithoutFeedback>
+      ),
+    });
+  }, [
+    navigation,
+    gender,
+    location,
+    city,
+    state,
+    country,
+    postalCode,
+    birthday,
+    dominant,
+    pressedNext,
+  ]);
 
   const handleDonePress = (date) => {
     setBirthday(new Date(date));
@@ -182,8 +230,10 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       placeholder={strings.selectCode}
       value={item.country_code}
       numberValue={item.phone_number}
+      from={true}
       onValueChange={(value) => {
         const tempCode = [...phoneNumber];
+
         tempCode[index].country_code = value;
         setPhoneNumber(tempCode);
         const filteredNumber = phoneNumber.filter(
@@ -192,6 +242,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
               obj.phone_number && obj.country_code,
             ),
         );
+
         setMemberInfo({
           ...memberInfo,
           phone_numbers: filteredNumber.map(({country_code, phone_number}) => ({
@@ -380,12 +431,6 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     </View>
   );
 
-  // const locationString = () =>
-  //   [location, city, state, country, postalCode].filter((v) => v).join(', ');
-
-  // const addressManualString = () =>
-  //   [city, state, country, location, postalCode].filter((w) => w).join(', ');
-
   const onSelectAddress = (_location) => {
     setCity(_location.city);
     setState(_location.state);
@@ -473,6 +518,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
         />
         <FlatList
           data={phoneNumber}
+          style={{marginHorizontal: 10}}
           renderItem={renderPhoneNumber}
           keyExtractor={(item, index) => index.toString()}></FlatList>
       </View>

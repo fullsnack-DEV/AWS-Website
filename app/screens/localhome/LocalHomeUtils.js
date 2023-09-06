@@ -12,7 +12,6 @@ import {
   getTCDate,
   getEventsSlots,
   groupBy,
-  getStorage,
 } from '../../utils';
 import {locationType} from '../../utils/constant';
 import {
@@ -566,7 +565,9 @@ const LocalHomeQuery = async (
   });
   getUserIndex(scorekeeperQuery).then((res) => {
     setCardLoader(false);
+
     const filterScoreKeeperData = filterCurrentUserFromData(res, authContext);
+
     setScorekeepers([...filterScoreKeeperData]);
   });
 };
@@ -623,135 +624,116 @@ const getSportsForHome = (
 ) => {
   setSportIconLoader(true);
 
-  getStorage('sportSetting')
-    .then((setting) => {
-      if (setting === null) {
-        setSportIconLoader(false);
-        const playerSport =
-          authContext?.entity?.auth?.user?.registered_sports || [];
-        const followedSport = authContext?.entity?.obj?.sports;
+  if (
+    authContext.entity.auth.user?.favouriteSport?.length > 1 &&
+    authContext.entity.role !== Verbs.entityTypeClub
+  ) {
+    setSportIconLoader(false);
 
-        const combineSoprts =
-          authContext.entity.role === Verbs.entityTypeClub
-            ? [...followedSport]
-            : [...playerSport, ...followedSport];
+    const favouriteSports = authContext.entity.auth.user?.favouriteSport?.map(
+      (item) => item,
+    );
+    const registeredSports =
+      authContext.user?.registered_sports?.map((item) => item) || [];
+    const scorekeeperSports =
+      authContext.user?.scorekeeper_data?.map((item) => item) || [];
+    const favsports = authContext.user?.sports?.map((item) => item) || [];
+    const refereeSports =
+      authContext.user?.referee_data?.map((item) => item) || [];
 
-        const res = combineSoprts.map((obj) => ({
-          sport: obj.sport,
-          sport_type: obj.sport_type,
-          sport_name: obj.sport_name,
-        }));
-        const result = res.reduce((unique, o) => {
-          if (
-            !unique.some(
-              (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
-            )
-          ) {
-            unique.push(o);
-          }
+    // Combine all the arrays and remove duplicates using a Set
+    const uniqueSports = [
+      ...new Set([
+        ...favouriteSports,
+        ...registeredSports,
+        ...scorekeeperSports,
+        ...favsports,
+        ...refereeSports,
+      ]),
+    ];
 
-          return unique;
-        }, []);
+    const res = uniqueSports.map((obj) => ({
+      sport: obj.sport,
+      sport_type: obj.sport_type,
+      sport_name: obj.sport_name ?? obj.sport,
+    }));
 
-        setSportHandler(result);
+    const result = res.reduce((unique, o) => {
+      if (
+        !unique.some(
+          (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
+        )
+      ) {
+        unique.push(o);
       }
-      const arr = [];
-      for (const sport of sports) {
-        const isFound = setting.filter((obj) => obj.sport === sport.sport);
-        if (isFound?.length > 0) {
-          arr.push(sport);
-        }
-      }
 
-      const allSport = [
-        ...arr,
-        ...setting,
-        ...authContext?.entity?.auth?.user?.registered_sports,
-      ];
-      const uniqSports = {};
-      const uniqueSports = allSport.filter(
-        // eslint-disable-next-line no-return-assign
-        (obj) => !uniqSports[obj.sport] && (uniqSports[obj.sport] = true),
-      );
+      return unique;
+    }, []);
 
-      return [...uniqueSports];
-    })
-    // eslint-disable-next-line no-unused-vars
-    .catch((e) => {
-      const playerSport =
-        authContext?.entity?.auth?.user?.registered_sports || [];
-      const followedSport = authContext?.entity?.obj?.sports;
-      const res = ([...playerSport, ...followedSport] || []).map((obj) => ({
-        sport: obj.sport,
-        sport_type: obj.sport_type,
-        sport_name: obj.sport_name,
-        player_image: obj.player_image,
-      }));
-      const result = res.reduce((unique, o) => {
-        if (
-          !unique.some(
-            (obj) =>
-              obj.sport === o.sport &&
-              obj.sport_type === o.sport_type &&
-              obj.sport_name === o.sport_name &&
-              obj.player_image === o.player_image,
-          )
-        ) {
-          unique.push(o);
-        }
-        return unique;
-      }, []);
+    setSportHandler(result);
 
-      return result;
+    return;
+  }
+  if (
+    authContext.entity.role === Verbs.entityTypeClub &&
+    authContext.entity.obj.favouriteSport?.length > 1
+  ) {
+    setSportHandler(authContext.entity.obj?.favouriteSport);
 
-      // setSportHandler(result);
-    });
+    setSportIconLoader(false);
+    return;
+  }
+
+  setSportIconLoader(false);
+
+  const registeredSports =
+    authContext.user?.registered_sports?.map((item) => item) || [];
+  const scorekeeperSports =
+    authContext.user?.scorekeeper_data?.map((item) => item) || [];
+  const favsports = authContext.user?.sports?.map((item) => item) || [];
+  const refereeSports =
+    authContext.user?.referee_data?.map((item) => item) || [];
+
+  // Combine all the arrays and remove duplicates using a Set
+  const uniqueSports = [
+    ...new Set([
+      ...registeredSports,
+      ...scorekeeperSports,
+      ...favsports,
+      ...refereeSports,
+    ]),
+  ];
+
+  const followedSport =
+    authContext.entity.role !== Verbs.entityTypeTeam
+      ? authContext?.entity?.obj?.sports
+      : [];
+
+  const combineSoprts =
+    authContext.entity.role === Verbs.entityTypeClub
+      ? [...followedSport]
+      : [...uniqueSports];
+
+  const res = combineSoprts.map((obj) => ({
+    sport: obj.sport,
+    sport_type: obj.sport_type,
+    sport_name: obj.sport_name ?? obj.sport,
+  }));
+
+  const result = res.reduce((unique, o) => {
+    if (
+      !unique.some(
+        (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
+      )
+    ) {
+      unique.push(o);
+    }
+
+    return unique;
+  }, []);
+
+  setSportHandler(result);
 };
-
-// const getSportsForHome = (
-//   authContext,
-//   setSportHandler,
-//   sports,
-//   setSportIconLoader,
-// ) => {
-//   setSportIconLoader(true);
-
-//   if (authContext.entity.auth.user?.favouriteSport?.length > 1) {
-//     setSportIconLoader(false);
-
-//     setSportHandler(authContext.entity.auth.user.favouriteSport);
-//     return;
-//   }
-//   setSportIconLoader(false);
-
-//   const playerSport = authContext?.entity?.auth?.user?.registered_sports || [];
-
-//   const followedSport = authContext?.entity?.obj?.sports;
-
-//   const combineSoprts =
-//     authContext.entity.role === Verbs.entityTypeClub
-//       ? [...followedSport]
-//       : [...playerSport, ...followedSport];
-
-//   const res = combineSoprts.map((obj) => ({
-//     sport: obj.sport,
-//     sport_type: obj.sport_type,
-//     sport_name: obj.sport_name,
-//   }));
-//   const result = res.reduce((unique, o) => {
-//     if (
-//       !unique.some(
-//         (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
-//       )
-//     ) {
-//       unique.push(o);
-//     }
-
-//     return unique;
-//   }, []);
-
-//   setSportHandler(result);
-// };
 
 const convertToKFormat = (number) => {
   if (typeof number === 'undefined') {
@@ -780,9 +762,6 @@ const getEventOccuranceFromRule = (event) => {
   const duration = event.end_datetime - event.start_datetime;
   let occr = rule.all();
   if (event.exclusion_dates) {
-    // _.remove(occr, function (date) {
-    //   return event.exclusion_dates.includes(Utility.getTCDate(date))
-    // })
     occr = occr.filter(
       (date) => !event.exclusion_dates.includes(getTCDate(date)),
     );

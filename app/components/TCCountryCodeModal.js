@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   FlatList,
   Pressable,
 } from 'react-native';
+
 import CustomModalWrapper from './CustomModalWrapper';
 
 import colors from '../Constants/Colors';
@@ -14,13 +15,29 @@ import countryCodeList from '../utils/countryCode.json';
 import {strings} from '../../Localization/translation';
 import fonts from '../Constants/Fonts';
 import {ModalTypes} from '../Constants/GeneralConstants';
+import AuthContext from '../auth/context';
 
 const TCCountryCodeModal = ({
   countryCodeVisible,
   onCloseModal,
   countryCodeObj,
 }) => {
+  const authContext = useContext(AuthContext);
+
   const [countryList, setCountryList] = useState(countryCodeList);
+
+  useEffect(() => {
+    const countryIndex = countryCodeList.findIndex(
+      (item) => item.country === authContext.user.country,
+    );
+
+    if (countryIndex !== -1) {
+      const updatedCountryList = [...countryCodeList];
+      const selectedCountry = updatedCountryList.splice(countryIndex, 1)[0];
+      updatedCountryList.unshift(selectedCountry);
+      setCountryList(updatedCountryList);
+    }
+  }, [countryCodeVisible]);
 
   const renderCountryCode = ({item}) => (
     <>

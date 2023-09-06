@@ -17,7 +17,6 @@ import {
   View,
   StyleSheet,
   Image,
-  TouchableWithoutFeedback,
   ScrollView,
   SafeAreaView,
   Alert,
@@ -120,7 +119,7 @@ export default function MembersProfileScreen({navigation, route}) {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <TouchableWithoutFeedback onPress={() => SetSendNewInvoice(true)}>
+            <TouchableOpacity onPress={() => SetSendNewInvoice(true)}>
               <Image
                 source={images.invoiceIcon}
                 style={[
@@ -133,21 +132,20 @@ export default function MembersProfileScreen({navigation, route}) {
                   },
                 ]}
               />
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
 
             {memberDetail?.connected && (
-              <TouchableWithoutFeedback
-                onPress={() => actionSheet.current?.show()}>
+              <TouchableOpacity onPress={() => actionSheet.current?.show()}>
                 <Image
                   source={images.vertical3Dot}
                   style={[styles.navigationRightItem, {marginRight: 10}]}
                 />
-              </TouchableWithoutFeedback>
+              </TouchableOpacity>
             )}
           </View>
         ),
       headerLeft: () => (
-        <TouchableWithoutFeedback
+        <TouchableOpacity
           onPress={() => {
             if (from === 'CreateMemberProfileTeamForm3') {
               navigation.navigate('GroupMembersScreen');
@@ -158,7 +156,7 @@ export default function MembersProfileScreen({navigation, route}) {
             }
           }}>
           <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
       ),
     });
   }, [
@@ -308,12 +306,11 @@ export default function MembersProfileScreen({navigation, route}) {
   };
 
   const getMembers = async () => {
-    setloading(true);
     if (groupID) {
       getGroupMembers(groupID, authContext)
         .then((response) => {
           setMembers(response.payload);
-
+          console.log(JSON.stringify(response.payload), 'from Issues');
           setloading(false);
         })
         .catch((e) => {
@@ -531,9 +528,13 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const getMemberPhoneNumber = () => {
     let numbersString;
+    console.log(JSON.stringify(memberDetail), 'From pon');
     if (memberDetail.phone_numbers) {
-      const numbers = memberDetail.phone_numbers.map(
-        (e) => `${e.country_code} ${e.phone_number}`,
+      const numbers = memberDetail?.phone_numbers.map(
+        (e) =>
+          `${`${e.country_code?.iso} +${e.country_code?.code}`} ${
+            e.phone_number
+          }`,
       );
       numbersString = numbers.join('\n');
     } else {
@@ -1159,13 +1160,13 @@ export default function MembersProfileScreen({navigation, route}) {
           <Text style={styles.startTime}>
             {strings.sendrequestForBaicInfoText}
           </Text>
-          <Pressable
+          <TouchableOpacity
             hitSlop={getHitSlop(15)}
             onPress={() => {
               setShowBasicInfoRequestModal(false);
             }}>
             <Image source={images.cancelImage} style={styles.closeButton} />
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <View style={locationModalStyles.separatorLine} />
         <ActivityLoader visible={loading} />
@@ -1235,7 +1236,7 @@ export default function MembersProfileScreen({navigation, route}) {
           flex: 1,
         }}>
         <View style={styles.privellegtitle}>
-          <Pressable
+          <TouchableOpacity
             hitSlop={getHitSlop(15)}
             onPress={() => {
               setShowAdminPrivillege(false);
@@ -1244,7 +1245,7 @@ export default function MembersProfileScreen({navigation, route}) {
               source={images.cancelImage}
               style={styles.closebtnprivillege}
             />
-          </Pressable>
+          </TouchableOpacity>
           <Text
             style={[
               styles.startTime,
@@ -1252,7 +1253,7 @@ export default function MembersProfileScreen({navigation, route}) {
             ]}>
             {strings.editAdminPrivillege}
           </Text>
-          <Pressable
+          <TouchableOpacity
             onPress={() => {
               if (hideAdminPrev) {
                 setShowAdminPrivillege(false);
@@ -1269,7 +1270,7 @@ export default function MembersProfileScreen({navigation, route}) {
               }}>
               {strings.save}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <ActivityLoader visible={loading} />
         <View style={locationModalStyles.separatorLine} />
@@ -1362,7 +1363,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   />
 
                   {!memberDetail.connected && (
-                    <TouchableWithoutFeedback
+                    <TouchableOpacity
                       onPress={() => {
                         navigation.navigate('EditMemberInfoScreen', {
                           memberInfo: memberDetail,
@@ -1372,7 +1373,7 @@ export default function MembersProfileScreen({navigation, route}) {
                         source={images.editProfilePencil}
                         style={styles.editImage}
                       />
-                    </TouchableWithoutFeedback>
+                    </TouchableOpacity>
                   )}
                 </View>
 
@@ -1487,7 +1488,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     {strings.basicinfotitle}
                   </Text>
 
-                  <TouchableWithoutFeedback
+                  <TouchableOpacity
                     onPress={() => {
                       navigation.navigate('EditMemberBasicInfoScreen', {
                         memberInfo: memberDetail,
@@ -1497,7 +1498,7 @@ export default function MembersProfileScreen({navigation, route}) {
                       source={images.editProfilePencil}
                       style={styles.editImage}
                     />
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
                 </View>
                 <TCInfoField
                   valueStyle={{
@@ -1580,12 +1581,12 @@ export default function MembersProfileScreen({navigation, route}) {
                       <Text style={styles.basicInfoTitle}>
                         {strings.family}
                       </Text>
-                      <TouchableWithoutFeedback>
+                      <TouchableOpacity>
                         <Image
                           source={images.editProfilePencil}
                           style={styles.editImage}
                         />
-                      </TouchableWithoutFeedback>
+                      </TouchableOpacity>
                     </View>
                     <View style={styles.familyView}>
                       <TCProfileView type={'medium'} />
@@ -1711,7 +1712,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     {strings.writeNotesPlaceholder}
                   </Text>
 
-                  <TouchableWithoutFeedback
+                  <TouchableOpacity
                     onPress={() => {
                       setMemberInfo(memberDetail);
                       setVisibleNotesModal(true);
@@ -1720,22 +1721,26 @@ export default function MembersProfileScreen({navigation, route}) {
                       source={images.editProfilePencil}
                       style={styles.editImage}
                     />
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
                 </View>
                 <Text style={styles.describeText} numberOfLines={50}>
                   {memberDetail.note}
                 </Text>
                 <TCThickDivider />
-                <Text
-                  style={styles.removeTextStyle}
-                  onPress={() => {
-                    deleteMemberValidations(
-                      switchUser.uid,
-                      memberDetail.user_id,
-                    );
-                  }}>
-                  {strings.removeMemberFromGroup.toUpperCase()}
-                </Text>
+                <TouchableOpacity>
+                  <Text
+                    style={styles.removeTextStyle}
+                    onPress={() => {
+                      deleteMemberValidations(
+                        switchUser.uid,
+                        memberDetail.user_id,
+                      );
+                    }}>
+                    {authContext.entity.role === Verbs.entityTypeClub
+                      ? strings.removeMemberFromClub.toUpperCase()
+                      : strings.removeMemberFromGroup.toUpperCase()}
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               <ActionSheet
@@ -1778,10 +1783,10 @@ const styles = StyleSheet.create({
     width: 25,
   },
   backArrowStyle: {
-    height: 20,
+    height: 25,
+    width: 25,
     marginLeft: 15,
     resizeMode: 'contain',
-    tintColor: colors.blackColor,
   },
   roleView: {
     flexDirection: 'row',
@@ -1805,7 +1810,7 @@ const styles = StyleSheet.create({
   basicInfoTitle: {
     fontSize: 20,
     color: colors.lightBlackColor,
-    textTransform: 'uppercase',
+    textTransform: 'none',
     fontFamily: fonts.RMedium,
     //  fontWeight: '500',
     lineHeight: 30,
@@ -1871,9 +1876,6 @@ const styles = StyleSheet.create({
     height: 25,
     width: '100%',
     backgroundColor: '#F5F5F5',
-    // elevation: 0,
-    // shadowOffset: 0,
-    // shadowRadius: 0,
   },
   buttonTextStyle: {
     fontFamily: fonts.RBold,

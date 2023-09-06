@@ -1,11 +1,13 @@
 // @flow
 /* eslint-disable no-param-reassign */
 import React, {useState, useCallback, useContext, useEffect} from 'react';
-import {FlatList, Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
+
 import {
   ModalTypes,
   InvoiceType,
@@ -117,8 +119,8 @@ const SelectedRecipientsModal = ({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={() => onClose()}
-      modalType={ModalTypes.style9}
-      containerStyle={{padding: 0}}
+      modalType={ModalTypes.style2}
+      containerStyle={{padding: 0, height: '98%'}}
       Top={100}>
       {isShowTabs && invoiceType === InvoiceType.Invoice && (
         <View style={{backgroundColor: '#FFFFFF'}}>
@@ -130,19 +132,21 @@ const SelectedRecipientsModal = ({
         </View>
       )}
       {/* People list */}
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={
-          currentTab === InvoiceRecipientTabType.Teams
-            ? selectedTeamsRecipient
-            : selectedPeopleRecipient
-        }
-        keyExtractor={(item, index) => index.toString()}
-        ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
-        renderItem={renderRecipient}
-        ListEmptyComponent={listEmptyComponent}
-        ListFooterComponent={() => <View style={{marginBottom: 180}} />}
-      />
+      <View style={{flex: 1}}>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={
+            currentTab === InvoiceRecipientTabType.Teams
+              ? selectedTeamsRecipient
+              : selectedPeopleRecipient
+          }
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
+          renderItem={renderRecipient}
+          ListEmptyComponent={listEmptyComponent}
+          ListFooterComponent={() => <View style={{marginBottom: 180}} />}
+        />
+      </View>
     </CustomModalWrapper>
   );
 };

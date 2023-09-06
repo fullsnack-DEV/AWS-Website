@@ -15,6 +15,8 @@ function TCKeyboardView({
   children,
   scrollReference = scrollDefault,
   enableOnAndroid = false,
+  extraHeight = hp(5),
+  containerStyle = {flex: 1},
 }) {
   return (
     <TouchableWithoutFeedback
@@ -28,8 +30,8 @@ function TCKeyboardView({
         enableOnAndroid={enableOnAndroid}
         keyboardShouldPersistTaps="always"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{flex: 1}}
-        extraScrollHeight={hp(5)}>
+        contentContainerStyle={containerStyle}
+        extraScrollHeight={extraHeight}>
         <View style={{flex: 1}}>
           <ScrollView
             bounces={false}

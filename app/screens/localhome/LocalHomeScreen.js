@@ -72,17 +72,15 @@ function LocalHomeScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
   const [customSports, setCustomSports] = useState([]);
   const [locationPopup, setLocationPopup] = useState(false);
-  const [selectedLocationOption, setSelectedLocationOption] = useState();
+  const [selectedLocationOption, setSelectedLocationOption] = useState(1);
   const [location, setLocation] = useState(
     authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
       authContext?.entity?.obj?.city?.slice(1),
   );
   const [selectedSport, setSelectedSport] = useState(
-    authContext.entity.obj.entity_type === Verbs.entityTypeTeam
-      ? authContext.entity.obj.sport
-      : strings.allType,
+    authContext.entity.obj.sport,
   );
-  const [sportType, setSportType] = useState(strings.allType);
+  const [sportType, setSportType] = useState();
   const [settingPopup, setSettingPopup] = useState(false);
   const [recentMatch, setRecentMatch] = useState([]);
   const [upcomingMatch, setUpcomingMatch] = useState([]);
@@ -140,26 +138,32 @@ function LocalHomeScreen({navigation, route}) {
   useEffect(() => {
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       setSelectedSport(authContext.entity.obj.sport);
+
       setSportType(authContext.entity.obj.sport_type);
+      return;
     }
     if (
       authContext.entity.role === Verbs.entityTypeUser ||
       authContext.entity.role === Verbs.entityTypePlayer
     ) {
-      setSelectedSport(strings.allSport);
+      setSelectedSport(strings.allType);
+      setSportType(strings.allSport);
+
       return;
     }
     if (
       authContext.entity.role === Verbs.entityTypeClub &&
       authContext.entity.obj.sports.length !== 1
     ) {
-      setSelectedSport(strings.allSport);
+      setSelectedSport(strings.allType);
+      setSportType(strings.allSport);
     }
   }, [
     authContext.entity.obj.sport,
     authContext.entity.obj.sport_type,
     authContext.entity.role,
     showSwitchAccountModal,
+    isFocused,
   ]);
 
   useEffect(() => {
@@ -322,7 +326,7 @@ function LocalHomeScreen({navigation, route}) {
 
   useEffect(() => {
     getSportsForHome(authContext, setSportHandler, sports, setSportIconLoader);
-  }, [authContext.entity]);
+  }, [authContext]);
 
   useEffect(() => {
     const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
@@ -585,6 +589,7 @@ function LocalHomeScreen({navigation, route}) {
     }
     setLocationSelectedViaModal(true);
     setLocationPopup(false);
+    setSelectedLocationOption(3);
   };
 
   const getLayout = (_, index) => ({
@@ -767,11 +772,9 @@ function LocalHomeScreen({navigation, route}) {
             navigation.setParams({locationText: null});
             setSelectedLocationOption(0);
             getLocation();
-
             setTimeout(() => {
-              // getLocation();
               setLocationPopup(false);
-            }, 300);
+            }, 500);
           }}>
           {selectedLocationOption === 0 ? (
             <View style={styles.backgroundViewSelected}>
@@ -867,7 +870,6 @@ function LocalHomeScreen({navigation, route}) {
             {selectedLocationOption === 3 ? (
               <Pressable
                 onPress={() => {
-                  setSelectedLocationOption(3);
                   setVisibleLocationModal(true);
                 }}
                 style={[styles.backgroundViewSelected, {alignItems: 'center'}]}>
@@ -887,7 +889,6 @@ function LocalHomeScreen({navigation, route}) {
               <Pressable
                 style={styles.backgroundView}
                 onPress={() => {
-                  setSelectedLocationOption(3);
                   setVisibleLocationModal(true);
                 }}>
                 <Text style={styles.worldText}>{location}</Text>
@@ -902,7 +903,6 @@ function LocalHomeScreen({navigation, route}) {
             <Pressable
               style={styles.sectionStyle}
               onPress={() => {
-                setSelectedLocationOption(3);
                 setVisibleLocationModal(true);
               }}>
               <Text style={styles.searchText}>

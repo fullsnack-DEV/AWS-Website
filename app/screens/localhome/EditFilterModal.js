@@ -6,8 +6,10 @@ import {
   FlatList,
   Pressable,
   Modal,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React, {useCallback, useEffect, useState, useContext} from 'react';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import FastImage from 'react-native-fast-image';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
@@ -17,11 +19,13 @@ import fonts from '../../Constants/Fonts';
 import {getSportDetails, getSportList} from '../../utils/sportsActivityUtils';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
-import {getStorage, setStorage, showAlert} from '../../utils';
+import {getHitSlop, getStorage, setStorage, showAlert} from '../../utils';
 import AuthContext from '../../auth/context';
 import ScreenHeader from '../../components/ScreenHeader';
 import {updateUserProfile} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import Verbs from '../../Constants/Verbs';
+import {patchGroup} from '../../api/Groups';
 
 export default function EditFilterModal({
   visible,
@@ -38,21 +42,88 @@ export default function EditFilterModal({
   const [favsport, setFavSport] = useState([]);
   const [addedSport, setAddedsport] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [registerSports, setRegisterSport] = useState([]);
+  const [notRegisterSport, setNotRegisterSport] = useState([]);
 
   useEffect(() => {
+    GetandSetSportsLists();
+  }, [visible, sportList, authContext]);
+
+  const GetandSetSportsLists = async () => {
+    setLoading(true);
     getStorage('appSetting').then((setting) => {
       setImageBaseUrl(setting.base_url_sporticon);
     });
 
     const newFavSports = [...favsport];
     sportList.forEach((item) => {
-      newFavSports.push(item);
+      if (!newFavSports.includes(item)) {
+        newFavSports.push(item);
+      }
     });
-    setFavSport(newFavSports);
 
+    const registeredSports =
+      authContext.user?.registered_sports?.map((item) => item) || [];
+    const scorekeeperSports =
+      authContext.user?.scorekeeper_data?.map((item) => item) || [];
+    const likedsports = authContext.user?.sports?.map((item) => item) || [];
+    const refereeSports =
+      authContext.user?.referee_data?.map((item) => item) || [];
+
+    const clubFavSport =
+      authContext.entity.role === Verbs.entityTypeClub
+        ? authContext.entity.obj?.sports.map((item) => item) || []
+        : [];
+
+    const uniqueSports = [
+      ...(authContext.entity.role === Verbs.entityTypeClub
+        ? clubFavSport
+        : [
+            ...registeredSports,
+            ...scorekeeperSports,
+            ...likedsports,
+            ...refereeSports,
+          ]),
+    ];
+
+    const res = uniqueSports.map((obj) => ({
+      sport: obj.sport,
+      sport_type: obj.sport_type,
+      sport_name: obj.sport_name ?? obj.sport,
+    }));
+    const result = res.reduce((unique, o) => {
+      if (
+        !unique.some(
+          (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
+        )
+      ) {
+        unique.push(o);
+      }
+
+      return unique;
+    }, []);
+
+    const registerSportNames = result.map((item) => item.sport_name);
+
+    const commonObjects = favsport.filter(
+      (item) => !registerSportNames.includes(item.sport_name),
+    );
+
+    if (authContext.entity.role !== Verbs.entityTypeClub) {
+      setAddedsport([...commonObjects, ...result]);
+    } else {
+      setAddedsport([...commonObjects, ...result]);
+    }
+
+    // Now batch the state updates into a single call
+    setLoading(false);
+    setFavSport(sportList);
     setsports(sportList);
+    setRegisterSport(result);
+    setNotRegisterSport(commonObjects);
+
     getAllsportData();
-  }, [visible]);
+  };
 
   const getAllsportData = () => {
     const sportArr = getSportList(authContext.sports);
@@ -83,20 +154,43 @@ export default function EditFilterModal({
     [authContext.sports, image_base_url],
   );
 
-  const Imagecheck = (item) => {
-    const isSportAdded = addedSport.some(
-      (favItem) => favItem.sport_name === item.sport_name,
+  const FavSportCheck = (item) => {
+    const isSportAdded = favsport.some(
+      (favItem) =>
+        favItem.sport_name.toLowerCase() === item.sport_name.toLowerCase(),
     );
 
     return isSportAdded;
   };
 
-  const FavSportCheck = (item) => {
-    const isSportAdded = favsport.some(
-      (favItem) => favItem.sport_name === item.sport_name,
+  const FavSportImageCheck = useCallback(
+    (item) => {
+      const filteredFavSport = favsport.filter(
+        (favItem) =>
+          !notRegisterSport.some(
+            (notRegisteredItem) =>
+              favItem.sport_name.toLowerCase() ===
+              notRegisteredItem.sport_name.toLowerCase(),
+          ),
+      );
+
+      const isSportAdded = filteredFavSport.some(
+        (favItem) =>
+          favItem.sport_name.toLowerCase() === item.sport_name.toLowerCase(),
+      );
+
+      return isSportAdded;
+    },
+    [addedSport, registerSports, notRegisterSport],
+  );
+
+  const CheckisRegister = (item) => {
+    const isRegisterSport = notRegisterSport.some(
+      (regSport) =>
+        regSport.sport_name.toLowerCase() === item.sport_name.toLowerCase(),
     );
 
-    return isSportAdded;
+    return isRegisterSport;
   };
 
   const RenderAllRow = () => (
@@ -120,7 +214,12 @@ export default function EditFilterModal({
 
   const onAllPress = () => {
     if (addedSport.length === allSports.length) {
-      setAddedsport([]);
+      if (authContext.entity.role !== Verbs.entityTypeClub) {
+        setAddedsport([...notRegisterSport, ...registerSports]);
+      } else {
+        setAddedsport([...sportList]);
+      }
+
       return;
     }
 
@@ -141,16 +240,20 @@ export default function EditFilterModal({
 
   const toggleSport = (item) => {
     const index = addedSport.findIndex(
-      (sportItem) => sportItem.sport_name === item.sport_name,
+      (sportItem) =>
+        sportItem.sport_name.toLowerCase() === item.sport_name.toLowerCase(),
     );
 
     const indexed = addedSport.findIndex(
-      (sportItem) => sportItem.sport_name === item.sport_name,
+      (sportItem) =>
+        sportItem.sport_name.toLowerCase() === item.sport_name.toLowerCase(),
     );
 
+    // Remove
     if (indexed === 0) {
       const filteredsport = sports.filter(
-        (sportItem) => sportItem.sport_name !== item.sport_name,
+        (sportItem) =>
+          sportItem.sport_name.toLowerCase() !== item.sport_name.toLowerCase(),
       );
 
       setsports([...filteredsport]);
@@ -158,12 +261,12 @@ export default function EditFilterModal({
 
     if (index === -1) {
       const newAddedSport = [
-        ...addedSport,
         {
           sport: item.sport,
           sport_name: item.sport_name,
           sport_type: item.sport_type,
         },
+        ...addedSport,
       ];
 
       if (addedSport.length === 20) {
@@ -173,154 +276,200 @@ export default function EditFilterModal({
       }
     } else {
       const newAddedSport = addedSport.filter(
-        (sportItem) => sportItem.sport_name !== item.sport_name,
+        (sportItem) =>
+          sportItem.sport_name.toLowerCase() !== item.sport_name.toLowerCase(),
       );
 
       setAddedsport(newAddedSport);
     }
   };
 
+  const onEditSport = async () => {
+    setLoading(true);
+    if (authContext.entity.role !== Verbs.entityTypeClub) {
+      const entity = authContext.entity;
+
+      entity.auth.user.favouriteSport = sports;
+      const body = {
+        favouriteSport: sports,
+      };
+      updateUserProfile(body, authContext)
+        .then(async () => {
+          await setStorage('authContextEntity', {...entity});
+          setAddedsport([]);
+          onApplyPress(sports);
+          setLoading(false);
+          onClose();
+        })
+        .catch((e) => {
+          console.log(e.message);
+        });
+
+      return;
+    }
+
+    const grp_id = authContext.entity.obj.group_id;
+    const body = {};
+    body.favouriteSport = sports;
+
+    patchGroup(grp_id, body, authContext)
+      .then(async (response) => {
+        const entity = authContext.entity;
+        entity.obj = response.payload;
+        authContext.setEntity({...entity});
+        setStorage('authContextEntity', {...entity});
+        setLoading(false);
+        onApplyPress(sports);
+        onClose();
+      })
+      .catch((e) => {
+        setLoading(false);
+        console.log(e.message);
+      });
+  };
+
+  const checkSportAdded = useCallback(
+    (item) => {
+      const isImagecheck = addedSport.some(
+        (favItem) =>
+          favItem.sport_name.toLowerCase() === item.sport_name.toLowerCase(),
+      );
+
+      return isImagecheck;
+    },
+    [visible, addedSport, registerSports, notRegisterSport],
+  );
+
+  const renderItem = ({item, drag, isActive}) => (
+    <View style={[styles.card, styles.row, {marginBottom: 15}]}>
+      <View
+        style={[
+          styles.row,
+          {
+            justifyContent: 'flex-start',
+          },
+        ]}>
+        <View style={{marginRight: 13}}>{renderImageforSport(item)}</View>
+        <Text style={styles.label}>{item.sport_name}</Text>
+      </View>
+
+      <TouchableOpacity
+        hitSlop={getHitSlop(10)}
+        style={styles.dragImageContainer}
+        onLongPress={drag}
+        disabled={isActive}>
+        <FastImage source={images.moveIcon} style={styles.image} />
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <Modal visible={visible} collapsable transparent animationType="fade">
-      <View style={styles.parent}>
-        <View style={styles.Mcard}>
-          <ScreenHeader
-            leftIcon={images.crossImage}
-            leftIconPress={() => {
-              setAddedsport([]);
-              onClose();
-            }}
-            rightButtonText={strings.apply}
-            title={strings.editFavSportTitle}
-            onRightButtonPress={async () => {
-              setLoading(true);
-              const entity = authContext.entity;
-
-              entity.auth.user.favouriteSport = sports;
-              const body = {
-                favouriteSport: sports,
-              };
-
-              updateUserProfile(body, authContext)
-                .then(async () => {
-                  await setStorage('authContextEntity', {...entity});
-                  setAddedsport([]);
-                  onApplyPress(sports);
-                  setLoading(false);
-                  onClose();
-                })
-                .catch((e) => {
-                  console.log(e);
-                });
-            }}
-            isRightIconText
-          />
-          <View style={{marginHorizontal: 20}}>
-            <ActivityLoader visible={loading} />
-            <Text style={styles.topText}> {strings.settingModaltitle} </Text>
-
-            <DraggableFlatList
-              scrollEnabled
-              data={sports}
-              nestedScrollEnabled
-              onDragEnd={({data}) => {
-                setsports(data);
-              }}
-              style={{marginBottom: 200}}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({item, drag, isActive}) => (
-                <View style={[styles.card, styles.row, {marginBottom: 15}]}>
-                  <View style={[styles.row, {justifyContent: 'center'}]}>
-                    <View style={{marginRight: 13}}>
-                      {renderImageforSport(item)}
-                    </View>
-                    <Text style={styles.label}>{item.sport_name}</Text>
-                  </View>
-
-                  <TouchableOpacity
-                    style={{width: 15, height: 13}}
-                    onLongPress={drag}
-                    disabled={isActive}>
-                    <FastImage source={images.moveIcon} style={styles.image} />
-                  </TouchableOpacity>
-                </View>
-              )}
-              ListFooterComponent={() => (
-                <TouchableOpacity
-                  style={styles.addordeletebtn}
-                  onPress={() => setVisibleAddModal(true)}>
-                  <Text style={styles.adddeletetext}>
-                    {strings.addOrDelete}
-                  </Text>
-                </TouchableOpacity>
-              )}
-              bounces={false}
-              showsVerticalScrollIndicator={false}
-            />
-
-            <CustomModalWrapper
-              isVisible={visibleAddModal}
-              title={strings.addorDeleteFavSportTitle}
-              closeModal={() => {
-                setVisibleAddModal(false);
+      <GestureHandlerRootView style={{flex: 1}}>
+        <View style={styles.parent}>
+          <View style={styles.Mcard}>
+            <ScreenHeader
+              leftIcon={images.crossImage}
+              leftIconPress={() => {
                 setAddedsport([]);
+                onClose();
               }}
-              modalType={ModalTypes.style1}
-              headerRightButtonText={strings.save}
-              onRightButtonPress={() => {
-                const newSports = [...sports];
+              rightButtonText={strings.apply}
+              title={strings.editFavSportTitle}
+              onRightButtonPress={() => onEditSport()}
+              isRightIconText
+            />
+            <View style={{marginHorizontal: 20}}>
+              <ActivityLoader visible={loading} />
+              <Text style={styles.topText}> {strings.settingModaltitle} </Text>
+              <TouchableWithoutFeedback>
+                <DraggableFlatList
+                  scrollEnabled
+                  data={sports}
+                  nestedScrollEnabled
+                  onDragEnd={({data}) => {
+                    setsports(data);
+                  }}
+                  style={{marginBottom: 200}}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={renderItem}
+                  ListFooterComponent={() => (
+                    <TouchableOpacity
+                      style={styles.addordeletebtn}
+                      onPress={() => setVisibleAddModal(true)}>
+                      <Text style={styles.adddeletetext}>
+                        {strings.addOrDelete}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  bounces={false}
+                  showsVerticalScrollIndicator={false}
+                />
+              </TouchableWithoutFeedback>
 
-                addedSport.forEach((item) => {
-                  if (
-                    !newSports.some(
-                      (sport) => sport.sport_name === item.sport_name,
-                    )
-                  ) {
-                    newSports.unshift(item);
+              <CustomModalWrapper
+                isVisible={visibleAddModal}
+                title={strings.addorDeleteFavSportTitle}
+                closeModal={() => {
+                  setVisibleAddModal(false);
+                  if (authContext.entity.role !== Verbs.entityTypeClub) {
+                    setAddedsport([...notRegisterSport, ...registerSports]);
+                  } else {
+                    setAddedsport([...sportList]);
                   }
-                });
-                setsports(newSports);
-                setVisibleAddModal(false);
-              }}>
-              <FlatList
-                data={allSports}
-                style={{marginTop: -20}}
-                ListHeaderComponent={RenderAllRow}
-                keyExtractor={(item, index) => `${item?.sport_type}/${index}`}
-                showsVerticalScrollIndicator={false}
-                renderItem={({item}) => (
-                  <>
-                    <Pressable
-                      style={styles.listItem}
-                      onPress={() => {
-                        if (!FavSportCheck(item)) {
-                          toggleSport(item);
-                        }
-                      }}>
-                      <Text style={styles.listLabel}>{item.sport_name}</Text>
-                      <View
-                        style={[
-                          styles.listIconContainer,
-                          {opacity: FavSportCheck(item) ? 0.6 : 1},
-                        ]}>
-                        <FastImage
-                          source={
-                            Imagecheck(item) || FavSportCheck(item)
-                              ? images.orangeCheckBox
-                              : images.uncheckBox
+                }}
+                modalType={ModalTypes.style1}
+                headerRightButtonText={strings.save}
+                onRightButtonPress={() => {
+                  setsports([...addedSport]);
+                  setVisibleAddModal(false);
+                }}>
+                <FlatList
+                  data={allSports}
+                  style={{marginTop: -20}}
+                  ListHeaderComponent={RenderAllRow}
+                  keyExtractor={(item, index) => `${item?.sport_type}/${index}`}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({item}) => (
+                    <>
+                      <Pressable
+                        style={styles.listItem}
+                        onPress={() => {
+                          if (CheckisRegister(item)) {
+                            toggleSport(item);
                           }
-                          style={styles.image}
-                        />
-                      </View>
-                    </Pressable>
-                    <View style={styles.lineSeparator} />
-                  </>
-                )}
-              />
-            </CustomModalWrapper>
+
+                          if (!FavSportCheck(item)) {
+                            toggleSport(item);
+                          }
+                        }}>
+                        <Text style={styles.listLabel}>{item.sport_name}</Text>
+                        <View
+                          style={[
+                            styles.listIconContainer,
+                            {
+                              opacity: FavSportImageCheck(item) ? 0.6 : 1,
+                            },
+                          ]}>
+                          <FastImage
+                            source={
+                              checkSportAdded(item)
+                                ? images.orangeCheckBox
+                                : images.uncheckBox
+                            }
+                            style={styles.image}
+                          />
+                        </View>
+                      </Pressable>
+                      <View style={styles.lineSeparator} />
+                    </>
+                  )}
+                />
+              </CustomModalWrapper>
+            </View>
           </View>
         </View>
-      </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
@@ -404,5 +553,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.modalBackgroundColor,
     paddingTop: 50,
+  },
+  dragImageContainer: {
+    width: 15,
+    height: 13,
+
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

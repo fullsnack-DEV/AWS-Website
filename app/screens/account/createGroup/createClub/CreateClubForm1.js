@@ -88,10 +88,13 @@ export default function CreateClubForm1({navigation, route}) {
 
   useEffect(() => {
     if (route.params?.length > 0) {
-      const newSportArray = route.params.map(({sport, sport_type}) => ({
-        sport,
-        sport_type,
-      }));
+      const newSportArray = route.params.map(
+        ({sport, sport_type, sport_name}) => ({
+          sport,
+          sport_type,
+          sport_name,
+        }),
+      );
 
       setSelectedSports(newSportArray);
     }

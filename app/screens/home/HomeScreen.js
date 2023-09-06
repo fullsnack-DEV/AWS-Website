@@ -35,6 +35,9 @@ import * as Utility from '../../utils';
 import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import InviteMemberModal from '../../components/InviteMemberModal';
+import {getDataForNextScreen} from '../localhome/LocalHomeUtils';
+import {locationType} from '../../utils/constant';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -49,7 +52,7 @@ const HomeScreen = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const [congratulationsModal, setCongratulationsModal] = useState(false);
   const [listLoading, setListLoading] = useState(false);
-
+  const [visibleInviteMember, setVisibleInviteMember] = useState(false);
   const [settingObject, setSettingObject] = useState();
   const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
 
@@ -464,21 +467,28 @@ const HomeScreen = ({navigation, route}) => {
                 : route.params.entityObj?.sports?.[0]?.sport
             }
             searchTeam={(filters) => {
+              const teamData = getDataForNextScreen(
+                Verbs.TEAM_DATA,
+                filters,
+                filters.location,
+                locationType.WORLD,
+                authContext,
+              );
+
               navigation.navigate('LookingForChallengeScreen', {
-                filters: {
-                  ...filters,
-                  groupTeam: strings.teamstitle,
-                },
+                filters: teamData.filters,
+                teamSportData: teamData.teamSportData,
+                registerFavSports: filters.sport,
               });
             }}
             searchPlayer={() => {
               setCongratulationsModal(false);
-              navigation.navigate('InviteMembersBySearchScreen');
+              setVisibleInviteMember(true);
             }}
             goToSportActivityHome={() => {
               setCongratulationsModal(false);
               if (authContext.entity.role === Verbs.entityTypeTeam) {
-                navigation.navigate('InviteMembersBySearchScreen');
+                setVisibleInviteMember(true);
               }
             }}
             onInviteClick={(item) => {
@@ -490,6 +500,11 @@ const HomeScreen = ({navigation, route}) => {
           />
         </>
       ) : null}
+
+      <InviteMemberModal
+        isVisible={visibleInviteMember}
+        closeModal={() => setVisibleInviteMember(false)}
+      />
 
       <SwitchAccountModal
         isVisible={showSwitchAccountModal}

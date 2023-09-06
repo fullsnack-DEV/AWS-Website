@@ -1,11 +1,5 @@
 import React, {memo} from 'react';
-import {
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-  Image,
-} from 'react-native';
+import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -19,9 +13,9 @@ const TCProfileButton = ({
   rightImage = images.arrowGraterthan,
   imageStyle,
   textStyle,
-  tickImage=false
+  tickImage = false,
 }) => (
-  <TouchableWithoutFeedback onPress={onPressProfile}>
+  <TouchableOpacity onPress={onPressProfile}>
     <View style={[styles.buttonView, style]}>
       <Text style={[styles.textStyle, textStyle]} numberOfLines={1}>
         {title}
@@ -29,13 +23,11 @@ const TCProfileButton = ({
       {showArrow && (
         <Image source={rightImage} style={[styles.arrowImage, imageStyle]} />
       )}
-      {
-      tickImage && (
+      {tickImage && (
         <Image source={images.tickImage} style={styles.tickImage} />
-      )
-      }
+      )}
     </View>
-  </TouchableWithoutFeedback>
+  </TouchableOpacity>
 );
 const styles = StyleSheet.create({
   buttonView: {

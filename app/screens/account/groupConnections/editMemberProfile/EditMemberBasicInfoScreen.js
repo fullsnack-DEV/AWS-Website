@@ -10,7 +10,6 @@ import {
   Platform,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Pressable,
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
@@ -48,7 +47,8 @@ import {
   weightMesurement,
 } from '../../../../utils/constant';
 import AddressLocationModal from '../../../../components/AddressLocationModal/AddressLocationModal';
-import TCCountryCodeModal from '../../../../components/TCCountryCodeModal';
+
+import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 
 let entity = {};
 
@@ -65,20 +65,10 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   const [country, setCountry] = useState();
   const [date, setDate] = useState();
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-  const [countryCodeVisible, setCountryCodeVisible] = useState(false);
-  const [selectedCountryCode, setSelectedCountryCode] = useState({
-    code: 1,
-    country: 'Canada',
-  });
+
   const [maxDateValue] = useState(new Date());
 
-  const [phoneNumber, setPhoneNumber] = useState([
-    {
-      id: 0,
-      phone_number: '',
-      country_code: '',
-    },
-  ]);
+  const [phoneNumber, setPhoneNumber] = useState([]);
 
   const [memberInfo, setMemberInfo] = useState({
     height: {
@@ -91,6 +81,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     },
   });
 
+  const [countrycode, setCountryCode] = useState();
   useEffect(() => {
     const mindate = new Date();
     const maxdate = new Date();
@@ -99,12 +90,33 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   }, []);
 
   useEffect(() => {
+    const selectedCountryItem = Utility.countryCode.find(
+      (item) =>
+        item.name.toLowerCase() === authContext.user.country.toLowerCase(),
+    );
+
+    let dialCode = selectedCountryItem.dial_code;
+
+    if (dialCode.startsWith('+')) {
+      dialCode = dialCode.substring(1);
+    }
+
+    const countryOBJ = {
+      country: selectedCountryItem.name,
+      code: dialCode,
+      iso: selectedCountryItem.code,
+    };
+
+    setCountryCode(countryOBJ);
+  }, []);
+
+  useEffect(() => {
     setPhoneNumber(
       route.params.memberInfo.phone_numbers || [
         {
           id: 0,
-          phone_number: '',
-          country_code: '',
+          phone_number: {},
+          country_code: countrycode,
         },
       ],
     );
@@ -132,8 +144,8 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   const addPhoneNumber = () => {
     const obj = {
       id: phoneNumber.length === 0 ? 0 : phoneNumber.length,
-      country_code: '',
-      phone_number: '',
+      country_code: countrycode,
+      phone_number: {},
     };
     setPhoneNumber([...phoneNumber, obj]);
   };
@@ -226,7 +238,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     setloading(true);
 
     const bodyParams = {...memberInfo};
-    console.log(authContext.user, 'From user');
+
     bodyParams.last_updatedBy = `${authContext.user?.full_name}`;
     delete bodyParams.group;
 
@@ -255,107 +267,51 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   const handleCancelPress = () => {
     setShowDate(!showDate);
   };
-  const renderPhoneNumber = () => {
-    if (memberInfo?.phone_numbers?.length > 0) {
-      return memberInfo.phone_numbers.map((item, index) => (
-        <View style={styles.row} key={index}>
-          <Pressable
-            style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]}
-            onPress={() => setCountryCodeVisible(true)}>
-            <View style={{flex: 1, alignItems: 'center'}}>
-              <Text
-                style={[
-                  styles.titleText,
-                  {fontFamily: fonts.RRegular, marginBottom: 0},
-                ]}>
-                {`${selectedCountryCode.country} (+${selectedCountryCode.code})`}
-              </Text>
-            </View>
-            <View style={{width: 10, height: 10}}>
-              <Image
-                source={images.dropDownArrow}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  resizeMode: 'contain',
-                  tintColor: colors.lightBlackColor,
-                }}
-              />
-            </View>
-          </Pressable>
-          <View style={{flex: 1, marginLeft: 8}}>
-            <TextInput
-              placeholder={strings.phone}
-              placeholderTextColor={colors.userPostTimeColor}
-              style={styles.inputField}
-              keyboardType={'phone-pad'}
-              onChangeText={(text) => {
-                const list = [...memberInfo.phone_numbers];
-                list[index] = {
-                  country_code: selectedCountryCode.code,
-                  phone_number: text,
-                };
-                setMemberInfo({
-                  ...memberInfo,
-                  phone_numbers: list,
-                });
-              }}
-              value={item.phone_number}
-              maxLength={12}
-            />
-          </View>
-        </View>
-      ));
-    }
-    return (
-      <View style={styles.row}>
-        <Pressable
-          style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]}
-          onPress={() => setCountryCodeVisible(true)}>
-          <View style={{flex: 1, alignItems: 'center'}}>
-            <Text
-              style={[
-                styles.titleText,
-                {fontFamily: fonts.RRegular, marginBottom: 0},
-              ]}>
-              {`${selectedCountryCode.country} (+${selectedCountryCode.code})`}
-            </Text>
-          </View>
-          <View style={{width: 10, height: 10}}>
-            <Image
-              source={images.dropDownArrow}
-              style={{
-                width: '100%',
-                height: '100%',
-                resizeMode: 'contain',
-                tintColor: colors.lightBlackColor,
-              }}
-            />
-          </View>
-        </Pressable>
-        <View style={{flex: 1, marginLeft: 8}}>
-          <TextInput
-            placeholder={strings.phone}
-            style={styles.inputField}
-            keyboardType={'phone-pad'}
-            onChangeText={(text) => {
-              setMemberInfo({
-                ...memberInfo,
-                phone_numbers: [
-                  {
-                    country_code: selectedCountryCode.code,
-                    phone_number: text,
-                  },
-                ],
-              });
-            }}
-            value={memberInfo.phone_numbers?.[0]?.phone_number}
-            maxLength={12}
-          />
-        </View>
-      </View>
-    );
-  };
+
+  const renderPhoneNumber = ({item, index}) => (
+    <TCPhoneNumber
+      marginBottom={2}
+      placeholder={strings.selectCode}
+      value={item.country_code}
+      numberValue={item.phone_number}
+      onValueChange={(value) => {
+        const tempCode = [...phoneNumber];
+        tempCode[index].country_code = value;
+        setPhoneNumber(tempCode);
+        const filteredNumber = phoneNumber.filter(
+          (obj) =>
+            ![null, undefined, ''].includes(
+              obj.phone_number && obj.country_code,
+            ),
+        );
+        setMemberInfo({
+          ...memberInfo,
+          phone_numbers: filteredNumber.map(({country_code, phone_number}) => ({
+            country_code,
+            phone_number,
+          })),
+        });
+      }}
+      onChangeText={(text) => {
+        const tempPhone = [...phoneNumber];
+        tempPhone[index].phone_number = text;
+        setPhoneNumber(tempPhone);
+        const filteredNumber = phoneNumber.filter(
+          (obj) =>
+            ![null, undefined, ''].includes(
+              obj.phone_number && obj.country_code,
+            ),
+        );
+        setMemberInfo({
+          ...memberInfo,
+          phone_numbers: filteredNumber.map(({country_code, phone_number}) => ({
+            country_code,
+            phone_number,
+          })),
+        });
+      }}
+    />
+  );
 
   const heightView = () => (
     <View>
@@ -678,17 +634,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         />
       </View>
 
-      <TCCountryCodeModal
-        countryCodeVisible={countryCodeVisible}
-        onCloseModal={() => {
-          setCountryCodeVisible(false);
-        }}
-        countryCodeObj={(obj) => {
-          setSelectedCountryCode(obj);
-          setCountryCodeVisible(false);
-        }}
-      />
-
       <View>
         <TCLabel
           title={strings.phone}
@@ -700,6 +645,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
         />
         <FlatList
           data={phoneNumber}
+          style={{marginHorizontal: 10}}
           renderItem={renderPhoneNumber}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -832,25 +778,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: colors.blackColor,
   },
-  titleText: {
-    fontSize: 16,
-    lineHeight: 19,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-    marginBottom: 6,
-  },
 
-  inputField: {
-    height: 40,
-    backgroundColor: colors.textFieldBackground,
-    // paddingVertical: Platform.OS === 'android' ? 5 : 12,
-    // paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
   miniDownArrow: {
     alignSelf: 'center',
     height: 12,
@@ -859,9 +787,5 @@ const styles = StyleSheet.create({
     tintColor: colors.lightBlackColor,
     top: 15,
     width: 12,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
 });

@@ -8,6 +8,7 @@ import {
   Text,
   View,
   StyleSheet,
+  Image,
   Alert,
 } from 'react-native';
 import {format} from 'react-string-format';
@@ -26,6 +27,7 @@ import Verbs from '../../../Constants/Verbs';
 import SelectedRecipientsModal from './SelectedRecipientsModal';
 import RecipientCell from './RecipientCell';
 import CustomScrollTabs from '../../../components/CustomScrollTabs';
+import images from '../../../Constants/ImagePath';
 
 const TAB_ITEMS = [strings.peopleTitleText, strings.teamsTitleText];
 
@@ -244,7 +246,10 @@ const AddRecipientsModal = ({
   };
 
   const selectMembers = () => {
-    if (invoiceType === InvoiceType.Event) {
+    if (
+      invoiceType === InvoiceType.Event ||
+      invoiceType === InvoiceType.Invoice
+    ) {
       if (currentTab === InvoiceRecipientTabType.Teams) {
         const l_selectedTeams = [];
         if (selectedTeams.length !== recipientTeams.length) {
@@ -394,12 +399,23 @@ const AddRecipientsModal = ({
         <TextInput
           style={styles.searchTextInput}
           placeholder={strings.searchText}
-          clearButtonMode="always"
           placeholderTextColor={colors.userPostTimeColor}
           value={searchText}
           onChangeText={(text) => setSearchText(text)}
         />
+        {searchText.length > 0 && (
+          <TouchableOpacity
+            onPress={() => {
+              setSearchText('');
+            }}>
+            <Image
+              source={images.closeRound}
+              style={{height: 15, width: 15, marginRight: 10}}
+            />
+          </TouchableOpacity>
+        )}
       </View>
+
       {/* Recipient selections */}
       <TouchableOpacity
         style={{marginHorizontal: 15}}
@@ -483,6 +499,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingLeft: 15,
     paddingRight: 10,
+    alignItems: 'center',
   },
   searchTextInput: {
     color: colors.lightBlackColor,

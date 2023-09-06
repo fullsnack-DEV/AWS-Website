@@ -267,10 +267,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
           },
         });
       }
-      console.log(
-        'Available For challengeQuery  match Query:=>',
-        JSON.stringify(availableForchallengeQuery),
-      );
+
       // Looking Challengee query
 
       getUserIndex(availableForchallengeQuery)
@@ -386,10 +383,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
         }
       }
 
-      console.log(
-        'Available For challengeQuery  match Query:=>',
-        JSON.stringify(availableForchallengeQuery),
-      );
       // Looking Challengee query
 
       getGroupIndex(availableForchallengeQuery)

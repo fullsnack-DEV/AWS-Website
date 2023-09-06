@@ -31,6 +31,7 @@ const ScreenHeader = ({
   rightIcon3Press = () => {},
   containerStyle = {},
   labelStyle = {},
+  iconContainerStyle = {},
   rightButtonTextStyle = {},
   leftIconStyle = {},
 }) => (
@@ -82,7 +83,7 @@ const ScreenHeader = ({
         <View style={styles.rightButtonContainer}>
           {rightIcon1 ? (
             <TouchableOpacity
-              style={styles.iconContainer}
+              style={[styles.iconContainer, iconContainerStyle]}
               onPress={rightIcon1Press}>
               <Image source={rightIcon1} style={styles.image} />
             </TouchableOpacity>

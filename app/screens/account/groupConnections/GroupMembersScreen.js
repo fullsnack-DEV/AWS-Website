@@ -17,6 +17,7 @@ import {
   Text,
   TouchableOpacity,
   SafeAreaView,
+  TextInput,
 } from 'react-native';
 import {
   useFocusEffect,
@@ -53,6 +54,7 @@ import GroupMemberShimmer from './GroupMemberShimmer';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
 import InviteMemberModal from '../../../components/InviteMemberModal';
+import RequestBasicInfoModal from './RequestBasicInfoModal';
 
 export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -64,7 +66,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const [searchMember, setSearchMember] = useState();
   const [searchText, setSearchText] = useState('');
   const [showInviteMember, setShowInviteMember] = useState(false);
-
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const [members, setMembers] = useState([]);
 
   const [switchUser] = useState(authContext.entity);
@@ -155,30 +157,22 @@ export default function GroupMembersScreen({navigation, route}) {
     getGroupsLoggedInUser();
   }, [authContext, getGroupsLoggedInUser, groupID]);
 
-  const searchFilterFunction = (text) => {
-    const searchTexts = text.toLowerCase();
+  useEffect(() => {
+    if (searchText.length > 0) {
+      const searchParts = searchText.toLowerCase().split(' ');
+      const list = members.filter((item) =>
+        searchParts.every(
+          (part) =>
+            item.first_name.toLowerCase().includes(part) ||
+            item.last_name.toLowerCase().includes(part),
+        ),
+      );
 
-    if (text.length === 0) {
-      setMembers(searchMember);
-      setSearchText(text);
-      setNoResults(false); // Reset noResults
-      return;
-    }
-
-    const filteredData = members.filter((item) => {
-      const fullName = `${item.first_name} ${item.last_name}`.toLowerCase();
-      return fullName.includes(searchTexts);
-    });
-
-    setMembers(filteredData);
-    setSearchText(text);
-
-    if (filteredData.length === 0) {
-      setNoResults(true);
+      setSearchMember(list);
     } else {
-      setNoResults(false);
+      setSearchMember(members);
     }
-  };
+  }, [searchText]);
 
   const onPressProfile = useCallback(
     (item) => {
@@ -643,13 +637,30 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const SearchBox = () => (
     <View style={styles.searchBarView}>
-      <TCSearchBox
-        onChangeText={(text) => searchFilterFunction(text)}
-        placeholderText={strings.searchText}
-        style={{
-          height: 40,
-        }}
-      />
+      <View style={styles.floatingInput}>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholderTextColor={colors.userPostTimeColor}
+            style={styles.textInputStyle}
+            value={searchText}
+            onChangeText={(text) => {
+              setSearchText(text);
+            }}
+            placeholder={strings.searchText}
+          />
+          {searchText.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchText('');
+              }}>
+              <Image
+                source={images.closeRound}
+                style={{height: 15, width: 15}}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
     </View>
   );
 
@@ -670,6 +681,7 @@ export default function GroupMembersScreen({navigation, route}) {
           rightIcon2={switchUser.uid === groupID ? images.vertical3Dot : null}
           rightIcon1Press={() => actionSheet.current.show()}
           rightIcon2Press={() => actionSheetPlus.current.show()}
+          iconContainerStyle={{marginRight: 7}}
         />
       </View>
       <View tabLabel={strings.membersTitle} style={{flex: 1}}>
@@ -678,16 +690,15 @@ export default function GroupMembersScreen({navigation, route}) {
         {/* eslint-disable-next-line no-nested-ternary */}
         {members.length > 0 || noResults ? (
           <FlatList
-            extraData={members}
             style={{marginTop: -10}}
-            data={members}
+            extraData={searchMember}
+            data={searchMember}
             renderItem={renderMembers}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={() => (
               <View style={styles.listemptyView}>
                 <Text style={{textAlign: 'center'}}>
-                  {' '}
-                  {strings.liseemptyText}{' '}
+                  {strings.liseemptyText}
                 </Text>
               </View>
             )}
@@ -727,9 +738,7 @@ export default function GroupMembersScreen({navigation, route}) {
         cancelButtonIndex={3}
         onPress={(index) => {
           if (index === 0) {
-            navigation.navigate('RequestMultipleBasicInfoScreen', {
-              groupID,
-            });
+            setShowInfoModal(true);
           } else if (index === 1) {
             setTimeout(() => {
               SetSendNewInvoice(true);
@@ -748,6 +757,11 @@ export default function GroupMembersScreen({navigation, route}) {
         isVisible={showInviteMember}
         closeModal={() => setShowInviteMember(false)}
       />
+      <RequestBasicInfoModal
+        isVisible={showInfoModal}
+        groupID={groupID}
+        closeModal={() => setShowInfoModal(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -760,8 +774,9 @@ const styles = StyleSheet.create({
 
   searchBarView: {
     flexDirection: 'row',
-    margin: 15,
     marginTop: 20,
+    justifyContent: 'center',
+    marginBottom: 20,
   },
 
   profileImage: {
@@ -837,5 +852,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 300,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    paddingHorizontal: 15,
+    borderRadius: 25,
+    backgroundColor: colors.inputBgOpacityColor,
+    height: 45,
+  },
+  textInputStyle: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    padding: 0,
+  },
+  floatingInput: {
+    alignSelf: 'center',
+    zIndex: 1,
+    width: '90%',
   },
 });

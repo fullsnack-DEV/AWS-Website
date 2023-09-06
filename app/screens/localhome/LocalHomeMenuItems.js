@@ -833,6 +833,7 @@ const LocalHomeMenuItems = memo(
                         sportType={sportType}
                         item={item}
                         onPress={() => onCardPress(items, item)}
+                        lookingTeamClub={true}
                       />
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
