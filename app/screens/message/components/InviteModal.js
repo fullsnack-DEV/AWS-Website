@@ -1,6 +1,12 @@
 // @flow
 import _ from 'lodash';
-import React, {useCallback, useContext, useEffect, useState,useRef} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -23,8 +29,6 @@ import {ModalTypes} from '../../../Constants/GeneralConstants';
 import Verbs from '../../../Constants/Verbs';
 import InviteeCard from './InviteeCard';
 import SelectedInviteeCard from './SelectedInviteeCard';
-
-
 
 const TAB_ITEMS = [
   strings.peopleTitleText,
@@ -128,23 +132,23 @@ const InviteModal = ({
 
   useEffect(() => {
     if (searchText.length > 0) {
-       clearTimeout(searchRef.current);
+      clearTimeout(searchRef.current);
       searchRef.current = setTimeout(() => {
-      const filteredData = list.filter(
-        (item) =>
-          item.name?.toLowerCase().includes(searchText.toLowerCase()) &&
-          item.entityType ===
-            (currentTab === strings.peopleTitleText
-              ? Verbs.entityTypePlayer || Verbs.entityTypeUser
-              : Verbs.entityTypeTeam || Verbs.entityTypeClub),
-      );
+        const filteredData = list.filter(
+          (item) =>
+            item.name?.toLowerCase().includes(searchText.toLowerCase()) &&
+            item.entityType ===
+              (currentTab === strings.peopleTitleText
+                ? Verbs.entityTypePlayer || Verbs.entityTypeUser
+                : Verbs.entityTypeTeam || Verbs.entityTypeClub),
+        );
 
-      setSearchedList(filteredData);
-       }, 300);
+        setSearchedList(filteredData);
+      }, 300);
     } else {
       setSearchedList([]);
     }
-     return () => clearTimeout(searchRef.current);
+    return () => clearTimeout(searchRef.current);
   }, [searchText, list, currentTab]);
 
   const toggleSelection = (isChecked, user) => {
@@ -175,23 +179,23 @@ const InviteModal = ({
       <Pressable
         style={styles.textInputStyle}
         onPress={() => inputRef.current.focus()}>
-      <TextInput
-       ref={inputRef}
-        value={searchText}
-        onChangeText={(text) => setSearchText(text)}
-        style={styles.textInput}
-        placeholder={strings.searchText}
-      />
-      {searchText.length > 0 && (
-        <Pressable
-          onPress={() => {
-            clearTimeout(searchRef.current);
-            setSearchText('');
-          }}>
-          <Image source={images.closeRound} style={styles.closeIcon} />
-        </Pressable>
+        <TextInput
+          ref={inputRef}
+          value={searchText}
+          onChangeText={(text) => setSearchText(text)}
+          style={styles.textInput}
+          placeholder={strings.searchText}
+        />
+        {searchText.length > 0 && (
+          <Pressable
+            onPress={() => {
+              clearTimeout(searchRef.current);
+              setSearchText('');
+            }}>
+            <Image source={images.closeRound} style={styles.closeIcon} />
+          </Pressable>
         )}
-    </Pressable>
+      </Pressable>
       {selectedInvitees.length > 0 ? (
         <View style={{marginBottom: 15, paddingHorizontal: 15}}>
           <FlatList
@@ -283,22 +287,21 @@ const styles = StyleSheet.create({
     height: '92%',
     padding: 15,
   },
-  
+
   textInputStyle: {
     backgroundColor: colors.textFieldBackground,
-    // paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 20,
-    margin: 15,
+    marginVertical: 15,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-   textInput: {
+  textInput: {
     fontSize: 16,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    // paddingVertical: 10,
+    paddingVertical: 10,
     flex: 1,
   },
   row: {
