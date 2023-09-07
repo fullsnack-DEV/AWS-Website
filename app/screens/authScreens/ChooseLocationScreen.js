@@ -166,11 +166,10 @@ export default function ChooseLocationScreen({navigation, route}) {
 
     const userData = {
       city: currentLocation?.city,
-      state_abbr: currentLocation?.state_abbr,
+      state_abbr: currentLocation?.state,
       country: currentLocation?.country,
       state: currentLocation.state_full,
     };
-
     navigateToChooseSportScreen(userData);
   };
 
@@ -220,7 +219,6 @@ export default function ChooseLocationScreen({navigation, route}) {
     setLoading(true);
     getPlaceNameFromPlaceID(item.place_id).then((location) => {
       setLoading(false);
-
       if (location) {
         let userData = {};
         userData = {
@@ -238,9 +236,9 @@ export default function ChooseLocationScreen({navigation, route}) {
     let userData = {};
     userData = {
       city: item.city,
-      state_abbr: item.state,
+      state_abbr: item.state_abbr,
       country: item.country,
-      state: item.state_full,
+      state: item.state,
     };
     navigateToChooseSportScreen(userData);
   };
@@ -330,7 +328,7 @@ export default function ChooseLocationScreen({navigation, route}) {
               style={styles.listItem}
               onPress={() => onSelectNearByLocation(item)}>
               <Text style={styles.cityList}>
-                {[item.city, item.state, item.country]
+                {[item.city, item.state_abbr, item.country]
                   .filter((v) => v)
                   .join(', ')}
               </Text>

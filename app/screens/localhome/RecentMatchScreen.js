@@ -13,6 +13,7 @@ import {
   TextInput,
   SafeAreaView,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
@@ -365,7 +366,7 @@ export default function RecentMatchScreen({navigation, route}) {
       />
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
-        <View style={styles.searchViewContainer}>
+        {/* <View style={styles.searchViewContainer}>
           <TextInput
             placeholder={strings.searchText}
             style={styles.searchTxt}
@@ -377,6 +378,49 @@ export default function RecentMatchScreen({navigation, route}) {
           <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
             <Image source={images.homeSetting} style={styles.settingImage} />
           </TouchableWithoutFeedback>
+        </View> */}
+        <View style={styles.floatingInput}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder={strings.searchText}
+              style={styles.searchTxt}
+              autoCorrect={false}
+              onChangeText={(text) => {
+                searchFilterFunction(text);
+              }}
+              value={filters.searchText}
+            />
+            {filters.searchText?.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  const tempFilter = {...filters};
+                  tempFilter.searchText = '';
+                  setFilters({
+                    ...tempFilter,
+                  });
+                  setPageFrom(0);
+                  setRecentMatch([]);
+                  applyFilter(tempFilter);
+                }}>
+                <Image
+                  source={images.closeRound}
+                  style={{
+                    height: 15,
+                    width: 15,
+                    resizeMode: 'cover',
+                    alignSelf: 'center',
+                    marginRight: 10,
+                  }}
+                />
+              </TouchableOpacity>
+            )}
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setSettingPopup(true);
+              }}>
+              <Image source={images.homeSetting} style={styles.settingImage} />
+            </TouchableWithoutFeedback>
+          </View>
         </View>
       </View>
       <TCTagsFilter
@@ -451,19 +495,6 @@ const styles = StyleSheet.create({
     padding: 15,
   },
 
-  searchViewContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 40,
-    width: widthPercentageToDP('92%'),
-    borderRadius: 20,
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
-    backgroundColor: colors.offwhite,
-  },
   settingImage: {
     height: 20,
     width: 20,
@@ -480,12 +511,26 @@ const styles = StyleSheet.create({
   searchTxt: {
     marginLeft: 15,
     fontSize: widthPercentageToDP('3.8%'),
-    width: widthPercentageToDP('75%'),
+    width: widthPercentageToDP('70%'),
   },
   loaderStyle: {
     height: 25,
     width: 25,
     marginBottom: 10,
     marginTop: 5,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 25,
+    backgroundColor: colors.lightGrey,
+    height: 45,
+  },
+  floatingInput: {
+    alignSelf: 'center',
+    zIndex: 1,
+    width: '90%',
+    marginTop: 20,
   },
 });

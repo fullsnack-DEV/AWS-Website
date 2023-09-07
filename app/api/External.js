@@ -40,7 +40,8 @@ export const searchNearByCityState = async (radius, lat, long) =>
       const cityList = response.data.map((obj) => ({
         description: obj[1],
         city: obj[1],
-        state: obj[2],
+        state: obj[12],
+        state_abbr: obj[2],
         country: obj[3],
       }));
       return cityList;

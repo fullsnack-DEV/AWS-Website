@@ -126,6 +126,7 @@ const getGeocoordinatesWithPlaceName = async (platform) => {
     locationDetails.results[0].address_components.map((e) => {
       if (e.types.includes('administrative_area_level_1')) {
         location.state = e.short_name;
+        location.state_full = e.long_name;
       } else if (e.types.includes('locality')) {
         location.city = e.short_name;
       } else if (e.types.includes('country')) {

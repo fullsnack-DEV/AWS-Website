@@ -19,6 +19,7 @@ import {
   SafeAreaView,
   Pressable,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 
 import {FlatList} from 'react-native-gesture-handler';
@@ -31,7 +32,7 @@ import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import {widthPercentageToDP, getStorage} from '../../utils';
+import {widthPercentageToDP, getStorage, calculateRatio} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
@@ -216,6 +217,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
       // Search filter
       if (filerdata?.searchText?.length > 0) {
+        /*
         if (
           filerdata.sport === strings.allSport &&
           filerdata.location === strings.worldTitleText
@@ -255,6 +257,14 @@ export default function LookingForChallengeScreen({navigation, route}) {
             },
           });
         }
+        */
+        // Simple search with full name
+        availableForchallengeQuery.query.bool.must.push({
+          query_string: {
+            query: `*${filerdata.searchText.toLowerCase()}*`,
+            fields: ['full_name'],
+          },
+        });
       }
 
       if (filerdata.fee) {
@@ -337,6 +347,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
       }
 
       if (filerdata.searchText) {
+        /*
         // No filter case
         if (
           filerdata.sport === strings.allSport &&
@@ -381,6 +392,14 @@ export default function LookingForChallengeScreen({navigation, route}) {
             },
           });
         }
+        */
+        // Simple search with group name
+        availableForchallengeQuery.query.bool.must.push({
+          query_string: {
+            query: `*${filerdata.searchText.toLowerCase()}*`,
+            fields: ['group_name'],
+          },
+        });
       }
 
       // Looking Challengee query
@@ -812,33 +831,60 @@ export default function LookingForChallengeScreen({navigation, route}) {
       />
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
-        <View style={styles.searchViewContainer}>
-          <TextInput
-            clearButtonMode={Platform.OS === 'ios' ? 'while-editing' : 'never'}
-            clearButtonVisible={Platform.OS === 'android'}
-            placeholder={strings.searchText}
-            style={styles.searchTxt}
-            autoCorrect={false}
-            onChangeText={(text) => {
-              const tempFilter = {...filters};
+        <View style={styles.floatingInput}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder={strings.searchText}
+              style={styles.searchTxt}
+              autoCorrect={false}
+              onChangeText={(text) => {
+                const tempFilter = {...filters};
 
-              if (text?.length > 0) {
-                tempFilter.searchText = text;
-              } else {
-                delete tempFilter.searchText;
-              }
-              setFilters({
-                ...tempFilter,
-              });
-              setPageFrom(0);
-              setAvailableChallenge([]);
-              applyFilter(tempFilter);
-            }}
-            // value={search}
-          />
-          <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
-            <Image source={images.homeSetting} style={styles.settingImage} />
-          </TouchableWithoutFeedback>
+                if (text?.length > 0) {
+                  tempFilter.searchText = text;
+                } else {
+                  delete tempFilter.searchText;
+                }
+                setFilters({
+                  ...tempFilter,
+                });
+                setPageFrom(0);
+                setAvailableChallenge([]);
+                applyFilter(tempFilter);
+              }}
+              value={filters.searchText}
+            />
+            {filters.searchText?.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  const tempFilter = {...filters};
+                  tempFilter.searchText = '';
+                  setFilters({
+                    ...tempFilter,
+                  });
+                  setPageFrom(0);
+                  setAvailableChallenge([]);
+                  applyFilter(tempFilter);
+                }}>
+                <Image
+                  source={images.closeRound}
+                  style={{
+                    height: 15,
+                    width: 15,
+                    resizeMode: 'cover',
+                    alignSelf: 'center',
+                    marginRight: 10,
+                  }}
+                />
+              </TouchableOpacity>
+            )}
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setSettingPopup(true);
+              }}>
+              <Image source={images.homeSetting} style={styles.settingImage} />
+            </TouchableWithoutFeedback>
+          </View>
         </View>
       </View>
       <TCTagsFilter
@@ -1185,7 +1231,8 @@ export default function LookingForChallengeScreen({navigation, route}) {
         closeModal={() => {
           setPlayerDetailPopup(false);
         }}
-        modalType={ModalTypes.style2}>
+        modalType={ModalTypes.style2}
+        ratio={calculateRatio(playerDetail?.sports.length)}>
         <View style={{paddingTop: 0, paddingHorizontal: 0}}>
           <FlatList
             data={playerDetail?.sports}
@@ -1204,16 +1251,6 @@ const styles = StyleSheet.create({
     padding: 15,
   },
 
-  searchViewContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 40,
-    width: widthPercentageToDP('92%'),
-    borderRadius: 25,
-    elevation: 2,
-    backgroundColor: '#F5F5F5',
-    marginTop: 10,
-  },
   settingImage: {
     height: 20,
     width: 20,
@@ -1267,7 +1304,7 @@ const styles = StyleSheet.create({
   searchTxt: {
     marginLeft: 15,
     fontSize: widthPercentageToDP('3.8%'),
-    width: widthPercentageToDP('75%'),
+    width: widthPercentageToDP('70%'),
   },
   challengeText: {
     fontSize: 16,
@@ -1358,5 +1395,19 @@ const styles = StyleSheet.create({
     width: 25,
     marginBottom: 10,
     marginTop: 5,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 25,
+    backgroundColor: colors.lightGrey,
+    height: 45,
+  },
+  floatingInput: {
+    alignSelf: 'center',
+    zIndex: 1,
+    width: '90%',
+    marginTop: 20,
   },
 });

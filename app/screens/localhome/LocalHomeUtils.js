@@ -32,14 +32,14 @@ const getDataForNextScreen = (
   authContext = {},
 ) => {
   const getLocation = () => {
-    if (selectedLocationOption === locationType.WORLD) {
-      return 2;
+    if (selectedLocationOption === locationType.CURRENT_LOCATION) {
+      return 0;
     }
     if (selectedLocationOption === locationType.HOME_CITY) {
       return 1;
     }
-    if (selectedLocationOption === locationType.CURRENT_LOCATION) {
-      return 0;
+    if (selectedLocationOption === locationType.WORLD) {
+      return 2;
     }
     if (selectedLocationOption === locationType.SEARCH_CITY) {
       return 3;
@@ -70,6 +70,7 @@ const getDataForNextScreen = (
           : filters.sport_name,
       location,
       locationOption: getLocation(),
+      searchCityLoc: location,
     };
 
     return data;
@@ -81,6 +82,7 @@ const getDataForNextScreen = (
       sport_type: filters.sport_type,
       location,
       locationOption: getLocation(),
+      searchCityLoc: location,
     };
     const data = {
       teamSportData: {

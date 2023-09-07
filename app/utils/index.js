@@ -2658,3 +2658,15 @@ export const prepareTagName = (data = {}) => {
   return `@${tagName} `;
 
 };
+export const calculateRatio = (sportsLength) => {
+  if (sportsLength === 2) {
+    return 1.3;
+  }
+  if (sportsLength === 3) {
+    return 1.5;
+  }
+  if (sportsLength === 4) {
+    return 1.7;
+  }
+  return 1.8;
+};

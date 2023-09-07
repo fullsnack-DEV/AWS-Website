@@ -223,7 +223,8 @@ export default function FollowTeams({route, navigation}) {
       gender: signUpData.gender,
       city: signUpData.city,
       country: signUpData.country,
-      state: signUpData.state_abbr,
+      state: signUpData.state,
+      state_abbr: signUpData.state_abbr,
       sports: signUpData.sports,
     };
 

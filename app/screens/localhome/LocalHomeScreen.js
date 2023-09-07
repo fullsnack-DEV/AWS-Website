@@ -164,9 +164,7 @@ function LocalHomeScreen({navigation, route}) {
   useEffect(() => {
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       setSelectedSport(authContext.entity.obj.sport);
-
       setSportType(authContext.entity.obj.sport_type);
-      return;
     }
     if (
       authContext.entity.role === Verbs.entityTypeUser ||
@@ -441,7 +439,7 @@ function LocalHomeScreen({navigation, route}) {
       });
     } else {
       const data = getDataForNextScreen(
-        'sportData',
+        Verbs.SPORT_DATA,
         filters,
         location,
         selectedLocationOption,
