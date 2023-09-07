@@ -231,10 +231,19 @@ const GroupHomeScreen = ({
         sportList={authContext.sports}
         isAdmin={isAdmin}
         onClickMembers={() => {
-          navigation.navigate('GroupMembersScreen', {
-            groupObj: groupData,
-            groupID: groupId,
-            fromProfile: true,
+          navigation.navigate('News Feed', {
+            screen: 'GroupMembersScreen',
+            params: {
+              groupObj: groupData,
+              groupID: groupId,
+              fromProfile: true,
+              showBackArrow: true,
+              comeFrom: 'HomeScreen',
+              routeParams: {
+                uid: groupId,
+                role: groupData.entity_type,
+              },
+            },
           });
         }}
         onClickFollowers={() => {
@@ -255,17 +264,32 @@ const GroupHomeScreen = ({
           });
         }}
         onPressMore={() => {
-          navigation.navigate('GroupMembersScreen', {
-            groupObj: groupData,
-            groupID: groupId,
-            fromProfile: true,
+          navigation.navigate('News Feed', {
+            screen: 'GroupMembersScreen',
+            params: {
+              groupObj: groupData,
+              groupID: groupId,
+              fromProfile: true,
+              showBackArrow: true,
+              comeFrom: 'HomeScreen',
+              routeParams: {
+                uid: groupId,
+                role: groupData.entity_type,
+              },
+            },
           });
         }}
         addMember={() => {
-          navigation.navigate('GroupMembersScreen', {
-            groupObj: groupData,
-            groupID: groupId,
-            fromProfile: true,
+          navigation.navigate('News Feed', {
+            screen: 'CreateMemberProfileForm1',
+            params: {
+              showBackArrow: true,
+              comeFrom: 'HomeScreen',
+              routeParams: {
+                uid: groupId,
+                role: groupData.entity_type,
+              },
+            },
           });
         }}
         isDoubleTeam={currentUserData.sport_type === Verbs.doubleSport}

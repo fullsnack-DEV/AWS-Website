@@ -1,4 +1,10 @@
-import React, {useLayoutEffect, useState, useContext, useEffect} from 'react';
+import React, {
+  useLayoutEffect,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -26,7 +32,11 @@ import TCPicker from '../../../../components/TCPicker';
 import DataSource from '../../../../Constants/DataSource';
 import TCLabel from '../../../../components/TCLabel';
 import TCTouchableLabel from '../../../../components/TCTouchableLabel';
-import {monthNames, widthPercentageToDP} from '../../../../utils';
+import {
+  countryCode as countryCodeList,
+  monthNames,
+  widthPercentageToDP,
+} from '../../../../utils';
 import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import TCMessageButton from '../../../../components/TCMessageButton';
 
@@ -68,22 +78,47 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   const [country, setCountry] = useState();
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
 
+  const [countrycode, setCountryCode] = useState();
+
+  useEffect(() => {
+    const selectedCountryItem = countryCodeList.find(
+      (item) =>
+        item.name.toLowerCase() === authContext.user.country.toLowerCase(),
+    );
+
+    let dialCode = selectedCountryItem.dial_code;
+
+    if (dialCode.startsWith('+')) {
+      dialCode = dialCode.substring(1);
+    }
+
+    const countryOBJ = {
+      country: selectedCountryItem.name,
+      code: dialCode,
+      iso: selectedCountryItem.code,
+    };
+
+    setCountryCode(countryOBJ);
+    setPhoneNumber([
+      {
+        id: 0,
+        phone_number: {},
+        country_code: countryOBJ,
+      },
+    ]);
+  }, [isFocused]);
+
+  const [phoneNumber, setPhoneNumber] = useState();
+
   const addPhoneNumber = () => {
     const obj = {
       id: phoneNumber.length === 0 ? 0 : phoneNumber.length,
       code: '',
       number: '',
+      country_code: countrycode,
     };
     setPhoneNumber([...phoneNumber, obj]);
   };
-
-  const [phoneNumber, setPhoneNumber] = useState([
-    {
-      id: 0,
-      phone_number: '',
-      country_code: '',
-    },
-  ]);
 
   useEffect(() => {
     const mindate = new Date();
@@ -114,6 +149,51 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     }
   }, [isFocused]);
 
+  const pressedNext = useCallback(() => {
+    const membersAuthority = {
+      ...memberInfo,
+      ...route.params.form1,
+      group_id: entity.uid,
+      is_member: true,
+      gender,
+      mail_street_address: location,
+      mail_city: city,
+      mail_state_abbr: state,
+      mail_country: country,
+      mail_postal_code: postalCode,
+      birthday,
+    };
+
+    if (entity.role === Verbs.entityTypeTeam) {
+      navigation.navigate('CreateMemberProfileTeamForm3', {
+        form2:
+          entity.obj.sport === 'soccer'
+            ? {...membersAuthority, dominant_foot: dominant}
+            : membersAuthority,
+        comeFrom: route.params?.comeFrom ?? '',
+        routeParams: {...(route.params?.routeParams ?? {})},
+      });
+    } else if (entity.role === Verbs.entityTypeClub) {
+      navigation.navigate('CreateMemberProfileClubForm3', {
+        form2: membersAuthority,
+        comeFrom: route.params?.comeFrom ?? '',
+        routeParams: {...(route.params?.routeParams ?? {})},
+      });
+    }
+  }, [
+    navigation,
+    gender,
+    location,
+    city,
+    state,
+    country,
+    postalCode,
+    birthday,
+    dominant,
+    memberInfo,
+    route.params,
+  ]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -137,36 +217,9 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     postalCode,
     birthday,
     dominant,
+    pressedNext,
+    route.params,
   ]);
-
-  const pressedNext = () => {
-    const membersAuthority = {
-      ...memberInfo,
-      ...route.params.form1,
-      group_id: entity.uid,
-      is_member: true,
-      gender,
-      mail_street_address: location,
-      mail_city: city,
-      mail_state_abbr: state,
-      mail_country: country,
-      mail_postal_code: postalCode,
-      birthday,
-    };
-
-    if (entity.role === Verbs.entityTypeTeam) {
-      navigation.navigate('CreateMemberProfileTeamForm3', {
-        form2:
-          entity.obj.sport === 'soccer'
-            ? {...membersAuthority, dominant_foot: dominant}
-            : membersAuthority,
-      });
-    } else if (entity.role === Verbs.entityTypeClub) {
-      navigation.navigate('CreateMemberProfileClubForm3', {
-        form2: membersAuthority,
-      });
-    }
-  };
 
   const handleDonePress = (date) => {
     setBirthday(new Date(date));
@@ -182,8 +235,10 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       placeholder={strings.selectCode}
       value={item.country_code}
       numberValue={item.phone_number}
+      from={true}
       onValueChange={(value) => {
         const tempCode = [...phoneNumber];
+
         tempCode[index].country_code = value;
         setPhoneNumber(tempCode);
         const filteredNumber = phoneNumber.filter(
@@ -192,6 +247,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
               obj.phone_number && obj.country_code,
             ),
         );
+
         setMemberInfo({
           ...memberInfo,
           phone_numbers: filteredNumber.map(({country_code, phone_number}) => ({
@@ -380,12 +436,6 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     </View>
   );
 
-  // const locationString = () =>
-  //   [location, city, state, country, postalCode].filter((v) => v).join(', ');
-
-  // const addressManualString = () =>
-  //   [city, state, country, location, postalCode].filter((w) => w).join(', ');
-
   const onSelectAddress = (_location) => {
     setCity(_location.city);
     setState(_location.state);
@@ -473,6 +523,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
         />
         <FlatList
           data={phoneNumber}
+          style={{marginHorizontal: 10}}
           renderItem={renderPhoneNumber}
           keyExtractor={(item, index) => index.toString()}></FlatList>
       </View>

@@ -217,18 +217,18 @@ const SportActivityModal = ({
         <View style={styles.card}>
           <ScreenHeader
             sportIcon={sportIcon}
-            title={`${getHeaderTitle(entityType)} ${sportName}`}
+            title={
+              sportName ? `${getHeaderTitle(entityType)} ${sportName}` : ''
+            }
             rightIcon2={images.chat3Dot}
             rightIcon2Press={() => setShowMoreOptions(true)}
             leftIcon={images.backArrow}
             leftIconPress={closeModal}
-            containerStyle={{
-              borderBottomWidth: 3,
-              borderBottomColor: getProgressBarColor(entityType),
-              padding: 0,
-              paddingHorizontal: 10,
-              paddingVertical: 2,
-            }}
+            containerStyle={[
+              styles.headerContainer,
+              {borderBottomColor: getProgressBarColor(entityType)},
+              sportName ? {} : {height: 45},
+            ]}
             leftIconStyle={{width: 70}}
           />
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -335,6 +335,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 15,
+  },
+  headerContainer: {
+    borderBottomWidth: 3,
+    padding: 0,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
   },
 });
 

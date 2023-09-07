@@ -1,4 +1,10 @@
-import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import {
   Image,
   StyleSheet,
@@ -7,6 +13,7 @@ import {
   Alert,
   SafeAreaView,
   Pressable,
+  BackHandler,
 } from 'react-native';
 import {format} from 'react-string-format';
 import {useIsFocused} from '@react-navigation/native';
@@ -35,6 +42,9 @@ import * as Utility from '../../utils';
 import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import InviteMemberModal from '../../components/InviteMemberModal';
+import {getDataForNextScreen} from '../localhome/LocalHomeUtils';
+import {locationType} from '../../utils/constant';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -49,7 +59,7 @@ const HomeScreen = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
   const [congratulationsModal, setCongratulationsModal] = useState(false);
   const [listLoading, setListLoading] = useState(false);
-
+  const [visibleInviteMember, setVisibleInviteMember] = useState(false);
   const [settingObject, setSettingObject] = useState();
   const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
 
@@ -178,9 +188,13 @@ const HomeScreen = ({navigation, route}) => {
         break;
 
       case strings.recruitingMembers:
-        navigation.navigate('GroupMembersScreen', {
-          groupID: route.params.uid,
-          groupObj: currentUserData,
+        navigation.navigate('News Feed', {
+          screen: 'GroupMembersScreen',
+          params: {
+            groupID: route.params.uid,
+            groupObj: currentUserData,
+            showBackArrow: true,
+          },
         });
         navigation.navigate('RecruitingMemberScreen', {
           comeFrom: 'HomeScreen',
@@ -268,12 +282,17 @@ const HomeScreen = ({navigation, route}) => {
         .then(async (channel) => {
           if (channel) {
             await channel.watch();
+            const routeParams = {...route.params};
+            if (route.params?.comeFrom === 'EntitySearchScreen') {
+              routeParams.comeFrom = 'EntitySearchScreen';
+            }
+
             navigation.navigate('Message', {
               screen: 'MessageChatScreen',
               params: {
                 channel,
                 comeFrom: 'HomeScreen',
-                routeParams: {...route.params},
+                routeParams,
               },
             });
           }
@@ -347,26 +366,35 @@ const HomeScreen = ({navigation, route}) => {
     }
   };
 
+  const handleBackPress = useCallback(() => {
+    if (route.params?.comeFrom === 'IncomingChallengeSettings') {
+      navigation.navigate('AccountScreen');
+    } else if (route.params?.comeFrom === 'EntitySearchScreen') {
+      navigation.push('EntitySearchScreen');
+    } else if (route.params?.isEntityCreated) {
+      navigation.pop(4);
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={[styles.headerRow, {width: '100%'}]}>
         <View style={[styles.row, {flex: 1}]}>
-          <Pressable
-            style={styles.imageContainer}
-            onPress={() => {
-              if (route.params?.comeFrom === 'IncomingChallengeSettings') {
-                navigation.navigate('AccountScreen');
-              } else if (route.params?.comeFrom === 'MessageChatScreen') {
-                navigation.navigate('Message', {
-                  screen: 'MessageChatScreen',
-                  params: {...route.params.routeParams},
-                });
-              } else if (route.params?.isEntityCreated) {
-                navigation.pop(4);
-              } else {
-                navigation.goBack();
-              }
-            }}>
+          <Pressable style={styles.imageContainer} onPress={handleBackPress}>
             <Image source={images.backArrow} style={styles.image} />
           </Pressable>
           <View
@@ -464,21 +492,28 @@ const HomeScreen = ({navigation, route}) => {
                 : route.params.entityObj?.sports?.[0]?.sport
             }
             searchTeam={(filters) => {
+              const teamData = getDataForNextScreen(
+                Verbs.TEAM_DATA,
+                filters,
+                filters.location,
+                locationType.WORLD,
+                authContext,
+              );
+
               navigation.navigate('LookingForChallengeScreen', {
-                filters: {
-                  ...filters,
-                  groupTeam: strings.teamstitle,
-                },
+                filters: teamData.filters,
+                teamSportData: teamData.teamSportData,
+                registerFavSports: filters.sport,
               });
             }}
             searchPlayer={() => {
               setCongratulationsModal(false);
-              navigation.navigate('InviteMembersBySearchScreen');
+              setVisibleInviteMember(true);
             }}
             goToSportActivityHome={() => {
               setCongratulationsModal(false);
               if (authContext.entity.role === Verbs.entityTypeTeam) {
-                navigation.navigate('InviteMembersBySearchScreen');
+                setVisibleInviteMember(true);
               }
             }}
             onInviteClick={(item) => {
@@ -490,6 +525,11 @@ const HomeScreen = ({navigation, route}) => {
           />
         </>
       ) : null}
+
+      <InviteMemberModal
+        isVisible={visibleInviteMember}
+        closeModal={() => setVisibleInviteMember(false)}
+      />
 
       <SwitchAccountModal
         isVisible={showSwitchAccountModal}

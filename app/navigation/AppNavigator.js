@@ -258,6 +258,15 @@ const AppNavigator = ({navigation}) => {
             );
           },
         })}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+
+            navigation.navigate('Local Home', {
+              screen: 'LocalHomeScreen',
+            });
+          },
+        }}
       />
       <Tab.Screen
         name="News Feed"
@@ -282,6 +291,23 @@ const AppNavigator = ({navigation}) => {
             );
           },
         })}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            if (
+              authContext.entity.role === 'team' ||
+              authContext.entity.role === 'club'
+            ) {
+              navigation.navigate('News Feed', {
+                screen: 'GroupMembersScreen',
+              });
+            } else {
+              navigation.navigate('News Feed', {
+                screen: 'FeedsScreen',
+              });
+            }
+          },
+        }}
       />
 
       <Tab.Screen

@@ -22,6 +22,7 @@ import {
   Pressable,
   TextInput,
   ActivityIndicator,
+  BackHandler,
 } from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
@@ -200,15 +201,29 @@ export default function EntitySearchScreen({navigation, route}) {
   const [smallLoader, setSmallLoader] = useState(false);
 
   useEffect(() => {
+    const backAction = () => {
+      navigation.popToTop();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
+
+  useEffect(() => {
     getStorage('appSetting').then((setting) => {
       setImageBaseUrl(setting.base_url_sporticon);
     });
-    if (route.params.locationText) {
+    if (route.params?.locationText) {
       setSettingPopup(true);
       // setLocation(route.params.locationText);
       // setSearchLocation(route.params.locationText);
     }
-  }, [route.params.locationText]);
+  }, [route.params?.locationText]);
 
   useEffect(() => {
     if (route.params?.activeTab) {
@@ -346,7 +361,6 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
-
     getUserIndex(generalsQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -2147,6 +2161,7 @@ export default function EntitySearchScreen({navigation, route}) {
                         : item.entity_type,
                       backButtonVisible: true,
                       menuBtnVisible: false,
+                      comeFrom: 'EntitySearchScreen',
                     });
                   } else if (sportsObj.length > 1) {
                     const data = {
@@ -2159,9 +2174,10 @@ export default function EntitySearchScreen({navigation, route}) {
                   } else {
                     navigation.navigate('SportActivityHome', {
                       sport: sportsObj[0]?.sport,
-                      sportType: sportsObj[0]?.sport_type,
+                      sportType:
+                        sportsObj[0]?.sport_type ?? Verbs.sportTypeSingle,
                       uid: item?.user_id,
-                      entityType: item?.entity_type,
+                      entityType: sportsObj[0]?.type,
                       showPreview: true,
                       backScreen: 'EntitySearchScreen',
                     });
@@ -2248,6 +2264,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       : item.entity_type,
                     backButtonVisible: true,
                     menuBtnVisible: false,
+                    comeFrom: 'EntitySearchScreen',
                   });
                 }}
                 onPressChallengeButton={(dataObj) => {

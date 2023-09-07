@@ -170,7 +170,7 @@ export const currencyList = [
     currency: 'KRW',
   },
   {
-    countryName: 'ThaiLand',
+    countryName: 'Thailand',
     currency: 'THB',
   },
   {

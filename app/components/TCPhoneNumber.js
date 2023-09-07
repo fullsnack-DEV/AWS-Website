@@ -1,31 +1,93 @@
-import React, {memo} from 'react';
+import React, {memo, useState, useContext, useEffect} from 'react';
 
-import {StyleSheet, Platform, View, TextInput} from 'react-native';
-import FastImage from 'react-native-fast-image';
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  Pressable,
+  Text,
+  Image,
+} from 'react-native';
 
-import RNPickerSelect from 'react-native-picker-select';
 import {strings} from '../../Localization/translation';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
-import {countryCode, widthPercentageToDP} from '../utils';
+import countryCodeList from '../utils/countryCode.json';
+import AuthContext from '../auth/context';
+import TCCountryCodeModal from './TCCountryCodeModal';
 
 const TCPhoneNumber = ({
+  // eslint-disable-next-line no-unused-vars
   placeholder,
   value,
   numberValue,
   onValueChange,
   onChangeText,
+  from = false,
 }) => {
+  const authContext = useContext(AuthContext);
+  const [countryCodeVisible, setCountryCodeVisible] = useState(false);
+  const [countrycode, setCountryCode] = useState({
+    country: 'India',
+    code: '91',
+    iso: 'IN',
+  });
+
   const onPhoneNumberCountryChanged = async (local_countryCode) => {
     if (onValueChange) {
       onValueChange(local_countryCode);
     }
   };
 
+  useEffect(() => {
+    const countryIndex = countryCodeList.findIndex(
+      (item) => item.country === authContext.user.country,
+    );
+
+    if (countryIndex !== -1) {
+      const updatedCountryList = [...countryCodeList];
+      const selectedCountry = updatedCountryList.splice(countryIndex, 1)[0];
+      setCountryCode(
+        value === undefined || null || '' ? selectedCountry : value,
+      );
+      if (from) {
+        onPhoneNumberCountryChanged(selectedCountry);
+      }
+    }
+  }, []);
+
   return (
     <View style={styles.mainContainer}>
-      <RNPickerSelect
+      <Pressable
+        style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]}
+        onPress={() => setCountryCodeVisible(true)}>
+        <View style={{flex: 1, alignItems: 'center'}}>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.titleText,
+              {fontFamily: fonts.RRegular, marginBottom: 0},
+            ]}>
+            {value === undefined || null || ''
+              ? `${countrycode.iso} (+${countrycode.code})`
+              : `${value.iso} (+${value.code})`}
+          </Text>
+        </View>
+        <View style={{width: 10, height: 10}}>
+          <Image
+            source={images.dropDownArrow}
+            style={{
+              width: '100%',
+              height: '100%',
+              resizeMode: 'contain',
+              tintColor: colors.lightBlackColor,
+            }}
+          />
+        </View>
+      </Pressable>
+
+      {/* <RNPickerSelect
         placeholder={{
           label: placeholder,
         }}
@@ -53,7 +115,7 @@ const TCPhoneNumber = ({
             style={styles.miniDownArrow}
           />
         )}
-      />
+      /> */}
       <View style={styles.halfMatchFeeView}>
         <TextInput
           placeholder={strings.phoneNumber}
@@ -64,6 +126,18 @@ const TCPhoneNumber = ({
           // editable={ editMode }
           value={numberValue}></TextInput>
       </View>
+
+      <TCCountryCodeModal
+        countryCodeVisible={countryCodeVisible}
+        onCloseModal={() => {
+          setCountryCodeVisible(false);
+        }}
+        countryCodeObj={(obj) => {
+          onPhoneNumberCountryChanged(obj);
+          setCountryCode(obj);
+          setCountryCodeVisible(false);
+        }}
+      />
     </View>
   );
 };
@@ -98,40 +172,27 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 
-  miniDownArrow: {
-    height: 12,
-    resizeMode: 'contain',
-    tintColor: colors.grayColor,
-    top: 15,
-    width: 12,
-    right: 30,
-  },
-  inputIOS: {
+  inputField: {
     height: 40,
+    backgroundColor: colors.textFieldBackground,
+    // paddingVertical: Platform.OS === 'android' ? 5 : 12,
+    // paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 5,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-
     color: colors.lightBlackColor,
-    marginHorizontal: 15,
-    paddingRight: 30,
-    backgroundColor: colors.textFieldBackground,
-    width: widthPercentageToDP('45%'),
-    borderRadius: 5,
   },
-  inputAndroid: {
-    height: 40,
-    marginHorizontal: 10,
+  titleText: {
     fontSize: 16,
-    fontFamily: fonts.RRegular,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    lineHeight: 19,
     color: colors.lightBlackColor,
-    paddingRight: 30,
-    backgroundColor: colors.textFieldBackground,
-    width: widthPercentageToDP('45%'),
-    borderRadius: 5,
+    fontFamily: fonts.RBold,
+    marginBottom: 6,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 

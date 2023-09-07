@@ -13,11 +13,11 @@ import React, {
   useCallback,
 } from 'react';
 import {
+  BackHandler,
   Text,
   View,
   StyleSheet,
   Image,
-  TouchableWithoutFeedback,
   ScrollView,
   SafeAreaView,
   Alert,
@@ -69,6 +69,9 @@ import SwitchAccountLoader from '../../../components/account/SwitchAccountLoader
 import useSwitchAccount from '../../../hooks/useSwitchAccount';
 import {InvoiceType} from '../../../Constants/GeneralConstants';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
+import useStreamChatUtils from '../../../hooks/useStreamChatUtils';
+import EditMemberModal from './editMemberProfile/EditMemberModal';
+
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
@@ -105,8 +108,37 @@ export default function MembersProfileScreen({navigation, route}) {
   });
   const [textInputHeight, setTextInputHeight] = useState(100);
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
+  const [visibleEditMemberModal, setVisibleEditMemberModal] = useState(false);
   const {onSwitchProfile} = useSwitchAccount();
   entity = authContext.entity;
+
+  const handleBackPress = useCallback(() => {
+    if (route.params?.comeFrom === 'HomeScreen') {
+      navigation.setOptions({});
+      navigation.navigate('Account', {
+        screen: 'HomeScreen',
+        params: {...route.params?.routeParams},
+      });
+    } else {
+      navigation.navigate('GroupMembersScreen', {
+        ...route.params?.routeParams,
+      });
+    }
+  }, [navigation, route.params]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -120,7 +152,7 @@ export default function MembersProfileScreen({navigation, route}) {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <TouchableWithoutFeedback onPress={() => SetSendNewInvoice(true)}>
+            <TouchableOpacity onPress={() => SetSendNewInvoice(true)}>
               <Image
                 source={images.invoiceIcon}
                 style={[
@@ -133,32 +165,25 @@ export default function MembersProfileScreen({navigation, route}) {
                   },
                 ]}
               />
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
 
             {memberDetail?.connected && (
-              <TouchableWithoutFeedback
-                onPress={() => actionSheet.current?.show()}>
+              <TouchableOpacity onPress={() => actionSheet.current?.show()}>
                 <Image
                   source={images.vertical3Dot}
                   style={[styles.navigationRightItem, {marginRight: 10}]}
                 />
-              </TouchableWithoutFeedback>
+              </TouchableOpacity>
             )}
           </View>
         ),
       headerLeft: () => (
-        <TouchableWithoutFeedback
+        <TouchableOpacity
           onPress={() => {
-            if (from === 'CreateMemberProfileTeamForm3') {
-              navigation.navigate('GroupMembersScreen');
-            } else if (from === 'CreateMemberProfileClubForm3') {
-              navigation.navigate('GroupMembersScreen');
-            } else {
-              navigation.navigate('GroupMembersScreen');
-            }
+            handleBackPress();
           }}>
           <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
       ),
     });
   }, [
@@ -173,6 +198,7 @@ export default function MembersProfileScreen({navigation, route}) {
     whoSeeID,
     from,
     showSwitchScreen,
+    handleBackPress,
   ]);
 
   const editTeamProfile = useCallback(() => {
@@ -308,12 +334,11 @@ export default function MembersProfileScreen({navigation, route}) {
   };
 
   const getMembers = async () => {
-    setloading(true);
     if (groupID) {
       getGroupMembers(groupID, authContext)
         .then((response) => {
           setMembers(response.payload);
-
+          console.log(JSON.stringify(response.payload), 'from Issues');
           setloading(false);
         })
         .catch((e) => {
@@ -517,7 +542,9 @@ export default function MembersProfileScreen({navigation, route}) {
             {cancelable: false},
           );
         } else {
-          navigation.navigate('GroupMembersScreen');
+          navigation.navigate('GroupMembersScreen', {
+            ...route.params?.routeParams,
+          });
         }
       })
       .catch((e) => {
@@ -531,9 +558,13 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const getMemberPhoneNumber = () => {
     let numbersString;
+
     if (memberDetail.phone_numbers) {
-      const numbers = memberDetail.phone_numbers.map(
-        (e) => `${e.country_code} ${e.phone_number}`,
+      const numbers = memberDetail?.phone_numbers.map(
+        (e) =>
+          `${`${e.country_code?.iso} +${e.country_code?.code}`} ${
+            e.phone_number
+          }`,
       );
       numbersString = numbers.join('\n');
     } else {
@@ -1152,20 +1183,20 @@ export default function MembersProfileScreen({navigation, route}) {
           right: 0,
           left: 0,
 
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
         }}>
         <View style={styles.titlePopup}>
           <Text style={styles.startTime}>
             {strings.sendrequestForBaicInfoText}
           </Text>
-          <Pressable
+          <TouchableOpacity
             hitSlop={getHitSlop(15)}
             onPress={() => {
               setShowBasicInfoRequestModal(false);
             }}>
             <Image source={images.cancelImage} style={styles.closeButton} />
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <View style={locationModalStyles.separatorLine} />
         <ActivityLoader visible={loading} />
@@ -1215,27 +1246,9 @@ export default function MembersProfileScreen({navigation, route}) {
       style={{
         margin: 0,
       }}>
-      <View
-        behavior="height"
-        enabled={false}
-        style={{
-          width: '100%',
-          backgroundColor: 'white',
-          position: 'absolute',
-          bottom: 0,
-          right: 0,
-          left: 0,
-          shadowColor: '#000',
-          shadowOffset: {width: 0, height: 1},
-          shadowOpacity: 0.5,
-          shadowRadius: 5,
-          elevation: 15,
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          flex: 1,
-        }}>
+      <View behavior="height" enabled={false} style={styles.modalStyles}>
         <View style={styles.privellegtitle}>
-          <Pressable
+          <TouchableOpacity
             hitSlop={getHitSlop(15)}
             onPress={() => {
               setShowAdminPrivillege(false);
@@ -1244,7 +1257,7 @@ export default function MembersProfileScreen({navigation, route}) {
               source={images.cancelImage}
               style={styles.closebtnprivillege}
             />
-          </Pressable>
+          </TouchableOpacity>
           <Text
             style={[
               styles.startTime,
@@ -1252,7 +1265,7 @@ export default function MembersProfileScreen({navigation, route}) {
             ]}>
             {strings.editAdminPrivillege}
           </Text>
-          <Pressable
+          <TouchableOpacity
             onPress={() => {
               if (hideAdminPrev) {
                 setShowAdminPrivillege(false);
@@ -1269,7 +1282,7 @@ export default function MembersProfileScreen({navigation, route}) {
               }}>
               {strings.save}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <ActivityLoader visible={loading} />
         <View style={locationModalStyles.separatorLine} />
@@ -1318,6 +1331,42 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const placeHolder = images.profilePlaceHolder;
 
+  const {createChannel, isCreatingChannel} = useStreamChatUtils();
+  const onMessageButtonPress = (entityData = {}) => {
+    if (entityData.is_admin) {
+      return;
+    }
+    const invitee = [
+      {
+        id: entityData.user_id,
+        name: entityData.full_name,
+        image: entityData.thumbnail,
+        entityType: Verbs.entityTypeUser,
+        city: entityData.city,
+      },
+    ];
+
+    if (invitee[0]?.id) {
+      createChannel(invitee)
+        .then(async (channel) => {
+          if (channel) {
+            await channel.watch();
+            navigation.navigate('Message', {
+              screen: 'MessageChatScreen',
+              params: {
+                channel,
+                comeFrom: 'MembersProfileScreen',
+                routeParams: {...route.params},
+              },
+            });
+          }
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    }
+  };
+
   return (
     <SafeAreaView>
       <SwitchAccountLoader
@@ -1325,14 +1374,14 @@ export default function MembersProfileScreen({navigation, route}) {
         entityName={authContext.user?.full_name}
         entityType={Verbs.entityTypePlayer}
         entityImage={
-          authContext.user.thumbnail || ''
+          authContext.user?.thumbnail
             ? {uri: authContext.user.thumbnail}
             : placeHolder
         }
         stopLoading={() => {}}
       />
 
-      <ActivityLoader visible={loading} />
+      <ActivityLoader visible={loading || isCreatingChannel} />
 
       {firstTimeLoad ? (
         <MemberProfileShimmer />
@@ -1362,17 +1411,15 @@ export default function MembersProfileScreen({navigation, route}) {
                   />
 
                   {!memberDetail.connected && (
-                    <TouchableWithoutFeedback
+                    <TouchableOpacity
                       onPress={() => {
-                        navigation.navigate('EditMemberInfoScreen', {
-                          memberInfo: memberDetail,
-                        });
+                        setVisibleEditMemberModal(true);
                       }}>
                       <Image
                         source={images.editProfilePencil}
                         style={styles.editImage}
                       />
-                    </TouchableWithoutFeedback>
+                    </TouchableOpacity>
                   )}
                 </View>
 
@@ -1420,10 +1467,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     showArrow={false}
                     onPressProfile={() => {
                       if (memberDetail.connected) {
-                        navigation.push('MessageChat', {
-                          screen: 'MessageChat',
-                          params: {userId: memberDetail.user_id},
-                        });
+                        onMessageButtonPress(memberDetail);
                       } else {
                         Linking.canOpenURL('mailto:')
                           .then((supported) => {
@@ -1487,7 +1531,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     {strings.basicinfotitle}
                   </Text>
 
-                  <TouchableWithoutFeedback
+                  <TouchableOpacity
                     onPress={() => {
                       navigation.navigate('EditMemberBasicInfoScreen', {
                         memberInfo: memberDetail,
@@ -1497,7 +1541,7 @@ export default function MembersProfileScreen({navigation, route}) {
                       source={images.editProfilePencil}
                       style={styles.editImage}
                     />
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
                 </View>
                 <TCInfoField
                   valueStyle={{
@@ -1580,12 +1624,12 @@ export default function MembersProfileScreen({navigation, route}) {
                       <Text style={styles.basicInfoTitle}>
                         {strings.family}
                       </Text>
-                      <TouchableWithoutFeedback>
+                      <TouchableOpacity>
                         <Image
                           source={images.editProfilePencil}
                           style={styles.editImage}
                         />
-                      </TouchableWithoutFeedback>
+                      </TouchableOpacity>
                     </View>
                     <View style={styles.familyView}>
                       <TCProfileView type={'medium'} />
@@ -1711,7 +1755,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     {strings.writeNotesPlaceholder}
                   </Text>
 
-                  <TouchableWithoutFeedback
+                  <TouchableOpacity
                     onPress={() => {
                       setMemberInfo(memberDetail);
                       setVisibleNotesModal(true);
@@ -1720,22 +1764,26 @@ export default function MembersProfileScreen({navigation, route}) {
                       source={images.editProfilePencil}
                       style={styles.editImage}
                     />
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
                 </View>
                 <Text style={styles.describeText} numberOfLines={50}>
                   {memberDetail.note}
                 </Text>
                 <TCThickDivider />
-                <Text
-                  style={styles.removeTextStyle}
-                  onPress={() => {
-                    deleteMemberValidations(
-                      switchUser.uid,
-                      memberDetail.user_id,
-                    );
-                  }}>
-                  {strings.removeMemberFromGroup.toUpperCase()}
-                </Text>
+                <TouchableOpacity>
+                  <Text
+                    style={styles.removeTextStyle}
+                    onPress={() => {
+                      deleteMemberValidations(
+                        switchUser.uid,
+                        memberDetail.user_id,
+                      );
+                    }}>
+                    {authContext.entity.role === Verbs.entityTypeClub
+                      ? strings.removeMemberFromClub.toUpperCase()
+                      : strings.removeMemberFromGroup.toUpperCase()}
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               <ActionSheet
@@ -1760,6 +1808,16 @@ export default function MembersProfileScreen({navigation, route}) {
         </>
       )}
 
+      <EditMemberModal
+        isVisible={visibleEditMemberModal}
+        closeModal={() => {
+          setVisibleEditMemberModal(false);
+          getMemberInformation();
+          getMembers();
+        }}
+        Info={memberDetail}
+      />
+
       <SendNewInvoiceModal
         isVisible={sendNewInvoice}
         invoiceType={InvoiceType.SingleInvoice}
@@ -1778,10 +1836,10 @@ const styles = StyleSheet.create({
     width: 25,
   },
   backArrowStyle: {
-    height: 20,
+    height: 25,
+    width: 25,
     marginLeft: 15,
     resizeMode: 'contain',
-    tintColor: colors.blackColor,
   },
   roleView: {
     flexDirection: 'row',
@@ -1805,7 +1863,7 @@ const styles = StyleSheet.create({
   basicInfoTitle: {
     fontSize: 20,
     color: colors.lightBlackColor,
-    textTransform: 'uppercase',
+    textTransform: 'none',
     fontFamily: fonts.RMedium,
     //  fontWeight: '500',
     lineHeight: 30,
@@ -1871,9 +1929,6 @@ const styles = StyleSheet.create({
     height: 25,
     width: '100%',
     backgroundColor: '#F5F5F5',
-    // elevation: 0,
-    // shadowOffset: 0,
-    // shadowRadius: 0,
   },
   buttonTextStyle: {
     fontFamily: fonts.RBold,
@@ -1991,5 +2046,21 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginTop: 35,
     paddingHorizontal: 15,
+  },
+  modalStyles: {
+    width: '100%',
+    backgroundColor: 'white',
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    left: 0,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 15,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    flex: 1,
   },
 });

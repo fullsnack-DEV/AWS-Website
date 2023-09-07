@@ -1,5 +1,5 @@
 // @flow
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -39,6 +39,8 @@ const CustomModalWrapper = ({
   parentStyle = {},
   isFullTitle = false,
   headerLeftIconStyle = {},
+  extraHeaderStyle = {},
+  onModalShow = () => {},
 }) => {
   const [isFullHeight, setIsFullHeight] = useState(isSwipeUp);
   const translateY = new Animated.Value(0);
@@ -121,7 +123,13 @@ const CustomModalWrapper = ({
             rightIcon2={images.crossImage}
             rightIcon2Press={handleCloseModal}
             title={title}
-            containerStyle={[styles.headerStyle, {paddingRight: 15}]}
+            containerStyle={[
+              styles.headerStyle,
+              {
+                paddingRight: 15,
+                ...extraHeaderStyle,
+              },
+            ]}
           />
         );
 
@@ -191,12 +199,16 @@ const CustomModalWrapper = ({
     }
   };
 
+  const panRef = useRef();
+  const scrollRef = useRef();
+
   return (
     <Modal
       visible={isVisible}
       collapsable
       transparent
       animationType="fade"
+      onShow={() => onModalShow()}
       onRequestClose={() => handleCloseModal()}>
       <GestureHandlerRootView style={{flex: 1}}>
         <Pressable
@@ -206,8 +218,10 @@ const CustomModalWrapper = ({
             modalType === ModalTypes.style2 ||
             modalType === ModalTypes.default) && (
             <PanGestureHandler
+              ref={panRef}
               onGestureEvent={onPanGestureEvent}
-              onHandlerStateChange={onPanGestureStateChange}>
+              onHandlerStateChange={onPanGestureStateChange}
+              simultaneousHandlers={scrollRef}>
               <Animated.View
                 style={[
                   getCardStyle(),

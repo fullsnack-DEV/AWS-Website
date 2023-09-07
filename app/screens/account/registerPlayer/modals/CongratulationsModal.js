@@ -372,7 +372,7 @@ const CongratulationsModal = ({
                   },
                 ]}>
                 <Text>
-                  {strings.congratulationsTitle}{' '}
+                  {strings.congratulationsTitle}
                   <Text style={styles.congratsTextStyle}>{title}</Text>
                 </Text>
 

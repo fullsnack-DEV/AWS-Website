@@ -187,7 +187,6 @@ import InvitationSentScreen from '../screens/account/groupConnections/Invitation
 import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
 import InviteMembersBySearchScreen from '../screens/account/groupConnections/InviteMemberBySearchScreen';
 import InviteMembersByEmailScreen from '../screens/account/groupConnections/InviteMembersByEmailScreen';
-import MembersProfileScreen from '../screens/account/groupConnections/MembersProfileScreen';
 import BasicInfoScreen from '../screens/account/userSettingPrivacy/BasicInfoScreen';
 import AccountInfoScreen from '../screens/account/userSettingPrivacy/AccountInfoScreen';
 import PersonalInformationScreen from '../screens/account/userSettingPrivacy/PersonalInformationScreen';
@@ -245,7 +244,6 @@ import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionLis
 import WriteCommentScreen from '../screens/newsfeeds/WriteCommentScreen';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
 import UserBasicInfoScreen from '../screens/home/user/UserBasicInfoScreen';
-import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
@@ -1078,12 +1076,6 @@ const LocalHomeNavigator = () => (
     />
 
     <Stack.Screen
-      name="GroupMembersScreen"
-      component={GroupMembersScreen}
-      options={{headerShown: false}}
-    />
-
-    <Stack.Screen
       component={GroupFollowersScreen}
       name="GroupFollowersScreen"
       options={{headerShown: false}}
@@ -1767,22 +1759,7 @@ const LocalHomeNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name="MembersProfileScreen"
-      component={MembersProfileScreen}
-      options={{
-        title: 'Member Profile',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
+
     <Stack.Screen
       name="InviteMembersByEmailScreen"
       component={InviteMembersByEmailScreen}

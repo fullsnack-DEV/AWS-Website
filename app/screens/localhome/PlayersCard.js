@@ -17,6 +17,8 @@ function PlayersCard({
   refree = false,
   hiring = false,
   playeravail = false,
+  // eslint-disable-next-line no-unused-vars
+  lookingTeamClub = false,
   onPress = () => {},
 }) {
   const getEntityName = () => item.full_name;

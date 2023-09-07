@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {View, StyleSheet, Text, Image, TouchableHighlight} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'react-string-format';
@@ -20,11 +20,21 @@ const ChannelView = ({channel, latestMessagePreview}) => {
   const {navigate} = useNavigation();
   const authContext = useContext(AuthContext);
   const [memberCount, setMemberCount] = useState(0);
+  const [unreadMentionCount, setUnreadMentionCount] = useState(0);
 
   useEffect(() => {
     const members = getChannelMembers(channel);
     setMemberCount(members.length);
   }, [channel]);
+
+  const getMentionCount = useCallback(async () => {
+    const unreadCount = await channel.countUnreadMentions();
+    setUnreadMentionCount(unreadCount);
+  }, [channel]);
+
+  useEffect(() => {
+    getMentionCount();
+  }, [getMentionCount]);
 
   const getLastMessage = () => {
     if (latestMessagePreview.messageObject?.text) {
@@ -89,9 +99,13 @@ const ChannelView = ({channel, latestMessagePreview}) => {
         <View style={{alignItems: 'flex-end'}}>
           <Text style={styles.channelAge}>{getLastMessageTime(channel)}</Text>
 
-          {state.unreadCount > 0 ? (
+          {state.unreadCount > 0 || unreadMentionCount > 0 ? (
             <View style={styles.channelUnreadCount}>
-              <Text style={styles.channelUnreadText}>{state.unreadCount}</Text>
+              <Text style={styles.channelUnreadText}>
+                {unreadMentionCount > 0
+                  ? `@${state.unreadCount + unreadMentionCount}`
+                  : state.unreadCount}
+              </Text>
             </View>
           ) : null}
         </View>

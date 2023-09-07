@@ -117,9 +117,11 @@ export default function EditGroupProfileScreen({navigation}) {
       setloading(true);
       setGroupProfile({
         ...groupProfile,
-        // sports_string: sportsName,
+
+        sports: selectedSports,
       });
-      const userProfile = {...groupProfile};
+      const userProfile = {...groupProfile, sports: selectedSports};
+
       if (profileImageChanged || backgroundImageChanged) {
         const imageArray = [];
         if (profileImageChanged) {
@@ -419,7 +421,13 @@ export default function EditGroupProfileScreen({navigation}) {
           closeList={() => setVisibleSportsModal(false)}
           title={strings.sportsTitleText}
           onNext={(sports = []) => {
-            setSelectedSports(sports);
+            const selectSports = sports.map((sportItem) => ({
+              sport: sportItem.sport,
+              sport_type: sportItem.sport_type,
+            }));
+
+            setSelectedSports([...selectSports]);
+
             setVisibleSportsModal(false);
           }}
           selectedSports={selectedSports}

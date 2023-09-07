@@ -79,10 +79,10 @@ const FeedsScreen = ({navigation}) => {
   );
 
   useEffect(() => {
-    if (isFocused) {
-      getFeeds();
-    }
-  }, [getFeeds, isFocused]);
+    // if (isFocused) {
+    // }
+    getFeeds();
+  }, [getFeeds, ]);
 
   useEffect(() => {
     getSportsList(authContext).then((res) => {

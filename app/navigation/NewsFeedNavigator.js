@@ -15,13 +15,11 @@ import UserConnections from '../screens/account/connections/UserConnections';
 import RefereeBookingDateAndTime from '../screens/game/bookReferee/refereeBookDateTime/RefereeBookingDateAndTime';
 import RefereeSelectMatch from '../screens/game/bookReferee/selectMatch/RefereeSelectMatch';
 import BookRefereeSuccess from '../screens/game/bookReferee/BookRefereeSuccess';
-import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 import UserTagSelectionListScreen from '../screens/newsfeeds/UserTagSelectionListScreen';
 import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddressScreen';
 import ChallengeSentScreen from '../screens/challenge/createChallenge/ChallengeSentScreen';
 import RefereeReservationScreen from '../screens/referee/RefereeReservationScreen';
 import AlterRequestAccept from '../screens/challenge/alterChallenge/AlterRequestAccept';
-import MembersProfileScreen from '../screens/account/groupConnections/MembersProfileScreen';
 
 import PaymentMethodsScreen from '../screens/account/payment/PaymentMethodsScreen';
 import AddCardScreen from '../screens/account/payment/AddCardScreen';
@@ -446,11 +444,6 @@ const NewsFeedNavigator = () => (
     />
 
     <Stack.Screen
-      name="GroupMembersScreen"
-      component={GroupMembersScreen}
-      options={{headerShown: false}}
-    />
-    <Stack.Screen
       component={GroupFollowersScreen}
       name="GroupFollowersScreen"
       options={{headerShown: false}}
@@ -540,22 +533,7 @@ const NewsFeedNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name="MembersProfileScreen"
-      component={MembersProfileScreen}
-      options={{
-        title: 'Member Profile',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
+
     <Stack.Screen
       name="PaymentMethodsScreen"
       component={PaymentMethodsScreen}

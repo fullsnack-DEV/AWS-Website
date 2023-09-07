@@ -11,107 +11,55 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
+
 import React, {useState, useCallback, useEffect, useContext, memo} from 'react';
 import {format} from 'react-string-format';
-import ClipboardToast from 'react-native-clipboard-toast';
-import CustomModalWrapper from './CustomModalWrapper';
-import {ModalTypes} from '../Constants/GeneralConstants';
-import {strings} from '../../Localization/translation';
-import ActivityLoader from './loader/ActivityLoader';
+import Verbs from '../../../Constants/Verbs';
+import GroupIcon from '../../../components/GroupIcon';
+import TCThinDivider from '../../../components/TCThinDivider';
+import images from '../../../Constants/ImagePath';
+import AuthContext from '../../../auth/context';
+import {getStorage, setStorage, showAlert} from '../../../utils';
+import fonts from '../../../Constants/Fonts';
+import colors from '../../../Constants/Colors';
+import InviteListShimmer from './InviteListShimmer';
+import CustomModalWrapper from '../../../components/CustomModalWrapper';
+import {ModalTypes} from '../../../Constants/GeneralConstants';
+import {strings} from '../../../../Localization/translation';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import {getGroupMembers, sendBasicInfoRequest} from '../../../api/Groups';
 
-import InviteListShimmer from '../screens/account/groupConnections/InviteListShimmer';
-import colors from '../Constants/Colors';
-import fonts from '../Constants/Fonts';
-import {showAlert} from '../utils';
-import {sendInvitationInGroup} from '../api/Users';
-import AuthContext from '../auth/context';
-import {getUserIndex} from '../api/elasticSearch';
-import images from '../Constants/ImagePath';
-import TCThinDivider from './TCThinDivider';
-import InviteMemberbyEmailModal from './InviteMemberByEmail';
-import GroupIcon from './GroupIcon';
-import Verbs from '../Constants/Verbs';
-
-function InviteMemberModal({isVisible, closeModal = () => {}}) {
-  const [loading, setloading] = useState(true);
+function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
+  const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [players, setPlayers] = useState([]);
   const [selectedList, setSelectedList] = useState([]);
-  const [pageSize] = useState(10000);
-  const [pageFrom, setPageFrom] = useState(0);
-  const [filters, setFilters] = useState();
+
   const [searchText, setSearchText] = useState('');
-  const [showInviteByEmail, setShowInvitwByEmail] = useState(false);
+
   const [filteredList, setFilteredList] = useState([]);
+  const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
+  const [showCheck, setShowCheck] = useState(false);
 
-  useEffect(() => {
-    getUsers(filters);
-    setPageFrom(10);
-  }, [isVisible, filters]);
+  const getMembers = () => {
+    setSelectedList([]);
 
-  const getUsers = useCallback(
-    (filterPlayer) => {
-      const membersQuery = {
-        size: pageSize,
-
-        query: {
-          bool: {
-            must: [],
-          },
-        },
-      };
-      if (filterPlayer?.searchText?.length > 0) {
-        membersQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filterPlayer?.searchText}*`,
-            fields: ['full_name'],
-          },
-        });
-      }
-
-      getUserIndex(membersQuery)
-        .then((response) => {
-          setloading(false);
-
-          setPlayers([...response]);
-          setFilteredList([...response]);
-        })
-        .catch((error) => {
-          setloading(false);
-          console.log(error.message);
-        });
-    },
-    [pageFrom, pageSize, players],
-  );
-
-  const sendInvitation = () => {
-    setloading(true);
-    const entity = authContext.entity;
-
-    const obj = {
-      entity_type: entity.role,
-      userIds: selectedList,
-      uid: entity.uid,
-    };
-
-    sendInvitationInGroup(obj, authContext)
-      .then(() => {
+    getGroupMembers(groupID, authContext)
+      .then((response) => {
         setloading(false);
 
+        setPlayers([...response.payload]);
+        setFilteredList([...response.payload]);
+
         setTimeout(() => {
-          showAlert(
-            format(
-              selectedList?.length > 1
-                ? strings.emailInvitationSent
-                : strings.oneemailInvitationSent,
-              selectedList?.length,
-            ),
-            () => {
-              onCloseModal();
-            },
-          );
-        }, 10);
+          getStorage('showPopup').then((isShow) => {
+            if (isShow || isShow === null) {
+              setIsInfoModalVisible(true);
+            } else {
+              setIsInfoModalVisible(false);
+            }
+          });
+        }, 300);
       })
       .catch((e) => {
         setloading(false);
@@ -121,39 +69,62 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
       });
   };
 
+  const sendRequestForBasicInfo = () => {
+    if (selectedList.length > 0) {
+      setloading(true);
+
+      sendBasicInfoRequest(groupID, selectedList, authContext)
+        .then(() => {
+          setloading(false);
+
+          setTimeout(() => {
+            showAlert(
+              format(
+                selectedList?.length > 1
+                  ? strings.multipleRequestSent
+                  : strings.requestforBasicInfoWasSent,
+                selectedList?.length,
+              ),
+              () => {
+                onCloseModal();
+              },
+            );
+          }, 10);
+        })
+        .catch((e) => {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    } else {
+      Alert.alert(strings.alertmessagetitle, strings.selectmemberValidation);
+    }
+  };
+
   const onCloseModal = () => {
     setSearchText('');
     setSelectedList([]);
     setPlayers([]);
     closeModal();
-    setFilters();
-  };
-
-  const RenderSportDetail = (item) => {
-    const sportname = item.registered_sports?.[0].sport;
-    const numOfSports = item.registered_sports?.length - 1;
-    const emptyString = '';
-
-    const capitalizeLetter =
-      sportname?.charAt(0).toUpperCase() + sportname?.slice(1);
-
-    if (sportname === undefined || !numOfSports === 0) {
-      return `${emptyString}`;
-    } else if (numOfSports === 0) {
-      return `${capitalizeLetter}`;
-    } else {
-      return `${capitalizeLetter} and ${numOfSports} more`;
-    }
   };
 
   const renderPlayer = ({item}) => {
     const isChecked = selectedList.includes(item.user_id);
     return (
-      <Pressable
-        onPress={() => selectPlayer(item)}
-        style={styles.topViewContainer}>
-        <View style={{flexDirection: 'row'}}>
-          <View style={{marginTop: 15}}>
+      <TouchableOpacity
+        disabled={!item.connected}
+        onPress={() => {
+          selectPlayer(item);
+        }}
+        style={[styles.topViewContainer, {opacity: item.connected ? 1 : 0.6}]}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: 10,
+            }}>
             <GroupIcon
               imageUrl={item.thumbnail}
               entityType={Verbs.entityTypePlayer}
@@ -163,20 +134,18 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
 
           <View style={styles.topTextContainer}>
             <Text style={styles.whiteNameText} numberOfLines={1}>
-              {item.full_name}
+              {item.first_name} {item.last_name}
             </Text>
             <Text style={styles.whiteLocationText} numberOfLines={1}>
               {item.city}
             </Text>
-            <Text
-              style={[styles.locationText, {textTransform: 'capitalize'}]}
-              numberOfLines={1}>
-              {RenderSportDetail(item)}
-            </Text>
           </View>
         </View>
         <Pressable
-          onPress={() => selectPlayer(item)}
+          disabled={!item.connected}
+          onPress={() => {
+            selectPlayer(item);
+          }}
           style={{
             height: 22,
             width: 22,
@@ -191,7 +160,7 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
             style={styles.checkGreenImage}
           />
         </Pressable>
-      </Pressable>
+      </TouchableOpacity>
     );
   };
 
@@ -211,8 +180,13 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
 
   useEffect(() => {
     if (searchText) {
+      const searchParts = searchText.toLowerCase().split(' ');
       const list = players.filter((item) =>
-        item.full_name.toLowerCase().includes(searchText.toLowerCase()),
+        searchParts.every(
+          (part) =>
+            item.first_name.toLowerCase().includes(part) ||
+            item.last_name.toLowerCase().includes(part),
+        ),
       );
       setFilteredList(list);
     } else {
@@ -240,44 +214,6 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
       style={{
         backgroundColor: colors.whiteColor,
       }}>
-      {!selectedList.length > 0 && (
-        <View
-          style={{
-            marginTop: 25,
-          }}>
-          <Pressable
-            style={styles.inviteEmailStyle}
-            onPress={() => {
-              setShowInvitwByEmail(true);
-            }}>
-            <FastImage source={images.inviteEmail} style={styles.imageIcon} />
-
-            <Text style={styles.textTitle}>{strings.inviteByEmail}</Text>
-          </Pressable>
-
-          <TCThinDivider />
-          <View style={styles.imageTextContainer}>
-            <FastImage source={images.copyUrl} style={styles.imageIcon} />
-
-            <ClipboardToast
-              textToShow={strings.copyInviteUrl}
-              textToCopy={'Hello is underdevelopment'}
-              toastText={'Text copied to clipboard!'}
-              containerStyle={styles.textTitle}
-              textStyle={{
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-                color: colors.lightBlackColor,
-              }}
-              toastDuration={2000}
-              toastPosition={'bottom'}
-              toastDelay={1000}
-            />
-          </View>
-          <TCThinDivider />
-        </View>
-      )}
-
       <ScrollView
         horizontal
         contentContainerStyle={{
@@ -296,10 +232,10 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
                       selectPlayer(user);
                     }}
                     style={{
-                      borderRadius: 90,
-                      overflow: 'hidden',
-                      height: 45,
-                      width: 45,
+                      borderRadius: 100,
+
+                      height: 40,
+                      width: 40,
                     }}>
                     <GroupIcon
                       imageUrl={user.thumbnail}
@@ -329,20 +265,57 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
     </View>
   );
 
+  const infoList = [
+    {
+      title: strings.gender,
+    },
+    {
+      title: strings.birthdayAgeText,
+    },
+    {
+      title: strings.height,
+    },
+    {
+      title: strings.weight,
+    },
+    {
+      title: strings.phoneNumber,
+    },
+    {
+      title: strings.emailPlaceHolder,
+    },
+  ];
+
+  const RenderInfoDetail = ({item}) => (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}>
+      <View
+        style={{
+          width: 5,
+          height: 5,
+          backgroundColor: colors.blackColor,
+          borderRadius: 50,
+        }}
+      />
+      <Text style={styles.basicInfoList}>{item?.title}</Text>
+    </View>
+  );
+
   return (
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={onCloseModal}
       modalType={ModalTypes.style1}
+      onModalShow={() => getMembers()}
       headerRightButtonText={strings.send}
-      onRightButtonPress={() => sendInvitation()}
-      title={strings.inviteMemberText}
+      onRightButtonPress={() => sendRequestForBasicInfo()}
+      title={strings.sendrequestForBaicInfoText}
       containerStyle={{padding: 0, flex: 1}}>
       <View style={styles.mainContainer}>
         <ActivityLoader visible={loading} />
-        <Text style={styles.infoTextStyle}>
-          {format(strings.inviteSearchText, authContext.entity.role)}
-        </Text>
 
         <View style={styles.floatingInput}>
           <View style={styles.inputContainer}>
@@ -386,10 +359,58 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
         )}
       </View>
 
-      <InviteMemberbyEmailModal
-        isVisible={showInviteByEmail}
-        closeModal={() => setShowInvitwByEmail(false)}
-      />
+      <CustomModalWrapper
+        isVisible={isInfoModalVisible}
+        closeModal={() => setIsInfoModalVisible(false)}
+        modalType={ModalTypes.style3}
+        containerStyle={{padding: 0, flex: 1}}
+        extraHeaderStyle={{borderBottomWidth: 0}}
+        Top={340}>
+        <View
+          style={{
+            flex: 1,
+          }}>
+          <Text
+            style={{
+              fontFamily: fonts.RMedium,
+              fontSize: 20,
+              marginLeft: 30,
+              marginRight: 44,
+              marginBottom: 15,
+              color: colors.lightBlackColor,
+            }}>
+            {strings.sentBasicInfoText}
+          </Text>
+          <View
+            style={{
+              marginLeft: 30,
+            }}>
+            <FlatList
+              data={infoList}
+              renderItem={({item}) => <RenderInfoDetail item={item} />}
+            />
+          </View>
+
+          <Text style={styles.basicInfoRequestText}>
+            {strings.requestInfoAcceptedText}
+          </Text>
+
+          <View
+            style={{flexDirection: 'row', marginLeft: 25, marginBottom: 20}}>
+            <Pressable
+              onPress={async () => {
+                await setStorage('showPopup', showCheck);
+                setShowCheck(!showCheck);
+              }}>
+              <Image
+                source={showCheck ? images.orangeCheckBox : images.uncheckWhite}
+                style={{height: 18, width: 18, resizeMode: 'contain'}}
+              />
+            </Pressable>
+            <Text style={styles.checkBoxItemText}>{strings.showAgainText}</Text>
+          </View>
+        </View>
+      </CustomModalWrapper>
     </CustomModalWrapper>
   );
 }
@@ -397,41 +418,6 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-  },
-  infoTextStyle: {
-    marginTop: 20,
-    marginLeft: 15,
-    marginBottom: 10,
-    fontFamily: fonts.RMedium,
-    fontSize: 20,
-    color: colors.lightBlackColor,
-    lineHeight: 30,
-  },
-
-  imageIcon: {
-    height: 40,
-    width: 40,
-    resizeMode: 'contain',
-  },
-  textTitle: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 10,
-  },
-  imageTextContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    margin: 25,
-    marginBottom: 15,
-    marginTop: 15,
-  },
-  inviteEmailStyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    margin: 25,
-    marginBottom: 15,
-    marginTop: 0,
   },
 
   closeButton: {
@@ -464,7 +450,7 @@ const styles = StyleSheet.create({
 
   topViewContainer: {
     flexDirection: 'row',
-    height: 60,
+    height: 50,
     width: '90%',
     alignSelf: 'center',
     justifyContent: 'space-between',
@@ -477,7 +463,7 @@ const styles = StyleSheet.create({
 
   topTextContainer: {
     marginLeft: 10,
-    marginTop: 20,
+    marginTop: 10,
     alignSelf: 'center',
     width: 220,
   },
@@ -487,11 +473,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
   },
-  locationText: {
-    fontSize: 14,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
-  },
+
   whiteLocationText: {
     fontSize: 14,
     color: colors.lightBlackColor,
@@ -507,7 +489,7 @@ const styles = StyleSheet.create({
   playerProfile: {
     width: 40,
     height: 40,
-    marginRight: 5,
+    resizeMode: 'contain',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -530,7 +512,33 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     zIndex: 1,
     width: '90%',
+    marginTop: 20,
+  },
+
+  basicInfoList: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 10,
+    marginBottom: 5,
+  },
+  basicInfoRequestText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    color: colors.lightBlackColor,
+    marginLeft: 30,
+    marginRight: 26,
+    lineHeight: 24,
+    marginTop: 15,
+    marginBottom: 30,
+  },
+
+  checkBoxItemText: {
+    fontFamily: fonts.RRegular,
+    fontSize: 14,
+    color: colors.veryLightBlack,
+    marginLeft: 7,
   },
 });
 
-export default memo(InviteMemberModal);
+export default memo(RequestBasicInfoModal);

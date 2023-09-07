@@ -95,7 +95,11 @@ const AvailabilitySection = ({
           <ActivityIndicator size={'small'} />
         </View>
       ) : (
-        <View style={[styles.row, {marginBottom: 0}]}>
+        <View
+          style={[
+            styles.row,
+            {marginBottom: 0, justifyContent: 'space-between'},
+          ]}>
           <View>
             {leftColumn.map((item, index) => {
               const slots = getList(item);

@@ -122,6 +122,7 @@ const RegisterPlayer = ({navigation, route}) => {
           settingObj: selectedSport.default_setting ?? {},
           settingType: selectedSport.default_setting?.default_setting_key,
           comeFrom: route.params?.comeFrom ?? '',
+          routeParams: route.params?.routeParams ?? {},
         });
       } else {
         setLoading(true);

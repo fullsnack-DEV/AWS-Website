@@ -76,20 +76,28 @@ const MessageChatScreen = ({navigation, route}) => {
   const [selectedTagMember, setSelectedTagMember] = useState({});
   const timeoutRef = useRef();
 
+  const handleBackPress = useCallback(() => {
+    navigation.setOptions({});
+    if (route.params?.comeFrom === 'MembersProfileScreen') {
+      navigation.navigate('News Feed', {
+        screen: 'MembersProfileScreen',
+        params: {...route.params.routeParams, from: 'chatscreen'},
+      });
+    } else if (route.params?.comeFrom) {
+      navigation.navigate(route.params.comeFrom, {
+        ...route.params.routeParams,
+      });
+    } else {
+      navigation.replace('MessageMainScreen');
+    }
+  }, [navigation, route.params?.comeFrom, route.params.routeParams]);
+
   useEffect(() => {
     const backAction = () => {
       if (showSearchInput) {
         setShowSearchInput(false);
       } else if (route.params?.comeFrom) {
-        if (route.params.comeFrom === 'MessageMainScreen') {
-          navigation.push(route.params.comeFrom, {
-            ...route.params.routeParams,
-          });
-        } else {
-          navigation.navigate(route.params.comeFrom, {
-            ...route.params.routeParams,
-          });
-        }
+        handleBackPress();
       } else {
         navigation.goBack();
       }
@@ -102,7 +110,7 @@ const MessageChatScreen = ({navigation, route}) => {
     );
 
     return () => backHandler.remove();
-  }, [showSearchInput, navigation, route.params]);
+  }, [showSearchInput, navigation, route.params, handleBackPress]);
 
   useEffect(() => {
     if (channel) {
@@ -355,13 +363,7 @@ const MessageChatScreen = ({navigation, route}) => {
         title={channelName}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          if (route.params?.comeFrom) {
-            navigation.navigate(route.params.comeFrom, {
-              ...route.params.routeParams,
-            });
-          } else {
-            navigation.replace('MessageMainScreen');
-          }
+          handleBackPress();
         }}
         rightIcon2={images.vertical3Dot}
         rightIcon2Press={() => {

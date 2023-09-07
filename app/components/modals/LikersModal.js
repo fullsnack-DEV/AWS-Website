@@ -64,7 +64,7 @@ const LikersModal = ({
         <Text style={styles.titleText}>{strings.likesTitle}</Text>
       </View>
       <View style={styles.likersHeaderContainer}>
-        <Text style={styles.likedByText}>Liked by</Text>
+        <Text style={styles.likedByText}>{strings.likedBy}</Text>
         <Text style={styles.likesCountText}>
           {list.length}{' '}
           {list.length > 1 ? strings.likesTitle : strings.likeTitle}

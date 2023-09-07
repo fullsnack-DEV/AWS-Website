@@ -2656,6 +2656,7 @@ export const prepareTagName = (data = {}) => {
   }
 
   return `@${tagName} `;
+
 };
 export const calculateRatio = (sportsLength) => {
   if (sportsLength === 2) {

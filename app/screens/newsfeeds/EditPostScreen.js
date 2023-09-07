@@ -18,6 +18,7 @@ import {
   FlatList,
   Alert,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -723,7 +724,8 @@ const EditPostScreen = ({navigation, route}) => {
               </Text>
             </View>
           </View>
-          <View style={{paddingHorizontal: 15, marginBottom: 15, zIndex: 100}}>
+          <ScrollView
+            contentContainerStyle={{paddingHorizontal: 15, marginBottom: 15}}>
             <TextInput
               ref={textInputRef}
               onLayout={(event) =>
@@ -749,7 +751,7 @@ const EditPostScreen = ({navigation, route}) => {
               </ParsedText>
             </TextInput>
             {renderModalTagEntity()}
-          </View>
+          </ScrollView>
 
           {renderUrlPreview()}
           {renderSelectedImageList()}

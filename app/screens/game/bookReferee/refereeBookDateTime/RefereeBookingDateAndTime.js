@@ -47,7 +47,7 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
   const [gameData, setGameData] = useState(route?.params?.gameData);
   const [chiefOrAssistant, setChiefOrAssistant] = useState('chief');
   const [challengeObject, setChallengeObject] = useState();
-  const [refereeReservationList, setRefereeReservationList] = useState();
+  const [refereeReservationList, setRefereeReservationList] = useState([]);
   const [defaultCard, setDefaultCard] = useState(route?.params?.paymentMethod);
 
   const authContext = useContext(AuthContext);
@@ -485,7 +485,6 @@ const RefereeBookingDateAndTime = ({navigation, route}) => {
                   justifyContent: 'center',
                 }}
                 onPress={() => {
-                  console.log('gameData', gameData);
                   if (item === 'chief') {
                     if (
                       refereeReservationList.filter((obj) => obj.chief_referee)

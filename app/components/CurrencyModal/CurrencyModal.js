@@ -98,7 +98,7 @@ export default function CurrencyModal({
                 lineHeight: 13,
                 marginTop: 2,
               }}>
-              {strings.homeCity}
+              {strings.homeCountry}
             </Text>
           )}
         </View>

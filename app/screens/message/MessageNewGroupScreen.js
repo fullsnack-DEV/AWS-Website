@@ -104,7 +104,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
     const list = selectedInvitees.filter((invitee) => invitee.id);
 
     createChannel(list, profileImage, groupName, Verbs.channelTypeGeneral)
-      .then((channel) => {
+      .then(async (channel) => {
         setLoading(false);
 
         if (channel !== null) {
@@ -180,7 +180,12 @@ const MessageNewGroupScreen = ({route, navigation}) => {
       <ScreenHeader
         title={strings.newGroup}
         leftIcon={images.backArrow}
-        leftIconPress={() => navigation.goBack()}
+        leftIconPress={() => {
+          const newList = selectedInvitees.filter((item) => item.id);
+          navigation.navigate('MessageInviteScreen', {
+            selectedInviteesData: newList,
+          });
+        }}
         isRightIconText
         rightButtonText={strings.create}
         onRightButtonPress={onSaveButtonClicked}

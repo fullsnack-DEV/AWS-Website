@@ -27,8 +27,9 @@ const TCUserList = ({
           entityType={user.entity_type}
           containerStyle={styles.profileIcon}
         />
-        <View>
-          <Text style={styles.userName}>
+        <View style={{flex:1}}>
+          <Text style={styles.userName}
+          numberOfLines={1}>
             {user.full_name ?? user.group_name}
           </Text>
           <Text style={styles.location}>{displayLocation(user)}</Text>
@@ -66,6 +67,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex:1,
   },
   profileIcon: {
     width: 40,

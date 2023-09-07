@@ -590,7 +590,10 @@ const AccountScreen = ({navigation, route}) => {
       <CustomModalWrapper
         isVisible={isRulesModalVisible}
         closeModal={() => setIsRulesModalVisible(false)}
-        modalType={ModalTypes.style2}>
+        modalType={ModalTypes.style2}
+        containerStyle={{
+          marginBottom: Platform.OS === 'android' ? -130 : -150,
+        }}>
         <View>
           <Text style={styles.modalTitle}>{strings.createTeamText}</Text>
           <Text style={[styles.rulesText, {marginBottom: 15}]}>

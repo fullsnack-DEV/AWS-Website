@@ -17,6 +17,7 @@ import {
   TouchableOpacity,
   Platform,
   TouchableWithoutFeedback,
+  BackHandler,
 } from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
@@ -113,6 +114,30 @@ export default function CreateMemberProfileForm1({navigation, route}) {
     return true;
   }, [email, firstName, lastName, homeCity]);
 
+  const handleBackPress = useCallback(() => {
+    if (route.params?.comeFrom === 'HomeScreen') {
+      navigation.setOptions({});
+      navigation.navigate('Account', {
+        screen: 'HomeScreen',
+        params: {...route.params?.routeParams},
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -137,6 +162,8 @@ export default function CreateMemberProfileForm1({navigation, route}) {
 
                     navigation.navigate('CreateMemberProfileForm2', {
                       form1: form1Object,
+                      comeFrom: route.params?.comeFrom ?? '',
+                      routeParams: {...(route.params?.routeParams ?? {})},
                     });
                   } else {
                     setTimeout(() => {
@@ -158,7 +185,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
       ),
 
       headerLeft: () => (
-        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+        <TouchableWithoutFeedback onPress={handleBackPress}>
           <Image source={images.backArrow} style={styles.backArrowStyle} />
         </TouchableWithoutFeedback>
       ),
@@ -171,10 +198,11 @@ export default function CreateMemberProfileForm1({navigation, route}) {
     firstName,
     lastName,
     email,
-
     checkValidation,
     birthday,
     homeCity,
+    route.params,
+    handleBackPress,
   ]);
 
   // Email input format validation

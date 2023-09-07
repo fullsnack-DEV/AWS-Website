@@ -1,6 +1,6 @@
 // @flow
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text, Modal, Pressable, Platform} from 'react-native';
+import {View, StyleSheet, Text, Modal, TouchableOpacity, Platform} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -39,8 +39,8 @@ const BottomSheet = ({
           transparent
           animationType="slide"
           onRequestClose={closeModal}>
-          <Pressable style={styles.modalParent} onPress={closeModal}>
-            <Pressable style={[styles.card, cardStyle]} onPress={() => {}}>
+          <TouchableOpacity style={styles.modalParent} onPress={closeModal}>
+            <TouchableOpacity style={[styles.card, cardStyle]} onPress={() => {}}>
               {title ? (
                 <>
                   <View
@@ -60,7 +60,7 @@ const BottomSheet = ({
               ) : null}
               {optionList.map((item, index) => (
                 <View key={index}>
-                  <Pressable
+                  <TouchableOpacity
                     style={[styles.modalButtonContainer, itemStyle]}
                     onPress={() => onSelect(item)}>
                     <Text
@@ -73,22 +73,22 @@ const BottomSheet = ({
                       ]}>
                       {item}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
 
                   <View
                     style={[styles.modalLineSeparator, separatorLineStyle]}
                   />
                 </View>
               ))}
-            </Pressable>
-            <Pressable
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[styles.modalCancelButton, cancelButtonContainerStyle]}
               onPress={closeModal}>
               <Text style={[styles.modalButtonText, cancelButtonTextStyle]}>
                 {strings.cancel}
               </Text>
-            </Pressable>
-          </Pressable>
+            </TouchableOpacity>
+          </TouchableOpacity>
         </Modal>
       );
     }
@@ -96,8 +96,8 @@ const BottomSheet = ({
     if (sheetType === 'android') {
       return (
         <Modal visible={isVisible} transparent animationType="fade">
-          <Pressable style={styles.modalParent} onPress={closeModal}>
-            <Pressable
+          <TouchableOpacity style={styles.modalParent} onPress={closeModal}>
+            <TouchableOpacity
               style={[styles.cardAndroid, cardStyle]}
               onPress={() => {}}>
               {title ? (
@@ -119,18 +119,18 @@ const BottomSheet = ({
               ) : null}
               {optionList.map((item) => (
                 <>
-                  <Pressable
+                  <TouchableOpacity
                     style={[styles.modalButtonContainerAndroid, itemStyle]}
                     onPress={() => onSelect(item)}>
                     <Text style={styles.modalButtonTextAndroid}>{item}</Text>
-                  </Pressable>
+                  </TouchableOpacity>
                   <View
                     style={[styles.modalLineSeparator, separatorLineStyle]}
                   />
                 </>
               ))}
-            </Pressable>
-          </Pressable>
+            </TouchableOpacity>
+          </TouchableOpacity>
         </Modal>
       );
     }
