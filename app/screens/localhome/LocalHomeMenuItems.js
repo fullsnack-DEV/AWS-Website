@@ -32,7 +32,7 @@ import {
   getSingleSportList,
   getSportDetails,
 } from '../../utils/sportsActivityUtils';
-import {getSportName, getStorage} from '../../utils';
+import {getSportName, getStorage, calculateRatio} from '../../utils';
 import {getGameHomeScreen} from '../../utils/gameUtils';
 import PlayersCardPlaceHolder from './PlayersCardPlaceHolder';
 import TCThinDivider from '../../components/TCThinDivider';
@@ -873,7 +873,8 @@ const LocalHomeMenuItems = memo(
           closeModal={() => {
             setPlayerDetailPopup(false);
           }}
-          modalType={ModalTypes.style2}>
+          modalType={ModalTypes.style2}
+          ratio={calculateRatio(playerDetail?.sports.length)}>
           <View style={{paddingTop: 0, paddingHorizontal: 0}}>
             <FlatList
               data={playerDetail?.sports}

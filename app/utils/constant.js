@@ -169,9 +169,9 @@ export const groupsType = [
 ];
 
 export const locationType = {
-  CURRENT_LOCATION: 2,
+  CURRENT_LOCATION: 0,
   HOME_CITY: 1,
-  WORLD: 0,
+  WORLD: 2,
   SEARCH_CITY: 3,
 };
 export const sortOptionType = {

@@ -19,6 +19,7 @@ import {
   TextInput,
   SafeAreaView,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
@@ -521,33 +522,60 @@ export default function RecruitingPlayerScreen({navigation, route}) {
       />
       <ActivityLoader visible={loading} />
       <View style={styles.searchView}>
-        <View style={styles.searchViewContainer}>
-          <TextInput
-            clearButtonMode={Platform.OS === 'ios' ? 'while-editing' : 'never'}
-            clearButtonVisible={Platform.OS === 'android'}
-            placeholder={strings.searchText}
-            style={styles.searchTxt}
-            autoCorrect={false}
-            onChangeText={(text) => {
-              const tempFilter = {...filters};
+        <View style={styles.floatingInput}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder={strings.searchText}
+              style={styles.searchTxt}
+              autoCorrect={false}
+              onChangeText={(text) => {
+                const tempFilter = {...filters};
 
-              if (text?.length > 0) {
-                tempFilter.searchText = text;
-              } else {
-                delete tempFilter.searchText;
-              }
-              setFilters({
-                ...tempFilter,
-              });
-              setPageFrom(0);
-              setRecruitingPlayer([]);
-              applyFilter(tempFilter);
-            }}
-            // value={search}
-          />
-          <TouchableWithoutFeedback onPress={() => setSettingPopup(true)}>
-            <Image source={images.homeSetting} style={styles.settingImage} />
-          </TouchableWithoutFeedback>
+                if (text?.length > 0) {
+                  tempFilter.searchText = text;
+                } else {
+                  delete tempFilter.searchText;
+                }
+                setFilters({
+                  ...tempFilter,
+                });
+                setPageFrom(0);
+                setRecruitingPlayer([]);
+                applyFilter(tempFilter);
+              }}
+              value={filters.searchText}
+            />
+            {filters.searchText?.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  const tempFilter = {...filters};
+                  tempFilter.searchText = '';
+                  setFilters({
+                    ...tempFilter,
+                  });
+                  setPageFrom(0);
+                  setRecruitingPlayer([]);
+                  applyFilter(tempFilter);
+                }}>
+                <Image
+                  source={images.closeRound}
+                  style={{
+                    height: 15,
+                    width: 15,
+                    resizeMode: 'cover',
+                    alignSelf: 'center',
+                    marginRight: 10,
+                  }}
+                />
+              </TouchableOpacity>
+            )}
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setSettingPopup(true);
+              }}>
+              <Image source={images.homeSetting} style={styles.settingImage} />
+            </TouchableWithoutFeedback>
+          </View>
         </View>
       </View>
       <TCTagsFilter
@@ -890,17 +918,6 @@ const styles = StyleSheet.create({
   listStyle: {
     padding: 15,
   },
-
-  searchViewContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 40,
-    width: widthPercentageToDP('92%'),
-    borderRadius: 25,
-    elevation: 2,
-    backgroundColor: '#F5F5F5',
-    marginTop: 10,
-  },
   settingImage: {
     height: 20,
     width: 20,
@@ -953,7 +970,7 @@ const styles = StyleSheet.create({
   searchTxt: {
     marginLeft: 15,
     fontSize: widthPercentageToDP('3.8%'),
-    width: widthPercentageToDP('75%'),
+    width: widthPercentageToDP('70%'),
   },
 
   // New sytles -===>
@@ -994,5 +1011,19 @@ const styles = StyleSheet.create({
     width: 25,
     marginBottom: 10,
     marginTop: 5,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 25,
+    backgroundColor: colors.lightGrey,
+    height: 45,
+  },
+  floatingInput: {
+    alignSelf: 'center',
+    zIndex: 1,
+    width: '90%',
+    marginTop: 20,
   },
 });

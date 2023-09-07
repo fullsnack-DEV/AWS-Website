@@ -333,13 +333,20 @@ export default function EntitySearchScreen({navigation, route}) {
     };
     // Search filter
     if (generalFilter.searchText) {
+      // generalsQuery.query.bool.must.push({
+      //   query_string: {
+      //     query: `*${generalFilter.searchText.toLowerCase()}*`,
+      //     fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
+      //   },
+      // });
       generalsQuery.query.bool.must.push({
         query_string: {
-          query: `*${generalFilter.searchText.toLowerCase()}*`,
-          fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
+          query: `${generalFilter.searchText.toLowerCase()}*`,
+          fields: ['full_name'],
         },
       });
     }
+
     getUserIndex(generalsQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -379,20 +386,6 @@ export default function EntitySearchScreen({navigation, route}) {
               },
             },
           ],
-          // should: [
-          //   {match: {entity_type: 'player'}},
-          //   // {term: {is_deactivate: false}},
-          //   {
-          //     nested: {
-          //       path: 'registered_sports',
-          //       query: {
-          //         bool: {
-          //           must: [{term: {'registered_sports.is_active': true}}],
-          //         },
-          //       },
-          //     },
-          //   },
-          // ],
         },
       },
     };
@@ -421,8 +414,10 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
 
-    // Search filter
+    // Search filter with cover all filter
+
     if (playerFilter.searchText) {
+      /*
       if (
         playerFilter.sport === strings.allSport &&
         playerFilter.location === strings.worldTitleText
@@ -473,6 +468,16 @@ export default function EntitySearchScreen({navigation, route}) {
         playersQuery.query.bool.must.push({
           query_string: {
             query: `*${playerFilter.searchText.toLowerCase()}*`,
+            fields: ['full_name'],
+          },
+        });
+      }
+      */
+      // simple search
+      if (playerFilter.searchText) {
+        playersQuery.query.bool.must.push({
+          query_string: {
+            query: `${playerFilter.searchText.toLowerCase()}*`,
             fields: ['full_name'],
           },
         });
@@ -549,6 +554,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
     // Search filter
     if (refereeFilters.searchText) {
+      /*
       // No filter case
       if (
         refereeFilters.sport === strings.allSport &&
@@ -624,8 +630,15 @@ export default function EntitySearchScreen({navigation, route}) {
           },
         });
       }
+*/
+      // Simple search with full name
+      refereeQuery.query.bool.must.push({
+        query_string: {
+          query: `${refereeFilters.searchText.toLowerCase()}*`,
+          fields: ['full_name'],
+        },
+      });
     }
-
     getUserIndex(refereeQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -691,6 +704,7 @@ export default function EntitySearchScreen({navigation, route}) {
     // Search filter
     if (scoreKeeperFilters.searchText) {
       // No filter case
+      /*
       if (
         scoreKeeperFilters.sport === strings.allSport &&
         scoreKeeperFilters.location === strings.worldTitleText
@@ -765,8 +779,15 @@ export default function EntitySearchScreen({navigation, route}) {
           },
         });
       }
+      */
+      // simple search with full name
+      scoreKeeperQuery.query.bool.must.push({
+        query_string: {
+          query: `${scoreKeeperFilters.searchText.toLowerCase()}*`,
+          fields: ['full_name'],
+        },
+      });
     }
-
     getUserIndex(scoreKeeperQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -820,6 +841,7 @@ export default function EntitySearchScreen({navigation, route}) {
     // team search filter
     if (teamFilters.searchText) {
       // No filter case
+      /*
       if (
         teamFilters.sport === strings.allSport &&
         teamFilters.location === strings.worldTitleText
@@ -863,8 +885,15 @@ export default function EntitySearchScreen({navigation, route}) {
           },
         });
       }
+      */
+      // Simple search with group name
+      teamsQuery.query.bool.must.push({
+        query_string: {
+          query: `${teamFilters.searchText.toLowerCase()}*`,
+          fields: ['group_name'],
+        },
+      });
     }
-
     getGroupIndex(teamsQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -929,6 +958,7 @@ export default function EntitySearchScreen({navigation, route}) {
     }
     // club search filter
     if (clubFilters.searchText) {
+      /*
       // No filter case
       if (
         clubFilters.sport === strings.allSport &&
@@ -973,8 +1003,15 @@ export default function EntitySearchScreen({navigation, route}) {
           },
         });
       }
+      */
+      // simple search with group name
+      clubsQuery.query.bool.must.push({
+        query_string: {
+          query: `${clubFilters.searchText.toLowerCase()}*`,
+          fields: ['group_name'],
+        },
+      });
     }
-
     getGroupIndex(clubsQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -1045,6 +1082,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
     if (completedGameFilters.searchText) {
+      /*
       if (
         completedGameFilters.sport === strings.allSport &&
         completedGameFilters.location === strings.worldTitleText
@@ -1098,6 +1136,15 @@ export default function EntitySearchScreen({navigation, route}) {
           },
         });
       }
+      */
+      // simple search with home and away team name
+      // Default case
+      completedGameQuery.query.bool.must.push({
+        query_string: {
+          query: `${completedGameFilters.searchText.toLowerCase()}*`,
+          fields: ['home_team_name', 'away_team_name'],
+        },
+      });
     }
     getGameIndex(completedGameQuery).then((games) => {
       Utility.getGamesList(games).then((gamedata) => {
@@ -2855,7 +2902,8 @@ export default function EntitySearchScreen({navigation, route}) {
         closeModal={() => {
           setPlayerDetailPopup(false);
         }}
-        modalType={ModalTypes.style2}>
+        modalType={ModalTypes.style2}
+        ratio={Utility.calculateRatio(playerDetail?.sports.length)}>
         <View style={{paddingTop: 0, paddingHorizontal: 0}}>
           <FlatList
             data={playerDetail?.sports}

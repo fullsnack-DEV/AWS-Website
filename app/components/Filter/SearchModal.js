@@ -276,7 +276,7 @@ const SearchModal = ({
   const onPressReset = useCallback(() => {
     setFilters({
       location: strings.worldTitleText,
-      locationOption: 0,
+      locationOption: 2,
       isSearchPlaceholder: true,
       sport: strings.allSport,
       sport_name: strings.allSport,
@@ -541,7 +541,7 @@ const SearchModal = ({
                         }}>
                         <Image
                           source={
-                            filters.locationOption === 2
+                            filters.locationOption === 0
                               ? images.checkRoundOrange
                               : images.radioUnselect
                           }
@@ -595,7 +595,7 @@ const SearchModal = ({
                         }}>
                         <Image
                           source={
-                            filters.locationOption === 0
+                            filters.locationOption === 2
                               ? images.checkRoundOrange
                               : images.radioUnselect
                           }

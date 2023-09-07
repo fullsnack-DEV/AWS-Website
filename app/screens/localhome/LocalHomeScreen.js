@@ -411,7 +411,7 @@ function LocalHomeScreen({navigation, route}) {
       });
     } else {
       const data = getDataForNextScreen(
-        'sportData',
+        Verbs.SPORT_DATA,
         filters,
         location,
         selectedLocationOption,

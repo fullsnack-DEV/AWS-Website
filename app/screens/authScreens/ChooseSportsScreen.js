@@ -347,6 +347,7 @@ export default function ChooseSportsScreen({navigation, route}) {
       gender: route.params.locationInfo.gender,
       city: route.params.locationInfo.city,
       country: route.params.locationInfo.country,
+      state: route.params.locationInfo.state,
       state_abbr: route.params.locationInfo.state_abbr,
       sports: selected,
     };
