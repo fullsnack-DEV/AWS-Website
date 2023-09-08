@@ -528,13 +528,9 @@ const WritePostScreen = ({navigation, route}) => {
     const arr = [];
     const data = [...users, ...groups];
     data.forEach((obj) => {
-      const item = tagsOfEntity.filter(
-        (temp) =>
-          ![temp?.group_id, temp?.user_id, temp?.entity_id].includes(
-            obj?.group_id || obj?.user_id || obj?.entity_id,
-          ),
-      );
-      if (item) {
+      const id = obj.group_id ?? obj.user_id ?? obj.entity_id;
+      const item = tagsOfEntity.find((temp) => temp.entity_id === id);
+      if (!item && id !== authContext.entity.uid) {
         arr.push(obj);
       }
     });
@@ -606,6 +602,7 @@ const WritePostScreen = ({navigation, route}) => {
         ref={flatListRef}
         horizontal
         showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{marginBottom: 15}}
         onContentSizeChange={() => {
           flatListRef.current.scrollToEnd({animated: true});
         }}
@@ -740,7 +737,7 @@ const WritePostScreen = ({navigation, route}) => {
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
-  const handleBackPress = useCallback (() => {
+  const handleBackPress = useCallback(() => {
     if (route.params.isRepost) {
       Alert.alert('', strings.discardRepostText, [
         {
@@ -772,18 +769,26 @@ const WritePostScreen = ({navigation, route}) => {
     } else {
       navigation.goBack();
     }
-  },[navigation,route.params.isRepost,searchText, selectImage, tagsOfEntity]);
+  }, [
+    navigation,
+    route.params.isRepost,
+    searchText,
+    selectImage,
+    tagsOfEntity,
+  ]);
 
   useEffect(() => {
-    const backAction = ()=>{
-      handleBackPress()
-      return true
-    }
-    const backHandler = BackHandler.addEventListener('hardwareBackPress',backAction)
-  
-    return () => backHandler.remove()
-  }, [handleBackPress])
-  
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   const renderPost = () => {
     const repostData = route.params.repostData;
@@ -848,66 +853,68 @@ const WritePostScreen = ({navigation, route}) => {
               </Text>
             </View>
           </View>
-          
-          <ScrollView style={{paddingHorizontal: 15, marginBottom: 15}}>
-            <TextInput
-              ref={textInputRef}
-              onLayout={(event) =>
-                setSearchFieldHeight(event?.nativeEvent?.layout?.height)
-              }
-              placeholder={strings.whatsGoingText}
-              placeholderTextColor={colors.userPostTimeColor}
-              onSelectionChange={onSelectionChange}
-              onKeyPress={onKeyPress}
-              onChangeText={(text) => setSearchText(text)}
-              style={styles.textInputField}
-              multiline={true}
-              textAlignVertical={'top'}
-              maxLength={4000}>
-              <ParsedText
-                parse={[
-                  {pattern: tagRegex, renderText: renderTagText},
-                  {pattern: hashTagRegex, renderText: renderTagText},
-                  {pattern: urlRegex, renderText: renderTagText},
-                ]}
-                childrenProps={{allowFontScaling: false}}>
-                {searchText}
-              </ParsedText>
-            </TextInput>
-            {renderModalTagEntity()}
+          <ScrollView>
+            <View style={{paddingHorizontal: 15, marginBottom: 10}}>
+              <TextInput
+                ref={textInputRef}
+                onLayout={(event) =>
+                  setSearchFieldHeight(event?.nativeEvent?.layout?.height)
+                }
+                placeholder={strings.whatsGoingText}
+                placeholderTextColor={colors.userPostTimeColor}
+                onSelectionChange={onSelectionChange}
+                onKeyPress={onKeyPress}
+                onChangeText={(text) => setSearchText(text)}
+                style={styles.textInputField}
+                multiline={true}
+                textAlignVertical={'top'}
+                maxLength={4000}
+                scrollEnabled={false}>
+                <ParsedText
+                  parse={[
+                    {pattern: tagRegex, renderText: renderTagText},
+                    {pattern: hashTagRegex, renderText: renderTagText},
+                    {pattern: urlRegex, renderText: renderTagText},
+                  ]}
+                  childrenProps={{allowFontScaling: false}}>
+                  {searchText}
+                </ParsedText>
+              </TextInput>
+              {renderModalTagEntity()}
+            </View>
+            {route.params?.isRepost ? (
+              renderPost()
+            ) : (
+              <>
+                <View style={{marginTop: 15}}>
+                  {renderUrlPreview()}
+                  {renderSelectedImageList()}
+                  {tagsOfGame.length > 0 ? (
+                    <FlatList
+                      data={tagsOfGame}
+                      keyExtractor={(item, index) => index.toString()}
+                      bounces={false}
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{paddingHorizontal: 15}}
+                      horizontal
+                      renderItem={({item}) => (
+                        <View
+                          style={{
+                            width: Dimensions.get('window').width - 30,
+                            flex: 1,
+                            marginRight: 15,
+                          }}>
+                          <MatchCard item={item.matchData} />
+                        </View>
+                      )}
+                    />
+                  ) : null}
+                </View>
+              </>
+            )}
           </ScrollView>
-          {route.params?.isRepost ? (
-            renderPost()
-          ) : (
-            <>
-              {renderUrlPreview()}
-              {renderSelectedImageList()}
-              <View>
-                {tagsOfGame.length > 0 ? (
-                  <FlatList
-                    data={tagsOfGame}
-                    keyExtractor={(item, index) => index.toString()}
-                    bounces={false}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{paddingHorizontal: 15}}
-                    horizontal
-                    renderItem={({item}) => (
-                      <View
-                        style={{
-                          width: Dimensions.get('window').width - 30,
-                          flex: 1,
-                          marginRight: 15,
-                        }}>
-                        <MatchCard item={item.matchData} />
-                      </View>
-                    )}
-                  />
-                ) : null}
-              </View>
-            </>
-          )}
         </View>
-        
+
         <View style={styles.bottomSafeAreaStyle}>
           <TouchableOpacity
             style={styles.onlyMeViewStyle}
@@ -956,12 +963,7 @@ const WritePostScreen = ({navigation, route}) => {
           paddingTop: 15,
           paddingHorizontal: 30,
         }}
-        ratio={
-          authContext.entity.role === Verbs.entityTypeClub ||
-          authContext.entity.role === Verbs.entityTypeTeam
-            ? 1.7
-            : 1.5
-        }>
+        ratio={1.7}>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -988,7 +990,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     paddingHorizontal: 15,
-    
   },
   profileImage: {
     width: 40,
@@ -1000,7 +1001,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
-    
   },
   tagText: {
     fontSize: 16,
@@ -1039,7 +1039,6 @@ const styles = StyleSheet.create({
       height: -3,
       width: 0,
     },
-    // backgroundColor:'black',
   },
   icon: {
     width: 30,
@@ -1059,7 +1058,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     marginBottom: 15,
-   
   },
   userTextStyle: {
     fontSize: 16,
@@ -1067,7 +1065,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-    
   },
   locationTextStyle: {
     fontSize: 12,
@@ -1082,7 +1079,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     marginBottom: 15,
-    
   },
   userListContainer: {
     zIndex: 100,

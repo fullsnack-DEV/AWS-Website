@@ -15,6 +15,9 @@ import {
   SafeAreaView,
   TextInput,
   ScrollView,
+  Pressable,
+  Image,
+  BackHandler,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import _ from 'lodash';
@@ -61,7 +64,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const intervalRef = useRef();
- const scrollRef = useRef();
+  const scrollRef = useRef();
 
   const fetchData = useCallback(() => {
     const query = {
@@ -266,9 +269,9 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         data.entity_type === Verbs.entityTypePlayer ||
         data.entity_type === Verbs.entityTypeUser
       ) {
-        obj = list.find((item) => item.user_id === data.user_id);
+        obj = list.find((item) => item.entity_id === data.user_id);
       } else {
-        obj = list.find((item) => item.group_id === data.group_id);
+        obj = list.find((item) => item.entity_id === data.group_id);
       }
 
       if (obj) {
@@ -276,9 +279,9 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           data.entity_type === Verbs.entityTypePlayer ||
           data.entity_type === Verbs.entityTypeUser
         ) {
-          newList = newList.filter((item) => item.user_id !== data.user_id);
+          newList = newList.filter((item) => item.entity_id !== data.user_id);
         } else {
-          newList = newList.filter((item) => item.group_id !== data.group_id);
+          newList = newList.filter((item) => item.entity_id !== data.group_id);
         }
       } else {
         const entity_data = getTaggedEntityData({}, data);
@@ -352,6 +355,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                 navigation.navigate('HomeScreen', {
                   uid: item.user_id ?? item.group_id,
                   role: item.entity_type,
+                  comeFrom: 'UserTagSelectionListScreen',
+                  routeParams: {...route.params, tagsOfEntity: seletedEntity},
                 });
               }}
               entityId={item.user_id ?? item.group_id}
@@ -390,6 +395,26 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       />
     ) : null;
 
+  const handleSearch = (text) => {
+    setSearchText(text);
+    clearTimeout(intervalRef.current);
+    intervalRef.current = setTimeout(() => {
+      filterData(text);
+    }, 300);
+  };
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [navigation]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -408,20 +433,23 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           })
         }
       />
-
-      <TextInput
-        placeholder={strings.searchText}
-        placeholderTextColor={colors.userPostTimeColor}
-        style={styles.inputField}
-        onChangeText={(text) => {
-          setSearchText(text);
-          clearTimeout(intervalRef.current);
-          intervalRef.current = setTimeout(() => {
-            filterData(text);
-          }, 1500);
-        }}
-        value={searchText}
-      />
+      <Pressable style={styles.inputContainer}>
+        <TextInput
+          placeholder={strings.searchText}
+          placeholderTextColor={colors.userPostTimeColor}
+          style={styles.inputField}
+          onChangeText={handleSearch}
+          value={searchText}
+        />
+        <Pressable
+          onPress={() => {
+            clearTimeout(intervalRef.current);
+            setSearchText('');
+            filterData('');
+          }}>
+          <Image source={images.closeRound} style={{width: 15, height: 15}} />
+        </Pressable>
+      </Pressable>
       <View>
         <ScrollView
           horizontal
@@ -433,9 +461,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
             paddingRight: 15,
           }}
           onContentSizeChange={() => {
-          scrollRef.current.scrollToEnd({animated: true});
-        }}
-          >
+            scrollRef.current.scrollToEnd({animated: true});
+          }}>
           <View style={styles.scrollStyle}>
             {renderSelectedEntity()}
             {renderSelectedMatchList()}
@@ -450,15 +477,21 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
-  inputField: {
+  inputContainer: {
     height: 40,
     margin: 15,
-    fontSize: 16,
     borderRadius: 25,
     paddingHorizontal: 15,
+    backgroundColor: colors.textFieldBackground,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  inputField: {
+    flex: 1,
+    fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    backgroundColor: colors.textFieldBackground,
   },
   row: {
     flexDirection: 'row',
@@ -488,9 +521,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBlack,
   },
   sperateLine: {
-    height:1,
+    height: 1,
     marginVertical: 15,
-    backgroundColor:colors.grayBackgroundColor,
+    backgroundColor: colors.grayBackgroundColor,
   },
   noDataText: {
     fontSize: 16,

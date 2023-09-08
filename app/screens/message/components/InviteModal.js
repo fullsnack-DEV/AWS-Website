@@ -130,6 +130,25 @@ const InviteModal = ({
     }
   };
 
+  const checkForSelectedTab = useCallback(
+    (entityType = '') => {
+      if (currentTab === strings.peopleTitleText) {
+        return (
+          entityType === Verbs.entityTypeUser ||
+          entityType === Verbs.entityTypePlayer
+        );
+      }
+      if (currentTab === strings.groupsTitleText) {
+        return (
+          entityType === Verbs.entityTypeTeam ||
+          entityType === Verbs.entityTypeClub
+        );
+      }
+      return true;
+    },
+    [currentTab],
+  );
+
   useEffect(() => {
     if (searchText.length > 0) {
       clearTimeout(searchRef.current);
@@ -137,10 +156,7 @@ const InviteModal = ({
         const filteredData = list.filter(
           (item) =>
             item.name?.toLowerCase().includes(searchText.toLowerCase()) &&
-            item.entityType ===
-              (currentTab === strings.peopleTitleText
-                ? Verbs.entityTypePlayer || Verbs.entityTypeUser
-                : Verbs.entityTypeTeam || Verbs.entityTypeClub),
+            checkForSelectedTab(item.entityType),
         );
 
         setSearchedList(filteredData);
@@ -149,7 +165,7 @@ const InviteModal = ({
       setSearchedList([]);
     }
     return () => clearTimeout(searchRef.current);
-  }, [searchText, list, currentTab]);
+  }, [searchText, list, checkForSelectedTab]);
 
   const toggleSelection = (isChecked, user) => {
     if (isChecked) {
@@ -241,7 +257,7 @@ const InviteModal = ({
         ) : (
           <FlatList
             data={
-              searchText.length >= 3 ? searchedList : getInviteeList(currentTab)
+              searchText.length >= 2 ? searchedList : getInviteeList(currentTab)
             }
             renderItem={({item}) => {
               const isChecked = selectedInvitees.some(

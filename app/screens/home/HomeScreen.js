@@ -371,6 +371,15 @@ const HomeScreen = ({navigation, route}) => {
       navigation.navigate('AccountScreen');
     } else if (route.params?.comeFrom === 'EntitySearchScreen') {
       navigation.push('EntitySearchScreen');
+    } else if (route.params?.comeFrom === 'MessageChatScreen') {
+      navigation.navigate('Message', {
+        screen: 'MessageChatScreen',
+        params: {channel: route.params.routeParams},
+      });
+    } else if (route.params?.comeFrom) {
+      navigation.navigate(route.params.comeFrom, {
+        ...route.params.routeParams,
+      });
     } else if (route.params?.isEntityCreated) {
       navigation.pop(4);
     } else {

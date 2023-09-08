@@ -14,6 +14,7 @@ import {
   Text,
   Platform,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import {format} from 'react-string-format';
 import ParsedText from 'react-native-parsed-text';
@@ -78,6 +79,7 @@ const CommentModal = ({
   const [replyParams, setReplyParams] = useState({});
   const [showAllReplies, setShowAllReplies] = useState(false);
   const [isMoreLoading, setIsMoreLoading] = useState(true);
+  const [replyingTo, setReplyingTo] = useState({});
 
   const inputRef = useRef();
 
@@ -143,9 +145,14 @@ const CommentModal = ({
       activity_id: data.activity_id,
       reaction_id: data.id,
     };
-
+    const tag = `@${data.user.data.full_name.replace(/ /g, '')} `;
     setReplyParams(bodyParams);
-    setCommentText(`@${data.user.data.full_name.replace(/ /g, '')} `);
+    setCommentText(tag);
+    const obj = {
+      formatted_tag: tag,
+      entity_name: data.user.data.full_name,
+    };
+    setReplyingTo(obj);
     inputRef.current.focus();
   };
 
@@ -421,47 +428,77 @@ const CommentModal = ({
           }
         />
 
-        <View style={[styles.bottomContainer, {paddingBottom: 20}]}>
-          <GroupIcon
-            imageUrl={authContext.entity.obj.thumbnail}
-            groupName={authContext.entity.obj.group_name}
-            entityType={authContext.entity.obj.entity_type}
-            containerStyle={styles.profileIcon}
-          />
-          <View style={styles.inputContainer}>
-            <TextInput
-              textAlignVertical="center"
-              placeholder={strings.leaveComment}
-              placeholderTextColor={colors.userPostTimeColor}
-              ref={inputRef}
-              onChangeText={(text) => {
-                setCommentText(text);
-                if (!text) {
-                  setReplyParams({});
-                }
-              }}
-              style={styles.writeCommectStyle}>
-              <ParsedText
-                parse={[{pattern: tagRegex, renderText: renderTagText}]}
-                childrenProps={{allowFontScaling: false}}>
-                {commentTxt}
-              </ParsedText>
-            </TextInput>
-            {commentTxt.trim().length > 0 && (
+        <View style={styles.bottomContainer}>
+          {replyParams?.activity_id ? (
+            <View
+              style={[
+                styles.row,
+                {justifyContent: 'space-between', marginBottom: 11},
+              ]}>
+              <View style={{flex: 1, marginRight: 10}}>
+                <Text style={styles.replyingToText} numberOfLines={1}>
+                  Replying to {replyingTo.entity_name}
+                </Text>
+              </View>
               <TouchableOpacity
+                style={styles.crossIcon}
                 onPress={() => {
-                  if (replyParams.activity_id) {
-                    handleCommentReply();
-                  } else {
-                    handleComment();
+                  setReplyParams({});
+                  const tags = commentTxt.match(tagRegex);
+                  const words = commentTxt.split(' ');
+                  const finalWords = words.filter((item) => item !== tags[0]);
+                  setCommentText(finalWords.join(' '));
+                }}>
+                <Image
+                  source={images.crossImage}
+                  style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+                />
+              </TouchableOpacity>
+            </View>
+          ) : null}
+
+          <View style={styles.row}>
+            <GroupIcon
+              imageUrl={authContext.entity.obj.thumbnail}
+              groupName={authContext.entity.obj.group_name}
+              entityType={authContext.entity.obj.entity_type}
+              containerStyle={styles.profileIcon}
+            />
+            <View style={styles.inputContainer}>
+              <TextInput
+                textAlignVertical="center"
+                placeholder={strings.leaveComment}
+                placeholderTextColor={colors.userPostTimeColor}
+                ref={inputRef}
+                onChangeText={(text) => {
+                  setCommentText(text);
+                  if (!text) {
+                    setReplyParams({});
                   }
                 }}
-                style={{paddingLeft: 7}}>
-                <Text style={styles.sendTextStyle}>
-                  {strings.send.toUpperCase()}
-                </Text>
-              </TouchableOpacity>
-            )}
+                style={styles.writeCommectStyle}>
+                <ParsedText
+                  parse={[{pattern: tagRegex, renderText: renderTagText}]}
+                  childrenProps={{allowFontScaling: false}}>
+                  {commentTxt}
+                </ParsedText>
+              </TextInput>
+              {commentTxt.trim().length > 0 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    if (replyParams.activity_id) {
+                      handleCommentReply();
+                    } else {
+                      handleComment();
+                    }
+                  }}
+                  style={{paddingLeft: 7}}>
+                  <Text style={styles.sendTextStyle}>
+                    {strings.send.toUpperCase()}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         </View>
       </KeyboardAwareScrollView>
@@ -531,9 +568,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   bottomContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
+    padding: 15,
     backgroundColor: colors.whiteColor,
     shadowColor: colors.blackColor,
     borderTopColor: colors.grayBackgroundColor,
@@ -553,7 +588,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 16,
     lineHeight: 24,
-    color: colors.tagColor,
+    color: colors.userPostTimeColor,
     fontFamily: fonts.RRegular,
   },
   repliesContainer: {
@@ -579,6 +614,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 25,
+  },
+  replyingToText: {
+    fontSize: 12,
+    lineHeight: 15,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  crossIcon: {
+    width: 15,
+    height: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

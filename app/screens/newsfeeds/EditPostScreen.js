@@ -61,16 +61,16 @@ const EditPostScreen = ({navigation, route}) => {
   const imageUploadContext = useContext(ImageUploadContext);
   const {postData} = route.params;
 
-  let postText = '';
-  let postAttachments = [];
-  if (postData && postData.object) {
-    postText = JSON.parse(postData.object).text;
-    if (JSON.parse(postData.object).attachments) {
-      postAttachments = JSON.parse(postData.object).attachments;
-    }
-  }
-  const [searchText, setSearchText] = useState(postText);
-  const [selectImage, setSelectImage] = useState(postAttachments);
+  // let postText = '';
+  // let postAttachments = [];
+  // if (postData && postData.object) {
+  //   postText = JSON.parse(postData.object).text;
+  //   if (JSON.parse(postData.object).attachments) {
+  //     postAttachments = JSON.parse(postData.object).attachments;
+  //   }
+  // }
+  const [searchText, setSearchText] = useState('');
+  const [selectImage, setSelectImage] = useState([]);
   const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
   const [loading, setloading] = useState(false);
   const [letModalVisible, setLetModalVisible] = useState(false);
@@ -87,6 +87,17 @@ const EditPostScreen = ({navigation, route}) => {
   const [privacySetting, setPrivacySetting] = useState({});
   const [showPreviewForUrl, setShowPreviewForUrl] = useState(true);
   const [tagsOfGame, setTagsOfGame] = useState([]);
+
+  useEffect(() => {
+    if (isFocused && postData && postData.object) {
+      const postText = JSON.parse(postData.object).text;
+      setSearchText(postText);
+      if (JSON.parse(postData.object).attachments) {
+        const postAttachments = JSON.parse(postData.object).attachments;
+        setSelectImage(postAttachments);
+      }
+    }
+  }, [isFocused, postData]);
 
   useEffect(() => {
     if (isFocused && postData?.id) {
@@ -157,34 +168,35 @@ const EditPostScreen = ({navigation, route}) => {
   }, [isFocused, getList]);
 
   useEffect(() => {
-    if (searchText[currentTextInputIndex - 1] === '@')
+    if (searchText[currentTextInputIndex - 1] === '@') {
       setLastTagStartIndex(currentTextInputIndex - 1);
-    if (searchText[currentTextInputIndex - 1] === ' ')
+    }
+    if (searchText[currentTextInputIndex - 1] === ' ') {
       setLastTagStartIndex(null);
+    }
   }, [searchText, currentTextInputIndex]);
 
   useEffect(() => {
-    if (searchText?.length === 0) {
+    if (searchText.length > 0) {
+      if (searchText[currentTextInputIndex - 1] === '@') {
+        setLetModalVisible(true);
+      }
+
+      const lastString = searchText.substr(0, currentTextInputIndex);
+      if (lastString) {
+        let str = '';
+        if (lastString.includes('#')) {
+          str = `#${lastString.split('#').reverse()?.[0]}`;
+        } else {
+          str = `@${lastString.split('@').reverse()?.[0]}`;
+        }
+        setSearchTag(str);
+      }
+    } else {
       setTagsOfEntity([]);
       setUsers([]);
       setGroups([]);
       setLetModalVisible(false);
-    }
-    if (searchText) {
-      if (
-        currentTextInputIndex === 1 &&
-        searchText[currentTextInputIndex - 2] === '@' &&
-        searchText[currentTextInputIndex - 1] !== ' '
-      )
-        setLetModalVisible(true);
-      else if (
-        searchText[currentTextInputIndex - 2] === '@' &&
-        searchText[currentTextInputIndex - 1] !== ' '
-      )
-        setLetModalVisible(true);
-
-      const lastString = searchText.substr(0, currentTextInputIndex);
-      if (lastString) setSearchTag(`@${lastString.split('@')?.reverse()?.[0]}`);
     }
   }, [currentTextInputIndex, searchText]);
 
@@ -213,7 +225,9 @@ const EditPostScreen = ({navigation, route}) => {
 
   useEffect(() => {
     if (letModalVisible) {
-      searchFilterFunction(searchTag?.replace('@', ''));
+      const txt = searchTag.split('@');
+      const searchValue = txt[txt.length - 1];
+      searchFilterFunction(searchValue);
     }
   }, [letModalVisible, searchTag, searchFilterFunction]);
 
@@ -398,16 +412,9 @@ const EditPostScreen = ({navigation, route}) => {
     const arr = [];
     const data = [...users, ...groups];
     data.forEach((obj) => {
-      const item =
-        tagsOfEntity.length > 0
-          ? tagsOfEntity.filter(
-              (temp) =>
-                ![temp?.group_id, temp?.user_id, temp?.entity_id].includes(
-                  obj?.group_id || obj?.user_id || obj?.entity_id,
-                ),
-            )
-          : null;
-      if (item) {
+      const id = obj.group_id ?? obj.user_id ?? obj.entity_id;
+      const item = tagsOfEntity.find((temp) => temp.entity_id === id);
+      if (!item && id !== authContext.entity.uid) {
         arr.push(obj);
       }
     });
@@ -724,59 +731,60 @@ const EditPostScreen = ({navigation, route}) => {
               </Text>
             </View>
           </View>
-          <ScrollView
-            contentContainerStyle={{paddingHorizontal: 15, marginBottom: 15}}>
-            <TextInput
-              ref={textInputRef}
-              onLayout={(event) =>
-                setSearchFieldHeight(event?.nativeEvent?.layout?.height)
-              }
-              placeholder={strings.whatsGoingText}
-              placeholderTextColor={colors.userPostTimeColor}
-              onSelectionChange={onSelectionChange}
-              onKeyPress={onKeyPress}
-              onChangeText={(text) => setSearchText(text)}
-              style={styles.textInputField}
-              multiline={true}
-              textAlignVertical={'top'}
-              maxLength={4000}>
-              <ParsedText
-                parse={[
-                  {pattern: tagRegex, renderText: renderTagText},
-                  {pattern: hashTagRegex, renderText: renderTagText},
-                  {pattern: urlRegex, renderText: renderTagText},
-                ]}
-                childrenProps={{allowFontScaling: false}}>
-                {searchText}
-              </ParsedText>
-            </TextInput>
+          <ScrollView>
+            <View style={{paddingHorizontal: 15, marginBottom: 15}}>
+              <TextInput
+                ref={textInputRef}
+                onLayout={(event) =>
+                  setSearchFieldHeight(event?.nativeEvent?.layout?.height)
+                }
+                placeholder={strings.whatsGoingText}
+                placeholderTextColor={colors.userPostTimeColor}
+                onSelectionChange={onSelectionChange}
+                onKeyPress={onKeyPress}
+                onChangeText={(text) => setSearchText(text)}
+                style={styles.textInputField}
+                multiline={true}
+                textAlignVertical={'top'}
+                maxLength={4000}
+                scrollEnabled={false}>
+                <ParsedText
+                  parse={[
+                    {pattern: tagRegex, renderText: renderTagText},
+                    {pattern: hashTagRegex, renderText: renderTagText},
+                    {pattern: urlRegex, renderText: renderTagText},
+                  ]}
+                  childrenProps={{allowFontScaling: false}}>
+                  {searchText}
+                </ParsedText>
+              </TextInput>
+            </View>
             {renderModalTagEntity()}
+            <View style={{marginTop: 15}}>
+              {renderUrlPreview()}
+              {renderSelectedImageList()}
+              {tagsOfGame.length > 0 ? (
+                <FlatList
+                  data={tagsOfGame}
+                  keyExtractor={(item, index) => index.toString()}
+                  bounces={false}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{paddingHorizontal: 15}}
+                  horizontal
+                  renderItem={({item}) => (
+                    <View
+                      style={{
+                        width: Dimensions.get('window').width - 30,
+                        flex: 1,
+                        marginRight: 15,
+                      }}>
+                      <MatchCard item={item.matchData} />
+                    </View>
+                  )}
+                />
+              ) : null}
+            </View>
           </ScrollView>
-
-          {renderUrlPreview()}
-          {renderSelectedImageList()}
-          <View>
-            {tagsOfGame.length > 0 ? (
-              <FlatList
-                data={tagsOfGame}
-                keyExtractor={(item, index) => index.toString()}
-                bounces={false}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{paddingHorizontal: 15}}
-                horizontal
-                renderItem={({item}) => (
-                  <View
-                    style={{
-                      width: Dimensions.get('window').width - 30,
-                      flex: 1,
-                      marginRight: 15,
-                    }}>
-                    <MatchCard item={item.matchData} />
-                  </View>
-                )}
-              />
-            ) : null}
-          </View>
         </View>
 
         <View style={styles.bottomSafeAreaStyle}>
@@ -945,7 +953,7 @@ const styles = StyleSheet.create({
   },
   userListContainer: {
     zIndex: 100,
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.lightGrayBackground,
     maxHeight: 280,
     width: Dimensions.get('window').width - 30,
     position: 'absolute',

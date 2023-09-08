@@ -355,6 +355,15 @@ const AppNavigator = ({navigation}) => {
             );
           },
         })}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+
+            navigation.navigate('Message', {
+              screen: 'MessageMainScreen',
+            });
+          },
+        }}
       />
       <Tab.Screen
         name="Account"

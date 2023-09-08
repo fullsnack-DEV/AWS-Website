@@ -1,5 +1,5 @@
 // @flow
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -15,8 +15,8 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import {newReactionData} from '../constants';
 import {strings} from '../../../../Localization/translation';
-import {checkIsMessageDeleted} from '../../../utils/streamChat';
-import AuthContext from '../../../auth/context';
+// import {checkIsMessageDeleted} from '../../../utils/streamChat';
+// import AuthContext from '../../../auth/context';
 
 const MAX_REACTION_COUNT = 99;
 
@@ -67,43 +67,47 @@ const Reactions = ({messageId, reactions = {}, onPress = () => {}}) => {
 
 const CustomMessageFooter = ({onPress = () => {}}) => {
   const {message} = useMessageContext();
-  const authContext = useContext(AuthContext);
-  const groupStyle = message.groupStyles[0];
-  const isDeletedMessage = checkIsMessageDeleted(
-    authContext.chatClient.userID,
-    message,
-  );
+  // const authContext = useContext(AuthContext);
+  // const groupStyle = message.groupStyles[0];
+  // const isDeletedMessage = checkIsMessageDeleted(
+  //   authContext.chatClient.userID,
+  //   message,
+  // );
 
-  if (
-    groupStyle === 'single' ||
-    groupStyle === 'bottom' ||
-    message.latest_reactions.length > 0 ||
-    message.own_reactions.length > 0 ||
-    isDeletedMessage
-  ) {
-    return (
-      <View style={styles.reactionAndTimeContainer}>
+  // if (
+  //   groupStyle === 'single' ||
+  //   groupStyle === 'bottom' ||
+  //   message.latest_reactions.length > 0 ||
+  //   message.own_reactions.length > 0 ||
+  //   isDeletedMessage
+  // ) {
+  return (
+    <View style={styles.reactionAndTimeContainer}>
+      {message.latest_reactions?.length > 0 ||
+      message.own_reactions?.length > 0 ? (
         <Reactions
           messageId={message.id}
           reactions={message.reaction_counts}
           onPress={onPress}
         />
-        {message.user.group_name ? (
-          <View style={{maxWidth: '80%'}}>
-            <Text style={[styles.time, {marginRight: 10}]} numberOfLines={1}>
-              {format(strings.byUser, message.user.name)}
-            </Text>
-          </View>
-        ) : null}
-        <View>
-          <Text style={styles.time}>
-            {moment(message.updated_at).format('hh:mm A')}
+      ) : null}
+
+      {message.user.group_name ? (
+        <View style={{maxWidth: '80%'}}>
+          <Text style={[styles.time, {marginRight: 10}]} numberOfLines={1}>
+            {format(strings.byUser, message.user.name)}
           </Text>
         </View>
+      ) : null}
+      <View>
+        <Text style={styles.time}>
+          {moment(message.updated_at).format('hh:mm A')}
+        </Text>
       </View>
-    );
-  }
-  return null;
+    </View>
+  );
+  // }
+  // return null;
 };
 
 const styles = StyleSheet.create({

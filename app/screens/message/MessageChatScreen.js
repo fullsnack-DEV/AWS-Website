@@ -280,7 +280,7 @@ const MessageChatScreen = ({navigation, route}) => {
       return;
     }
     const memberId = member.id.includes('@')
-      ? selectedTagMember.id.split('@')[0]
+      ? selectedTagMember.id?.split('@')[0]
       : selectedTagMember.id;
 
     if (memberId === authContext.entity.uid) {
@@ -323,11 +323,14 @@ const MessageChatScreen = ({navigation, route}) => {
           Alert.alert(strings.alertmessagetitle, err.message);
         });
     } else if (option === tagOptions[1]) {
-      navigation.navigate('HomeScreen', {
-        uid: memberId,
-        role: selectedTagMember.entityType,
-        comeFrom: 'MessageChatScreen',
-        routeParams: {channel},
+      navigation.navigate('Account', {
+        screen: 'HomeScreen',
+        params: {
+          uid: memberId,
+          role: selectedTagMember.entityType,
+          comeFrom: 'MessageChatScreen',
+          routeParams: channel,
+        },
       });
     }
   };
@@ -374,6 +377,7 @@ const MessageChatScreen = ({navigation, route}) => {
         rightIcon1Press={() => {
           setShowSearchInput(!showSearchInput);
         }}
+        iconContainerStyle={{marginRight: 10}}
       />
       <View style={{flex: 1}}>
         {showSearchInput ? (

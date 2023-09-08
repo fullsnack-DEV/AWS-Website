@@ -199,5 +199,6 @@ export {privacySettingEnum, privacyKey};
 
 export const urlRegex =
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/gim;
-export const tagRegex = /(?!\w)@\w+/gim;
+// export const tagRegex = /(?!\w)@\w+/gim;
+export const tagRegex = /(?!\w)@[\w\p{Extended_Pictographic}]+/gu;
 export const hashTagRegex = /\B(#[a-zA-Z]+\b)(?!;)/;
