@@ -392,6 +392,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
             Alert.alert(
               strings.alertmessagetitle,
               strings.bookScorekeeperMessage,
+              [{text: strings.okTitleText}],
             );
           }
         })
