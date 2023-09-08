@@ -435,6 +435,7 @@ export default function LookingTeamScreen({navigation, route}) {
           Alert.alert(
             strings.alertmessagetitle,
             format(strings.entityInvitedSuccessfully, `${dataObj.full_name}`),
+            [{text: strings.okTitleText}],
           );
         }, 10);
       })
@@ -442,7 +443,9 @@ export default function LookingTeamScreen({navigation, route}) {
         setloading(false);
 
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
+          Alert.alert(strings.alertmessagetitle, error.message, [
+            {text: strings.okTitleText},
+          ]);
         }, 10);
       });
   };
