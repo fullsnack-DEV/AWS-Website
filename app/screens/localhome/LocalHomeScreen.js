@@ -95,11 +95,7 @@ function LocalHomeScreen({navigation, route}) {
   const [pointEvent] = useState('auto');
   const [locationSelectedViaModal, setLocationSelectedViaModal] =
     useState(false);
-  const [filters, setFilters] = useState({
-    sport: selectedSport,
-    sport_type: sportType,
-    location,
-  });
+  const [filters, setFilters] = useState({});
   const [showBottomSheet, setBottomSheet] = useState(false);
   const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
   const [notificationCount, setNotificationCount] = useState();
@@ -187,8 +183,15 @@ function LocalHomeScreen({navigation, route}) {
     authContext.entity.obj.sport_type,
     authContext.entity.role,
     showSwitchAccountModal,
-    isFocused,
   ]);
+
+  useEffect(() => {
+    setFilters({
+      sport: selectedSport,
+      sport_type: sportType,
+      location,
+    });
+  }, [selectedSport, sportType]);
 
   useEffect(() => {
     const getEventdata = async () => {
