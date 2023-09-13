@@ -57,8 +57,8 @@ const styles = StyleSheet.create({
   },
   linkButton: {
     alignSelf: 'flex-end',
-
-    marginTop: -25,
+    marginTop: -30,
+   
   },
   linkButtonText: {
     fontSize: 14,
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RLight,
     textDecorationLine: 'underline',
+    
   },
   buttonContainer: {
     width: 20,
@@ -169,11 +170,12 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.googleColor,
   },
+  
   matchFeeModalInfoText: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: fonts.RRegular,
-    lineHeight: 21,
-    color: colors.googleColor,
+    lineHeight: 24,
+    color: colors.blackColor,
     marginBottom: 25,
   },
 });

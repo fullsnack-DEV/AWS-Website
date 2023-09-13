@@ -2241,7 +2241,7 @@ export default {
   bioDescription: 'en_Describe yourself as a player in this sport.',
   sportTextTitle: 'en_Sport',
   sportNameValidationText: 'en_Please fill in sport.',
-  incomingChallengeSettingsTitle: 'en_Incoming Challenge Settings',
+  incomingChallengeSettingsTitle: 'en_INCOMING CHALLENGE SETTINGS',
   incomingChallengeSettingsInfo:
     'en_Please review your incoming challenge settings. These settings will be applied to (the match reservation process) and  the match (a match) ONLY when you are the match host.\nWhen you are the  Challenger, the opponent’s incoming challenge settings Will be applied.',
   congratulationModalInfo:
@@ -2499,7 +2499,7 @@ export default {
     'en_You can upload any certificates or documents that prove or are related to the experience as a referee.',
   warningCertificateImageText: 'en_Please add the image of the certificate.',
   warningCertificateTitleText: 'en_Please add the title of the certificate.',
-  incomingReservationSettings: 'en_Incoming Reservation Settings',
+  incomingReservationSettings: ' en_INCOMING RESERVATIO SETTINGS',
   incomingReservationSettingsDescription:
     'en_Please review your incoming reservation settings. These settings are only applicable to the referee reservation when you are booked as a referee. When you book another referee for a match, their incoming reservation settings Will be applied.',
   servicableAreas: 'en_Serviceable Areas',
@@ -2508,7 +2508,7 @@ export default {
   addRefereeFee: 'en_ADD REFEREE FEE',
   continueWithNoRefereeFee: 'en_CONTINUE WITH NO REFEREE FEE',
   refereeCongratulationsModal:
-    'en_You can now receive referee booking requests from teams and players, and also can sent offers to teams and players.',
+    'en_You can now receive referee booking requests from {0}, and also can sent offers to {0}.',
   scoreKeeperQuestion: 'en_What sport do you work as a scorekeeper?',
   scoreKeeperQuestionDescription:
     'en_Do you work as a scorekeeper in multiple sports? Register as a referee in one sport first, and then register in another sport.',
