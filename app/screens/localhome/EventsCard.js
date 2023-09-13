@@ -95,9 +95,7 @@ export default function EventsCard({
                 {location}
               </Text>
             ) : (
-              <Text style={{...styles.onlineText, flex: 1}}>
-                {strings.onlineText}
-              </Text>
+              <Text style={{...styles.onlineText}}>{strings.onlineText}</Text>
             )}
           </Text>
         </View>
@@ -167,6 +165,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 7,
     width: 305,
+    overflow: 'hidden',
   },
   dateText: {
     fontSize: 12,
@@ -178,7 +177,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.darkYellowColor,
     marginLeft: 10,
-
+    overflow: 'hidden',
     width: 150,
   },
   userimgStyle: {

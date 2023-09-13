@@ -244,16 +244,54 @@ export default function MemberFilterModal({
       onModalShow={() => getParentClub()}
       onRightButtonPress={() => onRightButtonPress()}
       containerStyle={{margin: 0, padding: 0}}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{paddingBottom: 70}}>
         <ActivityLoader visible={loading} />
-        {authContext.entity.role === Verbs.entityTypeClub && (
+        {authContext.entity.role === Verbs.entityTypeClub &&
+          parentGroup.length > 1 && (
+            <>
+              <View>
+                <Text style={styles.titleTextStyle}>{strings.teams}</Text>
+
+                <FlatList
+                  scrollEnabled={false}
+                  data={parentGroup}
+                  ItemSeparatorComponent={() => <TCThinDivider />}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={renderGenders}
+                />
+              </View>
+              <TCThinDivider height={7} marginTop={15} />
+            </>
+          )}
+
+        {/* Roles */}
+        {authContext.entity.role === Verbs.entityTypeClub &&
+          parentGroup.length > 1 && (
+            <>
+              <View>
+                <Text style={styles.titleTextStyle}>{strings.roles}</Text>
+                <FlatList
+                  scrollEnabled={false}
+                  extraData={role}
+                  data={role}
+                  ItemSeparatorComponent={() => <TCThinDivider />}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={renderGenders}
+                />
+              </View>
+              <TCThinDivider height={7} marginTop={15} />
+            </>
+          )}
+        {authContext.entity.role === Verbs.entityTypeTeam && (
           <>
             <View>
-              <Text style={styles.titleTextStyle}>{strings.teams}</Text>
-
+              <Text style={styles.titleTextStyle}>{strings.roles}</Text>
               <FlatList
                 scrollEnabled={false}
-                data={parentGroup}
+                extraData={role}
+                data={role}
                 ItemSeparatorComponent={() => <TCThinDivider />}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderGenders}
@@ -263,19 +301,6 @@ export default function MemberFilterModal({
           </>
         )}
 
-        {/* Roles */}
-        <View>
-          <Text style={styles.titleTextStyle}>{strings.roles}</Text>
-          <FlatList
-            scrollEnabled={false}
-            extraData={role}
-            data={role}
-            ItemSeparatorComponent={() => <TCThinDivider />}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderGenders}
-          />
-        </View>
-        <TCThinDivider height={7} marginTop={15} />
         {/* connection */}
         <View>
           <Text style={styles.titleTextStyle}>

@@ -230,7 +230,7 @@ export default function EditFilterModal({
         .sort((a, b) => a.sport_name.localeCompare(b.sport_name));
 
       const result = [
-        ...addedSport.slice(0, sportList.length),
+        ...newAddedSport.slice(0, sportList.length),
         ...sortedNewAddedSport,
       ];
 
@@ -248,7 +248,7 @@ export default function EditFilterModal({
           sportItem.sport_name.toLowerCase() !== item.sport_name.toLowerCase(),
       );
 
-      setAddedsport(newAddedSport);
+      setAddedsport([...newAddedSport]);
     }
   };
 
@@ -305,7 +305,7 @@ export default function EditFilterModal({
 
       return isImagecheck;
     },
-    [visible, addedSport, registerSports, notRegisterSport],
+    [addedSport],
   );
 
   const renderItem = ({item, drag, isActive}) => (
@@ -388,6 +388,7 @@ export default function EditFilterModal({
                 title={strings.addorDeleteFavSportTitle}
                 closeModal={() => {
                   setVisibleAddModal(false);
+                  setAddedsport([...sportList]);
                   if (authContext.entity.role !== Verbs.entityTypeClub) {
                     setAddedsport([...notRegisterSport, ...registerSports]);
                   } else {
@@ -415,6 +416,7 @@ export default function EditFilterModal({
                         onPress={() => {
                           if (CheckisRegister(item)) {
                             toggleSport(item);
+                            return;
                           }
 
                           if (!FavSportCheck(item)) {

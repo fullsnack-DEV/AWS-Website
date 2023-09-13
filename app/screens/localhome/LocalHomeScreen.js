@@ -199,7 +199,6 @@ function LocalHomeScreen({navigation, route}) {
         authContext,
         setAllUserData,
         setOwners,
-
         filterSetting,
         selectedOptions,
         setFilterData,
@@ -207,7 +206,8 @@ function LocalHomeScreen({navigation, route}) {
       );
     };
     getEventdata();
-  }, [authContext]);
+    console.log(filterData, 'From event');
+  }, [authContext, isFocused]);
 
   useEffect(() => {
     if (isFocused) {
@@ -362,6 +362,17 @@ function LocalHomeScreen({navigation, route}) {
     );
     setSportsData([...sportArr]);
   }, [authContext, selectedMenuOptionType, visibleSportsModal]);
+
+  const scrollToFirstItem = () => {
+    if (refContainer.current) {
+      refContainer.current.scrollToIndex({index: 0});
+    }
+  };
+
+  // Call the scrollToFirstItem function when data changes
+  useEffect(() => {
+    scrollToFirstItem();
+  }, [settingPopup]);
 
   const editSportName = (line) => {
     const words = line?.split(' ');
@@ -628,6 +639,7 @@ function LocalHomeScreen({navigation, route}) {
   const SportList = () => (
     <FlatList
       ref={refContainer}
+      extraData={settingPopup}
       style={{
         height: 74,
         backgroundColor: colors.whiteColor,
@@ -661,7 +673,7 @@ function LocalHomeScreen({navigation, route}) {
   );
 
   const RenderSportsListView = () => {
-    if (authContext.entity.role === Verbs.entityTypeGame) {
+    if (authContext.entity.role === Verbs.entityTypeUser) {
       return SportList();
     }
     if (

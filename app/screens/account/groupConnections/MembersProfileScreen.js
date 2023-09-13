@@ -1709,7 +1709,6 @@ export default function MembersProfileScreen({navigation, route}) {
                   renderItem={({item}) => (
                     <Pressable
                       style={{
-                        backgroundColor: 'red',
                         marginTop:
                           entity.role === Verbs.entityTypeTeam ? 7 : 15,
                         marginBottom:
