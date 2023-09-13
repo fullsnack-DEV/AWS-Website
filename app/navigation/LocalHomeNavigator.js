@@ -745,6 +745,7 @@ const LocalHomeNavigator = () => (
       component={CreateTeamForm1}
       options={{
         title: 'Create Team',
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -2412,6 +2413,7 @@ const LocalHomeNavigator = () => (
       name="PendingRequestScreen"
       component={PendingRequestScreen}
       options={{
+        headerShown: false,
         title: 'Pending Request',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {

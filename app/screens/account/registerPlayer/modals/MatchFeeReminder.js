@@ -1,14 +1,7 @@
 // @flow
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-} from 'react-native';
-
+import {View, StyleSheet, Text, TouchableOpacity, Platform} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import {strings} from '../../../../../Localization/translation';
@@ -21,7 +14,7 @@ const MatchFeeReminder = ({
   onContinue = () => {},
   entityType = Verbs.entityTypePlayer,
   onCloseModal = () => {},
-  isDoubleSport = false,
+  // isDoubleSport = false,
 }) => {
   const getTitle = () => {
     switch (entityType) {
@@ -62,14 +55,7 @@ const MatchFeeReminder = ({
       containerStyle={{width: '100%', height: '100%', paddingHorizontal: 20}}>
       <View style={{flex: 1}}>
         {entityType === Verbs.entityTypePlayer ? (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            bounces={false}
-            contentContainerStyle={{
-              flex: 1,
-              justifyContent: 'space-between',
-              paddingBottom: Platform.OS === 'android' ? 6 : 50,
-            }}>
+          <ScrollView showsVerticalScrollIndicator={false}>
             <View>
               <Text style={styles.title}>
                 {strings.warningTextForFee}
@@ -82,7 +68,7 @@ const MatchFeeReminder = ({
               <Text style={[styles.description, {marginBottom: 23}]}>
                 {strings.matchFeeModalInfo}
               </Text>
-              {!isDoubleSport ? (
+              {/* {isDoubleSport ? (
                 <>
                   <Text
                     style={[
@@ -96,7 +82,7 @@ const MatchFeeReminder = ({
                     {strings.matchFeeModalInfo1}
                   </Text>
                 </>
-              ) : null}
+              ) : null} */}
 
               <Text
                 style={[
@@ -109,7 +95,10 @@ const MatchFeeReminder = ({
               <Text style={[styles.description, {marginBottom: 8}]}>
                 {strings.matchFeeModalInfo2}
               </Text>
-              <View style={{marginBottom: 23}}>
+              <View
+                style={{
+                  flex: 1,
+                }}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <View style={styles.dotContainer} />
                   <Text style={styles.description}>{strings.venueText}</Text>
@@ -128,7 +117,7 @@ const MatchFeeReminder = ({
                 </View>
               </View>
             </View>
-            <View>
+            <View style={{marginTop: Platform.OS === 'ios' ? 200 : 130}}>
               <TouchableOpacity
                 style={[
                   styles.buttonContainer,
@@ -144,7 +133,6 @@ const MatchFeeReminder = ({
                 style={[
                   styles.buttonContainer,
                   {
-                    marginBottom: 15,
                     backgroundColor: colors.grayBackgroundColor,
                   },
                 ]}
@@ -160,8 +148,6 @@ const MatchFeeReminder = ({
             style={{
               flex: 1,
               justifyContent: 'space-between',
-              // marginBottom: Platform.OS === 'ios' ? 50 : 0,
-              marginBottom: 50,
             }}>
             <View>
               <Text style={styles.title}>
@@ -176,7 +162,7 @@ const MatchFeeReminder = ({
               </Text>
             </View>
             {entityType === Verbs.entityTypeReferee ? (
-              <View>
+              <View style={{marginBottom: 50}}>
                 <TouchableOpacity
                   style={[
                     styles.buttonContainer,
@@ -205,7 +191,7 @@ const MatchFeeReminder = ({
             ) : null}
 
             {entityType === Verbs.entityTypeScorekeeper ? (
-              <View>
+              <View style={{marginTop: 20}}>
                 <TouchableOpacity
                   style={[
                     styles.buttonContainer,

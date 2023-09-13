@@ -501,6 +501,7 @@ const MembersNavigator = () => (
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
         headerTitleAlign: 'center',
+        headerShown: false,
         headerTitleStyle: {
           fontFamily: fonts.RMedium,
           fontSize: 16,
@@ -517,6 +518,7 @@ const MembersNavigator = () => (
       component={CreateMemberProfileTeamForm3}
       options={{
         title: strings.createMemberProfileText,
+        headerShown: false,
         headerTitleAlign: 'center',
         headerTitleStyle: {
           fontFamily: fonts.RMedium,
@@ -535,6 +537,7 @@ const MembersNavigator = () => (
       options={{
         title: strings.createMemberProfileText,
         headerTintColor: colors.blackColor,
+        headerShown: false,
         headerTitleAlign: 'center',
         headerTitleStyle: {
           fontFamily: fonts.RMedium,
@@ -1038,6 +1041,7 @@ const MembersNavigator = () => (
       component={CreateTeamForm1}
       options={{
         title: 'Create Team',
+        headerShown: false,
         headerTintColor: colors.blackColor,
       }}
     />
@@ -1511,6 +1515,7 @@ const MembersNavigator = () => (
       name="PendingRequestScreen"
       component={PendingRequestScreen}
       options={{
+        headerShown: false,
         title: 'Pending Request',
         headerTintColor: colors.blackColor,
       }}

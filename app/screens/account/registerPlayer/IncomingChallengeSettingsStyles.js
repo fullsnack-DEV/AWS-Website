@@ -31,6 +31,8 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontFamily: fonts.RBold,
     textAlign: 'center',
+
+    textTransform: 'capitalize',
   },
   buttonContainer: {
     flex: 1,

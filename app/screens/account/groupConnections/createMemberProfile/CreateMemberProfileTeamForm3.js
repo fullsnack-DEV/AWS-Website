@@ -1,4 +1,4 @@
-import React, {useState, useLayoutEffect, useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -6,7 +6,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
-  TouchableWithoutFeedback,
+  SafeAreaView,
 } from 'react-native';
 import {format} from 'react-string-format';
 import {createMemberProfile} from '../../../../api/Groups';
@@ -24,6 +24,7 @@ import TCMessageButton from '../../../../components/TCMessageButton';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import {showAlert} from '../../../../utils';
+import ScreenHeader from '../../../../components/ScreenHeader';
 
 let entity = {};
 export default function CreateMemberProfileTeamForm3({navigation, route}) {
@@ -45,21 +46,6 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
       position: '',
     },
   ]);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text style={styles.nextButtonStyle} onPress={() => createMember()}>
-          {strings.done}
-        </Text>
-      ),
-      headerLeft: () => (
-        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-          <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableWithoutFeedback>
-      ),
-    });
-  }, [navigation, groupMemberDetail, positions]);
 
   const addPosition = () => {
     const obj = {
@@ -123,7 +109,6 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
             thumbnail: attachments[0].thumbnail,
           };
 
-          console.log('BODY PARAMS:', bodyParams);
           createProfile(bodyParams);
         })
         .catch((e) => {
@@ -138,7 +123,6 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
         ...groupMemberDetail,
       };
 
-      console.log('BODY PARAMS:', bodyParams);
       createProfile(bodyParams);
     }
   };
@@ -165,7 +149,16 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
   );
 
   return (
-    <>
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.createMemberProfileText}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        onRightButtonPress={() => createMember()}
+        isRightIconText
+        rightButtonText={strings.next}
+      />
+
       <TCFormProgress totalSteps={2} curruentStep={2} />
       <TCKeyboardView>
         <ActivityLoader visible={loading} />
@@ -420,15 +413,10 @@ export default function CreateMemberProfileTeamForm3({navigation, route}) {
         </View>
         <View style={{marginBottom: 30}} />
       </TCKeyboardView>
-    </>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  nextButtonStyle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    marginRight: 10,
-  },
   checkBoxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -447,11 +435,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     marginLeft: 10,
-  },
-  backArrowStyle: {
-    height: 20,
-    marginLeft: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
   },
 });

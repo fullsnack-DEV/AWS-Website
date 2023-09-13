@@ -587,6 +587,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 5,
     backgroundColor: colors.modalHandleColor,
+    borderRadius: 15,
   },
   modalHeight: {
     height: 140,

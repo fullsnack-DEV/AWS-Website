@@ -118,6 +118,7 @@ const TCPhoneNumber = ({
       /> */}
       <View style={styles.halfMatchFeeView}>
         <TextInput
+          numberOfLines={1}
           placeholder={strings.phoneNumber}
           style={styles.halffeeText}
           keyboardType={'number-pad'}
@@ -175,8 +176,7 @@ const styles = StyleSheet.create({
   inputField: {
     height: 40,
     backgroundColor: colors.textFieldBackground,
-    // paddingVertical: Platform.OS === 'android' ? 5 : 12,
-    // paddingVertical: 12,
+
     paddingHorizontal: 10,
     borderRadius: 5,
     fontSize: 16,

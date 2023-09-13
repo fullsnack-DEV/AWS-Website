@@ -166,7 +166,7 @@ function LocalHomeScreen({navigation, route}) {
       authContext.entity.role === Verbs.entityTypeUser ||
       authContext.entity.role === Verbs.entityTypePlayer
     ) {
-      setSelectedSport(strings.allType);
+      setSelectedSport(strings.all);
       setSportType(strings.allSport);
 
       return;
@@ -175,7 +175,7 @@ function LocalHomeScreen({navigation, route}) {
       authContext.entity.role === Verbs.entityTypeClub &&
       authContext.entity.obj.sports.length !== 1
     ) {
-      setSelectedSport(strings.allType);
+      setSelectedSport(strings.all);
       setSportType(strings.allSport);
     }
   }, [

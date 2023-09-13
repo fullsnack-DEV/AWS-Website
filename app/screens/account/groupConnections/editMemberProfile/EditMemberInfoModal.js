@@ -1,4 +1,5 @@
-import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
+/* eslint-disable no-else-return */
+import React, {useState, useEffect, useContext, memo} from 'react';
 import {
   StyleSheet,
   View,
@@ -9,6 +10,7 @@ import {
   Image,
   Platform,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
@@ -48,16 +50,22 @@ import {
 import AddressLocationModal from '../../../../components/AddressLocationModal/AddressLocationModal';
 
 import TCPhoneNumber from '../../../../components/TCPhoneNumber';
+import CustomModalWrapper from '../../../../components/CustomModalWrapper';
+import {ModalTypes} from '../../../../Constants/GeneralConstants';
 
-let entity = {};
-
-export default function EditMemberBasicInfoScreen({navigation, route}) {
+function EditMemberBasicInfoModal({
+  isVisible,
+  closeModal = () => {},
+  memberdetails,
+  uidNo,
+}) {
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
 
   const [showDate, setShowDate] = useState(false);
-  const [role, setRole] = useState('');
+
+  const [uid, setUid] = useState();
   const [location, setLocation] = useState();
   const [city, setCity] = useState();
   const [state, setState] = useState();
@@ -86,7 +94,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     const maxdate = new Date();
     mindate.setFullYear(mindate.getFullYear() - 13);
     maxdate.setFullYear(maxdate.getFullYear() - 123);
-  }, []);
+  }, [isVisible]);
 
   useEffect(() => {
     const selectedCountryItem = Utility.countryCode.find(
@@ -107,11 +115,12 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     };
 
     setCountryCode(countryOBJ);
-  }, []);
+  }, [isVisible]);
 
-  useEffect(() => {
+  const onModalShow = () => {
     setPhoneNumber(
-      route.params.memberInfo.phone_numbers.length === 0
+      memberdetails?.phone_numbers?.length === 0 ||
+        memberdetails?.phone_numbers === undefined
         ? [
             {
               id: 0,
@@ -119,28 +128,23 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
               country_code: countrycode,
             },
           ]
-        : route.params.memberInfo.phone_numbers,
+        : memberdetails?.phone_numbers,
     );
 
-    const getAuthEntity = async () => {
-      entity = authContext.entity;
-      setRole(entity.role);
-    };
-    setMemberInfo(route.params.memberInfo);
+    setUid(uidNo);
+    setMemberInfo(memberdetails);
 
-    if (route.params.memberInfo.birthday === undefined) {
+    if (memberdetails?.birthday === undefined) {
       setDate(new Date());
     } else {
-      setDate(new Date(route.params.memberInfo.birthday));
+      setDate(new Date(memberdetails?.birthday));
     }
 
-    setCity(route.params.memberInfo?.city);
-    setCountry(route.params.memberInfo?.coutry);
-    setState(route.params.memberInfo?.state);
-    setLocation(route.params.memberInfo?.mail_street_address);
-
-    getAuthEntity();
-  }, [route.params.memberInfo, authContext, countrycode]);
+    setCity(memberdetails?.city);
+    setCountry(memberdetails?.coutry);
+    setState(memberdetails?.state);
+    setLocation(memberdetails?.mail_street_address);
+  };
 
   const addPhoneNumber = () => {
     const obj = {
@@ -150,30 +154,6 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     };
     setPhoneNumber([...phoneNumber, obj]);
   };
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text
-          style={styles.nextButtonStyle}
-          onPress={() => {
-            if (checkValidation()) {
-              editMemberBasicInfo();
-            }
-          }}>
-          {strings.save}
-        </Text>
-      ),
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation, memberInfo, role, phoneNumber, showDate]);
 
   // Form Validation
   const checkValidation = () => {
@@ -243,7 +223,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     bodyParams.last_updatedBy = `${authContext.user?.full_name}`;
     delete bodyParams.group;
 
-    const hasEmptyPhoneNumber = bodyParams.phone_numbers.some(
+    const hasEmptyPhoneNumber = bodyParams?.phone_numbers?.some(
       (entry) => Object.keys(entry.phone_number).length === 0,
     );
 
@@ -251,11 +231,11 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       bodyParams.phone_numbers = [];
     }
 
-    patchMember(entity?.uid, memberInfo?.user_id, bodyParams, authContext)
+    patchMember(uid, memberdetails?.user_id, bodyParams, authContext)
       .then((response) => {
         if (response.status) {
           setloading(false);
-          navigation.goBack();
+          closeModal();
         }
       })
       .catch((e) => {
@@ -484,7 +464,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     setloading(true);
     const membersIds = [];
     membersIds.push(memberInfo.user_id);
-    sendBasicInfoRequest(entity.uid, membersIds, authContext)
+    sendBasicInfoRequest(uid, membersIds, authContext)
       .then(() => {
         setloading(false);
         setTimeout(() => {
@@ -528,209 +508,230 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
   };
 
   return (
-    <TCKeyboardView>
-      <ActivityLoader visible={loading} />
+    <CustomModalWrapper
+      isVisible={isVisible}
+      closeModal={closeModal}
+      onModalShow={() => onModalShow()}
+      modalType={ModalTypes.style1}
+      headerRightButtonText={strings.save}
+      onRightButtonPress={() => {
+        if (checkValidation()) {
+          editMemberBasicInfo();
+        }
+      }}
+      title={strings.editbasicinfotitle}
+      containerStyle={{padding: 0, flex: 1}}>
+      <>
+        <TCKeyboardView>
+          <ScrollView>
+            <ActivityLoader visible={loading} />
 
-      {memberInfo.connected && (
-        <View>
-          <TouchableOpacity
-            onPress={() => {
-              sendRequestForBasicInfo();
-            }}
-            style={styles.outerContainerStyle}>
-            <LinearGradient
-              colors={[colors.lightGrey, colors.lightGrey]}
-              style={styles.containerStyle}>
-              <Text
-                style={[styles.buttonText, {color: colors.lightBlackColor}]}>
-                {strings.sendRequestText}
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-          <Text style={styles.basicInfoText}>
-            {strings.collectMemberInfoText}
-          </Text>
-          <TCThickDivider />
-        </View>
-      )}
+            {memberInfo.connected && (
+              <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    sendRequestForBasicInfo();
+                  }}
+                  style={styles.outerContainerStyle}>
+                  <LinearGradient
+                    colors={[colors.lightGrey, colors.lightGrey]}
+                    style={styles.containerStyle}>
+                    <Text
+                      style={[
+                        styles.buttonText,
+                        {color: colors.lightBlackColor},
+                      ]}>
+                      {strings.sendRequestText}
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+                <Text style={styles.basicInfoText}>
+                  {strings.collectMemberInfoText}
+                </Text>
+                <TCThickDivider />
+              </View>
+            )}
 
-      <View
-        style={{
-          marginTop: -10,
-        }}>
-        <TCLabel
-          title={strings.gender}
-          style={{
-            textTransform: 'uppercase',
-            lineHeight: 24,
-            marginBottom: 10,
-          }}
-        />
-        <TCPicker
-          dataSource={DataSource.Gender}
-          color={colors.userPostTimeColor}
-          placeholder={strings.selectGenderPlaceholder}
-          value={memberInfo?.gender}
-          onValueChange={(value) =>
-            value !== '' && setMemberInfo({...memberInfo, gender: value})
-          }
-        />
-      </View>
-      <View>
-        <TCLabel
-          title={strings.birthDatePlaceholder}
-          style={{
-            textTransform: 'uppercase',
-            lineHeight: 24,
-            marginBottom: 10,
-          }}
-        />
-        <TCTouchableLabel
-          title={
-            memberInfo.birthday &&
-            `${`${
-              monthNames[new Date(memberInfo.birthday).getMonth()]
-            } ${new Date(memberInfo.birthday).getDate()}`}, ${new Date(
-              memberInfo.birthday,
-            ).getFullYear()}`
-          }
-          textStyle={{
-            textAlign: 'center',
+            <View
+              style={{
+                marginTop: -10,
+              }}>
+              <TCLabel
+                title={strings.gender}
+                style={{
+                  textTransform: 'uppercase',
+                  lineHeight: 24,
+                  marginBottom: 10,
+                }}
+              />
+              <TCPicker
+                dataSource={DataSource.Gender}
+                color={colors.userPostTimeColor}
+                placeholder={strings.selectGenderPlaceholder}
+                value={memberInfo?.gender}
+                onValueChange={(value) =>
+                  value !== '' && setMemberInfo({...memberInfo, gender: value})
+                }
+              />
+            </View>
+            <View>
+              <TCLabel
+                title={strings.birthDatePlaceholder}
+                style={{
+                  textTransform: 'uppercase',
+                  lineHeight: 24,
+                  marginBottom: 10,
+                }}
+              />
+              <TCTouchableLabel
+                title={
+                  memberInfo.birthday &&
+                  `${`${
+                    monthNames[new Date(memberInfo.birthday).getMonth()]
+                  } ${new Date(memberInfo.birthday).getDate()}`}, ${new Date(
+                    memberInfo.birthday,
+                  ).getFullYear()}`
+                }
+                textStyle={{
+                  textAlign: 'center',
 
-            fontFamily: fonts.RRegular,
-          }}
-          placeholderTextColor={'#999999'}
-          placeholder={strings.birthDatePlaceholder}
-          onPress={() => setShowDate(!showDate)}
-        />
-      </View>
+                  fontFamily: fonts.RRegular,
+                }}
+                placeholderTextColor={'#999999'}
+                placeholder={strings.birthDatePlaceholder}
+                onPress={() => setShowDate(!showDate)}
+              />
+            </View>
 
-      <TCLabel
-        title={strings.height}
-        style={{
-          textTransform: 'uppercase',
-          lineHeight: 24,
-          marginBottom: 10,
-        }}
-      />
-      {heightView()}
+            <TCLabel
+              title={strings.height}
+              style={{
+                textTransform: 'uppercase',
+                lineHeight: 24,
+                marginBottom: 10,
+              }}
+            />
+            {heightView()}
 
-      <TCLabel
-        title={strings.weight}
-        style={{
-          textTransform: 'uppercase',
-          lineHeight: 24,
-          marginBottom: 10,
-        }}
-      />
-      {weightView()}
+            <TCLabel
+              title={strings.weight}
+              style={{
+                textTransform: 'uppercase',
+                lineHeight: 24,
+                marginBottom: 10,
+              }}
+            />
+            {weightView()}
 
-      <View>
-        <TCLabel
-          title={strings.emailPlaceHolder}
-          required={true}
-          style={{
-            textTransform: 'uppercase',
-            lineHeight: 24,
-            marginBottom: 10,
-          }}
-        />
-        <TCTextField
-          editable={false}
-          value={memberInfo.email}
-          onChangeText={(text) => setMemberInfo({...memberInfo, email: text})}
-          placeholder={strings.addressPlaceholder}
-          keyboardType={'email-address'}
-        />
-      </View>
+            <View>
+              <TCLabel
+                title={strings.emailPlaceHolder}
+                required={true}
+                style={{
+                  textTransform: 'uppercase',
+                  lineHeight: 24,
+                  marginBottom: 10,
+                }}
+              />
+              <TCTextField
+                editable={false}
+                value={memberInfo.email}
+                onChangeText={(text) =>
+                  setMemberInfo({...memberInfo, email: text})
+                }
+                placeholder={strings.addressPlaceholder}
+                keyboardType={'email-address'}
+              />
+            </View>
 
-      <View>
-        <TCLabel
-          title={strings.phone}
-          style={{
-            textTransform: 'uppercase',
-            lineHeight: 24,
-            marginBottom: 10,
-          }}
-        />
-        <FlatList
-          data={phoneNumber}
-          style={{marginHorizontal: 10}}
-          renderItem={renderPhoneNumber}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </View>
-      <TCMessageButton
-        borderColor={colors.whiteColor}
-        color={colors.lightBlackColor}
-        title={strings.addPhone}
-        backgroundColor={colors.lightGrey}
-        paddingVertical={5}
-        elevation={0}
-        width={120}
-        height={28}
-        alignSelf="center"
-        styletext={{
-          fontFamily: fonts.RBold,
-        }}
-        marginTop={20}
-        onPress={() => addPhoneNumber()}
-      />
+            <View>
+              <TCLabel
+                title={strings.phone}
+                style={{
+                  textTransform: 'uppercase',
+                  lineHeight: 24,
+                  marginBottom: 10,
+                }}
+              />
+              <FlatList
+                data={phoneNumber}
+                style={{marginHorizontal: 10}}
+                renderItem={renderPhoneNumber}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+            <TCMessageButton
+              borderColor={colors.whiteColor}
+              color={colors.lightBlackColor}
+              title={strings.addPhone}
+              backgroundColor={colors.lightGrey}
+              paddingVertical={5}
+              elevation={0}
+              width={120}
+              height={28}
+              alignSelf="center"
+              styletext={{
+                fontFamily: fonts.RBold,
+              }}
+              marginTop={20}
+              onPress={() => addPhoneNumber()}
+            />
 
-      <TouchableOpacity
-        onPress={() => {
-          setVisibleLocationModal(true);
-        }}>
-        <View
-          style={{
-            paddingBottom: 20,
-          }}>
-          <TCLabel
-            title={strings.address.toUpperCase()}
-            style={{marginBottom: 10, marginTop: 27}}
-          />
+            <TouchableOpacity
+              onPress={() => {
+                setVisibleLocationModal(true);
+              }}>
+              <View
+                style={{
+                  paddingBottom: 20,
+                }}>
+                <TCLabel
+                  title={strings.address.toUpperCase()}
+                  style={{marginBottom: 10, marginTop: 27}}
+                />
 
-          <TCTextField
-            value={location}
-            autoCapitalize="none"
-            autoCorrect={false}
-            placeholder={strings.address}
-            pointerEvents="none"
-            editable={false}
-          />
-        </View>
-      </TouchableOpacity>
+                <TCTextField
+                  value={location}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  placeholder={strings.address}
+                  pointerEvents="none"
+                  editable={false}
+                />
+              </View>
+            </TouchableOpacity>
 
-      {showDate && (
-        <View>
-          <DateTimePickerView
-            visible={showDate}
-            date={date}
-            onDone={handleDonePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            maximumDate={maxDateValue}
-            mode={'date'}
-          />
-        </View>
-      )}
+            {showDate && (
+              <View>
+                <DateTimePickerView
+                  visible={showDate}
+                  date={date}
+                  onDone={handleDonePress}
+                  onCancel={handleCancelPress}
+                  onHide={handleCancelPress}
+                  maximumDate={maxDateValue}
+                  mode={'date'}
+                />
+              </View>
+            )}
 
-      <AddressLocationModal
-        visibleLocationModal={visibleLocationModal}
-        setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
-        onAddressSelect={onSelectAddress}
-        handleSetLocationOptions={onSelectAddress}
-        onDonePress={(street, code) => setCityandPostal(street, code)}
-      />
-    </TCKeyboardView>
+            <AddressLocationModal
+              visibleLocationModal={visibleLocationModal}
+              setVisibleAddressModalhandler={() =>
+                setVisibleLocationModal(false)
+              }
+              onAddressSelect={onSelectAddress}
+              handleSetLocationOptions={onSelectAddress}
+              onDonePress={(street, code) => setCityandPostal(street, code)}
+            />
+          </ScrollView>
+        </TCKeyboardView>
+      </>
+    </CustomModalWrapper>
   );
 }
+
 const styles = StyleSheet.create({
-  nextButtonStyle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginRight: 10,
-  },
   basicInfoText: {
     fontSize: 14,
     fontFamily: fonts.RRegular,
@@ -782,12 +783,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fonts.RBold,
   },
-  backArrowStyle: {
-    height: 20,
-    marginLeft: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
-  },
 
   miniDownArrow: {
     alignSelf: 'center',
@@ -799,3 +794,5 @@ const styles = StyleSheet.create({
     width: 12,
   },
 });
+
+export default memo(EditMemberBasicInfoModal);

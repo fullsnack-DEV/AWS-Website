@@ -488,6 +488,7 @@ const ReservationNavigator = () => (
       name="PendingRequestScreen"
       component={PendingRequestScreen}
       options={{
+        headerShown: false,
         title: 'Pending Request',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {

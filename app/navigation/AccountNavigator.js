@@ -1080,6 +1080,7 @@ const AccountNavigator = () => (
       name="CreateTeamForm1"
       component={CreateTeamForm1}
       options={{
+        headerShown: false,
         title: strings.createTeamText,
         headerTintColor: colors.blackColor,
         headerTitleAlign: 'center',
@@ -2077,6 +2078,7 @@ const AccountNavigator = () => (
       name="PendingRequestScreen"
       component={PendingRequestScreen}
       options={{
+        headerShown: false,
         title: strings.pendingRequest,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {

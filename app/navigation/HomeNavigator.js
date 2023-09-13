@@ -1020,6 +1020,7 @@ const HomeNavigator = () => (
       name="CreateTeamForm1"
       component={CreateTeamForm1}
       options={{
+        headerShown: false,
         title: 'Create Team',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
@@ -2002,6 +2003,7 @@ const HomeNavigator = () => (
       name="PendingRequestScreen"
       component={PendingRequestScreen}
       options={{
+        headerShown: false,
         title: 'Pending Request',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {

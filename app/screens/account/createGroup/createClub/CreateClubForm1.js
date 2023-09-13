@@ -751,7 +751,8 @@ export default function CreateClubForm1({navigation, route}) {
       <SportListMultiModal
         isVisible={visibleSportsModalForClub}
         closeList={() => setVisibleSportsModalForClub(false)}
-        title={strings.createClubText}
+        issport={true}
+        title={strings.sportsTitleText}
         selectedSports={selectedSports}
         onNext={(sports) => {
           const newSportArray = sports.map(({sport, sport_type}) => ({

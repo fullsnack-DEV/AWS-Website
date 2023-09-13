@@ -4,7 +4,6 @@
 import React, {
   useState,
   useEffect,
-  useLayoutEffect,
   useRef,
   useContext,
   useCallback,
@@ -16,8 +15,8 @@ import {
   Image,
   TouchableOpacity,
   Platform,
-  TouchableWithoutFeedback,
   BackHandler,
+  SafeAreaView,
 } from 'react-native';
 
 import ActionSheet from 'react-native-actionsheet';
@@ -44,6 +43,7 @@ import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import LocationModal from '../../../../components/LocationModal/LocationModal';
 
 import Verbs from '../../../../Constants/Verbs';
+import ScreenHeader from '../../../../components/ScreenHeader';
 
 let entity = {};
 
@@ -52,7 +52,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   const [loading, setLoading] = useState(false);
   const actionSheet = useRef();
   const [showDate, setShowDate] = useState(false);
-  const [role, setRole] = useState('');
+  const [setRole] = useState('');
   const [minDateValue, setMinDateValue] = useState(new Date());
   const [maxDateValue, setMaxDateValue] = useState(new Date());
   const [memberInfo, setMemberInfo] = useState({});
@@ -138,72 +138,43 @@ export default function CreateMemberProfileForm1({navigation, route}) {
     return () => backHandler.remove();
   }, [handleBackPress]);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text
-          style={styles.nextButtonStyle}
-          onPress={() => {
-            if (checkValidation()) {
-              setLoading(true);
-              checkUserIsRegistratedOrNotWithTownscup(email)
-                .then((userExist) => {
-                  if (!userExist) {
-                    setLoading(false);
+  const onNextPress = () => {
+    if (checkValidation()) {
+      setLoading(true);
+      checkUserIsRegistratedOrNotWithTownscup(email)
+        .then((userExist) => {
+          if (!userExist) {
+            setLoading(false);
 
-                    const form1Object = {
-                      ...memberInfo,
-                      is_member: true,
-                      first_name: firstName,
-                      last_name: lastName,
-                      email,
-                      home_city: homeCity,
-                    };
+            const form1Object = {
+              ...memberInfo,
+              is_member: true,
+              first_name: firstName,
+              last_name: lastName,
+              email,
+              home_city: homeCity,
+            };
 
-                    navigation.navigate('CreateMemberProfileForm2', {
-                      form1: form1Object,
-                      comeFrom: route.params?.comeFrom ?? '',
-                      routeParams: {...(route.params?.routeParams ?? {})},
-                    });
-                  } else {
-                    setTimeout(() => {
-                      showAlert(strings.emailExistInTC);
-                    });
-                    setLoading(false);
-                  }
-                })
-                .catch((error) => {
-                  setTimeout(() => {
-                    showAlert(error);
-                  });
-                  setLoading(false);
-                });
-            }
-          }}>
-          {strings.next}
-        </Text>
-      ),
-
-      headerLeft: () => (
-        <TouchableWithoutFeedback onPress={handleBackPress}>
-          <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableWithoutFeedback>
-      ),
-    });
-  }, [
-    navigation,
-    memberInfo,
-    role,
-    showDate,
-    firstName,
-    lastName,
-    email,
-    checkValidation,
-    birthday,
-    homeCity,
-    route.params,
-    handleBackPress,
-  ]);
+            navigation.navigate('CreateMemberProfileForm2', {
+              form1: form1Object,
+              comeFrom: route.params?.comeFrom ?? '',
+              routeParams: {...(route.params?.routeParams ?? {})},
+            });
+          } else {
+            setTimeout(() => {
+              showAlert(strings.emailExistInTC);
+            });
+            setLoading(false);
+          }
+        })
+        .catch((error) => {
+          setTimeout(() => {
+            showAlert(error);
+          });
+          setLoading(false);
+        });
+    }
+  };
 
   // Email input format validation
   const ValidateEmail = (emailAddress) => {
@@ -306,7 +277,15 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   };
 
   return (
-    <>
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.createMemberProfileText}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        onRightButtonPress={() => onNextPress()}
+        isRightIconText
+        rightButtonText={strings.next}
+      />
       <TCFormProgress totalSteps={3} curruentStep={1} />
       <ActivityLoader visible={loading} />
       <TCKeyboardView>
@@ -458,7 +437,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
         onLocationSelect={handleSetLocationOptions}
         placeholder={strings.searchByCity}
       />
-    </>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -486,22 +465,11 @@ const styles = StyleSheet.create({
     bottom: 2,
     right: 0,
   },
-  nextButtonStyle: {
-    fontFamily: fonts.RMedium,
-    fontSize: 16,
-    marginRight: 10,
-  },
 
   notesStyle: {
     fontSize: 14,
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
     margin: 15,
-  },
-  backArrowStyle: {
-    height: 20,
-    marginLeft: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
   },
 });

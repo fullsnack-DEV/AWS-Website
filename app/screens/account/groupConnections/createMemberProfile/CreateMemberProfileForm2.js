@@ -1,20 +1,14 @@
-import React, {
-  useLayoutEffect,
-  useState,
-  useContext,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, {useState, useContext, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Image,
   ScrollView,
   FlatList,
   TextInput,
   Platform,
   TouchableWithoutFeedback,
+  SafeAreaView,
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -46,6 +40,7 @@ import Verbs from '../../../../Constants/Verbs';
 import TCTextField from '../../../../components/TCTextField';
 
 import AddressLocationModal from '../../../../components/AddressLocationModal/AddressLocationModal';
+import ScreenHeader from '../../../../components/ScreenHeader';
 
 let entity = {};
 export default function CreateMemberProfileForm2({navigation, route}) {
@@ -83,7 +78,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   useEffect(() => {
     const selectedCountryItem = countryCodeList.find(
       (item) =>
-        item.name.toLowerCase() === authContext.user.country.toLowerCase(),
+        item.name.toLowerCase() === authContext.user?.country.toLowerCase(),
     );
 
     let dialCode = selectedCountryItem.dial_code;
@@ -164,6 +159,14 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       birthday,
     };
 
+    const hasEmptyPhoneNumber = membersAuthority.phone_numbers.some(
+      (entry) => Object.keys(entry.phone_number).length === 0,
+    );
+
+    if (hasEmptyPhoneNumber) {
+      membersAuthority.phone_numbers = [];
+    }
+
     if (entity.role === Verbs.entityTypeTeam) {
       navigation.navigate('CreateMemberProfileTeamForm3', {
         form2:
@@ -191,33 +194,6 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     birthday,
     dominant,
     memberInfo,
-    route.params,
-  ]);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text style={styles.nextButtonStyle} onPress={() => pressedNext()}>
-          {strings.next}
-        </Text>
-      ),
-      headerLeft: () => (
-        <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-          <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableWithoutFeedback>
-      ),
-    });
-  }, [
-    navigation,
-    gender,
-    location,
-    city,
-    state,
-    country,
-    postalCode,
-    birthday,
-    dominant,
-    pressedNext,
     route.params,
   ]);
 
@@ -451,146 +427,155 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   };
 
   return (
-    <ScrollView style={styles.mainContainer}>
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.createMemberProfileText}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        onRightButtonPress={() => pressedNext()}
+        isRightIconText
+        rightButtonText={strings.next}
+      />
       <TCFormProgress totalSteps={3} curruentStep={2} />
-
-      <View>
-        <TCLabel
-          title={strings.gender.toUpperCase()}
-          style={{marginBottom: 10, marginTop: 20}}
-        />
-        <TCPicker
-          dataSource={DataSource.Gender}
-          placeholder={strings.choose}
-          value={gender}
-          onValueChange={(value) => {
-            setGender(value);
-          }}
-        />
-      </View>
-      <View>
-        <TCLabel
-          title={strings.birthDatePlaceholder.toUpperCase()}
-          style={{marginBottom: 10, marginTop: 25}}
-        />
-
-        <TCTouchableLabel
-          title={
-            birthday &&
-            `${`${monthNames[new Date(birthday).getMonth()]} ${new Date(
-              birthday,
-            ).getDate()}`}, ${new Date(birthday).getFullYear()}`
-          }
-          placeholder={strings.dateFormatPlaceholder}
-          onPress={() => setShowDate(!showDate)}
-          textStyle={{textAlign: 'center'}}
-        />
-      </View>
-
-      <TCLabel
-        title={strings.height.toUpperCase()}
-        style={{marginBottom: 10, marginTop: 25}}
-      />
-      {heightView()}
-
-      <TCLabel
-        title={strings.weight.toUpperCase()}
-        style={{marginBottom: 10, marginTop: 25}}
-      />
-      {weightView()}
-      {authContext.entity.obj.sport === 'soccer' &&
-        authContext.entity.role === 'team' && (
-          <View>
-            <TCLabel
-              title={strings.dominantFoot.toUpperCase()}
-              style={{marginBottom: 12}}
-            />
-            <TCPicker
-              dataSource={DataSource.dominantFoot}
-              placeholder={strings.dominantPlaceholder}
-              value={dominant}
-              onValueChange={(value) => {
-                setDominant(value);
-              }}
-            />
-          </View>
-        )}
-
-      <View>
-        <TCLabel
-          title={strings.phone.toUpperCase()}
-          style={{marginBottom: 10, marginTop: 25}}
-        />
-        <FlatList
-          data={phoneNumber}
-          style={{marginHorizontal: 10}}
-          renderItem={renderPhoneNumber}
-          keyExtractor={(item, index) => index.toString()}></FlatList>
-      </View>
-      {phoneNumber?.length < 5 && (
-        <TCMessageButton
-          title={strings.addPhone}
-          width={120}
-          borderColor={colors.whiteColor}
-          color={colors.lightBlackColor}
-          alignSelf="center"
-          marginTop={15}
-          onPress={() => addPhoneNumber()}
-          elevation={0}
-          backgroundColor={colors.lightGrey}
-          styletext={{
-            fontFamily: fonts.RBold,
-          }}
-        />
-      )}
-
-      <TouchableWithoutFeedback
-        onPress={() => {
-          setVisibleLocationModal(true);
-        }}>
+      <ScrollView style={styles.mainContainer}>
         <View>
           <TCLabel
-            title={strings.address.toUpperCase()}
+            title={strings.gender.toUpperCase()}
+            style={{marginBottom: 10, marginTop: 20}}
+          />
+          <TCPicker
+            dataSource={DataSource.Gender}
+            placeholder={strings.choose}
+            value={gender}
+            onValueChange={(value) => {
+              setGender(value);
+            }}
+          />
+        </View>
+        <View>
+          <TCLabel
+            title={strings.birthDatePlaceholder.toUpperCase()}
             style={{marginBottom: 10, marginTop: 25}}
           />
 
-          <TCTextField
-            value={location}
-            autoCapitalize="none"
-            autoCorrect={false}
-            placeholder={strings.address}
-            pointerEvents="none"
-            editable={false}
-            // multiline={true}
-            numberOfLines={4}
-            placeholderTextColor={colors.userPostTimeColor}
+          <TCTouchableLabel
+            title={
+              birthday &&
+              `${`${monthNames[new Date(birthday).getMonth()]} ${new Date(
+                birthday,
+              ).getDate()}`}, ${new Date(birthday).getFullYear()}`
+            }
+            placeholder={strings.dateFormatPlaceholder}
+            onPress={() => setShowDate(!showDate)}
+            textStyle={{textAlign: 'center'}}
           />
         </View>
-      </TouchableWithoutFeedback>
 
-      {showDate && (
+        <TCLabel
+          title={strings.height.toUpperCase()}
+          style={{marginBottom: 10, marginTop: 25}}
+        />
+        {heightView()}
+
+        <TCLabel
+          title={strings.weight.toUpperCase()}
+          style={{marginBottom: 10, marginTop: 25}}
+        />
+        {weightView()}
+        {authContext.entity.obj.sport === 'soccer' &&
+          authContext.entity.role === 'team' && (
+            <View>
+              <TCLabel
+                title={strings.dominantFoot.toUpperCase()}
+                style={{marginBottom: 12}}
+              />
+              <TCPicker
+                dataSource={DataSource.dominantFoot}
+                placeholder={strings.dominantPlaceholder}
+                value={dominant}
+                onValueChange={(value) => {
+                  setDominant(value);
+                }}
+              />
+            </View>
+          )}
+
         <View>
-          <DateTimePickerView
-            visible={showDate}
-            date={birthday}
-            onDone={handleDonePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            maximumDate={maxDateValue}
-            mode={'date'}
+          <TCLabel
+            title={strings.phone.toUpperCase()}
+            style={{marginBottom: 10, marginTop: 25}}
           />
+          <FlatList
+            data={phoneNumber}
+            style={{marginHorizontal: 10}}
+            renderItem={renderPhoneNumber}
+            keyExtractor={(item, index) => index.toString()}></FlatList>
         </View>
-      )}
-      {/* address locationModal */}
+        {phoneNumber?.length < 5 && (
+          <TCMessageButton
+            title={strings.addPhone}
+            width={120}
+            borderColor={colors.whiteColor}
+            color={colors.lightBlackColor}
+            alignSelf="center"
+            marginTop={15}
+            onPress={() => addPhoneNumber()}
+            elevation={0}
+            backgroundColor={colors.lightGrey}
+            styletext={{
+              fontFamily: fonts.RBold,
+            }}
+          />
+        )}
 
-      <AddressLocationModal
-        visibleLocationModal={visibleLocationModal}
-        setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
-        onAddressSelect={onSelectAddress}
-        handleSetLocationOptions={onSelectAddress}
-        onDonePress={(street, code) => setCityandPostal(street, code)}
-      />
-    </ScrollView>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setVisibleLocationModal(true);
+          }}>
+          <View>
+            <TCLabel
+              title={strings.address.toUpperCase()}
+              style={{marginBottom: 10, marginTop: 25}}
+            />
+
+            <TCTextField
+              value={location}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder={strings.address}
+              pointerEvents="none"
+              editable={false}
+              // multiline={true}
+              numberOfLines={4}
+              placeholderTextColor={colors.userPostTimeColor}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+
+        {showDate && (
+          <View>
+            <DateTimePickerView
+              visible={showDate}
+              date={birthday}
+              onDone={handleDonePress}
+              onCancel={handleCancelPress}
+              onHide={handleCancelPress}
+              maximumDate={maxDateValue}
+              mode={'date'}
+            />
+          </View>
+        )}
+        {/* address locationModal */}
+
+        <AddressLocationModal
+          visibleLocationModal={visibleLocationModal}
+          setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
+          onAddressSelect={onSelectAddress}
+          handleSetLocationOptions={onSelectAddress}
+          onDonePress={(street, code) => setCityandPostal(street, code)}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -598,12 +583,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     marginBottom: 50,
-  },
-
-  nextButtonStyle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    marginRight: 10,
   },
 
   miniDownArrow: {
@@ -636,11 +615,5 @@ const styles = StyleSheet.create({
     fontSize: widthPercentageToDP('3.8%'),
     width: '90%',
     textAlign: 'center',
-  },
-  backArrowStyle: {
-    height: 20,
-    marginLeft: 15,
-    resizeMode: 'contain',
-    tintColor: colors.blackColor,
   },
 });

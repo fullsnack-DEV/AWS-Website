@@ -1765,7 +1765,7 @@ export default {
   set: 'en_set',
   sets: 'en_sets',
   lessThanDollerFee: 'en_User should not allow less than $1 match fee.',
-  changeCurrency: 'en_Change Currency',
+  changeCurrency: 'en_Change currency',
   currencySetting: 'en_Currency Setting',
   nOverTime: 'en_{0} Overtime',
   Overtime: 'en_OVERTIME',
@@ -2980,7 +2980,7 @@ export default {
   scorekeeperFeeModalContent:
     'en_Your scorekeeper fee will be 0 CAD per hour if you don’t edit the rate. You can edit it later in Incoming Reservations Settings of the sportactivity.',
   sportSelectionModalSubTitle:
-    'en_Teams from various sports can be a member of aclub. You can edit the sports of the club now or later.',
+    'en_Teams from various sports can be a member of a club. You can edit the sports of the club now or later.',
   offline: 'en_Offline',
   online: 'en_Online',
   oneTime: 'en_One-time',
@@ -3115,5 +3115,7 @@ export default {
   homeCountry: 'en_Home Country',
   doYouWantToExit: 'en_Are you sure you want to go back?',
   holdOn: 'en_Hold on!',
-  likedBy :'en_Liked by',
+  likedBy: 'en_Liked by',
+  pendingReqiestesTitle: 'en_Pending Requests',
+  searchForMoreTeams: 'en_Search for more teams',
 };

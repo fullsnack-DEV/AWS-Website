@@ -71,7 +71,7 @@ import {InvoiceType} from '../../../Constants/GeneralConstants';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
 import useStreamChatUtils from '../../../hooks/useStreamChatUtils';
 import EditMemberModal from './editMemberProfile/EditMemberModal';
-
+import EditMemberInfoModal from './editMemberProfile/EditMemberInfoModal';
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
@@ -109,6 +109,7 @@ export default function MembersProfileScreen({navigation, route}) {
   const [textInputHeight, setTextInputHeight] = useState(100);
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
   const [visibleEditMemberModal, setVisibleEditMemberModal] = useState(false);
+  const [showEditInfoModal, setShowEditInfoModal] = useState(false);
   const {onSwitchProfile} = useSwitchAccount();
   entity = authContext.entity;
 
@@ -338,7 +339,7 @@ export default function MembersProfileScreen({navigation, route}) {
       getGroupMembers(groupID, authContext)
         .then((response) => {
           setMembers(response.payload);
-          console.log(JSON.stringify(response.payload), 'from Issues');
+
           setloading(false);
         })
         .catch((e) => {
@@ -400,7 +401,7 @@ export default function MembersProfileScreen({navigation, route}) {
     ) {
       Alert.alert(
         strings.appName,
-        //  strings.lastmember,
+
         format(strings.lastmember, authContext.entity.role),
         [
           {
@@ -559,7 +560,7 @@ export default function MembersProfileScreen({navigation, route}) {
   const getMemberPhoneNumber = () => {
     let numbersString;
 
-    if (memberDetail.phone_numbers) {
+    if (memberDetail?.phone_numbers?.length) {
       const numbers = memberDetail?.phone_numbers.map(
         (e) =>
           `${`${e.country_code?.iso} +${e.country_code?.code}`} ${
@@ -1533,9 +1534,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
                   <TouchableOpacity
                     onPress={() => {
-                      navigation.navigate('EditMemberBasicInfoScreen', {
-                        memberInfo: memberDetail,
-                      });
+                      setShowEditInfoModal(true);
                     }}>
                     <Image
                       source={images.editProfilePencil}
@@ -1710,6 +1709,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   renderItem={({item}) => (
                     <Pressable
                       style={{
+                        backgroundColor: 'red',
                         marginTop:
                           entity.role === Verbs.entityTypeTeam ? 7 : 15,
                         marginBottom:
@@ -1785,6 +1785,17 @@ export default function MembersProfileScreen({navigation, route}) {
                   </Text>
                 </TouchableOpacity>
               </View>
+
+              <EditMemberInfoModal
+                isVisible={showEditInfoModal}
+                closeModal={() => {
+                  setShowEditInfoModal(false);
+                  getMemberInformation();
+                  getMembers();
+                }}
+                memberdetails={memberDetail}
+                uidNo={authContext.entity.uid}
+              />
 
               <ActionSheet
                 ref={actionSheet}
