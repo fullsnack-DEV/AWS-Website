@@ -37,82 +37,31 @@ const NewsFeedDescription = ({
   const authContext = useContext(AuthContext);
   const [showTaggedModal, setShowTaggedModal] = useState(false);
 
-  const getIndicesOf = useCallback(
-    (searchStr, str = descriptions) => {
-      const searchStrLen = searchStr.length;
-      if (searchStrLen === 0) {
-        return [];
-      }
-      let startIndex = 0;
-      let index;
-      const indices = [];
-      // eslint-disable-next-line no-cond-assign
-      while (
-        // eslint-disable-next-line no-cond-assign
-        (index = str
-          .toLowerCase()
-          .indexOf(searchStr.toLowerCase(), startIndex)) > -1
-      ) {
-        indices.push(index);
-        startIndex = index + searchStrLen;
-      }
-      return indices;
-    },
-    [descriptions],
-  );
-
   const handleNamePress = useCallback(
-    (name, startTagIndex) => {
-      // console.log(`${name} - ${startTagIndex}`, getIndicesOf(name));
-      const currentIndexsOfMatch = getIndicesOf(name);
-      const isExistIndex = currentIndexsOfMatch?.findIndex(
-        (item) => item === startTagIndex,
-      );
-      const fetchedAllEntity = tagData?.filter(
-        (item) => item?.entity_data?.tagged_formatted_name === name,
+    (name) => {
+      const fetchedEntity = tagData.find(
+        (tag) => tag.entity_data?.tagged_formatted_name.trim() === name,
       );
 
-      if (fetchedAllEntity?.length > 0) {
-        let fetchedEntity = fetchedAllEntity?.[0];
-        if (fetchedAllEntity?.length > 1 && isExistIndex !== -1)
-          fetchedEntity = fetchedAllEntity?.[isExistIndex];
-        if (fetchedEntity?.entity_id) {
-          // if (
-          //   fetchedEntity?.entity_id !== authContext?.entity?.uid ||
-          //   (fetchedEntity?.entity_id === authContext?.entity?.uid &&
-          //     isNewsFeedScreen)
-          // ) {
-          //   navigation.push('HomeScreen', {
-          //     uid: fetchedEntity?.entity_id,
-          //     role: ['user', 'player']?.includes(fetchedEntity?.entity_type)
-          //       ? 'user'
-          //       : fetchedEntity?.entity_type,
-          //     backButtonVisible: true,
-          //   });
-          // }
-          if (
-            fetchedEntity?.entity_id !== openProfilId ||
-            (fetchedEntity?.entity_id === authContext?.entity?.uid &&
-              isNewsFeedScreen)
-          ) {
-            navigation.push('HomeScreen', {
-              uid: fetchedEntity?.entity_id,
-              role: ['user', 'player']?.includes(fetchedEntity?.entity_type)
-                ? 'user'
-                : fetchedEntity?.entity_type,
-              backButtonVisible: true,
-            });
-          }
+      if (fetchedEntity) {
+        if (
+          fetchedEntity.entity_id !== openProfilId ||
+          (fetchedEntity.entity_id === authContext.entity.uid &&
+            isNewsFeedScreen)
+        ) {
+          navigation.push('HomeScreen', {
+            uid: fetchedEntity.entity_id,
+            role: fetchedEntity.entity_type ?? Verbs.entityTypePlayer,
+          });
         }
       }
     },
     [
-      authContext?.entity?.uid,
-      getIndicesOf,
+      authContext.entity.uid,
+      tagData,
       isNewsFeedScreen,
       navigation,
       openProfilId,
-      tagData,
     ],
   );
 

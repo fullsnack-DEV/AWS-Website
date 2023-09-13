@@ -18,7 +18,6 @@ import {
   FlatList,
   Alert,
   Dimensions,
-  ScrollView,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -194,11 +193,34 @@ const EditPostScreen = ({navigation, route}) => {
       }
     } else {
       setTagsOfEntity([]);
-      setUsers([]);
-      setGroups([]);
       setLetModalVisible(false);
     }
   }, [currentTextInputIndex, searchText]);
+
+  useEffect(() => {
+    if (searchText) {
+      const tags = searchText.match(tagRegex);
+
+      if (tags) {
+        const list = [];
+        if (tags?.length > 0) {
+          tags.forEach((tagName) => {
+            const obj = tagsOfEntity.find(
+              (item) =>
+                item.entity_data?.tagged_formatted_name?.trim() === tagName,
+            );
+
+            if (obj) {
+              list.push(obj);
+            }
+          });
+        }
+
+        setTagsOfEntity(list);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchText]);
 
   const searchFilterFunction = useCallback(
     (text) => {
@@ -308,46 +330,91 @@ const EditPostScreen = ({navigation, route}) => {
   );
 
   useEffect(() => {
-    let tagName = '';
-
-    if (route.params.selectedTagList?.length > 0) {
+    if (route.params?.selectedTagList) {
+      const modifiedSearch = searchText;
       const tagsArray = [...route.params.selectedTagList];
-      tagsArray.forEach((tag) => {
-        const obj = tagsOfEntity.find(
-          (item) => item.entity_id === tag.entity_id,
-        );
-        if (!obj) {
-          tagName += `${tag.entity_data.tagged_formatted_name} `;
+
+      if (tagsArray.length > 0) {
+        let tagName = '';
+        tagsArray.forEach((tag) => {
+          const obj = tagsOfEntity.find(
+            (item) => item.entity_id === tag.entity_id,
+          );
+
+          if (!obj) {
+            tagName += `${tag.entity_data.tagged_formatted_name} `;
+          }
+        });
+
+        const words = modifiedSearch.split(' ');
+
+        const finalWords = [];
+        words.forEach((word) => {
+          if (!word) {
+            return;
+          }
+          if (word.includes('@')) {
+            const isExist = tagsArray.find(
+              (ele) =>
+                ele.entity_data.tagged_formatted_name?.trim() === word.trim(),
+            );
+
+            if (isExist) {
+              finalWords.push(word);
+            }
+          } else {
+            finalWords.push(word);
+          }
+        });
+
+        if (tagName) {
+          const tags = tagName.split(' ').filter((tag) => tag);
+
+          tags.forEach((ele) => {
+            const obj = tagsArray.find(
+              (item) =>
+                item.entity_data.tagged_formatted_name?.trim() === ele.trim(),
+            );
+            if (obj) {
+              finalWords.push(obj.entity_data.tagged_formatted_name?.trim());
+            }
+          });
         }
-      });
+
+        setSearchText(finalWords.join(' '));
+      } else {
+        const words = modifiedSearch.split(' ');
+        const finalWords = words.filter((item) => item && !item.includes('@'));
+        setSearchText(finalWords.join(' '));
+      }
 
       setTagsOfEntity(tagsArray);
       setLetModalVisible(false);
-
-      const modifiedSearch = searchText;
-      const output = [
-        modifiedSearch.slice(0, currentTextInputIndex),
-        tagName,
-        modifiedSearch.slice(currentTextInputIndex),
-      ].join('');
-
-      setSearchText(output);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route.params, currentTextInputIndex]);
+  }, [route.params?.selectedTagList]);
 
   const renderTagText = useCallback(
     (matchingString) => {
-      const isExists = tagsOfEntity.find(
+      const obj = JSON.parse(postData.object);
+      const tags =
+        tagsOfEntity.length > 0
+          ? [...tagsOfEntity]
+          : [...obj.format_tagged_data];
+      const isExists = tags.find(
         (item) =>
           item.entity_data?.tagged_formatted_name.trim() === matchingString,
       );
 
-      return isExists ? (
-        <Text style={styles.tagText}>{`${matchingString}`}</Text>
-      ) : null;
+      return (
+        <Text
+          style={[
+            styles.tagText,
+            !isExists ? {color: colors.lightBlackColor} : {},
+          ]}>{`${matchingString}`}</Text>
+      );
     },
-    [tagsOfEntity],
+    [tagsOfEntity, postData],
   );
 
   const addStr = (str, index, stringToAdd) =>
@@ -577,26 +644,11 @@ const EditPostScreen = ({navigation, route}) => {
     } else {
       setloading(true);
 
-      let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-      tagData = tagData?.map((tag) => ({
-        ...tag,
-        entity_type: 'publictimeline',
+      const tagData = tagsOfEntity.map((tag) => ({
+        entity_id: tag.entity_id,
+        entity_type: 'privatetimeline',
       }));
-
-      const format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity));
-      format_tagged_data.map(async (item, index) => {
-        const isThere =
-          item?.entity_type !== Verbs.entityTypeGame
-            ? searchText.includes(
-                item?.entity_data?.tagged_formatted_name?.replace(/ /g, ''),
-              )
-            : true;
-        if (!isThere) format_tagged_data.splice(index, 1);
-        return null;
-      });
-      // eslint-disable-next-line no-param-reassign
-      tagData.forEach((tData) => delete tData.entity_data);
-
+      const format_tagged_data = [...tagsOfEntity];
       const who_can_see = {...privacySetting};
       if (privacySetting.value === 2) {
         if (
@@ -731,60 +783,60 @@ const EditPostScreen = ({navigation, route}) => {
               </Text>
             </View>
           </View>
-          <ScrollView>
-            <View style={{paddingHorizontal: 15, marginBottom: 15}}>
-              <TextInput
-                ref={textInputRef}
-                onLayout={(event) =>
-                  setSearchFieldHeight(event?.nativeEvent?.layout?.height)
-                }
-                placeholder={strings.whatsGoingText}
-                placeholderTextColor={colors.userPostTimeColor}
-                onSelectionChange={onSelectionChange}
-                onKeyPress={onKeyPress}
-                onChangeText={(text) => setSearchText(text)}
-                style={styles.textInputField}
-                multiline={true}
-                textAlignVertical={'top'}
-                maxLength={4000}
-                scrollEnabled={false}>
-                <ParsedText
-                  parse={[
-                    {pattern: tagRegex, renderText: renderTagText},
-                    {pattern: hashTagRegex, renderText: renderTagText},
-                    {pattern: urlRegex, renderText: renderTagText},
-                  ]}
-                  childrenProps={{allowFontScaling: false}}>
-                  {searchText}
-                </ParsedText>
-              </TextInput>
-            </View>
+
+          <View
+            style={{paddingHorizontal: 15, marginBottom: 15, maxHeight: '70%'}}>
+            <TextInput
+              ref={textInputRef}
+              onLayout={(event) =>
+                setSearchFieldHeight(event?.nativeEvent?.layout?.height)
+              }
+              placeholder={strings.whatsGoingText}
+              placeholderTextColor={colors.userPostTimeColor}
+              onSelectionChange={onSelectionChange}
+              onKeyPress={onKeyPress}
+              onChangeText={(text) => setSearchText(text)}
+              style={styles.textInputField}
+              multiline={true}
+              textAlignVertical={'top'}
+              maxLength={4000}
+              scrollEnabled>
+              <ParsedText
+                parse={[
+                  {pattern: tagRegex, renderText: renderTagText},
+                  {pattern: hashTagRegex, renderText: renderTagText},
+                  {pattern: urlRegex, renderText: renderTagText},
+                ]}
+                childrenProps={{allowFontScaling: false}}>
+                {searchText}
+              </ParsedText>
+            </TextInput>
             {renderModalTagEntity()}
-            <View style={{marginTop: 15}}>
-              {renderUrlPreview()}
-              {renderSelectedImageList()}
-              {tagsOfGame.length > 0 ? (
-                <FlatList
-                  data={tagsOfGame}
-                  keyExtractor={(item, index) => index.toString()}
-                  bounces={false}
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{paddingHorizontal: 15}}
-                  horizontal
-                  renderItem={({item}) => (
-                    <View
-                      style={{
-                        width: Dimensions.get('window').width - 30,
-                        flex: 1,
-                        marginRight: 15,
-                      }}>
-                      <MatchCard item={item.matchData} />
-                    </View>
-                  )}
-                />
-              ) : null}
-            </View>
-          </ScrollView>
+          </View>
+          <View style={{marginTop: 15}}>
+            {renderUrlPreview()}
+            {renderSelectedImageList()}
+            {tagsOfGame.length > 0 ? (
+              <FlatList
+                data={tagsOfGame}
+                keyExtractor={(item, index) => index.toString()}
+                bounces={false}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{paddingHorizontal: 15}}
+                horizontal
+                renderItem={({item}) => (
+                  <View
+                    style={{
+                      width: Dimensions.get('window').width - 30,
+                      flex: 1,
+                      marginRight: 15,
+                    }}>
+                    <MatchCard item={item.matchData} />
+                  </View>
+                )}
+              />
+            ) : null}
+          </View>
         </View>
 
         <View style={styles.bottomSafeAreaStyle}>

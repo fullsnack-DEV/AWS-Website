@@ -51,7 +51,7 @@ import CustomInput from './components/CustomInput';
 import CustomAutoCompleteSuggestionsList from './components/CustomAutoCompleteSuggestionsList';
 import CustomReplyComponent from './components/CustomReplyComponent';
 import CustomReplyInputPreview from './components/CustomReplyInputPreview';
-import CustomAvatar from './components/CustomAvatar';
+// import CustomAvatar from './components/CustomAvatar';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import fonts from '../../Constants/Fonts';
 
@@ -439,16 +439,19 @@ const MessageChatScreen = ({navigation, route}) => {
               MessageText={() => (
                 <CustomMessageText onTagPress={handleTagPress} />
               )}
-              MessageAvatar={() => (
-                <CustomAvatar
-                  channel={channel}
-                  imageStyle={{width: 30, height: 30}}
-                  iconTextStyle={{fontSize: 12, marginTop: 1}}
-                  placeHolderStyle={{width: 12, height: 12}}
-                />
-              )}
+              MessageAvatar={
+                () => null
+                // <CustomAvatar
+                //   channel={channel}
+                //   imageStyle={{width: 30, height: 30}}
+                //   iconTextStyle={{fontSize: 12, marginTop: 1}}
+                //   placeHolderStyle={{width: 12, height: 12}}
+                // />
+              }
               myMessageTheme={myMessageTheme}
-              MessageHeader={CustomMessageHeader}
+              MessageHeader={({message}) => (
+                <CustomMessageHeader message={message} channel={channel} />
+              )}
               MessageFooter={() => (
                 <CustomMessageFooter
                   onPress={async (messageId) => {

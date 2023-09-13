@@ -48,6 +48,11 @@ const FeedsScreen = ({navigation}) => {
   const [sports, setSports] = useState([]);
   const [sportArr, setSportArr] = useState([]);
   const [pointEvent] = useState('auto');
+  const [visited, setVisited] = useState(false);
+
+  useEffect(() => {
+    setVisited(true);
+  }, []);
 
   useEffect(() => {
     navigation.getParent()?.setOptions({
@@ -57,32 +62,29 @@ const FeedsScreen = ({navigation}) => {
     });
   }, [navigation, isFocused]);
 
-  const getFeeds = useCallback(
-    (showLoader = true) => {
-      if (showLoader) {
-        setFirstTimeLoading(true);
-      }
-      const entity = authContext.entity;
-      setCurrentUserDetail(entity.obj || entity.auth.user);
-      getNewsFeed(authContext)
-        .then((response) => {
-          setFeedCalled(true);
-          setFirstTimeLoading(false);
-          setPostData([...response.payload.results]);
-        })
-        .catch((e) => {
-          setFirstTimeLoading(false);
-          setTimeout(() => Alert.alert('', e.message), 100);
-        });
-    },
-    [authContext],
-  );
+  const getFeeds = useCallback(() => {
+    if (!visited) {
+      setFirstTimeLoading(true);
+    }
+    const entity = authContext.entity;
+    setCurrentUserDetail(entity.obj || entity.auth.user);
+    getNewsFeed(authContext)
+      .then((response) => {
+        setFeedCalled(true);
+        setFirstTimeLoading(false);
+        setPostData([...response.payload.results]);
+      })
+      .catch((e) => {
+        setFirstTimeLoading(false);
+        setTimeout(() => Alert.alert('', e.message), 100);
+      });
+  }, [authContext, visited]);
 
   useEffect(() => {
-    // if (isFocused) {
-    // }
-    getFeeds();
-  }, [getFeeds, ]);
+    if (isFocused) {
+      getFeeds();
+    }
+  }, [getFeeds, isFocused]);
 
   useEffect(() => {
     getSportsList(authContext).then((res) => {

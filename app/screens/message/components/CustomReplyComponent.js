@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {Dimensions, Image, Text, View} from 'react-native';
+import {Image, Text, View} from 'react-native';
 import {useMessageContext} from 'stream-chat-react-native';
 import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
@@ -33,7 +33,6 @@ const CustomReplyComponent = () => {
           style={{
             paddingHorizontal: 3,
             paddingVertical: 3,
-            width: Dimensions.get('window').width * 0.8,
           }}>
           <View
             style={{

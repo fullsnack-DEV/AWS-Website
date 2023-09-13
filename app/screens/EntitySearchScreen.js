@@ -2380,7 +2380,11 @@ export default function EntitySearchScreen({navigation, route}) {
       <ScreenHeader
         title={strings.searchText}
         leftIcon={images.backArrow}
-        leftIconPress={() => navigation.goBack()}
+        leftIconPress={() =>
+          navigation.navigate('Local Home', {
+            screen: 'LocalHomeScreen',
+          })
+        }
       />
       <ActivityLoader visible={loading} />
       {/* <View style={styles.searchBarView}>

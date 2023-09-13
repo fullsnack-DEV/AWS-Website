@@ -51,8 +51,17 @@ export const themeStyle = {
       deletedContainerInner: {
         borderWidth: 0,
         backgroundColor: colors.whiteColor,
+        marginLeft: 30,
       },
       containerInner: {
+        maxWidth: Dimensions.get('window').width * 0.7,
+        marginLeft: 30,
+      },
+      container: {
+        maxWidth: Dimensions.get('window').width * 0.8,
+      },
+      replyContainer: {
+        borderWidth: 0,
         maxWidth: Dimensions.get('window').width * 0.7,
       },
     },

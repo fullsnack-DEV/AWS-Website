@@ -18,6 +18,7 @@ function WriteCommentItems({
   onReply = () => {},
   showLikesModal = () => {},
   containerStyle = {},
+  showReplyButton = true,
 }) {
   const authContext = useContext(AuthContext);
 
@@ -62,7 +63,6 @@ function WriteCommentItems({
               {formatTimestampForDisplay(data.created_at, 0)}
             </Text>
           </View>
-
           <TouchableOpacity style={{marginLeft: 15}} onPress={showLikesModal}>
             <Text style={[styles.activeTimeAgoTxt, {fontFamily: fonts.RBold}]}>
               {data.latest_children?.like?.length ?? 0}{' '}
@@ -72,11 +72,14 @@ function WriteCommentItems({
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={{marginLeft: 15}} onPress={onReply}>
-            <Text style={[styles.activeTimeAgoTxt, {fontFamily: fonts.RBold}]}>
-              {strings.reply}
-            </Text>
-          </TouchableOpacity>
+          {showReplyButton ? (
+            <TouchableOpacity style={{marginLeft: 15}} onPress={onReply}>
+              <Text
+                style={[styles.activeTimeAgoTxt, {fontFamily: fonts.RBold}]}>
+                {strings.reply}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
 

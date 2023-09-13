@@ -112,10 +112,8 @@ const NewsFeedPostItems = memo(
       const options = {
         message: getPostData(item).text,
       };
-      
 
       setShowShareOptionsModal(false);
-      
 
       switch (option) {
         case strings.repost:
@@ -188,7 +186,6 @@ const NewsFeedPostItems = memo(
           paddingHorizontal: 15,
           paddingTop: 17,
           paddingBottom: 20,
-          
         }}>
         {postType === Verbs.eventVerb ? (
           <PostForEvent
@@ -291,6 +288,7 @@ const NewsFeedPostItems = memo(
               role: data.entityType,
             });
           }}
+          postOwnerId={item.actor?.id}
         />
         <BottomSheet
           type="ios"
@@ -300,16 +298,15 @@ const NewsFeedPostItems = memo(
           onSelect={(value) => onActionSheetItemPress(value)}
         />
 
-        <BottomSheet 
+        <BottomSheet
           type="ios"
           isVisible={showShareOptionsModal}
           closeModal={() => setShowShareOptionsModal(false)}
           optionList={[strings.repost, strings.copyLink, strings.more]}
           onSelect={onShareActionSheetItemPress}
-          separatorLineStyle={{backgroundColor:colors.startGrayGrdient}}
-          cancelButtonContainerStyle= {{marginBottom:20}}
+          separatorLineStyle={{backgroundColor: colors.startGrayGrdient}}
+          cancelButtonContainerStyle={{marginBottom: 20}}
         />
-
       </View>
     );
   },
