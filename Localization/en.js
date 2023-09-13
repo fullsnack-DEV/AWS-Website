@@ -2241,7 +2241,7 @@ export default {
   bioDescription: 'en_Describe yourself as a player in this sport.',
   sportTextTitle: 'en_Sport',
   sportNameValidationText: 'en_Please fill in sport.',
-  incomingChallengeSettingsTitle: 'en_INCOMING CHALLENGE SETTINGS',
+  incomingChallengeSettingsTitle: 'en_Incoming Challenge Settings',
   incomingChallengeSettingsInfo:
     'en_Please review your incoming challenge settings. These settings will be applied to (the match reservation process) and  the match (a match) ONLY when you are the match host.\nWhen you are the  Challenger, the opponent’s incoming challenge settings Will be applied.',
   congratulationModalInfo:
@@ -2499,7 +2499,7 @@ export default {
     'en_You can upload any certificates or documents that prove or are related to the experience as a referee.',
   warningCertificateImageText: 'en_Please add the image of the certificate.',
   warningCertificateTitleText: 'en_Please add the title of the certificate.',
-  incomingReservationSettings: ' en_INCOMING RESERVATIO SETTINGS',
+  incomingReservationSettings: 'en_Incoming Reservation Settings',
   incomingReservationSettingsDescription:
     'en_Please review your incoming reservation settings. These settings are only applicable to the referee reservation when you are booked as a referee. When you book another referee for a match, their incoming reservation settings Will be applied.',
   servicableAreas: 'en_Serviceable Areas',

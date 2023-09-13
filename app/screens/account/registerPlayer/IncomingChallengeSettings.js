@@ -497,7 +497,9 @@ export default function IncomingChallengeSettings({navigation, route}) {
           ListHeaderComponent={() => (
             <>
               <View style={{paddingHorizontal: 15}}>
-                <Text style={styles.title} numberOfLines={1}>
+                <Text
+                  style={[styles.title, {textTransform: 'uppercase'}]}
+                  numberOfLines={2}>
                   {strings.incomingChallengeSettingsTitle}
                 </Text>
                 <Text style={styles.info}>
