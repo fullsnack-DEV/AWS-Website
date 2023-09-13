@@ -500,10 +500,12 @@ const OrderedSporList = ({
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
+   
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    
   },
   sportView: {
     justifyContent: 'space-between',
@@ -526,7 +528,7 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 5,
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.offwhite,
     shadowColor: colors.googleColor,
     shadowOffset: {
       width: 0,
@@ -578,6 +580,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     marginBottom: 15,
+    
   },
   listContainer: {
     marginTop: 40,

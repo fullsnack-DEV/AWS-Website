@@ -156,9 +156,8 @@ const MessageChatScreen = ({navigation, route}) => {
                 />
                 <Text>
                   {imageState === 'uploading'
-                    ? strings.uploadingText
-                    : strings.uploadedText}{' '}
-                  : {numberOfUploads}
+                    ? `${strings.uploadingText}... ${numberOfUploads}`
+                    : strings.uploadedText}
                 </Text>
               </View>
               <View>

@@ -830,7 +830,7 @@ export default function CreateEventScreen({navigation, route}) {
               multiline={true}
               numberOfLines={5}
               value={eventDescription}
-              containerStyle={{marginBottom: 35}}
+              containerStyle={{marginBottom: 35,backgroundColor:'red'}}
             />
 
             <View style={styles.containerStyle}>
@@ -1124,7 +1124,7 @@ export default function CreateEventScreen({navigation, route}) {
                 <Text
                   style={{
                     fontSize: 14,
-                    fontFamily: fonts.RRegular,
+                    fontFamily: fonts.RLight,
                     textDecorationLine: 'underline',
                     textAlign: 'right',
                     paddingHorizontal: 5,

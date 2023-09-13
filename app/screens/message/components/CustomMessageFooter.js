@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginTop: 5,
     maxWidth: Dimensions.get('window').width * 0.6,
+    marginLeft: 30,
   },
   countText: {
     fontSize: 12,

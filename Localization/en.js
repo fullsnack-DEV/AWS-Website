@@ -3058,7 +3058,7 @@ export default {
   deleteForEveryOneText:
     "en_This message will be deleted from everyone's device",
   uploadingText: 'en_Uploading',
-  uploadedText: ' en_Uploaded',
+  uploadedText: ' en_Image uploaded',
   messageDeletedText: 'en_This mesage was deleted.',
   photoText: 'en_Photo',
   replyTo: 'en_Reply to',
