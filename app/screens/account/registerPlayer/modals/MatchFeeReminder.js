@@ -2,6 +2,7 @@
 import React from 'react';
 import {View, StyleSheet, Text, TouchableOpacity, Platform} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
+import { format } from 'react-string-format';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import {strings} from '../../../../../Localization/translation';
@@ -9,6 +10,7 @@ import Verbs from '../../../../Constants/Verbs';
 import CustomModalWrapper from '../../../../components/CustomModalWrapper';
 
 const MatchFeeReminder = ({
+  fee={},
   isVisible,
   onAddMatchFee = () => {},
   onContinue = () => {},
@@ -38,10 +40,10 @@ const MatchFeeReminder = ({
         return strings.matchFeeModalInfo;
 
       case Verbs.entityTypeReferee:
-        return strings.refereeFeeModalContent;
+        return format(strings.refereeFeeModalContent,fee.fee ?? 0, fee.currency_type);
 
       case Verbs.entityTypeScorekeeper:
-        return strings.scorekeeperFeeModalContent;
+        return format(strings.scorekeeperFeeModalContent,fee.fee ?? 0, fee.currency_type);
 
       default:
         return '';
@@ -232,7 +234,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     marginBottom: 13,
-    textAlign: 'left',
+    textAlign: 'left'
   },
   description: {
     fontSize: 16,

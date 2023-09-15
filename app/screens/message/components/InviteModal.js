@@ -155,7 +155,7 @@ const InviteModal = ({
       searchRef.current = setTimeout(() => {
         const filteredData = list.filter(
           (item) =>
-            item.name?.toLowerCase().includes(searchText.toLowerCase()) &&
+            item.name?.toLowerCase().trim().includes(searchText.toLowerCase().trim()) &&
             checkForSelectedTab(item.entityType),
         );
 
@@ -178,7 +178,7 @@ const InviteModal = ({
     }
     setSelectedInvitees([...selectedInvitees]);
   };
-
+  
   return (
     <CustomModalWrapper
       isVisible={isVisible}

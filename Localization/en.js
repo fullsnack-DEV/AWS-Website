@@ -1124,7 +1124,7 @@ export default {
   scorekeepingTitleText: 'en_Scorekeeping',
   addSportsTitle: 'en_Add Sport',
   congratsModalTitle:
-    'en_Congratulations!\nYou are now registered\nas a player in',
+    'en_Congratulations!\nYou are now registered\nas a player in ',
   registerRefereeTitle: 'en_Register as Referee',
   registeredRefreeTitle: 'en_Registered as Referee',
   registerScorekeeperTitle: 'en_Register as Scorekeeper',
@@ -2976,9 +2976,9 @@ export default {
   zone: 'en_zone',
   chooseValidFromDate: 'en_Choose valid from Date',
   refereeFeeModalContent:
-    'en_Your referee fee will be 0 CAD per hour if you don’t edit the rate. You can edit it later in Incoming Reservations Settings of the sportactivity.',
+    'en_Your referee fee will be {0} {1} per hour if you don’t edit the rate. You can edit it later in Incoming Reservations Settings of the sportactivity.',
   scorekeeperFeeModalContent:
-    'en_Your scorekeeper fee will be 0 CAD per hour if you don’t edit the rate. You can edit it later in Incoming Reservations Settings of the sportactivity.',
+    'en_Your scorekeeper fee will be {0} {1} per hour if you don’t edit the rate. You can edit it later in Incoming Reservations Settings of the sportactivity.',
   sportSelectionModalSubTitle:
     'en_Teams from various sports can be a member of a club. You can edit the sports of the club now or later.',
   offline: 'en_Offline',

@@ -167,7 +167,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
             : strings.registerScorekeeperTitle
         }
         isFullTitle
-        leftIconStyle={{width: 50}}
+        // leftIconStyle={{width: 50}}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.goBack();
@@ -243,6 +243,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
         }}
         entityType={entityType}
         onCloseModal={() => setShowMatchFeeReminderModal(false)}
+        fee={settingsObject.game_fee ?? {}}
       />
 
       <RefereeCongratulationsModal

@@ -530,7 +530,10 @@ function NotificationsListScreen({navigation}) {
     acceptRequest({}, requestId, authContext)
       .then((response) => {
         setloading(false);
-        if (item.verb.includes(NotificationType.invitePlayerToJoinTeam)) {
+        if (
+          item.verb.includes(NotificationType.invitePlayerToJoinTeam) ||
+          item.verb.includes(NotificationType.invitePlayerToJoinClub)
+        ) {
           if (response?.payload?.error_code === errorCode.invitePlayerToJoin) {
             Alert.alert(
               '',

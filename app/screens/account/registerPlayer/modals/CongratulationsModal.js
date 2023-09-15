@@ -6,9 +6,7 @@ import {
   StyleSheet,
   Modal,
   Text,
-  Dimensions,
   Pressable,
-  Image,
   Alert,
   TouchableOpacity,
   ActivityIndicator,
@@ -18,10 +16,11 @@ import {getGroupIndex, getUserIndex} from '../../../../api/elasticSearch';
 import AuthContext from '../../../../auth/context';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
-import images from '../../../../Constants/ImagePath';
 import Verbs from '../../../../Constants/Verbs';
 import PlayersListNearYou from '../components/PlayersListNearYou';
 import TeamsListNearYou from '../components/TeamsListNearYou';
+import CustomModalWrapper from '../../../../components/CustomModalWrapper';
+import {ModalTypes} from '../../../../Constants/GeneralConstants';
 
 const CongratulationsModal = ({
   isVisible,
@@ -341,135 +340,117 @@ const CongratulationsModal = ({
   };
 
   return (
-    <Modal
-      visible={isVisible}
-      transparent
-      onRequestClose={() => {
-        closeModal();
-      }}>
-      <View style={styles.parent}>
-        <View style={styles.card}>
-          <View style={styles.closeButtonContainer}>
-            <Pressable style={styles.closeIcon} onPress={closeModal}>
-              <Image source={images.crossImage} style={styles.image} />
-            </Pressable>
-          </View>
-          <View
-            style={
-              fromCreateTeam || fromCreateClub
-                ? styles.titleContainerForTeam
-                : styles.titleTextContainer
-            }>
-            {fromCreateTeam || fromCreateClub ? (
-              <Text
-                style={[
-                  styles.congratsText,
-                  {
-                    alignSelf:
-                      fromCreateTeam || fromCreateClub
-                        ? 'flex-start'
-                        : 'center',
-                  },
-                ]}>
-                <Text>
-                  {strings.congratulationsTitle}
-                  <Text style={styles.congratsTextStyle}>{title}</Text>
-                </Text>
+    <CustomModalWrapper
+      isVisible={isVisible}
+      closeModal={closeModal}
+      modalType={ModalTypes.default}
+      containerStyle={{padding: 0, height: '97%'}}>
+      <View
+        style={
+          fromCreateTeam || fromCreateClub
+            ? styles.titleContainerForTeam
+            : styles.titleTextContainer
+        }>
+        {fromCreateTeam || fromCreateClub ? (
+          <Text
+            style={[
+              styles.congratsText,
+              {
+                alignSelf:
+                  fromCreateTeam || fromCreateClub ? 'flex-start' : 'center',
+              },
+            ]}>
+            <Text>
+              {strings.congratulationsTitle}
+              <Text style={styles.congratsTextStyle}>{title}</Text>
+            </Text>
 
-                {strings.hasBeenCreated}
-              </Text>
-            ) : (
-              <Text style={styles.congratsText}>
-                {title}
-                <Text style={styles.congratsSportText}>{sportName}.</Text>
-              </Text>
-            )}
+            {strings.hasBeenCreated}
+          </Text>
+        ) : (
+          <Text style={styles.congratsText}>
+            {title}
+            <Text style={styles.congratsSportText}>{sportName}.</Text>
+          </Text>
+        )}
 
-            {fromCreateTeam || fromCreateClub ? (
-              <Text
-                style={[
-                  styles.description,
-                  {marginHorizontal: 0, marginRight: 35},
-                ]}>
-                {subtitle}
-              </Text>
-            ) : null}
-          </View>
+        {fromCreateTeam || fromCreateClub ? (
+          <Text
+            style={[
+              styles.description,
+              {marginHorizontal: 0, marginRight: 35},
+            ]}>
+            {subtitle}
+          </Text>
+        ) : null}
+      </View>
 
-          {fromCreateTeam || fromCreateClub ? (
-            <>
-              <Pressable
-                style={styles.buttonContainer}
-                onPress={() => {
-                  goToSportActivityHome();
-                }}>
-                <Text style={[styles.buttonText, {textTransform: 'uppercase'}]}>
-                  {fromCreateTeam
-                    ? strings.inviteMemberText
-                    : strings.createTeamUnderYourClub}
-                </Text>
-              </Pressable>
-            </>
-          ) : (
-            <Pressable
-              style={styles.buttonContainer}
-              onPress={() => {
-                goToSportActivityHome({sport, sportType});
-              }}>
-              <Text style={styles.buttonText}>
-                {strings.goToSportActivityHomeText}
-              </Text>
-            </Pressable>
-          )}
+      {fromCreateTeam || fromCreateClub ? (
+        <>
+          <Pressable
+            style={styles.buttonContainer}
+            onPress={() => {
+              goToSportActivityHome();
+            }}>
+            <Text style={[styles.buttonText, {textTransform: 'uppercase'}]}>
+              {fromCreateTeam
+                ? strings.inviteMemberText
+                : strings.createTeamUnderYourClub}
+            </Text>
+          </Pressable>
+        </>
+      ) : (
+        <Pressable
+          style={styles.buttonContainer}
+          onPress={() => {
+            goToSportActivityHome({sport, sportType});
+          }}>
+          <Text style={styles.buttonText}>
+            {strings.goToSportActivityHomeText}
+          </Text>
+        </Pressable>
+      )}
 
-          {!fromCreateTeam || !fromCreateClub ? (
-            <></>
-          ) : (
-            <Text style={styles.description}>{getModalInfo(sportType)}</Text>
-          )}
-          <View style={styles.dividor} />
+      <Text style={styles.description}>{getModalInfo(sportType)}</Text>
+      <View style={styles.dividor} />
 
-          <View style={styles.renderListcontainer}>
-            {renderList(sportType)}
-          </View>
-        </View>
+      <View style={styles.renderListcontainer}>{renderList(sportType)}</View>
 
-        <Modal visible={showChallengeModal} transparent>
-          <View style={styles.parent}>
-            <View style={styles.container1}>
-              <TouchableOpacity
-                style={styles.challengeContainer}
-                onPress={() => handleChallengePress(strings.challenge)}>
-                <Text style={styles.challengeText}>{strings.challenge}</Text>
-                <Text style={styles.normalText}>
-                  ({strings.youWillBeChallenger})
-                </Text>
-                {selectedUser.setting?.game_fee?.fee > 0 && (
-                  <Text style={[styles.normalText, {marginTop: 8}]}>
-                    $ {selectedUser.setting.game_fee.fee}{' '}
-                    {selectedUser.setting.game_fee.currency_type} / match
-                  </Text>
-                )}
-              </TouchableOpacity>
-              <View style={styles.separator} />
-              <TouchableOpacity
-                style={styles.container2}
-                onPress={() => handleChallengePress(strings.inviteToChallenge)}>
-                <Text style={styles.challengeText}>
-                  {strings.inviteToChallenge}
-                </Text>
-                <Text style={styles.normalText}>({strings.youWillBeHost})</Text>
-              </TouchableOpacity>
-            </View>
+      <Modal visible={showChallengeModal} transparent>
+        <View style={styles.parent}>
+          <View style={styles.container1}>
             <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => setShowChallengeModal(false)}>
-              <Text style={styles.challengeText}>{strings.cancel}</Text>
+              style={styles.challengeContainer}
+              onPress={() => handleChallengePress(strings.challenge)}>
+              <Text style={styles.challengeText}>{strings.challenge}</Text>
+              <Text style={styles.normalText}>
+                ({strings.youWillBeChallenger})
+              </Text>
+              {selectedUser.setting?.game_fee?.fee > 0 && (
+                <Text style={[styles.normalText, {marginTop: 8}]}>
+                  $ {selectedUser.setting.game_fee.fee}{' '}
+                  {selectedUser.setting.game_fee.currency_type} / match
+                </Text>
+              )}
+            </TouchableOpacity>
+            <View style={styles.separator} />
+            <TouchableOpacity
+              style={styles.container2}
+              onPress={() => handleChallengePress(strings.inviteToChallenge)}>
+              <Text style={styles.challengeText}>
+                {strings.inviteToChallenge}
+              </Text>
+              <Text style={styles.normalText}>({strings.youWillBeHost})</Text>
             </TouchableOpacity>
           </View>
-        </Modal>
-      </View>
-    </Modal>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setShowChallengeModal(false)}>
+            <Text style={styles.challengeText}>{strings.cancel}</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    </CustomModalWrapper>
   );
 };
 
@@ -479,20 +460,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'flex-end',
   },
-  card: {
-    backgroundColor: colors.whiteColor,
-    height: Dimensions.get('window').height - 50,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 15,
-  },
   titleTextContainer: {
     marginHorizontal: 35,
-    marginTop: 70,
+    marginTop: 50,
     marginBottom: 25,
   },
   titleContainerForTeam: {
@@ -500,11 +470,6 @@ const styles = StyleSheet.create({
     marginRight: 24,
     marginTop: 70,
     marginBottom: 25,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
   },
   congratsText: {
     color: colors.lightBlackColor,
@@ -590,15 +555,6 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  closeButtonContainer: {
-    position: 'absolute',
-    right: 15,
-    top: 20,
-  },
-  closeIcon: {
-    width: 25,
-    height: 25,
   },
   renderListcontainer: {
     paddingHorizontal: 25,

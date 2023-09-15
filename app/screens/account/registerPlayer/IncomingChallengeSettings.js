@@ -655,6 +655,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           }
         }}
         isDoubleSport={sportType === Verbs.doubleSport}
+        fee={settingObject.game_fee ?? {}}
       />
 
       <WrapperModal

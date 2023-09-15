@@ -95,7 +95,7 @@ const CommentModal = ({
     getReactions(params, authContext)
       .then((response) => {
         setCommentData(response.payload);
-        if (response.payload.length === 0) {
+        if (response.payload.length === 0 || response.payload.length < 5) {
           setIsMoreLoading(false);
         }
       })
@@ -111,6 +111,23 @@ const CommentModal = ({
       fetchReactions();
     }
   }, [showCommentModal, fetchReactions]);
+
+  useEffect(() => {
+    if (replyParams.reaction_id) {
+      const obj = commentData.find((e) => e.id === replyParams.reaction_id);
+
+      if (!obj) {
+        setReplyParams({});
+        const data = commentTxt.split(' ');
+        const text = data
+          .filter((item) => item.trim() !== replyingTo.formatted_tag.trim())
+          .join(' ');
+        setReplyingTo({});
+        setCommentText(text);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [replyParams.reaction_id, commentData, replyingTo.formatted_tag]);
 
   const onLikePress = ({data}) => {
     const bodyParams = {
@@ -170,6 +187,7 @@ const CommentModal = ({
           count: filtered?.length,
           data: filtered,
         });
+        fetchReactions();
         setLoading(false);
       })
       .catch((e) => {
@@ -437,6 +455,7 @@ const CommentModal = ({
 
   const onEndReached = () => {
     if (!isMoreLoading) {
+      setIsMoreLoading(false);
       return;
     }
     const params = {
@@ -660,7 +679,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 16,
     lineHeight: 24,
-    color: colors.userPostTimeColor,
+    color: colors.tagColor,
     fontFamily: fonts.RRegular,
   },
   repliesContainer: {

@@ -719,8 +719,8 @@ const GroupHomeScreen = ({
           ) {
             setLoading(false);
             Alert.alert('', response.payload.user_message, [
-              {text: strings.no},
-              {text: strings.yes, onPress: () => userJoinGroup(true)},
+              {text: strings.cancel},
+              {text: strings.join, onPress: () => userJoinGroup(true)},
             ]);
           } else {
             setLoading(false);
@@ -836,39 +836,56 @@ const GroupHomeScreen = ({
     return strings.alertTitle1;
   };
 
-  const onAccept = (requestId) => {
+  const onAccept = (requestId, isMemberAlreadyExists = false) => {
     setLoading(true);
-    acceptRequest({}, requestId, authContext)
-      .then(() => {
-        // Succefully join case
-        const group = {
-          ...currentUserData,
-          is_joined: true,
-        };
+    const params = {};
+    if (isMemberAlreadyExists) {
+      params.is_confirm = true;
+    }
+    acceptRequest(params, requestId, authContext)
+      .then((response) => {
         if (
-          currentUserData?.entity_type === Verbs.entityTypeClub &&
-          authContext.entity.role === Verbs.entityTypeTeam
+          response.payload?.error_code &&
+          response.payload?.error_code === ErrorCodes.MEMBEREXISTERRORCODE
         ) {
-          group.joined_teams = [...group.joined_teams, authContext.entity.obj];
+          setLoading(false);
+          Alert.alert('', response.payload.user_message, [
+            {text: strings.cancel},
+            {text: strings.join, onPress: () => onAccept(requestId, true)},
+          ]);
+        } else {
+          const group = {
+            ...currentUserData,
+            is_joined: true,
+          };
+          if (
+            currentUserData?.entity_type === Verbs.entityTypeClub &&
+            authContext.entity.role === Verbs.entityTypeTeam
+          ) {
+            group.joined_teams = [
+              ...group.joined_teams,
+              authContext.entity.obj,
+            ];
+          }
+          if (
+            currentUserData?.entity_type === Verbs.entityTypeTeam &&
+            authContext.entity.role === Verbs.entityTypeClub
+          ) {
+            group.parent_groups = [
+              ...group.parent_groups,
+              authContext.entity.uid,
+            ];
+          }
+          setCurrentUserData(group);
+          setLoading(false);
+          setTimeout(() => {
+            Alert.alert(
+              strings.alertmessagetitle,
+              format(getAlertTitle(), groupData.group_name),
+              [{text: strings.okTitleText}],
+            );
+          }, 10);
         }
-        if (
-          currentUserData?.entity_type === Verbs.entityTypeTeam &&
-          authContext.entity.role === Verbs.entityTypeClub
-        ) {
-          group.parent_groups = [
-            ...group.parent_groups,
-            authContext.entity.uid,
-          ];
-        }
-        setCurrentUserData(group);
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(
-            strings.alertmessagetitle,
-            format(getAlertTitle(), groupData.group_name),
-            [{text: strings.okTitleText}],
-          );
-        }, 10);
       })
       .catch((error) => {
         setLoading(false);

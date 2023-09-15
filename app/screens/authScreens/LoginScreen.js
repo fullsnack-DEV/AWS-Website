@@ -48,8 +48,8 @@ import {getHitSlop} from '../../utils/index';
 import getUserToken from '../../api/StreamChat';
 
 const LoginScreen = ({navigation}) => {
-  const [email, setEmail] = useState('vineetpatidar@gmail.com');
-  const [password, setPassword] = useState('123456');
+  const [email, setEmail] = useState('gaurav@townscup.com');
+  const [password, setPassword] = useState('12345678');
   const [hidePassword, setHidePassword] = useState(true);
 
   const authContext = useContext(AuthContext);
