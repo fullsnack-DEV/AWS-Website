@@ -292,6 +292,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
                 .then(async (response) => {
                   setloading(false);
                   setShowSwitchScreen(false);
+                  getUnreadNotificationCount(authContext);
                   await onSwitchProfile(response.payload);
 
                   navigation.navigate('HomeScreen', {

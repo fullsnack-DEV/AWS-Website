@@ -206,7 +206,6 @@ function LocalHomeScreen({navigation, route}) {
       );
     };
     getEventdata();
-    console.log(filterData, 'From event');
   }, [authContext, isFocused]);
 
   useEffect(() => {

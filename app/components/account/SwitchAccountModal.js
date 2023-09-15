@@ -331,7 +331,6 @@ const styles = StyleSheet.create({
     height: 1,
     marginVertical: 15,
     backgroundColor: colors.grayBackgroundColor,
-
   },
   iconContainer: {
     width: 40,

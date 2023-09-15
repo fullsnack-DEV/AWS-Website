@@ -8,6 +8,8 @@ import {
   Animated,
   Pressable,
   InteractionManager,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import {
   GestureHandlerRootView,
@@ -210,6 +212,12 @@ const CustomModalWrapper = ({
       animationType="fade"
       onShow={() => onModalShow()}
       onRequestClose={() => handleCloseModal()}>
+      {Platform.OS === 'android' && (
+        <StatusBar
+          backgroundColor={colors.modalBackgroundColor}
+          barStyle="light-content"
+        />
+      )}
       <GestureHandlerRootView style={{flex: 1}}>
         <Pressable
           style={[styles.parent, {paddingTop: Top}]}

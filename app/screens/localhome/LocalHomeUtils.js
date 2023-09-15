@@ -706,8 +706,6 @@ const getSportsForHome = (
     ]),
   ];
 
-  console.log(authContext?.entity?.obj, 'From club');
-
   const followedSport =
     authContext.entity.role !== Verbs.entityTypeTeam
       ? authContext?.entity?.obj?.sports

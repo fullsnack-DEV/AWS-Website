@@ -3118,4 +3118,5 @@ export default {
   likedBy: 'en_Liked by',
   pendingReqiestesTitle: 'en_Pending Requests',
   searchForMoreTeams: 'en_Search for more teams',
+  download: 'en_Download',
 };

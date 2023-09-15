@@ -22,6 +22,7 @@ import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {strings} from '../../../Localization/translation';
 import {getStreamChatIdBasedOnRole} from '../../utils/streamChat';
 import ChannelView from './components/ChannelView';
+import Verbs from '../../Constants/Verbs';
 
 const MessageMainScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
@@ -55,6 +56,25 @@ const MessageMainScreen = ({navigation}) => {
     </View>
   );
 
+  const customChannelFilterFunction = (channels = []) => {
+    const channelsList = [...channels];
+    if (
+      authContext.entity.role === Verbs.entityTypeClub ||
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
+      const index = channelsList.findIndex(
+        (channel) => channel.data.id === authContext.entity.uid,
+      );
+      const objectToMove = channelsList[index];
+
+      if (index !== -1) {
+        channelsList.splice(index, 1);
+        channelsList.unshift(objectToMove);
+      }
+    }
+    return channelsList;
+  };
+
   return (
     <SafeAreaView style={styles.parent}>
       <View style={styles.headerRow}>
@@ -86,6 +106,7 @@ const MessageMainScreen = ({navigation}) => {
             <Chat client={authContext.chatClient}>
               <ChannelList
                 filters={{members: {$in: [streamChatId]}}}
+                channelRenderFilterFn={customChannelFilterFunction}
                 sort={[{last_message_at: -1}]}
                 Preview={ChannelView}
                 LoadingIndicator={() => <UserListShimmer />}

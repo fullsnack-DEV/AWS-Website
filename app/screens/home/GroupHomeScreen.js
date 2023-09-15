@@ -666,9 +666,12 @@ const GroupHomeScreen = ({
     setCurrentUserData(obj);
   };
 
-  const userJoinGroup = () => {
+  const userJoinGroup = (isMemberAlreadyExists = false) => {
     setLoading(true);
     const params = {};
+    if (isMemberAlreadyExists) {
+      params.is_confirm = true;
+    }
     joinTeam(params, groupId, authContext)
       .then((response) => {
         const inviteRequest = response.payload.data?.action
@@ -710,6 +713,14 @@ const GroupHomeScreen = ({
             // );
             Alert.alert('', response.payload.user_message, [
               {text: strings.okTitleText},
+            ]);
+          } else if (
+            response.payload.error_code === ErrorCodes.MEMBEREXISTERRORCODE
+          ) {
+            setLoading(false);
+            Alert.alert('', response.payload.user_message, [
+              {text: strings.no},
+              {text: strings.yes, onPress: () => userJoinGroup(true)},
             ]);
           } else {
             setLoading(false);

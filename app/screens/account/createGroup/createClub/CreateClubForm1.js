@@ -56,6 +56,7 @@ import SportListMultiModal from '../../../../components/SportListMultiModal/Spor
 import {getSportName} from '../../../../utils/sportsActivityUtils';
 import ScreenHeader from '../../../../components/ScreenHeader';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
+import {getUnreadNotificationCount} from '../../../../utils/accountUtils';
 
 export default function CreateClubForm1({navigation, route}) {
   const isFocused = useIsFocused();
@@ -200,6 +201,7 @@ export default function CreateClubForm1({navigation, route}) {
           )
             .then((response) => {
               onANimate(100);
+              getUnreadNotificationCount(authContext);
               onSwitchProfile(response.payload);
               setloading(false);
               navigation.push('HomeScreen', {
@@ -240,6 +242,7 @@ export default function CreateClubForm1({navigation, route}) {
         authContext,
       )
         .then((response) => {
+          getUnreadNotificationCount(authContext);
           onSwitchProfile(response.payload);
           setloading(false);
           navigation.push('HomeScreen', {

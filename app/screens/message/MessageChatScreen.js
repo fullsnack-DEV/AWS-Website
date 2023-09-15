@@ -54,6 +54,7 @@ import CustomReplyInputPreview from './components/CustomReplyInputPreview';
 // import CustomAvatar from './components/CustomAvatar';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import fonts from '../../Constants/Fonts';
+import CustomMediaView from './components/CustomMediaView';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
@@ -457,6 +458,15 @@ const MessageChatScreen = ({navigation, route}) => {
                     const response = await channel.getReactions(messageId);
                     setAllReaction(response.reactions);
                     setIsVisible(true);
+                  }}
+                />
+              )}
+              Gallery={() => (
+                <CustomMediaView
+                  onPress={(data = {}) => {
+                    navigation.navigate('MessageMediaFullScreen', {
+                      ...data,
+                    });
                   }}
                 />
               )}
