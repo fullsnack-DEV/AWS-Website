@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Pressable,
+  SafeAreaView,
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -461,7 +462,7 @@ export default function CreateTeamForm1({navigation, route}) {
   };
 
   return (
-    <>
+    <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
         title={strings.createTeamText}
         isRightIconText
@@ -952,6 +953,6 @@ export default function CreateTeamForm1({navigation, route}) {
           />
         </ScrollView>
       </TCKeyboardView>
-    </>
+    </SafeAreaView>
   );
 }

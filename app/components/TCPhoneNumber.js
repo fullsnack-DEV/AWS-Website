@@ -118,14 +118,14 @@ const TCPhoneNumber = ({
       /> */}
       <View style={styles.halfMatchFeeView}>
         <TextInput
-          numberOfLines={1}
           placeholder={strings.phoneNumber}
           style={styles.halffeeText}
           keyboardType={'number-pad'}
           onChangeText={onChangeText}
           maxLength={10}
-          // editable={ editMode }
-          value={numberValue}></TextInput>
+          textAlign="left"
+          value={numberValue}
+        />
       </View>
 
       <TCCountryCodeModal
@@ -158,18 +158,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    flex: 1,
-    height: 40,
+    flex: 1.5,
+
     paddingHorizontal: 15,
     paddingRight: 10,
     marginLeft: 5,
-
-    width: '48%',
   },
   halffeeText: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    height: 40,
+    paddingVertical: 5.5,
+    textAlignVertical: 'center',
+
     width: '100%',
   },
 

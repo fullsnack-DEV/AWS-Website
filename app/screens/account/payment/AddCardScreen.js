@@ -131,7 +131,7 @@ export default function AddCardScreen({navigation}) {
   };
 
   return (
-    <View accessibilityLabel="add-card-screen" style={{backgroundColor: 'red'}}>
+    <View accessibilityLabel="add-card-screen">
       <ActivityLoader visible={loading} />
       <CardField
         postalCodeEnabled={false}

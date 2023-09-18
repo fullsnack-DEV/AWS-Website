@@ -591,7 +591,9 @@ const AccountScreen = ({navigation, route}) => {
         isVisible={isRulesModalVisible}
         closeModal={() => setIsRulesModalVisible(false)}
         modalType={ModalTypes.style2}
-        ratio={1.9}>
+        containerStyle={{
+          marginBottom: Platform.OS === 'android' ? -70 : -150,
+        }}>
         <View>
           <Text style={styles.modalTitle}>{strings.createTeamText}</Text>
           <Text style={[styles.rulesText, {marginBottom: 15}]}>
@@ -634,7 +636,7 @@ const AccountScreen = ({navigation, route}) => {
             justifyContent: 'center',
             alignItems: 'center',
             alignSelf: 'center',
-            marginTop: 30,
+            marginTop: 35,
           }}>
           <Text
             style={{

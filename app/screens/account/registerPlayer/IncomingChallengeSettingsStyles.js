@@ -31,8 +31,7 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontFamily: fonts.RMedium,
     textAlign: 'center',
-    color:colors.lightBlackColor,
-    textTransform: 'capitalize',
+    color: colors.lightBlackColor,
   },
   buttonContainer: {
     flex: 1,
@@ -61,7 +60,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     alignSelf: 'center',
-    
   },
   completeStyle: {
     marginRight: 10,
