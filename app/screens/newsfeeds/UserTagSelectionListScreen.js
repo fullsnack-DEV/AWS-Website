@@ -66,74 +66,87 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   const intervalRef = useRef();
   const scrollRef = useRef();
 
-  const fetchData = useCallback(() => {
-    const query = {
-      size: 1000,
-      query: {
-        bool: {
-          must: [],
-        },
-      },
-    };
-
-    const gamesquery = {
-      size: 1000,
-      query: {
-        bool: {
-          should: [
-            {
-              match: {
-                city: {query: authContext.entity.obj.city, boost: 4},
-              },
-            },
-            {
-              match: {
-                country: {
-                  query: authContext.entity.obj.country,
-                  boost: 1,
-                },
-              },
-            },
-          ],
-        },
-      },
-      sort: [{actual_enddatetime: 'desc'}],
-    };
-
-    if (authContext.entity.obj.state) {
-      gamesquery.query.bool.should.push({
-        match: {
-          state: {query: authContext.entity.obj.state, boost: 3},
-        },
-      });
-    } else if (authContext.entity.obj.state_abbr) {
-      gamesquery.query.bool.should.push({
-        match: {
-          state_abbr: {
-            query: authContext.entity.obj.state_abbr,
-            boost: 2,
+  const fetchData = useCallback(
+    (searchValue = '') => {
+      const query = {
+        size: 1000,
+        query: {
+          bool: {
+            must: [],
           },
         },
-      });
-    }
-    const promiseArr = [
-      getUserIndex(query),
-      getGroupIndex(query),
-      getGameIndex(gamesquery),
-    ];
-    setLoading(true);
-    Promise.all(promiseArr)
-      .then((response) => {
-        setUserData(response[0]);
-        setGroupData(response[1]);
-        setGamesData(response[2]);
-        setLoading(false);
-      })
-      .catch((err) => {
-        Alert.alert(strings.alertmessagetitle, err.message);
-        setLoading(false);
-      });
-  }, [authContext.entity.obj]);
+      };
+
+      const gamesquery = {
+        size: 1000,
+        query: {
+          bool: {
+            should: [
+              {
+                match: {
+                  city: {query: authContext.entity.obj.city, boost: 4},
+                },
+              },
+              {
+                match: {
+                  country: {
+                    query: authContext.entity.obj.country,
+                    boost: 1,
+                  },
+                },
+              },
+            ],
+          },
+        },
+        // sort: [{actual_enddatetime: 'desc'}],
+      };
+
+      if (authContext.entity.obj.state) {
+        gamesquery.query.bool.should.push({
+          match: {
+            state: {query: authContext.entity.obj.state, boost: 3},
+          },
+        });
+      } else if (authContext.entity.obj.state_abbr) {
+        gamesquery.query.bool.should.push({
+          match: {
+            state_abbr: {
+              query: authContext.entity.obj.state_abbr,
+              boost: 2,
+            },
+          },
+        });
+      }
+
+      if (searchValue) {
+        query.query.bool.must.push({
+          query_string: {
+            query: `${searchValue.toLowerCase()}*`,
+            fields: ['full_name', 'group_name'],
+          },
+        });
+      }
+
+      const promiseArr = [
+        getUserIndex(query),
+        getGroupIndex(query),
+        getGameIndex(gamesquery),
+      ];
+      setLoading(true);
+      Promise.all(promiseArr)
+        .then((response) => {
+          setUserData(response[0]);
+          setGroupData(response[1]);
+          setGamesData(response[2]);
+          setLoading(false);
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+          setLoading(false);
+        });
+    },
+    [authContext.entity.obj],
+  );
 
   useEffect(() => {
     if (isFocused) {
@@ -152,22 +165,6 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       setSeletedEntity([...route.params.tagsOfEntity]);
     }
   }, [isFocused, route.params.tagsOfEntity]);
-
-  const filterData = (searchValue = '') => {
-    if (!searchValue) {
-      fetchData();
-    } else {
-      const userList = userData.filter((item) =>
-        item.full_name.toLowerCase().includes(searchValue.toLowerCase()),
-      );
-      const groupList = groupData.filter((item) =>
-        item.group_name.toLowerCase().includes(searchValue.toLowerCase()),
-      );
-
-      setUserData([...userList]);
-      setGroupData([...groupList]);
-    }
-  };
 
   const onSelectMatch = useCallback(
     (gameItem) => {
@@ -198,10 +195,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
             ]}
             onPress={() => {
               setCurrentTab(tab);
-              if (searchText) {
-                fetchData();
-              }
-              setSearchText('');
+              fetchData(searchText);
             }}>
             <Text
               style={[
@@ -395,13 +389,12 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       />
     ) : null;
 
-  const handleSearch = (text) => {
-    setSearchText(text);
+  useEffect(() => {
     clearTimeout(intervalRef.current);
     intervalRef.current = setTimeout(() => {
-      filterData(text);
+      fetchData(searchText);
     }, 300);
-  };
+  }, [searchText, fetchData]);
 
   useEffect(() => {
     const backAction = () => {
@@ -438,14 +431,13 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           placeholder={strings.searchText}
           placeholderTextColor={colors.userPostTimeColor}
           style={styles.inputField}
-          onChangeText={handleSearch}
+          onChangeText={(text) => setSearchText(text)}
           value={searchText}
         />
         <Pressable
           onPress={() => {
             clearTimeout(intervalRef.current);
             setSearchText('');
-            filterData('');
           }}>
           <Image source={images.closeRound} style={{width: 15, height: 15}} />
         </Pressable>

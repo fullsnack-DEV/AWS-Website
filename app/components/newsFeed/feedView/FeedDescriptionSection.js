@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import NewsFeedDescription from '../NewsFeedDescription';
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     left: 45,
     right: 15,
     position: 'absolute',
+    maxHeight: Dimensions.get('window').height * 0.75,
   },
   descText: {
     fontSize: 16,

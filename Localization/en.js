@@ -3119,6 +3119,7 @@ export default {
   pendingReqiestesTitle: 'en_Pending Requests',
   searchForMoreTeams: 'en_Search for more teams',
   download: 'en_Download',
+  doYouWantToDeleteThisPost: 'en_Do you want to delete this post?',
   filterModalValidation: 'en_Please select at least 1 item in each section',
   peopleNearYou: 'en_PEOPLE NEAR YOU',
 };

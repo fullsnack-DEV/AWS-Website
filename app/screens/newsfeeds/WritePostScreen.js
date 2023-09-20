@@ -887,7 +887,7 @@ const WritePostScreen = ({navigation, route}) => {
           <View style={styles.userDetailView}>
             <GroupIcon
               imageUrl={postData.thumbnail}
-              // entityType={postData.entity_type}
+              entityType={postData.entity_type}
               groupName={postData.group_name}
               textstyle={{fontSize: 12}}
               containerStyle={styles.profileImage}

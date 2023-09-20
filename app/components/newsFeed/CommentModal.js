@@ -114,7 +114,16 @@ const CommentModal = ({
 
   useEffect(() => {
     if (replyParams.reaction_id) {
-      const obj = commentData.find((e) => e.id === replyParams.reaction_id);
+      let obj = {};
+      commentData.forEach((e) => {
+        if (e.id === replyParams.reaction_id) {
+          obj = e;
+        } else if (e.latest_children?.reply?.length > 0) {
+          obj = e.latest_children?.reply.find(
+            (item) => item.id === replyParams.reaction_id,
+          );
+        }
+      });
 
       if (!obj) {
         setReplyParams({});
@@ -535,7 +544,7 @@ const CommentModal = ({
                 style={styles.crossIcon}
                 onPress={() => {
                   setReplyParams({});
-                  const tags = commentTxt.match(tagRegex);
+                  const tags = commentTxt?.match(tagRegex);
                   const words = commentTxt.split(' ');
                   const finalWords = words.filter((item) => item !== tags[0]);
                   setCommentText(finalWords.join(' '));

@@ -830,7 +830,7 @@ export default function CreateEventScreen({navigation, route}) {
               multiline={true}
               numberOfLines={5}
               value={eventDescription}
-              containerStyle={{marginBottom: 35,backgroundColor:'red'}}
+              containerStyle={{marginBottom: 35}}
             />
 
             <View style={styles.containerStyle}>

@@ -192,7 +192,6 @@ const EditPostScreen = ({navigation, route}) => {
         setSearchTag(str);
       }
     } else {
-      setTagsOfEntity([]);
       setLetModalVisible(false);
     }
   }, [currentTextInputIndex, searchText]);
@@ -854,6 +853,7 @@ const EditPostScreen = ({navigation, route}) => {
             <TouchableOpacity
               style={[styles.icon, {marginHorizontal: 10}]}
               onPress={() => {
+                console.log('tagsOfEntity ==>', tagsOfEntity);
                 navigation.navigate('UserTagSelectionListScreen', {
                   postData,
                   routeParams: route.params.isRepost ? {...route.params} : {},

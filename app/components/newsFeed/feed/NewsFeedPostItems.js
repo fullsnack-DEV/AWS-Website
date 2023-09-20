@@ -94,7 +94,20 @@ const NewsFeedPostItems = memo(
 
         case strings.delete:
         case strings.deleteFromPost:
-          onDeletePost();
+          setShowMoreOptions(false);
+          Alert.alert(
+            strings.alertmessagetitle,
+            strings.doYouWantToDeleteThisPost,
+            [
+              {text: strings.cancel, style: 'cancel'},
+              {
+                text: strings.delete,
+                style: 'destructive',
+                onPress: () => onDeletePost(),
+              },
+            ],
+          );
+
           break;
 
         case strings.report:
