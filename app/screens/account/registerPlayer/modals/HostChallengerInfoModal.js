@@ -14,7 +14,8 @@ const HostChallengerInfoModal = ({
   <CustomModalWrapper
     isVisible={isVisible}
     closeModal={closeModal}
-    modalType={ModalTypes.style2}>
+    modalType={ModalTypes.style2}
+    ratio={2}>
     <View style={{marginBottom: 25}}>
       <Text style={styles.titleText}>{strings.matchHostChallengeText}</Text>
       <Text style={styles.description}>

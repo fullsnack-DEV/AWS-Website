@@ -19,6 +19,7 @@ import fonts from '../../../Constants/Fonts';
 import {getTeamsOfClub} from '../../../api/Groups';
 import Verbs from '../../../Constants/Verbs';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import {showAlert} from '../../../utils';
 
 export default function MemberFilterModal({
   visible,
@@ -30,6 +31,7 @@ export default function MemberFilterModal({
   const [parentGroup, setParentGroup] = useState([]);
   const [isallForConnect, setIsAllForConnect] = useState(false);
   const [isallForRole, setIsAllForRole] = useState(false);
+  const [isallForGroup, setIsAllForGroup] = useState(false);
   const [loading, setloading] = useState(false);
   const [firstTimeCalled, setFirstTimeCalled] = useState(false);
 
@@ -121,8 +123,23 @@ export default function MemberFilterModal({
             const groupInfoArray = response.payload.map((item) => ({
               group_id: item.group_id,
               title: item.group_name,
-              is_checked: false,
+              is_checked: true,
+              is_group: true,
             }));
+
+            groupInfoArray.unshift({
+              group_id: 'is_all',
+              title: 'All',
+              is_checked: true,
+              is_group: true,
+            });
+
+            groupInfoArray.push({
+              group_id: 'non-Team-Member',
+              title: 'Non team member',
+              is_checked: true,
+              is_group: true,
+            });
 
             setParentGroup(groupInfoArray);
           } else {
@@ -139,17 +156,20 @@ export default function MemberFilterModal({
   };
 
   const onItemPress = (item) => {
-    if (item.is_role) {
-      if (item.role === 'is_all') {
-        setIsAllForRole(!isallForRole);
-        const updatedRole = role.map((roleItem) => ({
+    if (item.is_group) {
+      if (item.group_id === 'is_all') {
+        setIsAllForGroup(!isallForGroup);
+        const updatedParentGroupData = parentGroup.map((roleItem) => ({
           ...roleItem,
-          is_checked: isallForRole,
+          is_checked: isallForGroup,
         }));
-
-        setRole(updatedRole);
-      } else if (item.is_role) {
-        const updatedRole = role.map((roleItem) => {
+        setParentGroup(updatedParentGroupData);
+      } else if (item.is_group) {
+        const updatedparentGroupRole = parentGroup.map((roleItem) => {
+          if (roleItem.title === 'All') {
+            // eslint-disable-next-line no-param-reassign
+            roleItem.is_checked = false; // Set is_checked to false for 'All'
+          }
           if (
             roleItem.title === item.title &&
             // eslint-disable-next-line no-prototype-builtins
@@ -162,6 +182,72 @@ export default function MemberFilterModal({
           }
           return roleItem;
         });
+        const uncheckedElements = updatedparentGroupRole.filter(
+          (roleItem) => !roleItem.is_checked,
+        );
+        if (
+          uncheckedElements.length === 1 &&
+          !uncheckedElements[0].is_checked
+        ) {
+          const elementToToggle = uncheckedElements[0];
+          const updatedElement = {...elementToToggle, is_checked: true};
+          const updatedConnectWithToggledElement = updatedparentGroupRole.map(
+            (roleItem) =>
+              roleItem === elementToToggle ? updatedElement : roleItem,
+          );
+
+          setParentGroup(updatedConnectWithToggledElement);
+          return;
+        }
+
+        setParentGroup(updatedparentGroupRole);
+      }
+    }
+
+    if (item.is_role) {
+      if (item.role === 'is_all') {
+        setIsAllForRole(!isallForRole);
+        const updatedRole = role.map((roleItem) => ({
+          ...roleItem,
+          is_checked: isallForRole,
+        }));
+
+        setRole(updatedRole);
+      } else if (item.is_role) {
+        const updatedRole = role.map((roleItem) => {
+          if (roleItem.title === 'All') {
+            // eslint-disable-next-line no-param-reassign
+            roleItem.is_checked = false; // Set is_checked to false for 'All'
+          }
+          if (
+            roleItem.title === item.title &&
+            // eslint-disable-next-line no-prototype-builtins
+            roleItem.hasOwnProperty('is_checked')
+          ) {
+            return {
+              ...roleItem,
+              is_checked: !roleItem.is_checked,
+            };
+          }
+          return roleItem;
+        });
+
+        const uncheckedElements = updatedRole.filter(
+          (roleItem) => !roleItem.is_checked,
+        );
+        if (
+          uncheckedElements.length === 1 &&
+          !uncheckedElements[0].is_checked
+        ) {
+          const elementToToggle = uncheckedElements[0];
+          const updatedElement = {...elementToToggle, is_checked: true};
+          const updatedConnectWithToggledElement = updatedRole.map((roleItem) =>
+            roleItem === elementToToggle ? updatedElement : roleItem,
+          );
+
+          setRole(updatedConnectWithToggledElement);
+          return;
+        }
 
         setRole(updatedRole);
       }
@@ -178,6 +264,10 @@ export default function MemberFilterModal({
         setConnectdata(updatedConnect);
       } else if (item.is_connect) {
         const updatedConnect = connectData.map((roleItem) => {
+          if (roleItem.title === 'All') {
+            // eslint-disable-next-line no-param-reassign
+            roleItem.is_checked = false; // Set is_checked to false for 'All'
+          }
           if (
             roleItem.title === item.title &&
             // eslint-disable-next-line no-prototype-builtins
@@ -190,6 +280,23 @@ export default function MemberFilterModal({
           }
           return roleItem;
         });
+        const uncheckedElements = updatedConnect.filter(
+          (roleItem) => !roleItem.is_checked,
+        );
+        if (
+          uncheckedElements.length === 1 &&
+          !uncheckedElements[0].is_checked
+        ) {
+          const elementToToggle = uncheckedElements[0];
+          const updatedElement = {...elementToToggle, is_checked: true};
+          const updatedConnectWithToggledElement = updatedConnect.map(
+            (roleItem) =>
+              roleItem === elementToToggle ? updatedElement : roleItem,
+          );
+
+          setConnectdata(updatedConnectWithToggledElement);
+          return;
+        }
 
         setConnectdata(updatedConnect);
       }
@@ -210,7 +317,27 @@ export default function MemberFilterModal({
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
-        <Text style={styles.languageList}>{item.title}</Text>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={styles.languageList}>
+            {item.title === 'All' && item.is_group === true
+              ? strings.club
+              : item.title}
+          </Text>
+          {item.is_group && (
+            <Image
+              source={
+                item.title === 'All' ? images.newClubIcon : images.newTeamIcon
+              }
+              style={{
+                width: 15,
+                height: 15,
+                marginLeft: 5,
+                alignSelf: 'center',
+              }}
+            />
+          )}
+        </View>
+
         <View style={styles.checkbox}>
           {item.is_checked ? (
             <Image source={images.orangeCheckBox} style={styles.checkboxImg} />
@@ -231,7 +358,27 @@ export default function MemberFilterModal({
       .filter((item) => item.is_checked === true && item.is_connect === true)
       .map((item) => item.connected);
 
-    onApplyPress(rolesWithIsCheckedTrue, connectWithIcCheckedTrue);
+    const TeamsSelectedIds =
+      authContext.entity.role === Verbs.entityTypeTeam
+        ? []
+        : parentGroup
+            .filter(
+              (item) => item.is_checked === true && item.is_group === true,
+            )
+            .map((item) => item.group_id);
+
+    if (
+      !rolesWithIsCheckedTrue.length > 0 ||
+      !connectWithIcCheckedTrue.length > 0
+    ) {
+      showAlert(strings.filterModalValidation);
+    } else {
+      onApplyPress(
+        rolesWithIsCheckedTrue,
+        connectWithIcCheckedTrue,
+        TeamsSelectedIds,
+      );
+    }
   };
 
   return (
@@ -241,7 +388,11 @@ export default function MemberFilterModal({
       title={strings.filter}
       modalType={ModalTypes.style1}
       headerRightButtonText={strings.apply}
-      onModalShow={() => getParentClub()}
+      onModalShow={() => {
+        if (authContext.entity.role === Verbs.entityTypeClub) {
+          getParentClub();
+        }
+      }}
       onRightButtonPress={() => onRightButtonPress()}
       containerStyle={{margin: 0, padding: 0}}>
       <ScrollView
@@ -252,7 +403,7 @@ export default function MemberFilterModal({
           parentGroup.length > 1 && (
             <>
               <View>
-                <Text style={styles.titleTextStyle}>{strings.teams}</Text>
+                <Text style={styles.titleTextStyle}>{strings.groups}</Text>
 
                 <FlatList
                   scrollEnabled={false}
@@ -265,25 +416,7 @@ export default function MemberFilterModal({
               <TCThinDivider height={7} marginTop={15} />
             </>
           )}
-
         {/* Roles */}
-        {authContext.entity.role === Verbs.entityTypeClub &&
-          parentGroup.length > 1 && (
-            <>
-              <View>
-                <Text style={styles.titleTextStyle}>{strings.roles}</Text>
-                <FlatList
-                  scrollEnabled={false}
-                  extraData={role}
-                  data={role}
-                  ItemSeparatorComponent={() => <TCThinDivider />}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={renderGenders}
-                />
-              </View>
-              <TCThinDivider height={7} marginTop={15} />
-            </>
-          )}
         {authContext.entity.role === Verbs.entityTypeTeam && (
           <>
             <View>

@@ -94,11 +94,15 @@ const PlayersListNearYou = ({
   if (list.length > 0) {
     return (
       <>
-        <Text style={styles.listTitle}>
-          {sportType === Verbs.sportTypeSingle
-            ? strings.playersNearYouText
-            : strings.partnersNearYouText}
-        </Text>
+        {fromCreateClub ? (
+          <Text style={styles.listTitle}>{strings.peopleNearYou}</Text>
+        ) : (
+          <Text style={styles.listTitle}>
+            {sportType === Verbs.sportTypeSingle
+              ? strings.playersNearYouText
+              : strings.partnersNearYouText}
+          </Text>
+        )}
         {loading || listloading ? (
           <ListShimmer />
         ) : (

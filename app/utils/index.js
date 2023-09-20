@@ -2521,12 +2521,34 @@ export const displayLocation = (data) => {
 
 export const setAuthContextData = async (data, authContext) => {
   const entity = authContext.entity;
+
   entity.auth.user = data;
   entity.obj = data;
-  authContext.setEntity({...entity});
-  authContext.setUser(data);
   await setStorage('authContextUser', data);
   await setStorage('authContextEntity', {...entity});
+  authContext.setEntity({...entity});
+  authContext.setUser(data);
+
+  const updatedManagedEntities = authContext.managedEntities.map((item) => {
+    if (
+      data?.entity_type === Verbs.entityTypePlayer ||
+      data?.entity_type === Verbs.entityTypeUser
+    ) {
+      if (item?.user_id === data?.user_id) {
+        return data;
+      }
+    } else if (
+      data?.entity_type === Verbs.entityTypeClub ||
+      data?.entity_type === Verbs.entityTypeTeam
+    ) {
+      if (item?.group_id === data?.group_id) {
+        return data;
+      }
+    }
+    return item;
+  });
+
+  await authContext.setentityList(updatedManagedEntities);
 };
 
 export const calculateReviewPeriod = (item = {}, reviews = []) => {
@@ -2656,7 +2678,6 @@ export const prepareTagName = (data = {}) => {
   }
 
   return `@${tagName} `;
-
 };
 export const calculateRatio = (sportsLength) => {
   if (sportsLength === 2) {

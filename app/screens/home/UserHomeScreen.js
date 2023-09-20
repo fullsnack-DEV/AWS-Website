@@ -34,6 +34,7 @@ const UserHomeScreen = ({
   pointEvent = 'auto',
   isAccountDeactivated = false,
   userData = {},
+  pulltoRefresh,
 }) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
@@ -494,6 +495,7 @@ const UserHomeScreen = ({
             isAdmin={route.params.uid === authContext.entity.uid}
             homeFeedHeaderComponent={userDetailsSection}
             currentTab={0}
+            pulltoRefresh={pulltoRefresh}
           />
         </View>
 

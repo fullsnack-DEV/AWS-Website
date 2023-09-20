@@ -18,6 +18,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   BackHandler,
+  RefreshControl,
 } from 'react-native';
 
 import FastImage from 'react-native-fast-image';
@@ -120,9 +121,49 @@ function LocalHomeScreen({navigation, route}) {
   });
   const [allUserData, setAllUserData] = useState([]);
   const [owners, setOwners] = useState([]);
-  const [sportIconLoader, setSportIconLoader] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [sportIconLoader, setSportIconLoader] = useState(true);
   const [cardLoader, setCardLoader] = useState(false);
   const [showInviteMember, setShowInviteMember] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    locationContext.setSelectedLoaction(location);
+    Utility.getStorage('appSetting').then((setting) => {
+      setImageBaseUrl(setting.base_url_sporticon);
+    });
+
+    LocalHomeQuery(
+      location,
+      defaultPageSize,
+      selectedSport,
+      sportType,
+      authContext,
+      setRecentMatch,
+      setUpcomingMatch,
+      setChallengeeMatch,
+      setHiringPlayers,
+      setLookingTeam,
+      setReferees,
+      setScorekeepers,
+      setCardLoader,
+    );
+
+    const getEventdata = async () => {
+      await getEventsAndSlotsList(
+        authContext,
+        setAllUserData,
+        setOwners,
+        filterSetting,
+        selectedOptions,
+        setFilterData,
+        allUserData,
+      );
+    };
+    getEventdata();
+
+    setIsRefreshing(false);
+  };
 
   useEffect(() => {
     const backAction = () => {
@@ -206,7 +247,7 @@ function LocalHomeScreen({navigation, route}) {
       );
     };
     getEventdata();
-  }, [authContext, isFocused]);
+  }, [authContext, isFocused, isRefreshing]);
 
   useEffect(() => {
     if (isFocused) {
@@ -245,6 +286,7 @@ function LocalHomeScreen({navigation, route}) {
     setScorekeepers,
     isFocused,
     locationContext,
+    isRefreshing,
   ]);
 
   const ITEM_HEIGHT = Verbs.ITEM_HEIGHT;
@@ -346,7 +388,11 @@ function LocalHomeScreen({navigation, route}) {
   }, [route.params?.locationText]);
 
   const setSportHandler = (data) => {
-    const filteredData = data.filter((item) => item.sport !== undefined);
+    // remove duplicate Items
+    const filteredData = data.filter(
+      (item) => item.sport !== undefined && item.sport_type !== undefined,
+    );
+
     setSports(filteredData);
   };
 
@@ -428,10 +474,21 @@ function LocalHomeScreen({navigation, route}) {
       const sportImage = sportDetails?.sport_image || '';
 
       return (
-        <FastImage
-          source={{uri: `${image_base_url}${sportImage}`}}
-          style={{height: 40, width: 40}}
-        />
+        <View>
+          {!sportImage.length >= 1 ? (
+            <View style={{paddingHorizontal: 5}}>
+              <ActivityIndicator
+                style={{height: 40, width: 40}}
+                color={colors.orangeGradientColor}
+              />
+            </View>
+          ) : (
+            <FastImage
+              source={{uri: `${image_base_url}${sportImage}`}}
+              style={{height: 40, width: 40}}
+            />
+          )}
+        </View>
       );
     },
     [authContext.sports, image_base_url],
@@ -559,15 +616,7 @@ function LocalHomeScreen({navigation, route}) {
             : colors.whiteColor,
         marginHorizontal: 3,
       }}>
-      {sportIconLoader ? (
-        <ActivityIndicator
-          style={styles.imgloaderStyle}
-          size="small"
-          color="#000000"
-        />
-      ) : (
-        renderImageforSport(item)
-      )}
+      {renderImageforSport(item)}
 
       <Text
         style={
@@ -636,39 +685,41 @@ function LocalHomeScreen({navigation, route}) {
   });
 
   const SportList = () => (
-    <FlatList
-      ref={refContainer}
-      extraData={settingPopup}
-      style={{
-        height: 74,
-        backgroundColor: colors.whiteColor,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: colors.veryLightGray,
-      }}
-      maxToRenderPerBatch={10}
-      initialNumToRender={10}
-      windowSize={21}
-      horizontal={true}
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      data={[
-        ...[
+    <>
+      <FlatList
+        ref={refContainer}
+        extraData={settingPopup}
+        style={{
+          height: 74,
+          backgroundColor: colors.whiteColor,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: colors.veryLightGray,
+        }}
+        maxToRenderPerBatch={10}
+        initialNumToRender={10}
+        windowSize={21}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        data={[
+          ...[
+            {
+              sport: strings.allType,
+              sport_type: strings.allType,
+              icon: images.allSportIcon,
+            },
+          ],
+          ...sports.slice(0, 12),
           {
-            sport: strings.allType,
-            sport_type: strings.allType,
-            icon: images.allSportIcon,
+            sport: strings.editType,
+            sport_type: strings.editType,
           },
-        ],
-        ...sports.slice(0, 12),
-        {
-          sport: strings.editType,
-          sport_type: strings.editType,
-        },
-      ]}
-      keyExtractor={keyExtractor}
-      renderItem={SportsListView}
-      getItemLayout={getLayout}
-    />
+        ]}
+        keyExtractor={keyExtractor}
+        renderItem={SportsListView}
+        getItemLayout={getLayout}
+      />
+    </>
   );
 
   const RenderSportsListView = () => {
@@ -733,6 +784,7 @@ function LocalHomeScreen({navigation, route}) {
         <View style={styles.separateLine} testID="local-home-screen" />
 
         {/* sport list  */}
+
         {RenderSportsListView()}
       </View>
 
@@ -795,6 +847,12 @@ function LocalHomeScreen({navigation, route}) {
               />
             )}
             getItemLayout={getItemLayout}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+              />
+            }
           />
         </View>
       )}
@@ -1126,11 +1184,5 @@ const styles = StyleSheet.create({
   separateLine: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.veryLightGray,
-  },
-  imgloaderStyle: {
-    height: 25,
-    width: 25,
-    marginBottom: 10,
-    marginTop: 5,
   },
 });

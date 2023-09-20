@@ -33,6 +33,7 @@ const HomeFeed = ({
   isAdmin,
   homeFeedHeaderComponent,
   currentTab,
+  pulltoRefresh,
 }) => {
   const authContext = useContext(AuthContext);
   const [fullScreenLoading, setFullScreenLoading] = useState(false);
@@ -245,7 +246,8 @@ const HomeFeed = ({
     setPullRefresh(true);
 
     getTimeLine();
-  }, [getTimeLine]);
+    pulltoRefresh();
+  }, [getTimeLine, pulltoRefresh]);
 
   return (
     <View style={{flex: 1}}>

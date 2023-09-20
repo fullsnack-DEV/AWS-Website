@@ -61,6 +61,7 @@ const GroupHomeScreen = ({
   isAccountDeactivated = false,
   groupData = {},
   restrictReturn = false,
+  pulltoRefresh = () => {},
 }) => {
   const authContext = useContext(AuthContext);
 
@@ -1407,6 +1408,7 @@ const GroupHomeScreen = ({
             isAdmin={route.params.uid === authContext.entity.uid}
             homeFeedHeaderComponent={ListHeader}
             currentTab={0}
+            pulltoRefresh={pulltoRefresh}
           />
         </View>
 

@@ -69,8 +69,8 @@ const HomeScreen = ({navigation, route}) => {
     });
   }, [navigation]);
 
-  const getUserData = (uid, admin) => {
-    setLoading(true);
+  const getUserData = (uid, admin, fromRefresh) => {
+    setLoading(!fromRefresh);
 
     getUserDetails(uid, authContext, !admin)
       .then((res1) => {
@@ -97,6 +97,7 @@ const HomeScreen = ({navigation, route}) => {
           };
 
           setCurrentUserData(data);
+
           setLoading(false);
         });
       })
@@ -109,8 +110,8 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
-  const fetchGroupDetails = (userId, role, admin) => {
-    setLoading(true);
+  const fetchGroupDetails = (userId, role, admin, fromRefresh = false) => {
+    setLoading(!fromRefresh);
 
     const promises = [
       getGroupDetails(userId, authContext, !admin),
@@ -242,6 +243,16 @@ const HomeScreen = ({navigation, route}) => {
           pointEvent={pointEvent}
           isAccountDeactivated={authContext.isAccountDeactivated}
           userData={currentUserData}
+          pulltoRefresh={() => {
+            const loginEntity = authContext.entity;
+
+            const uid = route.params.uid ?? loginEntity.uid;
+
+            const admin = loginEntity.uid === uid;
+
+            const fromRefresh = true;
+            getUserData(uid, admin, fromRefresh);
+          }}
         />
       );
     }
@@ -260,6 +271,16 @@ const HomeScreen = ({navigation, route}) => {
           isAccountDeactivated={authContext.isAccountDeactivated}
           groupData={currentUserData}
           restrictReturn={route.params?.restrictReturn}
+          pulltoRefresh={() => {
+            const loginEntity = authContext.entity;
+
+            const uid = route.params.uid ?? loginEntity.uid;
+
+            const admin = loginEntity.uid === uid;
+            const role = route.params.role ?? '';
+            const fromRefresh = true;
+            fetchGroupDetails(uid, role, admin, fromRefresh);
+          }}
         />
       );
     }
@@ -414,9 +435,11 @@ const HomeScreen = ({navigation, route}) => {
               alignItems: 'center',
             }}>
             <View>
-              <Text style={styles.title} numberOfLines={1}>
-                {currentUserData.full_name ?? currentUserData.group_name}
-              </Text>
+              {!loading && (
+                <Text style={styles.title} numberOfLines={1}>
+                  {currentUserData.full_name ?? currentUserData.group_name}
+                </Text>
+              )}
             </View>
             {isAdmin ? (
               <Pressable
@@ -498,7 +521,7 @@ const HomeScreen = ({navigation, route}) => {
             sportType={
               authContext.entity.role === Verbs.entityTypeTeam
                 ? route.params.entityObj?.setting?.sport
-                : route.params.entityObj?.sports?.[0]?.sport
+                : Verbs.sportTypeSingle
             }
             searchTeam={(filters) => {
               const teamData = getDataForNextScreen(

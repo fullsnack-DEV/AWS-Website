@@ -630,8 +630,6 @@ const getSportsForHome = (
     authContext.entity.auth.user?.favouriteSport?.length > 1 &&
     authContext.entity.role !== Verbs.entityTypeClub
   ) {
-    setSportIconLoader(false);
-
     const favouriteSports = authContext.entity.auth.user?.favouriteSport?.map(
       (item) => item,
     );
@@ -671,7 +669,7 @@ const getSportsForHome = (
 
       return unique;
     }, []);
-
+    setSportIconLoader(false);
     setSportHandler(result);
 
     return;

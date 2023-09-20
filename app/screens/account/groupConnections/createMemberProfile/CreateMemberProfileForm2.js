@@ -81,7 +81,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
         item.name.toLowerCase() === authContext.user?.country.toLowerCase(),
     );
 
-    let dialCode = selectedCountryItem?.dial_code ?? '';
+    let dialCode = selectedCountryItem?.dial_code;
 
     if (dialCode.startsWith('+')) {
       dialCode = dialCode.substring(1);

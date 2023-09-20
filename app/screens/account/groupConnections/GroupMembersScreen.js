@@ -56,6 +56,7 @@ import RequestBasicInfoModal from './RequestBasicInfoModal';
 import GroupPrivacyModal from './GroupPrivacyModal';
 import MemberFilterModal from './MemberFilterModal';
 import {getPendingRequest} from '../../../api/Notificaitons';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -85,6 +86,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const [visiblePrivacyModal, setVisiblePrivacyModal] = useState(false);
   const [visibleFilterModal, setVisibleFilterModal] = useState(false);
   const [pendingReqNumber, setpendingReqNumber] = useState(10);
+  const [filterloading, setFilterLoading] = useState(false);
 
   useEffect(() => {
     const backAction = () => {
@@ -146,15 +148,16 @@ export default function GroupMembersScreen({navigation, route}) {
 
   useEffect(() => {
     if (visibleFilterModal) {
-      getMembers();
+      getMembers(groupID, authContext);
     }
+
     getPendingRequestData();
   }, [isFocused, visibleFilterModal]);
 
   useFocusEffect(
     React.useCallback(() => {
       if (active) {
-        getMembers();
+        getMembers(groupID, authContext);
 
         setActive(false);
       }
@@ -162,8 +165,57 @@ export default function GroupMembersScreen({navigation, route}) {
   );
 
   // eslint-disable-next-line consistent-return
-  const getFilteredMember = (roleArray, connectArray) => {
+  const getFilteredMember = (roleArray, connectArray, filterTeams = []) => {
+    const teamIdsString = filterTeams.join(',');
+
+    if (filterTeams.length >= 1) {
+      if (filterTeams.includes('is_all')) {
+        getOtherTeamsFilterMembers(
+          groupID,
+          authContext,
+          roleArray,
+          connectArray,
+        );
+
+        return;
+      }
+
+      getOtherTeamsFilterMembers(
+        groupID,
+        authContext,
+        roleArray,
+        connectArray,
+        teamIdsString,
+      );
+      return;
+    }
+
     const filteredMembers = searchMember.filter((item) => {
+      // Role Filter
+
+      if (
+        !roleArray.includes('is_all', 'no_role') &&
+        !connectArray.length > 0
+      ) {
+        if (roleArray.some((role) => item[role] === true)) {
+          return item;
+        }
+      }
+
+      if (
+        roleArray.length > 0 &&
+        !roleArray.includes('is_all', 'no_role') &&
+        connectArray.length > 0 &&
+        !connectArray.includes('is_all')
+      ) {
+        if (
+          roleArray.some((role) => item[role] === true) &&
+          connectArray.some((connected) => item.connected === connected)
+        ) {
+          return item;
+        }
+      }
+
       if (roleArray.includes('is_all')) {
         if (connectArray.includes(true) && !connectArray.includes('is_all')) {
           return item.connected === true;
@@ -192,18 +244,25 @@ export default function GroupMembersScreen({navigation, route}) {
           return item;
         }
       }
-      // Role Filter
-      if (roleArray.some((role) => item[role] === true)) {
-        return item;
-      }
+
       // connected All
       if (roleArray.includes('is_all')) {
         return true;
       }
-      // connected Filter
-      if (connectArray.some((role) => item.connected === role)) {
-        return item;
+
+      if (connectArray.includes('is_all')) {
+        if (roleArray.some((role) => item[role] === true)) {
+          return item;
+        }
       }
+
+      // // connected Filter
+      // if (connectArray.length >= 1 && !roleArray.length > 0) {
+      //   console.log('in the connect');
+      //   if (connectArray.some((role) => item.connected === role)) {
+      //     return item;
+      //   }
+      // }
 
       return false;
     });
@@ -211,13 +270,110 @@ export default function GroupMembersScreen({navigation, route}) {
     setSearchMember(filteredMembers);
   };
 
-  const getMembers = async () => {
-    setloading(true);
+  const getOtherTeamsFilterMembers = async (
+    groupIDs,
+    authContexts,
+    roleArray,
+    connectArray,
+    grp_ids = '',
+  ) => {
+    setFilterLoading(true);
 
-    if (groupID) {
-      getGroupMembers(groupID, authContext)
+    if (groupIDs) {
+      getGroupMembers(groupIDs, authContexts, grp_ids)
         .then((response) => {
           const unsortedReponse = response.payload;
+
+          unsortedReponse.sort((a, b) =>
+            a.first_name.normalize().localeCompare(b.first_name.normalize()),
+          );
+
+          const adminMembers = unsortedReponse.filter(
+            (item) => item.is_admin === true,
+          );
+
+          const normalMembers = unsortedReponse.filter(
+            (item) => item.is_admin !== true,
+          );
+
+          const SortedMembers = [...adminMembers, ...normalMembers];
+
+          // filtering for Role and connect
+          const filteredMembers = SortedMembers.filter((item) => {
+            if (roleArray.includes('is_all')) {
+              if (
+                connectArray.includes(true) &&
+                !connectArray.includes('is_all')
+              ) {
+                return item.connected === true;
+              }
+              if (
+                connectArray.includes(false) &&
+                !connectArray.includes('is_all')
+              ) {
+                return item.connected === false;
+              }
+              return true;
+            }
+
+            if (roleArray.includes('no_role')) {
+              const propertiesToCheck = [
+                'is_admin',
+                'is_player',
+                'is_coach',
+                'is_parent',
+              ];
+
+              const hasAllFalseProperties = propertiesToCheck.every(
+                (prop) =>
+                  // Check if the property exists and is set to false, or if it doesn't exist
+                  typeof item[prop] === 'undefined' || item[prop] === false,
+              );
+
+              if (hasAllFalseProperties) {
+                return item;
+              }
+            }
+            // Role Filter
+            if (roleArray.some((role) => item[role] === true)) {
+              return item;
+            }
+            // connected All
+            if (roleArray.includes('is_all')) {
+              return true;
+            }
+            // connected Filter
+            if (connectArray.some((role) => item.connected === role)) {
+              return item;
+            }
+
+            return false;
+          });
+
+          setMembers(filteredMembers);
+
+          setSearchMember(filteredMembers);
+
+          setFilterLoading(false);
+        })
+        .catch((e) => {
+          setFilterLoading(false);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, e.message);
+          }, 10);
+        });
+    }
+  };
+
+  const getMembers = async (groupIDs, authContexts, grp_ids = '') => {
+    // eslint-disable-next-line no-unused-expressions
+    grp_ids.length >= 1 ? setFilterLoading(true) : setloading(true);
+
+    if (groupIDs) {
+      getGroupMembers(groupIDs, authContexts, grp_ids)
+        .then((response) => {
+          const unsortedReponse = response.payload;
+
           unsortedReponse.sort((a, b) =>
             a.first_name.normalize().localeCompare(b.first_name.normalize()),
           );
@@ -236,10 +392,11 @@ export default function GroupMembersScreen({navigation, route}) {
 
           setSearchMember(SortedMembers);
           setloading(false);
+          setFilterLoading(false);
         })
         .catch((e) => {
           setloading(false);
-
+          setFilterLoading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -622,6 +779,8 @@ export default function GroupMembersScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
+      <ActivityLoader visible={filterloading} />
+
       <View
         style={{
           opacity: authContext.isAccountDeactivated ? 0.5 : 1,
@@ -773,8 +932,8 @@ export default function GroupMembersScreen({navigation, route}) {
         groupID={groupID}
         authContext={authContext}
         closeModal={() => setVisibleFilterModal(false)}
-        onApplyPress={(role, connectArray) => {
-          getFilteredMember(role, connectArray);
+        onApplyPress={(role, connectArray, filterTeams) => {
+          getFilteredMember(role, connectArray, filterTeams);
           setVisibleFilterModal(false);
         }}
       />

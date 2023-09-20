@@ -10,7 +10,7 @@ import {getSportName} from '../../utils/sportsActivityUtils';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 
-export default function EventsCard({
+function EventsCard({
   onItemPress = () => {},
   data = [],
   owners,
@@ -197,3 +197,5 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
+
+export default React.memo(EventsCard);

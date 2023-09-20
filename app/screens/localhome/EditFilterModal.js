@@ -7,6 +7,7 @@ import {
   Pressable,
   Modal,
   TouchableWithoutFeedback,
+  Dimensions,
 } from 'react-native';
 import React, {useCallback, useEffect, useState, useContext} from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -48,6 +49,7 @@ export default function EditFilterModal({
 
   useEffect(() => {
     GetandSetSportsLists();
+
     setisSaved(false);
   }, [visible, sportList, authContext]);
 
@@ -240,7 +242,11 @@ export default function EditFilterModal({
         return;
         // eslint-disable-next-line no-else-return
       } else {
-        setAddedsport([...result]);
+        const filteredData = result.filter(
+          (i) => i.sport !== undefined && i.sport_type !== undefined,
+        );
+
+        setAddedsport([...filteredData]);
       }
     } else {
       const newAddedSport = addedSport.filter(
@@ -362,11 +368,13 @@ export default function EditFilterModal({
                 <DraggableFlatList
                   scrollEnabled
                   autoscrollSpeed={200}
+                  style={{
+                    height: Dimensions.get('window').height * 0.75,
+                  }}
                   data={sports}
                   onDragEnd={({data}) => {
                     setsports(data);
                   }}
-                  style={{marginBottom: 200}}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={renderItem}
                   ListFooterComponent={() => (

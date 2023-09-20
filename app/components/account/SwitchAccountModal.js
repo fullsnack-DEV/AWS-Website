@@ -36,10 +36,11 @@ const SwitchAccountModal = ({
   closeModal = () => {},
   onCreate = () => {},
 }) => {
+  const authContext = useContext(AuthContext);
   const [accountList, setAccountList] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState({});
   const [showLoader, setShowLoader] = useState(false);
-  const [createOptions] = useState([
+  const [createOptions, setCreateOptions] = useState([
     strings.team,
     strings.club,
     strings.leaguesTitle,
@@ -48,7 +49,6 @@ const SwitchAccountModal = ({
   const [loading, setLoading] = useState(false);
   const [isFetchingList, setIsFetchingList] = useState(false);
 
-  const authContext = useContext(AuthContext);
   const {onSwitchProfile} = useSwitchAccount();
 
   useEffect(() => {
@@ -67,6 +67,12 @@ const SwitchAccountModal = ({
           Alert.alert(strings.alertmessagetitle, err.message);
           setIsFetchingList(false);
         });
+
+      if (authContext.entity.role === Verbs.entityTypeClub) {
+        setCreateOptions([strings.team]);
+      } else {
+        setCreateOptions([strings.team, strings.club, strings.leaguesTitle]);
+      }
     }
   }, [isVisible, authContext]);
 
@@ -183,7 +189,8 @@ const SwitchAccountModal = ({
 
   const ListFooterComponent = () => (
     <>
-      {authContext.entity.role === Verbs.entityTypeUser && (
+      {(authContext.entity.role === Verbs.entityTypeUser ||
+        authContext.entity.role === Verbs.entityTypeClub) && (
         <>
           <Pressable
             style={[styles.row, {justifyContent: 'flex-start'}]}
@@ -284,11 +291,13 @@ const SwitchAccountModal = ({
         closeModal={() => setBottomSheet(false)}
         onSelect={(option) => {
           setBottomSheet(false);
+
           onCreate(option);
         }}
         type="ios"
         title={strings.create}
       />
+
       <SwitchAccountLoader
         isVisible={showLoader}
         entityName={selectedAccount.full_name ?? selectedAccount.group_name}

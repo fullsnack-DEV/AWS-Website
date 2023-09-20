@@ -34,11 +34,11 @@ import fonts from '../../../Constants/Fonts';
 import uploadImages from '../../../utils/imageAction';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import AuthContext from '../../../auth/context';
-import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
+
 import images from '../../../Constants/ImagePath';
 import TCImage from '../../../components/TCImage';
-import Verbs from '../../../Constants/Verbs';
-import {deleteConfirmation} from '../../../utils';
+
+import {deleteConfirmation, setAuthContextData} from '../../../utils';
 
 // import ToggleView from '../../../components/Schedule/ToggleView';
 
@@ -209,42 +209,23 @@ export default function EditPersonalProfileScreen({navigation, route}) {
   };
 
   const callUpdateUserAPI = (userProfile) => {
-    updateUserProfile(userProfile, authContext).then((response) => {
-      if (response && response.status === true) {
-        const entity = authContext.entity;
-        entity.obj = response.payload;
-        entity.auth.user = response.payload;
-        const entity_id = [
-          Verbs.entityTypeUser,
-          Verbs.entityTypePlayer,
-        ]?.includes(response?.payload?.entity_type)
-          ? response?.payload?.user_id
-          : response?.payload?.group_id;
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          entity_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-            navigation.goBack();
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-
-            setloading(false);
-            navigation.goBack();
-          });
-      } else {
+    updateUserProfile(userProfile, authContext)
+      .then(async (response) => {
+        if (response && response.status === true) {
+          await setAuthContextData(response.payload, authContext);
+          navigation.goBack();
+          setloading(false);
+        } else {
+          setloading(false);
+          setTimeout(() => {
+            Alert.alert(strings.appName, strings.defaultError);
+          }, 0.1);
+        }
+      })
+      .catch((e) => {
+        console.log(e.messages);
         setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.appName, strings.defaultError);
-        }, 0.1);
-      }
-    });
+      });
   };
 
   const onLocationClicked = async () => {

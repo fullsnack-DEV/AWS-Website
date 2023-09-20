@@ -665,7 +665,11 @@ export default function MembersProfileScreen({navigation, route}) {
           }
         }
 
-        getMemberInformation();
+        // eslint-disable-next-line no-unused-expressions
+        authContext.entity.role === Verbs.entityTypeClub
+          ? navigation.goBack()
+          : getMemberInformation();
+
         setShowAdminPrivillege(false);
       })
       .catch((e) => {

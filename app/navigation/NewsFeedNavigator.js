@@ -92,6 +92,7 @@ import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollo
 import WritePostScreen from '../screens/newsfeeds/WritePostScreen';
 import FeedViewScreen from '../components/newsFeed/feedView/FeedViewScreen';
 import EventsListScreen from '../screens/account/schedule/EventsListScreen';
+import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 
 const Stack = createStackNavigator();
 
@@ -281,6 +282,12 @@ const NewsFeedNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+
+    <Stack.Screen
+      name="GroupMembersScreen"
+      component={GroupMembersScreen}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen

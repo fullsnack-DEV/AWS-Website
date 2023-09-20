@@ -40,6 +40,7 @@ const NewsFeedList = ({
   openProfilId,
   entityDetails = {},
   fetchFeeds = () => {},
+  dummyCall = () => {},
 }) => {
   const [userID, setUserID] = useState('');
 
@@ -127,13 +128,12 @@ const NewsFeedList = ({
   );
 
   const newsFeedOnRefresh = useCallback(() => {
-    if (onRefreshPress) {
-      const entity = authContext.entity;
-      if (entity) {
-        setUserID(entity.uid || entity.auth.user_id);
-      }
-      onRefreshPress();
+    const entity = authContext.entity;
+    if (entity) {
+      setUserID(entity.uid || entity.auth.user_id);
     }
+    onRefreshPress();
+    dummyCall();
   }, [authContext.entity, onRefreshPress]);
 
   const newsFeedKeyExtractor = useCallback(

@@ -33,17 +33,7 @@ const GroupHomeHeader = ({
             style={[styles.image, {borderRadius: 5, resizeMode: 'cover'}]}
           />
         ) : null}
-        {/* <View
-          style={{
-            backgroundColor: colors.whiteColor,
-            opacity: 0.95,
-            paddingHorizontal: 6,
-            paddingVertical: 8,
-            borderRadius: 5,
-            marginBottom: 5,
-          }}>
-          <Text>222 Matches</Text>
-        </View> */}
+
         <View style={styles.floatingContainer}>
           <GroupIcon
             imageUrl={groupData.thumbnail}
@@ -95,7 +85,10 @@ const GroupHomeHeader = ({
             <Pressable
               style={[
                 styles.row,
-                {justifyContent: 'flex-end', marginRight: 10},
+                {
+                  justifyContent: 'flex-end',
+                  marginRight: 10,
+                },
               ]}
               onPress={onClickMembers}>
               <Text style={styles.count}>{groupData.member_count}</Text>

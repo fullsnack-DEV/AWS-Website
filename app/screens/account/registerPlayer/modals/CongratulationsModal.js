@@ -227,7 +227,8 @@ const CongratulationsModal = ({
     if (!isFocused) return;
     if (
       sportType === Verbs.sportTypeSingle ||
-      sportType === Verbs.sportTypeDouble
+      sportType === Verbs.sportTypeDouble ||
+      fromCreateClub
     ) {
       getPlayerListNearYou();
     } else {
