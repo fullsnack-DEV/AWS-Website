@@ -57,6 +57,7 @@ import {ModalTypes} from '../../Constants/GeneralConstants';
 import ScreenHeader from '../../components/ScreenHeader';
 
 let stopFetchMore = true;
+let timeout;
 
 export default function LookingForChallengeScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
@@ -260,9 +261,8 @@ export default function LookingForChallengeScreen({navigation, route}) {
         */
         // Simple search with full name
         availableForchallengeQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filerdata.searchText.toLowerCase()}*`,
-            fields: ['full_name'],
+          match_phrase_prefix: {
+            full_name: `*${filerdata.searchText.toLowerCase()}*`,
           },
         });
       }
@@ -395,9 +395,8 @@ export default function LookingForChallengeScreen({navigation, route}) {
         */
         // Simple search with group name
         availableForchallengeQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filerdata.searchText.toLowerCase()}*`,
-            fields: ['group_name'],
+          match_phrase_prefix: {
+            group_name: `*${filerdata.searchText.toLowerCase()}*`,
           },
         });
       }
@@ -839,7 +838,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
               autoCorrect={false}
               onChangeText={(text) => {
                 const tempFilter = {...filters};
-
                 if (text?.length > 0) {
                   tempFilter.searchText = text;
                 } else {
@@ -848,9 +846,12 @@ export default function LookingForChallengeScreen({navigation, route}) {
                 setFilters({
                   ...tempFilter,
                 });
-                setPageFrom(0);
-                setAvailableChallenge([]);
-                applyFilter(tempFilter);
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                  setPageFrom(0);
+                  setAvailableChallenge([]);
+                  applyFilter(tempFilter);
+                }, 300);
               }}
               value={filters.searchText}
             />
@@ -907,7 +908,23 @@ export default function LookingForChallengeScreen({navigation, route}) {
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
-        ListFooterComponent={() => <View style={{height: 30}} />}
+        // ListFooterComponent={() => <View style={{height: 30}} />}
+        ListFooterComponent={() => (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {!stopFetchMore && (
+              <ActivityIndicator
+                style={styles.loaderStyle}
+                size="small"
+                color="#000000"
+              />
+            )}
+          </View>
+        )}
       />
       <ActionSheet
         ref={actionSheet}

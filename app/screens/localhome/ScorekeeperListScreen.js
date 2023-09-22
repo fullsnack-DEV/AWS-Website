@@ -38,6 +38,7 @@ import {ModalTypes} from '../../Constants/GeneralConstants';
 import ScreenHeader from '../../components/ScreenHeader';
 
 let stopFetchMore = true;
+let timeout;
 
 export default function ScorekeeperListScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
@@ -175,9 +176,8 @@ export default function ScorekeeperListScreen({navigation, route}) {
 
       if (filerScorekeeper?.searchText?.length > 0) {
         scorekeeperQuery.query.bool.must.push({
-          query_string: {
-            query: `${filerScorekeeper?.searchText}*`,
-            fields: ['full_name'],
+          match_phrase_prefix: {
+            full_name: `*${filerScorekeeper.searchText.toLowerCase()}*`,
           },
         });
       }
@@ -489,9 +489,12 @@ export default function ScorekeeperListScreen({navigation, route}) {
                 setFilters({
                   ...tempFilter,
                 });
-                setPageFrom(0);
-                setScorekeepers([]);
-                applyFilter(tempFilter);
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                  setPageFrom(0);
+                  setScorekeepers([]);
+                  applyFilter(tempFilter);
+                }, 300);
               }}
               value={filters.searchText}
             />
@@ -552,6 +555,22 @@ export default function ScorekeeperListScreen({navigation, route}) {
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
+        ListFooterComponent={() => (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {!stopFetchMore && (
+              <ActivityIndicator
+                style={styles.loaderStyle}
+                size="small"
+                color="#000000"
+              />
+            )}
+          </View>
+        )}
       />
       {/* note */}
 
