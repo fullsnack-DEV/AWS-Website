@@ -62,6 +62,7 @@ const GroupHomeScreen = ({
   groupData = {},
   restrictReturn = false,
   pulltoRefresh = () => {},
+  routeParams = {},
 }) => {
   const authContext = useContext(AuthContext);
 
@@ -1409,6 +1410,7 @@ const GroupHomeScreen = ({
             homeFeedHeaderComponent={ListHeader}
             currentTab={0}
             pulltoRefresh={pulltoRefresh}
+            routeParams={routeParams}
           />
         </View>
 

@@ -57,7 +57,7 @@ export default function TCEventCard({onPress, data, owners, allUserData}) {
             source={
               data?.background_thumbnail
                 ? {uri: data?.background_thumbnail}
-                : images.backgroudPlaceholder
+                : data?.temp_background?.thumbnail
             }
             resizeMode="cover"
             style={styles.eventImage}>

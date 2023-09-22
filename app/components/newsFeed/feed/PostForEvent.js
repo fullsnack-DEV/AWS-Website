@@ -25,6 +25,15 @@ const PostForEvent = ({
     }
   }, [postData]);
 
+  const generateRandomImage = () => {
+    const imageUrls = [
+      images.backgroudPlaceholder,
+      images.backgroudPlaceholder1,
+    ];
+    const randomIndex = Math.floor(Math.random() * imageUrls.length);
+    return imageUrls[randomIndex];
+  };
+
   return (
     <View style={styles.parent}>
       <FeedProfile
@@ -42,7 +51,7 @@ const PostForEvent = ({
             source={
               eventData.background_full_image
                 ? {uri: eventData.background_full_image}
-                : images.backgroudPlaceholder
+                : generateRandomImage()
             }
             style={styles.backgroundImage}
           />

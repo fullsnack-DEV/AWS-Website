@@ -36,6 +36,7 @@ import {
 } from '../../../utils';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import {ModalTypes} from '../../../Constants/GeneralConstants';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 export default function ChallengeAvailability({
   isVisible = false,
@@ -352,9 +353,9 @@ export default function ChallengeAvailability({
       title={strings.editChallengeAvailibility}
       headerRightButtonText={strings.save}
       onRightButtonPress={handleSave}
-      containerStyle={{paddingHorizontal: 15}}
-      loading={loading}>
+      containerStyle={{paddingHorizontal: 15}}>
       <View style={isFromSlot ? {} : {height: '95%'}}>
+        <ActivityLoader visible={loading} />
         <FlatList
           data={challengeAvailable}
           showsVerticalScrollIndicator={false}

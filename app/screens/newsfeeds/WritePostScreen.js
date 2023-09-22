@@ -27,7 +27,6 @@ import Video from 'react-native-video';
 import ImagePicker from 'react-native-image-crop-picker';
 import _ from 'lodash';
 import ParsedText from 'react-native-parsed-text';
-import ActivityLoader from '../../components/loader/ActivityLoader';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -50,8 +49,7 @@ import {
   tagRegex,
   urlRegex,
 } from '../../Constants/GeneralConstants';
-import {ImageUploadContext} from '../../context/ImageUploadContext';
-import {createPost, createRePost} from '../../api/NewsFeeds';
+import {createRePost} from '../../api/NewsFeeds';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import FeedMedia from '../../components/newsFeed/feed/FeedMedia';
 import FeedProfile from '../../components/newsFeed/feed/FeedProfile';
@@ -81,7 +79,6 @@ const WritePostScreen = ({navigation, route}) => {
   );
   const [searchUsers, setSearchUsers] = useState([]);
   const [searchGroups, setSearchGroups] = useState([]);
-  const [loading, setloading] = useState(false);
   const [letModalVisible, setLetModalVisible] = useState(false);
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -92,38 +89,7 @@ const WritePostScreen = ({navigation, route}) => {
     value: 0,
   });
 
-  const imageUploadContext = useContext(ImageUploadContext);
   const flatListRef = useRef();
-
-  const createPostAfterUpload = (dataParams) => {
-    let body = dataParams;
-    setloading(true);
-
-    if (
-      authContext.entity.role === Verbs.entityTypeClub ||
-      authContext.entity.role === Verbs.entityTypeTeam
-    ) {
-      body = {
-        ...dataParams,
-        group_id: authContext.entity.uid,
-        showPreviewForUrl,
-      };
-    }
-
-    createPost(body, authContext)
-      .then(() => {
-        if (route.params?.comeFrom) {
-          navigation.pop(2);
-        } else {
-          navigation.goBack();
-        }
-        setloading(false);
-      })
-      .catch((e) => {
-        Alert.alert('', e.messages);
-        setloading(false);
-      });
-  };
 
   const handleRepost = () => {
     const item = {...route.params.repostData};
@@ -201,33 +167,34 @@ const WritePostScreen = ({navigation, route}) => {
         }
       }
 
-      if (selectImage.length > 0) {
-        const imageArray = selectImage.map((dataItem) => dataItem);
-        dataParams = {
-          ...dataParams,
-          text: searchText,
-          attachments: [],
-          tagged: tagData ?? [],
-          who_can_see,
-          format_tagged_data,
-        };
-        imageUploadContext.uploadData(
-          authContext,
+      const imageArray = selectImage.length
+        ? selectImage.map((dataItem) => dataItem)
+        : [];
+      dataParams = {
+        ...dataParams,
+        text: searchText,
+        attachments: [],
+        tagged: tagData ?? [],
+        who_can_see,
+        format_tagged_data,
+      };
+
+      if (route.params?.comeFrom === 'HomeScreen') {
+        navigation.navigate('Account', {
+          screen: 'HomeScreen',
+          params: {
+            isCreatePost: true,
+            dataParams,
+            imageArray,
+            ...route.params.routeParams,
+          },
+        });
+      } else {
+        navigation.navigate('FeedsScreen', {
+          isCreatePost: true,
           dataParams,
           imageArray,
-          createPostAfterUpload,
-        );
-      } else {
-        dataParams = {
-          ...dataParams,
-          text: searchText,
-          attachments: [],
-          tagged: tagData ?? [],
-          who_can_see,
-          format_tagged_data,
-        };
-
-        createPostAfterUpload(dataParams);
+        });
       }
     }
   };
@@ -875,7 +842,6 @@ const WritePostScreen = ({navigation, route}) => {
         }
       />
 
-      <ActivityLoader visible={loading} />
       {renderImageProgress}
 
       <KeyboardAvoidingView
@@ -1109,7 +1075,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-   
   },
   locationTextStyle: {
     fontSize: 12,
@@ -1140,7 +1105,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     borderRadius: 5,
     padding: 9,
-    
   },
   languageList: {
     fontSize: 16,

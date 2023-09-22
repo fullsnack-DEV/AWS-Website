@@ -68,7 +68,15 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 
   const fetchData = useCallback(
     (searchValue = '') => {
-      const query = {
+      const usersQuery = {
+        size: 1000,
+        query: {
+          bool: {
+            must: [],
+          },
+        },
+      };
+      const groupsQuery = {
         size: 1000,
         query: {
           bool: {
@@ -119,17 +127,25 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       }
 
       if (searchValue) {
-        query.query.bool.must.push({
-          query_string: {
-            query: `${searchValue.toLowerCase()}*`,
-            fields: ['full_name', 'group_name'],
+        // query_string: {
+        //   query: `${searchValue.toLowerCase()}*`,
+        //   fields: ['full_name', 'group_name'],
+        // },
+        usersQuery.query.bool.must.push({
+          match_phrase_prefix: {
+            full_name: `*${searchValue.toLowerCase()}*`,
+          },
+        });
+        groupsQuery.query.bool.must.push({
+          match_phrase_prefix: {
+            group_name: `*${searchValue.toLowerCase()}*`,
           },
         });
       }
 
       const promiseArr = [
-        getUserIndex(query),
-        getGroupIndex(query),
+        getUserIndex(usersQuery),
+        getGroupIndex(groupsQuery),
         getGameIndex(gamesquery),
       ];
       setLoading(true);

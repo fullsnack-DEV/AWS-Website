@@ -14,11 +14,11 @@ import NewsFeedList from './NewsFeedList';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import images from '../../Constants/ImagePath';
 import {
+  createPost,
   createReaction,
   deletePost,
   getNewsFeed,
   getNewsFeedNextList,
-  updatePost,
 } from '../../api/NewsFeeds';
 import colors from '../../Constants/Colors';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
@@ -31,7 +31,7 @@ import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import Verbs from '../../Constants/Verbs';
 import FeedsShimmer from '../../components/shimmer/newsFeed/FeedsShimmer';
 
-const FeedsScreen = ({navigation}) => {
+const FeedsScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
 
@@ -105,80 +105,6 @@ const FeedsScreen = ({navigation}) => {
       setSports([...sport]);
     });
   }, [authContext]);
-
-  const updatePostAfterUpload = useCallback(
-    (dataParams) => {
-      updatePost(dataParams, authContext)
-        .then((response) => {
-          const pData = [...postData];
-          const pDataIndex = postData?.findIndex(
-            (item) => item?.id === dataParams?.activity_id,
-          );
-          pData[pDataIndex] = response?.payload;
-          setPostData([...pData]);
-        })
-        .catch((e) => {
-          Alert.alert(strings.alertmessagetitle, e.messages);
-        });
-    },
-    [authContext, postData],
-  );
-
-  const editPostDoneCall = useCallback(
-    (
-      data,
-      postDesc,
-      selectEditItem,
-      tagData,
-      who_can_see,
-      format_tagged_data,
-    ) => {
-      const alreadyUrlDone = [];
-      const createUrlData = [];
-
-      if (postDesc.trim().length > 0 && data?.length === 0) {
-        const dataParams = {
-          activity_id: selectEditItem.id,
-          text: postDesc,
-          tagged: tagData ?? [],
-          who_can_see,
-          format_tagged_data,
-        };
-        updatePostAfterUpload(dataParams);
-      } else if (data) {
-        if (data.length > 0) {
-          data.map((dataItem) => {
-            if (dataItem.thumbnail) {
-              alreadyUrlDone.push(dataItem);
-            } else {
-              createUrlData.push(dataItem);
-            }
-            return null;
-          });
-        }
-        const dataParams = {
-          activity_id: selectEditItem.id,
-          text: postDesc,
-          tagged: tagData ?? [],
-          who_can_see,
-          format_tagged_data,
-          attachments: [...alreadyUrlDone],
-        };
-        if (createUrlData?.length > 0) {
-          const imageArray = createUrlData.map((dataItem) => dataItem);
-          imageUploadContext.uploadData(
-            authContext,
-            dataParams,
-            imageArray,
-            updatePostAfterUpload,
-          );
-        } else {
-          updatePostAfterUpload(dataParams);
-        }
-      }
-    },
-    [authContext, imageUploadContext, updatePostAfterUpload],
-  );
 
   const onDeletePost = useCallback(
     (item) => {
@@ -324,7 +250,6 @@ const FeedsScreen = ({navigation}) => {
       pullRefresh={pullRefresh}
       onDeletePost={onDeletePost}
       postData={postData}
-      onEditPressDone={editPostDoneCall}
       onRefreshPress={onRefreshPress}
       footerLoading={footerLoading && isNextDataLoading}
       onLikePress={onLikePress}
@@ -366,6 +291,55 @@ const FeedsScreen = ({navigation}) => {
     </View>
   );
 
+  const createPostAfterUpload = (dataParams) => {
+    let body = dataParams;
+    setloading(true);
+
+    if (
+      authContext.entity.role === Verbs.entityTypeClub ||
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
+      body = {
+        ...dataParams,
+        group_id: authContext.entity.uid,
+        showPreviewForUrl: true,
+      };
+    }
+
+    createPost(body, authContext)
+      .then(() => {
+        // if (route.params?.comeFrom) {
+        //   navigation.pop(2);
+        // } else {
+        //   navigation.goBack();
+        // }
+        setVisited(false);
+        getFeeds();
+        setloading(false);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages);
+        setloading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (isFocused && route.params?.isCreatePost) {
+      const {dataParams, imageArray} = route.params;
+      if (imageArray.length > 0) {
+        imageUploadContext.uploadData(
+          authContext,
+          dataParams,
+          imageArray,
+          createPostAfterUpload,
+        );
+      } else {
+        createPostAfterUpload(dataParams);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.params?.isCreatePost, isFocused]);
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -378,7 +352,7 @@ const FeedsScreen = ({navigation}) => {
       <View
         style={{flex: 1, opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
-        {firstTimeLoading ? <FeedsShimmer/> : renderNewsFeedList()}
+        {firstTimeLoading ? <FeedsShimmer /> : renderNewsFeedList()}
         {renderImageProgress}
       </View>
     </SafeAreaView>

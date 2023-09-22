@@ -99,7 +99,7 @@ const MessageMainScreen = ({navigation}) => {
         </View>
       </View>
 
-      {authContext.isAccountDeactivated && <TCAccountDeactivate />}    
+      {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       {streamChatId && authContext.chatClient ? (
         <View style={{flex: 1}}>
           <ChatOverlayProvider>
@@ -123,7 +123,6 @@ const MessageMainScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    
   },
   headerRow: {
     flexDirection: 'row',
@@ -154,13 +153,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
-    backgroundColor:'red',
   },
   centerMsgContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    
   },
   noMsgText: {
     fontSize: 20,

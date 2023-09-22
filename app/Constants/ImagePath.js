@@ -445,7 +445,10 @@ const images = {
   availableChallenge: require('../assets/images/available_challenge.png'),
   blockedChallenge: require('../assets/images/blocked_challenge.png'),
   backgroudPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
-  backgroundPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
+  backgroudPlaceholder1: require('../assets/images/backgroudPlaceholder1.png'),
+  backgroudFullImage: require('../assets/images/backgroundFullImage.png'),
+  backgroudFullImage1: require('../assets/images/backgroundFullImage1.png'),
+
   moreIcon: require('../assets/images/moreIcon.png'),
 
   downloadImage: require('../assets/images/download_icon.png'),

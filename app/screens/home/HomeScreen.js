@@ -253,6 +253,7 @@ const HomeScreen = ({navigation, route}) => {
             const fromRefresh = true;
             getUserData(uid, admin, fromRefresh);
           }}
+          routeParams={route.params}
         />
       );
     }
@@ -281,6 +282,7 @@ const HomeScreen = ({navigation, route}) => {
             const fromRefresh = true;
             fetchGroupDetails(uid, role, admin, fromRefresh);
           }}
+          routeParams={route.params}
         />
       );
     }

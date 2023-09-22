@@ -34,8 +34,7 @@ const FeedDescriptionSection = ({
       );
     }
     return (
-      <ScrollView style={styles.parent}
-      scrollEnabled>
+      <ScrollView style={styles.parent} scrollEnabled>
         <NewsFeedDescription
           descriptions={descriptions}
           numberOfLineDisplay={2}
@@ -57,12 +56,12 @@ const FeedDescriptionSection = ({
 
 const styles = StyleSheet.create({
   parent: {
-    flex:1,
+    flex: 1,
     top: 50,
     left: 45,
     right: 15,
     position: 'absolute',
-    maxHeight: Dimensions.get('window').height * 0.75,
+    maxHeight: Dimensions.get('window').height * 0.72,
   },
   descText: {
     fontSize: 16,

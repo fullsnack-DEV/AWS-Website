@@ -732,26 +732,32 @@ export default function CreateEventScreen({navigation, route}) {
     ) {
       if (whoOption === see) {
         return [
-          strings.everyoneTitleText,
-          strings.followerTitleText,
-          strings.membersTitle,
-          format(strings.onlyAccount, authContext.entity.role),
+          {text: strings.everyoneTitleText, value: 0},
+          {text: strings.followerTitleText, value: 3},
+          {text: strings.membersTitle, value: 2},
+          {
+            text: format(strings.onlyAccount, authContext.entity.role),
+            value: 1,
+          },
         ];
       }
 
       if (whoOption === join) {
         return [
-          strings.everyoneTitleText,
-          strings.followerTitleText,
-          strings.membersTitle,
-          format(strings.onlyOrganizer, authContext.entity.role),
+          {text: strings.everyoneTitleText, value: 0},
+          {text: strings.followerTitleText, value: 3},
+          {text: strings.membersTitle, value: 2},
+          {
+            text: format(strings.onlyOrganizer, authContext.entity.role),
+            value: 1,
+          },
         ];
       }
 
       if (whoOption === invite) {
         return [
-          strings.attendeeRadioText,
-          format(strings.onlyOption, authContext.entity.role),
+          {text: strings.attendeeRadioText, value: 0},
+          {text: format(strings.onlyOption, authContext.entity.role), value: 1},
         ];
       }
     }
@@ -1572,7 +1578,6 @@ const styles = StyleSheet.create({
   },
   containerStyle: {
     marginBottom: 35,
-    
   },
   headerTextStyle: {
     fontSize: 16,

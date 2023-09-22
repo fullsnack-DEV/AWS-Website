@@ -35,6 +35,7 @@ const UserHomeScreen = ({
   isAccountDeactivated = false,
   userData = {},
   pulltoRefresh,
+  routeParams = {},
 }) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
@@ -496,6 +497,7 @@ const UserHomeScreen = ({
             homeFeedHeaderComponent={userDetailsSection}
             currentTab={0}
             pulltoRefresh={pulltoRefresh}
+            routeParams={routeParams}
           />
         </View>
 
