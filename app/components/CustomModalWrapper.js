@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   parent: {
     flex: 1,
     backgroundColor: colors.modalBackgroundColor,
-    paddingTop: 50,
+    paddingTop: 40,
     justifyContent: 'flex-end',
   },
   card: {

@@ -1,6 +1,5 @@
 import React, {memo, useCallback, useContext} from 'react';
 import {
-  Image,
   StyleSheet,
   Text,
   View,
@@ -30,6 +29,7 @@ const FeedAbsoluteTopView = memo(
     navigation,
     feedSubItem = {},
     currentViewIndex,
+    // eslint-disable-next-line no-unused-vars
     onThreeDotPress = () => {},
   }) => {
     const userImage = feedItem?.actor?.data?.thumbnail
@@ -121,9 +121,9 @@ const FeedAbsoluteTopView = memo(
               </View>
             )}
 
-            <TouchableOpacity onPress={onThreeDotPress} style={styles.moreIcon}>
+            {/* <TouchableOpacity onPress={onThreeDotPress} style={styles.moreIcon}>
               <Image source={images.threeDotIcon} style={styles.icon} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
 

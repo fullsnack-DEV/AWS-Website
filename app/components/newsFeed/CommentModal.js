@@ -683,7 +683,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
     paddingHorizontal: 10,
-    paddingVertical: 7,
+    paddingVertical: 8,
+   
   },
   tagText: {
     fontSize: 16,

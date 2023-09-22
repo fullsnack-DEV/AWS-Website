@@ -42,7 +42,7 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import {createEvent} from '../../../api/Schedule';
-import TCProfileView from '../../../components/TCProfileView';
+// import TCProfileView from '../../../components/TCProfileView';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
 import EventVenueTogglebtn from '../../../components/Schedule/EventVenueTogglebtn';
@@ -75,6 +75,7 @@ import SportsListModal from '../registerPlayer/modals/SportsListModal';
 import AddressWithMapModal from '../../../components/AddressWithMap/AddressWithMapModal';
 import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
 import GroupList from '../../../components/Schedule/GroupEvent/GroupList';
+import GroupIcon from '../../../components/GroupIcon';
 
 export default function CreateEventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -768,7 +769,7 @@ export default function CreateEventScreen({navigation, route}) {
         onRightButtonPress={() => {
           onDonePress();
         }}
-        loading={loading}
+        // loading={loading}
       />
       <ActivityLoader visible={loading} />
 
@@ -837,7 +838,7 @@ export default function CreateEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>
                 {strings.organizerTitle}
               </Text>
-              <TCProfileView
+              {/* <TCProfileView
                 type="medium"
                 name={
                   authContext.entity.obj.group_name ??
@@ -850,7 +851,43 @@ export default function CreateEventScreen({navigation, route}) {
                 }
                 alignSelf={'flex-start'}
                 marginTop={10}
-              />
+              /> */}
+              <View
+                style={{
+                  marginTop: 10,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <GroupIcon
+                  imageUrl={authContext.entity.obj.thumbnail}
+                  groupName={
+                    authContext.entity.obj.group_name ??
+                    authContext.entity.obj.full_name
+                  }
+                  entityType={authContext.entity.role}
+                  containerStyle={{width: 30, height: 30, borderWidth: 1}}
+                  textstyle={{fontSize: 10, marginTop: 1}}
+                  placeHolderStyle={{
+                    width: 12,
+                    height: 12,
+                    bottom: -2,
+                    right: -2,
+                  }}
+                />
+                <View style={{flex: 1, marginLeft: 8}}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      lineHeight: 15,
+                      color: colors.lightBlackColor,
+                      fontFamily: fonts.RBold,
+                    }}
+                    numberOfLines={1}>
+                    {authContext.entity.obj.group_name ??
+                      authContext.entity.obj.full_name}
+                  </Text>
+                </View>
+              </View>
             </View>
 
             <EventItemRender
@@ -1535,6 +1572,7 @@ const styles = StyleSheet.create({
   },
   containerStyle: {
     marginBottom: 35,
+    
   },
   headerTextStyle: {
     fontSize: 16,

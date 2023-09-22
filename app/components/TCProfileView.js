@@ -41,12 +41,11 @@ export default function TCProfileView({
 const styles = StyleSheet.create({
   profileImage: {
     alignSelf: 'center',
-    height: 40,
-    width: 40,
+    height: 30,
+    width: 30,
     borderRadius: 20,
     resizeMode: 'cover',
   },
-
   topViewContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -54,8 +53,8 @@ const styles = StyleSheet.create({
   },
   profileView: {
     backgroundColor: colors.whiteColor,
-    height: 44,
-    width: 44,
+    height: 30,
+    width: 30,
     borderRadius: 88,
     justifyContent: 'center',
     alignItems: 'center',
@@ -63,7 +62,7 @@ const styles = StyleSheet.create({
     borderColor: colors.thinDividerColor,
   },
   topTextContainer: {
-    marginLeft: 10,
+    marginLeft: 7,
     alignSelf: 'center',
   },
   nameText: {

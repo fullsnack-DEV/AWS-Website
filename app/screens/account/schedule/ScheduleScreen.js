@@ -21,7 +21,7 @@ import {
   Alert,
   TouchableOpacity,
   SafeAreaView,
-  Dimensions,
+  // Dimensions,
   ScrollView,
 } from 'react-native';
 
@@ -187,7 +187,8 @@ export default function ScheduleScreen({navigation, route}) {
   //   useState(false);
   const [settingsModal, setSettingsModal] = useState(false);
   const [allUserData, setAllUserData] = useState([]);
-  const [popupFilterHeight, setPopupFilterHeight] = useState(300);
+  // eslint-disable-next-line no-unused-vars
+  const [popupFilterHeight, setPopupFilterHeight] = useState(0);
   const [filterTags, setFilterTags] = useState([]);
   const [filterCancelled, setFilterCancelled] = useState(false);
   const [isAdmin] = useState(route?.params?.isAdmin);
@@ -1135,7 +1136,7 @@ export default function ScheduleScreen({navigation, route}) {
       } else if (timeSelectionOption === strings.filterThisMonth) {
         timeFilter = `${strings.filterThisMonth} . ${strings.eventFilterTimePast}`;
       } else if (timeSelectionOption === strings.filterLastMonth) {
-        timeFilter = `${strings.filterNextMonth}`;
+        timeFilter = `${strings.filterLastMonth}`;
       } else if (timeSelectionOption === strings.filterPickaDate) {
         timeFilter = `${moment(startDateTime).format('MMM DD')} - ${moment(
           endDateTime,
@@ -1674,7 +1675,7 @@ export default function ScheduleScreen({navigation, route}) {
             style={[
               styles.bottomPopupContainer,
               {
-                height: Dimensions.get('window').height - popupFilterHeight,
+                // height: Dimensions.get('window').height - popupFilterHeight,
                 paddingBottom: 50,
               },
             ]}>
@@ -1853,7 +1854,7 @@ export default function ScheduleScreen({navigation, route}) {
               } else {
                 getDates(timeFilterOpetion, option);
                 setTimeSelectionPicker(false);
-                setPopupFilterHeight(300);
+                setPopupFilterHeight(375);
               }
               setTimeSelectionModal(false);
               setTimeSelectionOption(option);
@@ -2232,8 +2233,8 @@ const styles = StyleSheet.create({
   bottomPopupContainer: {
     paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
     position: 'absolute',
     bottom: 0,
     width: '100%',

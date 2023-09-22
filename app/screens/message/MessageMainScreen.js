@@ -17,12 +17,12 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
-import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {strings} from '../../../Localization/translation';
 import {getStreamChatIdBasedOnRole} from '../../utils/streamChat';
 import ChannelView from './components/ChannelView';
 import Verbs from '../../Constants/Verbs';
+import ChatShimmer from '../../components/shimmer/Chat/ChatShimmer';
 
 const MessageMainScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
@@ -99,7 +99,7 @@ const MessageMainScreen = ({navigation}) => {
         </View>
       </View>
 
-      {authContext.isAccountDeactivated && <TCAccountDeactivate />}
+      {authContext.isAccountDeactivated && <TCAccountDeactivate />}    
       {streamChatId && authContext.chatClient ? (
         <View style={{flex: 1}}>
           <ChatOverlayProvider>
@@ -109,7 +109,7 @@ const MessageMainScreen = ({navigation}) => {
                 channelRenderFilterFn={customChannelFilterFunction}
                 sort={[{last_message_at: -1}]}
                 Preview={ChannelView}
-                LoadingIndicator={() => <UserListShimmer />}
+                LoadingIndicator={() => <ChatShimmer />}
                 EmptyStateIndicator={() => ListEmptyComponent()}
               />
             </Chat>
@@ -123,6 +123,7 @@ const MessageMainScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
+    
   },
   headerRow: {
     flexDirection: 'row',
@@ -153,11 +154,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
+    backgroundColor:'red',
   },
   centerMsgContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    
   },
   noMsgText: {
     fontSize: 20,

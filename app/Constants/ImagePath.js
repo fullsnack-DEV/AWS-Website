@@ -14,7 +14,7 @@ const images = {
   searchUser: require('../assets/images/searchUser.png'),
   profilePlaceHolder: require('../assets/images/profileplaceholder.png'),
   dummyPhoto: require('../assets/images/dummy_photo.png'),
-  searchLocation: require('../assets/images/ic_search_orange.png'),
+  searchLocation: require('../assets/images/SearchOrangeIcon.png'),
 
   archerySport: require('../assets/images/ic_archery.png'),
   bandySport: require('../assets/images/ic_Bandy.png'),

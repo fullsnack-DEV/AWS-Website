@@ -68,7 +68,7 @@ const CustomMessageText = ({onTagPress = () => {}}) => {
   if (!showFullMessage && message.text.length > 400) {
     return (
       <View style={styles.parent}>
-        <Text style={styles.messageText} numberOfLines={8}>
+        <Text style={styles.messageText} numberOfLines={12}>
           {message.text}
         </Text>
         <View
@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
     marginTop: 15,
     marginBottom: 10,
+   
   },
   viewMoreContainer: {
     flexDirection: 'row',

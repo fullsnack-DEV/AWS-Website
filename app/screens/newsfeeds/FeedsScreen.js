@@ -23,13 +23,13 @@ import {
 import colors from '../../Constants/Colors';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import AuthContext from '../../auth/context';
-import NewsFeedShimmer from '../../components/shimmer/newsFeed/NewsFeedShimmer';
 import {ImageUploadContext} from '../../context/GetContexts';
 import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
 import {getSportsList} from '../../api/Games'; // getRecentGameDetails
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import Verbs from '../../Constants/Verbs';
+import FeedsShimmer from '../../components/shimmer/newsFeed/FeedsShimmer';
 
 const FeedsScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
@@ -378,7 +378,7 @@ const FeedsScreen = ({navigation}) => {
       <View
         style={{flex: 1, opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
         pointerEvents={pointEvent}>
-        {firstTimeLoading ? <NewsFeedShimmer /> : renderNewsFeedList()}
+        {firstTimeLoading ? <FeedsShimmer/> : renderNewsFeedList()}
         {renderImageProgress}
       </View>
     </SafeAreaView>

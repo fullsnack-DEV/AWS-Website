@@ -1109,6 +1109,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
+   
   },
   locationTextStyle: {
     fontSize: 12,
@@ -1130,7 +1131,7 @@ const styles = StyleSheet.create({
     maxHeight: 280,
     width: Dimensions.get('window').width - 30,
     position: 'absolute',
-    left: 15,
+    marginHorizontal: 15,
     top: 0,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 0},
@@ -1139,6 +1140,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     borderRadius: 5,
     padding: 9,
+    
   },
   languageList: {
     fontSize: 16,
