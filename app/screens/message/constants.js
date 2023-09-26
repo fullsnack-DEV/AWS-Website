@@ -39,6 +39,7 @@ export const themeStyle = {
     content: {
       textContainer: {
         borderWidth: 0,
+        Bottom:10,
       },
       markdown: {
         text: {
@@ -46,6 +47,7 @@ export const themeStyle = {
           lineHeight: 24,
           color: colors.lightBlackColor,
           fontFamily: fonts.RRegular,
+         
         },
       },
       deletedContainerInner: {
@@ -70,6 +72,7 @@ export const themeStyle = {
   messageList: {
     container: {
       backgroundColor: colors.lightGrayBackground,
+      paddingHorizontal:10,
     },
   },
 };
@@ -86,6 +89,7 @@ export const myMessageTheme = {
           lineHeight: 24,
           color: colors.lightBlackColor,
           fontFamily: fonts.RRegular,
+         
         },
       },
       containerInner: {

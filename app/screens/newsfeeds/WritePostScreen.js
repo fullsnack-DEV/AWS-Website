@@ -734,7 +734,6 @@ const WritePostScreen = ({navigation, route}) => {
         onPress={() => {
           setPrivacySetting(item);
           setTimeout(() => {
-            setVisibleWhoModal(false);
           }, 300);
         }}>
         <View style={[styles.icon, {marginRight: 10}]}>
@@ -801,6 +800,10 @@ const WritePostScreen = ({navigation, route}) => {
     return () => backHandler.remove();
   }, [handleBackPress]);
 
+  const onCloseModal = () => {
+    setVisibleWhoModal(false);
+  };
+  
   const renderPost = () => {
     const repostData = route.params.repostData;
     const objData = getPostData(repostData);
@@ -967,12 +970,16 @@ const WritePostScreen = ({navigation, route}) => {
       </KeyboardAvoidingView>
       <CustomModalWrapper
         isVisible={visibleWhoModal}
-        closeModal={() => setVisibleWhoModal(false)}
-        modalType={ModalTypes.style2}
+        closeModal={onCloseModal}
+        modalType={ModalTypes.style1}
+        title={strings.privacySettings}   
         containerStyle={{
           paddingTop: 15,
-          paddingHorizontal: 30,
+          paddingHorizontal: 30, 
         }}
+         headerRightButtonText={strings.apply}
+        onRightButtonPress={() => {setVisibleWhoModal(false);
+                                  setPrivacySetting(privacySetting);}}
         ratio={1.7}>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
         <FlatList

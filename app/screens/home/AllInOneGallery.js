@@ -1,5 +1,11 @@
 /* eslint-disable no-unsafe-optional-chaining */
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {
+  FlatList,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -12,9 +18,9 @@ import React, {
 import ImagePicker from 'react-native-image-crop-picker';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
+import ScreenHeader from '../../components/ScreenHeader';
 import AuthContext from '../../auth/context';
 import {GALLERY_TYPE, getWholeGallery} from '../../api/Gallery';
-import AddPhotoItem from '../../components/Home/AddPhotoItem';
 import {MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
 import SingleImageRender from '../../components/Home/SingleImageRender';
 import MultipleImageRender from '../../components/Home/MultipleImageRender';
@@ -22,8 +28,10 @@ import SingleVideoRender from '../../components/Home/SingleVideoRender';
 import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
 import {strings} from '../../../Localization/translation';
 import {widthPercentageToDP} from '../../utils';
+import images from '../../Constants/ImagePath';
 
 const AllInOneGallery = ({
+  navigation,
   isAdmin,
   entity_id,
   entity_type,
@@ -80,30 +88,30 @@ const AllInOneGallery = ({
   };
 
   const allGalleryRenderItem = useCallback(
-    ({item, index}) => {
+    ({item}) => {
       const myItem =
         typeof item?.object === 'string'
           ? JSON.parse(item?.object)
           : item?.object;
-      if (
-        (index === 0 && authContext.entity.uid === entity_id) ||
-        (index === 0 && entity_type === 'game' && isAdmin)
-      ) {
-        return (
-          <AddPhotoItem
-            onAddPhotoPress={() => {
-              ImagePicker.openPicker({
-                height: widthPercentageToDP(32.3),
-                width: widthPercentageToDP(32.3),
-                multiple: true,
-                maxFiles: MAX_UPLOAD_POST_ASSETS,
-              }).then((pickImages) => {
-                onAddPhotoPress(pickImages);
-              });
-            }}
-          />
-        );
-      }
+      // if (
+      //   (index === 0 && authContext.entity.uid === entity_id) ||
+      //   (index === 0 && entity_type === 'game' && isAdmin)
+      // ) {
+      //   return (
+      //     <AddPhotoItem
+      //       onAddPhotoPress={() => {
+      //         ImagePicker.openPicker({
+      //           height: widthPercentageToDP(32.3),
+      //           width: widthPercentageToDP(32.3),
+      //           multiple: true,
+      //           maxFiles: MAX_UPLOAD_POST_ASSETS,
+      //         }).then((pickImages) => {
+      //           onAddPhotoPress(pickImages);
+      //         });
+      //       }}
+      //     />
+      //   );
+      // }
 
       if (myItem?.attachments?.length > 0) {
         if (myItem?.attachments?.[0]?.type === 'image') {
@@ -122,25 +130,42 @@ const AllInOneGallery = ({
     [authContext.entity.uid, entity_id, onAddPhotoPress],
   );
 
-  const finalGalleryData =
-    authContext.entity.uid === entity_id || isAdmin
-      ? ['0', ...galleryData]
-      : galleryData;
   return (
-    <View>
+    <SafeAreaView style={{flex: 1}}>
+      <ScreenHeader
+        title={strings.galleryTitle}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        rightIcon1={
+          authContext.entity.uid === entity_id || isAdmin
+            ? images.plusInvoice
+            : null
+        }
+        rightIcon1Press={() => {
+          ImagePicker.openPicker({
+            height: widthPercentageToDP(32.3),
+            width: widthPercentageToDP(32.3),
+            multiple: true,
+            maxFiles: MAX_UPLOAD_POST_ASSETS,
+          }).then((pickImages) => {
+            onAddPhotoPress(pickImages);
+          });
+        }}
+        rightButtonTextStyle={{marginLeft: 15}}
+        rightIcon2={images.chat3Dot}
+      />
       <View
         style={{
-          height: 35,
           flexDirection: 'row',
-
           borderBottomColor: colors.lightgrayColor,
           borderBottomWidth: 1,
+          padding: 15,
         }}>
         {showSubTabs &&
           [GALLERY_TYPE.FROMME, GALLERY_TYPE.TAGGED].map((item) => (
             <TouchableOpacity
               key={item}
-              style={{paddingLeft: 20, paddingBottom: 5, paddingTop: 10}}
+              style={{marginRight: 20}}
               onPress={() => {
                 setGalleryData([]);
                 setGalleryType(item);
@@ -153,6 +178,8 @@ const AllInOneGallery = ({
                       : colors.lightBlackColor,
                   fontFamily:
                     item === galleryType ? fonts.RBold : fonts.RRegular,
+                  lineHeight: 24,
+                  fontSize: 16,
                 }}>
                 {_.startCase(item)}
               </Text>
@@ -161,23 +188,30 @@ const AllInOneGallery = ({
       </View>
       <FlatList
         ListEmptyComponent={
-          <Text
+          <View
             style={{
-              textAlign: 'center',
-              fontFamily: fonts.RLight,
-              fontSize: 16,
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 200,
             }}>
-            {strings.noGalleryFound}
-          </Text>
+            <Text
+              style={{
+                textAlign: 'center',
+                fontFamily: fonts.RLight,
+                fontSize: 16,
+              }}>
+              {strings.noGalleryFound}
+            </Text>
+          </View>
         }
-        data={finalGalleryData}
+        data={galleryData}
         bounces={false}
         renderItem={allGalleryRenderItem}
         numColumns={3}
         style={{marginHorizontal: 1.5}}
         keyExtractor={(item, index) => `mainGallery${index}`}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

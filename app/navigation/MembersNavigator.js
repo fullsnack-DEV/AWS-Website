@@ -1800,10 +1800,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="DeactivatedSportsListScreen"
       component={DeactivatedSportsListScreen}
-      options={{
-        title: 'Deactivated Sports Activities',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="SportActivitiesScreen"

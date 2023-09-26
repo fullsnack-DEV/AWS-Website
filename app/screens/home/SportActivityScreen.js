@@ -88,7 +88,7 @@ export default function SportActivityScreen({navigation}) {
         containerStyle={styles.headerRow}
       />
 
-      <View style={{paddingTop: 25}}>
+      <View style={{paddingTop: 25,flex:1}}>
         <FlatList
           data={Options}
           keyExtractor={(item) => item}
@@ -112,7 +112,7 @@ export default function SportActivityScreen({navigation}) {
           }}
           ListFooterComponent={() => (
             <Pressable
-              style={styles.listContainer}
+              style={[styles.listContainer,{marginBottom:20}]}
               onPress={() => {
                 navigation.navigate('DeactivatedSportsListScreen');
               }}>

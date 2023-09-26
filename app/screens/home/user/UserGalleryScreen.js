@@ -35,6 +35,7 @@ export default function UserGalleryScreen({navigation, route}) {
             },
           });
         }}
+        navigation={navigation}
       />
     </ScrollView>
   );
