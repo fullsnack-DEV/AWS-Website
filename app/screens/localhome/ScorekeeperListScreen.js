@@ -414,7 +414,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
         <ActivityIndicator
           style={styles.loaderStyle}
           size="small"
-          color="#000000"
+          color={colors.blackColor}
         />
       ) : (
         <Text
@@ -566,7 +566,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
               <ActivityIndicator
                 style={styles.loaderStyle}
                 size="small"
-                color="#000000"
+                color={colors.blackColor}
               />
             )}
           </View>

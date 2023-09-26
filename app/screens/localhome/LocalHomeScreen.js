@@ -553,7 +553,7 @@ function LocalHomeScreen({navigation, route}) {
         <ActivityIndicator
           style={styles.imgloaderStyle}
           size="small"
-          color="#000000"
+          color={colors.blackColor}
         />
       ) : (
         renderImageforSport(item)
