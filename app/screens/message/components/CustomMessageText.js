@@ -8,6 +8,7 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {checkIsMessageDeleted} from '../../../utils/streamChat';
+import {emojiRegex} from '../../../Constants/GeneralConstants';
 
 const CustomMessageText = ({onTagPress = () => {}}) => {
   const [showFullMessage, setShowFullMessage] = useState(false);
@@ -52,7 +53,12 @@ const CustomMessageText = ({onTagPress = () => {}}) => {
           : `${word} `;
       });
     }
-    return <Text style={styles.messageText}>{processedText}</Text>;
+    return message.text.trim().match(emojiRegex) &&
+      message.text.trim().length === 2 ? (
+      <Text style={styles.emojiText}>{message.text}</Text>
+    ) : (
+      <Text style={styles.messageText}>{processedText}</Text>
+    );
   };
 
   if (isDeletedMessage) {
@@ -68,7 +74,7 @@ const CustomMessageText = ({onTagPress = () => {}}) => {
   if (!showFullMessage && message.text.length > 400) {
     return (
       <View style={styles.parent}>
-        <Text style={styles.messageText} numberOfLines={12}>
+        <Text style={styles.messageText} numberOfLines={7}>
           {message.text}
         </Text>
         <View
@@ -108,6 +114,10 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
   },
+  emojiText: {
+    fontSize: 40,
+    lineHeight: 60,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -130,7 +140,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayBackgroundColor,
     marginTop: 15,
     marginBottom: 10,
-   
   },
   viewMoreContainer: {
     flexDirection: 'row',

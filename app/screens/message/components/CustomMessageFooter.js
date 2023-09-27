@@ -66,7 +66,7 @@ const Reactions = ({messageId, reactions = {}, onPress = () => {}}) => {
 };
 
 const CustomMessageFooter = ({onPress = () => {}}) => {
-  const {message} = useMessageContext();
+  const {message, isMyMessage} = useMessageContext();
   // const authContext = useContext(AuthContext);
   // const groupStyle = message.groupStyles[0];
   // const isDeletedMessage = checkIsMessageDeleted(
@@ -82,7 +82,11 @@ const CustomMessageFooter = ({onPress = () => {}}) => {
   //   isDeletedMessage
   // ) {
   return (
-    <View style={styles.reactionAndTimeContainer}>
+    <View
+      style={[
+        styles.reactionAndTimeContainer,
+        isMyMessage ? {marginRight: 15} : {marginLeft: 30},
+      ]}>
       {message.latest_reactions?.length > 0 ||
       message.own_reactions?.length > 0 ? (
         <Reactions
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginTop: 5,
     maxWidth: Dimensions.get('window').width * 0.6,
-    marginLeft: 30,
+    marginBottom: 15,
   },
   countText: {
     fontSize: 12,

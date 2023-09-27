@@ -95,10 +95,12 @@ export const myMessageTheme = {
       containerInner: {
         borderWidth: 0,
         backgroundColor: colors.chatBubbleContainer,
+        marginRight: 15,
       },
       deletedContainerInner: {
         borderWidth: 0,
         backgroundColor: colors.chatBubbleContainer,
+        marginRight: 15,
       },
       container: {
         borderWidth: 0,

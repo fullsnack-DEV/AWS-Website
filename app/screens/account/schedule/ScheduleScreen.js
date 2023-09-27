@@ -55,7 +55,11 @@ import {getGameHomeScreen} from '../../../utils/gameUtils';
 import ScorekeeperReservationItem from '../../../components/Schedule/ScorekeeperReservationItem';
 import {getHitSlop /* getRoundedDate,  getSportName */} from '../../../utils';
 import * as Utility from '../../../utils/index';
-import {getGameIndex, getUserIndex} from '../../../api/elasticSearch';
+import {
+  getGameIndex,
+  getGroupIndex,
+  getUserIndex,
+} from '../../../api/elasticSearch';
 import TCAccountDeactivate from '../../../components/TCAccountDeactivate';
 import {getUserSettings} from '../../../api/Users';
 import {getGroups, getTeamsOfClub} from '../../../api/Groups';
@@ -728,12 +732,17 @@ export default function ScheduleScreen({navigation, route}) {
     Utility.getEventsSlots(participants)
       .then((response) => {
         const allUserIds = [];
+        const groupIds = [];
         response.forEach((item) => {
-          if (
-            item.cal_type === Verbs.eventVerb &&
-            !allUserData.includes(item.created_by.uid)
-          ) {
-            allUserIds.push(item.created_by.uid);
+          if (item.cal_type === Verbs.eventVerb) {
+            if (
+              item.created_by.group_id &&
+              !groupIds.includes(item.created_by.group_id)
+            ) {
+              groupIds.push(item.created_by.group_id);
+            } else if (!allUserData.includes(item.created_by.uid)) {
+              allUserIds.push(item.created_by.uid);
+            }
           }
         });
         const getUserDetailQuery = {
@@ -745,16 +754,40 @@ export default function ScheduleScreen({navigation, route}) {
             },
           },
         };
+        const getGroupDetailQuery = {
+          size: 1000,
+          from: 0,
+          query: {
+            terms: {
+              'group_id.keyword': [...groupIds],
+            },
+          },
+        };
 
-        getUserIndex(getUserDetailQuery)
+        const promiseArr = [
+          getUserIndex(getUserDetailQuery),
+          getGroupIndex(getGroupDetailQuery),
+        ];
+        Promise.all(promiseArr)
           .then((res) => {
-            setOwners(res);
+            const result = [...res[0], ...res[1]];
+            setOwners(result);
           })
           .catch((e) => {
             setTimeout(() => {
               Alert.alert(strings.alertmessagetitle, e.message);
             }, 10);
           });
+
+        // getGroupIndex(getGroupDetailQuery)
+        //   .then((res) => {
+        //     setOwners([...owners, ...res]);
+        //   })
+        //   .catch((e) => {
+        //     setTimeout(() => {
+        //       Alert.alert(strings.alertmessagetitle, e.message);
+        //     }, 10);
+        //   });
 
         let resCalenders = [];
         let eventsCal = [];

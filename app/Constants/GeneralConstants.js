@@ -202,3 +202,4 @@ export const urlRegex =
 // export const tagRegex = /(?!\w)@\w+/gim;
 export const tagRegex = /(?!\w)@[\w\p{Extended_Pictographic}]+/gu;
 export const hashTagRegex = /\B(#[a-zA-Z]+\b)(?!;)/;
+export const emojiRegex = /\p{Emoji}/u;

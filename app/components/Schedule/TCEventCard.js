@@ -15,8 +15,10 @@ import fonts from '../../Constants/Fonts';
 import {getJSDate, getSportName} from '../../utils';
 import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
+import GroupIcon from '../GroupIcon';
+import Verbs from '../../Constants/Verbs';
 
-export default function TCEventCard({onPress, data, owners, allUserData}) {
+export default function TCEventCard({onPress, data, owners = []}) {
   const authContext = useContext(AuthContext);
   const isGame = !!(data?.game_id && data?.game);
   const startDate = getJSDate(data.start_datetime);
@@ -30,23 +32,13 @@ export default function TCEventCard({onPress, data, owners, allUserData}) {
   const title = isGame ? getSportName(data.game, authContext) : data.title;
 
   useEffect(() => {
-    owners.forEach((item) => {
-      if (item.user_id === data?.created_by?.uid) {
-        setOwnerDetails(item);
-      }
-    });
-  });
-
-  const getUserFullName = () => {
-    let name = '';
-    const obj = allUserData.find((item) => item.id === data.owner_id);
+    const obj = owners.find(
+      (item) => data.owner_id === (item.group_id ?? item.user_id),
+    );
     if (obj) {
-      name = obj.name;
-    } else {
-      name = `${data.created_by?.first_name} ${data.created_by?.last_name}`;
+      setOwnerDetails(obj);
     }
-    return name;
-  };
+  }, [data.owner_id, owners]);
 
   return (
     <TouchableWithoutFeedback onPress={onPress}>
@@ -101,17 +93,23 @@ export default function TCEventCard({onPress, data, owners, allUserData}) {
             )}
           </View>
           <View style={styles.bottomView}>
-            <View style={styles.eventImageViewStyle}>
-              <Image
-                source={
-                  ownerDetails?.thumbnail
-                    ? {uri: ownerDetails?.thumbnail}
-                    : images.profilePlaceHolder
-                }
-                style={{height: 25, width: 25, borderRadius: 70}}
-              />
-            </View>
-            <Text style={styles.ownerText}>{getUserFullName()}</Text>
+            <GroupIcon
+              imageUrl={ownerDetails?.thumbnail}
+              groupName={ownerDetails?.group_name ?? ownerDetails?.full_name}
+              entityType={ownerDetails.entity_type}
+              containerStyle={[
+                styles.groupIconStyle,
+                ownerDetails.entity_type === Verbs.entityTypePlayer ||
+                ownerDetails.entity_type === Verbs.entityTypeUser
+                  ? {paddingTop: 0, borderWidth: 0}
+                  : {},
+              ]}
+              textstyle={{fontSize: 10, marginTop: 0}}
+              placeHolderStyle={styles.groupIconPlaceholder}
+            />
+            <Text style={styles.ownerText}>
+              {ownerDetails?.group_name ?? ownerDetails?.full_name}
+            </Text>
           </View>
         </View>
       </View>
@@ -176,5 +174,17 @@ const styles = StyleSheet.create({
   onlineText: {
     color: colors.themeColor,
     fontWeight: fonts.RMedium,
+  },
+  groupIconStyle: {
+    height: 25,
+    width: 25,
+    borderWidth: 1,
+    paddingTop: 2,
+  },
+  groupIconPlaceholder: {
+    width: 12,
+    height: 12,
+    right: -3,
+    bottom: -3,
   },
 });

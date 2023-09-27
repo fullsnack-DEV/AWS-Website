@@ -270,14 +270,14 @@ export default function EventScheduleScreen({
           if (selectedFilter.title.group_name === Verbs.me) {
             events = events.filter(
               (obj) =>
-                obj.created_by.uid === authContext.entity.uid ||
+                obj.owner_id === authContext.entity.uid ||
                 obj.game?.home_team?.user_id === authContext.entity.uid ||
                 obj.game?.away_team?.user_id === authContext.entity.uid,
             );
           } else if (selectedFilter.title.group_name === strings.othersText) {
             events = events.filter(
               (obj) =>
-                obj.created_by.uid !== authContext.entity.uid &&
+                obj.owner_id !== authContext.entity.uid &&
                 obj.game?.home_team?.user_id !== authContext.entity.uid &&
                 obj.game?.away_team?.user_id !== authContext.entity.uid,
             );

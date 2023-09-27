@@ -199,6 +199,10 @@ export default function CreateEventScreen({navigation, route}) {
   };
 
   const handleEndDatePress = (date) => {
+    if (date < eventStartDateTime) {
+      Alert.alert('', 'End date & time should be greater than start date.');
+      return;
+    }
     const endDateTime = toggle ? date.setHours(23, 59, 59, 0) : date;
     const unitDate = eventUntilDateTime;
     setEventEnddateTime(endDateTime);

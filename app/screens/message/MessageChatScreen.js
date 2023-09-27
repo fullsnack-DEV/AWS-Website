@@ -415,7 +415,6 @@ const MessageChatScreen = ({navigation, route}) => {
           MessageActionList={() => (
             <CustomMessageActionList
               channel={channel}
-              streamChatUserId={authContext.chatClient.userID}
               deleteMessageAction={(messageObj = {}) => {
                 setDeleteMessageObject(messageObj);
                 if (messageObj.user.id === authContext.chatClient.userID) {
@@ -467,6 +466,9 @@ const MessageChatScreen = ({navigation, route}) => {
                     navigation.navigate('MessageMediaFullScreen', {
                       ...data,
                     });
+                  }}
+                  onLongPress={() => {
+                    console.log('long pressed');
                   }}
                 />
               )}
