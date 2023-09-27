@@ -5,10 +5,12 @@ import {
   getEntitySportList,
   getSportDetails,
 } from '../../utils/sportsActivityUtils';
+import {getUserDetails} from '../../api/Users';
 // TODO: Move this file to right place. Improve this methods
 
 // TODO: call utility.getSportName() to fetch correct sports title
 // TODO: apply isAccountDeactivated logic to not display add sports button
+
 const prepareSportsSubMenuOfUser = (
   sports,
   baseUrl,
@@ -168,136 +170,151 @@ const invoicesMenuForGroup = () => [
     ],
   },
 ];
+export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
+  try {
+    const userSport = await getUserDetails(authContext.entity.uid, authContext);
 
-export const prepareUserMenu = (authContext, teams, clubs, baseUrl) => {
-  const userMenu = [
-    {
-      key: strings.reservationsTitleText,
-      icon: images.accountMyReservations,
-      navigateTo: {
-        screenName: 'ReservationNavigator',
-        data: {
-          screen: 'ReservationScreen',
+    const SportData = getEntitySportList(
+      userSport.payload,
+      Verbs.entityTypePlayer,
+    );
+
+    const playingMenu = prepareSportsSubMenuOfUser(
+      SportData,
+      baseUrl,
+      authContext,
+      Verbs.entityTypePlayer,
+    );
+
+    const refereeingMenu = prepareSportsSubMenuOfUser(
+      getEntitySportList(authContext.entity.obj, Verbs.entityTypeReferee),
+      baseUrl,
+      authContext,
+      Verbs.entityTypeReferee,
+    );
+
+    const scorekeepingMenu = prepareSportsSubMenuOfUser(
+      getEntitySportList(authContext.entity.obj, Verbs.entityTypeScorekeeper),
+      baseUrl,
+      authContext,
+      Verbs.entityTypeScorekeeper,
+    );
+
+    const userMenu = [
+      {
+        key: strings.reservationsTitleText,
+        icon: images.accountMyReservations,
+        navigateTo: {
+          screenName: 'ReservationNavigator',
+          data: {
+            screen: 'ReservationScreen',
+          },
         },
       },
-    },
-    {
-      key: strings.playingTitleText,
-      icon: images.accountMySports,
-      member: [
-        ...prepareSportsSubMenuOfUser(
-          getEntitySportList(authContext.entity.obj, Verbs.entityTypePlayer),
-          baseUrl,
-          authContext,
-          Verbs.entityTypePlayer,
-        ),
-        {
-          option: strings.addSportsTitle,
-          icon: images.addSport,
-          iconRight: images.nextArrow,
-          menuOptionType: Verbs.entityTypePlayer,
-          navigateTo: {
-            screenName: 'RegisterPlayer',
+      {
+        key: strings.playingTitleText,
+        icon: images.accountMySports,
+        member: [
+          ...playingMenu,
+          {
+            option: strings.addSportsTitle,
+            icon: images.addSport,
+            iconRight: images.nextArrow,
+            menuOptionType: Verbs.entityTypePlayer,
+            navigateTo: {
+              screenName: 'RegisterPlayer',
+            },
           },
-        },
-      ],
-    },
-    {
-      key: strings.refereeingTitleText,
-      icon: images.accountMyRefereeing,
-      member: [
-        ...prepareSportsSubMenuOfUser(
-          getEntitySportList(authContext.entity.obj, Verbs.entityTypeReferee),
-          baseUrl,
-          authContext,
-          Verbs.entityTypeReferee,
-        ),
-        {
-          option: strings.addSportsTitle,
-          icon: images.registerReferee,
-          iconRight: images.nextArrow,
-          menuOptionType: Verbs.entityTypeReferee,
-          navigateTo: {
-            screenName: 'RegisterReferee',
-          },
-        },
-      ],
-    },
-    {
-      key: strings.scorekeepingTitleText,
-      icon: images.accountMyScoreKeeping,
-      member: [
-        ...prepareSportsSubMenuOfUser(
-          getEntitySportList(
-            authContext.entity.obj,
-            Verbs.entityTypeScorekeeper,
-          ),
-          baseUrl,
-          authContext,
-          Verbs.entityTypeScorekeeper,
-        ),
-        {
-          option: strings.addSportsTitle,
-          icon: images.registerScorekeeper,
-          iconRight: images.nextArrow,
-          menuOptionType: Verbs.entityTypeScorekeeper,
-          navigateTo: {
-            screenName: 'RegisterScorekeeper',
-          },
-        },
-      ],
-    },
-    {
-      key: strings.teamstitle,
-      icon: images.accountMyTeams,
-      member: [
-        ...prepareGroupsSubMenu(teams),
-        {
-          option: strings.createTeamText,
-          icon: images.createTeam,
-          iconRight: images.nextArrow,
-          navigateTo: {
-            screenName: 'CreateTeamForm1',
-          },
-        },
-      ],
-    },
-    {
-      key: strings.clubstitle,
-      icon: images.accountMyClubs,
-      member: [
-        ...prepareGroupsSubMenu(clubs),
-        {
-          option: strings.createClubText,
-          icon: images.createClub,
-          iconRight: images.nextArrow,
-          navigateTo: {
-            screenName: 'CreateClubForm1',
-          },
-        },
-      ],
-    },
-    {
-      key: strings.leagues,
-      icon: images.accountMyLeagues,
-      member: [],
-    },
-    ...invoicesMenuForUser(),
-    {
-      key: strings.transactions,
-      icon: images.transactionsIcon,
-      member: [],
-    },
-    ...paymentMethodMenu(),
-    {
-      key: strings.settingsTitleText,
-      icon: images.accountSettingPrivacy,
-      navigateTo: {
-        screenName: 'UserSettingPrivacyScreen',
+        ],
       },
-    },
-  ];
-  return userMenu;
+      {
+        key: strings.refereeingTitleText,
+        icon: images.accountMyRefereeing,
+        member: [
+          ...refereeingMenu,
+          {
+            option: strings.addSportsTitle,
+            icon: images.registerReferee,
+            iconRight: images.nextArrow,
+            menuOptionType: Verbs.entityTypeReferee,
+            navigateTo: {
+              screenName: 'RegisterReferee',
+            },
+          },
+        ],
+      },
+      {
+        key: strings.scorekeepingTitleText,
+        icon: images.accountMyScoreKeeping,
+        member: [
+          ...scorekeepingMenu,
+          {
+            option: strings.addSportsTitle,
+            icon: images.registerScorekeeper,
+            iconRight: images.nextArrow,
+            menuOptionType: Verbs.entityTypeScorekeeper,
+            navigateTo: {
+              screenName: 'RegisterScorekeeper',
+            },
+          },
+        ],
+      },
+      {
+        key: strings.teamstitle,
+        icon: images.accountMyTeams,
+        member: [
+          ...prepareGroupsSubMenu(teams),
+          {
+            option: strings.createTeamText,
+            icon: images.createTeam,
+            iconRight: images.nextArrow,
+            navigateTo: {
+              screenName: 'CreateTeamForm1',
+            },
+          },
+        ],
+      },
+      {
+        key: strings.clubstitle,
+        icon: images.accountMyClubs,
+        member: [
+          ...prepareGroupsSubMenu(clubs),
+          {
+            option: strings.createClubText,
+            icon: images.createClub,
+            iconRight: images.nextArrow,
+            navigateTo: {
+              screenName: 'CreateClubForm1',
+            },
+          },
+        ],
+      },
+      {
+        key: strings.leagues,
+        icon: images.accountMyLeagues,
+        member: [],
+      },
+      ...invoicesMenuForUser(),
+      {
+        key: strings.transactions,
+        icon: images.transactionsIcon,
+        member: [],
+      },
+      ...paymentMethodMenu(),
+      {
+        key: strings.settingsTitleText,
+        icon: images.accountSettingPrivacy,
+        navigateTo: {
+          screenName: 'UserSettingPrivacyScreen',
+        },
+      },
+    ];
+
+    return userMenu;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 };
 
 export const prepareTeamMenu = (authContext, clubs) => {

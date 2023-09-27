@@ -23,10 +23,10 @@ import colors from '../../Constants/Colors';
 import {getHitSlop, getStorage, setStorage, showAlert} from '../../utils';
 import AuthContext from '../../auth/context';
 import ScreenHeader from '../../components/ScreenHeader';
-import {updateUserProfile} from '../../api/Users';
+import {getUserDetails, updateUserProfile} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
-import {patchGroup} from '../../api/Groups';
+import {getGroupDetails, patchGroup} from '../../api/Groups';
 
 export default function EditFilterModal({
   visible,
@@ -54,7 +54,7 @@ export default function EditFilterModal({
   }, [visible, sportList, authContext]);
 
   const GetandSetSportsLists = async () => {
-    setLoading(true);
+    // setLoading(true);
     getStorage('appSetting').then((setting) => {
       setImageBaseUrl(setting.base_url_sporticon);
     });
@@ -66,67 +66,91 @@ export default function EditFilterModal({
       }
     });
 
-    const registeredSports =
-      authContext.user?.registered_sports?.map((item) => item) || [];
-    const scorekeeperSports =
-      authContext.user?.scorekeeper_data?.map((item) => item) || [];
-    const likedsports = authContext.user?.sports?.map((item) => item) || [];
-    const refereeSports =
-      authContext.user?.referee_data?.map((item) => item) || [];
+    const handleSportData = (userSport) => {
+      const registeredSports =
+        userSport.payload?.registered_sports?.map((item) => item) || [];
+      const scorekeeperSports =
+        userSport.payload?.scorekeeper_data?.map((item) => item) || [];
+      const likedsports = userSport.payload?.sports?.map((item) => item) || [];
+      const refereeSports =
+        userSport.payload?.referee_data?.map((item) => item) || [];
 
-    const clubFavSport =
-      authContext.entity.role === Verbs.entityTypeClub
-        ? authContext.entity.obj?.sports.map((item) => item) || []
-        : [];
+      const clubFavSport =
+        authContext.entity.role === Verbs.entityTypeClub
+          ? userSport.payload?.sports.map((item) => item) || []
+          : [];
 
-    const uniqueSports = [
-      ...(authContext.entity.role === Verbs.entityTypeClub
-        ? clubFavSport
-        : [
-            ...registeredSports,
-            ...scorekeeperSports,
-            ...likedsports,
-            ...refereeSports,
-          ]),
-    ];
+      const uniqueSports = [
+        ...(authContext.entity.role === Verbs.entityTypeClub
+          ? clubFavSport
+          : [
+              ...registeredSports,
+              ...scorekeeperSports,
+              ...likedsports,
+              ...refereeSports,
+            ]),
+      ];
 
-    const res = uniqueSports.map((obj) => ({
-      sport: obj.sport,
-      sport_type: obj.sport_type,
-      sport_name: obj.sport_name ?? obj.sport,
-    }));
-    const result = res.reduce((unique, o) => {
-      if (
-        !unique.some(
-          (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
-        )
-      ) {
-        unique.push(o);
+      const res = uniqueSports.map((obj) => ({
+        sport: obj.sport,
+        sport_type: obj.sport_type,
+        sport_name: obj.sport_name ?? obj.sport,
+      }));
+      const result = res.reduce((unique, o) => {
+        if (
+          !unique.some(
+            (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
+          )
+        ) {
+          unique.push(o);
+        }
+
+        return unique;
+      }, []);
+
+      const registerSportNames = result.map((item) => item.sport_name);
+
+      const commonObjects = favsport.filter(
+        (item) => !registerSportNames.includes(item.sport_name),
+      );
+
+      if (authContext.entity.role !== Verbs.entityTypeClub) {
+        setAddedsport([...result, ...commonObjects]);
+      } else {
+        setAddedsport([...result, ...commonObjects]);
       }
 
-      return unique;
-    }, []);
+      // Now batch the state updates into a single call
+      setLoading(false);
+      setFavSport(sportList);
+      setsports(sportList);
+      setRegisterSport(result);
+      setNotRegisterSport(commonObjects);
 
-    const registerSportNames = result.map((item) => item.sport_name);
+      getAllsportData();
+    };
 
-    const commonObjects = favsport.filter(
-      (item) => !registerSportNames.includes(item.sport_name),
-    );
-
-    if (authContext.entity.role !== Verbs.entityTypeClub) {
-      setAddedsport([...result, ...commonObjects]);
+    if (authContext.entity.role === Verbs.entityTypeClub) {
+      getGroupDetails(authContext?.entity?.uid, authContext)
+        .then((userSport) => {
+          handleSportData(userSport);
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log(error);
+        });
     } else {
-      setAddedsport([...result, ...commonObjects]);
+      getUserDetails(authContext.entity.uid, authContext)
+        .then((userSport) => {
+          handleSportData(userSport);
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log(error);
+        });
     }
 
-    // Now batch the state updates into a single call
     setLoading(false);
-    setFavSport(sportList);
-    setsports(sportList);
-    setRegisterSport(result);
-    setNotRegisterSport(commonObjects);
-
-    getAllsportData();
   };
 
   const getAllsportData = () => {

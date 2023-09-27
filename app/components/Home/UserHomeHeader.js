@@ -110,10 +110,12 @@ const UserHomeHeader = ({
       case strings.following:
         setOptions([strings.unfollowText]);
         setShowModal(true);
+
         break;
 
       case strings.follow:
         onAction(Verbs.followVerb);
+
         break;
 
       case strings.invite:
@@ -181,7 +183,7 @@ const UserHomeHeader = ({
         </Pressable>
       </View>
       <View style={{marginTop: 15}}>
-        <Text style={styles.title}>{currentUserData.full_name}</Text>
+        <Text style={styles.title}> {currentUserData.full_name}</Text>
         <Text style={styles.location}>{displayLocation(currentUserData)}</Text>
         {currentUserData.description ? (
           <Text style={styles.description}>{currentUserData.description}</Text>

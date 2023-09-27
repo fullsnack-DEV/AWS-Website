@@ -619,6 +619,7 @@ const getTeamSportOnlyList = (authContext, selectedMenuOptionType) => {
 };
 
 const getSportsForHome = (
+  userSport,
   authContext,
   setSportHandler,
   sports,
@@ -626,20 +627,18 @@ const getSportsForHome = (
 ) => {
   setSportIconLoader(true);
 
-  if (
-    authContext.entity.auth.user?.favouriteSport?.length > 1 &&
-    authContext.entity.role !== Verbs.entityTypeClub
-  ) {
-    const favouriteSports = authContext.entity.auth.user?.favouriteSport?.map(
-      (item) => item,
-    );
+  if (userSport?.payload && authContext.entity.role !== Verbs.entityTypeClub) {
+    setSportIconLoader(true);
+
+    const favouriteSports =
+      userSport.payload?.favouriteSport?.map((item) => item) || [];
     const registeredSports =
-      authContext.user?.registered_sports?.map((item) => item) || [];
+      userSport.payload?.registered_sports?.map((item) => item) || [];
     const scorekeeperSports =
-      authContext.user?.scorekeeper_data?.map((item) => item) || [];
-    const favsports = authContext.user?.sports?.map((item) => item) || [];
+      userSport.payload?.scorekeeper_data?.map((item) => item) || [];
+    const favsports = userSport.payload.sports?.map((item) => item) || [];
     const refereeSports =
-      authContext.user?.referee_data?.map((item) => item) || [];
+      userSport.payload?.referee_data?.map((item) => item) || [];
 
     // Combine all the arrays and remove duplicates using a Set
     const uniqueSports = [
@@ -674,65 +673,39 @@ const getSportsForHome = (
 
     return;
   }
+
   if (
     authContext.entity.role === Verbs.entityTypeClub &&
-    authContext.entity.obj.favouriteSport?.length > 1
+    // eslint-disable-next-line no-prototype-builtins
+    userSport?.payload
   ) {
-    setSportHandler(authContext.entity.obj?.favouriteSport);
+    const clubFavSport = userSport.payload?.favouriteSport || [];
+    const clubSports = userSport.payload?.sports || [];
+
+    const combineSoprts = [...clubFavSport, ...clubSports];
+
+    const res = combineSoprts.map((obj) => ({
+      sport: obj.sport,
+      sport_type: obj.sport_type,
+      sport_name: obj.sport_name ?? obj.sport,
+    }));
+
+    const result = res.reduce((unique, o) => {
+      if (
+        !unique.some(
+          (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
+        )
+      ) {
+        unique.push(o);
+      }
+
+      return unique;
+    }, []);
+
+    setSportHandler(result);
 
     setSportIconLoader(false);
-    return;
   }
-
-  setSportIconLoader(false);
-
-  const registeredSports =
-    authContext.user?.registered_sports?.map((item) => item) || [];
-  const scorekeeperSports =
-    authContext.user?.scorekeeper_data?.map((item) => item) || [];
-  const favsports = authContext.user?.sports?.map((item) => item) || [];
-  const refereeSports =
-    authContext.user?.referee_data?.map((item) => item) || [];
-
-  // Combine all the arrays and remove duplicates using a Set
-  const uniqueSports = [
-    ...new Set([
-      ...registeredSports,
-      ...scorekeeperSports,
-      ...favsports,
-      ...refereeSports,
-    ]),
-  ];
-
-  const followedSport =
-    authContext.entity.role !== Verbs.entityTypeTeam
-      ? authContext?.entity?.obj?.sports
-      : [];
-
-  const combineSoprts =
-    authContext.entity.role === Verbs.entityTypeClub
-      ? [...followedSport]
-      : [...uniqueSports];
-
-  const res = combineSoprts.map((obj) => ({
-    sport: obj.sport,
-    sport_type: obj.sport_type,
-    sport_name: obj.sport_name ?? obj.sport,
-  }));
-
-  const result = res.reduce((unique, o) => {
-    if (
-      !unique.some(
-        (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
-      )
-    ) {
-      unique.push(o);
-    }
-
-    return unique;
-  }, []);
-
-  setSportHandler(result);
 };
 
 const convertToKFormat = (number) => {

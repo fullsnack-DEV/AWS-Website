@@ -48,7 +48,7 @@ function EventsCard({
   };
 
   return (
-    <>
+    <View>
       <Pressable style={styles.containerStyle} onPress={onItemPress}>
         <FastImage
           style={styles.imagstyles}
@@ -95,7 +95,7 @@ function EventsCard({
                 {location}
               </Text>
             ) : (
-              <Text style={{...styles.onlineText}}>{strings.onlineText}</Text>
+              <Text style={styles.onlineText}>{strings.onlineText}</Text>
             )}
           </Text>
         </View>
@@ -122,7 +122,7 @@ function EventsCard({
           </Text>
         </View>
       </Pressable>
-    </>
+    </View>
   );
 }
 

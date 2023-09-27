@@ -153,7 +153,13 @@ const HomeScreen = ({navigation, route}) => {
     if (role === Verbs.entityTypeClub || role === Verbs.entityTypeTeam) {
       fetchGroupDetails(uid, role, admin);
     }
-  }, [authContext.entity, route.params.role, route.params.uid]);
+  }, [
+    authContext.entity,
+    route.params.role,
+    route.params.uid,
+    route.params?.comeFrom,
+    isFocused,
+  ]);
 
   useEffect(() => {
     if (isFocused && route.params?.isEntityCreated && route.params?.entityObj) {
@@ -390,7 +396,10 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const handleBackPress = useCallback(() => {
-    if (route.params?.comeFrom === 'IncomingChallengeSettings') {
+    if (
+      route.params?.comeFrom === 'IncomingChallengeSettings' ||
+      route.params?.comeFrom === 'IncomingChallengeScreen'
+    ) {
       navigation.navigate('AccountScreen');
     } else if (route.params?.comeFrom === 'EntitySearchScreen') {
       navigation.push('EntitySearchScreen');

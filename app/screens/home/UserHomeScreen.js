@@ -25,6 +25,7 @@ import BottomSheet from '../../components/modals/BottomSheet';
 import {getEntitySport} from '../../utils/sportsActivityUtils';
 import PostsTabView from '../../components/Home/PostsTabView';
 import HomeFeed from '../homeFeed/HomeFeed';
+import UserConnectionModal from './UserConnectionsModal';
 
 const UserHomeScreen = ({
   navigation,
@@ -44,7 +45,10 @@ const UserHomeScreen = ({
   const [addSportActivityModal, setAddSportActivityModal] = useState(false);
 
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
+  const [refreshModal, setRefreshModal] = useState(false);
+  const [tab, setTab] = useState('');
   const mainFlatListRef = useRef();
+  const ModalRef = useRef();
 
   useEffect(() => {
     if (userData?.user_id) {
@@ -67,6 +71,7 @@ const UserHomeScreen = ({
           follower_count: currentUserData.follower_count + 1,
         };
         setCurrentUserData(obj);
+        setRefreshModal(true);
         setloading(false);
       })
       .catch((error) => {
@@ -93,6 +98,7 @@ const UserHomeScreen = ({
               : 0,
         };
         setCurrentUserData(obj);
+        setRefreshModal(true);
         setloading(false);
       })
       .catch((error) => {
@@ -433,15 +439,10 @@ const UserHomeScreen = ({
     <>
       <UserHomeHeader
         currentUserData={currentUserData}
-        onConnectionButtonPress={(tab = '') => {
-          const entityType = route.params.role ?? authContext.entity.role;
-          const userId = route.params.uid ?? authContext.entity.uid;
-          navigation.navigate('UserConnections', {
-            entityType,
-            userId,
-            userName: currentUserData.full_name,
-            tab,
-          });
+        onConnectionButtonPress={(tabs = '') => {
+          setTab(tabs);
+
+          ModalRef.current.present();
         }}
         onAction={onUserAction}
         isAdmin={isAdmin}
@@ -514,6 +515,15 @@ const UserHomeScreen = ({
           strings.addScorekeeping,
         ]}
         onSelect={handleSportActivityOption}
+      />
+      <UserConnectionModal
+        ModalRef={ModalRef}
+        refreshModal={refreshModal}
+        closeModal={() => setRefreshModal(false)}
+        entityType={route.params.role ?? authContext.entity.role}
+        userId={route.params.uid ?? authContext.entity.uid}
+        userName={currentUserData.full_name}
+        tab={tab}
       />
     </>
   );

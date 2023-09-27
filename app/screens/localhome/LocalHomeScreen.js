@@ -19,9 +19,9 @@ import {
   ActivityIndicator,
   BackHandler,
   RefreshControl,
+  Image,
 } from 'react-native';
 
-import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../auth/context';
 import LocationContext from '../../context/LocationContext';
@@ -32,7 +32,7 @@ import {strings} from '../../../Localization/translation';
 import * as Utility from '../../utils';
 import {widthPercentageToDP} from '../../utils';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
-import {getUserSettings} from '../../api/Users';
+import {getUserDetails, getUserSettings} from '../../api/Users';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
@@ -61,6 +61,7 @@ import BottomSheet from '../../components/modals/BottomSheet';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import InviteMemberModal from '../../components/InviteMemberModal';
+import {getGroupDetails} from '../../api/Groups';
 
 const defaultPageSize = 10;
 
@@ -111,6 +112,7 @@ function LocalHomeScreen({navigation, route}) {
   const [visibleSportsModalForTeam, setVisibleSportsModalForTeam] =
     useState(false);
   const [filterData, setFilterData] = useState([]);
+
   const [filterSetting] = useState({
     sort: 1,
     time: 0,
@@ -126,6 +128,29 @@ function LocalHomeScreen({navigation, route}) {
   const [cardLoader, setCardLoader] = useState(false);
   const [showInviteMember, setShowInviteMember] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Top Sport List
+
+  const renderTopSportBar = async () => {
+    try {
+      const [userSport] = await Promise.all([
+        authContext.entity.role !== Verbs.entityTypeClub
+          ? getUserDetails(authContext.entity.uid, authContext)
+          : getGroupDetails(authContext.entity.uid, authContext),
+      ]);
+
+      getSportsForHome(
+        userSport,
+        authContext,
+        setSportHandler,
+        sports,
+        setSportIconLoader,
+      );
+      setSportIconLoader(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleRefresh = () => {
     locationContext.setSelectedLoaction(location);
@@ -161,7 +186,8 @@ function LocalHomeScreen({navigation, route}) {
       );
     };
     getEventdata();
-
+    setSportIconLoader(true);
+    renderTopSportBar();
     setIsRefreshing(false);
   };
 
@@ -345,6 +371,10 @@ function LocalHomeScreen({navigation, route}) {
   ];
 
   useEffect(() => {
+    renderTopSportBar();
+  }, [authContext]);
+
+  useEffect(() => {
     if (isFocused) {
       const handleSetNotificationCount = (count) => {
         setNotificationCount(count);
@@ -395,10 +425,6 @@ function LocalHomeScreen({navigation, route}) {
 
     setSports(filteredData);
   };
-
-  useEffect(() => {
-    getSportsForHome(authContext, setSportHandler, sports, setSportIconLoader);
-  }, [authContext]);
 
   useEffect(() => {
     const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
@@ -452,18 +478,15 @@ function LocalHomeScreen({navigation, route}) {
     (item) => {
       if (item.sport === strings.allType) {
         return (
-          <FastImage
+          <Image
             source={images.allSportIcon}
-            style={{height: 25, width: 25, marginBottom: 10, marginTop: 5}}
+            style={styles.allSportIconStyle}
           />
         );
       }
       if (item.sport === strings.editType) {
         return (
-          <FastImage
-            source={images.editIconHome}
-            style={{height: 40, width: 40}}
-          />
+          <Image source={images.editIconHome} style={styles.editIconstyel} />
         );
       }
       const sportDetails = getSportDetails(
@@ -478,14 +501,14 @@ function LocalHomeScreen({navigation, route}) {
           {!sportImage.length >= 1 ? (
             <View style={{paddingHorizontal: 5}}>
               <ActivityIndicator
-                style={{height: 40, width: 40}}
+                style={styles.sportIconStyle}
                 color={colors.orangeGradientColor}
               />
             </View>
           ) : (
-            <FastImage
+            <Image
               source={{uri: `${image_base_url}${sportImage}`}}
-              style={{height: 40, width: 40}}
+              style={styles.sportIconStyle}
             />
           )}
         </View>
@@ -616,7 +639,11 @@ function LocalHomeScreen({navigation, route}) {
             : colors.whiteColor,
         marginHorizontal: 3,
       }}>
-      {renderImageforSport(item)}
+      {sportIconLoader ? (
+        <ActivityIndicator size={'small'} style={styles.iconStyles} />
+      ) : (
+        renderImageforSport(item)
+      )}
 
       <Text
         style={
@@ -760,15 +787,18 @@ function LocalHomeScreen({navigation, route}) {
     setVisibleSportsModalForClub(val);
   };
 
-  const LocalHeader = useMemo(() => (
-    <LocalHomeHeader
-      setShowSwitchAccountModal={() => setShowSwitchAccountModal(true)}
-      setLocationpopup={() => setLocationPopup(true)}
-      location={location}
-      notificationCount={notificationCount}
-      customSports={customSports}
-    />
-  ));
+  const LocalHeader = useMemo(
+    () => (
+      <LocalHomeHeader
+        setShowSwitchAccountModal={() => setShowSwitchAccountModal(true)}
+        setLocationpopup={() => setLocationPopup(true)}
+        location={location}
+        notificationCount={notificationCount}
+        customSports={customSports}
+      />
+    ),
+    [customSports, location, notificationCount],
+  );
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -1184,5 +1214,24 @@ const styles = StyleSheet.create({
   separateLine: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.veryLightGray,
+  },
+
+  iconStyles: {
+    height: 40,
+    width: 40,
+  },
+  allSportIconStyle: {
+    height: 25,
+    width: 25,
+    marginBottom: 10,
+    marginTop: 5,
+  },
+  editIconstyel: {
+    height: 40,
+    width: 40,
+  },
+  sportIconStyle: {
+    height: 40,
+    width: 40,
   },
 });

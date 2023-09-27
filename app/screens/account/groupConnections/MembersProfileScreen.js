@@ -121,9 +121,7 @@ export default function MembersProfileScreen({navigation, route}) {
         params: {...route.params?.routeParams},
       });
     } else {
-      navigation.navigate('GroupMembersScreen', {
-        ...route.params?.routeParams,
-      });
+      navigation.replace('GroupMembersScreen');
     }
   }, [navigation, route.params]);
 
@@ -276,8 +274,6 @@ export default function MembersProfileScreen({navigation, route}) {
         const tempPosition = [...positions];
         tempPosition[index] = text;
         setPositions(tempPosition);
-
-        // setGroupMemberDetail({...groupMemberDetail, positions});
       }}
       placeholder={strings.positionPlaceholder}
       keyboardType={'default'}
@@ -1338,9 +1334,6 @@ export default function MembersProfileScreen({navigation, route}) {
 
   const {createChannel, isCreatingChannel} = useStreamChatUtils();
   const onMessageButtonPress = (entityData = {}) => {
-    if (entityData.is_admin) {
-      return;
-    }
     const invitee = [
       {
         id: entityData.user_id,

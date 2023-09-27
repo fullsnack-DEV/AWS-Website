@@ -29,46 +29,51 @@ export default function MemberFilterModal({
   onApplyPress,
 }) {
   const [parentGroup, setParentGroup] = useState([]);
-  const [isallForConnect, setIsAllForConnect] = useState(false);
+
   const [isallForRole, setIsAllForRole] = useState(false);
   const [isallForGroup, setIsAllForGroup] = useState(false);
   const [loading, setloading] = useState(false);
   const [firstTimeCalled, setFirstTimeCalled] = useState(false);
+  const [profileOptions, setProfileOptions] = useState({
+    title: strings.alltitle,
+    connected: Verbs.ALL_ROLE,
+  });
+  const [nonMemberSelected, setNonMemberSelected] = useState(false);
 
   const filterEntity = [
     {
-      title: 'All',
-      role: 'is_all',
+      title: strings.alltitle,
+      role: Verbs.ALL_ROLE,
       is_role: true,
       is_checked: true,
     },
     {
-      title: 'Admin',
-      role: 'is_admin',
+      title: strings.adminTitle,
+      role: Verbs.ADMIN_ROLE,
       is_role: true,
       is_checked: true,
     },
     {
-      title: 'Coach',
-      role: 'is_coach',
+      title: strings.coachTitle,
+      role: Verbs.COACH_ROLE,
       is_role: true,
       is_checked: true,
     },
     {
-      title: 'Player',
-      role: 'is_player',
+      title: strings.playetTitle,
+      role: Verbs.PLAYER_ROLE,
       is_role: true,
       is_checked: true,
     },
     {
-      title: 'Parent',
-      role: 'is_parent',
+      title: strings.parentTitle,
+      role: Verbs.PARENT_ROLE,
       is_role: true,
       is_checked: true,
     },
     {
-      title: 'No role',
-      role: 'no_role',
+      title: strings.noroleTitle,
+      role: Verbs.NOROLE_ROLE,
       is_role: true,
       is_checked: true,
     },
@@ -77,38 +82,38 @@ export default function MemberFilterModal({
   const [role, setRole] = useState(filterEntity);
   const ConnectionData = [
     {
-      title: 'All',
-      is_checked: true,
-      is_connect: true,
-      connected: 'is_all',
+      title: strings.alltitle,
+      connected: Verbs.ALL_ROLE,
     },
     {
-      title: 'Connected to account',
-      is_checked: true,
+      title: strings.connectedToAccount,
       connected: true,
-      is_connect: true,
     },
     {
-      title: 'Disconnected to account',
-      is_checked: true,
+      title: strings.disconnectedToAccount,
       connected: false,
-      is_connect: true,
     },
   ];
 
-  const [connectData, setConnectdata] = useState(ConnectionData);
+  const [connectData] = useState(ConnectionData);
 
   const onCloseModal = () => {
-    const updatedConnect = connectData.map((roleItem) => ({
-      ...roleItem,
-      is_checked: true,
-    }));
     const updatedRole = role.map((roleItem) => ({
       ...roleItem,
       is_checked: true,
     }));
-    setConnectdata(updatedConnect);
+    setProfileOptions({
+      title: strings.alltitle,
+      connected: Verbs.ALL_ROLE,
+    });
+
+    const updateGroups = parentGroup.map((roleItem) => ({
+      ...roleItem,
+      is_disable: false,
+    }));
+
     setRole(updatedRole);
+    setParentGroup(updateGroups);
     closeModal();
   };
 
@@ -125,20 +130,23 @@ export default function MemberFilterModal({
               title: item.group_name,
               is_checked: true,
               is_group: true,
+              is_disable: false,
             }));
 
             groupInfoArray.unshift({
-              group_id: 'is_all',
-              title: 'All',
+              group_id: Verbs.ALL_ROLE,
+              title: strings.alltitle,
               is_checked: true,
               is_group: true,
+              is_disable: false,
             });
 
             groupInfoArray.push({
-              group_id: 'non-Team-Member',
-              title: 'Non team member',
+              group_id: Verbs.NonTeamMember_Role,
+              title: strings.nonTeamMembertTitle,
               is_checked: true,
               is_group: true,
+              is_disable: false,
             });
 
             setParentGroup(groupInfoArray);
@@ -157,24 +165,46 @@ export default function MemberFilterModal({
 
   const onItemPress = (item) => {
     if (item.is_group) {
-      if (item.group_id === 'is_all') {
+      if (item.group_id === Verbs.NonTeamMember_Role) {
+        setNonMemberSelected(true);
+        // Update the is_disable property for each element in parentGroup
+        const updatedParentGroupData = parentGroup.map((roleItem) => {
+          if (roleItem === item) {
+            return {...roleItem, is_checked: !roleItem.is_checked};
+          }
+
+          return {
+            ...roleItem,
+            is_disable: !item.is_checked,
+            is_checked: false,
+          };
+        });
+
+        setParentGroup(updatedParentGroupData);
+
+        return;
+      }
+      if (item.group_id === Verbs.ALL_ROLE) {
+        setNonMemberSelected(false);
+
         setIsAllForGroup(!isallForGroup);
         const updatedParentGroupData = parentGroup.map((roleItem) => ({
           ...roleItem,
           is_checked: isallForGroup,
         }));
+
         setParentGroup(updatedParentGroupData);
-      } else if (item.is_group) {
+        return;
+      }
+
+      if (item.is_group) {
         const updatedparentGroupRole = parentGroup.map((roleItem) => {
-          if (roleItem.title === 'All') {
+          if (roleItem.title === strings.alltitle) {
             // eslint-disable-next-line no-param-reassign
-            roleItem.is_checked = false; // Set is_checked to false for 'All'
+            roleItem.is_checked = false;
           }
-          if (
-            roleItem.title === item.title &&
-            // eslint-disable-next-line no-prototype-builtins
-            roleItem.hasOwnProperty('is_checked')
-          ) {
+
+          if (roleItem.title === item.title && 'is_checked' in roleItem) {
             return {
               ...roleItem,
               is_checked: !roleItem.is_checked,
@@ -182,15 +212,20 @@ export default function MemberFilterModal({
           }
           return roleItem;
         });
+
         const uncheckedElements = updatedparentGroupRole.filter(
           (roleItem) => !roleItem.is_checked,
         );
+
         if (
           uncheckedElements.length === 1 &&
           !uncheckedElements[0].is_checked
         ) {
           const elementToToggle = uncheckedElements[0];
-          const updatedElement = {...elementToToggle, is_checked: true};
+          const updatedElement = {
+            ...elementToToggle,
+            is_checked: true,
+          };
           const updatedConnectWithToggledElement = updatedparentGroupRole.map(
             (roleItem) =>
               roleItem === elementToToggle ? updatedElement : roleItem,
@@ -209,21 +244,59 @@ export default function MemberFilterModal({
         setIsAllForRole(!isallForRole);
         const updatedRole = role.map((roleItem) => ({
           ...roleItem,
+          is_checked: isallForGroup,
+        }));
+
+        setRole(updatedRole);
+      } else if (item.is_role) {
+        const updatedRole = role.map((roleItem) => {
+          if (roleItem.title === strings.alltitle) {
+            // eslint-disable-next-line no-param-reassign
+            roleItem.is_checked = false; // Set is_checked to false for 'All'
+          }
+          if (roleItem.title === item.title && 'is_checked' in roleItem) {
+            return {
+              ...roleItem,
+              is_checked: !roleItem.is_checked,
+            };
+          }
+          return roleItem;
+        });
+        const uncheckedElements = updatedRole.filter(
+          (roleItem) => !roleItem.is_checked,
+        );
+        if (
+          uncheckedElements.length === 1 &&
+          !uncheckedElements[0].is_checked
+        ) {
+          const elementToToggle = uncheckedElements[0];
+          const updatedElement = {...elementToToggle, is_checked: true};
+          const updatedConnectWithToggledElement = updatedRole.map((roleItem) =>
+            roleItem === elementToToggle ? updatedElement : roleItem,
+          );
+
+          setParentGroup(updatedConnectWithToggledElement);
+          return;
+        }
+      }
+    }
+
+    if (item.is_role) {
+      if (item.role === Verbs.ALL_ROLE) {
+        setIsAllForRole(!isallForRole);
+        const updatedRole = role.map((roleItem) => ({
+          ...roleItem,
           is_checked: isallForRole,
         }));
 
         setRole(updatedRole);
       } else if (item.is_role) {
         const updatedRole = role.map((roleItem) => {
-          if (roleItem.title === 'All') {
+          if (roleItem.title === strings.alltitle) {
             // eslint-disable-next-line no-param-reassign
             roleItem.is_checked = false; // Set is_checked to false for 'All'
           }
-          if (
-            roleItem.title === item.title &&
-            // eslint-disable-next-line no-prototype-builtins
-            roleItem.hasOwnProperty('is_checked')
-          ) {
+          if (roleItem.title === item.title && 'is_checked' in roleItem) {
             return {
               ...roleItem,
               is_checked: !roleItem.is_checked,
@@ -252,59 +325,12 @@ export default function MemberFilterModal({
         setRole(updatedRole);
       }
     }
-    if (item.is_connect) {
-      if (item.connected === 'is_all') {
-        setIsAllForConnect(!isallForConnect);
-
-        const updatedConnect = connectData.map((roleItem) => ({
-          ...roleItem,
-          is_checked: isallForConnect,
-        }));
-
-        setConnectdata(updatedConnect);
-      } else if (item.is_connect) {
-        const updatedConnect = connectData.map((roleItem) => {
-          if (roleItem.title === 'All') {
-            // eslint-disable-next-line no-param-reassign
-            roleItem.is_checked = false; // Set is_checked to false for 'All'
-          }
-          if (
-            roleItem.title === item.title &&
-            // eslint-disable-next-line no-prototype-builtins
-            roleItem.hasOwnProperty('is_checked')
-          ) {
-            return {
-              ...roleItem,
-              is_checked: !roleItem.is_checked,
-            };
-          }
-          return roleItem;
-        });
-        const uncheckedElements = updatedConnect.filter(
-          (roleItem) => !roleItem.is_checked,
-        );
-        if (
-          uncheckedElements.length === 1 &&
-          !uncheckedElements[0].is_checked
-        ) {
-          const elementToToggle = uncheckedElements[0];
-          const updatedElement = {...elementToToggle, is_checked: true};
-          const updatedConnectWithToggledElement = updatedConnect.map(
-            (roleItem) =>
-              roleItem === elementToToggle ? updatedElement : roleItem,
-          );
-
-          setConnectdata(updatedConnectWithToggledElement);
-          return;
-        }
-
-        setConnectdata(updatedConnect);
-      }
-    }
   };
 
   const renderGenders = ({item}) => (
     <TouchableOpacity
+      disabled={item.is_disable}
+      style={{opacity: item?.is_disable ? 0.4 : 1}}
       onPress={() => {
         onItemPress(item);
       }}>
@@ -319,14 +345,16 @@ export default function MemberFilterModal({
         }}>
         <View style={{flexDirection: 'row'}}>
           <Text style={styles.languageList}>
-            {item.title === 'All' && item.is_group === true
+            {item.title === strings.alltitle && item.is_group === true
               ? strings.club
               : item.title}
           </Text>
           {item.is_group && (
             <Image
               source={
-                item.title === 'All' ? images.newClubIcon : images.newTeamIcon
+                item.title === strings.alltitle
+                  ? images.newClubIcon
+                  : images.newTeamIcon
               }
               style={{
                 width: 15,
@@ -349,25 +377,92 @@ export default function MemberFilterModal({
     </TouchableOpacity>
   );
 
+  const renderProfileAccountOptions = ({item}) => (
+    <TouchableOpacity
+      onPress={() => {
+        setProfileOptions(item);
+      }}>
+      <View
+        style={{
+          paddingHorizontal: 40,
+
+          paddingVertical: 15,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Text style={styles.languageList}>{item.title}</Text>
+
+        <View style={styles.checkbox}>
+          {item.title === profileOptions.title ? (
+            <Image
+              source={images.radioRoundOrange}
+              style={styles.checkboxImg}
+            />
+          ) : (
+            <Image source={images.radioUnselect} style={styles.checkboxImg} />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   const onRightButtonPress = () => {
     const rolesWithIsCheckedTrue = role
       .filter((item) => item.is_checked === true && item.is_role === true)
       .map((item) => item.role);
 
-    const connectWithIcCheckedTrue = connectData
-      .filter((item) => item.is_checked === true && item.is_connect === true)
-      .map((item) => item.connected);
+    const connectWithIcCheckedTrue = [profileOptions].map(
+      (item) => item.connected,
+    );
 
-    const TeamsSelectedIds =
-      authContext.entity.role === Verbs.entityTypeTeam
-        ? []
-        : parentGroup
-            .filter(
-              (item) => item.is_checked === true && item.is_group === true,
-            )
-            .map((item) => item.group_id);
+    const TeamsSelectedIds = (() => {
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        return [];
+      }
+      const nonTeamMembers = parentGroup.filter(
+        (item) =>
+          item.is_checked === true &&
+          item.is_group === true &&
+          item.group_id === Verbs.NonTeamMember_Role,
+      );
 
-    if (
+      if (nonTeamMembers.length > 0) {
+        return parentGroup.map((item) => item.group_id);
+      }
+      return parentGroup
+        .filter((item) => item.is_checked === true && item.is_group === true)
+        .map((item) => item.group_id);
+    })();
+
+    const finalTeamIds = nonMemberSelected
+      ? TeamsSelectedIds.filter((item) => item !== Verbs.ALL_ROLE)
+      : TeamsSelectedIds;
+
+    console.log(parentGroup, 'from lele');
+    console.log(rolesWithIsCheckedTrue, 'from lele');
+    console.log(connectWithIcCheckedTrue, 'from lele');
+
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      setParentGroup([]);
+    }
+
+    if (parentGroup.length > 0) {
+      if (
+        (!rolesWithIsCheckedTrue.length > 0 ||
+          !connectWithIcCheckedTrue.length > 0 ||
+          !TeamsSelectedIds.length > 0) &&
+        parentGroup.length > 0
+      ) {
+        showAlert(strings.filterModalValidation);
+      } else {
+        onApplyPress(
+          rolesWithIsCheckedTrue,
+          connectWithIcCheckedTrue,
+          finalTeamIds,
+        );
+      }
+    } else if (
       !rolesWithIsCheckedTrue.length > 0 ||
       !connectWithIcCheckedTrue.length > 0
     ) {
@@ -376,7 +471,7 @@ export default function MemberFilterModal({
       onApplyPress(
         rolesWithIsCheckedTrue,
         connectWithIcCheckedTrue,
-        TeamsSelectedIds,
+        finalTeamIds,
       );
     }
   };
@@ -445,7 +540,7 @@ export default function MemberFilterModal({
             extraData={connectData}
             ItemSeparatorComponent={() => <TCThinDivider />}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={renderGenders}
+            renderItem={renderProfileAccountOptions}
           />
         </View>
       </ScrollView>

@@ -49,6 +49,8 @@ import {getCalendarIndex, getGameIndex} from '../../api/elasticSearch';
 import {getSetting} from '../challenge/manageChallenge/settingUtility';
 import fonts from '../../Constants/Fonts';
 import TCGameCard from '../../components/TCGameCard';
+import GroupMembersModal from './GroupMembersModal';
+import FollowFollowingModal from './FollowFollowingModal';
 
 // import BottomSheet from '../../components/modals/BottomSheet';
 
@@ -88,6 +90,10 @@ const GroupHomeScreen = ({
   const [refereeSettingObject, setRefereeSettingObject] = useState();
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
+  const [refreshMemberModal, setRefreshMemberModal] = useState(false);
+
+  const bottomSheetRef = useRef(null);
+  const followModalRef = useRef(null);
   const backButtonHandler = useCallback(() => {
     if (route.params.comeFrom === Verbs.INCOMING_CHALLENGE_SCREEN) {
       navigation.navigate('Account', {
@@ -233,23 +239,27 @@ const GroupHomeScreen = ({
         sportList={authContext.sports}
         isAdmin={isAdmin}
         onClickMembers={() => {
-          navigation.navigate('News Feed', {
-            screen: 'GroupMembersScreen',
-            params: {
-              groupObj: groupData,
-              groupID: groupId,
-              fromProfile: true,
-              showBackArrow: true,
-              comeFrom: 'HomeScreen',
-              routeParams: {
-                uid: groupId,
-                role: groupData.entity_type,
+          if (isAdmin) {
+            navigation.navigate('News Feed', {
+              screen: 'GroupMembersScreen',
+              params: {
+                groupObj: groupData,
+                groupID: groupId,
+                fromProfile: true,
+                showBackArrow: true,
+                comeFrom: 'HomeScreen',
+                routeParams: {
+                  uid: groupId,
+                  role: groupData.entity_type,
+                },
               },
-            },
-          });
+            });
+          } else {
+            bottomSheetRef.current?.present();
+          }
         }}
         onClickFollowers={() => {
-          navigation.navigate('GroupFollowersScreen', {groupId});
+          followModalRef.current?.present();
         }}
       />
       <MemberList
@@ -329,6 +339,7 @@ const GroupHomeScreen = ({
     setLoading(true);
     followGroup(params, groupId, authContext)
       .then(() => {
+        setRefreshMemberModal(true);
         const obj = {
           ...currentUserData,
           is_following: true,
@@ -354,6 +365,7 @@ const GroupHomeScreen = ({
     setLoading(true);
     unfollowGroup(params, groupId, authContext)
       .then(() => {
+        setRefreshMemberModal(true);
         const obj = {
           ...currentUserData,
           is_following: false,
@@ -670,12 +682,14 @@ const GroupHomeScreen = ({
 
   const userJoinGroup = (isMemberAlreadyExists = false) => {
     setLoading(true);
+
     const params = {};
     if (isMemberAlreadyExists) {
       params.is_confirm = true;
     }
     joinTeam(params, groupId, authContext)
       .then((response) => {
+        setRefreshMemberModal(true);
         const inviteRequest = response.payload.data?.action
           ? {...response.payload.data}
           : {
@@ -697,10 +711,7 @@ const GroupHomeScreen = ({
             ErrorCodes.MEMBERALREADYINVITEERRORCODE
           ) {
             setLoading(false);
-            // Alert.alert(
-            //   strings.alertmessagetitle,
-            //   format(strings.alertTitle2, groupData.group_name),
-            // );
+
             Alert.alert('', response.payload.user_message, [
               {text: strings.okTitleText},
             ]);
@@ -709,10 +720,7 @@ const GroupHomeScreen = ({
             ErrorCodes.MEMBERALREADYREQUESTERRORCODE
           ) {
             setLoading(false);
-            // Alert.alert(
-            //   strings.alertmessagetitle,
-            //   format(strings.alertTitle2, groupData.group_name),
-            // );
+
             Alert.alert('', response.payload.user_message, [
               {text: strings.okTitleText},
             ]);
@@ -767,6 +775,7 @@ const GroupHomeScreen = ({
       .then(() => {
         setCurrentGroupData(Verbs.leaveVerb);
         setLoading(false);
+        setRefreshMemberModal(true);
       })
       .catch((error) => {
         setLoading(false);
@@ -846,6 +855,7 @@ const GroupHomeScreen = ({
     }
     acceptRequest(params, requestId, authContext)
       .then((response) => {
+        setRefreshMemberModal(true);
         if (
           response.payload?.error_code &&
           response.payload?.error_code === ErrorCodes.MEMBEREXISTERRORCODE
@@ -1409,7 +1419,10 @@ const GroupHomeScreen = ({
             isAdmin={route.params.uid === authContext.entity.uid}
             homeFeedHeaderComponent={ListHeader}
             currentTab={0}
-            pulltoRefresh={pulltoRefresh}
+            pulltoRefresh={() => {
+              setRefreshMemberModal(true);
+              pulltoRefresh();
+            }}
             routeParams={routeParams}
           />
         </View>
@@ -1469,6 +1482,20 @@ const GroupHomeScreen = ({
           flatListProps={flatListScorekeeperProps}
         />
       </Portal>
+
+      <GroupMembersModal
+        bottomSheetRef={bottomSheetRef}
+        visibleMemberModal={refreshMemberModal}
+        closeModal={() => setRefreshMemberModal(false)}
+        groupID={groupId}
+      />
+
+      <FollowFollowingModal
+        followModalRef={followModalRef}
+        visibleMemberModal={refreshMemberModal}
+        closeModal={() => setRefreshMemberModal(false)}
+        groupID={groupId}
+      />
     </>
   );
 };

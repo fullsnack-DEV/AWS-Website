@@ -885,7 +885,7 @@ export default function CreateTeamForm1({navigation, route}) {
             title={strings.languages}
             headerRightButtonText={strings.apply}
             modalType={ModalTypes.style1}
-            closeModal={() => setVisibleGendersModal(false)}
+            closeModal={() => setModalVisible(false)}
             onRightButtonPress={() => {
               for (const temp of languages) {
                 if (temp.isChecked) {

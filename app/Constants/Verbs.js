@@ -194,6 +194,14 @@ const Verbs = {
   channelTypeGeneral: 'General',
   channelTypeMessaging: 'messaging',
   clap: 'clap',
+  ALL_ROLE: 'is_all',
+  ADMIN_ROLE: 'is_admin',
+  COACH_ROLE: 'is_coach',
+  PLAYER_ROLE: 'is_player',
+  PARENT_ROLE: 'is_parent',
+  NOROLE_ROLE: 'no_role',
+  NonTeamMember_Role: 'non-Team-Member',
+  PHONE_NUMBER_KEY: 'phone_numbers',
 };
 
 export default Verbs;

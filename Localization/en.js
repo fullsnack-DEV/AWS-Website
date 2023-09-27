@@ -3122,7 +3122,17 @@ export default {
   doYouWantToDeleteThisPost: 'en_Do you want to delete this post?',
   filterModalValidation: 'en_Please select at least 1 item in each section',
   peopleNearYou: 'en_PEOPLE NEAR YOU',
-  playingSportList: 'en_PLAYING',
+  alltitle: 'en_All',
+  adminTitle: 'en_Admin',
+  coachTitle: 'en_Coach',
+  playetTitle: 'en_Player',
+  parentTitle: 'en_Parent',
+  noroleTitle: 'en_No role',
+  connectedToAccount: 'en_Connected to account',
+  disconnectedToAccount: 'en_Disconnected to account',
+  nonTeamMembertTitle: 'en_Non team member',
+   playingSportList: 'en_PLAYING',
   refereeingSportList: 'en_REFEREEING',
   scoreKeepingSportList: 'en_SCOREKEEPING',
+
 };

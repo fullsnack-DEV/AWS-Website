@@ -19,7 +19,7 @@ import {
   SafeAreaView,
   TextInput,
   BackHandler,
-  Pressable,
+  RefreshControl,
 } from 'react-native';
 import {
   useFocusEffect,
@@ -87,6 +87,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const [visibleFilterModal, setVisibleFilterModal] = useState(false);
   const [pendingReqNumber, setpendingReqNumber] = useState(10);
   const [filterloading, setFilterLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const backAction = () => {
@@ -166,7 +167,13 @@ export default function GroupMembersScreen({navigation, route}) {
 
   // eslint-disable-next-line consistent-return
   const getFilteredMember = (roleArray, connectArray, filterTeams = []) => {
-    const teamIdsString = filterTeams.join(',');
+    const resultfilterTeams = filterTeams.filter(
+      (item) => item !== 'is_all' && item !== 'non-Team-Member',
+    );
+
+    const isNonTeamMember = filterTeams.includes('non-Team-Member');
+
+    const resultString = resultfilterTeams.join(',');
 
     if (filterTeams.length >= 1) {
       if (filterTeams.includes('is_all')) {
@@ -185,7 +192,8 @@ export default function GroupMembersScreen({navigation, route}) {
         authContext,
         roleArray,
         connectArray,
-        teamIdsString,
+        resultString,
+        isNonTeamMember,
       );
       return;
     }
@@ -270,12 +278,18 @@ export default function GroupMembersScreen({navigation, route}) {
     setSearchMember(filteredMembers);
   };
 
+  const handleRefresh = () => {
+    getMembers(groupID, authContext);
+    setIsRefreshing(true);
+  };
+
   const getOtherTeamsFilterMembers = async (
     groupIDs,
     authContexts,
     roleArray,
     connectArray,
     grp_ids = '',
+    isNonTeamMember = false,
   ) => {
     setFilterLoading(true);
 
@@ -350,6 +364,34 @@ export default function GroupMembersScreen({navigation, route}) {
             return false;
           });
 
+          if (isNonTeamMember) {
+            const filteredResult = members.filter(
+              (member) =>
+                !filteredMembers.some(
+                  (fMember) => fMember.user_id === member.user_id,
+                ),
+            );
+
+            const nonMemberFilterResult = filteredResult.filter((item) => {
+              // connected Filter
+
+              if (connectArray.some((role) => item.connected === role)) {
+                return item;
+              }
+              if (connectArray.includes('is_all')) {
+                return item;
+              }
+              return false;
+            });
+
+            setMembers(nonMemberFilterResult);
+
+            setSearchMember(nonMemberFilterResult);
+            setFilterLoading(false);
+
+            return;
+          }
+
           setMembers(filteredMembers);
 
           setSearchMember(filteredMembers);
@@ -393,10 +435,12 @@ export default function GroupMembersScreen({navigation, route}) {
           setSearchMember(SortedMembers);
           setloading(false);
           setFilterLoading(false);
+          setIsRefreshing(false);
         })
         .catch((e) => {
           setloading(false);
           setFilterLoading(false);
+          setIsRefreshing(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
@@ -800,49 +844,6 @@ export default function GroupMembersScreen({navigation, route}) {
       <View tabLabel={strings.membersTitle} style={{flex: 1}}>
         {SearchBox()}
 
-        {/* notifiatons */}
-
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 20,
-            marginBottom: 20,
-            marginTop: 10,
-            alignItems: 'center',
-          }}>
-          <View style={{flexDirection: 'row'}}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-                textTransform: 'uppercase',
-              }}>
-              pending requests
-            </Text>
-            <View
-              style={{
-                backgroundColor: colors.notificationCountBgColor,
-                borderRadius: 15,
-                marginLeft: 12,
-                justifyContent: 'center',
-              }}>
-              <Text style={styles.popUp}>{pendingReqNumber}+</Text>
-            </View>
-          </View>
-
-          <Pressable
-            onPress={() => {
-              navigation.navigate('NotificationNavigator', {
-                screen: 'PendingRequestScreen',
-              });
-            }}>
-            <Image source={images.arrowGraterthan} style={styles.arrowStyle} />
-          </Pressable>
-        </View>
-        <TCThinDivider height={7} marginBottom={20} width={'100%'} />
-
         {/* eslint-disable-next-line no-nested-ternary */}
         {members.length > 0 || noResults ? (
           <FlatList
@@ -858,6 +859,12 @@ export default function GroupMembersScreen({navigation, route}) {
                 </Text>
               </View>
             )}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+              />
+            }
             keyExtractor={(item, index) => `${item.first_name}/${index}`}
           />
         ) : (
@@ -1050,13 +1057,13 @@ const styles = StyleSheet.create({
     zIndex: 1,
     width: '90%',
   },
-  popUp: {
-    fontFamily: fonts.RBold,
-    fontSize: 12,
-    padding: 0,
+  // popUp: {
+  //   fontFamily: fonts.RBold,
+  //   fontSize: 12,
+  //   padding: 0,
 
-    width: 30,
-    color: colors.whiteColor,
-    textAlign: 'center',
-  },
+  //   width: 30,
+  //   color: colors.whiteColor,
+  //   textAlign: 'center',
+  // },
 });

@@ -2,7 +2,13 @@
 /* eslint-disable  no-else-return */
 /* eslint-disable  no-unneeded-ternary */
 
-import React, {useState, useEffect, useLayoutEffect, useContext} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useContext,
+  useCallback,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -45,7 +51,8 @@ import TCTextField from '../../../components/TCTextField';
 
 import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
 import {getUserDetails} from '../../../api/Users';
-import {getJSDate} from '../../../utils';
+import {countryCode, getJSDate} from '../../../utils';
+import Verbs from '../../../Constants/Verbs';
 
 let entity = {};
 
@@ -72,14 +79,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   const [updateProfile, setUpdateProfile] = useState(false);
 
-  const [phoneNumber, setPhoneNumber] = useState([
-    {
-      id: 0,
-      phone_number: '',
-      country_code: '',
-    },
-  ]);
-
   const [postalCode, setPostalCode] = useState('');
 
   const [setting, setSetting] = useState({});
@@ -88,6 +87,8 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const [state, setState] = useState();
   const [country, setCountry] = useState();
   const [grpInfo, setGrpInfo] = useState();
+  const [countrycode, setCountryCode] = useState();
+  const [phoneNumber, setPhoneNumber] = useState([]);
 
   useEffect(() => {
     const mindate = new Date();
@@ -97,30 +98,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     // setDateValue(mindate);
   }, []);
 
-  useEffect(() => {
-    if (isFocused) {
-      getUserInfo();
-      getGroupMemberInfo();
-
-      setLocation(memberInfo.mail_street_address);
-    }
-  }, [isFocused]);
-
-  useEffect(() => {
-    setPhoneNumber(
-      memberInfo.phone_numbers || [
-        {
-          id: 0,
-          phone_number: '',
-          country_code: '',
-        },
-      ],
-    );
-    setMemberInfo(memberInfo);
-    getAuthEntity();
-  }, []);
-
-  const getGroupMemberInfo = () => {
+  const getGroupMemberInfo = useCallback(() => {
     getGroupMembersInfo(
       route.params?.groupID,
       route.params?.memberID,
@@ -135,12 +113,16 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  };
+  }, [authContext, route.params?.groupID, route.params?.memberID]);
 
-  const getUserInfo = () => {
+  const getUserInfo = useCallback(() => {
     setloading(true);
 
-    getUserDetails(authContext.entity?.uid, authContext)
+    getGroupMembersInfo(
+      route.params?.groupID,
+      route.params?.memberID,
+      authContext,
+    )
       .then((response) => {
         setMemberInfo(response.payload);
 
@@ -154,17 +136,16 @@ export default function RequestBasicInfoScreen({navigation, route}) {
 
           address:
             !!response.payload.street_address &&
-            !!response.payload.city &&
-            !!response.payload.state_abbr &&
-            !!response.payload.country &&
-            !!response.payload.postal_code,
+            !!response.payload.mail_city &&
+            !!response.payload.mail_state_abbr &&
+            !!response.payload.mail_country &&
+            !!response.payload.mail_postal_code,
         });
-        if (response.payload.phone_numbers?.length > 0) {
-          setPhoneNumber(response.payload.phone_numbers);
-        }
+
         if (response.payload.mail_street_address) {
           setLocation(response.payload.mail_street_address);
         }
+
         setloading(false);
       })
       .catch((e) => {
@@ -173,12 +154,59 @@ export default function RequestBasicInfoScreen({navigation, route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  };
+  }, [authContext]);
+  useEffect(() => {
+    if (isFocused) {
+      getUserInfo();
+      getGroupMemberInfo();
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    setMemberInfo(memberInfo);
+    getAuthEntity();
+  }, []);
+
+  useEffect(() => {
+    const selectedCountryItem = countryCode.find(
+      (item) =>
+        item.name.toLowerCase() === authContext.user.country.toLowerCase(),
+    );
+
+    let dialCode = selectedCountryItem.dial_code;
+
+    if (dialCode.startsWith('+')) {
+      dialCode = dialCode.substring(1);
+    }
+
+    const countryOBJ = {
+      country: selectedCountryItem.name,
+      code: dialCode,
+      iso: selectedCountryItem.code,
+    };
+
+    setCountryCode(countryOBJ);
+  }, [phoneNumber]);
+
+  useEffect(() => {
+    setPhoneNumber(
+      memberInfo?.phone_numbers?.length === 0 ||
+        !(Verbs.PHONE_NUMBER_KEY in memberInfo)
+        ? [
+            {
+              id: 0,
+              phone_number: {},
+              country_code: countrycode,
+            },
+          ]
+        : memberInfo?.phone_numbers,
+    );
+  }, [memberInfo?.phone_numbers?.length, memberInfo?.birthday]);
 
   const addPhoneNumber = () => {
     const obj = {
-      id: phoneNumber.length === 0 ? 0 : phoneNumber.length,
-      country_code: '',
+      id: phoneNumber?.length === 0 ? 0 : phoneNumber?.length,
+      country_code: countrycode,
       phone_number: '',
     };
     setPhoneNumber([...phoneNumber, obj]);
@@ -254,7 +282,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   };
 
   const editMemberBasicInfo = () => {
-    const bodyParams = {...grpInfo, update_profile_info: updateProfile};
+    const bodyParams = {update_profile_info: updateProfile};
 
     setloading(true);
 
@@ -285,11 +313,11 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       bodyParams.phone_numbers = memberInfo?.phone_numbers;
     }
     if (setting.address === true) {
-      bodyParams.mail_street_address = memberInfo?.mail_street_address;
       bodyParams.mail_city = city;
       bodyParams.mail_state_abbr = state;
       bodyParams.mail_country = country;
       bodyParams.mail_postal_code = postalCode;
+      bodyParams.mail_street_address = location;
     }
 
     approveBasicInfoRequest(
@@ -322,6 +350,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
       marginBottom={2}
       placeholder={strings.selectCode}
       value={item.country_code}
+      from={!(phoneNumber.length > 1)}
       numberValue={item.phone_number}
       onValueChange={(value) => {
         const tempCode = [...phoneNumber];
@@ -541,9 +570,6 @@ export default function RequestBasicInfoScreen({navigation, route}) {
   const locationString = () =>
     [location, city, state, country, postalCode].filter((v) => v).join(', ');
 
-  const addressManualString = () =>
-    [location, city, state, country, postalCode].filter((w) => w).join(', ');
-
   const onSelectAddress = (_location) => {
     setCity(_location.city);
     setState(_location.state);
@@ -551,7 +577,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
     setPostalCode(_location.postalCode);
     setLocation(_location.formattedAddress);
 
-    memberInfo.street_address = _location.formattedAddress;
+    memberInfo.mail_street_address = _location.formattedAddress;
   };
 
   const setCityandPostal = (street, code) => {
@@ -733,24 +759,31 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             <FlatList
               style={{
                 marginTop: 10,
+                marginHorizontal: 15,
               }}
               data={phoneNumber}
               renderItem={renderPhoneNumber}
               keyExtractor={(item, index) => index.toString()}
             />
           </View>
-          <TCMessageButton
-            borderColor={colors.whiteColor}
-            color={colors.lightBlackColor}
-            title={strings.addPhone}
-            backgroundColor={colors.lightGrey}
-            paddingVertical={5}
-            width={120}
-            alignSelf="center"
-            marginTop={20}
-            marginBottom={25}
-            onPress={() => addPhoneNumber()}
-          />
+          <View
+            style={{
+              justifyContent: 'center',
+              alignSelf: 'center',
+            }}>
+            <TCMessageButton
+              borderColor={colors.whiteColor}
+              color={colors.lightBlackColor}
+              title={strings.addPhone}
+              backgroundColor={colors.lightGrey}
+              paddingVertical={5}
+              width={120}
+              alignSelf="center"
+              marginTop={20}
+              marginBottom={25}
+              onPress={() => addPhoneNumber()}
+            />
+          </View>
         </View>
         <View style={styles.checkBoxContainer}>
           <TouchableOpacity
@@ -778,11 +811,7 @@ export default function RequestBasicInfoScreen({navigation, route}) {
             setVisibleLocationModal(true);
           }}>
           <TCTextField
-            value={
-              locationString() ||
-              addressManualString() ||
-              memberInfo.street_address
-            }
+            value={locationString()}
             autoCapitalize="none"
             autoCorrect={false}
             placeholder={strings.streetAddress}

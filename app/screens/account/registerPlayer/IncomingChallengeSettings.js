@@ -37,6 +37,7 @@ import useSwitchAccount from '../../../hooks/useSwitchAccount';
 import SwitchAccountLoader from '../../../components/account/SwitchAccountLoader';
 import {getCountry} from 'country-currency-map';
 import {useIsFocused} from '@react-navigation/native';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
@@ -479,7 +480,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
             onSave();
           }
         }}
-        loading={loading}
+        // loading={loading}
         containerStyle={{
           paddingLeft: 10,
           paddingRight: 17,
@@ -489,6 +490,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
         }}
       />
       <TCFormProgress totalSteps={2} curruentStep={2} />
+      <ActivityLoader visible={loading} />
 
       <View style={{flex: 1}}>
         <FlatList
