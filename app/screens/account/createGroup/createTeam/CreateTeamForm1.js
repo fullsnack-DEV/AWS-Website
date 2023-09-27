@@ -84,10 +84,11 @@ export default function CreateTeamForm1({navigation, route}) {
   const [languagesName, setLanguagesName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedSport, SetSelectedSport] = useState(
-    route?.params || route.params.sports,
+    route?.params.sportData || route.params.sports,
   );
   const [parentGroupID, setParentGroupID] = useState(route.params?.grp_id);
   const [statefull, setStatefull] = useState('');
+  const [roleObj] = useState(route.params?.roleValues ?? {});
 
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
@@ -101,11 +102,11 @@ export default function CreateTeamForm1({navigation, route}) {
           delete route.params.grp_id;
         }
 
-        SetSelectedSport(route?.params || route.params.sports);
+        SetSelectedSport(route?.params.sportData || route.params.sports);
       }
 
       setSportsSelection(
-        route?.params.sport_name || route?.params.sports?.sport_name,
+        route?.params.sportData.sport_name || route?.params.sports?.sport_name,
       );
     }
   }, [isFocused]);
@@ -458,6 +459,11 @@ export default function CreateTeamForm1({navigation, route}) {
       backgroundThumbnail,
       fromCreateTeam: true,
       show_Double: showDouble,
+      is_player: roleObj.is_player,
+      is_coach: roleObj.is_coach,
+      is_parent: roleObj.is_parent,
+      is_other: roleObj.is_other,
+      other_role: roleObj.other_role,
     });
   };
 

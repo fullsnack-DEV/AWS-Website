@@ -59,6 +59,7 @@ import CustomModalWrapper from '../components/CustomModalWrapper';
 import CustomScrollTabs from '../components/CustomScrollTabs';
 
 import ScreenHeader from '../components/ScreenHeader';
+import JoinButtonModal from './home/JoinButtomModal';
 
 let stopFetchMore = true;
 
@@ -92,6 +93,7 @@ export default function EntitySearchScreen({navigation, route}) {
   };
   const getGameHomeScreen = (sportName) =>
     GAME_HOME[sportName?.split(' ').join('_').toLowerCase()];
+  const JoinButtonModalRef = useRef(null);
 
   // For activity indigator
 
@@ -117,6 +119,8 @@ export default function EntitySearchScreen({navigation, route}) {
   const [clubsPageFrom, setClubsPageFrom] = useState(0);
   const [completedGamePageFrom, setCompletedGamePageFrom] = useState(0);
   const [upcomingGamePageFrom, setUpcomingGamePageFrom] = useState(0);
+  const [groupData, setGroupData] = useState({});
+  const [isInvited] = useState(false);
   // const [location, setLocation] = useState(strings.worldTitleText);
   const [generalFilter, setGeneralFilter] = useState({
     location: strings.worldTitleText,
@@ -1812,7 +1816,10 @@ export default function EntitySearchScreen({navigation, route}) {
     const params = {};
     joinTeam(params, groupId, authContext)
       .then((response) => {
+        JoinButtonModalRef.current.close();
+
         setloading(false);
+
         if (response.payload.error_code === ErrorCodes.MEMBEREXISTERRORCODE) {
           Alert.alert(
             '',
@@ -1852,6 +1859,7 @@ export default function EntitySearchScreen({navigation, route}) {
           ErrorCodes.MEMBERALREADYINVITEERRORCODE
         ) {
           setloading(false);
+
           const messageStr = response.payload.user_message;
           setMessage(messageStr);
           setTimeout(() => {
@@ -1873,6 +1881,7 @@ export default function EntitySearchScreen({navigation, route}) {
           response.payload.error_code === ErrorCodes.MEMBERINVITEONLYERRORCODE
         ) {
           Alert.alert(strings.alertmessagetitle, response.payload.user_message);
+          JoinButtonModalRef.current.close();
         } else if (response.payload.action === Verbs.joinVerb) {
           Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage, [
             {text: strings.okTitleText},
@@ -1889,6 +1898,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((error) => {
         setloading(false);
+        JoinButtonModalRef.current.close();
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message, [
             {text: strings.okTitleText},
@@ -1926,6 +1936,7 @@ export default function EntitySearchScreen({navigation, route}) {
     acceptRequest({}, requestId, authContext)
       .then(() => {
         setloading(false);
+        JoinButtonModalRef.current.close();
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
         }, 10);
@@ -1944,6 +1955,7 @@ export default function EntitySearchScreen({navigation, route}) {
     declineRequest(requestId, authContext)
       .then(() => {
         setloading(false);
+        JoinButtonModalRef.current.close();
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
@@ -2272,8 +2284,10 @@ export default function EntitySearchScreen({navigation, route}) {
                   setSettingObject(dataObj.setting);
                   setCurrentUserData(dataObj);
                 }}
-                onPressJoinButton={(groupId) => {
-                  userJoinGroup(groupId);
+                onPressJoinButton={() => {
+                  setGroupData(item);
+
+                  JoinButtonModalRef.current.present();
                 }}
               />
             </View>
@@ -2934,6 +2948,14 @@ export default function EntitySearchScreen({navigation, route}) {
           />
         </View>
       </CustomModalWrapper>
+
+      <JoinButtonModal
+        JoinButtonModalRef={JoinButtonModalRef}
+        currentUserData={groupData}
+        onJoinPress={() => userJoinGroup(groupData.group_id)}
+        onAcceptPress={() => userJoinGroup(groupData.group_id)}
+        isInvited={isInvited}
+      />
     </SafeAreaView>
   );
 }
@@ -3109,7 +3131,7 @@ const styles = StyleSheet.create({
   },
   floatingInput: {
     alignSelf: 'center',
-    zIndex: 1,
+
     width: '90%',
     marginTop: 20,
   },

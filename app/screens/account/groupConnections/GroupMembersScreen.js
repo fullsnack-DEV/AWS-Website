@@ -62,6 +62,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
   const actionSheetPlus = useRef();
   const authContext = useContext(AuthContext);
+
   const isFocused = useIsFocused();
   // For activity indigator
   const [loading, setloading] = useState(true);
@@ -740,9 +741,9 @@ export default function GroupMembersScreen({navigation, route}) {
                         }}
                       />
                     )}
-                    {data?.is_others && (
+                    {data?.is_other && data?.other_role !== '' && (
                       <TCUserRoleBadge
-                        title={strings.other}
+                        title={data.other_role}
                         titleColor={colors.veryLightBlack}
                         gradientColor={colors.lightGrayBackground}
                         gradientColor1={colors.lightGrayBackground}
@@ -1057,13 +1058,5 @@ const styles = StyleSheet.create({
     zIndex: 1,
     width: '90%',
   },
-  // popUp: {
-  //   fontFamily: fonts.RBold,
-  //   fontSize: 12,
-  //   padding: 0,
 
-  //   width: 30,
-  //   color: colors.whiteColor,
-  //   textAlign: 'center',
-  // },
 });

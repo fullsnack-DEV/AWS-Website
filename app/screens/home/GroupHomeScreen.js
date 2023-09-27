@@ -51,6 +51,7 @@ import fonts from '../../Constants/Fonts';
 import TCGameCard from '../../components/TCGameCard';
 import GroupMembersModal from './GroupMembersModal';
 import FollowFollowingModal from './FollowFollowingModal';
+import JoinButtonModal from './JoinButtomModal';
 
 // import BottomSheet from '../../components/modals/BottomSheet';
 
@@ -91,9 +92,11 @@ const GroupHomeScreen = ({
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
   const [refreshMemberModal, setRefreshMemberModal] = useState(false);
+  const [isInvited, setIsInvited] = useState(false);
 
   const bottomSheetRef = useRef(null);
   const followModalRef = useRef(null);
+  const JoinButtonModalRef = useRef(null);
   const backButtonHandler = useCallback(() => {
     if (route.params.comeFrom === Verbs.INCOMING_CHALLENGE_SCREEN) {
       navigation.navigate('Account', {
@@ -690,6 +693,9 @@ const GroupHomeScreen = ({
     joinTeam(params, groupId, authContext)
       .then((response) => {
         setRefreshMemberModal(true);
+
+        JoinButtonModalRef.current.close();
+
         const inviteRequest = response.payload.data?.action
           ? {...response.payload.data}
           : {
@@ -1344,7 +1350,8 @@ const GroupHomeScreen = ({
         break;
 
       case strings.join:
-        userJoinGroup();
+        JoinButtonModalRef.current.present();
+        // userJoinGroup();
         break;
 
       case strings.following:
@@ -1375,7 +1382,11 @@ const GroupHomeScreen = ({
       case strings.acceptInvite:
       case strings.acceptRequest:
       case strings.acceptRequet:
-        onAccept(currentUserData.invite_request.activity_id);
+        Alert.alert('in Request accept');
+        setIsInvited(true);
+
+        JoinButtonModalRef.current.present();
+        // onAccept(currentUserData.invite_request.activity_id);
         break;
 
       case strings.declineInvite:
@@ -1495,6 +1506,15 @@ const GroupHomeScreen = ({
         visibleMemberModal={refreshMemberModal}
         closeModal={() => setRefreshMemberModal(false)}
         groupID={groupId}
+      />
+      <JoinButtonModal
+        JoinButtonModalRef={JoinButtonModalRef}
+        currentUserData={currentUserData}
+        onJoinPress={() => userJoinGroup()}
+        onAcceptPress={() =>
+          onAccept(currentUserData.invite_request.activity_id)
+        }
+        isInvited={isInvited}
       />
     </>
   );

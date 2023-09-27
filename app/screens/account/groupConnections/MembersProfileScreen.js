@@ -539,7 +539,7 @@ export default function MembersProfileScreen({navigation, route}) {
             {cancelable: false},
           );
         } else {
-          navigation.navigate('GroupMembersScreen', {
+          navigation.replace('GroupMembersScreen', {
             ...route.params?.routeParams,
           });
         }

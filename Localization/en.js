@@ -3122,6 +3122,16 @@ export default {
   doYouWantToDeleteThisPost: 'en_Do you want to delete this post?',
   filterModalValidation: 'en_Please select at least 1 item in each section',
   peopleNearYou: 'en_PEOPLE NEAR YOU',
+  messageToJoinTeam: 'en_Message to {0}.',
+  sendMessagePlaceHolder: 'en_Add your message',
+  sendJoinRequestText: 'en_Send Join request ',
+  matchFeeJointext:
+    'en_Membership fees will not be charged during the joining process.You can pay the fees after you join the {0} and receive an invoice from the {0}.',
+  registrationFeeJoin: 'en_Registration Fee',
+  basicBiweekley: 'en_Basic (Biweekly)',
+  memberSheepFeestitle:
+    'en_Membership fees are used for purchasing ballsand pay the facility fees.. Membership fees are used for purchasing balls and pay the facility ',
+  joinModaltitle: 'en_Join {0}',
   alltitle: 'en_All',
   adminTitle: 'en_Admin',
   coachTitle: 'en_Coach',
@@ -3131,8 +3141,12 @@ export default {
   connectedToAccount: 'en_Connected to account',
   disconnectedToAccount: 'en_Disconnected to account',
   nonTeamMembertTitle: 'en_Non team member',
-   playingSportList: 'en_PLAYING',
+  playingSportList: 'en_PLAYING',
   refereeingSportList: 'en_REFEREEING',
   scoreKeepingSportList: 'en_SCOREKEEPING',
-
+  whatRolePlayText: 'en_ What Role You Play in new Team?',
+  youCanChangetheRole:
+    'en_You can change the roles in the member profile after you create team',
+  roleWritePlaceholder: 'en_Can you write your role here?',
+  profileAccountConnectionText: 'en_Profile-Account Connection',
 };

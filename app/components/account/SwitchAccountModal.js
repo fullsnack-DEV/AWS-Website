@@ -258,7 +258,7 @@ const SwitchAccountModal = ({
                     ) {
                       return;
                     }
-                    //
+
                     handleSwitchAccount(item);
                   }}
                   onPressCancelRequest={() => {

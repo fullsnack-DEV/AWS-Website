@@ -68,9 +68,11 @@ import TCInnerLoader from '../../components/TCInnerLoader';
 import errorCode from '../../Constants/errorCode';
 import SendRequestModal from '../../components/SendRequestModal/SendRequestModal';
 import ScreenHeader from '../../components/ScreenHeader';
+import JoinButtonModal from '../home/JoinButtomModal';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
+  const JoinButtonModalRef = useRef(null);
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
   const [notifAPI, setNotifAPI] = useState();
@@ -89,6 +91,9 @@ function NotificationsListScreen({navigation}) {
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
   const [loadMore, setLoadMore] = useState(false);
   const [IDLT, setIDLT] = useState();
+  const [grpInfo, setGrpInfo] = useState({});
+  const [isAccept, setIsAccept] = useState(false);
+  const [currentNotificationData, setCurrentNotificationData] = useState([]);
 
   const onDetailPress = (item) => {
     if (activeScreen) {
@@ -522,6 +527,7 @@ function NotificationsListScreen({navigation}) {
       showSwitchProfilePopup();
     }
   };
+  // 9692d3be-5227-4619-a06d-00bc8c47a493
 
   const onAccept = (item) => {
     const requestId = item.activities[0].id;
@@ -530,6 +536,7 @@ function NotificationsListScreen({navigation}) {
     acceptRequest({}, requestId, authContext)
       .then((response) => {
         setloading(false);
+        JoinButtonModalRef.current.close();
         if (
           item.verb.includes(NotificationType.invitePlayerToJoinTeam) ||
           item.verb.includes(NotificationType.invitePlayerToJoinClub)
@@ -548,9 +555,11 @@ function NotificationsListScreen({navigation}) {
                         callNotificationList()
                           .then(() => setloading(false))
                           .catch(() => setloading(false));
+                        JoinButtonModalRef.current.close();
                       })
                       .catch((error) => {
                         setTimeout(() => {
+                          JoinButtonModalRef.current.close();
                           Alert.alert(strings.alertmessagetitle, error.message);
                         }, 10);
                       });
@@ -574,6 +583,7 @@ function NotificationsListScreen({navigation}) {
       })
       .catch((error) => {
         setloading(false);
+        JoinButtonModalRef.current.close();
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -598,6 +608,16 @@ function NotificationsListScreen({navigation}) {
     } else {
       showSwitchProfilePopup();
     }
+  };
+
+  const getGroupInfo = async (grpid) => {
+    console.log(grpid, 'fropmpo');
+    setloading(true);
+    const {payload} = await getGroupDetails(grpid, authContext);
+    setloading(false);
+    setGrpInfo(payload);
+    setIsAccept(true);
+    JoinButtonModalRef.current?.present();
   };
 
   const onRespond = (groupObj) => {
@@ -813,7 +833,11 @@ function NotificationsListScreen({navigation}) {
         <PRNotificationInviteCell
           item={item}
           selectedEntity={selectedEntity}
-          onAccept={() => onAccept(item)}
+          onAccept={() => {
+            setCurrentNotificationData(item);
+
+            getGroupInfo(item.activities[0].foreign_id);
+          }}
           onDecline={() => onDecline(item.activities[0].id)}
           onPress={() => onNotificationClick(item)}
           onPressFirstEntity={openHomePage}
@@ -1240,77 +1264,13 @@ function NotificationsListScreen({navigation}) {
         }}
       />
 
-      {/* Rules notes modal */}
-      {/* <Modal
-        isVisible={isRulesModalVisible}
-        onBackdropPress={() => setIsRulesModalVisible(false)}
-        onRequestClose={() => setIsRulesModalVisible(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 1.7,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 20,
-                fontSize: 16,
-                fontFamily: fonts.RBold,
-                color: colors.lightBlackColor,
-              }}>
-              {strings.respondToInviteCreateTeam} 
-            </Text>
-          </View>
-          <View style={styles.separatorLine} />
-          <View style={{flex: 1}}>
-            <ScrollView>
-              <Text style={[styles.rulesText, {margin: 15}]}>
-                {strings.teamCreateClubsText}
-              </Text>
-              <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                {strings.yourTeamWillBelogText}
-              </Text>
-              <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                {strings.teamCanLeaveClubText}
-              </Text>
-              <Text style={[styles.rulesText, {marginLeft: 15}]}>
-                {strings.adminOfTeamWillClubAdminText}
-              </Text>
-            </ScrollView>
-          </View>
-          <TCGradientButton
-            isDisabled={false}
-            title={strings.nextTitle}
-            style={{marginBottom: 30}}
-            onPress={onNextPressed}
-          />
-        </View>
-      </Modal> */}
+      <JoinButtonModal
+        JoinButtonModalRef={JoinButtonModalRef}
+        currentUserData={grpInfo}
+        isInvited={isAccept}
+        onJoinPress={() => onAccept(currentNotificationData)}
+        onAcceptPress={() => onAccept(currentNotificationData)}
+      />
     </SafeAreaView>
   );
 }

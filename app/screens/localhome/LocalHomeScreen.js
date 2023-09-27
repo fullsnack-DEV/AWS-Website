@@ -132,6 +132,10 @@ function LocalHomeScreen({navigation, route}) {
   // Top Sport List
 
   const renderTopSportBar = async () => {
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      return;
+    }
+
     try {
       const [userSport] = await Promise.all([
         authContext.entity.role !== Verbs.entityTypeClub
@@ -907,7 +911,7 @@ function LocalHomeScreen({navigation, route}) {
               <Text
                 style={[
                   styles.curruentLocationText,
-                  {color: colors.orangeGradientColor},
+                  {color: colors.whiteColor},
                 ]}>
                 {strings.locationTitle}
               </Text>
@@ -949,11 +953,7 @@ function LocalHomeScreen({navigation, route}) {
           }}>
           {selectedLocationOption === 1 ? (
             <View style={styles.backgroundViewSelected}>
-              <Text
-                style={[
-                  styles.myCityText,
-                  {color: colors.orangeGradientColor},
-                ]}>
+              <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
                 {strings.homeCityTitleText}
               </Text>
             </View>
@@ -980,8 +980,7 @@ function LocalHomeScreen({navigation, route}) {
           }}>
           {selectedLocationOption === 2 ? (
             <View style={styles.backgroundViewSelected}>
-              <Text
-                style={[styles.worldText, {color: colors.orangeGradientColor}]}>
+              <Text style={[styles.worldText, {color: colors.whiteColor}]}>
                 {strings.world}
               </Text>
             </View>
@@ -998,22 +997,25 @@ function LocalHomeScreen({navigation, route}) {
                 onPress={() => {
                   setVisibleLocationModal(true);
                 }}
-                style={[styles.backgroundViewSelected, {alignItems: 'center'}]}>
-                <Text
-                  style={[
-                    styles.worldText,
-                    {color: colors.orangeGradientColor},
-                  ]}>
+                style={[
+                  styles.backgroundViewSelected,
+                  {
+                    alignItems: 'center',
+                    borderRadius: 5,
+                  },
+                ]}>
+                <Text style={[styles.worldText, {color: colors.whiteColor}]}>
                   {location}
                 </Text>
 
-                <Text style={styles.chnageWordText}>
+                <Text
+                  style={[styles.chnageWordText, {color: colors.whiteColor}]}>
                   {strings.changecapital}
                 </Text>
               </Pressable>
             ) : (
               <Pressable
-                style={styles.backgroundView}
+                style={[styles.backgroundView, {borderRadius: 5}]}
                 onPress={() => {
                   setVisibleLocationModal(true);
                 }}>
@@ -1129,34 +1131,20 @@ const styles = StyleSheet.create({
 
   backgroundViewSelected: {
     // alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 8,
-    borderWidth: 3,
-    borderColor: colors.orangeGradientColor,
-    elevation: 5,
+    backgroundColor: colors.reservationAmountColor,
     flexDirection: 'row',
     height: 40,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 5},
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    // width: widthPercentageToDP('86%'),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
+    borderRadius: 5,
   },
   backgroundView: {
     // alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 8,
-    elevation: 5,
+    backgroundColor: colors.lightGrey,
+    borderRadius: 5,
     flexDirection: 'row',
     height: 40,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 5},
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    // width: widthPercentageToDP('86%'),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
@@ -1190,19 +1178,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     fontSize: 15,
     fontFamily: fonts.RRegular,
-    backgroundColor: colors.offwhite,
-    borderRadius: 25,
+    backgroundColor: 'red',
+    borderRadius: 5,
     flexDirection: 'row',
     height: 45,
     paddingLeft: 17,
     paddingRight: 5,
     width: widthPercentageToDP('86%'),
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
+
     alignSelf: 'center',
-    elevation: 2,
+
     marginBottom: 15,
   },
   searchText: {

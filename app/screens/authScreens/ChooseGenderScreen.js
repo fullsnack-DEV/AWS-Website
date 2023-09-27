@@ -127,7 +127,7 @@ export default function ChooseGenderScreen({navigation, route}) {
           popover={
             <Text
               style={{
-                color: colors.themeColor,
+                color: colors.signUpTextColor,
                 fontSize: 14,
                 fontFamily: fonts.RRegular,
                 flex: 1,

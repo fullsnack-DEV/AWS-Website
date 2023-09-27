@@ -67,6 +67,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
     show_Double,
     fromRespondToInvite,
     teamgrpId,
+    is_player,
+    is_coach,
+    is_parent,
+    is_other,
+    other_role,
   } = route.params;
   const [playerObject] = useState(playerData);
   const [showModal, setShowModal] = useState(false);
@@ -227,6 +232,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
       const bodyParams = {
         ...groupData,
         entity_type: Verbs.entityTypeTeam,
+        is_player: is_player,
+        is_coach: is_coach,
+        is_parent: is_parent,
+        is_other: is_other,
+        other_role: other_role,
       };
 
       if (thumbnail) {

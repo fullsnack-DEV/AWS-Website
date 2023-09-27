@@ -239,7 +239,7 @@ export default function RefereeReservationSetting({navigation, route}) {
           </TouchableOpacity>
           <View style={{flex: 1, alignItems: 'center'}}>
             <Text style={styles.headerTitle}>
-              {strings.incomingChallengeSettingsTitle}
+              {strings.incomingReservationSettings}
             </Text>
             <Text style={styles.headerText}>
               {strings.Referee} · {sportObj.sport_name}
@@ -264,7 +264,7 @@ export default function RefereeReservationSetting({navigation, route}) {
           contentContainerStyle={{paddingHorizontal: 15}}
         />
       </View>
-      <View style={{paddingHorizontal: 15, paddingBottom: 6}}>
+      <View style={{paddingHorizontal: 15, marginBottom: 50}}>
         <Text style={styles.label}>
           {format(strings.reservationScreenBottomText, strings.referee)}
         </Text>

@@ -11,6 +11,7 @@ import {
   initStripe,
   CardFieldInput,
   useStripe,
+  CardForm,
 } from '@stripe/stripe-react-native';
 import {format} from 'react-string-format';
 import * as Utility from '../../../utils';
@@ -39,7 +40,6 @@ export default function AddCardScreen({navigation}) {
       Alert.alert(format(strings.errorCodeText, error.message));
       setloading(false);
     } else if (paymentMethod) {
-      console.log('createPaymentMethod ', paymentMethod);
       setCard(paymentMethod?.card);
       onSaveCard(paymentMethod);
     }
@@ -133,8 +133,9 @@ export default function AddCardScreen({navigation}) {
   return (
     <View accessibilityLabel="add-card-screen">
       <ActivityLoader visible={loading} />
+
       <CardField
-        postalCodeEnabled={false}
+        postalCodeEnabled={true}
         placeholder={{
           number: 'XXXX XXXX XXXX XXXX',
         }}
@@ -145,7 +146,6 @@ export default function AddCardScreen({navigation}) {
           marginVertical: 30,
         }}
         onCardChange={(cardDetails) => {
-          console.log('cardDetails', cardDetails);
           setValid(cardDetails.complete);
         }}
         onFocus={(focusedField) => {

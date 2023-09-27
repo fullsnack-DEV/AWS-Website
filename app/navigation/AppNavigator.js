@@ -149,7 +149,10 @@ const AppNavigator = ({navigation}) => {
           );
         }
         return (
-          <Image source={images.tab_account_group} style={styles.tabImg} />
+          <Image
+            source={images.newGroupTabIcon}
+            style={[styles.tabImg, {height: 33, width: 33, marginTop: 1}]}
+          />
         );
       }
       if (role === 'club') {
@@ -190,7 +193,10 @@ const AppNavigator = ({navigation}) => {
           );
         }
         return (
-          <Image source={images.tab_account_group} style={styles.tabImg} />
+          <Image
+            source={images.newGroupTabIcon}
+            style={[styles.tabImg, {height: 33, width: 33, marginTop: 1}]}
+          />
         );
       }
       return null;

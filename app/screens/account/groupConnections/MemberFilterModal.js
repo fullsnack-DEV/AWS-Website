@@ -439,10 +439,6 @@ export default function MemberFilterModal({
       ? TeamsSelectedIds.filter((item) => item !== Verbs.ALL_ROLE)
       : TeamsSelectedIds;
 
-    console.log(parentGroup, 'from lele');
-    console.log(rolesWithIsCheckedTrue, 'from lele');
-    console.log(connectWithIcCheckedTrue, 'from lele');
-
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       setParentGroup([]);
     }
@@ -532,7 +528,7 @@ export default function MemberFilterModal({
         {/* connection */}
         <View>
           <Text style={styles.titleTextStyle}>
-            {'Profile-Account Connection'}
+            {strings.profileAccountConnectionText}
           </Text>
           <FlatList
             scrollEnabled={false}
