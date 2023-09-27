@@ -122,6 +122,21 @@ const useStreamChatUtils = () => {
       groupType === Verbs.channelTypeGeneral,
     );
     const memberList = [...entityList, ...members];
+    let tempChannelName = '';
+    if (!groupName && groupType === Verbs.channelTypeGeneral) {
+      let name = '';
+      inviteesList.forEach((item, index) => {
+        name +=
+          name.length === 0
+            ? item.name
+            : `${
+                index === inviteesList.length - 1
+                  ? ` & ${item.name}`
+                  : `, ${item.name}`
+              }`;
+      });
+      tempChannelName = name;
+    }
 
     const channel = await createStreamChatChannel({
       authContext,
@@ -130,6 +145,7 @@ const useStreamChatUtils = () => {
       members: memberList,
       channelAvatar: inviteesList.length > 1 ? groupProfile : '',
       groupType,
+      tempChannelName,
     });
 
     setLoading(false);

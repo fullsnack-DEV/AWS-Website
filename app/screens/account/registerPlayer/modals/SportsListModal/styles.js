@@ -11,9 +11,9 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.whiteColor,
-    height: Dimensions.get('window').height - 50,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
+    height: Dimensions.get('window').height - 40,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
   },
   headerRow: {
     paddingTop: 15,
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 30,
     flex: 1,
+
   },
   title: {
     fontSize: 20,

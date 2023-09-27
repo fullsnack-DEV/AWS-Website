@@ -592,7 +592,7 @@ const AccountScreen = ({navigation, route}) => {
         closeModal={() => setIsRulesModalVisible(false)}
         modalType={ModalTypes.style2}
         containerStyle={{
-          marginBottom: Platform.OS === 'android' ? -130 : -150,
+          marginBottom: Platform.OS === 'android' ? -70 : -150,
         }}>
         <View>
           <Text style={styles.modalTitle}>{strings.createTeamText}</Text>

@@ -27,6 +27,7 @@ export default function EntityGallaryScreen({navigation, route}) {
             },
           });
         }}
+        navigation={navigation}
       />
     </SafeAreaView>
   );

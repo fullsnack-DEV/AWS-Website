@@ -18,7 +18,6 @@ import {
   FlatList,
   Alert,
   Dimensions,
-  ScrollView,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -61,16 +60,16 @@ const EditPostScreen = ({navigation, route}) => {
   const imageUploadContext = useContext(ImageUploadContext);
   const {postData} = route.params;
 
-  let postText = '';
-  let postAttachments = [];
-  if (postData && postData.object) {
-    postText = JSON.parse(postData.object).text;
-    if (JSON.parse(postData.object).attachments) {
-      postAttachments = JSON.parse(postData.object).attachments;
-    }
-  }
-  const [searchText, setSearchText] = useState(postText);
-  const [selectImage, setSelectImage] = useState(postAttachments);
+  // let postText = '';
+  // let postAttachments = [];
+  // if (postData && postData.object) {
+  //   postText = JSON.parse(postData.object).text;
+  //   if (JSON.parse(postData.object).attachments) {
+  //     postAttachments = JSON.parse(postData.object).attachments;
+  //   }
+  // }
+  const [searchText, setSearchText] = useState('');
+  const [selectImage, setSelectImage] = useState([]);
   const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
   const [loading, setloading] = useState(false);
   const [letModalVisible, setLetModalVisible] = useState(false);
@@ -87,6 +86,17 @@ const EditPostScreen = ({navigation, route}) => {
   const [privacySetting, setPrivacySetting] = useState({});
   const [showPreviewForUrl, setShowPreviewForUrl] = useState(true);
   const [tagsOfGame, setTagsOfGame] = useState([]);
+
+  useEffect(() => {
+    if (isFocused && postData && postData.object) {
+      const postText = JSON.parse(postData.object).text;
+      setSearchText(postText);
+      if (JSON.parse(postData.object).attachments) {
+        const postAttachments = JSON.parse(postData.object).attachments;
+        setSelectImage(postAttachments);
+      }
+    }
+  }, [isFocused, postData]);
 
   useEffect(() => {
     if (isFocused && postData?.id) {
@@ -157,36 +167,59 @@ const EditPostScreen = ({navigation, route}) => {
   }, [isFocused, getList]);
 
   useEffect(() => {
-    if (searchText[currentTextInputIndex - 1] === '@')
+    if (searchText[currentTextInputIndex - 1] === '@') {
       setLastTagStartIndex(currentTextInputIndex - 1);
-    if (searchText[currentTextInputIndex - 1] === ' ')
+    }
+    if (searchText[currentTextInputIndex - 1] === ' ') {
       setLastTagStartIndex(null);
+    }
   }, [searchText, currentTextInputIndex]);
 
   useEffect(() => {
-    if (searchText?.length === 0) {
-      setTagsOfEntity([]);
-      setUsers([]);
-      setGroups([]);
-      setLetModalVisible(false);
-    }
-    if (searchText) {
-      if (
-        currentTextInputIndex === 1 &&
-        searchText[currentTextInputIndex - 2] === '@' &&
-        searchText[currentTextInputIndex - 1] !== ' '
-      )
+    if (searchText.length > 0) {
+      if (searchText[currentTextInputIndex - 1] === '@') {
         setLetModalVisible(true);
-      else if (
-        searchText[currentTextInputIndex - 2] === '@' &&
-        searchText[currentTextInputIndex - 1] !== ' '
-      )
-        setLetModalVisible(true);
+      }
 
       const lastString = searchText.substr(0, currentTextInputIndex);
-      if (lastString) setSearchTag(`@${lastString.split('@')?.reverse()?.[0]}`);
+      if (lastString) {
+        let str = '';
+        if (lastString.includes('#')) {
+          str = `#${lastString.split('#').reverse()?.[0]}`;
+        } else {
+          str = `@${lastString.split('@').reverse()?.[0]}`;
+        }
+        setSearchTag(str);
+      }
+    } else {
+      setLetModalVisible(false);
     }
   }, [currentTextInputIndex, searchText]);
+
+  useEffect(() => {
+    if (searchText) {
+      const tags = searchText.match(tagRegex);
+
+      if (tags) {
+        const list = [];
+        if (tags?.length > 0) {
+          tags.forEach((tagName) => {
+            const obj = tagsOfEntity.find(
+              (item) =>
+                item.entity_data?.tagged_formatted_name?.trim() === tagName,
+            );
+
+            if (obj) {
+              list.push(obj);
+            }
+          });
+        }
+
+        setTagsOfEntity(list);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchText]);
 
   const searchFilterFunction = useCallback(
     (text) => {
@@ -213,7 +246,9 @@ const EditPostScreen = ({navigation, route}) => {
 
   useEffect(() => {
     if (letModalVisible) {
-      searchFilterFunction(searchTag?.replace('@', ''));
+      const txt = searchTag.split('@');
+      const searchValue = txt[txt.length - 1];
+      searchFilterFunction(searchValue);
     }
   }, [letModalVisible, searchTag, searchFilterFunction]);
 
@@ -294,46 +329,91 @@ const EditPostScreen = ({navigation, route}) => {
   );
 
   useEffect(() => {
-    let tagName = '';
-
-    if (route.params.selectedTagList?.length > 0) {
+    if (route.params?.selectedTagList) {
+      const modifiedSearch = searchText;
       const tagsArray = [...route.params.selectedTagList];
-      tagsArray.forEach((tag) => {
-        const obj = tagsOfEntity.find(
-          (item) => item.entity_id === tag.entity_id,
-        );
-        if (!obj) {
-          tagName += `${tag.entity_data.tagged_formatted_name} `;
+
+      if (tagsArray.length > 0) {
+        let tagName = '';
+        tagsArray.forEach((tag) => {
+          const obj = tagsOfEntity.find(
+            (item) => item.entity_id === tag.entity_id,
+          );
+
+          if (!obj) {
+            tagName += `${tag.entity_data.tagged_formatted_name} `;
+          }
+        });
+
+        const words = modifiedSearch.split(' ');
+
+        const finalWords = [];
+        words.forEach((word) => {
+          if (!word) {
+            return;
+          }
+          if (word.includes('@')) {
+            const isExist = tagsArray.find(
+              (ele) =>
+                ele.entity_data.tagged_formatted_name?.trim() === word.trim(),
+            );
+
+            if (isExist) {
+              finalWords.push(word);
+            }
+          } else {
+            finalWords.push(word);
+          }
+        });
+
+        if (tagName) {
+          const tags = tagName.split(' ').filter((tag) => tag);
+
+          tags.forEach((ele) => {
+            const obj = tagsArray.find(
+              (item) =>
+                item.entity_data.tagged_formatted_name?.trim() === ele.trim(),
+            );
+            if (obj) {
+              finalWords.push(obj.entity_data.tagged_formatted_name?.trim());
+            }
+          });
         }
-      });
+
+        setSearchText(finalWords.join(' '));
+      } else {
+        const words = modifiedSearch.split(' ');
+        const finalWords = words.filter((item) => item && !item.includes('@'));
+        setSearchText(finalWords.join(' '));
+      }
 
       setTagsOfEntity(tagsArray);
       setLetModalVisible(false);
-
-      const modifiedSearch = searchText;
-      const output = [
-        modifiedSearch.slice(0, currentTextInputIndex),
-        tagName,
-        modifiedSearch.slice(currentTextInputIndex),
-      ].join('');
-
-      setSearchText(output);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route.params, currentTextInputIndex]);
+  }, [route.params?.selectedTagList]);
 
   const renderTagText = useCallback(
     (matchingString) => {
-      const isExists = tagsOfEntity.find(
+      const obj = JSON.parse(postData.object);
+      const tags =
+        tagsOfEntity.length > 0
+          ? [...tagsOfEntity]
+          : [...obj.format_tagged_data];
+      const isExists = tags.find(
         (item) =>
           item.entity_data?.tagged_formatted_name.trim() === matchingString,
       );
 
-      return isExists ? (
-        <Text style={styles.tagText}>{`${matchingString}`}</Text>
-      ) : null;
+      return (
+        <Text
+          style={[
+            styles.tagText,
+            !isExists ? {color: colors.lightBlackColor} : {},
+          ]}>{`${matchingString}`}</Text>
+      );
     },
-    [tagsOfEntity],
+    [tagsOfEntity, postData],
   );
 
   const addStr = (str, index, stringToAdd) =>
@@ -398,16 +478,9 @@ const EditPostScreen = ({navigation, route}) => {
     const arr = [];
     const data = [...users, ...groups];
     data.forEach((obj) => {
-      const item =
-        tagsOfEntity.length > 0
-          ? tagsOfEntity.filter(
-              (temp) =>
-                ![temp?.group_id, temp?.user_id, temp?.entity_id].includes(
-                  obj?.group_id || obj?.user_id || obj?.entity_id,
-                ),
-            )
-          : null;
-      if (item) {
+      const id = obj.group_id ?? obj.user_id ?? obj.entity_id;
+      const item = tagsOfEntity.find((temp) => temp.entity_id === id);
+      if (!item && id !== authContext.entity.uid) {
         arr.push(obj);
       }
     });
@@ -570,26 +643,11 @@ const EditPostScreen = ({navigation, route}) => {
     } else {
       setloading(true);
 
-      let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-      tagData = tagData?.map((tag) => ({
-        ...tag,
-        entity_type: 'publictimeline',
+      const tagData = tagsOfEntity.map((tag) => ({
+        entity_id: tag.entity_id,
+        entity_type: 'privatetimeline',
       }));
-
-      const format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity));
-      format_tagged_data.map(async (item, index) => {
-        const isThere =
-          item?.entity_type !== Verbs.entityTypeGame
-            ? searchText.includes(
-                item?.entity_data?.tagged_formatted_name?.replace(/ /g, ''),
-              )
-            : true;
-        if (!isThere) format_tagged_data.splice(index, 1);
-        return null;
-      });
-      // eslint-disable-next-line no-param-reassign
-      tagData.forEach((tData) => delete tData.entity_data);
-
+      const format_tagged_data = [...tagsOfEntity];
       const who_can_see = {...privacySetting};
       if (privacySetting.value === 2) {
         if (
@@ -724,8 +782,9 @@ const EditPostScreen = ({navigation, route}) => {
               </Text>
             </View>
           </View>
-          <ScrollView
-            contentContainerStyle={{paddingHorizontal: 15, marginBottom: 15}}>
+
+          <View
+            style={{paddingHorizontal: 15, marginBottom: 15, maxHeight: '70%'}}>
             <TextInput
               ref={textInputRef}
               onLayout={(event) =>
@@ -739,7 +798,8 @@ const EditPostScreen = ({navigation, route}) => {
               style={styles.textInputField}
               multiline={true}
               textAlignVertical={'top'}
-              maxLength={4000}>
+              maxLength={4000}
+              scrollEnabled>
               <ParsedText
                 parse={[
                   {pattern: tagRegex, renderText: renderTagText},
@@ -751,11 +811,10 @@ const EditPostScreen = ({navigation, route}) => {
               </ParsedText>
             </TextInput>
             {renderModalTagEntity()}
-          </ScrollView>
-
-          {renderUrlPreview()}
-          {renderSelectedImageList()}
-          <View>
+          </View>
+          <View style={{marginTop: 15}}>
+            {renderUrlPreview()}
+            {renderSelectedImageList()}
             {tagsOfGame.length > 0 ? (
               <FlatList
                 data={tagsOfGame}
@@ -794,6 +853,7 @@ const EditPostScreen = ({navigation, route}) => {
             <TouchableOpacity
               style={[styles.icon, {marginHorizontal: 10}]}
               onPress={() => {
+                console.log('tagsOfEntity ==>', tagsOfEntity);
                 navigation.navigate('UserTagSelectionListScreen', {
                   postData,
                   routeParams: route.params.isRepost ? {...route.params} : {},
@@ -945,7 +1005,7 @@ const styles = StyleSheet.create({
   },
   userListContainer: {
     zIndex: 100,
-    backgroundColor: colors.whiteColor,
+    backgroundColor: colors.lightGrayBackground,
     maxHeight: 280,
     width: Dimensions.get('window').width - 30,
     position: 'absolute',

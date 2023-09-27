@@ -47,7 +47,7 @@ const GroupIcon = ({
         resizeMode="contain"
       />
       {getPlaceholder().placeHolder ? (
-        <View style={styles.placeHolder}>
+        <View style={[styles.placeHolder, placeHolderStyle]}>
           <FastImage
             source={getPlaceholder().placeHolder}
             style={styles.image}
@@ -112,12 +112,11 @@ const styles = StyleSheet.create({
     borderColor: colors.thinDividerColor,
     borderRadius: 30,
     backgroundColor: colors.whiteColor,
-    
   },
   image: {
     width: '100%',
     height: '100%',
-    borderRadius:30
+    borderRadius: 30,
   },
   name: {
     justifyContent: 'center',

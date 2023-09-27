@@ -40,7 +40,7 @@ const MenuItem = ({
     <>
       <View style={styles.listItem}>
         <View style={{flex: 1}}>
-          <Text style={styles.title}>{item.key.toUpperCase()}</Text>
+          <Text style={styles.title}>{item.key}</Text>
         </View>
         {item.key === strings.sport ? (
           <View>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 30,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
   },
   description: {
     fontSize: 16,

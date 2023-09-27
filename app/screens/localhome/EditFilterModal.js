@@ -7,6 +7,7 @@ import {
   Pressable,
   Modal,
   TouchableWithoutFeedback,
+  Dimensions,
 } from 'react-native';
 import React, {useCallback, useEffect, useState, useContext} from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -22,10 +23,10 @@ import colors from '../../Constants/Colors';
 import {getHitSlop, getStorage, setStorage, showAlert} from '../../utils';
 import AuthContext from '../../auth/context';
 import ScreenHeader from '../../components/ScreenHeader';
-import {updateUserProfile} from '../../api/Users';
+import {getUserDetails, updateUserProfile} from '../../api/Users';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
-import {patchGroup} from '../../api/Groups';
+import {getGroupDetails, patchGroup} from '../../api/Groups';
 
 export default function EditFilterModal({
   visible,
@@ -44,13 +45,16 @@ export default function EditFilterModal({
   const [loading, setLoading] = useState(false);
   const [registerSports, setRegisterSport] = useState([]);
   const [notRegisterSport, setNotRegisterSport] = useState([]);
+  const [isSaved, setisSaved] = useState(false);
 
   useEffect(() => {
     GetandSetSportsLists();
+
+    setisSaved(false);
   }, [visible, sportList, authContext]);
 
   const GetandSetSportsLists = async () => {
-    setLoading(true);
+    // setLoading(true);
     getStorage('appSetting').then((setting) => {
       setImageBaseUrl(setting.base_url_sporticon);
     });
@@ -62,67 +66,91 @@ export default function EditFilterModal({
       }
     });
 
-    const registeredSports =
-      authContext.user?.registered_sports?.map((item) => item) || [];
-    const scorekeeperSports =
-      authContext.user?.scorekeeper_data?.map((item) => item) || [];
-    const likedsports = authContext.user?.sports?.map((item) => item) || [];
-    const refereeSports =
-      authContext.user?.referee_data?.map((item) => item) || [];
+    const handleSportData = (userSport) => {
+      const registeredSports =
+        userSport.payload?.registered_sports?.map((item) => item) || [];
+      const scorekeeperSports =
+        userSport.payload?.scorekeeper_data?.map((item) => item) || [];
+      const likedsports = userSport.payload?.sports?.map((item) => item) || [];
+      const refereeSports =
+        userSport.payload?.referee_data?.map((item) => item) || [];
 
-    const clubFavSport =
-      authContext.entity.role === Verbs.entityTypeClub
-        ? authContext.entity.obj?.sports.map((item) => item) || []
-        : [];
+      const clubFavSport =
+        authContext.entity.role === Verbs.entityTypeClub
+          ? userSport.payload?.sports.map((item) => item) || []
+          : [];
 
-    const uniqueSports = [
-      ...(authContext.entity.role === Verbs.entityTypeClub
-        ? clubFavSport
-        : [
-            ...registeredSports,
-            ...scorekeeperSports,
-            ...likedsports,
-            ...refereeSports,
-          ]),
-    ];
+      const uniqueSports = [
+        ...(authContext.entity.role === Verbs.entityTypeClub
+          ? clubFavSport
+          : [
+              ...registeredSports,
+              ...scorekeeperSports,
+              ...likedsports,
+              ...refereeSports,
+            ]),
+      ];
 
-    const res = uniqueSports.map((obj) => ({
-      sport: obj.sport,
-      sport_type: obj.sport_type,
-      sport_name: obj.sport_name ?? obj.sport,
-    }));
-    const result = res.reduce((unique, o) => {
-      if (
-        !unique.some(
-          (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
-        )
-      ) {
-        unique.push(o);
+      const res = uniqueSports.map((obj) => ({
+        sport: obj.sport,
+        sport_type: obj.sport_type,
+        sport_name: obj.sport_name ?? obj.sport,
+      }));
+      const result = res.reduce((unique, o) => {
+        if (
+          !unique.some(
+            (obj) => obj.sport === o.sport && obj.sport_type === o.sport_type,
+          )
+        ) {
+          unique.push(o);
+        }
+
+        return unique;
+      }, []);
+
+      const registerSportNames = result.map((item) => item.sport_name);
+
+      const commonObjects = favsport.filter(
+        (item) => !registerSportNames.includes(item.sport_name),
+      );
+
+      if (authContext.entity.role !== Verbs.entityTypeClub) {
+        setAddedsport([...result, ...commonObjects]);
+      } else {
+        setAddedsport([...result, ...commonObjects]);
       }
 
-      return unique;
-    }, []);
+      // Now batch the state updates into a single call
+      setLoading(false);
+      setFavSport(sportList);
+      setsports(sportList);
+      setRegisterSport(result);
+      setNotRegisterSport(commonObjects);
 
-    const registerSportNames = result.map((item) => item.sport_name);
+      getAllsportData();
+    };
 
-    const commonObjects = favsport.filter(
-      (item) => !registerSportNames.includes(item.sport_name),
-    );
-
-    if (authContext.entity.role !== Verbs.entityTypeClub) {
-      setAddedsport([...commonObjects, ...result]);
+    if (authContext.entity.role === Verbs.entityTypeClub) {
+      getGroupDetails(authContext?.entity?.uid, authContext)
+        .then((userSport) => {
+          handleSportData(userSport);
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log(error);
+        });
     } else {
-      setAddedsport([...commonObjects, ...result]);
+      getUserDetails(authContext.entity.uid, authContext)
+        .then((userSport) => {
+          handleSportData(userSport);
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log(error);
+        });
     }
 
-    // Now batch the state updates into a single call
     setLoading(false);
-    setFavSport(sportList);
-    setsports(sportList);
-    setRegisterSport(result);
-    setNotRegisterSport(commonObjects);
-
-    getAllsportData();
   };
 
   const getAllsportData = () => {
@@ -193,51 +221,6 @@ export default function EditFilterModal({
     return isRegisterSport;
   };
 
-  const RenderAllRow = () => (
-    <>
-      <Pressable style={styles.listItem} onPress={() => onAllPress()}>
-        <Text style={styles.listLabel}>All</Text>
-        <View style={styles.listIconContainer}>
-          <FastImage
-            source={
-              addedSport.length === allSports.length
-                ? images.orangeCheckBox
-                : images.uncheckBox
-            }
-            style={styles.image}
-          />
-        </View>
-      </Pressable>
-      <View style={styles.lineSeparator} />
-    </>
-  );
-
-  const onAllPress = () => {
-    if (addedSport.length === allSports.length) {
-      if (authContext.entity.role !== Verbs.entityTypeClub) {
-        setAddedsport([...notRegisterSport, ...registerSports]);
-      } else {
-        setAddedsport([...sportList]);
-      }
-
-      return;
-    }
-
-    const dummyaaray = [];
-    // eslint-disable-next-line array-callback-return
-    allSports.map((item) => {
-      const obj = {
-        sport: item.sport,
-        sport_name: item.sport_name,
-        sport_type: item.sport_type,
-      };
-
-      dummyaaray.push(obj);
-    });
-
-    setAddedsport(dummyaaray);
-  };
-
   const toggleSport = (item) => {
     const index = addedSport.findIndex(
       (sportItem) =>
@@ -260,19 +243,34 @@ export default function EditFilterModal({
     }
 
     if (index === -1) {
-      const newAddedSport = [
-        {
-          sport: item.sport,
-          sport_name: item.sport_name,
-          sport_type: item.sport_type,
-        },
-        ...addedSport,
+      const newSport = {
+        sport: item.sport,
+        sport_name: item.sport_name,
+        sport_type: item.sport_type,
+      };
+
+      const newAddedSport = [...addedSport, newSport];
+
+      const sortedNewAddedSport = newAddedSport
+        .slice(sportList.length)
+        .sort((a, b) => a.sport_name.localeCompare(b.sport_name));
+
+      const result = [
+        ...newAddedSport.slice(0, sportList.length),
+        ...sortedNewAddedSport,
       ];
 
-      if (addedSport.length === 20) {
+      if (result.length > 20) {
         showAlert(strings.only20SportsAlert);
+        // eslint-disable-next-line no-useless-return
+        return;
+        // eslint-disable-next-line no-else-return
       } else {
-        setAddedsport(newAddedSport);
+        const filteredData = result.filter(
+          (i) => i.sport !== undefined && i.sport_type !== undefined,
+        );
+
+        setAddedsport([...filteredData]);
       }
     } else {
       const newAddedSport = addedSport.filter(
@@ -280,7 +278,7 @@ export default function EditFilterModal({
           sportItem.sport_name.toLowerCase() !== item.sport_name.toLowerCase(),
       );
 
-      setAddedsport(newAddedSport);
+      setAddedsport([...newAddedSport]);
     }
   };
 
@@ -337,7 +335,7 @@ export default function EditFilterModal({
 
       return isImagecheck;
     },
-    [visible, addedSport, registerSports, notRegisterSport],
+    [addedSport],
   );
 
   const renderItem = ({item, drag, isActive}) => (
@@ -363,6 +361,14 @@ export default function EditFilterModal({
     </View>
   );
 
+  const onCloseModal = () => {
+    if (isSaved) {
+      onEditSport();
+      return;
+    }
+    onClose();
+  };
+
   return (
     <Modal visible={visible} collapsable transparent animationType="fade">
       <GestureHandlerRootView style={{flex: 1}}>
@@ -371,8 +377,8 @@ export default function EditFilterModal({
             <ScreenHeader
               leftIcon={images.crossImage}
               leftIconPress={() => {
+                onCloseModal();
                 setAddedsport([]);
-                onClose();
               }}
               rightButtonText={strings.apply}
               title={strings.editFavSportTitle}
@@ -385,12 +391,14 @@ export default function EditFilterModal({
               <TouchableWithoutFeedback>
                 <DraggableFlatList
                   scrollEnabled
+                  autoscrollSpeed={200}
+                  style={{
+                    height: Dimensions.get('window').height * 0.75,
+                  }}
                   data={sports}
-                  nestedScrollEnabled
                   onDragEnd={({data}) => {
                     setsports(data);
                   }}
-                  style={{marginBottom: 200}}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={renderItem}
                   ListFooterComponent={() => (
@@ -412,6 +420,7 @@ export default function EditFilterModal({
                 title={strings.addorDeleteFavSportTitle}
                 closeModal={() => {
                   setVisibleAddModal(false);
+                  setAddedsport([...sportList]);
                   if (authContext.entity.role !== Verbs.entityTypeClub) {
                     setAddedsport([...notRegisterSport, ...registerSports]);
                   } else {
@@ -421,13 +430,15 @@ export default function EditFilterModal({
                 modalType={ModalTypes.style1}
                 headerRightButtonText={strings.save}
                 onRightButtonPress={() => {
+                  setisSaved(true);
+
                   setsports([...addedSport]);
+
                   setVisibleAddModal(false);
                 }}>
                 <FlatList
                   data={allSports}
                   style={{marginTop: -20}}
-                  ListHeaderComponent={RenderAllRow}
                   keyExtractor={(item, index) => `${item?.sport_type}/${index}`}
                   showsVerticalScrollIndicator={false}
                   renderItem={({item}) => (
@@ -437,6 +448,7 @@ export default function EditFilterModal({
                         onPress={() => {
                           if (CheckisRegister(item)) {
                             toggleSport(item);
+                            return;
                           }
 
                           if (!FavSportCheck(item)) {
@@ -463,6 +475,9 @@ export default function EditFilterModal({
                       </Pressable>
                       <View style={styles.lineSeparator} />
                     </>
+                  )}
+                  ListFooterComponent={() => (
+                    <View style={{marginBottom: 50}} />
                   )}
                 />
               </CustomModalWrapper>

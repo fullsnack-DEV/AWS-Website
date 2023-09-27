@@ -167,7 +167,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
             : strings.registerScorekeeperTitle
         }
         isFullTitle
-        leftIconStyle={{width: 40}}
+        // leftIconStyle={{width: 50}}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           navigation.goBack();
@@ -177,6 +177,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
         rightButtonText={strings.done}
         onRightButtonPress={onSave}
         loading={loading}
+        labelStyle={{alignSelf: 'center'}}
       />
       <TCFormProgress totalSteps={2} curruentStep={2} />
       <View style={{flex: 1}}>
@@ -186,7 +187,12 @@ const IncomingReservationSettings = ({navigation, route}) => {
           ListHeaderComponent={() => (
             <>
               <View style={styles.container}>
-                <Text style={[styles.title, {marginBottom: 10}]}>
+                <Text
+                  style={[
+                    styles.title,
+                    {marginBottom: 10, textTransform: 'uppercase'},
+                  ]}
+                  numberOfLines={2}>
                   {strings.incomingReservationSettings}
                 </Text>
                 <Text style={styles.description}>
@@ -237,6 +243,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
         }}
         entityType={entityType}
         onCloseModal={() => setShowMatchFeeReminderModal(false)}
+        fee={settingsObject.game_fee ?? {}}
       />
 
       <RefereeCongratulationsModal
@@ -289,7 +296,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 30,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
   },
   description: {
     fontSize: 16,

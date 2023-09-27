@@ -22,6 +22,7 @@ const Gallery = ({navigation, gameData, isAdmin, galleryRef}) => {
             },
           });
         }}
+        navigation={navigation}
       />
     </View>
   );

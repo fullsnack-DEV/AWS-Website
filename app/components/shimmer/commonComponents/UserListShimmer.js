@@ -3,7 +3,9 @@ import {View, ScrollView, StyleSheet} from 'react-native';
 import {ShimmerView} from './ShimmerCommonComponents';
 
 const UserListShimmer = ({count = 15}) => (
-  <ScrollView style={{padding: 15, flex: 1}}>
+  <ScrollView
+    style={{padding: 15, flex: 1}}
+    showsHorizontalScrollIndicator={false}>
     {Array(count)
       .fill('')
       .map((item, index) => (

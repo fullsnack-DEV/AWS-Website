@@ -11,6 +11,7 @@ import {Alert, View} from 'react-native';
 
 import _ from 'lodash';
 import {
+  createPost,
   createReaction,
   deletePost,
   getTimeline,
@@ -21,6 +22,8 @@ import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import WritePost from '../../components/newsFeed/WritePost';
 import Verbs from '../../Constants/Verbs';
+import ImageProgress from '../../components/newsFeed/ImageProgress';
+import {ImageUploadContext} from '../../context/ImageUploadContext';
 
 let onEndReachedCalledDuringMomentum = true;
 
@@ -33,6 +36,8 @@ const HomeFeed = ({
   isAdmin,
   homeFeedHeaderComponent,
   currentTab,
+  pulltoRefresh,
+  routeParams = {},
 }) => {
   const authContext = useContext(AuthContext);
   const [fullScreenLoading, setFullScreenLoading] = useState(false);
@@ -45,6 +50,7 @@ const HomeFeed = ({
   const [footerLoading, setFooterLoading] = useState(false);
 
   const isFocused = useIsFocused();
+  const imageUploadContext = useContext(ImageUploadContext);
 
   const getTimeLine = useCallback(() => {
     let entityType = Verbs.entityTypeUsers;
@@ -200,11 +206,16 @@ const HomeFeed = ({
             navigation.navigate('WritePostScreen', {
               postData: currentUserData,
               selectedImageList: [],
+              comeFrom: 'HomeScreen',
+              routeParams: {
+                uid: routeParams.uid,
+                role: routeParams.role,
+              },
             });
           }}
         />
       ),
-    [isAdmin, currentUserData, navigation],
+    [isAdmin, currentUserData, navigation, routeParams],
   );
 
   const ListHeaderComponent = useMemo(
@@ -245,11 +256,56 @@ const HomeFeed = ({
     setPullRefresh(true);
 
     getTimeLine();
-  }, [getTimeLine]);
+    pulltoRefresh();
+  }, [getTimeLine, pulltoRefresh]);
+
+  const createPostAfterUpload = (dataParams) => {
+    let body = dataParams;
+    setFullScreenLoading(true);
+
+    if (
+      authContext.entity.role === Verbs.entityTypeClub ||
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
+      body = {
+        ...dataParams,
+        group_id: authContext.entity.uid,
+        showPreviewForUrl: true,
+      };
+    }
+
+    createPost(body, authContext)
+      .then(() => {
+        getTimeLine();
+        setFullScreenLoading(false);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages);
+        setFullScreenLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (isFocused && routeParams?.isCreatePost) {
+      const {dataParams, imageArray} = routeParams;
+      if (imageArray.length > 0) {
+        imageUploadContext.uploadData(
+          authContext,
+          dataParams,
+          imageArray,
+          createPostAfterUpload,
+        );
+      } else {
+        createPostAfterUpload(dataParams);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFocused, routeParams?.isCreatePost]);
 
   return (
     <View style={{flex: 1}}>
       <ActivityLoader visible={fullScreenLoading} />
+      <ImageProgress />
       <NewsFeedList
         navigation={navigation}
         updateCommentCount={updateCommentCount}

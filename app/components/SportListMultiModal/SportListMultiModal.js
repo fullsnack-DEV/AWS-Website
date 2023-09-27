@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {FlatList, Image, Text, View, StyleSheet, Pressable} from 'react-native';
-import {widthPercentageToDP} from 'react-native-responsive-screen';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
@@ -35,6 +34,11 @@ const SportListMultiModal = ({
     }
   }, [isVisible, selectedSports]);
 
+  const onCloseModal = () => {
+    setSelectedList([]);
+    closeList();
+  };
+
   const handleClick = (item) => {
     let list = [...selectedList];
     if (selectedList.length > 0) {
@@ -68,7 +72,7 @@ const SportListMultiModal = ({
   return (
     <CustomModalWrapper
       isVisible={isVisible}
-      closeModal={() => closeList()}
+      closeModal={() => onCloseModal()}
       modalType={ModalTypes.style1}
       title={title}
       headerRightButtonText={
@@ -141,13 +145,14 @@ const styles = StyleSheet.create({
   languageList: {
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
-    fontSize: widthPercentageToDP('4%'),
+    fontSize: 16,
   },
   listItem: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 9,
   },
   title: {
     fontSize: 20,

@@ -131,7 +131,14 @@ export default function RecruitingMemberScreen({navigation, route}) {
           </View>
         </TouchableOpacity>
       ))}
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+
+          marginTop: 40,
+          marginBottom: 70,
+        }}>
         <View
           style={{
             width: 240,
@@ -141,7 +148,7 @@ export default function RecruitingMemberScreen({navigation, route}) {
           }}>
           <Image
             source={getImage()}
-            style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+            style={{width: '100%', height: '100%', resizeMode: 'cover'}}
           />
         </View>
       </View>

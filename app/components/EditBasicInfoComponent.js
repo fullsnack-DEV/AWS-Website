@@ -1,15 +1,15 @@
 // @flow
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import moment from 'moment';
 import {
   View,
   StyleSheet,
   Text,
   TextInput,
-  // Platform,
   Image,
   Pressable,
+  FlatList,
 } from 'react-native';
 
 // import/no-extraneous-dependencies
@@ -20,28 +20,28 @@ import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import LanguagesListModal from '../screens/account/registerPlayer/modals/LanguagesListModal';
 import {languageList, getJSDate} from '../utils';
-
 import {heightMesurement, weightMesurement} from '../utils/constant';
 import AddressLocationModal from './AddressLocationModal/AddressLocationModal';
-import TCCountryCodeModal from './TCCountryCodeModal';
 import TCKeyboardView from './TCKeyboardView';
+import * as Utility from '../utils/index';
 import Verbs from '../Constants/Verbs';
+import TCPhoneNumber from './TCPhoneNumber';
+import AuthContext from '../auth/context';
 
 const EditBasicInfoComponent = ({
   userInfo = {},
   containerStyle = {},
   setUserInfo = () => {},
 }) => {
-  const [countryCodeVisible, setCountryCodeVisible] = useState(false);
-  const [selectedCountryCode, setSelectedCountryCode] = useState({
-    code: 1,
-    country: 'Canada',
-  });
   const [visibleAddressModal, setVisibleAddressModal] = useState(false);
   const [languages, setLanguages] = useState([]);
   const [languageName, setLanguageName] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState([]);
+  const [countrycode, setCountryCode] = useState();
+
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     const arr = languageList.map((item) => ({
@@ -64,6 +64,43 @@ const EditBasicInfoComponent = ({
     }
     return language_name;
   };
+
+  useEffect(() => {
+    const selectedCountryItem = Utility.countryCode.find(
+      (item) =>
+        item.name.toLowerCase() === authContext.user.country.toLowerCase(),
+    );
+
+    let dialCode = selectedCountryItem.dial_code;
+
+    if (dialCode.startsWith('+')) {
+      dialCode = dialCode.substring(1);
+    }
+
+    const countryOBJ = {
+      country: selectedCountryItem.name,
+      code: dialCode,
+      iso: selectedCountryItem.code,
+    };
+
+    setCountryCode(countryOBJ);
+  }, [authContext.user.country]);
+
+  useEffect(() => {
+    setPhoneNumber(
+      // eslint-disable-next-line no-prototype-builtins
+      !userInfo.hasOwnProperty('phone_numbers') ||
+        userInfo?.phone_numbers?.length === 0
+        ? [
+            {
+              id: 0,
+              phone_number: '',
+              country_code: countrycode,
+            },
+          ]
+        : userInfo?.phone_numbers,
+    );
+  }, [countrycode]);
 
   useEffect(() => {
     if (userInfo.language?.length > 0) {
@@ -109,102 +146,55 @@ const EditBasicInfoComponent = ({
     setUserInfo(obj);
   };
 
-  const renderPhoneNumber = () => {
-    if (userInfo?.phone_numbers?.length > 0) {
-      return userInfo.phone_numbers.map((item, index) => (
-        <View style={[styles.row, {marginBottom: 15}]} key={index}>
-          <Pressable
-            style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]}
-            onPress={() => setCountryCodeVisible(true)}>
-            <View style={{flex: 1, alignItems: 'center'}}>
-              <Text
-                style={[
-                  styles.titleText,
-                  {fontFamily: fonts.RRegular, marginBottom: 0},
-                ]}>{`${selectedCountryCode.country} (+${selectedCountryCode.code})`}</Text>
-            </View>
-            <View style={{width: 10, height: 10}}>
-              <Image
-                source={images.dropDownArrow}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  resizeMode: 'contain',
-                  tintColor: colors.lightBlackColor,
-                }}
-              />
-            </View>
-          </Pressable>
-          <View style={{flex: 1, marginLeft: 8}}>
-            <TextInput
-              placeholder={strings.phone}
-              placeholderTextColor={colors.userPostTimeColor}
-              style={styles.inputField}
-              keyboardType={'phone-pad'}
-              onChangeText={(text) => {
-                const list = [...userInfo.phone_numbers];
-                list[index] = {
-                  country_code: selectedCountryCode.code,
-                  phone_number: text,
-                };
-                setUserInfo({
-                  ...userInfo,
-                  phone_numbers: list,
-                });
-              }}
-              value={item.phone_number}
-              maxLength={12}
-            />
-          </View>
-        </View>
-      ));
-    }
-    return (
-      <View style={styles.row}>
-        <Pressable
-          style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]}
-          onPress={() => setCountryCodeVisible(true)}>
-          <View style={{flex: 1, alignItems: 'center'}}>
-            <Text
-              style={[
-                styles.titleText,
-                {fontFamily: fonts.RRegular, marginBottom: 0},
-              ]}>{`${selectedCountryCode.country} (+${selectedCountryCode.code})`}</Text>
-          </View>
-          <View style={{width: 10, height: 10}}>
-            <Image
-              source={images.dropDownArrow}
-              style={{
-                width: '100%',
-                height: '100%',
-                resizeMode: 'contain',
-                tintColor: colors.lightBlackColor,
-              }}
-            />
-          </View>
-        </Pressable>
-        <View style={{flex: 1, marginLeft: 8}}>
-          <TextInput
-            placeholder={strings.phone}
-            style={styles.inputField}
-            keyboardType={'phone-pad'}
-            onChangeText={(text) => {
-              setUserInfo({
-                ...userInfo,
-                phone_numbers: [
-                  {
-                    country_code: selectedCountryCode.code,
-                    phone_number: text,
-                  },
-                ],
-              });
-            }}
-            value={userInfo.phone_numbers?.[0]?.phone_number}
-            maxLength={12}
-          />
-        </View>
-      </View>
-    );
+  const renderPhoneNumbers = ({item, index}) => (
+    <TCPhoneNumber
+      marginBottom={2}
+      placeholder={strings.selectCode}
+      value={item.country_code}
+      from={!(phoneNumber.length > 1)}
+      numberValue={item.phone_number}
+      onValueChange={(value) => {
+        const tempCode = [...phoneNumber];
+        tempCode[index].country_code = value;
+        setPhoneNumber(tempCode);
+        const filteredNumber = phoneNumber.filter(
+          (obj) =>
+            ![null, undefined, ''].includes(
+              obj.phone_number && obj.country_code,
+            ),
+        );
+
+        setUserInfo({
+          ...userInfo,
+          phone_numbers: filteredNumber,
+        });
+      }}
+      onChangeText={(text) => {
+        const tempPhone = [...phoneNumber];
+        tempPhone[index].phone_number = text;
+        setPhoneNumber(tempPhone);
+        const filteredNumber = phoneNumber.filter(
+          (obj) =>
+            ![null, undefined, ''].includes(
+              obj.phone_number && obj.country_code,
+            ),
+        );
+
+        setUserInfo({
+          ...userInfo,
+          phone_numbers: filteredNumber,
+        });
+      }}
+    />
+  );
+
+  const addPhoneNumber = () => {
+    const obj = {
+      id: phoneNumber.length === 0 ? 0 : phoneNumber.length,
+      country_code: countrycode,
+      phone_number: {},
+    };
+    setPhoneNumber([...phoneNumber, obj]);
   };
 
   return (
@@ -366,10 +356,11 @@ const EditBasicInfoComponent = ({
           </Pressable>
         </View>
 
-        <View style={{marginBottom: 24}}>
-          <Text style={styles.titleText}>{strings.phone.toUpperCase()}</Text>
-          {renderPhoneNumber()}
-        </View>
+        <FlatList
+          data={phoneNumber}
+          renderItem={renderPhoneNumbers}
+          keyExtractor={(item, index) => index.toString()}
+        />
 
         <Pressable
           style={{
@@ -381,16 +372,7 @@ const EditBasicInfoComponent = ({
             marginBottom: 50,
           }}
           onPress={() => {
-            const list = [...userInfo.phone_numbers];
-            const obj = {
-              country_code: 1,
-              phone_number: '',
-            };
-            list.push(obj);
-            setUserInfo({
-              ...userInfo,
-              phone_numbers: list,
-            });
+            addPhoneNumber();
           }}>
           <Text
             style={{
@@ -426,17 +408,6 @@ const EditBasicInfoComponent = ({
             </Text>
           </Pressable>
         </View>
-
-        <TCCountryCodeModal
-          countryCodeVisible={countryCodeVisible}
-          onCloseModal={() => {
-            setCountryCodeVisible(false);
-          }}
-          countryCodeObj={(obj) => {
-            setSelectedCountryCode(obj);
-            setCountryCodeVisible(false);
-          }}
-        />
 
         <LanguagesListModal
           isVisible={showLanguageModal}

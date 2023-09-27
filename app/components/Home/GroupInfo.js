@@ -1,12 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import ReadMore from '@fawazahmed/react-native-read-more';
 import moment from 'moment';
@@ -21,8 +15,13 @@ import GroupBasicInfo from './Team/GroupBasicInfo';
 import Venues from '../../screens/home/SportActivity/components/Venues';
 import TeamCard from '../TeamCard';
 import BottomSheet from '../modals/BottomSheet';
+
 import {getGroupDetails} from '../../api/Groups';
 import EditHomeFacilityScreen from '../../screens/home/SportActivity/contentScreens/EditHomeFacilityScreen';
+import GroupIcon from '../GroupIcon';
+import TCThinDivider from '../TCThinDivider';
+import TCTextField from '../TCTextField';
+
 
 const teamOptions = [
   strings.bio,
@@ -33,6 +32,24 @@ const teamOptions = [
   strings.tcranking,
   strings.matchVenues,
   strings.clubsTitleText,
+  strings.membershipFee,
+  strings.bylaw,
+];
+
+const teamOptiosnForJoin = [
+  strings.bio,
+  strings.basicInfoText,
+  // strings.homeFacility,
+  strings.matchVenues,
+  strings.membershipFee,
+  strings.bylaw,
+];
+
+const clubOptiosnForJoin = [
+  strings.bio,
+  strings.basicInfoText,
+  // strings.homeFacility,
+  strings.matchVenues,
   strings.membershipFee,
   strings.bylaw,
 ];
@@ -57,6 +74,11 @@ export default function GroupInfo({
   onClickPrivacy = () => {},
   onAddMember = () => {},
   authContext,
+  forJoinButton = false,
+  onJoinPress = () => {},
+  onAcceptPress = () => {},
+  isInvited = false,
+  isAccept = false,
 }) {
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState('');
@@ -66,11 +88,19 @@ export default function GroupInfo({
 
   useEffect(() => {
     if (groupDetails.entity_type) {
-      setOptions(
-        groupDetails.entity_type === Verbs.entityTypeClub
-          ? clubOptions
-          : teamOptions,
-      );
+      if (!forJoinButton) {
+        setOptions(
+          groupDetails.entity_type === Verbs.entityTypeClub
+            ? clubOptions
+            : teamOptions,
+        );
+      } else {
+        setOptions(
+          groupDetails.entity_type === Verbs.entityTypeClub
+            ? clubOptiosnForJoin
+            : teamOptiosnForJoin,
+        );
+      }
     }
   }, [groupDetails]);
 
@@ -327,67 +357,7 @@ export default function GroupInfo({
         );
 
       case strings.membershipFee:
-        return (
-          <>
-            <View
-              style={[
-                styles.row,
-                {marginBottom: 15, alignItems: 'flex-start'},
-              ]}>
-              <View style={styles.col}>
-                <Text style={styles.label}>{strings.membershipfee}</Text>
-              </View>
-              <View style={styles.col}>
-                <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
-                  {groupDetails?.membership_fee
-                    ? `${groupDetails.membership_fee} ${
-                        groupDetails.currency_type ?? Verbs.cad
-                      }/${groupDetails.membership_fee_type}`
-                    : '--'}
-                </Text>
-              </View>
-            </View>
-
-            <View
-              style={[
-                styles.row,
-                {marginBottom: 15, alignItems: 'flex-start'},
-              ]}>
-              <View style={styles.col}>
-                <Text style={styles.label}>{strings.membershipregfee}</Text>
-              </View>
-              <View style={styles.col}>
-                <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
-                  {groupDetails?.registration_fee
-                    ? `${groupDetails.registration_fee}/${
-                        groupDetails.currency_type ?? Verbs.cad
-                      }`
-                    : '--'}
-                </Text>
-              </View>
-            </View>
-            {groupDetails.membership_fee_details && (
-              <View style={{marginBottom: 15}}>
-                <View style={[styles.col, {marginBottom: 10}]}>
-                  <Text style={styles.label}>
-                    {strings.venueDetailsPlaceholder}
-                  </Text>
-                </View>
-                <View>
-                  <ReadMore
-                    numberOfLines={3}
-                    style={styles.longTextStyle}
-                    seeMoreText={strings.moreText}
-                    seeLessText={strings.lessText}
-                    seeLessStyle={styles.moreLessText}
-                    seeMoreStyle={styles.moreLessText}>
-                    {groupDetails.membership_fee_details}
-                  </ReadMore>
-                </View>
-              </View>
-            )}
-          </>
-        );
+        return renderMatchFeeSection();
 
       case strings.teams:
         return (
@@ -443,6 +413,255 @@ export default function GroupInfo({
         return null;
     }
   };
+
+  const RenderHeader = () => (
+    <View>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginHorizontal: 15,
+        }}>
+        <GroupIcon
+          entityType={groupDetails.entity_type}
+          groupName={groupDetails.group_name}
+          imageUrl={groupDetails.full_image}
+        />
+        <View style={{marginLeft: 15}}>
+          <Text
+            style={{
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              lineHeight: 24,
+            }}>
+            {' '}
+            {groupDetails.group_name}{' '}
+          </Text>
+          <Text
+            style={{
+              marginLeft: 5,
+              fontFamily: fonts.RLight,
+              fontSize: 14,
+              lineHeight: 21,
+            }}>
+            {groupDetails.city} {groupDetails.state_abbr}
+          </Text>
+          <Text
+            style={{
+              marginLeft: 5,
+              fontFamily: fonts.RLight,
+              fontSize: 14,
+              lineHeight: 21,
+            }}>
+            {strings.tcLevel} {groupDetails.level ?? '5'}
+          </Text>
+        </View>
+      </View>
+      <TCThinDivider
+        height={7}
+        marginBottom={25}
+        width={'100%'}
+        marginTop={25}
+      />
+    </View>
+  );
+
+  const renderFooterComponent = () => (
+    <View>
+      {groupDetails.who_can_join_for_member !== 0 && (
+        <>
+          <Text style={[styles.headingLabel, {marginHorizontal: 15}]}>
+            {format(strings.messageToJoinTeam, groupDetails.group_name)}
+          </Text>
+          <TCTextField
+            style={{
+              marginHorizontal: 15,
+              backgroundColor: colors.textFieldBackground,
+              height: 100,
+              marginVertical: 15,
+              borderRadius: 5,
+              paddingHorizontal: 15,
+              paddingVertical: 15,
+            }}
+            placeholder={strings.sendMessagePlaceHolder}
+            height={100}
+            multiline
+          />
+          <TCThinDivider
+            height={7}
+            marginTop={20}
+            marginBottom={25}
+            width={'100%'}
+          />
+        </>
+      )}
+
+      {groupDetails.who_can_join_for_member === 0 || isInvited ? (
+        <TouchableOpacity
+          onPress={onJoinPress}
+          style={{
+            marginHorizontal: 15,
+            backgroundColor: colors.reservationAmountColor,
+            borderRadius: 30,
+            marginBottom: 100,
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              lineHeight: 24,
+              paddingVertical: 8,
+              color: colors.whiteColor,
+              textTransform: 'uppercase',
+            }}>
+            {isAccept ? strings.acceptTitle : strings.join}
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={onAcceptPress}
+          style={{
+            marginHorizontal: 15,
+            backgroundColor: colors.reservationAmountColor,
+            borderRadius: 30,
+            marginBottom: 100,
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              lineHeight: 24,
+              paddingVertical: 8,
+              textTransform: 'uppercase',
+              color: colors.whiteColor,
+              backgroundColor: 'red',
+            }}>
+            {isAccept ? strings.acceptTitle : strings.sendJoinRequestText}
+          </Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
+  const renderMatchFeeSection = () => (
+    <View>
+      {!forJoinButton ? (
+        <>
+          <View
+            style={[styles.row, {marginBottom: 15, alignItems: 'flex-start'}]}>
+            <View style={styles.col}>
+              <Text style={styles.label}>{strings.membershipfee}</Text>
+            </View>
+            <View style={styles.col}>
+              <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
+                {groupDetails?.membership_fee
+                  ? `${groupDetails.membership_fee} ${
+                      groupDetails.currency_type ?? Verbs.cad
+                    }/${groupDetails.membership_fee_type}`
+                  : '--'}
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={[styles.row, {marginBottom: 15, alignItems: 'flex-start'}]}>
+            <View style={styles.col}>
+              <Text style={styles.label}>{strings.membershipregfee}</Text>
+            </View>
+            <View style={styles.col}>
+              <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
+                {groupDetails?.registration_fee
+                  ? `${groupDetails.registration_fee}/${
+                      groupDetails.currency_type ?? Verbs.cad
+                    }`
+                  : '--'}
+              </Text>
+            </View>
+          </View>
+          <>
+            {groupDetails.membership_fee_details && (
+              <View style={{marginBottom: 15}}>
+                <View style={[styles.col, {marginBottom: 10}]}>
+                  <Text style={styles.label}>
+                    {strings.venueDetailsPlaceholder}
+                  </Text>
+                </View>
+                <View>
+                  <ReadMore
+                    numberOfLines={3}
+                    style={styles.longTextStyle}
+                    seeMoreText={strings.moreText}
+                    seeLessText={strings.lessText}
+                    seeLessStyle={styles.moreLessText}
+                    seeMoreStyle={styles.moreLessText}>
+                    {groupDetails.membership_fee_details}
+                  </ReadMore>
+                </View>
+              </View>
+            )}
+          </>
+        </>
+      ) : (
+        <>
+          <View
+            style={[styles.row, {marginBottom: 20, alignItems: 'flex-start'}]}>
+            <View style={styles.col}>
+              <Text style={styles.label}>{strings.registrationFeeJoin}</Text>
+            </View>
+            <View style={styles.col}>
+              <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
+                {groupDetails?.registration_fee
+                  ? `${groupDetails.registration_fee}/${
+                      groupDetails.currency_type ?? Verbs.cad
+                    }`
+                  : '--'}
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={[styles.row, {marginBottom: 15, alignItems: 'flex-start'}]}>
+            <View style={styles.col}>
+              <Text style={styles.label}>{strings.membershipfee}</Text>
+              <Text> {strings.basicBiweekley} </Text>
+            </View>
+            <View style={styles.col}>
+              <Text style={[styles.longTextStyle, {textAlign: 'right'}]}>
+                {groupDetails?.membership_fee
+                  ? `${groupDetails.membership_fee} ${
+                      groupDetails.currency_type ?? Verbs.cad
+                    }/${groupDetails.membership_fee_type}`
+                  : '--'}
+              </Text>
+            </View>
+          </View>
+
+          <Text
+            style={{
+              color: colors.darkThemeColor,
+              fontFamily: fonts.RRegular,
+              fontSize: 12,
+              lineHeight: 18,
+            }}>
+            {format(strings.matchFeeJointext, groupDetails.entity_type)}
+          </Text>
+
+          <TCThinDivider height={1} marginTop={20} />
+          <Text
+            style={{
+              fontFamily: fonts.RRegular,
+              fontSize: 16,
+              lineHeight: 24,
+              marginTop: 20,
+            }}>
+            {strings.memberSheepFeestitle}
+          </Text>
+        </>
+      )}
+    </View>
+  );
 
   return (
     <View style={{flex: 1, paddingTop: 20}}>
@@ -503,6 +722,8 @@ export default function GroupInfo({
             <View style={styles.divider} />
           </>
         )}
+        ListHeaderComponent={forJoinButton ? RenderHeader : null}
+        ListFooterComponent={forJoinButton ? renderFooterComponent : null}
       />
       <BottomSheet
         isVisible={showModal}

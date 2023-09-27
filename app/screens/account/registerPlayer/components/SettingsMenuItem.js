@@ -34,7 +34,6 @@ const SettingsMenuItem = ({
           );
 
         case strings.gameFee:
-          // console.log('settings==>', settingObject);
           return (
             <Text style={styles.normalStyle}>
               {`${settingObject.game_fee?.fee || 0} ${
@@ -106,7 +105,7 @@ const SettingsMenuItem = ({
       <View style={styles.menuItemRow}>
         <View style={{flex: 1}}>
           <Text style={[styles.headerTitle, {textAlign: 'left'}]}>
-            {item.key.toUpperCase()}
+            {item.key}
           </Text>
         </View>
         {item.key === strings.sport ? (

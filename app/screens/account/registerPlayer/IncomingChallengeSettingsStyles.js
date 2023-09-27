@@ -29,8 +29,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     lineHeight: 30,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     textAlign: 'center',
+    color: colors.lightBlackColor,
   },
   buttonContainer: {
     flex: 1,
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 30,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
     marginBottom: 15,
     marginTop: 20,
   },

@@ -34,6 +34,7 @@ import {getGroupDetails} from '../../api/Groups';
 import {getQBAccountType, QBcreateUser} from '../../utils/QuickBlox';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
+import ScreenHeader from '../../components/ScreenHeader';
 
 function PendingRequestScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -180,7 +181,7 @@ function PendingRequestScreen({navigation}) {
               reservationObj,
             });
           } else {
-            console.log('reservationObj', reservationObj.status);
+            console.log('reservationObj');
             if (authContext.entity.uid === reservationObj.approved_by) {
               navigation.navigate('RefereeApprovalScreen', {
                 type: 'accepted',
@@ -286,7 +287,7 @@ function PendingRequestScreen({navigation}) {
               reservationObj,
             });
           } else {
-            console.log('reservationObj', reservationObj.status);
+            console.log('reservationObj');
             if (authContext.entity.uid === reservationObj.approved_by) {
               navigation.navigate('ScorekeeperApprovalScreen', {
                 type: 'accepted',
@@ -440,7 +441,6 @@ function PendingRequestScreen({navigation}) {
   };
 
   const onNotificationClick = (notificationItem) => {
-    console.log(notificationItem?.verb);
     const verb = notificationItem?.verb?.split('_');
     const postVerbTypes = [
       NotificationType.clap,
@@ -493,7 +493,7 @@ function PendingRequestScreen({navigation}) {
       getRefereeReservationDetail(a, authContext.entity.uid, authContext)
         .then((obj) => {
           const reservationObj = obj.reservationObj || obj.reservationObj[0];
-          console.log('reservationObj:1>=>', reservationObj);
+          console.log('reservationObj:1>=>');
           navigation.navigate(obj.screenName, {
             reservationObj,
           });
@@ -520,12 +520,17 @@ function PendingRequestScreen({navigation}) {
   };
 
   const notificationComponentType = (item, index) => {
+    console.log(
+      item.activities[0].verb.includes(NotificationType.inviteToConnectMember),
+    );
     if (isInvite(item.activities[0].verb)) {
+      console.log('is invit');
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
         item.activities[0].verb.includes(NotificationType.inviteToEvent) ||
         item.activities[0].verb.includes(NotificationType.inviteToJoinClub)
       ) {
+        console.log(':hetev');
         return (
           <PRNotificationTeamInvite
             accessibilityLabel={index}
@@ -541,6 +546,7 @@ function PendingRequestScreen({navigation}) {
       if (
         item.activities[0].verb.includes(NotificationType.sendBasicInfoToMember)
       ) {
+        console.log(':hetev8');
         return (
           <PRNotificationTeamInvite
             accessibilityLabel={index}
@@ -573,6 +579,7 @@ function PendingRequestScreen({navigation}) {
       item.activities[0].verb.includes(NotificationType.refereeRequest) ||
       item.activities[0].verb.includes(NotificationType.scorekeeperRequest)
     ) {
+      console.log(':hetev7');
       return (
         <PRNotificationDetailItem
           accessibilityLabel={index}
@@ -598,17 +605,14 @@ function PendingRequestScreen({navigation}) {
     );
   };
 
-  const renderPendingRequestComponent = ({item, index}) => {
-    console.log('ITEm:,', item);
-    return (
-      <AppleStyleSwipeableRow
-        onPress={() => onDelete({item})}
-        color={colors.darkThemeColor}
-        image={images.deleteIcon}>
-        {notificationComponentType(item, index)}
-      </AppleStyleSwipeableRow>
-    );
-  };
+  const renderPendingRequestComponent = ({item, index}) => (
+    <AppleStyleSwipeableRow
+      onPress={() => onDelete({item})}
+      color={colors.darkThemeColor}
+      image={images.deleteIcon}>
+      {notificationComponentType(item, index)}
+    </AppleStyleSwipeableRow>
+  );
 
   useEffect(() => {
     if (isFocused) {
@@ -628,6 +632,10 @@ function PendingRequestScreen({navigation}) {
         setloading(false);
         setLoadMore(false);
         setFirstTimeLoading(false);
+        console.log(
+          JSON.stringify([...response.payload.requests]),
+          'from notifiaction',
+        );
         setNotificationsList([...response.payload.requests]);
       })
       .catch((e) => {
@@ -657,10 +665,7 @@ function PendingRequestScreen({navigation}) {
       });
   };
 
-  const itemSeparator = () => (
-    // Item Separator
-    <View style={styles.listItemSeparatorStyle} />
-  );
+  const itemSeparator = () => <View style={styles.listItemSeparatorStyle} />;
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
@@ -686,12 +691,18 @@ function PendingRequestScreen({navigation}) {
 
   return (
     <SafeAreaView style={styles.rowViewStyle}>
+      <ScreenHeader
+        title={strings.pendingReqiestesTitle}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+      />
       <ActivityLoader visible={loading} />
       {/* eslint-disable-next-line no-nested-ternary */}
       {firstTimeLoading ? (
         <NotificationListShimmer />
       ) : notificationsList?.length > 0 ? (
         <FlatList
+          style={{marginTop: 5}}
           ItemSeparatorComponent={itemSeparator}
           data={notificationsList}
           keyExtractor={keyExtractor}

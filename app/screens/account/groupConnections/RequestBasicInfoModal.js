@@ -10,6 +10,7 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 
 import React, {useState, useCallback, useEffect, useContext, memo} from 'react';
@@ -365,7 +366,7 @@ function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
         modalType={ModalTypes.style3}
         containerStyle={{padding: 0, flex: 1}}
         extraHeaderStyle={{borderBottomWidth: 0}}
-        Top={340}>
+        Top={Dimensions.get('screen').height - 500}>
         <View
           style={{
             flex: 1,

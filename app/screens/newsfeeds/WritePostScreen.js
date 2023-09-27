@@ -21,14 +21,12 @@ import {
   Dimensions,
   Keyboard,
   BackHandler,
-  ScrollView,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
 import ImagePicker from 'react-native-image-crop-picker';
 import _ from 'lodash';
 import ParsedText from 'react-native-parsed-text';
-import ActivityLoader from '../../components/loader/ActivityLoader';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
@@ -51,8 +49,7 @@ import {
   tagRegex,
   urlRegex,
 } from '../../Constants/GeneralConstants';
-import {ImageUploadContext} from '../../context/ImageUploadContext';
-import {createPost, createRePost} from '../../api/NewsFeeds';
+import {createRePost} from '../../api/NewsFeeds';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import FeedMedia from '../../components/newsFeed/feed/FeedMedia';
 import FeedProfile from '../../components/newsFeed/feed/FeedProfile';
@@ -82,7 +79,6 @@ const WritePostScreen = ({navigation, route}) => {
   );
   const [searchUsers, setSearchUsers] = useState([]);
   const [searchGroups, setSearchGroups] = useState([]);
-  const [loading, setloading] = useState(false);
   const [letModalVisible, setLetModalVisible] = useState(false);
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -93,38 +89,7 @@ const WritePostScreen = ({navigation, route}) => {
     value: 0,
   });
 
-  const imageUploadContext = useContext(ImageUploadContext);
   const flatListRef = useRef();
-
-  const createPostAfterUpload = (dataParams) => {
-    let body = dataParams;
-    setloading(true);
-
-    if (
-      authContext.entity.role === Verbs.entityTypeClub ||
-      authContext.entity.role === Verbs.entityTypeTeam
-    ) {
-      body = {
-        ...dataParams,
-        group_id: authContext.entity.uid,
-        showPreviewForUrl,
-      };
-    }
-
-    createPost(body, authContext)
-      .then(() => {
-        if (route.params?.comeFrom) {
-          navigation.pop(2);
-        } else {
-          navigation.goBack();
-        }
-        setloading(false);
-      })
-      .catch((e) => {
-        Alert.alert('', e.messages);
-        setloading(false);
-      });
-  };
 
   const handleRepost = () => {
     const item = {...route.params.repostData};
@@ -152,29 +117,13 @@ const WritePostScreen = ({navigation, route}) => {
     if (searchText.trim().length === 0 && selectImage.length === 0) {
       Alert.alert(strings.writeTextOrImage, '', [{text: strings.okTitleText}]);
     } else {
-      let tagData = JSON.parse(JSON.stringify(tagsOfEntity));
-      tagData = tagData?.map((tag) => ({
-        ...tag,
-        entity_type: 'publictimeline',
+      const tagData = tagsOfEntity.map((tag) => ({
+        entity_id: tag.entity_id,
+        entity_type: 'privatetimeline',
       }));
-
-      let format_tagged_data = JSON.parse(JSON.stringify(tagsOfEntity)) ?? [];
-      format_tagged_data = [...format_tagged_data, ...tagsOfGame];
-      format_tagged_data.map(async (item, index) => {
-        const isThere =
-          item?.entity_type !== Verbs.entityTypeGame
-            ? searchText.includes(
-                item?.entity_data?.tagged_formatted_name?.replace(/ /g, ''),
-              )
-            : true;
-        if (!isThere) format_tagged_data.splice(index, 1);
-        return null;
-      });
-
-      // eslint-disable-next-line no-param-reassign
-      tagData.forEach((tData) => delete tData.entity_data);
-
+      const format_tagged_data = [...tagsOfEntity];
       const who_can_see = {...privacySetting};
+
       if (privacySetting.value === 2) {
         if (
           [
@@ -218,33 +167,34 @@ const WritePostScreen = ({navigation, route}) => {
         }
       }
 
-      if (selectImage.length > 0) {
-        const imageArray = selectImage.map((dataItem) => dataItem);
-        dataParams = {
-          ...dataParams,
-          text: searchText,
-          attachments: [],
-          tagged: tagData ?? [],
-          who_can_see,
-          format_tagged_data,
-        };
-        imageUploadContext.uploadData(
-          authContext,
+      const imageArray = selectImage.length
+        ? selectImage.map((dataItem) => dataItem)
+        : [];
+      dataParams = {
+        ...dataParams,
+        text: searchText,
+        attachments: [],
+        tagged: tagData ?? [],
+        who_can_see,
+        format_tagged_data,
+      };
+
+      if (route.params?.comeFrom === 'HomeScreen') {
+        navigation.navigate('Account', {
+          screen: 'HomeScreen',
+          params: {
+            isCreatePost: true,
+            dataParams,
+            imageArray,
+            ...route.params.routeParams,
+          },
+        });
+      } else {
+        navigation.navigate('FeedsScreen', {
+          isCreatePost: true,
           dataParams,
           imageArray,
-          createPostAfterUpload,
-        );
-      } else {
-        dataParams = {
-          ...dataParams,
-          text: searchText,
-          attachments: [],
-          tagged: tagData ?? [],
-          who_can_see,
-          format_tagged_data,
-        };
-
-        createPostAfterUpload(dataParams);
+        });
       }
     }
   };
@@ -271,33 +221,94 @@ const WritePostScreen = ({navigation, route}) => {
   }, [searchText, currentTextInputIndex]);
 
   useEffect(() => {
-    let tagName = '';
-
-    if (route.params.selectedTagList?.length > 0) {
+    if (route.params?.selectedTagList) {
+      const modifiedSearch = searchText;
       const tagsArray = [...route.params.selectedTagList];
-      tagsArray.forEach((tag) => {
-        const obj = tagsOfEntity.find(
-          (item) => item.entity_id === tag.entity_id,
-        );
-        if (!obj) {
-          tagName += `${tag.entity_data.tagged_formatted_name} `;
+
+      if (tagsArray.length > 0) {
+        let tagName = '';
+        tagsArray.forEach((tag) => {
+          const obj = tagsOfEntity.find(
+            (item) => item.entity_id === tag.entity_id,
+          );
+
+          if (!obj) {
+            tagName += `${tag.entity_data.tagged_formatted_name} `;
+          }
+        });
+
+        const words = modifiedSearch.split(' ');
+
+        const finalWords = [];
+        words.forEach((word) => {
+          if (!word) {
+            return;
+          }
+          if (word.includes('@')) {
+            const isExist = tagsArray.find(
+              (ele) =>
+                ele.entity_data.tagged_formatted_name?.trim() === word.trim(),
+            );
+
+            if (isExist) {
+              finalWords.push(word);
+            }
+          } else {
+            finalWords.push(word);
+          }
+        });
+
+        if (tagName) {
+          const tags = tagName.split(' ').filter((tag) => tag);
+
+          tags.forEach((ele) => {
+            const obj = tagsArray.find(
+              (item) =>
+                item.entity_data.tagged_formatted_name?.trim() === ele.trim(),
+            );
+            if (obj) {
+              finalWords.push(obj.entity_data.tagged_formatted_name?.trim());
+            }
+          });
         }
-      });
+
+        setSearchText(finalWords.join(' '));
+      } else {
+        const words = modifiedSearch.split(' ');
+        const finalWords = words.filter((item) => item && !item.includes('@'));
+        setSearchText(finalWords.join(' '));
+      }
 
       setTagsOfEntity(tagsArray);
       setLetModalVisible(false);
-
-      const modifiedSearch = searchText;
-      const output = [
-        modifiedSearch.slice(0, currentTextInputIndex),
-        tagName,
-        modifiedSearch.slice(currentTextInputIndex),
-      ].join('');
-
-      setSearchText(output);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route.params, currentTextInputIndex]);
+  }, [route.params?.selectedTagList]);
+
+  useEffect(() => {
+    if (searchText) {
+      const tags = searchText.match(tagRegex);
+
+      if (tags) {
+        const list = [];
+        if (tags?.length > 0) {
+          tags.forEach((tagName) => {
+            const obj = tagsOfEntity.find(
+              (item) =>
+                item.entity_data?.tagged_formatted_name?.trim() === tagName,
+            );
+
+            if (obj) {
+              list.push(obj);
+            }
+          });
+        }
+
+        setTagsOfEntity(list);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchText]);
 
   useEffect(() => {
     if (route.params?.selectedMatchTags?.length > 0) {
@@ -528,13 +539,9 @@ const WritePostScreen = ({navigation, route}) => {
     const arr = [];
     const data = [...users, ...groups];
     data.forEach((obj) => {
-      const item = tagsOfEntity.filter(
-        (temp) =>
-          ![temp?.group_id, temp?.user_id, temp?.entity_id].includes(
-            obj?.group_id || obj?.user_id || obj?.entity_id,
-          ),
-      );
-      if (item) {
+      const id = obj.group_id ?? obj.user_id ?? obj.entity_id;
+      const item = tagsOfEntity.find((temp) => temp.entity_id === id);
+      if (!item && id !== authContext.entity.uid) {
         arr.push(obj);
       }
     });
@@ -606,6 +613,7 @@ const WritePostScreen = ({navigation, route}) => {
         ref={flatListRef}
         horizontal
         showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{marginBottom: 15}}
         onContentSizeChange={() => {
           flatListRef.current.scrollToEnd({animated: true});
         }}
@@ -726,7 +734,6 @@ const WritePostScreen = ({navigation, route}) => {
         onPress={() => {
           setPrivacySetting(item);
           setTimeout(() => {
-            setVisibleWhoModal(false);
           }, 300);
         }}>
         <View style={[styles.icon, {marginRight: 10}]}>
@@ -740,7 +747,7 @@ const WritePostScreen = ({navigation, route}) => {
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
-  const handleBackPress = useCallback (() => {
+  const handleBackPress = useCallback(() => {
     if (route.params.isRepost) {
       Alert.alert('', strings.discardRepostText, [
         {
@@ -772,19 +779,31 @@ const WritePostScreen = ({navigation, route}) => {
     } else {
       navigation.goBack();
     }
-  },[navigation,route.params.isRepost,searchText, selectImage, tagsOfEntity]);
+  }, [
+    navigation,
+    route.params.isRepost,
+    searchText,
+    selectImage,
+    tagsOfEntity,
+  ]);
 
   useEffect(() => {
-    const backAction = ()=>{
-      handleBackPress()
-      return true
-    }
-    const backHandler = BackHandler.addEventListener('hardwareBackPress',backAction)
-  
-    return () => backHandler.remove()
-  }, [handleBackPress])
-  
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
 
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
+  const onCloseModal = () => {
+    setVisibleWhoModal(false);
+  };
+  
   const renderPost = () => {
     const repostData = route.params.repostData;
     const objData = getPostData(repostData);
@@ -826,18 +845,18 @@ const WritePostScreen = ({navigation, route}) => {
         }
       />
 
-      <ActivityLoader visible={loading} />
       {renderImageProgress}
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -25}
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        // keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -25}
         style={{flex: 1}}>
         <View style={styles.container}>
           <View style={styles.userDetailView}>
             <GroupIcon
               imageUrl={postData.thumbnail}
-              // entityType={postData.entity_type}
+              entityType={postData.entity_type}
               groupName={postData.group_name}
               textstyle={{fontSize: 12}}
               containerStyle={styles.profileImage}
@@ -848,8 +867,9 @@ const WritePostScreen = ({navigation, route}) => {
               </Text>
             </View>
           </View>
-          
-          <ScrollView style={{paddingHorizontal: 15, marginBottom: 15}}>
+
+          <View
+            style={{paddingHorizontal: 15, marginBottom: 10, maxHeight: '70%'}}>
             <TextInput
               ref={textInputRef}
               onLayout={(event) =>
@@ -863,7 +883,8 @@ const WritePostScreen = ({navigation, route}) => {
               style={styles.textInputField}
               multiline={true}
               textAlignVertical={'top'}
-              maxLength={4000}>
+              maxLength={4000}
+              scrollEnabled>
               <ParsedText
                 parse={[
                   {pattern: tagRegex, renderText: renderTagText},
@@ -875,39 +896,38 @@ const WritePostScreen = ({navigation, route}) => {
               </ParsedText>
             </TextInput>
             {renderModalTagEntity()}
-          </ScrollView>
+          </View>
+
           {route.params?.isRepost ? (
             renderPost()
           ) : (
-            <>
+            <View style={{marginTop: 15}}>
               {renderUrlPreview()}
               {renderSelectedImageList()}
-              <View>
-                {tagsOfGame.length > 0 ? (
-                  <FlatList
-                    data={tagsOfGame}
-                    keyExtractor={(item, index) => index.toString()}
-                    bounces={false}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{paddingHorizontal: 15}}
-                    horizontal
-                    renderItem={({item}) => (
-                      <View
-                        style={{
-                          width: Dimensions.get('window').width - 30,
-                          flex: 1,
-                          marginRight: 15,
-                        }}>
-                        <MatchCard item={item.matchData} />
-                      </View>
-                    )}
-                  />
-                ) : null}
-              </View>
-            </>
+              {tagsOfGame.length > 0 ? (
+                <FlatList
+                  data={tagsOfGame}
+                  keyExtractor={(item, index) => index.toString()}
+                  bounces={false}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{paddingHorizontal: 15}}
+                  horizontal
+                  renderItem={({item}) => (
+                    <View
+                      style={{
+                        width: Dimensions.get('window').width - 30,
+                        flex: 1,
+                        marginRight: 15,
+                      }}>
+                      <MatchCard item={item.matchData} />
+                    </View>
+                  )}
+                />
+              ) : null}
+            </View>
           )}
         </View>
-        
+
         <View style={styles.bottomSafeAreaStyle}>
           <TouchableOpacity
             style={styles.onlyMeViewStyle}
@@ -950,18 +970,17 @@ const WritePostScreen = ({navigation, route}) => {
       </KeyboardAvoidingView>
       <CustomModalWrapper
         isVisible={visibleWhoModal}
-        closeModal={() => setVisibleWhoModal(false)}
-        modalType={ModalTypes.style2}
+        closeModal={onCloseModal}
+        modalType={ModalTypes.style1}
+        title={strings.privacySettings}   
         containerStyle={{
           paddingTop: 15,
-          paddingHorizontal: 30,
+          paddingHorizontal: 30, 
         }}
-        ratio={
-          authContext.entity.role === Verbs.entityTypeClub ||
-          authContext.entity.role === Verbs.entityTypeTeam
-            ? 1.7
-            : 1.5
-        }>
+         headerRightButtonText={strings.apply}
+        onRightButtonPress={() => {setVisibleWhoModal(false);
+                                  setPrivacySetting(privacySetting);}}
+        ratio={1.7}>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -988,7 +1007,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     paddingHorizontal: 15,
-    
   },
   profileImage: {
     width: 40,
@@ -1000,7 +1018,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
-    
   },
   tagText: {
     fontSize: 16,
@@ -1039,7 +1056,6 @@ const styles = StyleSheet.create({
       height: -3,
       width: 0,
     },
-    // backgroundColor:'black',
   },
   icon: {
     width: 30,
@@ -1059,7 +1075,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
     marginBottom: 15,
-   
   },
   userTextStyle: {
     fontSize: 16,
@@ -1067,7 +1082,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-    
   },
   locationTextStyle: {
     fontSize: 12,
@@ -1082,7 +1096,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     marginBottom: 15,
-    
   },
   userListContainer: {
     zIndex: 100,
@@ -1090,7 +1103,7 @@ const styles = StyleSheet.create({
     maxHeight: 280,
     width: Dimensions.get('window').width - 30,
     position: 'absolute',
-    left: 15,
+    marginHorizontal: 15,
     top: 0,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 0},

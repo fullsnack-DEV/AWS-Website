@@ -10,7 +10,7 @@ import {getSportName} from '../../utils/sportsActivityUtils';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 
-export default function EventsCard({
+function EventsCard({
   onItemPress = () => {},
   data = [],
   owners,
@@ -48,7 +48,7 @@ export default function EventsCard({
   };
 
   return (
-    <>
+    <View>
       <Pressable style={styles.containerStyle} onPress={onItemPress}>
         <FastImage
           style={styles.imagstyles}
@@ -95,9 +95,7 @@ export default function EventsCard({
                 {location}
               </Text>
             ) : (
-              <Text style={{...styles.onlineText, flex: 1}}>
-                {strings.onlineText}
-              </Text>
+              <Text style={styles.onlineText}>{strings.onlineText}</Text>
             )}
           </Text>
         </View>
@@ -124,7 +122,7 @@ export default function EventsCard({
           </Text>
         </View>
       </Pressable>
-    </>
+    </View>
   );
 }
 
@@ -167,6 +165,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 7,
     width: 305,
+    overflow: 'hidden',
   },
   dateText: {
     fontSize: 12,
@@ -178,7 +177,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.darkYellowColor,
     marginLeft: 10,
-
+    overflow: 'hidden',
     width: 150,
   },
   userimgStyle: {
@@ -198,3 +197,5 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
+
+export default React.memo(EventsCard);

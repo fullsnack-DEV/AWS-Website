@@ -9,7 +9,6 @@ import {
   Image,
   Platform,
   TouchableOpacity,
-
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
@@ -112,13 +111,15 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
 
   useEffect(() => {
     setPhoneNumber(
-      route.params.memberInfo.phone_numbers || [
-        {
-          id: 0,
-          phone_number: {},
-          country_code: countrycode,
-        },
-      ],
+      route.params.memberInfo.phone_numbers.length === 0
+        ? [
+            {
+              id: 0,
+              phone_number: {},
+              country_code: countrycode,
+            },
+          ]
+        : route.params.memberInfo.phone_numbers,
     );
 
     const getAuthEntity = async () => {
@@ -139,7 +140,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     setLocation(route.params.memberInfo?.mail_street_address);
 
     getAuthEntity();
-  }, [route.params.memberInfo, authContext]);
+  }, [route.params.memberInfo, authContext, countrycode]);
 
   const addPhoneNumber = () => {
     const obj = {
@@ -242,6 +243,14 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
     bodyParams.last_updatedBy = `${authContext.user?.full_name}`;
     delete bodyParams.group;
 
+    const hasEmptyPhoneNumber = bodyParams.phone_numbers.some(
+      (entry) => Object.keys(entry.phone_number).length === 0,
+    );
+
+    if (hasEmptyPhoneNumber) {
+      bodyParams.phone_numbers = [];
+    }
+
     patchMember(entity?.uid, memberInfo?.user_id, bodyParams, authContext)
       .then((response) => {
         if (response.status) {
@@ -273,9 +282,7 @@ export default function EditMemberBasicInfoScreen({navigation, route}) {
       marginBottom={2}
       placeholder={strings.selectCode}
       value={item.country_code}
-
       from={!(phoneNumber.length > 1)}
-
       numberValue={item.phone_number}
       onValueChange={(value) => {
         const tempCode = [...phoneNumber];

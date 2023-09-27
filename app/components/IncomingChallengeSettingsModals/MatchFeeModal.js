@@ -46,11 +46,11 @@ const MatchFeeModal = ({
         {getTitle()}
       </Text>
 
-      {/* {entityType !== Verbs.entityTypeReferee && (
+      {entityType !== Verbs.entityTypeReferee && (
         <Text style={styles.matchFeeModalInfoText}>
           {strings.matchFeeModalInfo}
         </Text>
-      )} */}
+      )}
 
       <View
         style={[

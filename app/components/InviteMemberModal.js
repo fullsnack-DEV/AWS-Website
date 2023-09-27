@@ -296,10 +296,8 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
                       selectPlayer(user);
                     }}
                     style={{
-                      borderRadius: 90,
+                      borderRadius: 100,
                       overflow: 'hidden',
-                      height: 45,
-                      width: 45,
                     }}>
                     <GroupIcon
                       imageUrl={user.thumbnail}
@@ -508,6 +506,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginRight: 5,
+    borderRadius: 100,
   },
   inputContainer: {
     flexDirection: 'row',

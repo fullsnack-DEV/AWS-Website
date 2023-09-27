@@ -26,7 +26,6 @@ import fonts from '../../../Constants/Fonts';
 import TCLabel from '../../../components/TCLabel';
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import uploadImages from '../../../utils/imageAction';
-import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import LocationModal from '../../../components/LocationModal/LocationModal';
 import ScreenHeader from '../../../components/ScreenHeader';
 import BottomSheet from '../../../components/modals/BottomSheet';
@@ -174,23 +173,8 @@ export default function PersonalInformationScreen({navigation, route}) {
     updateUserProfile(params, authContext)
       .then(async (response) => {
         await Utility.setAuthContextData(response.payload, authContext);
-        const accountType = getQBAccountType(response?.payload?.entity_type);
-        QBupdateUser(
-          response?.payload?.user_id,
-          response?.payload,
-          accountType,
-          response.payload,
-          authContext,
-        )
-          .then(() => {
-            setloading(false);
-            navigation.goBack();
-          })
-          .catch((error) => {
-            console.log('QB error : ', error);
-            setloading(false);
-            navigation.goBack();
-          });
+        setloading(false);
+        navigation.goBack();
       })
       .catch((e) => {
         setTimeout(() => {

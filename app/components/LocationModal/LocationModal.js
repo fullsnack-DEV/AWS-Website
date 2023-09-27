@@ -29,6 +29,7 @@ import {
   searchRegion,
 } from '../../api/External';
 import locationModelStyles from './locationModelStyles';
+import fonts from '../../Constants/Fonts';
 
 function LocationModal({
   visibleLocationModal,
@@ -54,7 +55,7 @@ function LocationModal({
     let apiSearchtocall = '';
     apiSearchtocall = type === 'country' ? searchRegion : searchCityState;
 
-    if (searchText.length >= 3) {
+    if (searchText.length >= 1) {
       apiSearchtocall(searchText)
         .then((response) => {
           setNoData(false);
@@ -302,6 +303,7 @@ function LocationModal({
         animationOutTiming={800}
         backdropTransitionInTiming={300}
         backdropTransitionOutTiming={800}
+        backdropOpacity={0.45}
         style={{
           margin: 0,
         }}>
@@ -343,12 +345,12 @@ function LocationModal({
                 onChangeText={(text) => setSearchText(text)}
               />
             </View>
-
-            {searchText.length < 3 && (
+            {/* 
+            {searchText.length < 3 && searchText.trim().length > 0 && (
               <Text style={locationModelStyles.noDataText}>
                 {strings.enter3CharText}
               </Text>
-            )}
+            )} */}
             {noData &&
               searchText.length === 0 &&
               nearbyCities.length >= 0 &&
@@ -372,7 +374,11 @@ function LocationModal({
               !currentLocation && (
                 <Pressable onPress={() => onSelectNoCurrentLocation()}>
                   <View>
-                    <Text style={locationModelStyles.currentLocationTextStyle}>
+                    <Text
+                      style={[
+                        locationModelStyles.currentLocationTextStyle,
+                        {fontSize: 12, fontFamily: fonts.RRegular},
+                      ]}>
                       {strings.currentLocationText}
                     </Text>
                   </View>

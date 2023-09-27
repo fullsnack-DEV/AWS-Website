@@ -18,9 +18,10 @@ import {
   SafeAreaView,
   ActivityIndicator,
   BackHandler,
+  RefreshControl,
+  Image,
 } from 'react-native';
 
-import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../auth/context';
 import LocationContext from '../../context/LocationContext';
@@ -31,7 +32,7 @@ import {strings} from '../../../Localization/translation';
 import * as Utility from '../../utils';
 import {widthPercentageToDP} from '../../utils';
 import LocalHomeScreenShimmer from '../../components/shimmer/localHome/LocalHomeScreenShimmer';
-import {getUserSettings} from '../../api/Users';
+import {getUserDetails, getUserSettings} from '../../api/Users';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import Verbs from '../../Constants/Verbs';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
@@ -60,6 +61,7 @@ import BottomSheet from '../../components/modals/BottomSheet';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import InviteMemberModal from '../../components/InviteMemberModal';
+import {getGroupDetails} from '../../api/Groups';
 
 const defaultPageSize = 10;
 
@@ -110,6 +112,7 @@ function LocalHomeScreen({navigation, route}) {
   const [visibleSportsModalForTeam, setVisibleSportsModalForTeam] =
     useState(false);
   const [filterData, setFilterData] = useState([]);
+
   const [filterSetting] = useState({
     sort: 1,
     time: 0,
@@ -120,9 +123,77 @@ function LocalHomeScreen({navigation, route}) {
   });
   const [allUserData, setAllUserData] = useState([]);
   const [owners, setOwners] = useState([]);
-  const [sportIconLoader, setSportIconLoader] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [sportIconLoader, setSportIconLoader] = useState(true);
   const [cardLoader, setCardLoader] = useState(false);
   const [showInviteMember, setShowInviteMember] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Top Sport List
+
+  const renderTopSportBar = async () => {
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      return;
+    }
+
+    try {
+      const [userSport] = await Promise.all([
+        authContext.entity.role !== Verbs.entityTypeClub
+          ? getUserDetails(authContext.entity.uid, authContext)
+          : getGroupDetails(authContext.entity.uid, authContext),
+      ]);
+
+      getSportsForHome(
+        userSport,
+        authContext,
+        setSportHandler,
+        sports,
+        setSportIconLoader,
+      );
+      setSportIconLoader(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleRefresh = () => {
+    locationContext.setSelectedLoaction(location);
+    Utility.getStorage('appSetting').then((setting) => {
+      setImageBaseUrl(setting.base_url_sporticon);
+    });
+
+    LocalHomeQuery(
+      location,
+      defaultPageSize,
+      selectedSport,
+      sportType,
+      authContext,
+      setRecentMatch,
+      setUpcomingMatch,
+      setChallengeeMatch,
+      setHiringPlayers,
+      setLookingTeam,
+      setReferees,
+      setScorekeepers,
+      setCardLoader,
+    );
+
+    const getEventdata = async () => {
+      await getEventsAndSlotsList(
+        authContext,
+        setAllUserData,
+        setOwners,
+        filterSetting,
+        selectedOptions,
+        setFilterData,
+        allUserData,
+      );
+    };
+    getEventdata();
+    setSportIconLoader(true);
+    renderTopSportBar();
+    setIsRefreshing(false);
+  };
 
   useEffect(() => {
     const backAction = () => {
@@ -166,7 +237,7 @@ function LocalHomeScreen({navigation, route}) {
       authContext.entity.role === Verbs.entityTypeUser ||
       authContext.entity.role === Verbs.entityTypePlayer
     ) {
-      setSelectedSport(strings.allType);
+      setSelectedSport(strings.all);
       setSportType(strings.allSport);
 
       return;
@@ -175,7 +246,7 @@ function LocalHomeScreen({navigation, route}) {
       authContext.entity.role === Verbs.entityTypeClub &&
       authContext.entity.obj.sports.length !== 1
     ) {
-      setSelectedSport(strings.allType);
+      setSelectedSport(strings.all);
       setSportType(strings.allSport);
     }
   }, [
@@ -199,7 +270,6 @@ function LocalHomeScreen({navigation, route}) {
         authContext,
         setAllUserData,
         setOwners,
-
         filterSetting,
         selectedOptions,
         setFilterData,
@@ -207,7 +277,7 @@ function LocalHomeScreen({navigation, route}) {
       );
     };
     getEventdata();
-  }, [authContext]);
+  }, [authContext, isFocused, isRefreshing]);
 
   useEffect(() => {
     if (isFocused) {
@@ -246,6 +316,7 @@ function LocalHomeScreen({navigation, route}) {
     setScorekeepers,
     isFocused,
     locationContext,
+    isRefreshing,
   ]);
 
   const ITEM_HEIGHT = Verbs.ITEM_HEIGHT;
@@ -304,6 +375,10 @@ function LocalHomeScreen({navigation, route}) {
   ];
 
   useEffect(() => {
+    renderTopSportBar();
+  }, [authContext]);
+
+  useEffect(() => {
     if (isFocused) {
       const handleSetNotificationCount = (count) => {
         setNotificationCount(count);
@@ -347,13 +422,13 @@ function LocalHomeScreen({navigation, route}) {
   }, [route.params?.locationText]);
 
   const setSportHandler = (data) => {
-    const filteredData = data.filter((item) => item.sport !== undefined);
+    // remove duplicate Items
+    const filteredData = data.filter(
+      (item) => item.sport !== undefined && item.sport_type !== undefined,
+    );
+
     setSports(filteredData);
   };
-
-  useEffect(() => {
-    getSportsForHome(authContext, setSportHandler, sports, setSportIconLoader);
-  }, [authContext]);
 
   useEffect(() => {
     const sportArr = getExcludedSportsList(authContext, selectedMenuOptionType);
@@ -362,6 +437,17 @@ function LocalHomeScreen({navigation, route}) {
     );
     setSportsData([...sportArr]);
   }, [authContext, selectedMenuOptionType, visibleSportsModal]);
+
+  const scrollToFirstItem = () => {
+    if (refContainer.current) {
+      refContainer.current.scrollToIndex({index: 0});
+    }
+  };
+
+  // Call the scrollToFirstItem function when data changes
+  useEffect(() => {
+    scrollToFirstItem();
+  }, [settingPopup]);
 
   const editSportName = (line) => {
     const words = line?.split(' ');
@@ -396,18 +482,15 @@ function LocalHomeScreen({navigation, route}) {
     (item) => {
       if (item.sport === strings.allType) {
         return (
-          <FastImage
+          <Image
             source={images.allSportIcon}
-            style={{height: 25, width: 25, marginBottom: 10, marginTop: 5}}
+            style={styles.allSportIconStyle}
           />
         );
       }
       if (item.sport === strings.editType) {
         return (
-          <FastImage
-            source={images.editIconHome}
-            style={{height: 40, width: 40}}
-          />
+          <Image source={images.editIconHome} style={styles.editIconstyel} />
         );
       }
       const sportDetails = getSportDetails(
@@ -418,10 +501,21 @@ function LocalHomeScreen({navigation, route}) {
       const sportImage = sportDetails?.sport_image || '';
 
       return (
-        <FastImage
-          source={{uri: `${image_base_url}${sportImage}`}}
-          style={{height: 40, width: 40}}
-        />
+        <View>
+          {!sportImage.length >= 1 ? (
+            <View style={{paddingHorizontal: 5}}>
+              <ActivityIndicator
+                style={styles.sportIconStyle}
+                color={colors.orangeGradientColor}
+              />
+            </View>
+          ) : (
+            <Image
+              source={{uri: `${image_base_url}${sportImage}`}}
+              style={styles.sportIconStyle}
+            />
+          )}
+        </View>
       );
     },
     [authContext.sports, image_base_url],
@@ -626,42 +720,45 @@ function LocalHomeScreen({navigation, route}) {
   });
 
   const SportList = () => (
-    <FlatList
-      ref={refContainer}
-      style={{
-        height: 74,
-        backgroundColor: colors.whiteColor,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: colors.veryLightGray,
-      }}
-      maxToRenderPerBatch={10}
-      initialNumToRender={10}
-      windowSize={21}
-      horizontal={true}
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-      data={[
-        ...[
+    <>
+      <FlatList
+        ref={refContainer}
+        extraData={settingPopup}
+        style={{
+          height: 74,
+          backgroundColor: colors.whiteColor,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: colors.veryLightGray,
+        }}
+        maxToRenderPerBatch={10}
+        initialNumToRender={10}
+        windowSize={21}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        data={[
+          ...[
+            {
+              sport: strings.allType,
+              sport_type: strings.allType,
+              icon: images.allSportIcon,
+            },
+          ],
+          ...sports.slice(0, 12),
           {
-            sport: strings.allType,
-            sport_type: strings.allType,
-            icon: images.allSportIcon,
+            sport: strings.editType,
+            sport_type: strings.editType,
           },
-        ],
-        ...sports.slice(0, 12),
-        {
-          sport: strings.editType,
-          sport_type: strings.editType,
-        },
-      ]}
-      keyExtractor={keyExtractor}
-      renderItem={SportsListView}
-      getItemLayout={getLayout}
-    />
+        ]}
+        keyExtractor={keyExtractor}
+        renderItem={SportsListView}
+        getItemLayout={getLayout}
+      />
+    </>
   );
 
   const RenderSportsListView = () => {
-    if (authContext.entity.role === Verbs.entityTypeGame) {
+    if (authContext.entity.role === Verbs.entityTypeUser) {
       return SportList();
     }
     if (
@@ -698,15 +795,18 @@ function LocalHomeScreen({navigation, route}) {
     setVisibleSportsModalForClub(val);
   };
 
-  const LocalHeader = useMemo(() => (
-    <LocalHomeHeader
-      setShowSwitchAccountModal={() => setShowSwitchAccountModal(true)}
-      setLocationpopup={() => setLocationPopup(true)}
-      location={location}
-      notificationCount={notificationCount}
-      customSports={customSports}
-    />
-  ));
+  const LocalHeader = useMemo(
+    () => (
+      <LocalHomeHeader
+        setShowSwitchAccountModal={() => setShowSwitchAccountModal(true)}
+        setLocationpopup={() => setLocationPopup(true)}
+        location={location}
+        notificationCount={notificationCount}
+        customSports={customSports}
+      />
+    ),
+    [customSports, location, notificationCount],
+  );
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -722,6 +822,7 @@ function LocalHomeScreen({navigation, route}) {
         <View style={styles.separateLine} testID="local-home-screen" />
 
         {/* sport list  */}
+
         {RenderSportsListView()}
       </View>
 
@@ -784,6 +885,12 @@ function LocalHomeScreen({navigation, route}) {
               />
             )}
             getItemLayout={getItemLayout}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+              />
+            }
           />
         </View>
       )}
@@ -808,7 +915,7 @@ function LocalHomeScreen({navigation, route}) {
               <Text
                 style={[
                   styles.curruentLocationText,
-                  {color: colors.orangeGradientColor},
+                  {color: colors.whiteColor},
                 ]}>
                 {strings.locationTitle}
               </Text>
@@ -850,11 +957,7 @@ function LocalHomeScreen({navigation, route}) {
           }}>
           {selectedLocationOption === 1 ? (
             <View style={styles.backgroundViewSelected}>
-              <Text
-                style={[
-                  styles.myCityText,
-                  {color: colors.orangeGradientColor},
-                ]}>
+              <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
                 {strings.homeCityTitleText}
               </Text>
             </View>
@@ -881,8 +984,7 @@ function LocalHomeScreen({navigation, route}) {
           }}>
           {selectedLocationOption === 2 ? (
             <View style={styles.backgroundViewSelected}>
-              <Text
-                style={[styles.worldText, {color: colors.orangeGradientColor}]}>
+              <Text style={[styles.worldText, {color: colors.whiteColor}]}>
                 {strings.world}
               </Text>
             </View>
@@ -899,22 +1001,25 @@ function LocalHomeScreen({navigation, route}) {
                 onPress={() => {
                   setVisibleLocationModal(true);
                 }}
-                style={[styles.backgroundViewSelected, {alignItems: 'center'}]}>
-                <Text
-                  style={[
-                    styles.worldText,
-                    {color: colors.orangeGradientColor},
-                  ]}>
+                style={[
+                  styles.backgroundViewSelected,
+                  {
+                    alignItems: 'center',
+                    borderRadius: 5,
+                  },
+                ]}>
+                <Text style={[styles.worldText, {color: colors.whiteColor}]}>
                   {location}
                 </Text>
 
-                <Text style={styles.chnageWordText}>
+                <Text
+                  style={[styles.chnageWordText, {color: colors.whiteColor}]}>
                   {strings.changecapital}
                 </Text>
               </Pressable>
             ) : (
               <Pressable
-                style={styles.backgroundView}
+                style={[styles.backgroundView, {borderRadius: 5}]}
                 onPress={() => {
                   setVisibleLocationModal(true);
                 }}>
@@ -1030,34 +1135,20 @@ const styles = StyleSheet.create({
 
   backgroundViewSelected: {
     // alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 8,
-    borderWidth: 3,
-    borderColor: colors.orangeGradientColor,
-    elevation: 5,
+    backgroundColor: colors.reservationAmountColor,
     flexDirection: 'row',
     height: 40,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 5},
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    // width: widthPercentageToDP('86%'),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
+    borderRadius: 5,
   },
   backgroundView: {
     // alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 8,
-    elevation: 5,
+    backgroundColor: colors.lightGrey,
+    borderRadius: 5,
     flexDirection: 'row',
     height: 40,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 5},
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    // width: widthPercentageToDP('86%'),
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
@@ -1091,19 +1182,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     fontSize: 15,
     fontFamily: fonts.RRegular,
-    backgroundColor: colors.offwhite,
-    borderRadius: 25,
+    backgroundColor: 'red',
+    borderRadius: 5,
     flexDirection: 'row',
     height: 45,
     paddingLeft: 17,
     paddingRight: 5,
     width: widthPercentageToDP('86%'),
-    shadowColor: colors.grayColor,
-    shadowOffset: {width: 0, height: 3},
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
+
     alignSelf: 'center',
-    elevation: 2,
+
     marginBottom: 15,
   },
   searchText: {
@@ -1116,10 +1204,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.veryLightGray,
   },
-  imgloaderStyle: {
+
+  iconStyles: {
+    height: 40,
+    width: 40,
+  },
+  allSportIconStyle: {
     height: 25,
     width: 25,
     marginBottom: 10,
     marginTop: 5,
+  },
+  editIconstyel: {
+    height: 40,
+    width: 40,
+  },
+  sportIconStyle: {
+    height: 40,
+    width: 40,
   },
 });

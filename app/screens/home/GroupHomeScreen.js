@@ -49,6 +49,9 @@ import {getCalendarIndex, getGameIndex} from '../../api/elasticSearch';
 import {getSetting} from '../challenge/manageChallenge/settingUtility';
 import fonts from '../../Constants/Fonts';
 import TCGameCard from '../../components/TCGameCard';
+import GroupMembersModal from './GroupMembersModal';
+import FollowFollowingModal from './FollowFollowingModal';
+import JoinButtonModal from './JoinButtomModal';
 
 // import BottomSheet from '../../components/modals/BottomSheet';
 
@@ -61,6 +64,8 @@ const GroupHomeScreen = ({
   isAccountDeactivated = false,
   groupData = {},
   restrictReturn = false,
+  pulltoRefresh = () => {},
+  routeParams = {},
 }) => {
   const authContext = useContext(AuthContext);
 
@@ -86,6 +91,12 @@ const GroupHomeScreen = ({
   const [refereeSettingObject, setRefereeSettingObject] = useState();
   const [scorekeeperSettingObject, setScorekeeperSettingObject] = useState();
 
+  const [refreshMemberModal, setRefreshMemberModal] = useState(false);
+  const [isInvited, setIsInvited] = useState(false);
+
+  const bottomSheetRef = useRef(null);
+  const followModalRef = useRef(null);
+  const JoinButtonModalRef = useRef(null);
   const backButtonHandler = useCallback(() => {
     if (route.params.comeFrom === Verbs.INCOMING_CHALLENGE_SCREEN) {
       navigation.navigate('Account', {
@@ -231,23 +242,27 @@ const GroupHomeScreen = ({
         sportList={authContext.sports}
         isAdmin={isAdmin}
         onClickMembers={() => {
-          navigation.navigate('News Feed', {
-            screen: 'GroupMembersScreen',
-            params: {
-              groupObj: groupData,
-              groupID: groupId,
-              fromProfile: true,
-              showBackArrow: true,
-              comeFrom: 'HomeScreen',
-              routeParams: {
-                uid: groupId,
-                role: groupData.entity_type,
+          if (isAdmin) {
+            navigation.navigate('News Feed', {
+              screen: 'GroupMembersScreen',
+              params: {
+                groupObj: groupData,
+                groupID: groupId,
+                fromProfile: true,
+                showBackArrow: true,
+                comeFrom: 'HomeScreen',
+                routeParams: {
+                  uid: groupId,
+                  role: groupData.entity_type,
+                },
               },
-            },
-          });
+            });
+          } else {
+            bottomSheetRef.current?.present();
+          }
         }}
         onClickFollowers={() => {
-          navigation.navigate('GroupFollowersScreen', {groupId});
+          followModalRef.current?.present();
         }}
       />
       <MemberList
@@ -327,6 +342,7 @@ const GroupHomeScreen = ({
     setLoading(true);
     followGroup(params, groupId, authContext)
       .then(() => {
+        setRefreshMemberModal(true);
         const obj = {
           ...currentUserData,
           is_following: true,
@@ -352,6 +368,7 @@ const GroupHomeScreen = ({
     setLoading(true);
     unfollowGroup(params, groupId, authContext)
       .then(() => {
+        setRefreshMemberModal(true);
         const obj = {
           ...currentUserData,
           is_following: false,
@@ -666,11 +683,19 @@ const GroupHomeScreen = ({
     setCurrentUserData(obj);
   };
 
-  const userJoinGroup = () => {
+  const userJoinGroup = (isMemberAlreadyExists = false) => {
     setLoading(true);
+
     const params = {};
+    if (isMemberAlreadyExists) {
+      params.is_confirm = true;
+    }
     joinTeam(params, groupId, authContext)
       .then((response) => {
+        setRefreshMemberModal(true);
+
+        JoinButtonModalRef.current.close();
+
         const inviteRequest = response.payload.data?.action
           ? {...response.payload.data}
           : {
@@ -692,10 +717,7 @@ const GroupHomeScreen = ({
             ErrorCodes.MEMBERALREADYINVITEERRORCODE
           ) {
             setLoading(false);
-            // Alert.alert(
-            //   strings.alertmessagetitle,
-            //   format(strings.alertTitle2, groupData.group_name),
-            // );
+
             Alert.alert('', response.payload.user_message, [
               {text: strings.okTitleText},
             ]);
@@ -704,12 +726,17 @@ const GroupHomeScreen = ({
             ErrorCodes.MEMBERALREADYREQUESTERRORCODE
           ) {
             setLoading(false);
-            // Alert.alert(
-            //   strings.alertmessagetitle,
-            //   format(strings.alertTitle2, groupData.group_name),
-            // );
+
             Alert.alert('', response.payload.user_message, [
               {text: strings.okTitleText},
+            ]);
+          } else if (
+            response.payload.error_code === ErrorCodes.MEMBEREXISTERRORCODE
+          ) {
+            setLoading(false);
+            Alert.alert('', response.payload.user_message, [
+              {text: strings.cancel},
+              {text: strings.join, onPress: () => userJoinGroup(true)},
             ]);
           } else {
             setLoading(false);
@@ -754,6 +781,7 @@ const GroupHomeScreen = ({
       .then(() => {
         setCurrentGroupData(Verbs.leaveVerb);
         setLoading(false);
+        setRefreshMemberModal(true);
       })
       .catch((error) => {
         setLoading(false);
@@ -825,39 +853,57 @@ const GroupHomeScreen = ({
     return strings.alertTitle1;
   };
 
-  const onAccept = (requestId) => {
+  const onAccept = (requestId, isMemberAlreadyExists = false) => {
     setLoading(true);
-    acceptRequest({}, requestId, authContext)
-      .then(() => {
-        // Succefully join case
-        const group = {
-          ...currentUserData,
-          is_joined: true,
-        };
+    const params = {};
+    if (isMemberAlreadyExists) {
+      params.is_confirm = true;
+    }
+    acceptRequest(params, requestId, authContext)
+      .then((response) => {
+        setRefreshMemberModal(true);
         if (
-          currentUserData?.entity_type === Verbs.entityTypeClub &&
-          authContext.entity.role === Verbs.entityTypeTeam
+          response.payload?.error_code &&
+          response.payload?.error_code === ErrorCodes.MEMBEREXISTERRORCODE
         ) {
-          group.joined_teams = [...group.joined_teams, authContext.entity.obj];
+          setLoading(false);
+          Alert.alert('', response.payload.user_message, [
+            {text: strings.cancel},
+            {text: strings.join, onPress: () => onAccept(requestId, true)},
+          ]);
+        } else {
+          const group = {
+            ...currentUserData,
+            is_joined: true,
+          };
+          if (
+            currentUserData?.entity_type === Verbs.entityTypeClub &&
+            authContext.entity.role === Verbs.entityTypeTeam
+          ) {
+            group.joined_teams = [
+              ...group.joined_teams,
+              authContext.entity.obj,
+            ];
+          }
+          if (
+            currentUserData?.entity_type === Verbs.entityTypeTeam &&
+            authContext.entity.role === Verbs.entityTypeClub
+          ) {
+            group.parent_groups = [
+              ...group.parent_groups,
+              authContext.entity.uid,
+            ];
+          }
+          setCurrentUserData(group);
+          setLoading(false);
+          setTimeout(() => {
+            Alert.alert(
+              strings.alertmessagetitle,
+              format(getAlertTitle(), groupData.group_name),
+              [{text: strings.okTitleText}],
+            );
+          }, 10);
         }
-        if (
-          currentUserData?.entity_type === Verbs.entityTypeTeam &&
-          authContext.entity.role === Verbs.entityTypeClub
-        ) {
-          group.parent_groups = [
-            ...group.parent_groups,
-            authContext.entity.uid,
-          ];
-        }
-        setCurrentUserData(group);
-        setLoading(false);
-        setTimeout(() => {
-          Alert.alert(
-            strings.alertmessagetitle,
-            format(getAlertTitle(), groupData.group_name),
-            [{text: strings.okTitleText}],
-          );
-        }, 10);
       })
       .catch((error) => {
         setLoading(false);
@@ -1304,7 +1350,8 @@ const GroupHomeScreen = ({
         break;
 
       case strings.join:
-        userJoinGroup();
+        JoinButtonModalRef.current.present();
+        // userJoinGroup();
         break;
 
       case strings.following:
@@ -1335,7 +1382,11 @@ const GroupHomeScreen = ({
       case strings.acceptInvite:
       case strings.acceptRequest:
       case strings.acceptRequet:
-        onAccept(currentUserData.invite_request.activity_id);
+        Alert.alert('in Request accept');
+        setIsInvited(true);
+
+        JoinButtonModalRef.current.present();
+        // onAccept(currentUserData.invite_request.activity_id);
         break;
 
       case strings.declineInvite:
@@ -1379,6 +1430,11 @@ const GroupHomeScreen = ({
             isAdmin={route.params.uid === authContext.entity.uid}
             homeFeedHeaderComponent={ListHeader}
             currentTab={0}
+            pulltoRefresh={() => {
+              setRefreshMemberModal(true);
+              pulltoRefresh();
+            }}
+            routeParams={routeParams}
           />
         </View>
 
@@ -1437,6 +1493,29 @@ const GroupHomeScreen = ({
           flatListProps={flatListScorekeeperProps}
         />
       </Portal>
+
+      <GroupMembersModal
+        bottomSheetRef={bottomSheetRef}
+        visibleMemberModal={refreshMemberModal}
+        closeModal={() => setRefreshMemberModal(false)}
+        groupID={groupId}
+      />
+
+      <FollowFollowingModal
+        followModalRef={followModalRef}
+        visibleMemberModal={refreshMemberModal}
+        closeModal={() => setRefreshMemberModal(false)}
+        groupID={groupId}
+      />
+      <JoinButtonModal
+        JoinButtonModalRef={JoinButtonModalRef}
+        currentUserData={currentUserData}
+        onJoinPress={() => userJoinGroup()}
+        onAcceptPress={() =>
+          onAccept(currentUserData.invite_request.activity_id)
+        }
+        isInvited={isInvited}
+      />
     </>
   );
 };

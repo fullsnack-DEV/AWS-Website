@@ -183,6 +183,7 @@ export default function EditGroupProfileScreen({navigation}) {
     patchGroup(paramGroupID, userProfile, authContext)
       .then(async (response) => {
         await setAuthContextData(response.payload, authContext);
+
         setloading(false);
         navigation.goBack();
       })

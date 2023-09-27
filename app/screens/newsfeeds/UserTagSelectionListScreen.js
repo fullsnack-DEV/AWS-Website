@@ -15,6 +15,9 @@ import {
   SafeAreaView,
   TextInput,
   ScrollView,
+  Pressable,
+  Image,
+  BackHandler,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import _ from 'lodash';
@@ -61,76 +64,105 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const intervalRef = useRef();
- const scrollRef = useRef();
+  const scrollRef = useRef();
 
-  const fetchData = useCallback(() => {
-    const query = {
-      size: 1000,
-      query: {
-        bool: {
-          must: [],
-        },
-      },
-    };
-
-    const gamesquery = {
-      size: 1000,
-      query: {
-        bool: {
-          should: [
-            {
-              match: {
-                city: {query: authContext.entity.obj.city, boost: 4},
-              },
-            },
-            {
-              match: {
-                country: {
-                  query: authContext.entity.obj.country,
-                  boost: 1,
-                },
-              },
-            },
-          ],
-        },
-      },
-      sort: [{actual_enddatetime: 'desc'}],
-    };
-
-    if (authContext.entity.obj.state) {
-      gamesquery.query.bool.should.push({
-        match: {
-          state: {query: authContext.entity.obj.state, boost: 3},
-        },
-      });
-    } else if (authContext.entity.obj.state_abbr) {
-      gamesquery.query.bool.should.push({
-        match: {
-          state_abbr: {
-            query: authContext.entity.obj.state_abbr,
-            boost: 2,
+  const fetchData = useCallback(
+    (searchValue = '') => {
+      const usersQuery = {
+        size: 1000,
+        query: {
+          bool: {
+            must: [],
           },
         },
-      });
-    }
-    const promiseArr = [
-      getUserIndex(query),
-      getGroupIndex(query),
-      getGameIndex(gamesquery),
-    ];
-    setLoading(true);
-    Promise.all(promiseArr)
-      .then((response) => {
-        setUserData(response[0]);
-        setGroupData(response[1]);
-        setGamesData(response[2]);
-        setLoading(false);
-      })
-      .catch((err) => {
-        Alert.alert(strings.alertmessagetitle, err.message);
-        setLoading(false);
-      });
-  }, [authContext.entity.obj]);
+      };
+      const groupsQuery = {
+        size: 1000,
+        query: {
+          bool: {
+            must: [],
+          },
+        },
+      };
+
+      const gamesquery = {
+        size: 1000,
+        query: {
+          bool: {
+            should: [
+              {
+                match: {
+                  city: {query: authContext.entity.obj.city, boost: 4},
+                },
+              },
+              {
+                match: {
+                  country: {
+                    query: authContext.entity.obj.country,
+                    boost: 1,
+                  },
+                },
+              },
+            ],
+          },
+        },
+        // sort: [{actual_enddatetime: 'desc'}],
+      };
+
+      if (authContext.entity.obj.state) {
+        gamesquery.query.bool.should.push({
+          match: {
+            state: {query: authContext.entity.obj.state, boost: 3},
+          },
+        });
+      } else if (authContext.entity.obj.state_abbr) {
+        gamesquery.query.bool.should.push({
+          match: {
+            state_abbr: {
+              query: authContext.entity.obj.state_abbr,
+              boost: 2,
+            },
+          },
+        });
+      }
+
+      if (searchValue) {
+        // query_string: {
+        //   query: `${searchValue.toLowerCase()}*`,
+        //   fields: ['full_name', 'group_name'],
+        // },
+        usersQuery.query.bool.must.push({
+          match_phrase_prefix: {
+            full_name: `*${searchValue.toLowerCase()}*`,
+          },
+        });
+        groupsQuery.query.bool.must.push({
+          match_phrase_prefix: {
+            group_name: `*${searchValue.toLowerCase()}*`,
+          },
+        });
+      }
+
+      const promiseArr = [
+        getUserIndex(usersQuery),
+        getGroupIndex(groupsQuery),
+        getGameIndex(gamesquery),
+      ];
+      setLoading(true);
+      Promise.all(promiseArr)
+        .then((response) => {
+          setUserData(response[0]);
+          setGroupData(response[1]);
+          setGamesData(response[2]);
+          setLoading(false);
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+          setLoading(false);
+        });
+    },
+    [authContext.entity.obj],
+  );
 
   useEffect(() => {
     if (isFocused) {
@@ -149,22 +181,6 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       setSeletedEntity([...route.params.tagsOfEntity]);
     }
   }, [isFocused, route.params.tagsOfEntity]);
-
-  const filterData = (searchValue = '') => {
-    if (!searchValue) {
-      fetchData();
-    } else {
-      const userList = userData.filter((item) =>
-        item.full_name.toLowerCase().includes(searchValue.toLowerCase()),
-      );
-      const groupList = groupData.filter((item) =>
-        item.group_name.toLowerCase().includes(searchValue.toLowerCase()),
-      );
-
-      setUserData([...userList]);
-      setGroupData([...groupList]);
-    }
-  };
 
   const onSelectMatch = useCallback(
     (gameItem) => {
@@ -195,10 +211,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
             ]}
             onPress={() => {
               setCurrentTab(tab);
-              if (searchText) {
-                fetchData();
-              }
-              setSearchText('');
+              fetchData(searchText);
             }}>
             <Text
               style={[
@@ -266,9 +279,9 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         data.entity_type === Verbs.entityTypePlayer ||
         data.entity_type === Verbs.entityTypeUser
       ) {
-        obj = list.find((item) => item.user_id === data.user_id);
+        obj = list.find((item) => item.entity_id === data.user_id);
       } else {
-        obj = list.find((item) => item.group_id === data.group_id);
+        obj = list.find((item) => item.entity_id === data.group_id);
       }
 
       if (obj) {
@@ -276,9 +289,9 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           data.entity_type === Verbs.entityTypePlayer ||
           data.entity_type === Verbs.entityTypeUser
         ) {
-          newList = newList.filter((item) => item.user_id !== data.user_id);
+          newList = newList.filter((item) => item.entity_id !== data.user_id);
         } else {
-          newList = newList.filter((item) => item.group_id !== data.group_id);
+          newList = newList.filter((item) => item.entity_id !== data.group_id);
         }
       } else {
         const entity_data = getTaggedEntityData({}, data);
@@ -352,6 +365,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                 navigation.navigate('HomeScreen', {
                   uid: item.user_id ?? item.group_id,
                   role: item.entity_type,
+                  comeFrom: 'UserTagSelectionListScreen',
+                  routeParams: {...route.params, tagsOfEntity: seletedEntity},
                 });
               }}
               entityId={item.user_id ?? item.group_id}
@@ -390,6 +405,25 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       />
     ) : null;
 
+  useEffect(() => {
+    clearTimeout(intervalRef.current);
+    intervalRef.current = setTimeout(() => {
+      fetchData(searchText);
+    }, 300);
+  }, [searchText, fetchData]);
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [navigation]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -408,20 +442,22 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           })
         }
       />
-
-      <TextInput
-        placeholder={strings.searchText}
-        placeholderTextColor={colors.userPostTimeColor}
-        style={styles.inputField}
-        onChangeText={(text) => {
-          setSearchText(text);
-          clearTimeout(intervalRef.current);
-          intervalRef.current = setTimeout(() => {
-            filterData(text);
-          }, 1500);
-        }}
-        value={searchText}
-      />
+      <Pressable style={styles.inputContainer}>
+        <TextInput
+          placeholder={strings.searchText}
+          placeholderTextColor={colors.userPostTimeColor}
+          style={styles.inputField}
+          onChangeText={(text) => setSearchText(text)}
+          value={searchText}
+        />
+        <Pressable
+          onPress={() => {
+            clearTimeout(intervalRef.current);
+            setSearchText('');
+          }}>
+          <Image source={images.closeRound} style={{width: 15, height: 15}} />
+        </Pressable>
+      </Pressable>
       <View>
         <ScrollView
           horizontal
@@ -433,9 +469,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
             paddingRight: 15,
           }}
           onContentSizeChange={() => {
-          scrollRef.current.scrollToEnd({animated: true});
-        }}
-          >
+            scrollRef.current.scrollToEnd({animated: true});
+          }}>
           <View style={styles.scrollStyle}>
             {renderSelectedEntity()}
             {renderSelectedMatchList()}
@@ -450,15 +485,21 @@ export default function UserTagSelectionListScreen({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
-  inputField: {
+  inputContainer: {
     height: 40,
     margin: 15,
-    fontSize: 16,
     borderRadius: 25,
     paddingHorizontal: 15,
+    backgroundColor: colors.textFieldBackground,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  inputField: {
+    flex: 1,
+    fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
-    backgroundColor: colors.textFieldBackground,
   },
   row: {
     flexDirection: 'row',
@@ -488,9 +529,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBlack,
   },
   sperateLine: {
-    height:1,
+    height: 1,
     marginVertical: 15,
-    backgroundColor:colors.grayBackgroundColor,
+    backgroundColor: colors.grayBackgroundColor,
   },
   noDataText: {
     fontSize: 16,

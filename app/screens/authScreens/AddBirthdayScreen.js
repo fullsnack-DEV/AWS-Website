@@ -122,7 +122,7 @@ export default function AddBirthdayScreen({navigation, route}) {
           popover={
             <Text
               style={{
-                color: colors.themeColor,
+                color: colors.signUpTextColor,
                 fontSize: 14,
                 fontFamily: fonts.RRegular,
                 paddingHorizontal: 15,

@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {TapGestureHandler} from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import {
@@ -15,9 +15,11 @@ const CustomMessageActionListItem = ({action, actionType, ...rest}) => {
     return (
       <TapGestureHandler onHandlerStateChange={onTap}>
         <Animated.View style={[styles.container, {marginHorizontal: 15}]}>
-          <Text style={[styles.label, {color: colors.blueColorCard}]}>
-            {rest.title}
-          </Text>
+          <TouchableOpacity>
+            <Text style={[styles.label, {color: colors.blueColorCard}]}>
+              {rest.title}
+            </Text>
+          </TouchableOpacity>
         </Animated.View>
       </TapGestureHandler>
     );
@@ -27,13 +29,15 @@ const CustomMessageActionListItem = ({action, actionType, ...rest}) => {
     return (
       <TapGestureHandler onHandlerStateChange={onTap}>
         <Animated.View style={styles.container}>
-          <Text
-            style={[
-              styles.label,
-              {color: colors.redColorCard, marginHorizontal: 15},
-            ]}>
-            {rest.title}
-          </Text>
+          <TouchableOpacity>
+            <Text
+              style={[
+                styles.label,
+                {color: colors.redColorCard, marginHorizontal: 15},
+              ]}>
+              {rest.title}
+            </Text>
+          </TouchableOpacity>
         </Animated.View>
       </TapGestureHandler>
     );

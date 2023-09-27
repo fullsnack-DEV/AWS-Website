@@ -1,5 +1,3 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable array-callback-return */
 import React, {
   useContext,
   useCallback,
@@ -28,6 +26,8 @@ import fonts from '../../Constants/Fonts';
 import {getUserDetails, sportActivate} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
 import ActivityLoader from '../loader/ActivityLoader';
+import ScreenHeader from '../ScreenHeader';
+import images from '../../Constants/ImagePath';
 
 let image_url = '';
 
@@ -40,10 +40,8 @@ export default function DeactivatedSportsListScreen({navigation}) {
   const [userObject, setUserObject] = useState();
 
   const authContext = useContext(AuthContext);
-  console.log('authContext', authContext.entity.obj);
 
   Utility.getStorage('appSetting').then((setting) => {
-    console.log('APPSETTING:=', setting);
     image_url = setting.base_url_sporticon;
   });
 
@@ -55,7 +53,6 @@ export default function DeactivatedSportsListScreen({navigation}) {
         .then((response) => {
           setloading(false);
           setUserObject(response.payload);
-          console.log('response====>', response.payload);
         })
         .catch((e) => {
           setloading(false);
@@ -76,7 +73,6 @@ export default function DeactivatedSportsListScreen({navigation}) {
     };
     sportActivate(body, authContext)
       .then(async (response) => {
-        console.log('deactivate sport ', response);
         setloading(false);
         const entity = authContext.entity;
         entity.auth.user = response.payload;
@@ -92,13 +88,8 @@ export default function DeactivatedSportsListScreen({navigation}) {
       });
   };
 
-  const sportsView = useCallback(({item}) => {
-    console.log(
-      'image_url:',
-      image_url,
-      Utility.getSportImage(item.sport, item.type, authContext),
-    );
-    return (
+  const sportsView = useCallback(
+    ({item}) => (
       <View style={styles.sportView}>
         <LinearGradient
           colors={[colors.yellowColor, colors.orangeGradientColor]}
@@ -132,8 +123,10 @@ export default function DeactivatedSportsListScreen({navigation}) {
           </TouchableOpacity>
         </View>
       </View>
-    );
-  }, []);
+    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activateSport],
+  );
 
   const refereeSportsView = useCallback(
     ({item}) => (
@@ -170,7 +163,8 @@ export default function DeactivatedSportsListScreen({navigation}) {
         </View>
       </View>
     ),
-    [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activateSport],
   );
 
   const scorekeeperSportsView = useCallback(
@@ -208,20 +202,20 @@ export default function DeactivatedSportsListScreen({navigation}) {
         </View>
       </View>
     ),
-    [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activateSport],
   );
 
   const noDataView = (text) => (
     <Text
       style={{
         color: colors.userPostTimeColor,
-        fontFamily: fonts.RLight,
+        fontFamily: fonts.RRegular,
         fontSize: 16,
-        marginTop: 15,
-
-        textAlign: 'center',
-        alignSelf: 'center',
-        justifyContent: 'center',
+        lineHeight: 24,
+        marginLeft: 27,
+        marginTop: 10,
+        marginBottom: 15,
       }}>
       {text}
     </Text>
@@ -229,10 +223,16 @@ export default function DeactivatedSportsListScreen({navigation}) {
 
   return (
     <ScrollView>
+      <ScreenHeader
+        title={strings.deactivatedSportsActivities}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        rightIcon1={images.chat3Dot}
+      />
       <ActivityLoader visible={loading} />
       <View>
         <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>Playing</Text>
+          <Text style={styles.listTitle}>{strings.playingSportList}</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
             data={userObject?.registered_sports
@@ -245,7 +245,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
         </View>
 
         <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>Refereeing</Text>
+          <Text style={styles.listTitle}>{strings.refereeingSportList}</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
             data={userObject?.referee_data
@@ -258,7 +258,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
         </View>
 
         <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>Scorekeeping</Text>
+          <Text style={styles.listTitle}>{strings.scoreKeepingSportList}</Text>
           <FlatList
             showsHorizontalScrollIndicator={false}
             data={userObject?.scorekeeper_data
@@ -310,13 +310,14 @@ export default function DeactivatedSportsListScreen({navigation}) {
 }
 const styles = StyleSheet.create({
   listTitle: {
-    fontFamily: fonts.RRegular,
-    fontSize: 20,
+    marginTop: 20,
+    fontFamily: fonts.RBold,
+    fontSize: 16,
     color: colors.lightBlackColor,
-    marginBottom: 15,
+    lineHeight: 24,
   },
   listContainer: {
-    margin: 15,
+    marginHorizontal: 15,
   },
   sportView: {
     flexDirection: 'row',

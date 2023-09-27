@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, TouchableWithoutFeedback, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
@@ -15,7 +15,7 @@ export default function TCMessageButton({
   ...props
 }) {
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
+    <TouchableOpacity onPress={onPress}>
       <View
         style={[
           styles.buttonView,
@@ -24,7 +24,7 @@ export default function TCMessageButton({
         ]}>
         <Text style={[styles.buttonTitle, {color}, styletext]}>{title}</Text>
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 }
 

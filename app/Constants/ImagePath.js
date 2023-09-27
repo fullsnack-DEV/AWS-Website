@@ -14,7 +14,7 @@ const images = {
   searchUser: require('../assets/images/searchUser.png'),
   profilePlaceHolder: require('../assets/images/profileplaceholder.png'),
   dummyPhoto: require('../assets/images/dummy_photo.png'),
-  searchLocation: require('../assets/images/ic_search_orange.png'),
+  searchLocation: require('../assets/images/SearchOrangeIcon.png'),
 
   archerySport: require('../assets/images/ic_archery.png'),
   bandySport: require('../assets/images/ic_Bandy.png'),
@@ -445,7 +445,10 @@ const images = {
   availableChallenge: require('../assets/images/available_challenge.png'),
   blockedChallenge: require('../assets/images/blocked_challenge.png'),
   backgroudPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
-  backgroundPlaceholder: require('../assets/images/backgroudPlaceholder.png'),
+  backgroudPlaceholder1: require('../assets/images/backgroudPlaceholder1.png'),
+  backgroudFullImage: require('../assets/images/backgroundFullImage.png'),
+  backgroudFullImage1: require('../assets/images/backgroundFullImage1.png'),
+
   moreIcon: require('../assets/images/moreIcon.png'),
 
   downloadImage: require('../assets/images/download_icon.png'),
@@ -556,6 +559,7 @@ const images = {
   autoChannelBadge: require('../assets/images/auto_channel_badge.png'),
   newchatIcon: require('../assets/images/newchaticon.png'),
   allsportlogo: require('../assets/images/allsportinworld.png'),
+  newGroupTabIcon: require('../assets/images/groupTabIcon.png'),
   replyCancelImage: require('../assets/images/replyCancelImage.png'),
 };
 

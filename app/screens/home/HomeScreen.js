@@ -69,8 +69,8 @@ const HomeScreen = ({navigation, route}) => {
     });
   }, [navigation]);
 
-  const getUserData = (uid, admin) => {
-    setLoading(true);
+  const getUserData = (uid, admin, fromRefresh) => {
+    setLoading(!fromRefresh);
 
     getUserDetails(uid, authContext, !admin)
       .then((res1) => {
@@ -97,6 +97,7 @@ const HomeScreen = ({navigation, route}) => {
           };
 
           setCurrentUserData(data);
+
           setLoading(false);
         });
       })
@@ -109,8 +110,8 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
-  const fetchGroupDetails = (userId, role, admin) => {
-    setLoading(true);
+  const fetchGroupDetails = (userId, role, admin, fromRefresh = false) => {
+    setLoading(!fromRefresh);
 
     const promises = [
       getGroupDetails(userId, authContext, !admin),
@@ -152,7 +153,13 @@ const HomeScreen = ({navigation, route}) => {
     if (role === Verbs.entityTypeClub || role === Verbs.entityTypeTeam) {
       fetchGroupDetails(uid, role, admin);
     }
-  }, [authContext.entity, route.params.role, route.params.uid]);
+  }, [
+    authContext.entity,
+    route.params.role,
+    route.params.uid,
+    route.params?.comeFrom,
+    isFocused,
+  ]);
 
   useEffect(() => {
     if (isFocused && route.params?.isEntityCreated && route.params?.entityObj) {
@@ -242,6 +249,17 @@ const HomeScreen = ({navigation, route}) => {
           pointEvent={pointEvent}
           isAccountDeactivated={authContext.isAccountDeactivated}
           userData={currentUserData}
+          pulltoRefresh={() => {
+            const loginEntity = authContext.entity;
+
+            const uid = route.params.uid ?? loginEntity.uid;
+
+            const admin = loginEntity.uid === uid;
+
+            const fromRefresh = true;
+            getUserData(uid, admin, fromRefresh);
+          }}
+          routeParams={route.params}
         />
       );
     }
@@ -260,6 +278,17 @@ const HomeScreen = ({navigation, route}) => {
           isAccountDeactivated={authContext.isAccountDeactivated}
           groupData={currentUserData}
           restrictReturn={route.params?.restrictReturn}
+          pulltoRefresh={() => {
+            const loginEntity = authContext.entity;
+
+            const uid = route.params.uid ?? loginEntity.uid;
+
+            const admin = loginEntity.uid === uid;
+            const role = route.params.role ?? '';
+            const fromRefresh = true;
+            fetchGroupDetails(uid, role, admin, fromRefresh);
+          }}
+          routeParams={route.params}
         />
       );
     }
@@ -367,10 +396,22 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const handleBackPress = useCallback(() => {
-    if (route.params?.comeFrom === 'IncomingChallengeSettings') {
+    if (
+      route.params?.comeFrom === 'IncomingChallengeSettings' ||
+      route.params?.comeFrom === 'IncomingChallengeScreen'
+    ) {
       navigation.navigate('AccountScreen');
     } else if (route.params?.comeFrom === 'EntitySearchScreen') {
       navigation.push('EntitySearchScreen');
+    } else if (route.params?.comeFrom === 'MessageChatScreen') {
+      navigation.navigate('Message', {
+        screen: 'MessageChatScreen',
+        params: {channel: route.params.routeParams},
+      });
+    } else if (route.params?.comeFrom) {
+      navigation.navigate(route.params.comeFrom, {
+        ...route.params.routeParams,
+      });
     } else if (route.params?.isEntityCreated) {
       navigation.pop(4);
     } else {
@@ -405,9 +446,11 @@ const HomeScreen = ({navigation, route}) => {
               alignItems: 'center',
             }}>
             <View>
-              <Text style={styles.title} numberOfLines={1}>
-                {currentUserData.full_name ?? currentUserData.group_name}
-              </Text>
+              {!loading && (
+                <Text style={styles.title} numberOfLines={1}>
+                  {currentUserData.full_name ?? currentUserData.group_name}
+                </Text>
+              )}
             </View>
             {isAdmin ? (
               <Pressable
@@ -489,7 +532,7 @@ const HomeScreen = ({navigation, route}) => {
             sportType={
               authContext.entity.role === Verbs.entityTypeTeam
                 ? route.params.entityObj?.setting?.sport
-                : route.params.entityObj?.sports?.[0]?.sport
+                : Verbs.sportTypeSingle
             }
             searchTeam={(filters) => {
               const teamData = getDataForNextScreen(

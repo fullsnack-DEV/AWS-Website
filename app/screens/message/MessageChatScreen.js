@@ -51,9 +51,10 @@ import CustomInput from './components/CustomInput';
 import CustomAutoCompleteSuggestionsList from './components/CustomAutoCompleteSuggestionsList';
 import CustomReplyComponent from './components/CustomReplyComponent';
 import CustomReplyInputPreview from './components/CustomReplyInputPreview';
-import CustomAvatar from './components/CustomAvatar';
+// import CustomAvatar from './components/CustomAvatar';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import fonts from '../../Constants/Fonts';
+import CustomMediaView from './components/CustomMediaView';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
@@ -156,9 +157,8 @@ const MessageChatScreen = ({navigation, route}) => {
                 />
                 <Text>
                   {imageState === 'uploading'
-                    ? strings.uploadingText
-                    : strings.uploadedText}{' '}
-                  : {numberOfUploads}
+                    ? `${strings.uploadingText}... ${numberOfUploads}`
+                    : strings.uploadedText}
                 </Text>
               </View>
               <View>
@@ -280,7 +280,7 @@ const MessageChatScreen = ({navigation, route}) => {
       return;
     }
     const memberId = member.id.includes('@')
-      ? selectedTagMember.id.split('@')[0]
+      ? selectedTagMember.id?.split('@')[0]
       : selectedTagMember.id;
 
     if (memberId === authContext.entity.uid) {
@@ -323,11 +323,14 @@ const MessageChatScreen = ({navigation, route}) => {
           Alert.alert(strings.alertmessagetitle, err.message);
         });
     } else if (option === tagOptions[1]) {
-      navigation.navigate('HomeScreen', {
-        uid: memberId,
-        role: selectedTagMember.entityType,
-        comeFrom: 'MessageChatScreen',
-        routeParams: {channel},
+      navigation.navigate('Account', {
+        screen: 'HomeScreen',
+        params: {
+          uid: memberId,
+          role: selectedTagMember.entityType,
+          comeFrom: 'MessageChatScreen',
+          routeParams: channel,
+        },
       });
     }
   };
@@ -374,6 +377,7 @@ const MessageChatScreen = ({navigation, route}) => {
         rightIcon1Press={() => {
           setShowSearchInput(!showSearchInput);
         }}
+        iconContainerStyle={{marginRight: 10}}
       />
       <View style={{flex: 1}}>
         {showSearchInput ? (
@@ -411,7 +415,6 @@ const MessageChatScreen = ({navigation, route}) => {
           MessageActionList={() => (
             <CustomMessageActionList
               channel={channel}
-              streamChatUserId={authContext.chatClient.userID}
               deleteMessageAction={(messageObj = {}) => {
                 setDeleteMessageObject(messageObj);
                 if (messageObj.user.id === authContext.chatClient.userID) {
@@ -435,22 +438,37 @@ const MessageChatScreen = ({navigation, route}) => {
               MessageText={() => (
                 <CustomMessageText onTagPress={handleTagPress} />
               )}
-              MessageAvatar={() => (
-                <CustomAvatar
-                  channel={channel}
-                  imageStyle={{width: 30, height: 30}}
-                  iconTextStyle={{fontSize: 12, marginTop: 1}}
-                  placeHolderStyle={{width: 12, height: 12}}
-                />
-              )}
+              MessageAvatar={
+                () => null
+                // <CustomAvatar
+                //   channel={channel}
+                //   imageStyle={{width: 30, height: 30}}
+                //   iconTextStyle={{fontSize: 12, marginTop: 1}}
+                //   placeHolderStyle={{width: 12, height: 12}}
+                // />
+              }
               myMessageTheme={myMessageTheme}
-              MessageHeader={CustomMessageHeader}
+              MessageHeader={({message}) => (
+                <CustomMessageHeader message={message} channel={channel} />
+              )}
               MessageFooter={() => (
                 <CustomMessageFooter
                   onPress={async (messageId) => {
                     const response = await channel.getReactions(messageId);
                     setAllReaction(response.reactions);
                     setIsVisible(true);
+                  }}
+                />
+              )}
+              Gallery={() => (
+                <CustomMediaView
+                  onPress={(data = {}) => {
+                    navigation.navigate('MessageMediaFullScreen', {
+                      ...data,
+                    });
+                  }}
+                  onLongPress={() => {
+                    console.log('long pressed');
                   }}
                 />
               )}

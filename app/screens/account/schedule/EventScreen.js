@@ -423,6 +423,7 @@ export default function EventScreen({navigation, route}) {
 
       case strings.editEvent:
         if (route && route.params && eventData) {
+          setShowActionSheet(false);
           navigation.navigate('EditEventScreen', {
             data: eventData,
             gameData: route.params.gameData,
@@ -493,7 +494,7 @@ export default function EventScreen({navigation, route}) {
           imageURL={
             eventData.background_thumbnail
               ? {uri: eventData.background_thumbnail}
-              : images.backgroudPlaceholder
+              : eventData?.temp_background?.full_image
           }
         />
         <View style={{paddingHorizontal: 15}}>
@@ -510,7 +511,7 @@ export default function EventScreen({navigation, route}) {
 
           <EventTimeItem
             from={strings.from}
-            fromTime={moment(startTime).format('MMM DD, YYYY')}
+            fromTime={moment(startTime).format('ddd, MMM DD, YYYY')}
             to={strings.to}
             toTime={`${moment(startTime).format('hh:mm a')} - ${moment(
               endTime,

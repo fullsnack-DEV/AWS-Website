@@ -98,10 +98,10 @@ export const getGroupFollowers = (group_id, authContext) =>
     authContext,
   });
 
-export const getGroupMembers = (group_id, authContext) =>
+export const getGroupMembers = (group_id, authContext, groups_ids = '') =>
   makeAPIRequest({
     method: 'get',
-    url: `${Config.BASE_URL}/groups/${group_id}/members`,
+    url: `${Config.BASE_URL}/groups/${group_id}/members?group_ids=${groups_ids}`,
     authContext,
   });
 

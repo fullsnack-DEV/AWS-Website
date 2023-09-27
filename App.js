@@ -116,6 +116,10 @@ function App() {
     [],
   );
 
+  const setentityList = useCallback((list) => {
+    setManagedEntityList(list);
+  }, []);
+
   const clearAuthContext = useCallback(() => {
     setUser(null);
     setSports([]);
@@ -127,7 +131,8 @@ function App() {
     setNotificationCount({});
     setTotalNotificationCount(0);
     setStreamChatToken(null);
-  }, []);
+    setentityList([]);
+  }, [setentityList]);
 
   const authValue = useMemo(
     () => ({
@@ -158,6 +163,7 @@ function App() {
       streamChatToken,
       setStreamChatToken,
       chatClient,
+      setentityList,
     }),
     [
       role,
@@ -178,6 +184,7 @@ function App() {
       isAccountDeactivated,
       streamChatToken,
       chatClient,
+      setentityList,
     ],
   );
 

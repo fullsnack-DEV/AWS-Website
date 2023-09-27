@@ -98,6 +98,7 @@ const SearchScreen = ({navigation, route}) => {
         }
         entity_id={entityID}
         showSubTabs={false}
+        navigation={navigation}
       />
     </ScrollView>
     // </View>

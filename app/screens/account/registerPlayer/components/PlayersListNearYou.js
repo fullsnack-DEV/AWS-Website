@@ -4,10 +4,11 @@ import {
   View,
   StyleSheet,
   Text,
-  FlatList,
+  // FlatList,
   Image,
   TouchableOpacity,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
@@ -93,17 +94,21 @@ const PlayersListNearYou = ({
   if (list.length > 0) {
     return (
       <>
-        <Text style={styles.listTitle}>
-          {sportType === Verbs.sportTypeSingle
-            ? strings.playersNearYouText
-            : strings.partnersNearYouText}
-        </Text>
+        {fromCreateClub ? (
+          <Text style={styles.listTitle}>{strings.peopleNearYou}</Text>
+        ) : (
+          <Text style={styles.listTitle}>
+            {sportType === Verbs.sportTypeSingle
+              ? strings.playersNearYouText
+              : strings.partnersNearYouText}
+          </Text>
+        )}
         {loading || listloading ? (
           <ListShimmer />
         ) : (
           <FlatList
             data={list}
-            keyExtractor={(item) => item.customer_id}
+            keyExtractor={(item, index) => index.toString()}
             renderItem={renderPlayerCard}
             ListFooterComponent={() =>
               list.length > 0 ? (
@@ -150,6 +155,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     marginBottom: 20,
+    marginTop: -10,
   },
   image: {
     width: '100%',
@@ -160,6 +166,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 5,
   },
   imageContainer: {
     width: 40,

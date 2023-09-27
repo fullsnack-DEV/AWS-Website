@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   headerTextStyle: {
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
+    color: colors.userPostTimeColor,
   },
   dateSelectStyle: {
     borderRadius: 5,

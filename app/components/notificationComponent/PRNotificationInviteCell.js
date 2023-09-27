@@ -6,6 +6,7 @@ import {strings} from '../../../Localization/translation';
 import {parseInviteRequest} from '../../screens/notificationsScreen/PRNotificationParser';
 import NotificationType from '../../Constants/NotificationType';
 import GroupIcon from '../GroupIcon';
+import TCThinDivider from '../TCThinDivider';
 
 function PRNotificationInviteCell({
   item,
@@ -96,16 +97,10 @@ function PRNotificationInviteCell({
           </View>
           <View style={[styles.buttonView, disabled ? {opacity: 0.5} : {}]}>
             <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={onAccept}
-              disabled={disabled}>
-              <Text style={styles.buttonText}>{strings.accept}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
               style={[
                 styles.buttonContainer,
                 {
-                  marginLeft: 5,
+                  marginRight: 5,
                   backgroundColor: colors.grayBackgroundColor,
                 },
               ]}
@@ -116,9 +111,16 @@ function PRNotificationInviteCell({
                 {strings.decline}
               </Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={onAccept}
+              disabled={disabled}>
+              <Text style={styles.buttonText}>{strings.accept}</Text>
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
       )}
+      <TCThinDivider />
     </View>
   );
 }
@@ -134,7 +136,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 15,
-    marginBottom: 15,
+
+    paddingVertical: 15,
   },
   textContainerStyle: {
     fontFamily: fonts.RLight,
@@ -152,7 +155,7 @@ const styles = StyleSheet.create({
     color: colors.userPostTimeColor,
   },
   buttonContainer: {
-    padding: 5,
+    padding: 6,
     borderRadius: 5,
     backgroundColor: colors.themeColor,
   },

@@ -15,6 +15,7 @@ import MessageEditInviteeScreen from '../screens/message/MessageEditInviteeScree
 // import SearchScreen from '../screens/search/SearchScreen';
 // // import MessageChat from '../components/message/MessageChat';
 import MessageChatScreen from '../screens/message/MessageChatScreen';
+import MessageMediaFullScreen from '../screens/message/MessageMediaFullScreen';
 
 // import fonts from '../Constants/Fonts';
 
@@ -61,6 +62,11 @@ const MessageNavigator = () => (
     <Stack.Screen
       name="MessageEditGroupScreen"
       component={MessageEditGroupScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="MessageMediaFullScreen"
+      component={MessageMediaFullScreen}
       options={{headerShown: false}}
     />
     {/* <Stack.Screen

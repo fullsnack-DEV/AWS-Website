@@ -10,7 +10,7 @@ const CustomReactionComponent = ({channel = {}}) => {
   const {setOverlay} = useOverlayContext();
   const authContext = useContext(AuthContext);
   const [selectedReaction, setSelectedReaction] = useState('');
-  // console.log('reactions ==>,', message);
+
   useEffect(() => {
     if (message.own_reactions.length) {
       setSelectedReaction(message.own_reactions[0].type);

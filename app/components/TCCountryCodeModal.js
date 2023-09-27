@@ -28,7 +28,7 @@ const TCCountryCodeModal = ({
 
   useEffect(() => {
     const countryIndex = countryCodeList.findIndex(
-      (item) => item.country === authContext.user.country,
+      (item) => item.country === authContext?.user?.country,
     );
 
     if (countryIndex !== -1) {

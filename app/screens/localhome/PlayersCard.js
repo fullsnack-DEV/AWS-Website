@@ -1,5 +1,5 @@
 import {View, Text, Pressable, StyleSheet, Platform, Image} from 'react-native';
-import React, {memo} from 'react';
+import React from 'react';
 
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
@@ -23,7 +23,7 @@ function PlayersCard({
 }) {
   const getEntityName = () => item.full_name;
 
-  const getName = () => {
+  const getName = React.useMemo(() => {
     if (playeravail && selectedSport === strings.allSport) {
       const singleSport = item?.registered_sports?.find(
         (sport) => sport.sport_type === Verbs.sportTypeSingle,
@@ -84,7 +84,7 @@ function PlayersCard({
     }
 
     return item?.sports[0]?.sport_name;
-  };
+  }, [item, playeravail, hiring, refree, scoreKeeper, selectedSport]);
 
   // eslint-disable-next-line consistent-return
   const getCurrencyAndGameFee = () => {
@@ -189,7 +189,7 @@ function PlayersCard({
         }
         blurRadius={4}>
         <Text numberOfLines={1} style={styles.nameStyle}>
-          {getName()}
+          {getName}
           {/* {sportText} */}
         </Text>
 
@@ -322,4 +322,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(PlayersCard);
+export default React.memo(PlayersCard);

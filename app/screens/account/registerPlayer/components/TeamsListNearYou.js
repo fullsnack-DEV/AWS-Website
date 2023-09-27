@@ -117,7 +117,7 @@ const TeamsListNearYou = ({
                     />
                   </View>
                   <Text style={[styles.name, {marginLeft: 10}]}>
-                    Search for more teams
+                    {strings.searchForMoreTeams}
                   </Text>
                 </TouchableOpacity>
                 <View style={styles.dividor} />
@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     marginBottom: 20,
+    marginTop: -10,
   },
   image: {
     width: '100%',
@@ -167,6 +168,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 5,
   },
   imageContainer: {
     width: 40,

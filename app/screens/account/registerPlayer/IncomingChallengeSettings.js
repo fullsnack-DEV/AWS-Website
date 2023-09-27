@@ -37,6 +37,7 @@ import useSwitchAccount from '../../../hooks/useSwitchAccount';
 import SwitchAccountLoader from '../../../components/account/SwitchAccountLoader';
 import {getCountry} from 'country-currency-map';
 import {useIsFocused} from '@react-navigation/native';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 export default function IncomingChallengeSettings({navigation, route}) {
   const [settingObject, setSettingObject] = useState({});
@@ -66,6 +67,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
     show_Double,
     fromRespondToInvite,
     teamgrpId,
+    is_player,
+    is_coach,
+    is_parent,
+    is_other,
+    other_role,
   } = route.params;
   const [playerObject] = useState(playerData);
   const [showModal, setShowModal] = useState(false);
@@ -226,6 +232,11 @@ export default function IncomingChallengeSettings({navigation, route}) {
       const bodyParams = {
         ...groupData,
         entity_type: Verbs.entityTypeTeam,
+        is_player: is_player,
+        is_coach: is_coach,
+        is_parent: is_parent,
+        is_other: is_other,
+        other_role: other_role,
       };
 
       if (thumbnail) {
@@ -292,6 +303,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
                 .then(async (response) => {
                   setloading(false);
                   setShowSwitchScreen(false);
+                  getUnreadNotificationCount(authContext);
                   await onSwitchProfile(response.payload);
 
                   navigation.navigate('HomeScreen', {
@@ -478,7 +490,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
             onSave();
           }
         }}
-        loading={loading}
+        // loading={loading}
         containerStyle={{
           paddingLeft: 10,
           paddingRight: 17,
@@ -488,6 +500,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
         }}
       />
       <TCFormProgress totalSteps={2} curruentStep={2} />
+      <ActivityLoader visible={loading} />
 
       <View style={{flex: 1}}>
         <FlatList
@@ -497,7 +510,9 @@ export default function IncomingChallengeSettings({navigation, route}) {
           ListHeaderComponent={() => (
             <>
               <View style={{paddingHorizontal: 15}}>
-                <Text style={styles.title}>
+                <Text
+                  style={[styles.title, {textTransform: 'uppercase'}]}
+                  numberOfLines={2}>
                   {strings.incomingChallengeSettingsTitle}
                 </Text>
                 <Text style={styles.info}>
@@ -652,6 +667,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           }
         }}
         isDoubleSport={sportType === Verbs.doubleSport}
+        fee={settingObject.game_fee ?? {}}
       />
 
       <WrapperModal

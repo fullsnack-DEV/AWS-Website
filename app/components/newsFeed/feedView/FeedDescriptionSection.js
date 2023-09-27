@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {Dimensions, ScrollView, StyleSheet, View} from 'react-native';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import NewsFeedDescription from '../NewsFeedDescription';
@@ -18,7 +18,7 @@ const FeedDescriptionSection = ({
           <ScrollView>
             <NewsFeedDescription
               descriptions={descriptions}
-              numberOfLineDisplay={2}
+              // numberOfLineDisplay={2}
               tagData={tagData}
               navigation={navigation}
               descText={styles.descText}
@@ -34,7 +34,7 @@ const FeedDescriptionSection = ({
       );
     }
     return (
-      <View style={styles.parent}>
+      <ScrollView style={styles.parent} scrollEnabled>
         <NewsFeedDescription
           descriptions={descriptions}
           numberOfLineDisplay={2}
@@ -48,7 +48,7 @@ const FeedDescriptionSection = ({
             setReadMore(!readMore);
           }}
         />
-      </View>
+      </ScrollView>
     );
   }
   return null;
@@ -56,10 +56,12 @@ const FeedDescriptionSection = ({
 
 const styles = StyleSheet.create({
   parent: {
+    flex: 1,
     top: 50,
     left: 45,
     right: 15,
     position: 'absolute',
+    maxHeight: Dimensions.get('window').height * 0.72,
   },
   descText: {
     fontSize: 16,

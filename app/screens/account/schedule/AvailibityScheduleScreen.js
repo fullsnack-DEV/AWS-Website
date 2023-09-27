@@ -1,5 +1,12 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import {Text, View, TouchableOpacity, StyleSheet, FlatList} from 'react-native';
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  ScrollView,
+} from 'react-native';
 import moment from 'moment';
 import {getJSDate} from '../../../utils';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
@@ -541,7 +548,10 @@ export default function AvailibilityScheduleScreen({
   };
 
   return (
-    <View>
+    <ScrollView
+      bounces={false}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{paddingBottom: 12}}>
       <ActivityLoader visible={loading} />
       {listView ? (
         <AvailabilityHeader
@@ -578,7 +588,7 @@ export default function AvailibilityScheduleScreen({
         deleteOrCreateSlotData={deleteOrCreateSlotData}
         isFromSlot={isFromSlots}
       />
-    </View>
+    </ScrollView>
   );
 }
 

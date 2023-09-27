@@ -745,6 +745,7 @@ const LocalHomeNavigator = () => (
       component={CreateTeamForm1}
       options={{
         title: 'Create Team',
+        headerShown: false,
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',
@@ -901,18 +902,7 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="UserGalleryScreen"
       component={UserGalleryScreen}
-      options={{
-        title: 'Gallery',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="UserConnections"
@@ -2412,6 +2402,7 @@ const LocalHomeNavigator = () => (
       name="PendingRequestScreen"
       component={PendingRequestScreen}
       options={{
+        headerShown: false,
         title: 'Pending Request',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
@@ -2769,18 +2760,7 @@ const LocalHomeNavigator = () => (
     <Stack.Screen
       name="DeactivatedSportsListScreen"
       component={DeactivatedSportsListScreen}
-      options={{
-        title: 'Deactivated Sports Activities',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen

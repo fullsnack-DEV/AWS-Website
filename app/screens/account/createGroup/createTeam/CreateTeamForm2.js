@@ -555,6 +555,7 @@ export default function CreateTeamForm2({navigation, route}) {
           setShowMatchFeeReminderModal(false);
           onSave();
         }}
+        fee={{}}
       />
 
       <WrapperModal

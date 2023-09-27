@@ -39,6 +39,7 @@ export const themeStyle = {
     content: {
       textContainer: {
         borderWidth: 0,
+        Bottom:10,
       },
       markdown: {
         text: {
@@ -46,13 +47,23 @@ export const themeStyle = {
           lineHeight: 24,
           color: colors.lightBlackColor,
           fontFamily: fonts.RRegular,
+         
         },
       },
       deletedContainerInner: {
         borderWidth: 0,
         backgroundColor: colors.whiteColor,
+        marginLeft: 30,
       },
       containerInner: {
+        maxWidth: Dimensions.get('window').width * 0.7,
+        marginLeft: 30,
+      },
+      container: {
+        maxWidth: Dimensions.get('window').width * 0.8,
+      },
+      replyContainer: {
+        borderWidth: 0,
         maxWidth: Dimensions.get('window').width * 0.7,
       },
     },
@@ -61,6 +72,7 @@ export const themeStyle = {
   messageList: {
     container: {
       backgroundColor: colors.lightGrayBackground,
+      paddingHorizontal:10,
     },
   },
 };
@@ -77,15 +89,18 @@ export const myMessageTheme = {
           lineHeight: 24,
           color: colors.lightBlackColor,
           fontFamily: fonts.RRegular,
+         
         },
       },
       containerInner: {
         borderWidth: 0,
         backgroundColor: colors.chatBubbleContainer,
+        marginRight: 15,
       },
       deletedContainerInner: {
         borderWidth: 0,
         backgroundColor: colors.chatBubbleContainer,
+        marginRight: 15,
       },
       container: {
         borderWidth: 0,

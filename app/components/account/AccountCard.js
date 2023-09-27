@@ -123,8 +123,8 @@ const styles = StyleSheet.create({
   },
   countContainer: {
     backgroundColor: colors.notificationCountBgColor,
-    paddingHorizontal: 3,
-    paddingVertical: 4,
+    paddingHorizontal: 3.5,
+    paddingVertical: 1.5,
     borderRadius: 25,
     alignSelf: 'baseline',
     marginLeft: 5,

@@ -93,7 +93,8 @@ export default function BasicInfoScreen({navigation}) {
     }
     if (
       userInfo.phone_numbers &&
-      !userInfo.phone_numbers[0]?.country_code.length
+      userInfo.phone_numbers[0]?.country_code &&
+      userInfo.phone_numbers[0]?.country_code.length > 0
     ) {
       Alert.alert(strings.appName, strings.phoneCodeValidation);
       return false;
@@ -106,11 +107,13 @@ export default function BasicInfoScreen({navigation}) {
     if (checkValidation()) {
       setloading(true);
       const bodyParams = {...userInfo};
+
       updateUserProfile(bodyParams, authContext)
         .then(async (response) => {
+          navigation.goBack();
+
           await Utility.setAuthContextData(response.payload, authContext);
           setloading(false);
-          navigation.goBack();
         })
         .catch((e) => {
           setTimeout(() => {
