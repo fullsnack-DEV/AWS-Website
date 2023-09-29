@@ -8,7 +8,13 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
-import React, {useMemo, useState, useContext, useEffect} from 'react';
+import React, {
+  useMemo,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from 'react';
 import {format} from 'react-string-format';
 import {useNavigation} from '@react-navigation/native';
 
@@ -30,6 +36,8 @@ import GroupIcon from '../../components/GroupIcon';
 import {displayLocation} from '../../utils';
 import UserListShimmer from '../../components/shimmer/commonComponents/UserListShimmer';
 import images from '../../Constants/ImagePath';
+import TCFollowUnfollwButton from '../../components/TCFollowUnfollwButton';
+import {followUser, unfollowUser} from '../../api/Users';
 
 const renderBackdrop = (props) => (
   <BottomSheetBackdrop
@@ -67,6 +75,123 @@ export default function FollowFollowingModal({
     fetchList(groupID);
   }, [groupID, visibleMemberModal]);
 
+  const callUnfollowUser = useCallback(
+    (data, index) => {
+      const tempMember = [...followersList];
+      tempMember[index].is_following = false;
+      setFollowersList(tempMember);
+
+      const params = {
+        entity_type: Verbs.entityTypePlayer,
+      };
+      unfollowUser(params, data.user_id, authContext)
+        .then(() => {})
+        .catch((error) => {
+          const tempMem = [...followersList];
+          tempMem[index].is_following = true;
+          setFollowersList(tempMem);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    },
+    [authContext, followersList],
+  );
+
+  const callFollowUser = useCallback(
+    (data, index) => {
+      const tempMember = [...followersList];
+
+      tempMember[index].is_following = true;
+      setFollowersList(tempMember);
+
+      const params = {
+        entity_type: Verbs.entityTypePlayer,
+      };
+      followUser(params, data.user_id, authContext)
+        .then(() => {})
+        .catch((error) => {
+          const tempMem = [...followersList];
+          tempMem[index].is_following = false;
+          setFollowersList(tempMem);
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    },
+    [authContext, followersList],
+  );
+
+  const onUserAction = useCallback(
+    (action, data, index) => {
+      switch (action) {
+        case 'follow':
+          callFollowUser(data, index);
+          break;
+        case 'unfollow':
+          callUnfollowUser(data, index);
+          break;
+        default:
+      }
+    },
+    [callFollowUser, callUnfollowUser],
+  );
+
+  const renderFollowUnfollowArrow = useCallback(
+    (data, index) => {
+      if (
+        authContext.entity.role === Verbs.entityTypeClub ||
+        authContext.entity.role === Verbs.entityTypeTeam
+      ) {
+        return <View />;
+      }
+
+      if (data.is_following) {
+        if (authContext.entity.uid !== data?.user_id) {
+          return (
+            <View style={{flexDirection: 'row'}}>
+              <TCFollowUnfollwButton
+                outerContainerStyles={styles.firstButtonOuterStyle}
+                style={styles.firstButtonStyle}
+                title={strings.following}
+                isFollowing={data.is_following}
+                startGradientColor={colors.lightGrey}
+                endGradientColor={colors.lightGrey}
+                onPress={() => {
+                  onUserAction(Verbs.unfollowVerb, data, index);
+                }}
+              />
+            </View>
+          );
+        }
+        return <View />;
+      }
+      if (
+        authContext.entity.role !== Verbs.entityTypeTeam ||
+        authContext.entity.role !== Verbs.entityTypeClub
+      ) {
+        return (
+          <View style={{flexDirection: 'row'}}>
+            <TCFollowUnfollwButton
+              outerContainerStyles={styles.firstButtonOuterStyle}
+              style={styles.firstButtonStyle}
+              title={strings.follow}
+              isFollowing={data.is_following}
+              startGradientColor={colors.lightGrey}
+              endGradientColor={colors.lightGrey}
+              onPress={() => {
+                onUserAction(Verbs.followVerb, data, index);
+              }}
+            />
+          </View>
+        );
+      }
+
+      return <View />;
+    },
+    [groupID, onUserAction],
+  );
+
   const fetchList = (groupId) => {
     setLoading(true);
     getGroupFollowers(groupId, authContext)
@@ -92,7 +217,7 @@ export default function FollowFollowingModal({
           data={filteredList}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
-          renderItem={({item}) => (
+          renderItem={({item, index}) => (
             <>
               <View style={[styles.row, {justifyContent: 'space-between'}]}>
                 <TouchableOpacity
@@ -117,7 +242,9 @@ export default function FollowFollowingModal({
                     </Text>
                   </View>
                 </TouchableOpacity>
+                {renderFollowUnfollowArrow(item, index)}
               </View>
+
               <View style={styles.separator} />
             </>
           )}
@@ -155,6 +282,10 @@ export default function FollowFollowingModal({
         enablePanDownToClose={true}
         enableDismissOnClose
         backdropComponent={renderBackdrop}>
+        <Text
+          style={{textAlign: 'center', fontFamily: fonts.RBold, fontSize: 16}}>
+          {strings.followerTitleText}
+        </Text>
         <View style={{flex: 1, paddingHorizontal: 15}}>
           <View style={styles.inputContainer}>
             <TextInput

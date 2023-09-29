@@ -1,12 +1,10 @@
-import React, {useState, useLayoutEffect} from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   Alert,
   StyleSheet,
   Keyboard,
   TouchableWithoutFeedback,
-  TouchableOpacity,
-  Image,
   SafeAreaView,
 } from 'react-native';
 
@@ -24,45 +22,12 @@ import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import ActivityLoader from '../../components/loader/ActivityLoader';
-import {getHitSlop} from '../../utils';
+import AuthScreenHeader from './AuthScreenHeader';
 
 export default function ForgotPasswordScreen({navigation}) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity hitSlop={getHitSlop(19)}>
-          <Text
-            style={styles.nextButtonStyle}
-            onPress={() => {
-              if (checkValidation()) {
-                forgotPassword(email);
-              }
-            }}>
-            {strings.next}
-          </Text>
-        </TouchableOpacity>
-      ),
-      headerLeft: () => (
-        <TouchableOpacity
-          hitSlop={getHitSlop(15)}
-          onPress={() => {
-            navigation.pop();
-          }}>
-          <Image
-            source={images.backArrow}
-            style={{
-              height: 20,
-              width: 15,
-              marginLeft: 20,
-              tintColor: colors.whiteColor,
-            }}
-          />
-        </TouchableOpacity>
-      ),
-    });
-  });
+
   // Basic input validation
   const checkValidation = () => {
     if (email === '') {
@@ -138,7 +103,18 @@ export default function ForgotPasswordScreen({navigation}) {
       <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
         <ActivityLoader visible={loading} />
         <FastImage style={styles.background} source={images.loginBg} />
-        <Text style={styles.forgotText}>{strings.forgotPassword}</Text>
+        <AuthScreenHeader
+          title={strings.forgotPassword}
+          onBackPress={() => {
+            navigation.pop();
+          }}
+          onNextPress={() => {
+            if (checkValidation()) {
+              forgotPassword(email);
+            }
+          }}
+        />
+
         <Text style={styles.resetText}>{strings.resetText}</Text>
         <TCTextField
           placeholderTextColor={colors.darkYellowColor}
@@ -161,20 +137,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: wp('100%'),
   },
-  forgotText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginTop: 50,
-    paddingLeft: 25,
-    textAlign: 'left',
-  },
 
   resetText: {
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
     fontSize: 14,
-    marginTop: 5,
+    marginTop: 15,
     paddingLeft: 25,
     textAlign: 'left',
   },
@@ -190,11 +158,5 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginLeft: 35,
     marginRight: 35,
-  },
-  nextButtonStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    marginRight: 15,
-    color: colors.whiteColor,
   },
 });

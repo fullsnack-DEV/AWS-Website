@@ -1178,7 +1178,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     fontSize: 15,
     fontFamily: fonts.RRegular,
-    backgroundColor: 'red',
+    backgroundColor: colors.lightGrey,
     borderRadius: 5,
     flexDirection: 'row',
     height: 45,

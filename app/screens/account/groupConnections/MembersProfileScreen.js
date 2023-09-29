@@ -408,6 +408,7 @@ export default function MembersProfileScreen({navigation, route}) {
             text: strings.remove,
             onPress: () => {
               const toaccount = true;
+              setloading(true);
 
               onDeleteMemberProfile(groupId, memberId, toaccount);
             },
@@ -439,6 +440,7 @@ export default function MembersProfileScreen({navigation, route}) {
             style: 'destructive',
             onPress: () => {
               const toaccount = true;
+              setloading(true);
               onDeleteMemberProfile(groupId, memberId, toaccount);
             },
           },
@@ -486,6 +488,7 @@ export default function MembersProfileScreen({navigation, route}) {
             text: strings.removeTextTitle,
             style: 'destructive',
             onPress: () => {
+              setloading(true);
               onDeleteMemberProfile(groupId, memberId);
             },
           },
@@ -496,25 +499,28 @@ export default function MembersProfileScreen({navigation, route}) {
   };
 
   const onDeleteMemberProfile = (groupId, memberId, toaccount = false) => {
-    if (toaccount) {
-      setShowSwitchScreen(true);
-
-      Animated.timing(animProgress, {
-        useNativeDriver: false,
-        toValue: 100,
-        duration: 400,
-      }).start();
-    } else {
-      setloading(true);
-    }
-
     deleteMember(groupId, memberId, authContext)
       .then(async (response) => {
-        setloading(false);
-
         const validator = 102;
 
-        if (toaccount && Object.keys(response.payload).length === 0) {
+        if (
+          toaccount &&
+          Object.keys(response.payload).length === 0 &&
+          !response.hasOwnProperty('error_code')
+        ) {
+          setloading(false);
+          if (toaccount) {
+            setShowSwitchScreen(true);
+
+            Animated.timing(animProgress, {
+              useNativeDriver: false,
+              toValue: 100,
+              duration: 400,
+            }).start();
+          } else {
+            setloading(true);
+          }
+
           await onSwitchProfile(authContext.user);
 
           navigation.navigate('Account', {
@@ -527,6 +533,7 @@ export default function MembersProfileScreen({navigation, route}) {
           });
         } else if (response.payload.error_code === validator) {
           setShowSwitchScreen(false);
+          setloading(false);
           Alert.alert(
             strings.appName,
             strings.childMemberError,
@@ -1664,10 +1671,11 @@ export default function MembersProfileScreen({navigation, route}) {
                 {memberDetail.group && entity.role === Verbs.entityTypeClub && (
                   <Pressable>
                     <GroupMembership
-                      groupData={memberDetail.group}
+                      groupData={memberDetail}
                       switchID={entity.uid}
                       edit={!editTeam}
                       onEditPressed={() => setShowAdminPrivillege(true)}
+                      forClub={true}
                     />
                   </Pressable>
                 )}
@@ -1704,15 +1712,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   ListEmptyComponent={listEmptyView}
                   ItemSeparatorComponent={renderSeparator}
                   renderItem={({item}) => (
-                    <Pressable
-                      style={{
-                        marginTop:
-                          entity.role === Verbs.entityTypeTeam ? 7 : 15,
-                        marginBottom:
-                          entity.role === Verbs.entityTypeTeam ? 15 : -5,
-                        marginLeft:
-                          entity.role === Verbs.entityTypeTeam ? -10 : 0,
-                      }}>
+                    <Pressable>
                       <GroupMembership
                         onlybadge={
                           entity.role === Verbs.entityTypeTeam ? true : false
@@ -1742,7 +1742,7 @@ export default function MembersProfileScreen({navigation, route}) {
                 />
               </View>
               <TCThickDivider
-                marginTop={entity.role === Verbs.entityTypeTeam ? 10 : 20}
+                marginTop={entity.role === Verbs.entityTypeTeam ? 5 : 10}
               />
 
               <View>

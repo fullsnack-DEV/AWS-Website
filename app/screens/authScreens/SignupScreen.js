@@ -1,4 +1,4 @@
-import React, {useContext, useState, useLayoutEffect} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Image,
   SafeAreaView,
   Dimensions,
 } from 'react-native';
@@ -31,6 +30,7 @@ import {checkTownscupEmail} from '../../api/Users';
 
 import {getHitSlop} from '../../utils/index';
 import Verbs from '../../Constants/Verbs';
+import AuthScreenHeader from './AuthScreenHeader';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -122,43 +122,20 @@ export default function SignupScreen({navigation}) {
     return false;
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.pop();
-          }}
-          hitSlop={getHitSlop(20)}>
-          <Image
-            source={images.backArrow}
-            style={{
-              height: 20,
-              width: 15,
-              marginLeft: 20,
-              tintColor: colors.whiteColor,
-            }}
-          />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <Text
-          testID="signup-nav-text"
-          style={styles.nextButtonStyle}
-          onPress={() => {
-            if (validate()) {
-              if (authContext.networkConnected) {
-                signupUser();
-              } else {
-                authContext.showNetworkAlert();
-              }
-            }
-          }}>
-          {strings.next}
-        </Text>
-      ),
-    });
-  });
+  const onBackPress = () => {
+    navigation.pop();
+  };
+
+  const signUpPress = () => {
+    if (validate()) {
+      if (authContext.networkConnected) {
+        signupUser();
+      } else {
+        authContext.showNetworkAlert();
+      }
+    }
+  };
+
   const checkUserIsRegistratedOrNotWithTownscup = () =>
     new Promise((resolve) => {
       checkTownscupEmail(encodeURIComponent(email))
@@ -387,13 +364,19 @@ export default function SignupScreen({navigation}) {
         source={images.loginBg}
         resizeMode="cover"
       />
-      <Text style={styles.checkEmailText}>{strings.signupwithemail}</Text>
+
+      <AuthScreenHeader
+        title={strings.signupwithemail}
+        onBackPress={onBackPress}
+        showNext={false}
+      />
+
       <TCKeyboardView>
         <View
           style={{
-            marginVertical: 66,
-            marginLeft: 35,
-            marginRight: 35,
+            marginHorizontal: 25,
+
+            marginTop: 35,
           }}>
           <TCTextField
             testID={'email-signup-input'}
@@ -474,7 +457,7 @@ export default function SignupScreen({navigation}) {
               )}
             </TouchableOpacity>
           </View>
-          <View style={{marginTop: 20}}>
+          <View style={{marginTop: 5}}>
             <Text
               style={{
                 fontSize: 16,
@@ -485,9 +468,32 @@ export default function SignupScreen({navigation}) {
               {strings.signUpPasswordText}
             </Text>
           </View>
+
+          <TouchableOpacity
+            onPress={() => signUpPress()}
+            style={{
+              backgroundColor: colors.whiteColor,
+              borderRadius: 30,
+              width: '100%',
+              height: 48,
+              alignItems: 'center',
+              marginTop: 35,
+              justifyContent: 'center',
+            }}>
+            <Text
+              style={{
+                paddingVertical: 8,
+                color: colors.orangeColorCard,
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                lineHeight: 24,
+                textTransform: 'uppercase',
+              }}>
+              {strings.signUpbuttonText}
+            </Text>
+          </TouchableOpacity>
         </View>
       </TCKeyboardView>
-
       <View style={{bottom: 70}}>
         <TouchableOpacity
           hitSlop={getHitSlop(15)}
@@ -558,21 +564,5 @@ const styles = StyleSheet.create({
   },
   alreadyView: {
     alignSelf: 'center',
-  },
-  nextButtonStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    marginRight: 15,
-    color: colors.whiteColor,
-    paddingLeft: 20,
-    paddingVertical: 10,
-  },
-  checkEmailText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginLeft: 25,
-    marginTop: 50,
-    textAlign: 'left',
   },
 });

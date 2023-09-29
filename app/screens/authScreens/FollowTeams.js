@@ -1,13 +1,11 @@
 /* eslint-disable import/no-unresolved */
-import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   View,
   Text,
-  Image,
   FlatList,
   TouchableWithoutFeedback,
   StyleSheet,
-  TouchableOpacity,
   Alert,
   SafeAreaView,
   Dimensions,
@@ -28,6 +26,7 @@ import {strings} from '../../../Localization/translation';
 import TCProfileImage from '../../components/TCProfileImage';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import apiCall from '../../utils/apiCall';
+import AuthScreenHeader from './AuthScreenHeader';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -42,35 +41,6 @@ export default function FollowTeams({route, navigation}) {
 
   const followedTeam = [];
   const dummyAuthContext = {...authContext};
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Text
-          testID="followteam-nav-button"
-          style={styles.nextButtonStyle}
-          onPress={signUpLastStep}>
-          {strings.next}
-        </Text>
-      ),
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.pop();
-          }}>
-          <Image
-            source={images.backArrow}
-            style={{
-              height: 20,
-              width: 15,
-              marginLeft: 20,
-              tintColor: colors.whiteColor,
-            }}
-          />
-        </TouchableOpacity>
-      ),
-    });
-  });
 
   useEffect(() => {
     const setFollowData = () => {
@@ -290,14 +260,20 @@ export default function FollowTeams({route, navigation}) {
         style={styles.background}
         source={images.loginBg}
       />
+      <AuthScreenHeader
+        title={strings.followSportTeam}
+        onBackPress={() => {
+          navigation.pop();
+        }}
+        onNextPress={() => {
+          signUpLastStep();
+        }}
+      />
 
-      <Text testID="followteam-signup-text" style={styles.sportText}>
-        {strings.followSportTeam}
-      </Text>
       <FlatList
         style={{
           width: Dimensions.get('window').width - 60,
-          marginTop: -15,
+          marginTop: 15,
           alignSelf: 'center',
         }}
         data={teams}
@@ -366,27 +342,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.reservationAmountColor,
   },
 
-  sportText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginTop: 60,
-    paddingHorizontal: 25,
-
-    marginBottom: 25,
-  },
   teamNameText: {
     color: colors.whiteColor,
     fontFamily: fonts.RBlack,
     fontSize: 16,
     textAlign: 'left',
     textAlignVertical: 'center',
-  },
-  nextButtonStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    marginRight: 15,
-    color: colors.whiteColor,
   },
 
   imageContainer: {

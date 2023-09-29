@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
-  Platform,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -22,6 +21,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 import Verbs from '../../Constants/Verbs';
+import AuthScreenHeader from './AuthScreenHeader';
 
 export default function ChooseGenderScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -117,9 +117,25 @@ export default function ChooseGenderScreen({navigation, route}) {
       colors={[colors.themeColor1, colors.themeColor3]}
       style={styles.mainContainer}>
       <FastImage style={styles.background} source={images.loginBg} />
+
+      <View style={{marginTop: 15}}>
+        <AuthScreenHeader
+          title={strings.addGenderText}
+          onBackPress={() => {
+            navigation.pop();
+          }}
+          onNextPress={async () => {
+            let gender = {};
+            if (selected === 0) gender = Verbs.male;
+            else if (selected === 1) gender = Verbs.female;
+            else if (selected === 2) gender = strings.other;
+            navigateToChooseLocationScreen(gender);
+          }}
+        />
+      </View>
+
       <View style={{flex: 1}}>
         <View style={styles.genderTextContainer}>
-          <Text style={styles.checkEmailText}>{strings.addGenderText}</Text>
           <Text style={styles.resetText}>{strings.notDisplayGenderText}</Text>
         </View>
 
@@ -199,14 +215,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: wp('100%'),
   },
-  checkEmailText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginLeft: 25,
-    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
-    textAlign: 'left',
-  },
+
   mainContainer: {
     flex: 1,
     paddingTop: 25,
@@ -229,10 +238,8 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginLeft: 25,
-    marginRight: 25,
+    marginHorizontal: 20,
     marginTop: 5,
-    textAlign: 'left',
   },
   whyAskingText: {
     color: colors.parrotColor,
@@ -240,7 +247,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 25,
     marginRight: 25,
-    marginTop: 25,
+    marginTop: 15,
     textAlign: 'left',
   },
   canNotChangeGender: {

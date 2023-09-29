@@ -35,6 +35,7 @@ import {getGroupIndex} from '../../api/elasticSearch';
 import {uploadImageOnPreSignedUrls} from '../../utils/imageAction';
 import apiCall from '../../utils/apiCall';
 import {generateUserStreamToken} from '../../utils/streamChat';
+import AuthScreenHeader from './AuthScreenHeader';
 
 export default function ChooseSportsScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
@@ -417,13 +418,27 @@ export default function ChooseSportsScreen({navigation, route}) {
       <ActivityLoader visible={loading} />
       <FastImage style={styles.background} source={images.loginBg} />
       <SafeAreaView style={styles.container}>
-        <Text style={styles.sportText}>{strings.sportText}</Text>
+        <AuthScreenHeader
+          title={strings.sportText}
+          onBackPress={() => {
+            navigation.pop();
+          }}
+          onNextPress={() => {
+            if (selected.length > 0) {
+              getTeamsData();
+            } else {
+              Alert.alert(strings.appName, strings.chooseOneSportText);
+              return false;
+            }
+          }}
+        />
+
         {/* <ActivityIndicator animating={loading} size="large" /> */}
 
         <FlatList
           showsVerticalScrollIndicator={false}
           data={sports}
-          style={{top: -15, marginBottom: 35}}
+          style={{top: 15, marginBottom: 35}}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
         />
@@ -468,17 +483,7 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
   },
-  sportText: {
-    color: colors.whiteColor,
 
-    marginTop: 60,
-    fontSize: 25,
-    lineHeight: 28,
-    fontFamily: fonts.RBold,
-    marginHorizontal: 15,
-
-    marginBottom: 30,
-  },
   nextButtonStyle: {
     fontFamily: fonts.RBold,
     fontSize: 16,

@@ -1,13 +1,5 @@
-import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  Image,
-  Platform,
-} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
 
 import {
   widthPercentageToDP as wp,
@@ -27,6 +19,7 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import AuthScreenHeader from './AuthScreenHeader';
 
 export default function AddBirthdayScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -49,38 +42,7 @@ export default function AddBirthdayScreen({navigation, route}) {
     console.log('on date change call', selectedDate);
     setDateValue(selectedDate);
   };
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.pop();
-          }}>
-          <Image
-            source={images.backArrow}
-            style={{
-              height: 20,
-              width: 15,
-              marginLeft: 20,
-              tintColor: colors.whiteColor,
-            }}
-          />
-        </TouchableOpacity>
-      ),
 
-      headerRight: () => (
-        <Text
-          testID={'next-signupBirthday-button'}
-          style={styles.nextButtonStyle}
-          onPress={() => {
-            const userParams = {birthday: new Date(dateValue).getTime() / 1000};
-            navigateToGenderScreen(userParams);
-          }}>
-          {strings.next}
-        </Text>
-      ),
-    });
-  });
   useEffect(() => {
     const mindate = new Date();
     const maxdate = new Date();
@@ -112,9 +74,23 @@ export default function AddBirthdayScreen({navigation, route}) {
         style={styles.background}
         source={images.loginBg}
       />
+      <View style={{marginTop: 15}}>
+        <AuthScreenHeader
+          title={strings.addBirthdayText}
+          onBackPress={() => {
+            navigation.pop();
+          }}
+          onNextPress={() => {
+            const userParams = {
+              birthday: new Date(dateValue).getTime() / 1000,
+            };
+            navigateToGenderScreen(userParams);
+          }}
+        />
+      </View>
+
       <View style={{flex: 1}}>
         <View style={styles.addBirthdayTextContainer}>
-          <Text style={styles.checkEmailText}>{strings.addBirthdayText}</Text>
           <Text style={styles.resetText}>{strings.notDisplayText}</Text>
         </View>
 
@@ -188,14 +164,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: wp('100%'),
   },
-  checkEmailText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginLeft: 25,
-    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
-    textAlign: 'left',
-  },
+
   dateText: {
     color: colors.themeColor,
     fontFamily: fonts.RRegular,
@@ -208,7 +177,7 @@ const styles = StyleSheet.create({
   matchFeeTxt: {
     height: 40,
     justifyContent: 'center',
-    marginTop: 65,
+    marginTop: 25,
     color: 'black',
     backgroundColor: colors.bhirthdaybgcolor,
     paddingLeft: 20,
@@ -225,8 +194,7 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
     fontSize: 16,
-    marginLeft: 25,
-    marginRight: 25,
+    marginHorizontal: 20,
     marginTop: 5,
     textAlign: 'left',
   },
@@ -236,7 +204,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 25,
     marginRight: 25,
-    marginTop: 25,
+    marginTop: 15,
     textAlign: 'left',
   },
   birthDateChangeNote: {
@@ -248,12 +216,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
 
-  nextButtonStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    marginRight: 15,
-    color: colors.whiteColor,
-  },
   addBirthdayTextContainer: {
     marginTop: 25,
   },

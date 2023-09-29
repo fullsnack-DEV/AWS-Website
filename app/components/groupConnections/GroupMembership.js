@@ -19,6 +19,7 @@ import TCUserRoleBadge from '../TCUserRoleBadge';
 import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
+import GroupIcon from '../GroupIcon';
 
 const GroupMembership = ({
   groupData,
@@ -26,11 +27,11 @@ const GroupMembership = ({
   edit = false,
   onEditPressed,
   onlybadge = false,
+  forClub = false,
 }) => {
-  let typeImage = '';
   const authContext = useContext(AuthContext);
 
-  if (groupData.group?.entity_type === 'team') {
+  if (groupData.group?.entity_type === Verbs.entityTypeTeam) {
     const a = {
       ...groupData.group,
       positions: groupData.positions,
@@ -47,33 +48,56 @@ const GroupMembership = ({
     groupData = a;
   }
 
-  if (groupData.entity_type === 'player') typeImage = '';
-  else if (groupData.entity_type === 'club') typeImage = images.clubC;
-  else if (groupData.entity_type === 'team') typeImage = images.teamT;
-  else if (groupData.entity_type === 'league') typeImage = images.clubC;
-
   return (
     <>
-      <View style={styles.topViewContainer}>
+      <View
+        style={[
+          styles.topViewContainer,
+          {
+            paddingVertical: forClub ? 5 : 10,
+          },
+        ]}>
         <View style={{flexDirection: 'row'}}>
           {!onlybadge && (
-            <Image
-              source={
-                groupData.thumbnail
-                  ? {uri: groupData.thumbnail}
-                  : images.profilePlaceHolder
-              }
-              style={styles.profileImage}
-            />
+            <>
+              <GroupIcon
+                entityType={
+                  groupData.group?.entity_type === Verbs.entityTypeClub
+                    ? groupData.group.entity_type
+                    : groupData.entity_type
+                }
+                imageUrl={
+                  groupData.group?.entity_type === Verbs.entityTypeClub
+                    ? groupData.group?.thumbnail
+                    : groupData?.thumbnail
+                }
+                containerStyle={styles.playerProfile}
+                groupName={
+                  groupData.group?.entity_type === Verbs.entityTypeClub
+                    ? groupData.group?.group_name
+                    : groupData?.group_name
+                }
+                textstyle={{fontSize: 12}}
+              />
+            </>
           )}
 
           <View style={styles.topTextContainer}>
             {!onlybadge && (
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={styles.nameText} numberOfLines={5}>
-                  {groupData.group_name}
-                </Text>
-                <Image source={typeImage} style={styles.teamTImage} />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                {groupData.group?.entity_type === Verbs.entityTypeClub ? (
+                  <Text style={styles.nameText} numberOfLines={1}>
+                    {groupData.group.group_name}
+                  </Text>
+                ) : (
+                  <Text style={styles.nameText} numberOfLines={1}>
+                    {groupData.group_name}
+                  </Text>
+                )}
               </View>
             )}
             <View style={{flexDirection: 'row'}}>
@@ -178,26 +202,17 @@ const GroupMembership = ({
           />
         </View>
       )}
-      {/* {groupData.note ? (
-        <Text style={styles.groupDescriptionText}>{groupData.note}</Text>
-      ) : null} */}
     </>
   );
 };
 const styles = StyleSheet.create({
-  profileImage: {
-    alignSelf: 'center',
-    height: 40,
-    resizeMode: 'cover',
-    width: 40,
-    borderRadius: 80,
-  },
-
   topViewContainer: {
     flexDirection: 'row',
     marginLeft: 20,
     marginRight: 20,
     justifyContent: 'space-between',
+
+    paddingVertical: 15,
   },
 
   topTextContainer: {
@@ -211,16 +226,20 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     width: 12,
   },
-  teamTImage: {
-    marginHorizontal: 5,
-    height: 15,
-    resizeMode: 'contain',
-    width: 15,
-  },
+
   nameText: {
     fontSize: 16,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RMedium,
+    fontFamily: fonts.RBold,
+    lineHeight: 19,
+    marginTop: 3,
+    marginBottom: 3,
+  },
+  playerProfile: {
+    width: 40,
+    height: 40,
+    marginRight: 5,
+    borderRadius: 100,
   },
 });
 

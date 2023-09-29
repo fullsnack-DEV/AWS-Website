@@ -142,7 +142,7 @@ export default {
   clubTeamTitle3: 'en_FC Barcelona',
   leagueTeamTitle: 'en_UEFA Champions League',
 
-  locationText: 'en_Choose your city.',
+  locationText: 'en_Choose your home city.',
   locationDescription:
     'en_Home city is the city where you currently reside or you mostly play sports.',
   locationPlaceholderText: 'en_Search by city or postal code',
@@ -3149,4 +3149,6 @@ export default {
     'en_You can change the roles in the member profile after you create team',
   roleWritePlaceholder: 'en_Can you write your role here?',
   profileAccountConnectionText: 'en_Profile-Account Connection',
+  signUpbuttonText: 'en_SIGN-UP',
+  loginWithEmail: 'en_Log in with email',
 };

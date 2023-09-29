@@ -89,6 +89,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const [pendingReqNumber, setpendingReqNumber] = useState(10);
   const [filterloading, setFilterLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [shimmerLoading, setShimmerLoading] = useState(false);
 
   useEffect(() => {
     const backAction = () => {
@@ -169,15 +170,15 @@ export default function GroupMembersScreen({navigation, route}) {
   // eslint-disable-next-line consistent-return
   const getFilteredMember = (roleArray, connectArray, filterTeams = []) => {
     const resultfilterTeams = filterTeams.filter(
-      (item) => item !== 'is_all' && item !== 'non-Team-Member',
+      (item) => item !== Verbs.ALL_ROLE && item !== Verbs.NonTeamMember_Role,
     );
 
-    const isNonTeamMember = filterTeams.includes('non-Team-Member');
+    const isNonTeamMember = filterTeams.includes(Verbs.NonTeamMember_Role);
 
     const resultString = resultfilterTeams.join(',');
 
     if (filterTeams.length >= 1) {
-      if (filterTeams.includes('is_all')) {
+      if (filterTeams.includes(Verbs.ALL_ROLE)) {
         getOtherTeamsFilterMembers(
           groupID,
           authContext,
@@ -203,7 +204,7 @@ export default function GroupMembersScreen({navigation, route}) {
       // Role Filter
 
       if (
-        !roleArray.includes('is_all', 'no_role') &&
+        !roleArray.includes(Verbs.ALL_ROLE, Verbs.NOROLE_ROLE) &&
         !connectArray.length > 0
       ) {
         if (roleArray.some((role) => item[role] === true)) {
@@ -213,9 +214,9 @@ export default function GroupMembersScreen({navigation, route}) {
 
       if (
         roleArray.length > 0 &&
-        !roleArray.includes('is_all', 'no_role') &&
+        !roleArray.includes(Verbs.ALL_ROLE, Verbs.NOROLE_ROLE) &&
         connectArray.length > 0 &&
-        !connectArray.includes('is_all')
+        !connectArray.includes(Verbs.ALL_ROLE)
       ) {
         if (
           roleArray.some((role) => item[role] === true) &&
@@ -225,22 +226,28 @@ export default function GroupMembersScreen({navigation, route}) {
         }
       }
 
-      if (roleArray.includes('is_all')) {
-        if (connectArray.includes(true) && !connectArray.includes('is_all')) {
+      if (roleArray.includes(Verbs.ALL_ROLE)) {
+        if (
+          connectArray.includes(true) &&
+          !connectArray.includes(Verbs.ALL_ROLE)
+        ) {
           return item.connected === true;
         }
-        if (connectArray.includes(false) && !connectArray.includes('is_all')) {
+        if (
+          connectArray.includes(false) &&
+          !connectArray.includes(Verbs.ALL_ROLE)
+        ) {
           return item.connected === false;
         }
         return true;
       }
 
-      if (roleArray.includes('no_role')) {
+      if (roleArray.includes(Verbs.NOROLE_ROLE)) {
         const propertiesToCheck = [
-          'is_admin',
-          'is_player',
-          'is_coach',
-          'is_parent',
+          Verbs.ADMIN_ROLE,
+          Verbs.PLAYER_ROLE,
+          Verbs.COACH_ROLE,
+          Verbs.PARENT_ROLE,
         ];
 
         const hasAllFalseProperties = propertiesToCheck.every(
@@ -255,23 +262,15 @@ export default function GroupMembersScreen({navigation, route}) {
       }
 
       // connected All
-      if (roleArray.includes('is_all')) {
+      if (roleArray.includes(Verbs.ALL_ROLE)) {
         return true;
       }
 
-      if (connectArray.includes('is_all')) {
+      if (connectArray.includes(Verbs.ALL_ROLE)) {
         if (roleArray.some((role) => item[role] === true)) {
           return item;
         }
       }
-
-      // // connected Filter
-      // if (connectArray.length >= 1 && !roleArray.length > 0) {
-      //   console.log('in the connect');
-      //   if (connectArray.some((role) => item.connected === role)) {
-      //     return item;
-      //   }
-      // }
 
       return false;
     });
@@ -315,28 +314,28 @@ export default function GroupMembersScreen({navigation, route}) {
 
           // filtering for Role and connect
           const filteredMembers = SortedMembers.filter((item) => {
-            if (roleArray.includes('is_all')) {
+            if (roleArray.includes(Verbs.ALL_ROLE)) {
               if (
                 connectArray.includes(true) &&
-                !connectArray.includes('is_all')
+                !connectArray.includes(Verbs.ALL_ROLE)
               ) {
                 return item.connected === true;
               }
               if (
                 connectArray.includes(false) &&
-                !connectArray.includes('is_all')
+                !connectArray.includes(Verbs.ALL_ROLE)
               ) {
                 return item.connected === false;
               }
               return true;
             }
 
-            if (roleArray.includes('no_role')) {
+            if (roleArray.includes(Verbs.NOROLE_ROLE)) {
               const propertiesToCheck = [
-                'is_admin',
-                'is_player',
-                'is_coach',
-                'is_parent',
+                Verbs.ADMIN_ROLE,
+                Verbs.PLAYER_ROLE,
+                Verbs.COACH_ROLE,
+                Verbs.PARENT_ROLE,
               ];
 
               const hasAllFalseProperties = propertiesToCheck.every(
@@ -354,7 +353,7 @@ export default function GroupMembersScreen({navigation, route}) {
               return item;
             }
             // connected All
-            if (roleArray.includes('is_all')) {
+            if (roleArray.includes(Verbs.ALL_ROLE)) {
               return true;
             }
             // connected Filter
@@ -379,7 +378,7 @@ export default function GroupMembersScreen({navigation, route}) {
               if (connectArray.some((role) => item.connected === role)) {
                 return item;
               }
-              if (connectArray.includes('is_all')) {
+              if (connectArray.includes(Verbs.ALL_ROLE)) {
                 return item;
               }
               return false;
@@ -410,7 +409,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const getMembers = async (groupIDs, authContexts, grp_ids = '') => {
     // eslint-disable-next-line no-unused-expressions
-    grp_ids.length >= 1 ? setFilterLoading(true) : setloading(true);
+    grp_ids.length >= 1 ? setFilterLoading(true) : setShimmerLoading(true);
 
     if (groupIDs) {
       getGroupMembers(groupIDs, authContexts, grp_ids)
@@ -434,12 +433,12 @@ export default function GroupMembersScreen({navigation, route}) {
           setMembers(SortedMembers);
 
           setSearchMember(SortedMembers);
-          setloading(false);
+          setShimmerLoading(false);
           setFilterLoading(false);
           setIsRefreshing(false);
         })
         .catch((e) => {
-          setloading(false);
+          setShimmerLoading(false);
           setFilterLoading(false);
           setIsRefreshing(false);
           setTimeout(() => {
@@ -845,8 +844,9 @@ export default function GroupMembersScreen({navigation, route}) {
       <View tabLabel={strings.membersTitle} style={{flex: 1}}>
         {SearchBox()}
 
-        {/* eslint-disable-next-line no-nested-ternary */}
-        {members.length > 0 || noResults ? (
+        {shimmerLoading ? (
+          <GroupMemberShimmer />
+        ) : (
           <FlatList
             style={{marginTop: -10}}
             extraData={searchMember}
@@ -868,8 +868,6 @@ export default function GroupMembersScreen({navigation, route}) {
             }
             keyExtractor={(item, index) => `${item.first_name}/${index}`}
           />
-        ) : (
-          <GroupMemberShimmer />
         )}
       </View>
 
@@ -1058,5 +1056,4 @@ const styles = StyleSheet.create({
     zIndex: 1,
     width: '90%',
   },
-
 });

@@ -1,7 +1,6 @@
 /**
  * @format
  */
-
 // import './app/wdyr';
 
 import {enableScreens} from 'react-native-screens';

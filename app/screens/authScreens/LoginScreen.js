@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useMemo,
-  useCallback,
-  useLayoutEffect,
-} from 'react';
+import React, {useState, useContext, useMemo, useCallback} from 'react';
 import {
   View,
   Text,
@@ -12,7 +6,6 @@ import {
   Alert,
   TextInput,
   StyleSheet,
-  Image,
   SafeAreaView,
   TouchableWithoutFeedback,
   ScrollView,
@@ -46,6 +39,7 @@ import {
 } from '../../api/Users';
 import {getHitSlop} from '../../utils/index';
 import getUserToken from '../../api/StreamChat';
+import AuthScreenHeader from './AuthScreenHeader';
 
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('gauravkulkarni@towncup.com');
@@ -432,30 +426,6 @@ const LoginScreen = ({navigation}) => {
     ),
     [navigation, onLogin],
   );
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          hitSlop={getHitSlop(15)}
-          onPress={() => {
-            // navigation.navigate('LoginScreen');
-            // navigation.dispatch(StackActions.popToTop());
-            navigation.pop();
-            // navigation.dispatch(StackActions.replace('WelcomeScreen'));
-          }}>
-          <Image
-            source={images.backArrow}
-            style={{
-              height: 20,
-              width: 15,
-              marginLeft: 15,
-              tintColor: colors.whiteColor,
-            }}
-          />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
@@ -475,9 +445,15 @@ const LoginScreen = ({navigation}) => {
           contentContainerStyle={{flex: 1}}
           extraScrollHeight={hp(5)}>
           <View style={{flex: 1}}>
+            <AuthScreenHeader
+              title={strings.loginWithEmail}
+              showNext={false}
+              onBackPress={() => {
+                navigation.pop();
+              }}
+            />
             <ScrollView style={{flex: 1}} bounces={false}>
-              <Text style={styles.loginText}>{strings.loginText}</Text>
-              <View style={{marginTop: 30}}>
+              <View style={{marginTop: 50}}>
                 {renderEmailInput}
                 {renderPasswordInput}
               </View>
@@ -522,14 +498,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 25,
     textAlign: 'center',
-  },
-  loginText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginTop: 50,
-    marginLeft: 25,
-    textAlign: 'left',
   },
 
   passwordEyes: {

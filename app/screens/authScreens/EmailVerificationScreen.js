@@ -1,17 +1,10 @@
-import React, {
-  useEffect,
-  useState,
-  useLayoutEffect,
-  useCallback,
-  useContext,
-} from 'react';
+import React, {useEffect, useState, useCallback, useContext} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
   Alert,
-  Image,
   SafeAreaView,
   Dimensions,
 } from 'react-native';
@@ -26,6 +19,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {setStorage} from '../../utils';
+import AuthScreenHeader from './AuthScreenHeader';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -42,19 +36,6 @@ export default function EmailVerificationScreen({navigation, route}) {
       timer > 0 && setInterval(() => setTimer(timer - 1), 1000);
     return () => clearInterval(timerController);
   }, [timer]);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.pop();
-          }}>
-          <Image source={images.backArrow} style={styles.backarrowImg} />
-        </TouchableOpacity>
-      ),
-    });
-  });
 
   const onAuthStateChanged = useCallback(
     (user) => {
@@ -186,10 +167,12 @@ export default function EmailVerificationScreen({navigation, route}) {
     <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
       <ActivityLoader visible={loading} />
       <FastImage style={styles.background} source={images.loginBg} />
+      <AuthScreenHeader
+        title={strings.verifyEmailText}
+        showNext={false}
+        onBackPress={() => navigation.pop()}
+      />
       <View style={styles.headerContainer}>
-        <Text style={styles.headerTextContainer}>
-          {strings.verifyEmailText}
-        </Text>
         <Text style={styles.verificationemailText}>
           {getVerificationEmailText}
         </Text>
@@ -255,26 +238,14 @@ const styles = StyleSheet.create({
     marginRight: 25,
     opacity: 1,
   },
-  backarrowImg: {
-    height: 20,
-    width: 15,
-    marginLeft: 20,
-    tintColor: colors.whiteColor,
-  },
 
   headerContainer: {
-    marginTop: 50,
+    marginTop: 25,
     alignSelf: 'center',
     marginLeft: 25,
     marginRight: 25,
   },
-  headerTextContainer: {
-    fontSize: 25,
-    fontFamily: fonts.RBold,
-    color: colors.whiteColor,
-    marginBottom: 5,
-    lineHeight: 37,
-  },
+
   verificationemailText: {
     fontSize: 16,
     color: 'white',

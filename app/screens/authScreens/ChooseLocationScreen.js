@@ -43,6 +43,7 @@ import * as Utility from '../../utils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 import locationModalStyles from '../../Constants/LocationModalStyle';
+import AuthScreenHeader from './AuthScreenHeader';
 
 export default function ChooseLocationScreen({navigation, route}) {
   const [cityData, setCityData] = useState([]);
@@ -291,8 +292,17 @@ export default function ChooseLocationScreen({navigation, route}) {
       style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       <FastImage style={styles.background} source={images.loginBg} />
+
+      <View style={{marginTop: 25}}>
+        <AuthScreenHeader
+          title={strings.locationText}
+          onBackPress={() => navigation.pop()}
+          onNextPress={() => {}}
+          showNext={false}
+        />
+      </View>
+
       <View style={styles.locationTextContainer}>
-        <Text style={styles.LocationText}>{strings.locationText}</Text>
         <Text style={styles.LocationDescription}>
           {strings.locationDescription}
         </Text>
@@ -323,6 +333,7 @@ export default function ChooseLocationScreen({navigation, route}) {
       {noData && searchText.length === 0 && nearbyCities.length > 0 && (
         <FlatList
           data={nearbyCities}
+          style={{marginTop: -10}}
           renderItem={({item}) => (
             <TouchableWithoutFeedback
               style={styles.listItem}
@@ -369,14 +380,6 @@ export default function ChooseLocationScreen({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
-  LocationText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginTop: Platform.OS === 'ios' ? 40 + 25 : 25,
-    marginLeft: 25,
-    textAlign: 'left',
-  },
   LocationDescription: {
     color: colors.whiteColor,
     fontFamily: fonts.RMedium,
@@ -460,6 +463,6 @@ const styles = StyleSheet.create({
     marginTop: 21,
   },
   locationTextContainer: {
-    marginTop: 25,
+    marginTop: 15,
   },
 });

@@ -1,11 +1,9 @@
-import React, {useState, useRef, useLayoutEffect} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   Alert,
   StyleSheet,
   TouchableOpacity,
   View,
-  Text,
-  Image,
   Platform,
   SafeAreaView,
   Dimensions,
@@ -24,9 +22,9 @@ import * as Utility from '../../utils/index';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
-import fonts from '../../Constants/Fonts';
 import TCTextField from '../../components/TCTextField';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import AuthScreenHeader from './AuthScreenHeader';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -47,38 +45,6 @@ export default function SignupScreen({navigation, route}) {
 
   const actionSheet = useRef();
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.pop();
-          }}>
-          <Image
-            source={images.backArrow}
-            style={{
-              height: 20,
-              width: 15,
-              marginLeft: 20,
-              tintColor: colors.whiteColor,
-            }}
-          />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <Text
-          testID="next-signup-button"
-          style={styles.nextButtonStyle}
-          onPress={() => {
-            if (validate()) {
-              uploadProfilePicAndGeneratePreSignedUrls();
-            }
-          }}>
-          {strings.next}
-        </Text>
-      ),
-    });
-  });
   // For activity indigator
   const uploadProfilePicAndGeneratePreSignedUrls = async () => {
     const userData = {};
@@ -257,10 +223,19 @@ export default function SignupScreen({navigation, route}) {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#FF8A01'}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
       <ActivityLoader visible={loading} />
       <FastImage style={styles.background} source={images.loginBg} />
-      <Text style={styles.checkEmailText}>{strings.addYourName}</Text>
+
+      <AuthScreenHeader
+        title={strings.addYourName}
+        onBackPress={() => navigation.pop()}
+        onNextPress={() => {
+          if (validate()) {
+            uploadProfilePicAndGeneratePreSignedUrls();
+          }
+        }}
+      />
 
       <TCKeyboardView>
         <View
@@ -437,19 +412,5 @@ const styles = StyleSheet.create({
   cameraIcon: {
     height: 22,
     width: 22,
-  },
-  nextButtonStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    marginRight: 15,
-    color: colors.whiteColor,
-  },
-  checkEmailText: {
-    color: colors.whiteColor,
-    fontFamily: fonts.RBold,
-    fontSize: 25,
-    marginLeft: 25,
-    marginTop: 50,
-    textAlign: 'left',
   },
 });

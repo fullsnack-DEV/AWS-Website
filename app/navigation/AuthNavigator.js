@@ -43,22 +43,22 @@ const AuthNavigator = () => (
     <Stack.Screen
       name="ForgotPasswordScreen"
       component={ForgotPasswordScreen}
-      options={{title: ''}}
+      options={{title: '', headerShown: false}}
     />
     <Stack.Screen
       name="ForgotPasswordLinkSentScreen"
       component={ForgotPasswordLinkSentScreen}
-      options={{title: ''}}
+      options={{title: '', headerShown: false}}
     />
     <Stack.Screen
       name="SignupScreen"
       component={SignupScreen}
-      options={{title: ''}}
+      options={{title: '', headerShown: false}}
     />
     <Stack.Screen
       name="LoginScreen"
       component={LoginScreen}
-      options={{title: ''}}
+      options={{title: '', headerShown: false}}
     />
     <Stack.Screen
       name="SignUpFromLoginScreen"
@@ -68,18 +68,19 @@ const AuthNavigator = () => (
     <Stack.Screen
       name="ChooseLocationScreen"
       component={ChooseLocationScreen}
-      options={{title: ''}}
+      options={{title: '', headerShown: false}}
     />
     <Stack.Screen
       name="ChooseSportsScreen"
       component={ChooseSportsScreen}
-      options={{title: ''}}
+      options={{title: '', headerShown: false}}
     />
     <Stack.Screen
       name="FollowTeams"
       component={FollowTeams}
       options={{
         title: '',
+        headerShown: false,
       }}
     />
     <Stack.Screen name="HomeScreen" component={HomeScreen} options={{}} />
@@ -101,7 +102,7 @@ const AuthNavigator = () => (
     <Stack.Screen
       name="EmailVerificationScreen"
       component={EmailVerificationScreen}
-      options={{title: ''}}
+      options={{title: '', headerShown: false}}
     />
     <Stack.Screen
       name="BottomTab"
@@ -116,18 +117,18 @@ const AuthNavigator = () => (
     <Stack.Screen
       name="AddNameScreen"
       component={AddNameScreen}
-      options={{title: ''}}
+      options={{title: '', headerShown: false}}
     />
     <Stack.Screen
       name="AddBirthdayScreen"
       component={AddBirthdayScreen}
       // options={{headerShown: true}}
-      options={{title: ''}}
+      options={{title: '', headerShown: false}}
     />
     <Stack.Screen
       name="ChooseGenderScreen"
       component={ChooseGenderScreen}
-      options={{title: ''}}
+      options={{title: '', headerShown: false}}
     />
   </Stack.Navigator>
 );

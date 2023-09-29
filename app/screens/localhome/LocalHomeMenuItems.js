@@ -666,7 +666,7 @@ const LocalHomeMenuItems = memo(
                 title={strings.refreesAvailable}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
-                isDisabled={!(items.data.length > 0)}
+                isDisabled={!(items?.data?.length > 0)}
                 onPress={() => onTitlePress(item)}
               />
               <FlatList
