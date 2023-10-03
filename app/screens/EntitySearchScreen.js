@@ -62,6 +62,7 @@ import ScreenHeader from '../components/ScreenHeader';
 import JoinButtonModal from './home/JoinButtomModal';
 
 let stopFetchMore = true;
+let timeout;
 
 const TAB_ITEMS = [
   strings.peopleTitleText,
@@ -224,8 +225,6 @@ export default function EntitySearchScreen({navigation, route}) {
     });
     if (route.params?.locationText) {
       setSettingPopup(true);
-      // setLocation(route.params.locationText);
-      // setSearchLocation(route.params.locationText);
     }
   }, [route.params?.locationText]);
 
@@ -252,7 +251,6 @@ export default function EntitySearchScreen({navigation, route}) {
       setCurrentSubTab(subTab);
     }
   }, [route.params?.activeTab]);
-
   useEffect(() => {
     getGeneralList();
   }, [generalFilter]);
@@ -352,16 +350,9 @@ export default function EntitySearchScreen({navigation, route}) {
     };
     // Search filter
     if (generalFilter.searchText) {
-      // generalsQuery.query.bool.must.push({
-      //   query_string: {
-      //     query: `*${generalFilter.searchText.toLowerCase()}*`,
-      //     fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
-      //   },
-      // });
       generalsQuery.query.bool.must.push({
-        query_string: {
-          query: `${generalFilter.searchText.toLowerCase()}*`,
-          fields: ['full_name'],
+        match_phrase_prefix: {
+          full_name: `*${generalFilter.searchText.toLowerCase()}*`,
         },
       });
     }
@@ -435,73 +426,15 @@ export default function EntitySearchScreen({navigation, route}) {
     // Search filter with cover all filter
 
     if (playerFilter.searchText) {
-      /*
-      if (
-        playerFilter.sport === strings.allSport &&
-        playerFilter.location === strings.worldTitleText
-      ) {
-        playersQuery.query.bool.must.push({
-          bool: {
-            should: [
-              {
-                query_string: {
-                  query: `*${playerFilter.searchText.toLowerCase()}*`,
-                  fields: [
-                    'full_name',
-                    'city',
-                    'country',
-                    'state',
-                    'state_abbr',
-                  ],
-                },
-              },
-              {
-                nested: {
-                  path: 'registered_sports',
-                  query: {
-                    term: {
-                      'registered_sports.sport.keyword': `${playerFilter.searchText.toLowerCase()}`,
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        });
-      } else if (playerFilter.sport === strings.allSport) {
-        playersQuery.query.bool.must.push({
-          query_string: {
-            query: `*${playerFilter.searchText.toLowerCase()}*`,
-            fields: ['full_name', 'registered_sports.sport'],
-          },
-        });
-      } else if (playerFilter.location === strings.worldTitleText) {
-        playersQuery.query.bool.must.push({
-          query_string: {
-            query: `*${playerFilter.searchText.toLowerCase()}*`,
-            fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
-          },
-        });
-      } else {
-        playersQuery.query.bool.must.push({
-          query_string: {
-            query: `*${playerFilter.searchText.toLowerCase()}*`,
-            fields: ['full_name'],
-          },
-        });
-      }
-      */
       // simple search
       if (playerFilter.searchText) {
         playersQuery.query.bool.must.push({
-          query_string: {
-            query: `${playerFilter.searchText.toLowerCase()}*`,
-            fields: ['full_name'],
+          match_phrase_prefix: {
+            full_name: `*${playerFilter.searchText.toLowerCase()}*`,
           },
         });
       }
     }
-
     getUserIndex(playersQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -572,88 +505,10 @@ export default function EntitySearchScreen({navigation, route}) {
 
     // Search filter
     if (refereeFilters.searchText) {
-      /*
-      // No filter case
-      if (
-        refereeFilters.sport === strings.allSport &&
-        refereeFilters.location === strings.worldTitleText
-      ) {
-        refereeQuery.query.bool.must.push({
-          bool: {
-            should: [
-              {
-                query_string: {
-                  query: `*${refereeFilters.searchText.toLowerCase()}*`,
-                  fields: [
-                    'full_name',
-                    'city',
-                    'country',
-                    'state',
-                    'state_abbr',
-                  ],
-                },
-              },
-              {
-                nested: {
-                  path: 'referee_data',
-                  query: {
-                    term: {
-                      'referee_data.sport.keyword': `${refereeFilters.searchText.toLowerCase()}`,
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        });
-      }
-      // Sport filter case
-      else if (refereeFilters.sport === strings.allSport) {
-        refereeQuery.query.bool.must.push({
-          bool: {
-            should: [
-              {
-                query_string: {
-                  query: `*${refereeFilters.searchText.toLowerCase()}*`,
-                  fields: ['full_name'],
-                },
-              },
-              {
-                nested: {
-                  path: 'referee_data',
-                  query: {
-                    term: {
-                      'referee_data.sport.keyword': `${refereeFilters.searchText.toLowerCase()}`,
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        });
-      } // location filter case
-      else if (refereeFilters.location === strings.worldTitleText) {
-        refereeQuery.query.bool.must.push({
-          query_string: {
-            query: `*${refereeFilters.searchText.toLowerCase()}*`,
-            fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
-          },
-        });
-      } else {
-        // default case
-        refereeQuery.query.bool.must.push({
-          query_string: {
-            query: `*${refereeFilters.searchText.toLowerCase()}*`,
-            fields: ['full_name'],
-          },
-        });
-      }
-*/
       // Simple search with full name
       refereeQuery.query.bool.must.push({
-        query_string: {
-          query: `${refereeFilters.searchText.toLowerCase()}*`,
-          fields: ['full_name'],
+        match_phrase_prefix: {
+          full_name: `*${refereeFilters.searchText.toLowerCase()}*`,
         },
       });
     }
@@ -721,88 +576,10 @@ export default function EntitySearchScreen({navigation, route}) {
     }
     // Search filter
     if (scoreKeeperFilters.searchText) {
-      // No filter case
-      /*
-      if (
-        scoreKeeperFilters.sport === strings.allSport &&
-        scoreKeeperFilters.location === strings.worldTitleText
-      ) {
-        scoreKeeperQuery.query.bool.must.push({
-          bool: {
-            should: [
-              {
-                query_string: {
-                  query: `*${scoreKeeperFilters.searchText.toLowerCase()}*`,
-                  fields: [
-                    'city',
-                    'country',
-                    'state',
-                    'state_abbr',
-                    'full_name',
-                  ],
-                },
-              },
-              {
-                nested: {
-                  path: 'scorekeeper_data',
-                  query: {
-                    term: {
-                      'scorekeeper_data.sport.keyword': `${scoreKeeperFilters.searchText.toLowerCase()}`,
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        });
-      }
-      // Sport filter case
-      else if (scoreKeeperFilters.sport === strings.allSport) {
-        scoreKeeperQuery.query.bool.must.push({
-          bool: {
-            should: [
-              {
-                query_string: {
-                  query: `*${scoreKeeperFilters.searchText.toLowerCase()}*`,
-                  fields: ['full_name'],
-                },
-              },
-              {
-                nested: {
-                  path: 'scorekeeper_data',
-                  query: {
-                    term: {
-                      'scorekeeper_data.sport.keyword': `${scoreKeeperFilters.searchText.toLowerCase()}`,
-                    },
-                  },
-                },
-              },
-            ],
-          },
-        });
-      } // location filter case
-      else if (scoreKeeperFilters.location === strings.worldTitleText) {
-        scoreKeeperQuery.query.bool.must.push({
-          query_string: {
-            query: `*${scoreKeeperFilters.searchText.toLowerCase()}*`,
-            fields: ['full_name', 'city', 'country', 'state', 'state_abbr'],
-          },
-        });
-      } else {
-        // Default case
-        scoreKeeperQuery.query.bool.must.push({
-          query_string: {
-            query: `*${scoreKeeperFilters.searchText.toLowerCase()}*`,
-            fields: ['full_name'],
-          },
-        });
-      }
-      */
       // simple search with full name
       scoreKeeperQuery.query.bool.must.push({
-        query_string: {
-          query: `${scoreKeeperFilters.searchText.toLowerCase()}*`,
-          fields: ['full_name'],
+        match_phrase_prefix: {
+          full_name: `*${scoreKeeperFilters.searchText.toLowerCase()}*`,
         },
       });
     }
@@ -858,57 +635,10 @@ export default function EntitySearchScreen({navigation, route}) {
     }
     // team search filter
     if (teamFilters.searchText) {
-      // No filter case
-      /*
-      if (
-        teamFilters.sport === strings.allSport &&
-        teamFilters.location === strings.worldTitleText
-      ) {
-        teamsQuery.query.bool.must.push({
-          query_string: {
-            query: `*${teamFilters.searchText.toLowerCase()}*`,
-            fields: [
-              'group_name',
-              'city',
-              'country',
-              'state',
-              'state_abbr',
-              'sport',
-            ],
-          },
-        });
-      }
-      // Sport filter case
-      else if (teamFilters.sport === strings.allSport) {
-        teamsQuery.query.bool.must.push({
-          query_string: {
-            query: `*${teamFilters.searchText.toLowerCase()}*`,
-            fields: ['group_name', 'sport'],
-          },
-        });
-      } // location filter case
-      else if (teamFilters.location === strings.worldTitleText) {
-        teamsQuery.query.bool.must.push({
-          query_string: {
-            query: `*${teamFilters.searchText.toLowerCase()}*`,
-            fields: ['group_name', 'city', 'country', 'state', 'state_abbr'],
-          },
-        });
-      } else {
-        // Default case
-        teamsQuery.query.bool.must.push({
-          query_string: {
-            query: `*${teamFilters.searchText.toLowerCase()}*`,
-            fields: ['group_name'],
-          },
-        });
-      }
-      */
       // Simple search with group name
       teamsQuery.query.bool.must.push({
-        query_string: {
-          query: `${teamFilters.searchText.toLowerCase()}*`,
-          fields: ['group_name'],
+        match_phrase_prefix: {
+          group_name: `*${teamFilters.searchText.toLowerCase()}*`,
         },
       });
     }
@@ -934,9 +664,6 @@ export default function EntitySearchScreen({navigation, route}) {
 
   const getClubList = useCallback(() => {
     setSmallLoader(true);
-    // const clubsQuery = bodybuilder()
-    //   .query('match', 'entity_type', 'club')
-    //   .build();
     const clubsQuery = {
       size: pageSize,
       from: clubsPageFrom,
@@ -976,57 +703,10 @@ export default function EntitySearchScreen({navigation, route}) {
     }
     // club search filter
     if (clubFilters.searchText) {
-      /*
-      // No filter case
-      if (
-        clubFilters.sport === strings.allSport &&
-        clubFilters.location === strings.worldTitleText
-      ) {
-        clubsQuery.query.bool.must.push({
-          query_string: {
-            query: `*${clubFilters.searchText.toLowerCase()}*`,
-            fields: [
-              'group_name',
-              'city',
-              'country',
-              'state',
-              'state_abbr',
-              'sports.sport',
-            ],
-          },
-        });
-      }
-      // Sport filter case
-      else if (clubFilters.sport === strings.allSport) {
-        clubsQuery.query.bool.must.push({
-          query_string: {
-            query: `*${clubFilters.searchText.toLowerCase()}*`,
-            fields: ['group_name', 'sports.sport'],
-          },
-        });
-      } // location filter case
-      else if (clubFilters.location === strings.worldTitleText) {
-        clubsQuery.query.bool.must.push({
-          query_string: {
-            query: `*${clubFilters.searchText.toLowerCase()}*`,
-            fields: ['group_name', 'city', 'country', 'state', 'state_abbr'],
-          },
-        });
-      } else {
-        // Default case
-        clubsQuery.query.bool.must.push({
-          query_string: {
-            query: `*${clubFilters.searchText.toLowerCase()}*`,
-            fields: ['group_name'],
-          },
-        });
-      }
-      */
       // simple search with group name
       clubsQuery.query.bool.must.push({
-        query_string: {
-          query: `${clubFilters.searchText.toLowerCase()}*`,
-          fields: ['group_name'],
+        match_phrase_prefix: {
+          group_name: `*${clubFilters.searchText.toLowerCase()}*`,
         },
       });
     }
@@ -1100,67 +780,11 @@ export default function EntitySearchScreen({navigation, route}) {
       });
     }
     if (completedGameFilters.searchText) {
-      /*
-      if (
-        completedGameFilters.sport === strings.allSport &&
-        completedGameFilters.location === strings.worldTitleText
-      ) {
-        completedGameQuery.query.bool.must.push({
-          query_string: {
-            query: `*${completedGameFilters.searchText.toLowerCase()}*`,
-            fields: [
-              'city',
-              'country',
-              'state',
-              'state_abbr',
-              'sport',
-              'venue.address',
-              'home_team_name',
-              'away_team_name',
-            ],
-          },
-        });
-      }
-      // Sport filter case
-      else if (completedGameFilters.sport === strings.allSport) {
-        completedGameQuery.query.bool.must.push({
-          query_string: {
-            query: `*${completedGameFilters.searchText.toLowerCase()}*`,
-            fields: ['home_team_name', 'away_team_name', 'sport'],
-          },
-        });
-      } // location filter case
-      else if (completedGameFilters.location === strings.worldTitleText) {
-        completedGameQuery.query.bool.must.push({
-          query_string: {
-            query: `*${completedGameFilters.searchText.toLowerCase()}*`,
-            fields: [
-              'home_team_name',
-              'away_team_name',
-              'city',
-              'country',
-              'state',
-              'state_abbr',
-              'venue.address',
-            ],
-          },
-        });
-      } else {
-        // Default case
-        completedGameQuery.query.bool.must.push({
-          query_string: {
-            query: `*${completedGameFilters.searchText.toLowerCase()}*`,
-            fields: ['home_team_name', 'away_team_name'],
-          },
-        });
-      }
-      */
-      // simple search with home and away team name
-      // Default case
       completedGameQuery.query.bool.must.push({
-        query_string: {
-          query: `${completedGameFilters.searchText.toLowerCase()}*`,
+        multi_match: {
+          query: `*${completedGameFilters.searchText.toLowerCase()}*`,
           fields: ['home_team_name', 'away_team_name'],
+          type: 'phrase_prefix',
         },
       });
     }
@@ -1280,7 +904,6 @@ export default function EntitySearchScreen({navigation, route}) {
           },
         });
       }
-      console.log('gameListWithFilter==>', JSON.stringify(gameListWithFilter));
       getGameIndex(gameListWithFilter)
         .then((res) => {
           if (res.length > 0) {
@@ -1331,7 +954,7 @@ export default function EntitySearchScreen({navigation, route}) {
         <ActivityIndicator
           style={styles.loaderStyle}
           size="small"
-          color="#000000"
+          color={colors.blackColor}
         />
       ) : (
         <Text
@@ -1552,93 +1175,6 @@ export default function EntitySearchScreen({navigation, route}) {
     }
   };
 
-  // const getLocation = async () => {
-  //   setloading(true);
-  //   await getGeocoordinatesWithPlaceName(Platform.OS)
-  //     .then((currentLocation) => {
-  //       if (currentLocation.position) {
-  //         const loc =
-  //           currentLocation.city?.charAt(0).toUpperCase() +
-  //           currentLocation.city?.slice(1);
-  //         // setLocation(loc);
-  //         switch (currentTab) {
-  //           case 0:
-  //             if (currentSubTab === strings.generalText) {
-  //               setGeneralFilter({
-  //                 ...generalFilter,
-  //                 locationOption: 2,
-  //                 location: loc,
-  //               });
-  //             } else if (currentSubTab === strings.playerTitle) {
-  //               setPlayerFilter({
-  //                 ...playerFilter,
-  //                 locationOption: 2,
-  //                 location: loc,
-  //               });
-  //             } else if (currentSubTab === strings.refereesTitle) {
-  //               setrRefereeFilters({
-  //                 ...refereeFilters,
-  //                 locationOption: 2,
-  //                 location: loc,
-  //               });
-  //             } else if (currentSubTab === strings.scorekeeperTitle) {
-  //               setScoreKeeperFilters({
-  //                 ...scoreKeeperFilters,
-  //                 locationOption: 2,
-  //                 location: loc,
-  //               });
-  //             }
-  //             break;
-  //           case 1:
-  //             if (currentSubTab === strings.teamsTitleText) {
-  //               setTeamFilters({
-  //                 ...teamFilters,
-  //                 locationOption: 2,
-  //                 location: loc,
-  //               });
-  //             } else if (currentSubTab === strings.clubsTitleText) {
-  //               setClubFilters({
-  //                 ...clubFilters,
-  //                 locationOption: 2,
-  //                 location: loc,
-  //               });
-  //             }
-  //             break;
-  //           case 2:
-  //             if (currentSubTab === strings.completedTitleText) {
-  //               setCompletedGameFilters({
-  //                 ...completedGameFilters,
-  //                 locationOption: 2,
-  //                 location: loc,
-  //               });
-  //             } else if (currentSubTab === strings.upcomingTitleText) {
-  //               setUpcomingGameFilters({
-  //                 ...upcomingGameFilters,
-  //                 locationOption: 2,
-  //                 location: loc,
-  //               });
-  //             }
-  //             break;
-  //           default:
-  //             break;
-  //         }
-  //       }
-  //       setloading(false);
-  //       setSettingPopup(false);
-  //       return currentLocation;
-  //     })
-  //     .catch((e) => {
-  //       setloading(false);
-  //       setSettingPopup(false);
-
-  //       if (e.message !== strings.userdeniedgps) {
-  //         setTimeout(() => {
-  //           Alert.alert(strings.alertmessagetitle, e.message);
-  //         }, 10);
-  //       }
-  //     });
-  // };
-
   const onScrollHandler = () => {
     switch (currentTab) {
       case 0:
@@ -1781,18 +1317,33 @@ export default function EntitySearchScreen({navigation, route}) {
 
   const tabChangePress = useCallback(
     (changeTab) => {
-      searchFilterFunction('');
-
-      searchBoxRef.current.clear();
       switch (changeTab) {
         case 0:
           setCurrentSubTab(strings.generalText);
+          setGeneralList([]);
+          setGeneralPageFrom(0);
+          setGeneralFilter({
+            ...generalFilter,
+            searchText,
+          });
           break;
         case 1:
           setCurrentSubTab(strings.teamsTitleText);
+          setTeams([]);
+          setTeamsPageFrom(0);
+          setTeamFilters({
+            ...teamFilters,
+            searchText,
+          });
           break;
         case 2:
           setCurrentSubTab(strings.completedTitleText);
+          setCompletedGame([]);
+          setCompletedGamePageFrom(0);
+          setCompletedGameFilters({
+            ...completedGameFilters,
+            searchText,
+          });
           break;
         default:
           break;
@@ -1800,15 +1351,91 @@ export default function EntitySearchScreen({navigation, route}) {
 
       setCurrentTab(changeTab);
     },
-    [searchFilterFunction],
+    [completedGameFilters, generalFilter, searchText, teamFilters],
   );
   const onPressSubTabs = useCallback(
     (item) => {
       setCurrentSubTab(item);
-      searchFilterFunction('');
-      searchBoxRef.current.clear();
+      switch (item) {
+        case strings.generalText:
+          setGeneralList([]);
+          setGeneralPageFrom(0);
+          setGeneralFilter({
+            ...generalFilter,
+            searchText,
+          });
+          break;
+        case strings.playerTitle:
+          setplayerList([]);
+          setPageFrom(0);
+          setPlayerFilter({
+            ...playerFilter,
+            searchText,
+          });
+          break;
+        case strings.refereesTitle:
+          setReferees([]);
+          setRefereesPageFrom(0);
+          setrRefereeFilters({
+            ...refereeFilters,
+            searchText,
+          });
+          break;
+        case strings.scorekeeperTitle:
+          setScorekeepers([]);
+          setScorekeeperPageFrom(0);
+          setScoreKeeperFilters({
+            ...scoreKeeperFilters,
+            searchText,
+          });
+          break;
+        case strings.teamsTitleText:
+          setTeams([]);
+          setTeamsPageFrom(0);
+          setTeamFilters({
+            ...teamFilters,
+            searchText,
+          });
+          break;
+        case strings.clubsTitleText:
+          setClubs([]);
+          setClubsPageFrom(0);
+          setClubFilters({
+            ...clubFilters,
+            searchText,
+          });
+          break;
+        case strings.completedTitleText:
+          setCompletedGame([]);
+          setCompletedGamePageFrom(0);
+          setCompletedGameFilters({
+            ...completedGameFilters,
+            searchText,
+          });
+          break;
+        case strings.upcomingTitleText:
+          setUpcomingGame([]);
+          setUpcomingGamePageFrom(0);
+          setUpcomingGameFilters({
+            ...upcomingGameFilters,
+            searchText,
+          });
+          break;
+        default:
+          break;
+      }
     },
-    [searchFilterFunction],
+    [
+      clubFilters,
+      completedGameFilters,
+      generalFilter,
+      playerFilter,
+      refereeFilters,
+      scoreKeeperFilters,
+      searchText,
+      teamFilters,
+      upcomingGameFilters,
+    ],
   );
 
   const userJoinGroup = (groupId) => {
@@ -2044,62 +1671,11 @@ export default function EntitySearchScreen({navigation, route}) {
                 </Text>
               </TouchableOpacity>
             ))}
-          {/* {currentTab === 3 &&
-            POST_SUB_TAB_ITEMS.map((item) => (
-              <TouchableOpacity
-                key={item}
-                style={{padding: 10}}
-                onPress={() => setCurrentSubTab(item)}>
-                <Text
-                  style={{
-                    color:
-                      item === currentSubTab
-                        ? colors.themeColor
-                        : colors.lightBlackColor,
-                    fontFamily:
-                      item === currentSubTab ? fonts.RBold : fonts.RRegular,
-                  }}>
-                  {_.startCase(item)}
-                </Text>
-              </TouchableOpacity>
-            ))} */}
         </ScrollView>
         {currentSubTab !== strings.generalText && (
           <TouchableWithoutFeedback
             onPress={() => {
               setTimeout(() => {
-                // switch (currentSubTab) {
-                //   case strings.playerTitle: {
-                //     setLocation(playerFilter.location);
-                //     break;
-                //   }
-                //   case strings.refereesTitle: {
-                //     setLocation(refereeFilters.location);
-                //     break;
-                //   }
-                //   case strings.scorekeeperTitle: {
-                //     setLocation(scoreKeeperFilters.location);
-                //     break;
-                //   }
-                //   case strings.teamsTitleText: {
-                //     setLocation(teamFilters.location);
-                //     break;
-                //   }
-                //   case strings.clubsTitleText: {
-                //     setLocation(clubFilters.location);
-                //     break;
-                //   }
-                //   case strings.completedTitleText: {
-                //     setLocation(completedGameFilters.location);
-                //     break;
-                //   }
-                //   case strings.upcomingTitleText: {
-                //     setLocation(upcomingGameFilters.location);
-                //     break;
-                //   }
-                //   default:
-                //     break;
-                // }
                 setSettingPopup(true);
               }, 100);
             }}>
@@ -2401,23 +1977,6 @@ export default function EntitySearchScreen({navigation, route}) {
         }
       />
       <ActivityLoader visible={loading} />
-      {/* <View style={styles.searchBarView}>
-        <TCSearchBox
-          testID={'entity-search-input'}
-          textInputRef={searchBoxRef}
-          editable={true}
-          value={searchText}
-          onChangeText={(text) => {
-            setSearchText(text);
-            searchFilterFunction(text);
-          }}
-          onPressClear={(text) => {
-            console.log('search call', text);
-            setSearchText('');
-            searchFilterFunction('');
-          }}
-        />
-      </View> */}
       <View style={styles.floatingInput}>
         <View style={styles.inputContainer}>
           <TextInput
@@ -2426,7 +1985,10 @@ export default function EntitySearchScreen({navigation, route}) {
             value={searchText}
             onChangeText={(text) => {
               setSearchText(text);
-              searchFilterFunction(text);
+              clearTimeout(timeout);
+              timeout = setTimeout(() => {
+                searchFilterFunction(text);
+              }, 300);
             }}
             placeholder={strings.searchHereText}
             ref={searchBoxRef}
@@ -2518,7 +2080,23 @@ export default function EntitySearchScreen({navigation, route}) {
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
-        ListFooterComponent={() => <View style={{height: 15}} />}
+        // ListFooterComponent={() => <View style={{height: 15}} />}
+        ListFooterComponent={() => (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {!stopFetchMore && (
+              <ActivityIndicator
+                style={styles.loaderStyle}
+                size="small"
+                color={colors.blackColor}
+              />
+            )}
+          </View>
+        )}
       />
       <ActionSheet
         ref={actionSheet}
@@ -2960,13 +2538,6 @@ export default function EntitySearchScreen({navigation, route}) {
   );
 }
 const styles = StyleSheet.create({
-  // searchBarView: {
-  //   flexDirection: 'row',
-  //   marginLeft: 15,
-  //   marginTop: 20,
-  //   marginBottom: 0,
-  //   marginRight: 15,
-  // },
   topViewContainer: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -56,6 +56,8 @@ export default function RefereesListScreen({navigation, route}) {
   const [playerDetail, setPlayerDetail] = useState();
   const [smallLoader, setSmallLoader] = useState(false);
 
+  let timeout;
+
   useEffect(() => {
     getStorage('appSetting').then((setting) => {
       setImageBaseUrl(setting.base_url_sporticon);
@@ -262,9 +264,8 @@ export default function RefereesListScreen({navigation, route}) {
         */
         // Simple search with name
         refereeQuery.query.bool.must.push({
-          query_string: {
-            query: `${filerReferee.searchText.toLowerCase()}*`,
-            fields: ['full_name'],
+          match_phrase_prefix: {
+            full_name: `*${filerReferee.searchText.toLowerCase()}*`,
           },
         });
       }
@@ -502,7 +503,7 @@ export default function RefereesListScreen({navigation, route}) {
         <ActivityIndicator
           style={styles.loaderStyle}
           size="small"
-          color="#000000"
+          color={colors.blackColor}
         />
       ) : (
         <Text
@@ -552,18 +553,6 @@ export default function RefereesListScreen({navigation, route}) {
     </Pressable>
   );
 
-  // const calculateRatio = (sportsLength) => {
-  //   if (sportsLength === 2) {
-  //     return 1.3;
-  //   }
-  //   if (sportsLength === 3) {
-  //     return 1.5;
-  //   }
-  //   if (sportsLength === 4) {
-  //     return 1.7;
-  //   }
-  //   return 1.8;
-  // };
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -589,9 +578,12 @@ export default function RefereesListScreen({navigation, route}) {
                 setFilters({
                   ...tempFilter,
                 });
-                setPageFrom(0);
-                setReferees([]);
-                applyFilter(tempFilter);
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                  setPageFrom(0);
+                  setReferees([]);
+                  applyFilter(tempFilter);
+                }, 300);
               }}
               value={filters.searchText}
             />
@@ -652,6 +644,22 @@ export default function RefereesListScreen({navigation, route}) {
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
+        ListFooterComponent={() => (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {!stopFetchMore && (
+              <ActivityIndicator
+                style={styles.loaderStyle}
+                size="small"
+                color={colors.blackColor}
+              />
+            )}
+          </View>
+        )}
       />
       {/* note */}
 

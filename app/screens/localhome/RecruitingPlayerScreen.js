@@ -54,6 +54,7 @@ import SearchModal from '../../components/Filter/SearchModal';
 import ScreenHeader from '../../components/ScreenHeader';
 
 let stopFetchMore = true;
+let timeout;
 
 export default function RecruitingPlayerScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -294,9 +295,8 @@ export default function RecruitingPlayerScreen({navigation, route}) {
 
       if (filerdata?.searchText?.length > 0) {
         recruitingPlayersQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filerdata?.searchText}*`,
-            fields: ['group_name'],
+          match_phrase_prefix: {
+            group_name: `*${filerdata.searchText.toLowerCase()}*`,
           },
         });
       }
@@ -459,7 +459,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         <ActivityIndicator
           style={styles.loaderStyle}
           size="small"
-          color="#000000"
+          color={colors.blackColor}
         />
       ) : (
         <Text
@@ -530,7 +530,6 @@ export default function RecruitingPlayerScreen({navigation, route}) {
               autoCorrect={false}
               onChangeText={(text) => {
                 const tempFilter = {...filters};
-
                 if (text?.length > 0) {
                   tempFilter.searchText = text;
                 } else {
@@ -539,9 +538,12 @@ export default function RecruitingPlayerScreen({navigation, route}) {
                 setFilters({
                   ...tempFilter,
                 });
-                setPageFrom(0);
-                setRecruitingPlayer([]);
-                applyFilter(tempFilter);
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                  setPageFrom(0);
+                  setRecruitingPlayer([]);
+                  applyFilter(tempFilter);
+                }, 300);
               }}
               value={filters.searchText}
             />
@@ -599,7 +601,23 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
-        ListFooterComponent={() => <View style={{height: 15}} />}
+        // ListFooterComponent={() => <View style={{height: 15}} />}
+        ListFooterComponent={() => (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {!stopFetchMore && (
+              <ActivityIndicator
+                style={styles.loaderStyle}
+                size="small"
+                color={colors.blackColor}
+              />
+            )}
+          </View>
+        )}
       />
       <ActionSheet
         ref={actionSheet}

@@ -43,6 +43,7 @@ import {ModalTypes} from '../../Constants/GeneralConstants';
 import ScreenHeader from '../../components/ScreenHeader';
 
 let stopFetchMore = true;
+let timeout;
 
 export default function LookingTeamScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
@@ -242,9 +243,8 @@ export default function LookingTeamScreen({navigation, route}) {
         */
         // simple search with full name
         lookingQuery.query.bool.must.push({
-          query_string: {
-            query: `*${filerLookingEntity.searchText.toLowerCase()}*`,
-            fields: ['full_name'],
+          match_phrase_prefix: {
+            full_name: `*${filerLookingEntity.searchText.toLowerCase()}*`,
           },
         });
       }
@@ -375,7 +375,7 @@ export default function LookingTeamScreen({navigation, route}) {
         <ActivityIndicator
           style={styles.loaderStyle}
           size="small"
-          color="#000000"
+          color={colors.blackColor}
         />
       ) : (
         <Text
@@ -512,9 +512,12 @@ export default function LookingTeamScreen({navigation, route}) {
                 setFilters({
                   ...tempFilter,
                 });
-                setPageFrom(0);
-                setLookingEntity([]);
-                applyFilter(tempFilter);
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                  setPageFrom(0);
+                  setLookingEntity([]);
+                  applyFilter(tempFilter);
+                }, 300);
               }}
               value={filters.searchText}
             />
@@ -572,7 +575,23 @@ export default function LookingTeamScreen({navigation, route}) {
           stopFetchMore = false;
         }}
         ListEmptyComponent={listEmptyComponent}
-        ListFooterComponent={() => <View style={{height: 30}} />}
+        // ListFooterComponent={() => <View style={{height: 30}} />}
+        ListFooterComponent={() => (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {!stopFetchMore && (
+              <ActivityIndicator
+                style={styles.loaderStyle}
+                size="small"
+                color={colors.blackColor}
+              />
+            )}
+          </View>
+        )}
       />
       <Modal
         onBackdropPress={() => setChallengePopup(false)}

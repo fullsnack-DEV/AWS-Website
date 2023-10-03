@@ -644,7 +644,11 @@ function LocalHomeScreen({navigation, route}) {
         marginHorizontal: 3,
       }}>
       {sportIconLoader ? (
-        <ActivityIndicator size={'small'} style={styles.iconStyles} />
+        <ActivityIndicator
+          style={styles.imgloaderStyle}
+          size="small"
+          color={colors.blackColor}
+        />
       ) : (
         renderImageforSport(item)
       )}
@@ -1201,10 +1205,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.veryLightGray,
   },
 
-  iconStyles: {
-    height: 40,
-    width: 40,
-  },
   allSportIconStyle: {
     height: 25,
     width: 25,
