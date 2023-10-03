@@ -1205,10 +1205,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.veryLightGray,
   },
 
-  iconStyles: {
-    height: 40,
-    width: 40,
-  },
   allSportIconStyle: {
     height: 25,
     width: 25,
