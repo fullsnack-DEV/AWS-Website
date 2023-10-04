@@ -11,12 +11,17 @@ export default function TCProfileView({
   location,
   type = 'large',
   color = colors.lightBlackColor,
+  profileImageStyle = {},
+  profileContainerStyle = {},
   ...Props
 }) {
   return (
     <View style={[styles.topViewContainer, Props]}>
-      <View style={styles.profileView}>
-        <FastImage source={image} style={styles.profileImage} />
+      <View style={[styles.profileView, profileContainerStyle]}>
+        <FastImage
+          source={image}
+          style={[styles.profileImage, profileImageStyle]}
+        />
       </View>
       <View style={styles.topTextContainer}>
         {type === 'medium' && name && (

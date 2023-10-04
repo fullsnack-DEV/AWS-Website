@@ -667,6 +667,8 @@ export default function EventScreen({navigation, route}) {
                     }
                     alignSelf={'flex-start'}
                     marginTop={10}
+                    profileImageStyle={{width: 40, height: 40}}
+                    profileContainerStyle={{marginRight: 10}}
                   />
                   <Image
                     source={images.starProfile}
@@ -1064,7 +1066,7 @@ export default function EventScreen({navigation, route}) {
       <CustomModalWrapper
         isVisible={infoModal}
         modalType={ModalTypes.style2}
-        ratio={infoType === Verbs.attendeeVerb ? 1.3 : 1.2}
+        ratio={infoType === Verbs.attendeeVerb ? 1.28 : 1.23}
         closeModal={() => {
           setInfoModal(false);
         }}>
@@ -1170,16 +1172,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   titleText: {
-    color: colors.blackColor,
     fontSize: 16,
     lineHeight: 24,
-    fontWeight: 'bold',
     marginBottom: 15,
+    color: colors.blackColor,
+    fontFamily: fonts.RBold,
   },
   contentText: {
     color: colors.blackColor,
     fontSize: 16,
     lineHeight: 24,
+    fontFamily: fonts.RMedium,
   },
   filterTitle: {
     fontSize: 20,
@@ -1197,7 +1200,7 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     position: 'absolute',
-    left: 15,
+    left: 22,
     bottom: 0,
   },
   seeAllText: {

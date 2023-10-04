@@ -172,6 +172,7 @@ const CustomInput = () => {
       <BottomSheet
         isVisible={showBottomSheet}
         closeModal={() => setShowBottomSheet(false)}
+        type="ios"
         optionList={[strings.galleryTitle, strings.photoText]}
         onSelect={handleOptions}
       />
