@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import {View, StyleSheet, Pressable, Text, FlatList} from 'react-native';
+import {View, StyleSheet, Text, FlatList, TouchableOpacity} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -15,14 +15,14 @@ const PostsTabView = ({list = [], onPress = () => {}}) =>
         horizontal
         showsHorizontalScrollIndicator={false}
         renderItem={({item, index}) => (
-          <Pressable
+          <TouchableOpacity
             style={[
               styles.buttonContainer,
               index !== list.length - 1 ? {marginRight: 10} : {},
             ]}
             onPress={() => onPress(item)}>
             <Text style={styles.buttonText}>{item}</Text>
-          </Pressable>
+          </TouchableOpacity>
         )}
       />
     </View>

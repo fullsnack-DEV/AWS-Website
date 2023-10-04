@@ -199,7 +199,7 @@ const SwitchAccountModal = ({
             }}>
             <View style={styles.iconContainer}>
               <Image
-                source={images.createGroupIcon}
+                source={images.newCreateGroupIcon}
                 style={[styles.image, {borderRadius: 30}]}
               />
             </View>
@@ -346,10 +346,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.thinDividerColor,
-    borderRadius: 30,
-    padding: 5,
+    marginLeft: 5,
   },
   label: {
     fontSize: 16,

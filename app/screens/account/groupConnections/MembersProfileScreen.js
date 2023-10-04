@@ -26,7 +26,6 @@ import {
   Linking,
   Pressable,
   Platform,
-  Animated,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 
@@ -499,29 +498,40 @@ export default function MembersProfileScreen({navigation, route}) {
   };
 
   const onDeleteMemberProfile = (groupId, memberId, toaccount = false) => {
+    if (memberDetail?.teams?.length > 0) {
+      setloading(false);
+      Alert.alert(
+        strings.appName,
+        strings.childMemberError,
+        [
+          {
+            text: strings.OkText,
+            onPress: () => console.log('PRessed'),
+          },
+        ],
+        {cancelable: false},
+      );
+      return;
+    }
+
+    if (toaccount) {
+      setShowSwitchScreen(true);
+    } else {
+      setloading(true);
+    }
+
     deleteMember(groupId, memberId, authContext)
       .then(async (response) => {
         const validator = 102;
 
-        if (
-          toaccount &&
-          Object.keys(response.payload).length === 0 &&
-          !response.hasOwnProperty('error_code')
-        ) {
-          setloading(false);
-          if (toaccount) {
-            setShowSwitchScreen(true);
+        if (toaccount && Object.keys(response.payload).length === 0) {
+          const updatedManagedEntities = authContext.managedEntities.filter(
+            (item) => item.group_id !== groupId,
+          );
 
-            Animated.timing(animProgress, {
-              useNativeDriver: false,
-              toValue: 100,
-              duration: 400,
-            }).start();
-          } else {
-            setloading(true);
-          }
+          authContext.setentityList(updatedManagedEntities);
 
-          await onSwitchProfile(authContext.user);
+          await onSwitchProfile(authContext.managedEntities[0]);
 
           navigation.navigate('Account', {
             screen: 'AccountScreen',
@@ -546,9 +556,7 @@ export default function MembersProfileScreen({navigation, route}) {
             {cancelable: false},
           );
         } else {
-          navigation.replace('GroupMembersScreen', {
-            ...route.params?.routeParams,
-          });
+          navigation.replace('GroupMembersScreen');
         }
       })
       .catch((e) => {
@@ -1335,8 +1343,6 @@ export default function MembersProfileScreen({navigation, route}) {
     </Modal>
   );
 
-  const animProgress = React.useState(new Animated.Value(0))[0];
-
   const placeHolder = images.profilePlaceHolder;
 
   const {createChannel, isCreatingChannel} = useStreamChatUtils();
@@ -1376,11 +1382,11 @@ export default function MembersProfileScreen({navigation, route}) {
     <SafeAreaView>
       <SwitchAccountLoader
         isVisible={showSwitchScreen}
-        entityName={authContext.user?.full_name}
+        entityName={authContext.managedEntities[0]?.full_name}
         entityType={Verbs.entityTypePlayer}
         entityImage={
-          authContext.user?.thumbnail
-            ? {uri: authContext.user.thumbnail}
+          authContext.managedEntities[0]?.thumbnail
+            ? {uri: authContext.managedEntities[0].thumbnail}
             : placeHolder
         }
         stopLoading={() => {}}

@@ -20,8 +20,9 @@ import {
   BackHandler,
   RefreshControl,
   Image,
+  TouchableOpacity,
 } from 'react-native';
-
+import FastImage from 'react-native-fast-image';
 import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../auth/context';
 import LocationContext from '../../context/LocationContext';
@@ -135,7 +136,6 @@ function LocalHomeScreen({navigation, route}) {
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       return;
     }
-
     try {
       const [userSport] = await Promise.all([
         authContext.entity.role !== Verbs.entityTypeClub
@@ -156,13 +156,13 @@ function LocalHomeScreen({navigation, route}) {
     }
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     locationContext.setSelectedLoaction(location);
     Utility.getStorage('appSetting').then((setting) => {
       setImageBaseUrl(setting.base_url_sporticon);
     });
 
-    LocalHomeQuery(
+    await LocalHomeQuery(
       location,
       defaultPageSize,
       selectedSport,
@@ -191,7 +191,10 @@ function LocalHomeScreen({navigation, route}) {
     };
     getEventdata();
     setSportIconLoader(true);
-    renderTopSportBar();
+    if (authContext.entity.role !== Verbs.entityTypeTeam) {
+      renderTopSportBar();
+    }
+
     setIsRefreshing(false);
   };
 
@@ -244,7 +247,7 @@ function LocalHomeScreen({navigation, route}) {
     }
     if (
       authContext.entity.role === Verbs.entityTypeClub &&
-      authContext.entity.obj.sports.length !== 1
+      authContext.entity.obj?.sports?.length !== 1
     ) {
       setSelectedSport(strings.all);
       setSportType(strings.allSport);
@@ -256,28 +259,7 @@ function LocalHomeScreen({navigation, route}) {
     showSwitchAccountModal,
   ]);
 
-  useEffect(() => {
-    setFilters({
-      sport: selectedSport,
-      sport_type: sportType,
-      location,
-    });
-  }, [selectedSport, sportType]);
-
-  useEffect(() => {
-    const getEventdata = async () => {
-      await getEventsAndSlotsList(
-        authContext,
-        setAllUserData,
-        setOwners,
-        filterSetting,
-        selectedOptions,
-        setFilterData,
-        allUserData,
-      );
-    };
-    getEventdata();
-  }, [authContext, isFocused, isRefreshing]);
+  const memoizedLocalHomeQuery = useMemo(() => LocalHomeQuery, []);
 
   useEffect(() => {
     if (isFocused) {
@@ -286,24 +268,33 @@ function LocalHomeScreen({navigation, route}) {
         setImageBaseUrl(setting.base_url_sporticon);
       });
 
-      LocalHomeQuery(
-        location,
-        defaultPageSize,
-        selectedSport,
-        sportType,
-        authContext,
-        setRecentMatch,
-        setUpcomingMatch,
-        setChallengeeMatch,
-        setHiringPlayers,
-        setLookingTeam,
-        setReferees,
-        setScorekeepers,
-        setCardLoader,
-      );
+      listRef.current.scrollToOffset({offset: 0, animated: true});
+
+      if (
+        selectedSport !== undefined &&
+        sportType !== undefined &&
+        selectedSport !== null &&
+        sportType !== null
+      ) {
+        memoizedLocalHomeQuery(
+          location,
+          defaultPageSize,
+          selectedSport,
+          sportType,
+          authContext,
+          setRecentMatch,
+          setUpcomingMatch,
+          setChallengeeMatch,
+          setHiringPlayers,
+          setLookingTeam,
+          setReferees,
+          setScorekeepers,
+          setCardLoader,
+        );
+      }
     }
   }, [
-    authContext,
+    isFocused,
     selectedSport,
     location,
     sportType,
@@ -314,10 +305,43 @@ function LocalHomeScreen({navigation, route}) {
     setLookingTeam,
     setReferees,
     setScorekeepers,
-    isFocused,
-    locationContext,
-    isRefreshing,
+    memoizedLocalHomeQuery,
   ]);
+
+  useEffect(() => {
+    setFilters({
+      sport: selectedSport,
+      sport_type: sportType,
+      location,
+    });
+  }, [location, selectedSport, sportType]);
+
+  const getEventdata = useMemo(
+    () => async () => {
+      await getEventsAndSlotsList(
+        authContext,
+        setAllUserData,
+        setOwners,
+        filterSetting,
+        selectedOptions,
+        setFilterData,
+        allUserData,
+      );
+    },
+    [
+      authContext,
+      setAllUserData,
+      setOwners,
+      filterSetting,
+      selectedOptions,
+      setFilterData,
+      allUserData,
+    ],
+  );
+
+  useEffect(() => {
+    getEventdata();
+  }, [isFocused]);
 
   const ITEM_HEIGHT = Verbs.ITEM_HEIGHT;
 
@@ -375,7 +399,9 @@ function LocalHomeScreen({navigation, route}) {
   ];
 
   useEffect(() => {
-    renderTopSportBar();
+    if (authContext.entity.role !== Verbs.entityTypeTeam) {
+      renderTopSportBar();
+    }
   }, [authContext]);
 
   useEffect(() => {
@@ -482,7 +508,7 @@ function LocalHomeScreen({navigation, route}) {
     (item) => {
       if (item.sport === strings.allType) {
         return (
-          <Image
+          <FastImage
             source={images.allSportIcon}
             style={styles.allSportIconStyle}
           />
@@ -490,7 +516,10 @@ function LocalHomeScreen({navigation, route}) {
       }
       if (item.sport === strings.editType) {
         return (
-          <Image source={images.editIconHome} style={styles.editIconstyel} />
+          <FastImage
+            source={images.editIconHome}
+            style={styles.editIconstyel}
+          />
         );
       }
       const sportDetails = getSportDetails(
@@ -587,7 +616,7 @@ function LocalHomeScreen({navigation, route}) {
     }
     if (item.title === strings.createEventhomeTitle) {
       navigation.navigate('Schedule', {
-        screen: 'CreateEventScreen',
+        screen: 'EventScheduleScreen',
         params: {
           comeName: '',
         },
@@ -627,7 +656,7 @@ function LocalHomeScreen({navigation, route}) {
   );
 
   const SportsListView = ({item, index}) => (
-    <Pressable
+    <TouchableOpacity
       onPress={() => handlePress(item, index)}
       style={{
         justifyContent: 'center',
@@ -667,7 +696,7 @@ function LocalHomeScreen({navigation, route}) {
         }>
         {renderSportName(item)}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
@@ -854,10 +883,10 @@ function LocalHomeScreen({navigation, route}) {
               ) => (
                 <TopTileSection
                   key={index}
-                  handleTileClick={handleTileClick}
+                  handleTileClick={(item) => handleTileClick(item)}
                   visibleSportsModalForClub={visibleSportsModalForClub}
                   visibleSportsModalForTeam={visibleSportsModalForTeam}
-                  onRegisterAsTilePress={onRegisterAsTilePress}
+                  onRegisterAsTilePress={(item) => onRegisterAsTilePress(item)}
                   setSelectedMenuOptionType={(val) =>
                     setSelectedMenuOptionType(val)
                   }

@@ -1,5 +1,5 @@
-import {View, Text, Pressable, StyleSheet, Platform} from 'react-native';
-import React from 'react';
+import {View, Text, StyleSheet, Platform, TouchableOpacity} from 'react-native';
+import React, {useCallback, useMemo} from 'react';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
@@ -8,11 +8,7 @@ import {convertToKFormat} from './LocalHomeUtils';
 import Verbs from '../../Constants/Verbs';
 import GroupIcon from '../../components/GroupIcon';
 
-export default function TeamCard({
-  item = {},
-  onPress = () => {},
-  placholder = false,
-}) {
+function TeamCard({item = {}, onPress = () => {}, placholder = false}) {
   const getFooterComponent = () => (
     <View
       style={[
@@ -25,56 +21,60 @@ export default function TeamCard({
     </View>
   );
 
-  const getSportName = () => {
+  const getSportName = useCallback(() => {
     if (item.entity_type === Verbs.entityTypeClub) {
       const sportname = item.sports[0].sport;
       return sportname;
     }
 
     return item.sport;
-  };
+  }, [item.entity_type, item.sport, item.sports]);
 
-  const getBgImage = () => {
+  const getBgImage = useMemo(() => {
     if (item.entity_type === Verbs.entityTypeClub) {
       return images.clubdefaultbg;
     }
 
     return images.teamdefaultbg;
-  };
+  }, [item.entity_type]);
 
-  return (
-    <Pressable style={styles.cardContainer} onPress={onPress}>
+  const renderImageBgandName = useMemo(
+    () => (
       <FastImage
         borderTopLeftRadius={5}
         borderTopRightRadius={5}
         style={styles.imgStyles}
-        source={
-          item?.full_image
-            ? {
-                uri: item?.full_image,
-                priority: FastImage.priority.high,
-              }
-            : getBgImage()
-        }>
+        source={item?.full_image ? item?.full_image : getBgImage}>
         <View style={styles.sportNameContainer}>
           <Text style={styles.sportName}>{getSportName()}</Text>
         </View>
       </FastImage>
+    ),
+    [getBgImage, getSportName, item?.full_image],
+  );
 
+  const placeHolderImage = useCallback(
+    () => (
+      <FastImage
+        resizeMode="cover"
+        source={images.tcdefaultPlaceholder}
+        style={styles.teamlogoImg}
+      />
+    ),
+    [],
+  );
+
+  return (
+    <TouchableOpacity style={styles.cardContainer} onPress={onPress}>
       {/* team Logo  */}
+      {renderImageBgandName}
 
       {placholder ? (
-        <View style={styles.teamLogoContainer}>
-          <FastImage
-            resizeMode="cover"
-            source={images.tcdefaultPlaceholder}
-            style={styles.teamlogoImg}
-          />
-        </View>
+        <View style={styles.teamLogoContainer}>{placeHolderImage()}</View>
       ) : (
         <GroupIcon
           entityType={item.entity_type}
-          imageUrl={item?.thumbnail}
+          imageUrl={item?.thumbnail ?? ''}
           groupName={item.group_name}
           containerStyle={styles.teamLogoContainer}
           grpImageStyle={styles.teamlogoImg}
@@ -97,9 +97,11 @@ export default function TeamCard({
       </View>
 
       {getFooterComponent()}
-    </Pressable>
+    </TouchableOpacity>
   );
 }
+
+export default React.memo(TeamCard);
 
 const styles = StyleSheet.create({
   cardContainer: {

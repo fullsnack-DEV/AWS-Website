@@ -2,11 +2,12 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
   Dimensions,
+  TouchableOpacity,
   ScrollView,
+  Image,
 } from 'react-native';
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useCallback} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import {strings} from '../../../Localization/translation';
@@ -134,37 +135,57 @@ function TopTileSection({
     }
   };
 
-  const RenderTiles = ({item, index}) => (
-    <Pressable key={index} onPress={() => handleTileClick(item)} style={{}}>
-      <View
-        key={index}
-        style={[
-          styles.tileView,
-          {
-            marginBottom: 12,
-            width: screenWidth >= 430 ? 88 : 75,
-          },
-        ]}>
-        <FastImage
-          source={item.icon}
-          style={styles.tileImage}
-          resizeMode="contain"
-        />
-      </View>
+  const renderTileImage = useCallback(
+    (icon) => (
+      <FastImage source={icon} style={styles.tileImage} resizeMode="contain" />
+    ),
+    [],
+  );
 
-      <View style={styles.tiletitleContainer}>
-        <Text style={styles.tiletitleText}>
-          {item.title === strings.createEventhomeTitle &&
-          authContext.entity.role !== Verbs.entityTypeTeam
-            ? strings.eventHomeTile
-            : item.title}
-        </Text>
-      </View>
-    </Pressable>
+  const RenderTiles = ({item, index}) => {
+    const {icon} = item;
+    return (
+      <TouchableOpacity
+        key={index}
+        onPress={() => handleTileClick(item)}
+        style={{}}>
+        <View
+          key={index}
+          style={[
+            styles.tileView,
+            {
+              marginBottom: 12,
+              width: screenWidth >= 430 ? 88 : 75,
+            },
+          ]}>
+          {renderTileImage(icon)}
+        </View>
+
+        <View style={styles.tiletitleContainer}>
+          <Text style={styles.tiletitleText}>
+            {item.title === strings.createEventhomeTitle &&
+            authContext.entity.role !== Verbs.entityTypeTeam
+              ? strings.eventHomeTile
+              : item.title}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderTileImageClub = useCallback(
+    (item) => (
+      <FastImage
+        source={item.icon}
+        style={styles.clubTileImg}
+        resizeMode="contain"
+      />
+    ),
+    [],
   );
 
   const RenderTileClub = ({item, index}) => (
-    <Pressable
+    <TouchableOpacity
       key={index}
       onPress={() => {
         handleTileClick(item);
@@ -172,14 +193,21 @@ function TopTileSection({
       <View
         key={index}
         style={[styles.clubTileView, {width: screenWidth >= 430 ? 123 : 105}]}>
-        <FastImage
-          source={item.icon}
-          style={styles.clubTileImg}
-          resizeMode="contain"
-        />
+        {renderTileImageClub(item)}
       </View>
       <Text style={styles.clubTitle}>{item.title}</Text>
-    </Pressable>
+    </TouchableOpacity>
+  );
+
+  const renderHorizontalTileImage = useCallback(
+    (i) => (
+      <FastImage
+        source={i.icon}
+        style={styles.miniCardImg}
+        resizeMode="contain"
+      />
+    ),
+    [],
   );
 
   const RenderHorizontalTileView = () => (
@@ -194,17 +222,13 @@ function TopTileSection({
 
           <View style={styles.miniCardContainer}>
             {item.createData.map((i) => (
-              <Pressable
+              <TouchableOpacity
                 key={i.index.toString()}
                 style={styles.miniCards}
                 onPress={() => onTilePress(i)}>
-                <FastImage
-                  source={i.icon}
-                  style={styles.miniCardImg}
-                  resizeMode="contain"
-                />
+                {renderHorizontalTileImage(i)}
                 <Text style={styles.miniCardName}>{i.name}</Text>
-              </Pressable>
+              </TouchableOpacity>
             ))}
           </View>
         </View>
@@ -213,14 +237,14 @@ function TopTileSection({
   );
 
   const RenderInviteMemberbutton = () => (
-    <Pressable
+    <TouchableOpacity
       onPress={() =>
         handleTileClick({
           title: strings.inviteMemberClub,
         })
       }
       style={styles.memberInviteButton}>
-      <FastImage
+      <Image
         source={images.invitememberbuttonicon}
         style={styles.memberInviteIcon}
       />
@@ -231,7 +255,7 @@ function TopTileSection({
         }}>
         {strings.inviteMemberText}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 
   const renderhorizontalTileContent = () => {
@@ -247,7 +271,7 @@ function TopTileSection({
 
   return (
     <View>
-      <Pressable style={styles.tilesContainer}>
+      <TouchableOpacity style={styles.tilesContainer}>
         {authContext.entity.role === Verbs.entityTypeClub ? (
           <>
             {tilesArray.clubSection.map((item, index) => (
@@ -261,7 +285,7 @@ function TopTileSection({
             ))}
           </>
         )}
-      </Pressable>
+      </TouchableOpacity>
       {/* horizontal tile view */}
 
       {renderhorizontalTileContent()}
@@ -278,9 +302,14 @@ function TopTileSection({
         title={strings.createClubText}
         onNext={(sports) => {
           setClubModal(false);
+
+          const transformedSportArray = Object.keys(sports).map(
+            (key) => sports[key],
+          );
+
           navigation.navigate('Account', {
             screen: 'CreateClubForm1',
-            params: sports,
+            params: transformedSportArray,
           });
         }}
       />

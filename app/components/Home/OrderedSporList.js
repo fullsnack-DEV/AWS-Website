@@ -158,13 +158,14 @@ const OrderedSporList = ({
       item?.item_type === EntityStatus.moreActivity
     ) {
       return (
-        <Pressable
+        <TouchableOpacity
           style={[
             styles.horizontalCard,
             index === 0 ? {marginLeft: 15} : {},
             {borderBottomWidth: 0},
           ]}
           onPress={() => {
+            // Alert.alert('popo');
             onCardPress(item, item?.item_type);
           }}>
           <View style={[styles.imageContainer, {marginHorizontal: 0}]}>
@@ -180,7 +181,7 @@ const OrderedSporList = ({
           <View style={{alignItems: 'center', marginTop: 7}}>
             <Text style={styles.horizontalCardTitle}>{item.sport_name}</Text>
           </View>
-        </Pressable>
+        </TouchableOpacity>
       );
     }
     const sport = getSportDetails(
@@ -212,7 +213,7 @@ const OrderedSporList = ({
 
     if (type === 'horizontal') {
       return (
-        <Pressable
+        <TouchableOpacity
           style={[
             styles.horizontalCard,
             index === 0 ? {marginLeft: 15} : {},
@@ -233,12 +234,12 @@ const OrderedSporList = ({
           <View style={{alignItems: 'center', marginTop: 7}}>
             <Text style={styles.horizontalCardTitle}>{sport.sport_name}</Text>
           </View>
-        </Pressable>
+        </TouchableOpacity>
       );
     }
 
     return (
-      <Pressable
+      <TouchableOpacity
         style={[
           styles.sportView,
           styles.row,
@@ -302,7 +303,7 @@ const OrderedSporList = ({
             </Pressable>
           ) : null}
         </View>
-      </Pressable>
+      </TouchableOpacity>
     );
   };
 
@@ -326,7 +327,7 @@ const OrderedSporList = ({
 
                 if (list.length > 0) {
                   return (
-                    <View
+                    <TouchableOpacity
                       style={[
                         styles.listContainer,
                         index === 0 ? {marginTop: 34} : {},
@@ -337,7 +338,7 @@ const OrderedSporList = ({
                         .map((ele, idx) =>
                           sportsView(ele, getEntityType(item), idx),
                         )}
-                    </View>
+                    </TouchableOpacity>
                   );
                 }
                 return null;
@@ -500,12 +501,10 @@ const OrderedSporList = ({
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-   
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    
   },
   sportView: {
     justifyContent: 'space-between',
@@ -580,7 +579,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
     marginBottom: 15,
-    
   },
   listContainer: {
     marginTop: 40,

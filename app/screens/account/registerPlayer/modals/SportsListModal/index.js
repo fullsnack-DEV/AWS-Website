@@ -1,6 +1,6 @@
 // @flow
 import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {FlatList, Image, Pressable, Text, View} from 'react-native';
 import {strings} from '../../../../../../Localization/translation';
 import images from '../../../../../Constants/ImagePath';
@@ -37,9 +37,10 @@ const SportsListModal = ({
     {name: 'en_Other', isChecked: false},
   ]);
 
-  useEffect(() => {
+  const onModalVisible = useCallback(() => {
+    console.log('in the sports');
     setSelectedSport(sport);
-  }, [sport]);
+  }, [isVisible]);
 
   const isIconCheckedOrNot = ({item, index}) => {
     rolesArray[index].isChecked = !item.isChecked;
@@ -101,12 +102,28 @@ const SportsListModal = ({
 
       navigation.navigate('Account', {
         screen: 'CreateTeamForm1',
-        params: obj,
+        params: {
+          sportData: {...sport_data},
+        },
       });
     } else {
       closeList();
 
       setVisibleRoleModal(false);
+
+      // just in Case if Parametrs doe not REfreseh
+      // navigation.reset({
+      //   index: 1,
+      //   routes: [
+      //     {
+      //       name: 'Account',
+      //       params: {
+      //         screen: 'CreateTeamForm1',
+      //         params: {},
+      //       },
+      //     },
+      //   ],
+      // });
 
       navigation.navigate('Account', {
         screen: 'CreateTeamForm1',
@@ -139,6 +156,7 @@ const SportsListModal = ({
       closeModal={closeList}
       modalType={ModalTypes.style1}
       title={title}
+      onModalShow={() => onModalVisible()}
       headerRightButtonText={rightButtonText}
       containerStyle={styles.parent}
       onRightButtonPress={() => {
@@ -147,7 +165,11 @@ const SportsListModal = ({
         }
 
         if (forTeam) {
-          setVisibleRoleModal(true);
+          if (authContext.entity.role !== Verbs.entityTypeClub) {
+            setVisibleRoleModal(true);
+          } else {
+            onNextPress(selectedSport);
+          }
         } else {
           onNext(selectedSport);
         }
@@ -199,7 +221,7 @@ const SportsListModal = ({
         isVisible={visibleRoleModal}
         title={strings.createTeamText}
         headerRightButtonText={strings.next}
-        closeModal={() => {
+        closeModal={async () => {
           setVisibleRoleModal(false);
 
           setRoleArray([

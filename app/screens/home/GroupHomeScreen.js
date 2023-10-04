@@ -52,6 +52,7 @@ import TCGameCard from '../../components/TCGameCard';
 import GroupMembersModal from './GroupMembersModal';
 import FollowFollowingModal from './FollowFollowingModal';
 import JoinButtonModal from './JoinButtomModal';
+import EditGroupProfileModal from './EditGroupProfileModal';
 
 // import BottomSheet from '../../components/modals/BottomSheet';
 
@@ -93,10 +94,12 @@ const GroupHomeScreen = ({
 
   const [refreshMemberModal, setRefreshMemberModal] = useState(false);
   const [isInvited, setIsInvited] = useState(false);
+  const [visibleEditProfileModal, setVisibleEditProfileModal] = useState(false);
 
   const bottomSheetRef = useRef(null);
   const followModalRef = useRef(null);
   const JoinButtonModalRef = useRef(null);
+
   const backButtonHandler = useCallback(() => {
     if (route.params.comeFrom === Verbs.INCOMING_CHALLENGE_SCREEN) {
       navigation.navigate('Account', {
@@ -105,6 +108,7 @@ const GroupHomeScreen = ({
     } else if (!restrictReturn) {
       navigation.goBack();
     }
+
     return true;
   }, [navigation, route.params.comeFrom, restrictReturn]);
 
@@ -862,6 +866,7 @@ const GroupHomeScreen = ({
     acceptRequest(params, requestId, authContext)
       .then((response) => {
         setRefreshMemberModal(true);
+        JoinButtonModalRef.current.close();
         if (
           response.payload?.error_code &&
           response.payload?.error_code === ErrorCodes.MEMBEREXISTERRORCODE
@@ -907,6 +912,7 @@ const GroupHomeScreen = ({
       })
       .catch((error) => {
         setLoading(false);
+        JoinButtonModalRef.current.close();
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -1321,21 +1327,8 @@ const GroupHomeScreen = ({
   const handleGroupActions = (action) => {
     switch (action) {
       case strings.editprofiletitle:
-        navigation.navigate('EditGroupProfileScreen', {
-          placeholder:
-            authContext.entity.role === Verbs.entityTypeTeam
-              ? strings.teamNamePlaceholder
-              : strings.clubNameplaceholder,
-          nameTitle:
-            authContext.entity.role === Verbs.entityTypeTeam
-              ? strings.teamName
-              : strings.clubName,
-          sportType:
-            authContext.entity.role === Verbs.entityTypeTeam
-              ? currentUserData.sport_type
-              : currentUserData.sports_string,
-          isEditProfileTitle: true,
-        });
+        setVisibleEditProfileModal(true);
+
         break;
 
       case strings.removeTeamFromClub:
@@ -1382,7 +1375,6 @@ const GroupHomeScreen = ({
       case strings.acceptInvite:
       case strings.acceptRequest:
       case strings.acceptRequet:
-        Alert.alert('in Request accept');
         setIsInvited(true);
 
         JoinButtonModalRef.current.present();
@@ -1515,6 +1507,10 @@ const GroupHomeScreen = ({
           onAccept(currentUserData.invite_request.activity_id)
         }
         isInvited={isInvited}
+      />
+      <EditGroupProfileModal
+        visible={visibleEditProfileModal}
+        closeModal={() => setVisibleEditProfileModal(false)}
       />
     </>
   );

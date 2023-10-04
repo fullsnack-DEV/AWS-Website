@@ -1,7 +1,14 @@
-import {View, Text, StyleSheet, Pressable, Platform} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+  Image,
+  ImageBackground,
+  TouchableOpacity,
+} from 'react-native';
 import moment from 'moment';
-import FastImage from 'react-native-fast-image';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
@@ -47,20 +54,35 @@ function EventsCard({
     return name;
   };
 
+  const getImage = () => {
+    if (data?.background_thumbnail) {
+      return {uri: data?.background_thumbnail};
+    }
+    return images.backgroudPlaceholder;
+  };
+
+  const MemoiZedImagetitle = useMemo(
+    () => (
+      <ImageBackground
+        borderTopLeftRadius={5}
+        borderTopRightRadius={5}
+        style={styles.imagstyles}
+        source={getImage()}
+        resizeMode="cover">
+        <Text numberOfLines={1} style={styles.titlestyle}>
+          {title.toUpperCase()}
+        </Text>
+      </ImageBackground>
+    ),
+    [title],
+  );
+
   return (
-    <View>
-      <Pressable style={styles.containerStyle} onPress={onItemPress}>
-        <FastImage
-          style={styles.imagstyles}
-          source={
-            data?.background_thumbnail
-              ? {uri: data?.background_thumbnail}
-              : images.backgroudPlaceholder
-          }>
-          <Text numberOfLines={1} style={styles.titlestyle}>
-            {title.toUpperCase()}
-          </Text>
-        </FastImage>
+    <View style={{flex: 1}}>
+      <TouchableOpacity
+        style={styles.containerStyle}
+        onPress={() => onItemPress()}>
+        {MemoiZedImagetitle}
         {/* time and type */}
         <View style={styles.timeplacecontainer}>
           {forPlaceholder ? (
@@ -102,12 +124,12 @@ function EventsCard({
         <View style={styles.userimgStyle}>
           <View style={styles.eventImageViewStyle}>
             {forPlaceholder ? (
-              <FastImage
+              <Image
                 source={images.tcdefaultPlaceholder}
                 style={styles.smallImgstyle}
               />
             ) : (
-              <FastImage
+              <Image
                 source={
                   ownerDetails?.thumbnail
                     ? {uri: ownerDetails?.thumbnail}
@@ -121,7 +143,7 @@ function EventsCard({
             {forPlaceholder ? data.title : getUserFullName()}
           </Text>
         </View>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 }

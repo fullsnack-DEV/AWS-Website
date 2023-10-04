@@ -11,7 +11,6 @@ import {
   getJSDate,
   getTCDate,
   getEventsSlots,
-  groupBy,
 } from '../../utils';
 import {locationType} from '../../utils/constant';
 import {
@@ -146,6 +145,7 @@ const LocalHomeQuery = async (
   setCardLoader,
 ) => {
   setCardLoader(true);
+
   const recentMatchQuery = {
     size: defaultPageSize,
     query: {
@@ -189,8 +189,7 @@ const LocalHomeQuery = async (
       },
     });
   }
-  // Recent match query
-  // Upcoming match query
+
   const upcomingMatchQuery = {
     size: defaultPageSize,
     query: {
@@ -233,7 +232,7 @@ const LocalHomeQuery = async (
       },
     });
   }
-  // Player available for challenge
+
   const playerAvailableForchallengeQuery = {
     size: defaultPageSize,
     query: {
@@ -279,9 +278,9 @@ const LocalHomeQuery = async (
       },
     );
   }
-
   // World filter
-  if (location !== strings.worldTitleText) {
+  if (location && location !== strings.worldTitleText) {
+    // Check if location is defined and not empty
     playerAvailableForchallengeQuery.query.bool.must.push({
       multi_match: {
         query: `${location.toLowerCase()}`,
@@ -290,7 +289,6 @@ const LocalHomeQuery = async (
     });
   }
 
-  // Team available for challenge
   const teamAvailableForchallengeQuery = {
     size: defaultPageSize,
     query: {
@@ -312,7 +310,7 @@ const LocalHomeQuery = async (
       },
     });
   }
-  if (selectedSport !== strings.allType) {
+  if (selectedSport && sportType && selectedSport !== strings.allType) {
     teamAvailableForchallengeQuery.query.bool.must.push({
       term: {
         'sport.keyword': {
@@ -329,10 +327,6 @@ const LocalHomeQuery = async (
       },
     });
   }
-
-  // Looking Challengee query
-
-  // Hiring player query
 
   const recruitingPlayersQuery = {
     size: defaultPageSize,
@@ -367,9 +361,7 @@ const LocalHomeQuery = async (
       },
     });
   }
-  // Hiring player query
 
-  // Looking team query
   const lookingQuery = {
     size: defaultPageSize,
     query: {
@@ -421,7 +413,6 @@ const LocalHomeQuery = async (
     });
   }
 
-  // Referee query
   const refereeQuery = {
     size: defaultPageSize,
     query: {
@@ -457,7 +448,7 @@ const LocalHomeQuery = async (
       },
     });
   }
-  // Scorekeeper query
+
   const scorekeeperQuery = {
     size: defaultPageSize,
     query: {
@@ -478,7 +469,11 @@ const LocalHomeQuery = async (
     },
   };
 
-  if (location !== strings.worldTitleText) {
+  if (
+    location &&
+    strings.worldTitleText &&
+    location !== strings.worldTitleText
+  ) {
     scorekeeperQuery.query.bool.must.push({
       multi_match: {
         query: `${location.toLowerCase()}`,
@@ -486,6 +481,7 @@ const LocalHomeQuery = async (
       },
     });
   }
+
   if (selectedSport !== strings.allType) {
     scorekeeperQuery.query.bool.must[0].nested.query.bool.must.push({
       term: {
@@ -496,82 +492,91 @@ const LocalHomeQuery = async (
     });
   }
 
-  getGameIndex(recentMatchQuery).then((games) => {
-    getGamesList(games).then((gamedata) => {
-      if (games?.length > 0) {
-        const result = groupBy(gamedata, 'sport');
+  // Create an array of promises for each API call
 
-        const dataArray = Object.keys(result).map((title) => ({
-          title,
-          data: result[title],
-        }));
+  const promises = [
+    // Wrap the API calls in promises
+    // getGameIndex(recentMatchQuery).then((games) => getGamesList(games)  ),
+    // getGameIndex(upcomingMatchQuery).then((games) => getGamesList(games)),
+    getUserIndex(playerAvailableForchallengeQuery).then((players) =>
+      filterCurrentUserFromData(players, authContext),
+    ),
+    getGroupIndex(teamAvailableForchallengeQuery).then((teams) =>
+      filterCurrentTeam(teams, authContext),
+    ),
+    getGroupIndex(recruitingPlayersQuery),
+    getUserIndex(lookingQuery).then((players) =>
+      filterCurrentUserFromData(players, authContext),
+    ),
+    getUserIndex(refereeQuery).then((res) =>
+      filterCurrentUserFromData(res, authContext),
+    ),
+    getUserIndex(scorekeeperQuery).then((res) =>
+      filterCurrentUserFromData(res, authContext),
+    ),
+  ];
 
-        setRecentMatch(dataArray);
-      } else {
-        setRecentMatch([]);
-      }
-    });
-  });
+  Promise.all(promises)
+    .then((results) => {
+      const [
+        //  recentMatchGames,
+        // upcomingMatchGames,
+        playerData,
+        teamData,
+        hiringPlayers,
+        lookingTeam,
+        referees,
+        scorekeepers,
+      ] = results;
 
-  getGameIndex(upcomingMatchQuery).then((games) => {
-    getGamesList(games).then((gamedata) => {
-      if (games?.length > 0) {
-        const result = groupBy(gamedata, 'sport');
+      // setCardLoader(false);
 
-        const dataArray = Object.keys(result).map((title) => ({
-          title,
-          data: result[title],
-        }));
+      // if (recentMatchGames.length > 0) {
+      //   const result = groupBy(recentMatchGames, 'sport');
+      //   const dataArray = Object.keys(result).map((title) => ({
+      //     title,
+      //     data: result[title],
+      //   }));
+      //   console.log(dataArray, 'from array');
+      //   setRecentMatch(dataArray);
+      // } else {
+      //   setRecentMatch([]);
+      // }
 
-        setUpcomingMatch(dataArray);
-      } else {
-        setUpcomingMatch([]);
-      }
-    });
-  });
+      // if (upcomingMatchGames.value.length > 0) {
+      //   const result = groupBy(upcomingMatchGames, 'sport');
+      //   const dataArray = Object.keys(result).map((title) => ({
+      //     title,
+      //     data: result[title],
+      //   }));
+      //   console.log(dataArray, 'from array');
+      //   setUpcomingMatch(dataArray);
+      // } else {
+      //   setUpcomingMatch([]);
+      // }
 
-  // getEntityIndex(availableForchallengeQuery).then((entity) => {
-  //   setChallengeeMatch(entity);
-  // });
-  if (authContext.entity.role === Verbs.entityTypeUser) {
-    getUserIndex(playerAvailableForchallengeQuery).then((players) => {
       setCardLoader(false);
+      setChallengeeMatch(playerData);
 
-      const playersData = filterCurrentUserFromData(players, authContext);
-
-      setChallengeeMatch(playersData);
-    });
-  } else if (authContext.entity.role === Verbs.entityTypeTeam) {
-    getGroupIndex(teamAvailableForchallengeQuery).then((teams) => {
       setCardLoader(false);
-      const filterTeam = filterCurrentTeam(teams, authContext);
-      setChallengeeMatch(filterTeam);
+      setChallengeeMatch(teamData ?? []);
+
+      setCardLoader(false);
+      setHiringPlayers(hiringPlayers ?? []);
+
+      setCardLoader(false);
+      setLookingTeam(lookingTeam ?? []);
+
+      setCardLoader(false);
+      setReferees([...referees] ?? []);
+
+      setCardLoader(false);
+      setScorekeepers([...scorekeepers] ?? []);
+    })
+    .catch((e) => {
+      setCardLoader(false);
+      console.log(e.message);
     });
-  }
-
-  getGroupIndex(recruitingPlayersQuery).then((teams) => {
-    setCardLoader(false);
-    setHiringPlayers(teams);
-  });
-
-  getUserIndex(lookingQuery).then((players) => {
-    setCardLoader(false);
-    const playersData = filterCurrentUserFromData(players, authContext);
-    setLookingTeam(playersData);
-  });
-  getUserIndex(refereeQuery).then((res) => {
-    setCardLoader(false);
-    const filterRefreeData = filterCurrentUserFromData(res, authContext);
-
-    setReferees([...filterRefreeData]);
-  });
-  getUserIndex(scorekeeperQuery).then((res) => {
-    setCardLoader(false);
-
-    const filterScoreKeeperData = filterCurrentUserFromData(res, authContext);
-
-    setScorekeepers([...filterScoreKeeperData]);
-  });
 };
 
 const getNotificationCountHome = (authContext, handleSetNotificationCount) => {

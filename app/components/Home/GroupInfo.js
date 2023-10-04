@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import ReadMore from '@fawazahmed/react-native-read-more';
@@ -21,7 +21,6 @@ import EditHomeFacilityScreen from '../../screens/home/SportActivity/contentScre
 import GroupIcon from '../GroupIcon';
 import TCThinDivider from '../TCThinDivider';
 import TCTextField from '../TCTextField';
-
 
 const teamOptions = [
   strings.bio,
@@ -498,7 +497,7 @@ export default function GroupInfo({
 
       {groupDetails.who_can_join_for_member === 0 || isInvited ? (
         <TouchableOpacity
-          onPress={onJoinPress}
+          onPress={isAccept ? onAcceptPress : onJoinPress}
           style={{
             marginHorizontal: 15,
             backgroundColor: colors.reservationAmountColor,
@@ -520,7 +519,7 @@ export default function GroupInfo({
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
-          onPress={onAcceptPress}
+          onPress={isAccept ? onAcceptPress : onJoinPress}
           style={{
             marginHorizontal: 15,
             backgroundColor: colors.reservationAmountColor,
@@ -536,7 +535,6 @@ export default function GroupInfo({
               paddingVertical: 8,
               textTransform: 'uppercase',
               color: colors.whiteColor,
-              backgroundColor: 'red',
             }}>
             {isAccept ? strings.acceptTitle : strings.sendJoinRequestText}
           </Text>

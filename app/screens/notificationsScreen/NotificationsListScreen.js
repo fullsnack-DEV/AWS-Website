@@ -69,6 +69,7 @@ import errorCode from '../../Constants/errorCode';
 import SendRequestModal from '../../components/SendRequestModal/SendRequestModal';
 import ScreenHeader from '../../components/ScreenHeader';
 import JoinButtonModal from '../home/JoinButtomModal';
+import Verbs from '../../Constants/Verbs';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
@@ -611,13 +612,16 @@ function NotificationsListScreen({navigation}) {
   };
 
   const getGroupInfo = async (grpid) => {
-    console.log(grpid, 'fropmpo');
     setloading(true);
-    const {payload} = await getGroupDetails(grpid, authContext);
-    setloading(false);
-    setGrpInfo(payload);
-    setIsAccept(true);
-    JoinButtonModalRef.current?.present();
+    try {
+      const {payload} = await getGroupDetails(grpid, authContext);
+      setloading(false);
+      setGrpInfo(payload);
+      setIsAccept(true);
+      JoinButtonModalRef.current?.present();
+    } catch (error) {
+      setloading(false);
+    }
   };
 
   const onRespond = (groupObj) => {
@@ -834,9 +838,16 @@ function NotificationsListScreen({navigation}) {
           item={item}
           selectedEntity={selectedEntity}
           onAccept={() => {
+            if (
+              authContext.entity.role === Verbs.entityTypeClub ||
+              authContext.entity.role === Verbs.entityTypeTeam
+            ) {
+              onAccept(item);
+              return;
+            }
             setCurrentNotificationData(item);
 
-            getGroupInfo(item.activities[0].foreign_id);
+            getGroupInfo(item.activities[0]?.foreign_id);
           }}
           onDecline={() => onDecline(item.activities[0].id)}
           onPress={() => onNotificationClick(item)}

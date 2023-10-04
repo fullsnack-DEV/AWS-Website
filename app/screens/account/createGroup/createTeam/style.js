@@ -50,21 +50,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   matchFeeTxt: {
-    alignSelf: 'center',
     backgroundColor: colors.lightGrey,
     borderRadius: 5,
-    color: 'black',
-
-    fontSize: widthPercentageToDP('3.8%'),
+    color: colors.blackColor,
+    fontSize: 16,
     height: 40,
-
     marginTop: 10,
     paddingHorizontal: 10,
-    paddingRight: 30,
-
     paddingVertical: 12,
-
-    width: widthPercentageToDP('92%'),
+    marginHorizontal: 15,
   },
   searchView: {
     alignSelf: 'center',

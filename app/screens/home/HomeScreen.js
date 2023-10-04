@@ -408,6 +408,8 @@ const HomeScreen = ({navigation, route}) => {
         screen: 'MessageChatScreen',
         params: {channel: route.params.routeParams},
       });
+    } else if (route.params?.comeFrom === 'createClub') {
+      navigation.navigate('AccountScreen');
     } else if (route.params?.comeFrom) {
       navigation.navigate(route.params.comeFrom, {
         ...route.params.routeParams,

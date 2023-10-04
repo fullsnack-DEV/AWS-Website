@@ -627,7 +627,7 @@ export default function WelcomeScreen({navigation}) {
       Animated.delay(3000),
       Animated.timing(fadeInOpacity, {
         toValue: 0,
-        duration: 400,
+        duration: 800,
         useNativeDriver: true,
       }),
     ]).start();
@@ -648,7 +648,10 @@ export default function WelcomeScreen({navigation}) {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
-      <StatusBar backgroundColor="white" barStyle="dark-content" />
+      <StatusBar
+        backgroundColor={colors.reservationAmountColor}
+        barStyle="dark-content"
+      />
       <ActivityLoader visible={loading} />
       {renderBackgroundImages}
       <View style={styles.logoContainer}>

@@ -1,5 +1,12 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {StyleSheet, View, Text, Image, Pressable} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  Pressable,
+  TouchableOpacity,
+} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import colors from '../../Constants/Colors';
@@ -170,7 +177,7 @@ const UserHomeHeader = ({
           />
         </View>
 
-        <Pressable
+        <TouchableOpacity
           style={[
             styles.buttonContainer,
             isMember ? {flexDirection: 'row', alignItems: 'center'} : {},
@@ -180,7 +187,7 @@ const UserHomeHeader = ({
           {isMember ? (
             <Image source={images.check} style={styles.checkIcon} />
           ) : null}
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <View style={{marginTop: 15}}>
         <Text style={styles.title}> {currentUserData.full_name}</Text>

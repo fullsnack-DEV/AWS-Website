@@ -18,7 +18,7 @@ const ShimmerCard = () => (
   </View>
 );
 
-export default function PlayerShimmerCard({data}) {
+function PlayerShimmerCard({data}) {
   return (
     <FlatList
       data={data}
@@ -35,6 +35,7 @@ export default function PlayerShimmerCard({data}) {
     />
   );
 }
+export default React.memo(PlayerShimmerCard);
 
 const styles = StyleSheet.create({
   cardContainer: {

@@ -1,6 +1,13 @@
 /* eslint-disable no-nested-ternary */
 import React, {memo, useContext, useEffect, useState} from 'react';
-import {Text, View, StyleSheet, Image, Pressable} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Pressable,
+  TouchableOpacity,
+} from 'react-native';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
@@ -18,6 +25,15 @@ const AccountMenuRow = ({
 }) => {
   const [groupSportName, setGroupSportName] = useState('');
   const authContext = useContext(AuthContext);
+  const [isPressed, setIsPressed] = useState(false);
+
+  const handlePressIn = () => {
+    setIsPressed(true);
+  };
+
+  const handlePressOut = () => {
+    setIsPressed(false);
+  };
 
   useEffect(() => {
     if (item.option?.entity_type) {
@@ -40,9 +56,20 @@ const AccountMenuRow = ({
           item.option?.request_id ? {opacity: 0.3} : {},
         ]}
         pointerEvents={item.option?.request_id ? 'none' : 'auto'}>
-        <Pressable
-          style={[styles.row, {marginVertical: 5}]}
-          onPress={onPressSport}>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          style={[
+            styles.row,
+            {marginVertical: 5},
+            {
+              backgroundColor: isPressed
+                ? colors.buttonClickBgEffect
+                : 'transparent',
+            },
+          ]}
+          onPress={onPressSport}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}>
           <GroupIcon
             imageUrl={item.icon}
             entityType={item.option.entity_type ?? Verbs.entityTypePlayer}
@@ -73,17 +100,19 @@ const AccountMenuRow = ({
               </Text>
             ) : null}
           </View>
-        </Pressable>
+        </TouchableOpacity>
         <Pressable onPress={onPressSetting}>
           <Image source={item?.iconRight} style={styles.nextArrow} />
         </Pressable>
       </View>
       {item.option?.request_id && (
-        <Pressable style={styles.buttonView} onPress={onPressCancelRequest}>
+        <TouchableOpacity
+          style={styles.buttonView}
+          onPress={onPressCancelRequest}>
           <Text style={styles.textStyle}>
             {strings.teamCreationRequestSend}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       )}
     </View>
   ) : null;

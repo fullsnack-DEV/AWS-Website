@@ -332,6 +332,18 @@ const LocalHomeMenuItems = memo(
       return expandedData;
     }
 
+    const getItemLayout = (data, index) => ({
+      length: 149,
+      offset: 149 * index,
+      index,
+    });
+
+    const getItemLayoutForPlayerCard = (data, index) => ({
+      length: 178,
+      offset: 178 * index,
+      index,
+    });
+
     const RenderMenuItem = (items) => {
       switch (items.key) {
         case strings.rankingInWorld:
@@ -396,7 +408,7 @@ const LocalHomeMenuItems = memo(
                 <>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {items.data.map((section, index) => (
-                      <React.Fragment key={index}>
+                      <View key={index}>
                         {section.data.map((item) => (
                           <View key={item.id} style={{marginRight: 10}}>
                             <HorizontalsCards
@@ -405,7 +417,7 @@ const LocalHomeMenuItems = memo(
                             />
                           </View>
                         ))}
-                      </React.Fragment>
+                      </View>
                     ))}
                   </ScrollView>
                 </>
@@ -440,7 +452,7 @@ const LocalHomeMenuItems = memo(
                 <>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {items.data.map((section, index) => (
-                      <React.Fragment key={index}>
+                      <View key={index}>
                         {section.data.map((item) => (
                           <View key={item.id} style={{marginRight: 10}}>
                             <HorizontalsCards
@@ -449,7 +461,7 @@ const LocalHomeMenuItems = memo(
                             />
                           </View>
                         ))}
-                      </React.Fragment>
+                      </View>
                     ))}
                   </ScrollView>
 
@@ -492,6 +504,10 @@ const LocalHomeMenuItems = memo(
                     scrollEnabled={items.data?.length > 0}
                     contentContainerStyle={{paddingVertical: 6}}
                     showsHorizontalScrollIndicator={false}
+                    removeClippedSubviews={true}
+                    initialNumToRender={10}
+                    maxToRenderPerBatch={10}
+                    getItemLayout={getItemLayout}
                     renderItem={({item}) => (
                       <EventsCard
                         data={item}
@@ -620,6 +636,10 @@ const LocalHomeMenuItems = memo(
                         : items.data
                     }
                     horizontal={true}
+                    removeClippedSubviews={true}
+                    initialNumToRender={10}
+                    maxToRenderPerBatch={10}
+                    getItemLayout={getItemLayoutForPlayerCard}
                     scrollEnabled={items.data.length > 0}
                     contentContainerStyle={{paddingVertical: 6}}
                     showsHorizontalScrollIndicator={false}
@@ -674,6 +694,9 @@ const LocalHomeMenuItems = memo(
                 horizontal={true}
                 contentContainerStyle={{paddingVertical: 6}}
                 showsHorizontalScrollIndicator={false}
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                getItemLayout={getItemLayoutForPlayerCard}
                 renderItem={({item}) => (
                   <PlayersCard
                     selectedSport={selectedSport}
@@ -722,6 +745,9 @@ const LocalHomeMenuItems = memo(
                 horizontal={true}
                 contentContainerStyle={{paddingVertical: 6}}
                 showsHorizontalScrollIndicator={false}
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                getItemLayout={getItemLayoutForPlayerCard}
                 renderItem={({item}) => (
                   <PlayersCard
                     selectedSport={selectedSport}
@@ -827,6 +853,9 @@ const LocalHomeMenuItems = memo(
                     horizontal={true}
                     contentContainerStyle={{paddingVertical: 6}}
                     showsHorizontalScrollIndicator={false}
+                    initialNumToRender={10}
+                    maxToRenderPerBatch={10}
+                    getItemLayout={getItemLayoutForPlayerCard}
                     renderItem={({item}) => (
                       <PlayersCard
                         selectedSport={selectedSport}
@@ -868,7 +897,7 @@ const LocalHomeMenuItems = memo(
 
     return (
       <View style={{flex: 1}}>
-        <View>{RenderMenuItem(item)}</View>
+        {RenderMenuItem(item)}
         <CustomModalWrapper
           isVisible={playerDetailPopup}
           closeModal={() => {

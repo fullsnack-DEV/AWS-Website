@@ -174,6 +174,7 @@ const UserHomeScreen = ({
       acceptRequest({}, requestId, authContext)
         .then(() => {
           // Succefully join case
+          mainFlatListRef.current.close();
           const obj = {...currentUserData};
           if (authContext.entity.role === Verbs.entityTypeTeam) {
             obj.joined_teams = [
@@ -198,6 +199,7 @@ const UserHomeScreen = ({
         })
         .catch((error) => {
           setloading(false);
+          mainFlatListRef.current.close();
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, error.message);
           }, 10);

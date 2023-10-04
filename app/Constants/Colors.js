@@ -166,5 +166,7 @@ const colors = {
   bottomSheetBgColor: 'rgba(237, 237, 237, 0.8)',
   cardBgColor: '#eeee',
   signUpTextColor: '#814E1C',
+  buttonClickBgEffect: '#f2f2f2',
+  modalTransparentBG: 'rgba(255,255,255,0.1)',
 };
 export default colors;

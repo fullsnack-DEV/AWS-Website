@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign  */
-
 import React, {useState, useEffect, useContext, useRef} from 'react';
 import {
   View,
@@ -14,17 +13,11 @@ import {
   Pressable,
   SafeAreaView,
 } from 'react-native';
-
 import {useIsFocused} from '@react-navigation/native';
-
 import RNPickerSelect from 'react-native-picker-select';
-
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
-
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
-
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
 import {strings} from '../../../../../Localization/translation';
@@ -33,7 +26,6 @@ import colors from '../../../../Constants/Colors';
 import TCLabel from '../../../../components/TCLabel';
 import TCFormProgress from '../../../../components/TCFormProgress';
 import TCThinDivider from '../../../../components/TCThinDivider';
-
 import {
   deleteConfirmation,
   groupMemberGenderItems,
@@ -41,11 +33,9 @@ import {
   showAlert,
   showAlertWithoutTitle,
 } from '../../../../utils';
-
 import styles from './style';
 import LocationModal from '../../../../components/LocationModal/LocationModal';
 import TCProfileImageControl from '../../../../components/TCProfileImageControl';
-
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import CustomModalWrapper from '../../../../components/CustomModalWrapper';
 import {ModalTypes} from '../../../../Constants/GeneralConstants';
@@ -106,7 +96,7 @@ export default function CreateTeamForm1({navigation, route}) {
       }
 
       setSportsSelection(
-        route?.params.sportData.sport_name || route?.params.sports?.sport_name,
+        route?.params.sportData?.sport_name || route?.params.sports?.sport_name,
       );
     }
   }, [isFocused]);
@@ -209,13 +199,17 @@ export default function CreateTeamForm1({navigation, route}) {
       height,
       cropping: true,
       cropperCircleOverlay: cropCircle,
-    }).then((data) => {
-      if (currentImageSelection === 1) {
-        setThumbnail(data.path);
-      } else {
-        setBackgroundThumbnail(data.path);
-      }
-    });
+    })
+      .then((data) => {
+        if (currentImageSelection === 1) {
+          setThumbnail(data.path);
+        } else {
+          setBackgroundThumbnail(data.path);
+        }
+      })
+      .catch((error) => {
+        showAlert(error.message);
+      });
   };
 
   const openCamera = (width = 400, height = 400) => {
@@ -698,63 +692,63 @@ export default function CreateTeamForm1({navigation, route}) {
                   marginRight: 15,
                   justifyContent: 'space-between',
                 }}>
-                <RNPickerSelect
-                  testID="min-age-picker"
-                  placeholder={{
-                    label: strings.minPlaceholder,
-                    value: 0,
-                  }}
-                  items={minAgeValue}
-                  onValueChange={(value) => {
-                    setMinAge(value);
-                    setMaxAge(0);
-                  }}
-                  useNativeAndroidPickerStyle={false}
+                <Pressable
                   style={{
-                    placeholder: {
-                      color: colors.blackColor,
-                    },
-                    iconContainer: {
-                      top: 0,
-                      right: 0,
-                    },
+                    width: '45%',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <RNPickerSelect
+                    testID="min-age-picker"
+                    placeholder={{
+                      label: strings.minPlaceholder,
+                      value: 0,
+                    }}
+                    items={minAgeValue}
+                    onValueChange={(value) => {
+                      setMinAge(value);
+                      setMaxAge(0);
+                    }}
+                    useNativeAndroidPickerStyle={false}
+                    style={{
+                      placeholder: {
+                        color: colors.blackColor,
+                      },
+                      iconContainer: {
+                        top: 0,
+                        right: 0,
+                      },
 
-                    inputIOS: {
-                      height: 40,
-                      textAlign: 'center',
-                      fontSize: wp('3.5%'),
-                      paddingVertical: 12,
-                      paddingHorizontal: 15,
-                      width: wp('40%'),
-                      color: 'black',
-                      paddingRight: 30,
-                      backgroundColor: colors.lightGrey,
+                      inputIOS: {
+                        borderRadius: 5,
+                        height: 40,
+                        justifyContent: 'flex-start',
+                        fontSize: 16,
+                        textAlign: 'center',
+                        paddingVertical: 12,
+                        color: colors.blackColor,
+                        backgroundColor: colors.lightGrey,
+                      },
+                      inputAndroid: {
+                        height: 40,
+                        justifyContent: 'flex-start',
+                        fontSize: 16,
+                        textAlign: 'center',
+                        paddingVertical: 12,
+                        color: colors.blackColor,
+                        backgroundColor: colors.lightGrey,
+                        borderRadius: 5,
+                      },
+                    }}
+                    value={minAge}
+                    Icon={() => (
+                      <Image
+                        source={images.dropDownArrow}
+                        style={styles.miniDownArrow}
+                      />
+                    )}
+                  />
+                </Pressable>
 
-                      borderRadius: 5,
-                    },
-                    inputAndroid: {
-                      height: 40,
-                      textAlign: 'center',
-                      fontSize: wp('4%'),
-                      paddingVertical: 12,
-                      paddingHorizontal: 15,
-                      width: wp('40%'),
-                      color: 'black',
-
-                      backgroundColor: colors.lightGrey,
-                      borderRadius: 5,
-                      borderWidth: 1,
-                      borderColor: '#fff',
-                    },
-                  }}
-                  value={minAge}
-                  Icon={() => (
-                    <Image
-                      source={images.dropDownArrow}
-                      style={styles.miniDownArrow}
-                    />
-                  )}
-                />
                 <Text
                   style={{
                     textAlign: 'center',
@@ -762,7 +756,11 @@ export default function CreateTeamForm1({navigation, route}) {
                   }}>
                   -
                 </Text>
-                <Pressable>
+                <Pressable
+                  style={{
+                    width: '45%',
+                    justifyContent: 'flex-start',
+                  }}>
                   <RNPickerSelect
                     testID="max-age-picker"
                     placeholder={{
@@ -780,27 +778,23 @@ export default function CreateTeamForm1({navigation, route}) {
                       },
                       inputIOS: {
                         height: 40,
-
-                        fontSize: wp('3.5%'),
+                        justifyContent: 'flex-start',
+                        fontSize: 16,
                         textAlign: 'center',
                         paddingVertical: 12,
-                        paddingHorizontal: 15,
-                        width: wp('40%'),
-                        color: 'black',
-
+                        color: colors.blackColor,
                         backgroundColor: colors.lightGrey,
-
                         borderRadius: 5,
                       },
                       inputAndroid: {
                         height: 40,
+                        justifyContent: 'flex-start',
+                        fontSize: 16,
                         textAlign: 'center',
-                        fontSize: wp('4%'),
                         paddingVertical: 12,
-                        paddingHorizontal: 15,
-                        width: wp('40%'),
-                        color: 'black',
+                        color: colors.blackColor,
                         backgroundColor: colors.lightGrey,
+                        borderRadius: 5,
                       },
                     }}
                     value={maxAge}
@@ -941,7 +935,11 @@ export default function CreateTeamForm1({navigation, route}) {
             destructiveButtonIndex={2}
             onPress={(index) => {
               if (index === 0) {
-                openCamera();
+                try {
+                  openCamera();
+                } catch (error) {
+                  console.log(error);
+                }
               } else if (index === 1) {
                 if (currentImageSelection) {
                   openImagePicker();

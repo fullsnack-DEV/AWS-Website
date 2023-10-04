@@ -43,6 +43,7 @@ const CustomModalWrapper = ({
   headerLeftIconStyle = {},
   extraHeaderStyle = {},
   onModalShow = () => {},
+  isTransparent = false,
 }) => {
   const [isFullHeight, setIsFullHeight] = useState(isSwipeUp);
   const translateY = new Animated.Value(0);
@@ -186,7 +187,7 @@ const CustomModalWrapper = ({
         return [styles.card, {flex: 1}, parentStyle];
 
       case ModalTypes.style2:
-        return [styles.card];
+        return [styles.card, {shadowRadius: isTransparent ? 25 : 5}];
 
       case ModalTypes.style3:
         return [styles.card, {flex: 1}];
@@ -209,6 +210,9 @@ const CustomModalWrapper = ({
       visible={isVisible}
       collapsable
       transparent
+      style={{
+        backgroundColor: 'rgba(255,255,255,0.1',
+      }}
       animationType="fade"
       onShow={() => onModalShow()}
       onRequestClose={() => handleCloseModal()}>
@@ -220,7 +224,15 @@ const CustomModalWrapper = ({
       )}
       <GestureHandlerRootView style={{flex: 1}}>
         <Pressable
-          style={[styles.parent, {paddingTop: Top}]}
+          style={[
+            styles.parent,
+            {
+              paddingTop: Top,
+              backgroundColor: isTransparent
+                ? colors.modalTransparentBG
+                : colors.modalBackgroundColor,
+            },
+          ]}
           onPress={handleCloseModal}>
           {(modalType === ModalTypes.style7 ||
             modalType === ModalTypes.style2 ||
@@ -283,8 +295,18 @@ const CustomModalWrapper = ({
                     ],
                   },
                 ]}>
-                <Pressable onPress={() => {}} style={{flex: 1}}>
-                  <View style={{flexDirection: 'row', alignSelf: 'stretch'}}>
+                <Pressable
+                  onPress={() => {}}
+                  style={{
+                    flex: 1,
+                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignSelf: 'stretch',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
                     {getModalHeader()}
                   </View>
                   <View style={[{padding: 25}, containerStyle]}>
@@ -302,7 +324,7 @@ const CustomModalWrapper = ({
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: colors.modalBackgroundColor,
+
     paddingTop: 40,
     justifyContent: 'flex-end',
   },

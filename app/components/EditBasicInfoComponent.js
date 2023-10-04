@@ -68,7 +68,7 @@ const EditBasicInfoComponent = ({
   useEffect(() => {
     const selectedCountryItem = Utility.countryCode.find(
       (item) =>
-        item.name.toLowerCase() === authContext.user.country.toLowerCase(),
+        item.name.toLowerCase() === authContext?.user?.country.toLowerCase(),
     );
 
     let dialCode = selectedCountryItem.dial_code;

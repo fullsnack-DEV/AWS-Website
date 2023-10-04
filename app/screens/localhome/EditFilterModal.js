@@ -8,11 +8,11 @@ import {
   Modal,
   TouchableWithoutFeedback,
   Dimensions,
+  Image,
 } from 'react-native';
 import React, {useCallback, useEffect, useState, useContext} from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import FastImage from 'react-native-fast-image';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import {strings} from '../../../Localization/translation';
@@ -173,7 +173,7 @@ export default function EditFilterModal({
       const sportImage = sportDetails?.sport_image || '';
 
       return (
-        <FastImage
+        <Image
           source={{uri: `${image_base_url}${sportImage}`}}
           style={{height: 40, width: 40}}
         />
@@ -356,7 +356,7 @@ export default function EditFilterModal({
         style={styles.dragImageContainer}
         onLongPress={drag}
         disabled={isActive}>
-        <FastImage source={images.moveIcon} style={styles.image} />
+        <Image source={images.moveIcon} style={styles.image} />
       </TouchableOpacity>
     </View>
   );
@@ -463,7 +463,7 @@ export default function EditFilterModal({
                               opacity: FavSportImageCheck(item) ? 0.6 : 1,
                             },
                           ]}>
-                          <FastImage
+                          <Image
                             source={
                               checkSportAdded(item)
                                 ? images.orangeCheckBox

@@ -1,4 +1,4 @@
-import {View, Text, Pressable, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import fonts from '../../Constants/Fonts';
@@ -15,7 +15,7 @@ export default function HorizontalsCards({
 }) {
   return (
     <View>
-      <Pressable
+      <TouchableOpacity
         onPress={onPress}
         style={[
           styles.mainContaianer,
@@ -48,7 +48,7 @@ export default function HorizontalsCards({
           </Text>
           <FastImage source={images.teamCover} style={styles.teamImg} />
         </View>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 }

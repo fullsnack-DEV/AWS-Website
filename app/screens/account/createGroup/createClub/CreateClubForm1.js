@@ -78,6 +78,7 @@ export default function CreateClubForm1({navigation, route}) {
 
   const [thumbnail, setThumbnail] = useState();
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
+  const [paramsSport] = useState(route.params);
   const actionSheet = useRef();
 
   const actionSheetWithDelete = useRef();
@@ -88,8 +89,12 @@ export default function CreateClubForm1({navigation, route}) {
     useState(false);
 
   useEffect(() => {
-    if (route.params?.length > 0) {
-      const newSportArray = route.params.map(
+    const transformedSportArray = Object.keys(paramsSport).map(
+      (key) => paramsSport[key],
+    );
+
+    if (transformedSportArray.length > 0) {
+      const newSportArray = transformedSportArray.map(
         ({sport, sport_type, sport_name}) => ({
           sport,
           sport_type,
@@ -99,7 +104,7 @@ export default function CreateClubForm1({navigation, route}) {
 
       setSelectedSports(newSportArray);
     }
-  }, [route.params]);
+  }, [paramsSport, route.params]);
 
   useEffect(() => {
     if (selectedSports.length > 0) {
@@ -116,7 +121,7 @@ export default function CreateClubForm1({navigation, route}) {
 
       setSportsName(sportText);
     }
-  }, [isFocused, authContext, selectedSports]);
+  }, [route.params, authContext, selectedSports, isFocused]);
 
   const checkClubValidations = useCallback(() => {
     if (clubName === '') {
@@ -253,6 +258,7 @@ export default function CreateClubForm1({navigation, route}) {
             isEntityCreated: true,
             groupName: response.payload.group_name,
             entityObj: response.payload,
+            comeFrom: 'createClub',
             restrictReturn: true,
           });
 

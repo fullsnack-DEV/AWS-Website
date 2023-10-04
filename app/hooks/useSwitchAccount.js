@@ -11,6 +11,7 @@ const useSwitchAccount = () => {
 
   const onSwitchProfile = useCallback(
     async (item) => {
+      console.log(item, 'from switch entity');
       let currentEntity = authContext.entity;
       setLoading(true);
       if (

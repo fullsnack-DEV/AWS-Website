@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import React, {useContext} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import FastImage from 'react-native-fast-image';
 import Header from '../../components/Home/Header';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
@@ -30,7 +29,7 @@ export default function LocalHomeHeader({
       <Header
         leftComponent={
           <Pressable>
-            <FastImage
+            <Image
               source={images.newTcLogo}
               resizeMode={'contain'}
               style={styles.backImageStyle}

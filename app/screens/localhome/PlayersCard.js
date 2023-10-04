@@ -1,5 +1,12 @@
-import {View, Text, Pressable, StyleSheet, Platform, Image} from 'react-native';
-import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+  TouchableOpacity,
+  ImageBackground,
+} from 'react-native';
+import React, {useMemo} from 'react';
 
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
@@ -17,8 +24,7 @@ function PlayersCard({
   refree = false,
   hiring = false,
   playeravail = false,
-  // eslint-disable-next-line no-unused-vars
-  lookingTeamClub = false,
+
   onPress = () => {},
 }) {
   const getEntityName = () => item.full_name;
@@ -73,7 +79,7 @@ function PlayersCard({
         return item.referee_data[0].sport;
       }
 
-      return item.referee_data.map((d) => d.sport);
+      return item?.referee_data.map((d) => d.sport);
     }
 
     if (scoreKeeper && selectedSport === strings.allType) {
@@ -148,6 +154,20 @@ function PlayersCard({
     }
   };
 
+  const footerImage = useMemo(
+    () => (
+      <FastImage
+        source={images.orangeStar}
+        style={{
+          height: 10,
+          width: 10,
+          marginRight: 5,
+        }}
+      />
+    ),
+    [],
+  );
+
   const getFooterComponent = () => (
     <View
       style={[
@@ -158,15 +178,7 @@ function PlayersCard({
           marginTop: 10,
         },
       ]}>
-      <FastImage
-        source={images.orangeStar}
-        style={{
-          height: 10,
-          width: 10,
-          marginRight: 5,
-        }}
-      />
-
+      {footerImage}
       <Text style={[styles.levelText, {color: '#FF7F00', marginRight: 5}]}>
         3.2
       </Text>
@@ -175,19 +187,41 @@ function PlayersCard({
     </View>
   );
 
+  const imageSource = () => {
+    if (item?.full_image) {
+      return {uri: item?.full_image};
+    }
+    return images.defaultPlayerBg;
+  };
+
+  const renderFastImage = useMemo(
+    () =>
+      item?.thumbnail ? (
+        <FastImage
+          style={styles.teamlogoImg}
+          source={{
+            uri: item?.thumbnail,
+          }}
+        />
+      ) : (
+        <FastImage
+          style={styles.teamlogoImg}
+          source={images.profilePlaceHolder}
+        />
+      ),
+    [item?.thumbnail],
+  );
+
   return (
-    <Pressable style={styles.cardContainer} onPress={onPress}>
-      <FastImage
+    <TouchableOpacity
+      activeOpacity={0.9}
+      style={styles.cardContainer}
+      onPress={onPress}>
+      <ImageBackground
+        defaultSource={images.defaultPlayerBg}
         style={styles.inneimgContainer}
-        source={
-          item?.full_image
-            ? {
-                uri: item?.full_image,
-                priority: FastImage.priority.high,
-              }
-            : images.defaultPlayerBg
-        }
-        blurRadius={4}>
+        source={imageSource()}
+        blurRadius={8}>
         <Text numberOfLines={1} style={styles.nameStyle}>
           {getName}
           {/* {sportText} */}
@@ -195,44 +229,30 @@ function PlayersCard({
 
         {/* team Logo  */}
 
-        <FastImage
+        <ImageBackground
+          defaultSource={images.curvecut}
           source={images.curvecut}
           tintColor={colors.offwhite}
-          resizeMode="cover"
+          resizeMode="contain"
           style={styles.imageContaienrstyle}>
-          <>
-            <View style={styles.teamLogoContainer}>
-              <Image
-                resizeMode="cover"
-                source={
-                  item?.thumbnail
-                    ? {
-                        uri: item?.thumbnail,
-                        priority: FastImage.priority.high,
-                      }
-                    : images.profilePlaceHolder
-                }
-                style={styles.teamlogoImg}
-              />
+          <View style={styles.teamLogoContainer}>{renderFastImage}</View>
+          <View style={{marginTop: -25}}>
+            <View style={styles.mainContentcontainer}>
+              <Text style={styles.teamnameTextStyle} numberOfLines={1}>
+                {getEntityName()}
+              </Text>
+              <Text style={styles.locationNameTextStyle} numberOfLines={1}>
+                {item.city} {item.state_abbr}
+              </Text>
             </View>
-            <View style={{marginTop: -25}}>
-              <View style={styles.mainContentcontainer}>
-                <Text style={styles.teamnameTextStyle} numberOfLines={1}>
-                  {getEntityName()}
-                </Text>
-                <Text style={styles.locationNameTextStyle} numberOfLines={1}>
-                  {item.city} {item.state_abbr}
-                </Text>
-              </View>
 
-              {getFooterComponent()}
-            </View>
-          </>
+            {getFooterComponent()}
+          </View>
 
           {/* name */}
-        </FastImage>
-      </FastImage>
-    </Pressable>
+        </ImageBackground>
+      </ImageBackground>
+    </TouchableOpacity>
   );
 }
 
@@ -263,7 +283,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 0,
     borderRadius: 100,
-    backgroundColor: '#FFFFFF',
+
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -303,14 +323,17 @@ const styles = StyleSheet.create({
   imageContaienrstyle: {
     height: 130,
     width: 125,
-
+    zIndex: 100,
     marginTop: 15,
+    overflow: 'hidden',
   },
   inneimgContainer: {
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
+    overflow: 'hidden',
+    zIndex: 2,
   },
   nameStyle: {
     fontFamily: fonts.RBold,
@@ -319,6 +342,7 @@ const styles = StyleSheet.create({
     color: colors.whiteColor,
     marginTop: 10,
     alignSelf: 'center',
+    textTransform: 'uppercase',
   },
 });
 
