@@ -142,7 +142,7 @@ const FeedAbsoluteTopView = memo(
 const styles = StyleSheet.create({
   topMainContainer: {
     // flex: 1,
-    top: 30,
+    top: Platform.OS === 'ios' ? 0 : 30,
     zIndex: 99,
   },
   topSubContainer: {

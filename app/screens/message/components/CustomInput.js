@@ -1,15 +1,17 @@
 // @flow
-import React from 'react';
+import React, {useState} from 'react';
 import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import {
   AutoCompleteInput,
   useMessageInputContext,
 } from 'stream-chat-react-native';
+import ImagePicker from 'react-native-image-crop-picker';
 import * as Progress from 'react-native-progress';
 import colors from '../../../Constants/Colors';
 import {widthPercentageToDP as wp} from '../../../utils';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
+import BottomSheet from '../../../components/modals/BottomSheet';
 
 const CancelFileUpload = (files, removeFile) => {
   files.forEach((item) => {
@@ -52,8 +54,9 @@ const CustomFileUploadPreview = () => {
                 }}
               />
               <Text>
-                {fileState === 'uploading' ? 'Uploading' : 'Uploaded'} :{' '}
-                {numberOfUploads}
+                {fileState === 'uploading'
+                  ? `${strings.uploadingText}... ${numberOfUploads}`
+                  : strings.uploadedText}
               </Text>
             </View>
             <View>
@@ -93,8 +96,55 @@ const CustomFileUploadPreview = () => {
 };
 
 const CustomInput = () => {
-  const {sendMessage, toggleAttachmentPicker, ImageUploadPreview} =
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const {sendMessage, ImageUploadPreview, uploadNewImage} =
     useMessageInputContext();
+
+  const pickImageFromGallery = () => {
+    ImagePicker.openPicker({
+      multiple: true,
+    })
+      .then((imageList) => {
+        setShowBottomSheet(false);
+        imageList.forEach((image) =>
+          uploadNewImage({
+            uri: image.path,
+          }),
+        );
+      })
+      .catch(() => {
+        setShowBottomSheet(false);
+      });
+  };
+  const pickImageFromCamera = () => {
+    ImagePicker.openCamera({
+      cropping: true,
+    })
+      .then((image) => {
+        setShowBottomSheet(false);
+        uploadNewImage({
+          uri: image.path,
+        });
+      })
+      .catch(() => {
+        setShowBottomSheet(false);
+      });
+  };
+  const handleOptions = (option = '') => {
+    switch (option) {
+      case strings.galleryTitle:
+        pickImageFromGallery();
+        break;
+
+      case strings.photoText:
+        pickImageFromCamera();
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <View style={styles.parent}>
       <ImageUploadPreview />
@@ -102,7 +152,9 @@ const CustomInput = () => {
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.cameraIcon}
-          onPress={toggleAttachmentPicker}>
+          onPress={() => {
+            setShowBottomSheet(true);
+          }}>
           <Image source={images.chatCamera} style={styles.image} />
         </TouchableOpacity>
 
@@ -117,6 +169,12 @@ const CustomInput = () => {
           </TouchableOpacity>
         </View>
       </View>
+      <BottomSheet
+        isVisible={showBottomSheet}
+        closeModal={() => setShowBottomSheet(false)}
+        optionList={[strings.galleryTitle, strings.photoText]}
+        onSelect={handleOptions}
+      />
     </View>
   );
 };

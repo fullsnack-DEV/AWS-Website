@@ -9,7 +9,7 @@ import Verbs from '../../../Constants/Verbs';
 
 const CustomMessageHeader = ({message, channel}) => {
   const authContext = useContext(AuthContext);
-  const groupStyle = message.groupStyles[0];
+  // const groupStyle = message.groupStyles[0];
 
   const getMessageAvtar = (messageUserId = '') => {
     const obj = {
@@ -38,8 +38,8 @@ const CustomMessageHeader = ({message, channel}) => {
   };
 
   if (
-    message.user.id !== authContext.chatClient.userID &&
-    (groupStyle === 'top' || groupStyle === 'single')
+    message.user.id !== authContext.chatClient.userID
+    // (groupStyle === 'top' || groupStyle === 'single')
   ) {
     return (
       <View

@@ -300,7 +300,7 @@ const HomeFeed = ({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused, routeParams?.isCreatePost]);
+  }, [routeParams?.isCreatePost]);
 
   return (
     <View style={{flex: 1}}>

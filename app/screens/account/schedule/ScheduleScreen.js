@@ -23,6 +23,7 @@ import {
   SafeAreaView,
   // Dimensions,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 
 import {
@@ -1704,15 +1705,14 @@ export default function ScheduleScreen({navigation, route}) {
           style={{
             margin: 0,
           }}>
-          <View
-            style={[
-              styles.bottomPopupContainer,
-              {
-                // height: Dimensions.get('window').height - popupFilterHeight,
-                paddingBottom: 50,
-              },
-            ]}>
+          <View style={styles.bottomPopupContainer}>
             <View style={styles.topHeaderContainer}>
+              {Platform.OS === 'android' && (
+                <StatusBar
+                  backgroundColor={colors.modalBackgroundColor}
+                  barStyle="light-content"
+                />
+              )}
               <TouchableOpacity
                 hitSlop={getHitSlop(15)}
                 style={styles.closeFilterButton}
@@ -2264,10 +2264,10 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   bottomPopupContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
+    paddingBottom: Platform.OS === 'ios' ? 80 : 50,
     backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
     position: 'absolute',
     bottom: 0,
     width: '100%',
@@ -2279,7 +2279,7 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
       },
       android: {
-        elevation: 15,
+        elevation: 5,
       },
     }),
   },

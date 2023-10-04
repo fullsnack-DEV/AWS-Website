@@ -349,7 +349,11 @@ export default function EventScheduleScreen({
                   );
                 }
                 return (
-                  <View style={{backgroundColor: colors.whiteColor}}>
+                  <View
+                    style={{
+                      backgroundColor: colors.whiteColor,
+                      marginHorizontal: 15,
+                    }}>
                     <TCEventCard
                       onPress={() => onItemPress(item)}
                       data={item}
@@ -374,9 +378,11 @@ export default function EventScheduleScreen({
             renderSectionHeader={({section}) =>
               (section?.data || [])?.filter((obj) => obj.cal_type === 'event')
                 .length > 0 && (
-                <Text style={styles.sectionHeader}>
-                  {section.title.toUpperCase()}
-                </Text>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionHeaderText}>
+                    {section.title.toUpperCase()}
+                  </Text>
+                </View>
               )
             }
             sections={filterData}
@@ -393,14 +399,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectionHeader: {
+    paddingLeft: 15,
+    marginBottom: 10,
+    marginTop: 20,
+  },
+  sectionHeaderText: {
     fontSize: 20,
+    lineHeight: 30,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-    marginBottom: 10,
-    paddingLeft: 12,
-    backgroundColor: colors.whiteColor,
-    paddingTop: 20,
-    paddingBottom: 10,
   },
   dataNotFoundText: {
     fontSize: 16,

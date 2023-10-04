@@ -3,11 +3,10 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableWithoutFeedback,
   ImageBackground,
   Image,
+  Pressable,
 } from 'react-native';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
@@ -41,135 +40,125 @@ export default function TCEventCard({onPress, data, owners = []}) {
   }, [data.owner_id, owners]);
 
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
-      <View style={styles.backgroundView}>
-        <View>
-          <ImageBackground
-            imageStyle={styles.imageBorder}
-            source={
-              data?.background_thumbnail
-                ? {uri: data?.background_thumbnail}
-                : data?.temp_background?.thumbnail
-            }
-            resizeMode="cover"
-            style={styles.eventImage}>
-            <Image
-              source={images.threeDotIcon}
-              style={{
-                height: 20,
-                width: 4,
-                alignSelf: 'flex-end',
-                marginRight: 15,
-                marginTop: 15,
-              }}
-            />
-            <View style={{height: 50}} />
-            <View style={styles.eventTitlewithDot}>
-              <Text style={styles.eventTitle} numberOfLines={1}>
-                {title.toUpperCase()}
-              </Text>
-            </View>
-          </ImageBackground>
+    <Pressable onPress={onPress} style={styles.parent}>
+      <ImageBackground
+        imageStyle={styles.eventBackgroundImage}
+        source={
+          data?.background_thumbnail
+            ? {uri: data?.background_thumbnail}
+            : data?.temp_background?.thumbnail
+        }
+        resizeMode="cover"
+        style={styles.backgroundImageContainer}>
+        <Image source={images.threeDotIcon} style={styles.moreOptionsIcon} />
+
+        <View style={{marginHorizontal: 15, marginBottom: 5}}>
+          <Text style={styles.eventTitle} numberOfLines={1}>
+            {title.toUpperCase()}
+          </Text>
         </View>
-        <View style={styles.eventText}>
-          <View style={styles.bottomView}>
-            <Text style={styles.eventTime}>{`${moment(startDate).format(
-              'ddd, MMM DD',
-            )} - `}</Text>
-            <Text style={styles.eventTime}>{`${moment(startDate).format(
-              'h:mma',
-            )} `}</Text>
+      </ImageBackground>
 
-            <Text style={styles.eventTime}> | </Text>
+      <View style={{paddingHorizontal: 15, paddingVertical: 10}}>
+        <View style={[styles.row, {marginBottom: 5}]}>
+          <Text style={styles.eventTime}>{`${moment(startDate).format(
+            'ddd, MMM DD',
+          )} - `}</Text>
+          <Text style={styles.eventTime}>{`${moment(startDate).format(
+            'h:mma',
+          )}`}</Text>
 
-            {data?.is_Offline ? (
-              <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
-                {location}
-              </Text>
-            ) : (
-              <Text style={{...styles.onlineText, flex: 1}}>
-                {strings.onlineText}
-              </Text>
-            )}
-          </View>
-          <View style={styles.bottomView}>
-            <GroupIcon
-              imageUrl={ownerDetails?.thumbnail}
-              groupName={ownerDetails?.group_name ?? ownerDetails?.full_name}
-              entityType={ownerDetails.entity_type}
-              containerStyle={[
-                styles.groupIconStyle,
-                ownerDetails.entity_type === Verbs.entityTypePlayer ||
-                ownerDetails.entity_type === Verbs.entityTypeUser
-                  ? {paddingTop: 0, borderWidth: 0}
-                  : {},
-              ]}
-              textstyle={{fontSize: 10, marginTop: 0}}
-              placeHolderStyle={styles.groupIconPlaceholder}
-            />
-            <Text style={styles.ownerText}>
-              {ownerDetails?.group_name ?? ownerDetails?.full_name}
+          <Text style={[styles.eventTime, {marginHorizontal: 10}]}>|</Text>
+
+          {data?.is_Offline ? (
+            <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
+              {location}
             </Text>
-          </View>
+          ) : (
+            <Text style={{...styles.onlineText, flex: 1}}>
+              {strings.onlineText}
+            </Text>
+          )}
+        </View>
+        <View style={styles.row}>
+          <GroupIcon
+            imageUrl={ownerDetails?.thumbnail}
+            groupName={ownerDetails?.group_name ?? ownerDetails?.full_name}
+            entityType={ownerDetails.entity_type}
+            containerStyle={[
+              styles.groupIconStyle,
+              ownerDetails.entity_type === Verbs.entityTypePlayer ||
+              ownerDetails.entity_type === Verbs.entityTypeUser
+                ? {paddingTop: 0, borderWidth: 0}
+                : {},
+            ]}
+            textstyle={{fontSize: 10, marginTop: 0}}
+            placeHolderStyle={styles.groupIconPlaceholder}
+          />
+          <Text style={styles.ownerText}>
+            {ownerDetails?.group_name ?? ownerDetails?.full_name}
+          </Text>
         </View>
       </View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  imageBorder: {
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-  backgroundView: {
-    alignSelf: 'center',
+  parent: {
     backgroundColor: colors.whiteColor,
     borderRadius: 10,
     elevation: 5,
-    flexDirection: 'column',
     marginBottom: 15,
     shadowColor: colors.googleColor,
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 7,
-    width: wp('94%'),
   },
-  bottomView: {
+  backgroundImageContainer: {
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    height: 90,
+    justifyContent: 'space-between',
+  },
+  eventBackgroundImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  moreOptionsIcon: {
+    height: 15,
+    width: 4,
+    alignSelf: 'flex-end',
+    marginRight: 15,
+    marginTop: 15,
+    resizeMode: 'contain',
+  },
+  eventTitle: {
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.whiteColor,
+    textShadowColor: colors.blackColor,
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 7,
+  },
+  row: {
     flexDirection: 'row',
-    marginTop: 10,
     alignItems: 'center',
-  },
-  eventText: {
-    padding: 10,
-    paddingVertical: 15,
-    width: wp('83%'),
   },
   eventTime: {
     fontSize: 12,
-    color: colors.darkBlackColor,
-    fontFamily: fonts.RLight,
+    lineHeight: 18,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
   },
   ownerText: {
     fontSize: 12,
     color: colors.darkBlackColor,
     fontFamily: fonts.RBold,
     marginLeft: 10,
-  },
-  eventTitle: {
-    fontSize: 16,
-    fontFamily: fonts.RBold,
-    width: wp('70%'),
-    color: colors.whiteColor,
-    textShadowColor: 'rgba(0, 0, 0, 1)',
-    textShadowOffset: {width: -1, height: 1},
-    textShadowRadius: 7,
-  },
-  eventTitlewithDot: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
   },
   onlineText: {
     color: colors.themeColor,

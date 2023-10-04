@@ -32,6 +32,10 @@ export default function UserGalleryScreen({navigation, route}) {
               comeFrom: 'HomeScreen',
               postData: currentUserData,
               selectedImageList: pickImages,
+              routeParams: {
+                uid: route.params.entityID,
+                role: route.params.entityType,
+              },
             },
           });
         }}

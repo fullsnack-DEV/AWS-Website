@@ -231,8 +231,8 @@ export default function EditEventScreen({navigation, route}) {
   }, [authContext.sports]);
 
   useEffect(() => {
-    setloading(true);
-    // getGroups(authContext)
+    // setloading(true);
+
     getGroups(authContext)
       .then((response) => {
         const {teams, clubs} = response.payload;

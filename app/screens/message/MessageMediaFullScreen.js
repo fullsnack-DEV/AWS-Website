@@ -1,5 +1,5 @@
 // @flow
-import React, {useContext, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -11,7 +11,11 @@ import {
   Pressable,
   Linking,
   Alert,
+  Dimensions,
 } from 'react-native';
+import Carousel from 'react-native-snap-carousel';
+import Orientation from 'react-native-orientation';
+import Video from 'react-native-video';
 import colors from '../../Constants/Colors';
 import ScreenHeader from '../../components/ScreenHeader';
 import images from '../../Constants/ImagePath';
@@ -19,20 +23,25 @@ import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import AuthContext from '../../auth/context';
+import Verbs from '../../Constants/Verbs';
 
 const MessageMediaFullScreen = ({navigation, route}) => {
   const [showFullScreen, setShowFullScreen] = useState(false);
+  const [currentViewIndex, setCurrentViewIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
+  const videoRef = useRef();
 
-  const {url, entityName, msgId} = route.params;
+  const {attachments, entityName, msgId} = route.params;
 
   const deleteImageFromMessage = async (messageId) => {
     setLoading(true);
     try {
       const message = await authContext.chatClient.getMessage(messageId);
       if (message) {
-        const updatedAttachments = [];
+        const updatedAttachments = attachments.filter(
+          (item, index) => index !== currentViewIndex,
+        );
 
         await authContext.chatClient.partialUpdateMessage(messageId, {
           set: {
@@ -47,7 +56,7 @@ const MessageMediaFullScreen = ({navigation, route}) => {
     }
   };
 
-  const downloadImage = async () => {
+  const downloadImage = async (url = '') => {
     const supported = await Linking.canOpenURL(url);
 
     if (supported) {
@@ -55,6 +64,45 @@ const MessageMediaFullScreen = ({navigation, route}) => {
     } else {
       Alert.alert(`Don't know how to open this URL: ${url}`);
     }
+  };
+
+  const renderItem = ({item}) => {
+    if (item.type === Verbs.mediaTypeImage) {
+      return (
+        <Pressable
+          style={{flex: 1, paddingVertical: showFullScreen ? 0 : 50}}
+          onPress={() => setShowFullScreen(!showFullScreen)}>
+          <Image source={{uri: item.image_url}} style={styles.image} />
+        </Pressable>
+      );
+    }
+    if (item.type === Verbs.mediaTypeVideo) {
+      return (
+        <Pressable
+          style={{
+            flex: 1,
+            width: Dimensions.get('window').width,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          onPress={() => setShowFullScreen(!showFullScreen)}>
+          <Video
+            ref={videoRef}
+            source={{uri: item.asset_url}}
+            style={{width: '100%', height: '100%'}}
+            resizeMode={'contain'}
+            controls
+            onLoad={() => {
+              setShowFullScreen(true);
+              Orientation.unlockAllOrientations();
+              videoRef.current.seek(0);
+            }}
+          />
+        </Pressable>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -71,20 +119,38 @@ const MessageMediaFullScreen = ({navigation, route}) => {
           labelStyle={{color: colors.whiteColor}}
           leftIcon={images.whiteBackArrow}
           leftIconPress={() => navigation.goBack()}
+          isRightIconText
+          rightButtonText={`${currentViewIndex + 1}/${attachments.length}`}
+          rightButtonTextStyle={{color: colors.whiteColor}}
+          rightButtonTextContainerStyle={{
+            backgroundColor: colors.userPostTimeColor,
+            paddingHorizontal: 6,
+            paddingVertical: 2,
+            borderRadius: 20,
+          }}
         />
       )}
 
-      <Pressable
-        style={{flex: 1, paddingVertical: showFullScreen ? 0 : 50}}
-        onPress={() => setShowFullScreen(!showFullScreen)}>
-        <Image source={{uri: url}} style={styles.image} />
-      </Pressable>
+      <Carousel
+        data={attachments}
+        renderItem={renderItem}
+        sliderWidth={Dimensions.get('window').width}
+        itemWidth={Dimensions.get('window').width}
+        inactiveSlideScale={1}
+        inactiveSlideOpacity={1}
+        onSnapToItem={(itemIndex) => {
+          setCurrentViewIndex(itemIndex);
+          setShowFullScreen(false);
+        }}
+      />
 
       {!showFullScreen && (
         <View style={styles.bottomRow}>
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={downloadImage}>
+            onPress={() =>
+              downloadImage(attachments[currentViewIndex].image_url)
+            }>
             <Image source={images.downloadImage} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>{strings.download}</Text>
           </TouchableOpacity>
@@ -140,7 +206,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
   },
 });
 export default MessageMediaFullScreen;

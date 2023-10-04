@@ -14,6 +14,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -28,6 +29,7 @@ import {strings} from '../../../Localization/translation';
 import ActivityLoader from '../loader/ActivityLoader';
 import ScreenHeader from '../ScreenHeader';
 import images from '../../Constants/ImagePath';
+import Verbs from '../../Constants/Verbs';
 
 let image_url = '';
 
@@ -222,90 +224,103 @@ export default function DeactivatedSportsListScreen({navigation}) {
   );
 
   return (
-    <ScrollView>
-      <ScreenHeader
-        title={strings.deactivatedSportsActivities}
-        leftIcon={images.backArrow}
-        leftIconPress={() => navigation.goBack()}
-        rightIcon1={images.chat3Dot}
-      />
-      <ActivityLoader visible={loading} />
-      <View>
-        <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>{strings.playingSportList}</Text>
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={userObject?.registered_sports
-              ?.filter((obj) => obj.type === 'player' && !obj.is_active)
-              .sort((a, b) => a.sport.localeCompare(b.sport))}
-            keyExtractor={keyExtractor}
-            renderItem={sportsView}
-            ListEmptyComponent={noDataView(strings.noSportsData)}
-          />
-        </View>
+    <SafeAreaView style={{flex: 1}}>
+      <ScrollView>
+        <ScreenHeader
+          title={strings.deactivatedSportsActivities}
+          leftIcon={images.backArrow}
+          leftIconPress={() => navigation.goBack()}
+          rightIcon1={images.chat3Dot}
+        />
+        <ActivityLoader visible={loading} />
+        <View>
+          <View style={styles.listContainer}>
+            <Text style={styles.listTitle}>{strings.playingSportList}</Text>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              data={userObject?.registered_sports
+                ?.filter(
+                  (obj) =>
+                    obj.type === Verbs.entityTypePlayer && !obj.is_active,
+                )
+                .sort((a, b) => a.sport.localeCompare(b.sport))}
+              keyExtractor={keyExtractor}
+              renderItem={sportsView}
+              ListEmptyComponent={noDataView(strings.noSportsData)}
+            />
+          </View>
 
-        <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>{strings.refereeingSportList}</Text>
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={userObject?.referee_data
-              ?.filter((obj) => obj.type === 'referee' && !obj.is_active)
-              .sort((a, b) => a.sport.localeCompare(b.sport))}
-            keyExtractor={keyExtractor}
-            renderItem={refereeSportsView}
-            ListEmptyComponent={noDataView(strings.noRefereeData)}
-          />
-        </View>
+          <View style={styles.listContainer}>
+            <Text style={styles.listTitle}>{strings.refereeingSportList}</Text>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              data={userObject?.referee_data
+                ?.filter(
+                  (obj) =>
+                    obj.type === Verbs.entityTypeReferee && !obj.is_active,
+                )
+                .sort((a, b) => a.sport.localeCompare(b.sport))}
+              keyExtractor={keyExtractor}
+              renderItem={refereeSportsView}
+              ListEmptyComponent={noDataView(strings.noRefereeData)}
+            />
+          </View>
 
-        <View style={styles.listContainer}>
-          <Text style={styles.listTitle}>{strings.scoreKeepingSportList}</Text>
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            data={userObject?.scorekeeper_data
-              ?.filter((obj) => obj.type === 'scorekeeper' && !obj.is_active)
-              .sort((a, b) => a.sport.localeCompare(b.sport))}
-            keyExtractor={keyExtractor}
-            renderItem={scorekeeperSportsView}
-            ListEmptyComponent={noDataView(strings.noScorekeeperData)}
-          />
+          <View style={styles.listContainer}>
+            <Text style={styles.listTitle}>
+              {strings.scoreKeepingSportList}
+            </Text>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              data={userObject?.scorekeeper_data
+                ?.filter(
+                  (obj) =>
+                    obj.type === Verbs.entityTypeScorekeeper && !obj.is_active,
+                )
+                .sort((a, b) => a.sport.localeCompare(b.sport))}
+              keyExtractor={keyExtractor}
+              renderItem={scorekeeperSportsView}
+              ListEmptyComponent={noDataView(strings.noScorekeeperData)}
+            />
+          </View>
         </View>
-      </View>
-      <ActionSheet
-        ref={actionSheet}
-        options={['Sports Activity Tags Order', strings.cancel]}
-        cancelButtonIndex={1}
-        onPress={(index) => {
-          if (index === 0) {
-            navigation.navigate('SportActivityTagScreen');
-          }
-        }}
-      />
+        <ActionSheet
+          ref={actionSheet}
+          options={['Sports Activity Tags Order', strings.cancel]}
+          cancelButtonIndex={1}
+          onPress={(index) => {
+            if (index === 0) {
+              navigation.navigate('SportActivityTagScreen');
+            }
+          }}
+        />
 
-      <ActionSheet
-        ref={addRoleActionSheet}
-        options={[
-          strings.addPlaying,
-          strings.addRefereeing,
-          strings.addScorekeeping,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={3}
-        onPress={(index) => {
-          if (index === 0) {
-            // Add Playing
-            navigation.navigate('RegisterPlayer', {
-              comeFrom: 'SportActivityScreen',
-            });
-          } else if (index === 1) {
-            // Add Refereeing
-            navigation.navigate('RegisterReferee');
-          } else if (index === 2) {
-            // Add Scorekeeper
-            navigation.navigate('RegisterScorekeeper');
-          }
-        }}
-      />
-    </ScrollView>
+        <ActionSheet
+          ref={addRoleActionSheet}
+          options={[
+            strings.addPlaying,
+            strings.addRefereeing,
+            strings.addScorekeeping,
+            strings.cancel,
+          ]}
+          cancelButtonIndex={3}
+          onPress={(index) => {
+            if (index === 0) {
+              // Add Playing
+              navigation.navigate('RegisterPlayer', {
+                comeFrom: 'SportActivityScreen',
+              });
+            } else if (index === 1) {
+              // Add Refereeing
+              navigation.navigate('RegisterReferee');
+            } else if (index === 2) {
+              // Add Scorekeeper
+              navigation.navigate('RegisterScorekeeper');
+            }
+          }}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

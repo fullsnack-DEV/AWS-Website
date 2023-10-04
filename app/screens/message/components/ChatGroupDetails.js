@@ -1,5 +1,5 @@
 // @flow
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,15 +9,22 @@ import {
   Dimensions,
   Alert,
   Platform,
+  StatusBar,
 } from 'react-native';
+
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
 import {FlatList} from 'react-native-gesture-handler';
 import {strings} from '../../../../Localization/translation';
-import CustomModalWrapper from '../../../components/CustomModalWrapper';
+// import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import GroupIcon from '../../../components/GroupIcon';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import {ModalTypes} from '../../../Constants/GeneralConstants';
+// import {ModalTypes} from '../../../Constants/GeneralConstants';
 import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
 import {
@@ -33,12 +40,13 @@ import useStreamChatUtils from '../../../hooks/useStreamChatUtils';
 import AuthContext from '../../../auth/context';
 
 const ChatGroupDetails = ({
-  isVisible = false,
+  // isVisible = false,
   closeModal = () => {},
   channel = {},
   streamUserId = '',
   leaveChannel = () => {},
   newChannelCreated = () => {},
+  modalRef,
 }) => {
   const [members, setMembers] = useState([]);
   const [showUpdateInfoModal, setShowUpdateInfoModal] = useState(false);
@@ -50,11 +58,11 @@ const ChatGroupDetails = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isVisible) {
-      const list = getChannelMembers(channel);
-      setMembers(list);
-    }
-  }, [isVisible, channel]);
+    // if (isVisible) {
+    const list = getChannelMembers(channel);
+    setMembers(list);
+    // }
+  }, [channel]);
 
   useEffect(() => {
     if (channel.state.members) {
@@ -137,119 +145,286 @@ const ChatGroupDetails = ({
         });
     }
   };
+  const layout = Dimensions.get('window');
+  const snapPoints = useMemo(
+    () => [layout.height - 40, layout.height - 40],
+    [layout],
+  );
+
+  const renderBackdrop = (props) => (
+    <BottomSheetBackdrop
+      {...props}
+      disappearsOnIndex={-1}
+      appearsOnIndex={1}
+      style={{
+        backgroundColor: colors.modalBackgroundColor,
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+      }}
+      opacity={6}
+    />
+  );
 
   return (
-    <CustomModalWrapper
-      isVisible={isVisible}
-      closeModal={closeModal}
-      modalType={ModalTypes.style2}
-      containerStyle={{height: '98%'}}>
-      <ActivityLoader visible={isMemberAdding || loading} />
-
-      {channel.data?.group_type === Verbs.channelTypeGeneral ||
-      channel.data?.channel_type === Verbs.channelTypeAuto ? (
-        <>
-          <Text style={[styles.sectionTitle, {marginBottom: 10}]}>
-            {strings.chatroomName.toUpperCase()}
-          </Text>
-          <TouchableOpacity
-            style={[styles.row, {justifyContent: 'space-between'}]}
-            onPress={() =>
-              isChannelOwner ? setShowUpdateInfoModal(true) : {}
-            }>
-            <View style={[styles.row, {flex: 1}]}>
-              <View style={{marginRight: 10}}>
-                <CustomAvatar
-                  channel={channel}
-                  imageStyle={{width: 30, height: 30}}
-                  placeHolderStyle={{width: 8, height: 8}}
-                  iconTextStyle={{fontSize: 10, marginTop: 1}}
-                />
-              </View>
-
-              <View style={{flex: 1}}>
-                <Text style={styles.channelName} numberOfLines={1}>
-                  {getChannelName(channel, streamUserId)}
-                </Text>
-              </View>
-            </View>
-            {channel.data?.channel_type !== Verbs.channelTypeAuto &&
-            isChannelOwner ? (
-              <View style={styles.iconContainer}>
-                <Image source={images.nextArrow} style={styles.icon} />
-              </View>
-            ) : null}
-          </TouchableOpacity>
-          <View style={styles.separator} />
-        </>
-      ) : null}
-
-      <Text style={[styles.sectionTitle, {marginBottom: 15}]}>
-        {strings.participants}
-      </Text>
-      <FlatList
-        data={members}
-        keyExtractor={(item, index) => index.toString()}
-        showsVerticalScrollIndicator={false}
-        renderItem={({item}) => {
-          const obj = getIconUrl(item);
-
-          return (
-            <View style={styles.listItem}>
-              <GroupIcon
-                imageUrl={obj.url}
-                groupName={item.memberName}
-                entityType={obj.entityType}
-                containerStyle={styles.listIcon}
-                showPlaceholder={false}
-                textstyle={{fontSize: 10, marginTop: 2}}
-              />
-              <Text style={styles.listText}>{item.memberName}</Text>
-            </View>
-          );
+    <BottomSheetModalProvider>
+      <BottomSheetModal
+        onDismiss={closeModal}
+        ref={modalRef}
+        backgroundStyle={{
+          borderRadius: 10,
         }}
-        ListHeaderComponent={() =>
-          channel.data?.channel_type !== Verbs.channelTypeAuto &&
-          members.length !== 1 ? (
-            <TouchableOpacity
-              style={styles.listItem}
-              onPress={() => setShowInviteModal(true)}>
-              <View style={styles.addIconContainer}>
-                <Image source={images.invitePlusIcon} style={styles.addIcon} />
-              </View>
-              <Text style={[styles.listText, {color: colors.tabFontColor}]}>
-                {strings.invite}
+        index={1}
+        handleIndicatorStyle={{
+          backgroundColor: colors.modalHandleColor,
+          width: 40,
+          height: 5,
+          marginTop: 5,
+          alignSelf: 'center',
+          borderRadius: 5,
+        }}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        enableDismissOnClose
+        backdropComponent={renderBackdrop}>
+        <View style={{paddingHorizontal: 25, paddingTop: 25, flex: 1}}>
+          <ActivityLoader visible={isMemberAdding || loading} />
+          {Platform.OS === 'android' && (
+            <StatusBar
+              backgroundColor={colors.modalBackgroundColor}
+              barStyle="light-content"
+            />
+          )}
+          {channel.data?.group_type === Verbs.channelTypeGeneral ||
+          channel.data?.channel_type === Verbs.channelTypeAuto ? (
+            <>
+              <Text style={[styles.sectionTitle, {marginBottom: 10}]}>
+                {strings.chatroomName.toUpperCase()}
               </Text>
-            </TouchableOpacity>
-          ) : null
-        }
-      />
-      {channel.data?.channel_type !== Verbs.channelTypeAuto ? (
-        <TouchableOpacity
-          style={styles.bottomContainer}
-          onPress={handleLeaveChat}>
-          <View
-            style={[styles.iconContainer, {marginLeft: 0, marginRight: 10}]}>
-            <Image source={images.leave_chat_room} style={styles.icon} />
+              <TouchableOpacity
+                style={[styles.row, {justifyContent: 'space-between'}]}
+                onPress={() =>
+                  isChannelOwner ? setShowUpdateInfoModal(true) : {}
+                }>
+                <View style={[styles.row, {flex: 1}]}>
+                  <View style={{marginRight: 10}}>
+                    <CustomAvatar
+                      channel={channel}
+                      imageStyle={{width: 30, height: 30}}
+                      placeHolderStyle={{width: 8, height: 8}}
+                      iconTextStyle={{fontSize: 10, marginTop: 1}}
+                    />
+                  </View>
+
+                  <View style={{flex: 1}}>
+                    <Text style={styles.channelName} numberOfLines={1}>
+                      {getChannelName(channel, streamUserId)}
+                    </Text>
+                  </View>
+                </View>
+                {channel.data?.channel_type !== Verbs.channelTypeAuto &&
+                isChannelOwner ? (
+                  <View style={styles.iconContainer}>
+                    <Image source={images.nextArrow} style={styles.icon} />
+                  </View>
+                ) : null}
+              </TouchableOpacity>
+              <View style={styles.separator} />
+            </>
+          ) : null}
+
+          <Text style={[styles.sectionTitle, {marginBottom: 15}]}>
+            {strings.participants}
+          </Text>
+          <View style={{flex: 1, marginBottom: 70}}>
+            <FlatList
+              data={members}
+              keyExtractor={(item, index) => index.toString()}
+              showsVerticalScrollIndicator={false}
+              renderItem={({item}) => {
+                const obj = getIconUrl(item);
+
+                return (
+                  <View style={styles.listItem}>
+                    <GroupIcon
+                      imageUrl={obj.url}
+                      groupName={item.memberName}
+                      entityType={obj.entityType}
+                      containerStyle={styles.listIcon}
+                      showPlaceholder={false}
+                      textstyle={{fontSize: 10, marginTop: 2}}
+                    />
+                    <Text style={styles.listText}>{item.memberName}</Text>
+                  </View>
+                );
+              }}
+              ListHeaderComponent={() =>
+                channel.data?.channel_type !== Verbs.channelTypeAuto &&
+                members.length !== 1 ? (
+                  <TouchableOpacity
+                    style={styles.listItem}
+                    onPress={() => setShowInviteModal(true)}>
+                    <View style={styles.addIconContainer}>
+                      <Image
+                        source={images.invitePlusIcon}
+                        style={styles.addIcon}
+                      />
+                    </View>
+                    <Text
+                      style={[styles.listText, {color: colors.tabFontColor}]}>
+                      {strings.invite}
+                    </Text>
+                  </TouchableOpacity>
+                ) : null
+              }
+            />
           </View>
-          <Text style={styles.buttonText}>{strings.leaveChatRoom}</Text>
-        </TouchableOpacity>
-      ) : null}
+          {channel.data?.channel_type !== Verbs.channelTypeAuto ? (
+            <TouchableOpacity
+              style={styles.bottomContainer}
+              onPress={handleLeaveChat}>
+              <View
+                style={[
+                  styles.iconContainer,
+                  {marginLeft: 0, marginRight: 10},
+                ]}>
+                <Image source={images.leave_chat_room} style={styles.icon} />
+              </View>
+              <Text style={styles.buttonText}>{strings.leaveChatRoom}</Text>
+            </TouchableOpacity>
+          ) : null}
 
-      <UpdateChannelInfo
-        isVisible={showUpdateInfoModal}
-        closeModal={() => setShowUpdateInfoModal(false)}
-        channel={channel}
-      />
+          <UpdateChannelInfo
+            isVisible={showUpdateInfoModal}
+            closeModal={() => setShowUpdateInfoModal(false)}
+            channel={channel}
+          />
 
-      <InviteModal
-        isVisible={showInviteModal}
-        closeModal={() => setShowInviteModal(false)}
-        members={members}
-        addMembers={handleAddMembers}
-      />
-    </CustomModalWrapper>
+          <InviteModal
+            isVisible={showInviteModal}
+            closeModal={() => setShowInviteModal(false)}
+            members={members}
+            addMembers={handleAddMembers}
+          />
+        </View>
+      </BottomSheetModal>
+    </BottomSheetModalProvider>
   );
+
+  // return (
+  //   <CustomModalWrapper
+  //     isVisible={isVisible}
+  //     closeModal={closeModal}
+  //     modalType={ModalTypes.style2}
+  //     containerStyle={{height: '98%'}}>
+  //     <ActivityLoader visible={isMemberAdding || loading} />
+
+  //     {channel.data?.group_type === Verbs.channelTypeGeneral ||
+  //     channel.data?.channel_type === Verbs.channelTypeAuto ? (
+  //       <>
+  //         <Text style={[styles.sectionTitle, {marginBottom: 10}]}>
+  //           {strings.chatroomName.toUpperCase()}
+  //         </Text>
+  //         <TouchableOpacity
+  //           style={[styles.row, {justifyContent: 'space-between'}]}
+  //           onPress={() =>
+  //             isChannelOwner ? setShowUpdateInfoModal(true) : {}
+  //           }>
+  //           <View style={[styles.row, {flex: 1}]}>
+  //             <View style={{marginRight: 10}}>
+  //               <CustomAvatar
+  //                 channel={channel}
+  //                 imageStyle={{width: 30, height: 30}}
+  //                 placeHolderStyle={{width: 8, height: 8}}
+  //                 iconTextStyle={{fontSize: 10, marginTop: 1}}
+  //               />
+  //             </View>
+
+  //             <View style={{flex: 1}}>
+  //               <Text style={styles.channelName} numberOfLines={1}>
+  //                 {getChannelName(channel, streamUserId)}
+  //               </Text>
+  //             </View>
+  //           </View>
+  //           {channel.data?.channel_type !== Verbs.channelTypeAuto &&
+  //           isChannelOwner ? (
+  //             <View style={styles.iconContainer}>
+  //               <Image source={images.nextArrow} style={styles.icon} />
+  //             </View>
+  //           ) : null}
+  //         </TouchableOpacity>
+  //         <View style={styles.separator} />
+  //       </>
+  //     ) : null}
+
+  //     <Text style={[styles.sectionTitle, {marginBottom: 15}]}>
+  //       {strings.participants}
+  //     </Text>
+  //     <FlatList
+  //       data={members}
+  //       keyExtractor={(item, index) => index.toString()}
+  //       showsVerticalScrollIndicator={false}
+  //       renderItem={({item}) => {
+  //         const obj = getIconUrl(item);
+
+  //         return (
+  //           <View style={styles.listItem}>
+  //             <GroupIcon
+  //               imageUrl={obj.url}
+  //               groupName={item.memberName}
+  //               entityType={obj.entityType}
+  //               containerStyle={styles.listIcon}
+  //               showPlaceholder={false}
+  //               textstyle={{fontSize: 10, marginTop: 2}}
+  //             />
+  //             <Text style={styles.listText}>{item.memberName}</Text>
+  //           </View>
+  //         );
+  //       }}
+  //       ListHeaderComponent={() =>
+  //         channel.data?.channel_type !== Verbs.channelTypeAuto &&
+  //         members.length !== 1 ? (
+  //           <TouchableOpacity
+  //             style={styles.listItem}
+  //             onPress={() => setShowInviteModal(true)}>
+  //             <View style={styles.addIconContainer}>
+  //               <Image source={images.invitePlusIcon} style={styles.addIcon} />
+  //             </View>
+  //             <Text style={[styles.listText, {color: colors.tabFontColor}]}>
+  //               {strings.invite}
+  //             </Text>
+  //           </TouchableOpacity>
+  //         ) : null
+  //       }
+  //     />
+  //     {channel.data?.channel_type !== Verbs.channelTypeAuto ? (
+  //       <TouchableOpacity
+  //         style={styles.bottomContainer}
+  //         onPress={handleLeaveChat}>
+  //         <View
+  //           style={[styles.iconContainer, {marginLeft: 0, marginRight: 10}]}>
+  //           <Image source={images.leave_chat_room} style={styles.icon} />
+  //         </View>
+  //         <Text style={styles.buttonText}>{strings.leaveChatRoom}</Text>
+  //       </TouchableOpacity>
+  //     ) : null}
+
+  //     <UpdateChannelInfo
+  //       isVisible={showUpdateInfoModal}
+  //       closeModal={() => setShowUpdateInfoModal(false)}
+  //       channel={channel}
+  //     />
+
+  //     <InviteModal
+  //       isVisible={showInviteModal}
+  //       closeModal={() => setShowInviteModal(false)}
+  //       members={members}
+  //       addMembers={handleAddMembers}
+  //     />
+  //   </CustomModalWrapper>
+  // );
 };
 
 const styles = StyleSheet.create({

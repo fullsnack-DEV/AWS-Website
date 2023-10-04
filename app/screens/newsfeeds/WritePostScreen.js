@@ -733,8 +733,6 @@ const WritePostScreen = ({navigation, route}) => {
         ]}
         onPress={() => {
           setPrivacySetting(item);
-          setTimeout(() => {
-          }, 300);
         }}>
         <View style={[styles.icon, {marginRight: 10}]}>
           <Image source={item.icon} style={styles.image} />
@@ -803,7 +801,7 @@ const WritePostScreen = ({navigation, route}) => {
   const onCloseModal = () => {
     setVisibleWhoModal(false);
   };
-  
+
   const renderPost = () => {
     const repostData = route.params.repostData;
     const objData = getPostData(repostData);
@@ -972,14 +970,16 @@ const WritePostScreen = ({navigation, route}) => {
         isVisible={visibleWhoModal}
         closeModal={onCloseModal}
         modalType={ModalTypes.style1}
-        title={strings.privacySettings}   
+        title={strings.privacySettings}
         containerStyle={{
           paddingTop: 15,
-          paddingHorizontal: 30, 
+          paddingHorizontal: 30,
         }}
-         headerRightButtonText={strings.apply}
-        onRightButtonPress={() => {setVisibleWhoModal(false);
-                                  setPrivacySetting(privacySetting);}}
+        headerRightButtonText={strings.apply}
+        onRightButtonPress={() => {
+          setVisibleWhoModal(false);
+          setPrivacySetting(privacySetting);
+        }}
         ratio={1.7}>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
         <FlatList

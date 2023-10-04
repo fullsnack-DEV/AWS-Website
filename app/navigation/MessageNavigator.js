@@ -16,6 +16,7 @@ import MessageEditInviteeScreen from '../screens/message/MessageEditInviteeScree
 // // import MessageChat from '../components/message/MessageChat';
 import MessageChatScreen from '../screens/message/MessageChatScreen';
 import MessageMediaFullScreen from '../screens/message/MessageMediaFullScreen';
+import LongTextMessageScreen from '../screens/message/LongTextMessageScreen';
 
 // import fonts from '../Constants/Fonts';
 
@@ -69,57 +70,11 @@ const MessageNavigator = () => (
       component={MessageMediaFullScreen}
       options={{headerShown: false}}
     />
-    {/* <Stack.Screen
-      name="HomeScreen"
-      component={HomeScreen}
-      options={{
-        title: strings.home,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
     <Stack.Screen
-      name="SportActivityHome"
-      component={SportActivityHome}
+      name="LongTextMessageScreen"
+      component={LongTextMessageScreen}
       options={{headerShown: false}}
     />
-    <Stack.Screen
-      name="EditWrapperScreen"
-      component={EditWrapperScreen}
-      options={{
-        headerShown: false,
-      }}
-    />
-    <Stack.Screen
-      name="ReviewDetailsScreen"
-      component={ReviewDetailsScreen}
-      options={{headerShown: false}}
-    />
-    <Stack.Screen
-      name="SearchScreen"
-      component={SearchScreen}
-      options={{
-        title: strings.searchText,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    /> */}
   </Stack.Navigator>
 );
 

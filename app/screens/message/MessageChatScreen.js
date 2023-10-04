@@ -65,6 +65,7 @@ const MessageChatScreen = ({navigation, route}) => {
   const [allReaction, setAllReaction] = useState([]);
   const [deleteMessageModal, setDeleteMessageModal] = useState(false);
   const [deleteMessageObject, setDeleteMessageObject] = useState({});
+  // eslint-disable-next-line no-unused-vars
   const [showDetails, setShowDetails] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [showSearchInput, setShowSearchInput] = useState(false);
@@ -76,6 +77,7 @@ const MessageChatScreen = ({navigation, route}) => {
   const [tagOptions, setTagOptions] = useState([]);
   const [selectedTagMember, setSelectedTagMember] = useState({});
   const timeoutRef = useRef();
+  const channelInfoModalRef = useRef();
 
   const handleBackPress = useCallback(() => {
     navigation.setOptions({});
@@ -150,7 +152,9 @@ const MessageChatScreen = ({navigation, route}) => {
                 }}>
                 <Image
                   style={{width: 28, height: 28, marginRight: 10}}
-                  source={{uri: imageUploads[0].url}}
+                  source={{
+                    uri: imageUploads[0].url ?? imageUploads[0].thumb_url,
+                  }}
                   onPress={() => {
                     CancelImageUpload(imageUploads, removeImage);
                   }}
@@ -180,7 +184,6 @@ const MessageChatScreen = ({navigation, route}) => {
             {imageState === 'uploading' && (
               <View style={{position: 'absolute', bottom: -8, left: -10}}>
                 <Progress.Bar
-                  progress={1}
                   width={wp(100)}
                   height={5}
                   borderRadius={5}
@@ -370,7 +373,8 @@ const MessageChatScreen = ({navigation, route}) => {
         }}
         rightIcon2={images.vertical3Dot}
         rightIcon2Press={() => {
-          setShowDetails(true);
+          // setShowDetails(true);
+          channelInfoModalRef.current?.present();
         }}
         loading={false}
         rightIcon1={showSearchInput ? images.searchLocation : images.chatSearch}
@@ -431,22 +435,22 @@ const MessageChatScreen = ({navigation, route}) => {
           )}
           MessageActionListItem={CustomMessageActionListItem}
           OverlayReactionList={() => null}
-          ImageGalleryFooter={CustomImageGalleryComponent}>
-          <Chat style={themeStyle} client={authContext.chatClient}>
+          ImageGalleryFooter={CustomImageGalleryComponent}
+          value={{style: themeStyle}}>
+          <Chat client={authContext.chatClient}>
             <Channel
               channel={channel}
               MessageText={() => (
-                <CustomMessageText onTagPress={handleTagPress} />
+                <CustomMessageText
+                  onTagPress={handleTagPress}
+                  onViewAll={(messageText) => {
+                    navigation.navigate('LongTextMessageScreen', {
+                      messageText,
+                    });
+                  }}
+                />
               )}
-              MessageAvatar={
-                () => null
-                // <CustomAvatar
-                //   channel={channel}
-                //   imageStyle={{width: 30, height: 30}}
-                //   iconTextStyle={{fontSize: 12, marginTop: 1}}
-                //   placeHolderStyle={{width: 12, height: 12}}
-                // />
-              }
+              MessageAvatar={() => null}
               myMessageTheme={myMessageTheme}
               MessageHeader={({message}) => (
                 <CustomMessageHeader message={message} channel={channel} />
@@ -482,8 +486,11 @@ const MessageChatScreen = ({navigation, route}) => {
               )}
               TypingIndicator={CustomTypingIndicator}
               AutoCompleteSuggestionList={CustomAutoCompleteSuggestionsList}>
-              <MessageList />
-              <MessageInput Input={CustomInput} />
+              <MessageList
+                noGroupByUser
+                additionalFlatListProps={{showsVerticalScrollIndicator: false}}
+              />
+              {!showSearchInput && <MessageInput Input={CustomInput} />}
             </Channel>
           </Chat>
         </ChatOverlayProvider>
@@ -502,21 +509,6 @@ const MessageChatScreen = ({navigation, route}) => {
           onSelect={handleMessageDeletion}
         />
 
-        {/* Chat group details */}
-        <ChatGroupDetails
-          isVisible={showDetails}
-          closeModal={() => setShowDetails(false)}
-          channel={channel}
-          streamUserId={authContext.chatClient.userID}
-          leaveChannel={handleChannelLeave}
-          newChannelCreated={async (channelObj) => {
-            await channelObj.watch();
-            navigation.replace('MessageChatScreen', {
-              channel: channelObj,
-            });
-          }}
-        />
-
         <BottomSheet
           type="ios"
           optionList={tagOptions}
@@ -525,6 +517,21 @@ const MessageChatScreen = ({navigation, route}) => {
           onSelect={handleTagOptions}
         />
       </View>
+      {/* Chat group details */}
+      <ChatGroupDetails
+        // isVisible={showDetails}
+        closeModal={() => setShowDetails(false)}
+        channel={channel}
+        streamUserId={authContext.chatClient.userID}
+        leaveChannel={handleChannelLeave}
+        newChannelCreated={async (channelObj) => {
+          await channelObj.watch();
+          navigation.replace('MessageChatScreen', {
+            channel: channelObj,
+          });
+        }}
+        modalRef={channelInfoModalRef}
+      />
     </SafeAreaView>
   );
 };

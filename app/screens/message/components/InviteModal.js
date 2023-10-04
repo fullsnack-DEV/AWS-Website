@@ -13,10 +13,10 @@ import {
   Text,
   TextInput,
   Image,
-  FlatList,
   Pressable,
   TouchableOpacity,
 } from 'react-native';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import {strings} from '../../../../Localization/translation';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import AuthContext from '../../../auth/context';
@@ -155,7 +155,10 @@ const InviteModal = ({
       searchRef.current = setTimeout(() => {
         const filteredData = list.filter(
           (item) =>
-            item.name?.toLowerCase().trim().includes(searchText.toLowerCase().trim()) &&
+            item.name
+              ?.toLowerCase()
+              .trim()
+              .includes(searchText.toLowerCase().trim()) &&
             checkForSelectedTab(item.entityType),
         );
 
@@ -178,7 +181,7 @@ const InviteModal = ({
     }
     setSelectedInvitees([...selectedInvitees]);
   };
-  
+
   return (
     <CustomModalWrapper
       isVisible={isVisible}
@@ -214,18 +217,15 @@ const InviteModal = ({
       </Pressable>
       {selectedInvitees.length > 0 ? (
         <View style={{marginBottom: 15, paddingHorizontal: 15}}>
-          <FlatList
-            data={selectedInvitees}
-            renderItem={({item}) => (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {selectedInvitees.map((item, index) => (
               <SelectedInviteeCard
+                key={index}
                 item={item}
                 onCancel={() => toggleSelection(true, item)}
               />
-            )}
-            keyExtractor={(item, index) => index.toString()}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          />
+            ))}
+          </ScrollView>
         </View>
       ) : null}
 

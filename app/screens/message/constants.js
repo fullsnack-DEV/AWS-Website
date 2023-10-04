@@ -39,7 +39,7 @@ export const themeStyle = {
     content: {
       textContainer: {
         borderWidth: 0,
-        Bottom:10,
+        Bottom: 10,
       },
       markdown: {
         text: {
@@ -47,7 +47,6 @@ export const themeStyle = {
           lineHeight: 24,
           color: colors.lightBlackColor,
           fontFamily: fonts.RRegular,
-         
         },
       },
       deletedContainerInner: {
@@ -58,9 +57,11 @@ export const themeStyle = {
       containerInner: {
         maxWidth: Dimensions.get('window').width * 0.7,
         marginLeft: 30,
+        borderWidth: 0,
       },
       container: {
         maxWidth: Dimensions.get('window').width * 0.8,
+        borderWidth: 0,
       },
       replyContainer: {
         borderWidth: 0,
@@ -72,7 +73,8 @@ export const themeStyle = {
   messageList: {
     container: {
       backgroundColor: colors.lightGrayBackground,
-      paddingHorizontal:10,
+      paddingHorizontal: 10,
+      borderWidth: 0,
     },
   },
 };
@@ -89,7 +91,6 @@ export const myMessageTheme = {
           lineHeight: 24,
           color: colors.lightBlackColor,
           fontFamily: fonts.RRegular,
-         
         },
       },
       containerInner: {

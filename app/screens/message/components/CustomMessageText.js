@@ -1,5 +1,5 @@
 // @flow
-import React, {useContext, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {View, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
 import {useMessageContext} from 'stream-chat-react-native';
 import {strings} from '../../../../Localization/translation';
@@ -10,13 +10,28 @@ import images from '../../../Constants/ImagePath';
 import {checkIsMessageDeleted} from '../../../utils/streamChat';
 import {emojiRegex} from '../../../Constants/GeneralConstants';
 
-const CustomMessageText = ({onTagPress = () => {}}) => {
-  const [showFullMessage, setShowFullMessage] = useState(false);
+const NUM_OF_LINES = 12;
+
+const CustomMessageText = ({onTagPress = () => {}, onViewAll = () => {}}) => {
+  const [showViewMoreOption, setShowViewMoreOption] = useState(false);
+  const [numOfLines, setNumOfLines] = useState(0);
+
   const authContext = useContext(AuthContext);
   const {message} = useMessageContext();
+
   const isDeletedMessage = checkIsMessageDeleted(
     authContext.chatClient.userID,
     message,
+  );
+
+  const onTextLayout = useCallback(
+    (e) => {
+      if (numOfLines === 0 && e.nativeEvent.lines.length > NUM_OF_LINES) {
+        setShowViewMoreOption(true);
+        setNumOfLines(NUM_OF_LINES);
+      }
+    },
+    [numOfLines],
   );
 
   const renderMentions = () => {
@@ -57,7 +72,12 @@ const CustomMessageText = ({onTagPress = () => {}}) => {
       message.text.trim().length === 2 ? (
       <Text style={styles.emojiText}>{message.text}</Text>
     ) : (
-      <Text style={styles.messageText}>{processedText}</Text>
+      <Text
+        style={styles.messageText}
+        numberOfLines={numOfLines}
+        onTextLayout={onTextLayout}>
+        {processedText}
+      </Text>
     );
   };
 
@@ -71,34 +91,30 @@ const CustomMessageText = ({onTagPress = () => {}}) => {
       </View>
     );
   }
-  if (!showFullMessage && message.text.length > 400) {
-    return (
-      <View style={styles.parent}>
-        <Text style={styles.messageText} numberOfLines={7}>
-          {message.text}
-        </Text>
-        <View
-          style={[
-            styles.hrLine,
-            message.user_id === authContext.chatClient.userID
-              ? {backgroundColor: colors.whiteColor}
-              : {},
-          ]}
-        />
-        <TouchableOpacity
-          style={styles.viewMoreContainer}
-          onPress={() => setShowFullMessage(!showFullMessage)}>
-          <Text style={styles.messageText}>{strings.viewAll}</Text>
-          <Image source={images.nextArrow} style={styles.nextArrow} />
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.parent}>
-      {/* <Text style={styles.messageText}>{message.text}</Text> */}
       {renderMentions()}
+      {showViewMoreOption ? (
+        <>
+          <View
+            style={[
+              styles.hrLine,
+              message.user_id === authContext.chatClient.userID
+                ? {backgroundColor: colors.whiteColor}
+                : {},
+            ]}
+          />
+          <TouchableOpacity
+            style={styles.viewMoreContainer}
+            onPress={() => {
+              onViewAll(message.text);
+            }}>
+            <Text style={styles.messageText}>{strings.viewAll}</Text>
+            <Image source={images.nextArrow} style={styles.nextArrow} />
+          </TouchableOpacity>
+        </>
+      ) : null}
     </View>
   );
 };

@@ -2,7 +2,6 @@ import {
   Text,
   View,
   Alert,
-  FlatList,
   TouchableOpacity,
   TextInput,
   StyleSheet,
@@ -18,6 +17,7 @@ import React, {
 import {format} from 'react-string-format';
 import {useNavigation} from '@react-navigation/native';
 
+import {FlatList} from 'react-native-gesture-handler';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
   BottomSheetModal,

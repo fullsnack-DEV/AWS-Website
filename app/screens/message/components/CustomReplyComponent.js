@@ -82,7 +82,8 @@ const CustomReplyComponent = () => {
                     color: colors.placeHolderColor,
                     marginTop: 5,
                     marginBottom: 5,
-                  }}>
+                  }}
+                  numberOfLines={3}>
                   {message.quoted_message.attachments.length > 0
                     ? attachementType
                     : message.quoted_message.text}

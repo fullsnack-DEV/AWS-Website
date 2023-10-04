@@ -34,6 +34,7 @@ const ScreenHeader = ({
   iconContainerStyle = {},
   rightButtonTextStyle = {},
   leftIconStyle = {},
+  rightButtonTextContainerStyle = {},
 }) => (
   <View style={[styles.headerRow, containerStyle]}>
     <View style={[{width: 80}, leftIconStyle]}>
@@ -67,7 +68,9 @@ const ScreenHeader = ({
     <View style={{width: 80}}>
       {isRightIconText ? (
         <View style={{alignItems: 'flex-end'}}>
-          <TouchableOpacity onPress={onRightButtonPress}>
+          <TouchableOpacity
+            onPress={onRightButtonPress}
+            style={rightButtonTextContainerStyle}>
             {loading ? (
               <ActivityIndicator size={'small'} />
             ) : (
