@@ -661,7 +661,13 @@ export default function CreateEventScreen({navigation, route}) {
         {
           text: strings.quit,
           onPress: () => {
-            navigation.goBack();
+            if (route.params?.comeName === 'LocalHomeScreen') {
+              navigation.navigate('Local Home', {
+                screen: 'LocalHomeScreen',
+              });
+            } else {
+              navigation.goBack();
+            }
           },
         },
       ],

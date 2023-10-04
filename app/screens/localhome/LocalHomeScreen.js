@@ -618,15 +618,16 @@ function LocalHomeScreen({navigation, route}) {
       navigation.navigate('Schedule', {
         screen: 'EventScheduleScreen',
         params: {
-          comeName: '',
+          comeName: 'LocalHomeScreen',
         },
       });
+      return;
     }
     if (item.title === strings.createevents) {
       navigation.navigate('Schedule', {
         screen: 'CreateEventScreen',
         params: {
-          comeName: '',
+          comeName: 'LocalHomeScreen',
         },
       });
     }

@@ -9,6 +9,7 @@ import {
   Alert,
   FlatList,
   Dimensions,
+  Platform,
 } from 'react-native';
 import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -49,7 +50,7 @@ import CustomModalWrapper from '../../../components/CustomModalWrapper';
 export default function EventScreen({navigation, route}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
-  const [sendNewInvoice, SetSendNewInvoice] = useState(false);
+  const [sendNewInvoice, setSendNewInvoice] = useState(false);
 
   const [loading, setloading] = useState(false);
   const [organizer, setOrganizer] = useState({});
@@ -414,7 +415,8 @@ export default function EventScreen({navigation, route}) {
   const handleActions = (option) => {
     switch (option) {
       case strings.sendInvoice:
-        SetSendNewInvoice(true);
+        setShowActionSheet(false);
+        setSendNewInvoice(true);
         break;
 
       case strings.sendMessage:
@@ -1017,7 +1019,7 @@ export default function EventScreen({navigation, route}) {
         ) : null}
       </ScrollView>
       <BottomSheet
-        type="ios"
+        type={Platform.OS}
         isVisible={showActionSheet}
         closeModal={() => setShowActionSheet(false)}
         optionList={moreOptions}
@@ -1061,7 +1063,10 @@ export default function EventScreen({navigation, route}) {
         invoiceType={InvoiceType.Event}
         eventID={eventData.cal_id}
         member={going}
-        onClose={() => SetSendNewInvoice(false)}
+        onClose={() => {
+          setShowActionSheet(false);
+          setSendNewInvoice(false);
+        }}
       />
       <CustomModalWrapper
         isVisible={infoModal}

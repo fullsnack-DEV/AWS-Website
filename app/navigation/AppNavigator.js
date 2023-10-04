@@ -253,6 +253,7 @@ const AppNavigator = ({navigation}) => {
         options={() => ({
           tabBarTestID: 'localhome-tab',
           headerShown: false,
+
           tabBarStyle: {display: 'none'},
           tabBarIcon: ({focused}) => {
             if (focused);
@@ -322,6 +323,7 @@ const AppNavigator = ({navigation}) => {
         options={() => ({
           tabBarTestID: 'schedule-tab',
           headerShown: false,
+          unmountOnBlur: true,
           tabBarStyle: {display: 'none'},
           tabBarIcon: ({focused}) => {
             if (focused);
@@ -337,6 +339,15 @@ const AppNavigator = ({navigation}) => {
             );
           },
         })}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+
+            navigation.navigate('Schedule', {
+              screen: 'EventScheduleScreen',
+            });
+          },
+        }}
       />
       <Tab.Screen
         name="Message"

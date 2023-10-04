@@ -164,7 +164,9 @@ function TopTileSection({
         <View style={styles.tiletitleContainer}>
           <Text style={styles.tiletitleText}>
             {item.title === strings.createEventhomeTitle &&
-            authContext.entity.role !== Verbs.entityTypeTeam
+
+            authContext.entity.role !== Verbs.entityTypeClub
+
               ? strings.eventHomeTile
               : item.title}
           </Text>
