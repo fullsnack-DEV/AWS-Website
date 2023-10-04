@@ -15,8 +15,6 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import Modal from 'react-native-modal';
-
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import ReadMore from '@fawazahmed/react-native-read-more';
 
 import EventItemRender from '../../../components/Schedule/EventItemRender';
@@ -44,8 +42,9 @@ import {getUserFollowerFollowing} from '../../../api/Users';
 import {getGroupMembers} from '../../../api/Groups';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
-import {InvoiceType} from '../../../Constants/GeneralConstants';
+import {InvoiceType, ModalTypes} from '../../../Constants/GeneralConstants';
 import BottomSheet from '../../../components/modals/BottomSheet';
+import CustomModalWrapper from '../../../components/CustomModalWrapper';
 
 export default function EventScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -468,6 +467,7 @@ export default function EventScreen({navigation, route}) {
         leftIconPress={() => {
           navigation.goBack();
         }}
+        rightIcon1={images.unlikeImage}
         rightIcon2={images.vertical3Dot}
         rightIcon2Press={() => {
           if (isOrganizer) {
@@ -482,6 +482,7 @@ export default function EventScreen({navigation, route}) {
           }
           setShowActionSheet(true);
         }}
+        containerStyle={{marginLeft: 7}}
         // loading={loading}
       />
       <ActivityLoader visible={loading} />
@@ -634,7 +635,7 @@ export default function EventScreen({navigation, route}) {
         {activeTab === strings.infoTitle ? (
           <>
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.description}</Text>
+              <Text style={styles.headerTextStyle}>{strings.describeText}</Text>
               <ReadMore
                 numberOfLines={3}
                 style={styles.longTextStyle}
@@ -649,7 +650,7 @@ export default function EventScreen({navigation, route}) {
 
             <View style={styles.containerStyle}>
               <Text style={styles.headerTextStyle}>
-                {strings.organizerTitle}
+                {strings.eventFilterOrganiserTitle}
               </Text>
               {organizer && (
                 <View>
@@ -687,7 +688,7 @@ export default function EventScreen({navigation, route}) {
                       marginBottom: 15,
                     }}>
                     <Text style={[styles.headerTextStyle, {marginBottom: 0}]}>
-                      {`${strings.goingTitle} (${going?.length})`}
+                      {`${strings.going} (${going?.length})`}
                     </Text>
 
                     <Text
@@ -715,7 +716,7 @@ export default function EventScreen({navigation, route}) {
               </>
             )}
 
-            <EventItemRender title={strings.place}>
+            <EventItemRender title={strings.venue}>
               {eventData.is_Offline ? (
                 <>
                   <Text
@@ -765,9 +766,7 @@ export default function EventScreen({navigation, route}) {
             <View style={styles.sepratorViewStyle} />
 
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>
-                {strings.timeUppercase}
-              </Text>
+              <Text style={styles.headerTextStyle}>{strings.timeText}</Text>
 
               <View
                 style={{
@@ -932,7 +931,7 @@ export default function EventScreen({navigation, route}) {
 
             <View style={styles.sepratorViewStyle} />
             <EventItemRender
-              title={strings.eventFeeTitle}
+              title={strings.eventFee}
               icon={images.infoIcon}
               clickInfoIcon={clickInfoIcon}
               type={'fee'}>
@@ -945,7 +944,7 @@ export default function EventScreen({navigation, route}) {
             </EventItemRender>
 
             <View style={styles.sepratorViewStyle} />
-            <EventItemRender title={strings.refundPolicyTitle}>
+            <EventItemRender title={strings.refundpolicy}>
               <ReadMore
                 numberOfLines={2}
                 style={styles.longTextStyle}
@@ -959,7 +958,7 @@ export default function EventScreen({navigation, route}) {
 
             <View style={styles.sepratorViewStyle} />
             <EventItemRender
-              title={strings.numberOfAttend}
+              title={strings.numberAttend}
               icon={images.infoIcon}
               clickInfoIcon={clickInfoIcon}
               type={'attendee'}>
@@ -976,7 +975,7 @@ export default function EventScreen({navigation, route}) {
             {isOrganizer && (
               <>
                 <View style={styles.sepratorViewStyle} />
-                <EventItemRender title={strings.whoCanSee}>
+                <EventItemRender title={strings.whoCanSeeTitle}>
                   <Text
                     style={[
                       styles.textValueStyle,
@@ -987,7 +986,7 @@ export default function EventScreen({navigation, route}) {
                 </EventItemRender>
 
                 <View style={styles.sepratorViewStyle} />
-                <EventItemRender title={strings.whoCanJoin}>
+                <EventItemRender title={strings.whoCanJoinTitle}>
                   <Text
                     style={[
                       styles.textValueStyle,
@@ -998,7 +997,7 @@ export default function EventScreen({navigation, route}) {
                 </EventItemRender>
 
                 <View style={styles.sepratorViewStyle} />
-                <EventItemRender title={strings.whoCanInvite}>
+                <EventItemRender title={strings.whoCanInviteTitle}>
                   <Text
                     style={[
                       styles.textValueStyle,
@@ -1062,34 +1061,25 @@ export default function EventScreen({navigation, route}) {
         member={going}
         onClose={() => SetSendNewInvoice(false)}
       />
-
-      {/* Modal Style 3 */}
-      <Modal
+      <CustomModalWrapper
         isVisible={infoModal}
-        backdropColor="black"
-        style={{margin: 0, justifyContent: 'flex-end'}}
-        hasBackdrop
-        onBackdropPress={() => {
+        modalType={ModalTypes.style2}
+        ratio={infoType === Verbs.attendeeVerb ? 1.3 : 1.2}
+        closeModal={() => {
           setInfoModal(false);
-        }}
-        backdropOpacity={0.7}>
-        <SafeAreaView style={styles.modalMainViewStyle}>
-          <View style={{padding: 20}}>
-            <View style={styles.sepratorStyle} />
-            {infoType === 'attendee' ? (
-              <View>
-                <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
-                <Text style={styles.contentText}>{strings.attendyText}</Text>
-              </View>
-            ) : (
-              <View>
-                <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
-                <Text style={styles.contentText}>{strings.feeText}</Text>
-              </View>
-            )}
+        }}>
+        {infoType === Verbs.attendeeVerb ? (
+          <View>
+            <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
+            <Text style={styles.contentText}>{strings.attendyText}</Text>
           </View>
-        </SafeAreaView>
-      </Modal>
+        ) : (
+          <View>
+            <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
+            <Text style={styles.contentText}>{strings.feeText}</Text>
+          </View>
+        )}
+      </CustomModalWrapper>
     </SafeAreaView>
   );
 }
@@ -1159,7 +1149,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 30,
     marginBottom: 15,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
   goingContainer: {
@@ -1178,26 +1168,6 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
     borderRadius: 20,
-  },
-  modalMainViewStyle: {
-    shadowOpacity: 0.15,
-    shadowOffset: {
-      height: -10,
-      width: 0,
-    },
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: hp('32%'),
-    flexDirection: 'column',
-    padding: 10,
-  },
-  sepratorStyle: {
-    height: 5,
-    width: 80,
-    backgroundColor: colors.writePostSepratorColor,
-    alignSelf: 'center',
-    marginBottom: 20,
   },
   titleText: {
     color: colors.blackColor,
@@ -1227,8 +1197,8 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     position: 'absolute',
-    left: 30,
-    top: 40,
+    left: 15,
+    bottom: 0,
   },
   seeAllText: {
     color: colors.themeColor,

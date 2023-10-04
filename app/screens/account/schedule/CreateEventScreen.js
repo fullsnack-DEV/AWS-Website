@@ -29,6 +29,7 @@ import {useIsFocused} from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
 import {format} from 'react-string-format';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import {getCountry} from 'country-currency-map';
 import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
@@ -170,6 +171,13 @@ export default function CreateEventScreen({navigation, route}) {
 
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
   const [currency, setSelectedCurrency] = useState('');
+
+  useEffect(() => {
+    const currencyObj = getCountry(authContext.entity.obj.country);
+    if (currencyObj) {
+      setSelectedCurrency(currencyObj.currency);
+    }
+  }, [authContext.entity.obj.country]);
 
   const handleStartDatePress = (date) => {
     const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date;
@@ -547,7 +555,7 @@ export default function CreateEventScreen({navigation, route}) {
           event_posted_at: eventPosted,
           event_fee: {
             value: Number(eventFee),
-            currency_type: Verbs.usd,
+            currency_type: currency,
           },
           refund_policy: refundPolicy,
           min_attendees: Number(minAttendees),
@@ -1164,7 +1172,7 @@ export default function CreateEventScreen({navigation, route}) {
                   placeholderTextColor={colors.userPostTimeColor}
                 />
                 <Text style={styles.currencyStyle}>
-                  {currency || strings.defaultCurrency}
+                  {currency ?? strings.defaultCurrency}
                 </Text>
               </View>
               <TouchableOpacity onPress={() => setShowCurrencyModal(true)}>
@@ -1189,15 +1197,6 @@ export default function CreateEventScreen({navigation, route}) {
               </Text>
               <Text style={[styles.subTitleText, {marginTop: 10}]}>
                 {strings.attendeesMustRefundedText}
-                {strings.readPaymentPolicyText}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: fonts.RBold,
-                  marginTop: 16,
-                }}>
-                {strings.additionalRefundPolicy}
               </Text>
               <Pressable
                 onPress={() => {
@@ -1622,7 +1621,6 @@ const styles = StyleSheet.create({
   },
   feeContainer: {
     width: wp('92%'),
-    alignSelf: 'center',
     padding: wp('1.5%'),
     height: 40,
     backgroundColor: colors.textFieldBackground,
@@ -1636,6 +1634,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.lightBlackColor,
     marginTop: 10,
+    lineHeight: 24,
   },
   activeEventPricacy: {
     paddingVertical: 4,

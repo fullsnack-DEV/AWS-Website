@@ -355,7 +355,9 @@ export default {
   PAYNOW: 'en_PAY NOW',
   sportCreateEvent: 'en_SPORT',
   numberOfAttend: 'en_NUMBER OF ATTENDEES',
+  numberAttend: 'en_Number of Attendees',
   eventFeeTitle: 'en_EVENT FEE',
+  eventFee: 'en_Event Fee',
   refundPolicyTitle: 'en_REFUND POLICY',
   whereEventPosted: 'en_WHERE THE EVENT IS POSTED',
   sportPlaceholder: 'en_Choose sport',
@@ -964,7 +966,9 @@ export default {
   goingTitle: 'en_GOING',
 
   whoCanJoin: 'en_WHO CAN JOIN',
+  whoCanJoinTitle: 'en_Who Can Join',
   whoCanSee: 'en_WHO CAN SEE',
+  whoCanSeeTitle: 'en_Who Can See',
   moveTo: 'en_Move To',
   clearAllStarting: 'en_Clear all starting',
   clearAllSubs: 'en_Clear all subs',
@@ -2601,6 +2605,7 @@ export default {
   eventPostCreate:
     'en_Display the event on Posts as soon as the event is created.',
   whoCanInvite: 'en_WHO CAN INVITE',
+  whoCanInviteTitle: 'en_Who Can Invite',
   editAvailability: 'en_Edit Availability',
 
   updateRecurringEvent: 'en_Update recurring event',

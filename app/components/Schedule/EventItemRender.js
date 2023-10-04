@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 30,
     marginBottom: 15,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
 });

@@ -202,6 +202,7 @@ const Verbs = {
   NOROLE_ROLE: 'no_role',
   NonTeamMember_Role: 'non-Team-Member',
   PHONE_NUMBER_KEY: 'phone_numbers',
+  attendeeVerb: 'attendee',
 };
 
 export default Verbs;
