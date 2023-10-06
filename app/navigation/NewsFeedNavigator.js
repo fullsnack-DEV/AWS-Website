@@ -358,18 +358,7 @@ const NewsFeedNavigator = () => (
     <Stack.Screen
       name="EntityGallaryScreen"
       component={EntityGallaryScreen}
-      options={{
-        title: 'Gallary',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="EntityScoreboardScreen"

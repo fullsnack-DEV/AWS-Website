@@ -189,6 +189,13 @@ const WritePostScreen = ({navigation, route}) => {
             ...route.params.routeParams,
           },
         });
+      } else if (route.params?.comeFrom) {
+        navigation.navigate(route.params?.comeFrom, {
+          isCreatePost: true,
+          dataParams,
+          imageArray,
+          ...route.params.routeParams,
+        });
       } else {
         navigation.navigate('FeedsScreen', {
           isCreatePost: true,

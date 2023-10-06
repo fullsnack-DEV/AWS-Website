@@ -1534,6 +1534,10 @@ export default function ScheduleScreen({navigation, route}) {
                   timeSelectionOption={timeSelectionOption}
                   startDateTime={startDateTime}
                   endDateTime={endDateTime}
+                  refreshData={() => {
+                    getEventsAndSlotsList();
+                  }}
+                  loading={indigator}
                 />
               )}
 

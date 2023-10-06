@@ -28,6 +28,8 @@ export default function EventScheduleScreen({
   timeSelectionOption = {},
   startDateTime = '',
   endDateTime = '',
+  refreshData = () => {},
+  loading = false,
 }) {
   const authContext = useContext(AuthContext);
   const [filterData, setFilterData] = useState(null);
@@ -387,6 +389,8 @@ export default function EventScheduleScreen({
             }
             sections={filterData}
             keyExtractor={(item, index) => index.toString()}
+            refreshing={loading}
+            onRefresh={refreshData}
           />
         )}
       </View>

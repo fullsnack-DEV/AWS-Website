@@ -533,7 +533,6 @@ export default function AvailibilityScheduleScreen({
               index={key}
               slots={slotList}
               onPress={() => {
-                console.log({item});
                 if (isAdmin) {
                   setEditableSlots([item]);
                   setIsFromSlots(true);

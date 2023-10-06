@@ -142,6 +142,7 @@ export default function EditEventScreen({navigation, route}) {
   const [backgroundImageChanged, setBackgroundImageChanged] = useState(false);
   const venueInputRef = useRef();
   const refundPolicyInputRef = useRef();
+  const [canOrganizerEdit, setCanOrganizerEdit] = useState(true);
 
   useEffect(() => {
     if (isFocused) {
@@ -169,6 +170,16 @@ export default function EditEventScreen({navigation, route}) {
         setWhoCanInviteOption({...data?.who_can_invite});
         setSelectWeekMonth(data.repeat);
         setBackgroundThumbnail(data.background_thumbnail);
+        setSelectedCurrency(data.event_fee?.currency_type);
+
+        const goingList =
+          data?.going?.length > 0
+            ? data.going.filter((item) => item !== data.owner_id)
+            : [];
+
+        if (goingList.length > 0) {
+          setCanOrganizerEdit(false);
+        }
       }
     }
   }, [isFocused, route.params?.data]);
@@ -945,8 +956,12 @@ export default function EditEventScreen({navigation, route}) {
                 offline={is_Offline}
                 firstTabTitle={strings.offline}
                 secondTabTitle={strings.online}
-                onFirstTabPress={() => setIsOffline(true)}
-                onSecondTabPress={() => setIsOffline(false)}
+                onFirstTabPress={() =>
+                  canOrganizerEdit ? setIsOffline(true) : {}
+                }
+                onSecondTabPress={() =>
+                  canOrganizerEdit ? setIsOffline(false) : {}
+                }
               />
               {is_Offline ? (
                 <>
@@ -960,6 +975,7 @@ export default function EditEventScreen({navigation, route}) {
                     // multiline={multiline}
                     textAlignVertical={'center'}
                     placeholderTextColor={colors.userPostTimeColor}
+                    editable={canOrganizerEdit}
                   />
 
                   <TCTouchableLabel
@@ -968,7 +984,7 @@ export default function EditEventScreen({navigation, route}) {
                     showShadow={false}
                     showNextArrow={true}
                     onPress={() => {
-                      setVisibleLocationModal(true);
+                      if (canOrganizerEdit) setVisibleLocationModal(true);
                     }}
                     style={{
                       width: '98%',
@@ -1007,6 +1023,7 @@ export default function EditEventScreen({navigation, route}) {
                       multiline={true}
                       textAlignVertical={'center'}
                       placeholderTextColor={colors.userPostTimeColor}
+                      editable={canOrganizerEdit}
                     />
                   </Pressable>
 
@@ -1031,6 +1048,7 @@ export default function EditEventScreen({navigation, route}) {
                     value={onlineUrl}
                     textAlignVertical={'center'}
                     placeholderTextColor={colors.userPostTimeColor}
+                    editable={canOrganizerEdit}
                   />
                 </>
               )}
@@ -1053,7 +1071,9 @@ export default function EditEventScreen({navigation, route}) {
                     ? moment(eventStartDateTime).format('h:mm a')
                     : moment(new Date()).format('h:mm a')
                 }
-                onDatePress={() => setStartDateVisible(!startDateVisible)}
+                onDatePress={() =>
+                  canOrganizerEdit ? setStartDateVisible(!startDateVisible) : {}
+                }
               />
               <EventTimeSelectItem
                 title={strings.ends}
@@ -1069,7 +1089,9 @@ export default function EditEventScreen({navigation, route}) {
                     : moment(new Date()).format('h:mm a')
                 }
                 containerStyle={{marginBottom: 8}}
-                onDatePress={() => setEndDateVisible(!endDateVisible)}
+                onDatePress={() =>
+                  canOrganizerEdit ? setEndDateVisible(!endDateVisible) : {}
+                }
               />
 
               <View
@@ -1143,6 +1165,7 @@ export default function EditEventScreen({navigation, route}) {
                 onValueChange={(value) => {
                   setSelectWeekMonth(value);
                 }}
+                editable={canOrganizerEdit}
               />
 
               {selectWeekMonth !== Verbs.eventRecurringEnum.Never && (
@@ -1160,7 +1183,11 @@ export default function EditEventScreen({navigation, route}) {
                       : moment(new Date()).format('h:mm a')
                   }
                   containerStyle={{marginBottom: 12}}
-                  onDatePress={() => setUntilDateVisible(!untilDateVisible)}
+                  onDatePress={() =>
+                    canOrganizerEdit
+                      ? setUntilDateVisible(!untilDateVisible)
+                      : {}
+                  }
                 />
               )}
             </EventItemRender>
@@ -1196,10 +1223,14 @@ export default function EditEventScreen({navigation, route}) {
                   value={`${eventFee}`}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
+                  editable={canOrganizerEdit}
                 />
                 <Text style={styles.currencyStyle}>{selectedCurrency}</Text>
               </View>
-              <TouchableOpacity onPress={() => setShowCurrencyModal(true)}>
+              <TouchableOpacity
+                onPress={() =>
+                  canOrganizerEdit ? setShowCurrencyModal(true) : {}
+                }>
                 <Text
                   style={{
                     fontSize: 14,
@@ -1218,7 +1249,6 @@ export default function EditEventScreen({navigation, route}) {
                 closeList={() => setShowCurrencyModal(false)}
                 currency={selectedCurrency}
                 onNext={(item) => {
-                  console.log(item);
                   setSelectedCurrency(item);
                   setShowCurrencyModal(false);
                 }}
@@ -1236,7 +1266,7 @@ export default function EditEventScreen({navigation, route}) {
               <Pressable
                 style={styles.detailsContainer}
                 onPress={() => {
-                  refundPolicyInputRef.current.focus();
+                  if (canOrganizerEdit) refundPolicyInputRef.current.focus();
                 }}>
                 <TextInput
                   ref={refundPolicyInputRef}
@@ -1247,6 +1277,7 @@ export default function EditEventScreen({navigation, route}) {
                   multiline={true}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
+                  editable={canOrganizerEdit}
                 />
               </Pressable>
               {/* <Text style={[styles.subTitleText, {marginTop: 0}]}>

@@ -17,6 +17,7 @@ const EventMonthlySelection = ({
   containerStyle = {},
   title = '',
   titleStyle = {},
+  editable = true,
 }) => {
   const [dropDownValue, setDropDownValue] = useState('');
   const [options, setOptions] = useState([]);
@@ -42,7 +43,9 @@ const EventMonthlySelection = ({
       </View>
       <TouchableOpacity
         style={styles.dropDown}
-        onPress={() => setShowBottomSheet(true)}>
+        onPress={() => {
+          if (editable) setShowBottomSheet(true);
+        }}>
         <View style={{flex: 1}}>
           <Text style={styles.label} numberOfLines={1}>
             {dropDownValue ?? placeholder}

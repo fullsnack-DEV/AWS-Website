@@ -440,10 +440,15 @@ export default function CreateEventScreen({navigation, route}) {
       return false;
     }
 
-    // if (!locationDetail?.venue_name || locationDetail?.venue_name?.length < 1) {
-    //   Alert.alert(strings.appName, strings.enterVenueNameValidation);
-    //   return false;
-    // }
+    if (is_Offline) {
+      if (!locationDetail?.venue_name) {
+        Alert.alert(strings.appName, strings.enterVenueNameValidation);
+        return false;
+      }
+    } else if (!onlineUrl) {
+      Alert.alert(strings.appName, strings.enterVenueUrlValidation);
+      return false;
+    }
     // if (
     //   !locationDetail?.venue_detail ||
     //   locationDetail?.venue_detail?.length < 1
@@ -476,6 +481,9 @@ export default function CreateEventScreen({navigation, route}) {
     maxAttendees,
     minAttendees,
     selectedSport.sport,
+    is_Offline,
+    onlineUrl,
+    locationDetail?.venue_name,
   ]);
 
   const createEventDone = (data) => {

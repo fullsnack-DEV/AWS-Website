@@ -726,10 +726,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="EntityGallaryScreen"
       component={EntityGallaryScreen}
-      options={{
-        title: 'Gallary',
-        headerTintColor: colors.blackColor,
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="GameDetail"

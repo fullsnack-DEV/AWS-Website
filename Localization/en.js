@@ -1405,6 +1405,7 @@ export default {
   eventStartDateValidation: 'en_Please Select Event Start Date and Time.',
   eventEndDateValidation: 'en_Please Select Event End Date and Time.',
   enterVenueNameValidation: 'en_Please enter venue name.',
+  enterVenueUrlValidation: 'en_Please enter venue url.',
   enterVenueDescriptionValidation: 'en_Please enter venue description.',
   enterValidAttendee:
     'en_Please enter valid minimum attendees number(0 not allowed).',
@@ -2993,7 +2994,7 @@ export default {
   editTimeSlots: 'en_Please edit time slots below. ',
   areYouSureToRemove: 'en_Are you sure want to remove {0}?',
   removeGoingModalText:
-    'en_The event fee should be refunded when an attendee is removed.',
+    'en_The paid event fee should be refunded when an attendee is removed.',
   whoCanSeePost: 'en_Who can see this post?',
   discardPost: 'en_If you discard now, your post will not be saved.',
   discardText: 'en_Discard',
@@ -3156,4 +3157,7 @@ export default {
   profileAccountConnectionText: 'en_Profile-Account Connection',
   signUpbuttonText: 'en_SIGN-UP',
   loginWithEmail: 'en_Log in with email',
+  creatChatRoomForEvent:
+    'en_Do you want to create a chat room and invite all attendees?',
+  createAndInvite: 'en_Create & Invite',
 };

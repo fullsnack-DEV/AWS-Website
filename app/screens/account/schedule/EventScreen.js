@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect, useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -28,7 +28,11 @@ import {strings} from '../../../../Localization/translation';
 import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-import {attendEvent, deleteEvent} from '../../../api/Schedule';
+import {
+  attendEvent,
+  deleteEvent,
+  removeAttendeeFromEvent,
+} from '../../../api/Schedule';
 import TCProfileButton from '../../../components/TCProfileButton';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCProfileView from '../../../components/TCProfileView';
@@ -46,6 +50,7 @@ import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
 import {InvoiceType, ModalTypes} from '../../../Constants/GeneralConstants';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
+import GoingUsersModal from './GoingUsersModal';
 
 export default function EventScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -67,6 +72,8 @@ export default function EventScreen({navigation, route}) {
   const THISEVENT = 0;
   const FUTUREEVENT = 1;
   const ALLEVENT = 2;
+
+  const goingModalRef = useRef();
 
   const recurringEditList = [
     {
@@ -461,6 +468,22 @@ export default function EventScreen({navigation, route}) {
     }
   };
 
+  const removeAttendee = (userData = {}) => {
+    setloading(true);
+    removeAttendeeFromEvent(eventData.cal_id, [userData.user_id], authContext)
+      .then(() => {
+        setloading(false);
+        goingModalRef.current.dismiss();
+        navigation.goBack();
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   return (
     <SafeAreaView style={styles.mainContainerStyle}>
       <ScreenHeader
@@ -489,7 +512,7 @@ export default function EventScreen({navigation, route}) {
       />
       <ActivityLoader visible={loading} />
 
-      <ScrollView stickyHeaderIndices={[5]}>
+      <ScrollView stickyHeaderIndices={[2]}>
         <EventBackgroundPhoto
           isEdit={!!eventData.background_thumbnail}
           isPreview={true}
@@ -602,36 +625,41 @@ export default function EventScreen({navigation, route}) {
             )}
           </View>
         </View>
-
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            style={[
-              styles.tabItem,
-              activeTab === strings.infoTitle ? styles.activeTabItem : {},
-            ]}
-            onPress={() => setActiveTab(strings.infoTitle)}>
-            <Text
+        <View style={styles.tabContainerStyle}>
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
               style={[
-                styles.tabItemText,
-                activeTab === strings.infoTitle ? styles.activeTabItemText : {},
-              ]}>
-              {strings.infoTitle}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.tabItem,
-              activeTab === strings.postTitle ? styles.activeTabItem : {},
-            ]}
-            onPress={() => setActiveTab(strings.postTitle)}>
-            <Text
+                styles.tabItem,
+                activeTab === strings.infoTitle ? styles.activeTabItem : {},
+              ]}
+              onPress={() => setActiveTab(strings.infoTitle)}>
+              <Text
+                style={[
+                  styles.tabItemText,
+                  activeTab === strings.infoTitle
+                    ? styles.activeTabItemText
+                    : {},
+                ]}>
+                {strings.infoTitle}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[
-                styles.tabItemText,
-                activeTab === strings.postTitle ? styles.activeTabItemText : {},
-              ]}>
-              {strings.postTitle}
-            </Text>
-          </TouchableOpacity>
+                styles.tabItem,
+                activeTab === strings.postTitle ? styles.activeTabItem : {},
+              ]}
+              onPress={() => setActiveTab(strings.postTitle)}>
+              <Text
+                style={[
+                  styles.tabItemText,
+                  activeTab === strings.postTitle
+                    ? styles.activeTabItemText
+                    : {},
+                ]}>
+                {strings.postTitle}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {activeTab === strings.infoTitle ? (
@@ -697,12 +725,13 @@ export default function EventScreen({navigation, route}) {
 
                     <Text
                       onPress={() => {
-                        navigation.navigate('GoingListScreen', {
-                          showRemove:
-                            authContext.entity.uid === organizer.user_id,
-                          going_ids: eventData.going ?? [],
-                          eventData,
-                        });
+                        // navigation.navigate('GoingListScreen', {
+                        //   showRemove:
+                        //     authContext.entity.uid === organizer.user_id,
+                        //   going_ids: eventData.going ?? [],
+                        //   eventData,
+                        // });
+                        goingModalRef.current?.present();
                       }}
                       style={styles.seeAllText}>
                       {`${strings.seeAllText}`}
@@ -1087,6 +1116,49 @@ export default function EventScreen({navigation, route}) {
           </View>
         )}
       </CustomModalWrapper>
+      <GoingUsersModal
+        modalRef={goingModalRef}
+        goingList={going}
+        isOwner={eventData.owner_id === authContext.entity.uid}
+        onProfilePress={(obj) => {
+          navigation.push('HomeScreen', {
+            role: obj.entity_type,
+            uid: obj.user_id ?? obj.group_id,
+          });
+        }}
+        onRemovePress={(item) => {
+          Alert.alert(
+            format(
+              strings.areYouSureToRemove,
+              item.full_name ?? item.group_name,
+            ),
+            strings.removeGoingModalText,
+            [
+              {text: strings.cancel},
+              {
+                text: strings.remove,
+                style: 'destructive',
+                onPress: () => {
+                  removeAttendee(item);
+                },
+              },
+            ],
+            {cancelable: true},
+          );
+        }}
+        onPressChat={() => {
+          Alert.alert(strings.creatChatRoomForEvent, '', [
+            {text: strings.cancel},
+            {
+              text: strings.createAndInvite,
+              onPress: () => {},
+            },
+          ]);
+        }}
+        onPressInvoice={() => {
+          setSendNewInvoice(true);
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -1222,10 +1294,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 15,
   },
+  tabContainerStyle: {
+    backgroundColor: colors.whiteColor,
+    marginVertical: 25,
+    paddingTop: 10,
+  },
   tabContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 25,
   },
   tabItem: {
     flex: 1,

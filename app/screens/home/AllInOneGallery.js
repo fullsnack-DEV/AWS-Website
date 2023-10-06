@@ -38,6 +38,8 @@ const AllInOneGallery = ({
   onAddPhotoPress,
   showSubTabs = true,
   galleryRef,
+  isCreatePost = false,
+  handleBackPress = () => {},
 }) => {
   const authContext = useContext(AuthContext);
   const [galleryType, setGalleryType] = useState(GALLERY_TYPE.FROMME);
@@ -52,21 +54,25 @@ const AllInOneGallery = ({
       onEndReached();
     },
   }));
-  useEffect(() => {
-    onLoadGallery();
-  }, [galleryType]);
 
-  const onLoadGallery = () => {
+  const onLoadGallery = useCallback(() => {
     setIsNextDataLoading(true);
     getWholeGallery(galleryType, entity_type, entity_id, authContext)
       .then((res) => {
-        if (res?.payload?.next === '') setIsNextDataLoading(false);
+        if (res?.payload?.next === '') {
+          setIsNextDataLoading(false);
+        }
         setGalleryData([...res.payload?.results]);
       })
       .catch(() => {
         setIsNextDataLoading(false);
       });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    onLoadGallery();
+  }, [galleryType, onLoadGallery, isCreatePost]);
 
   const onEndReached = () => {
     if (isNextDataLoading) {
@@ -135,7 +141,13 @@ const AllInOneGallery = ({
       <ScreenHeader
         title={strings.galleryTitle}
         leftIcon={images.backArrow}
-        leftIconPress={() => navigation.goBack()}
+        leftIconPress={() => {
+          if (isCreatePost) {
+            handleBackPress();
+          } else {
+            navigation.goBack();
+          }
+        }}
         rightIcon1={
           authContext.entity.uid === entity_id || isAdmin
             ? images.plusInvoice
@@ -186,31 +198,33 @@ const AllInOneGallery = ({
             </TouchableOpacity>
           ))}
       </View>
-      <FlatList
-        ListEmptyComponent={
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: 200,
-            }}>
-            <Text
+      <View style={{flex: 1}}>
+        <FlatList
+          ListEmptyComponent={
+            <View
               style={{
-                textAlign: 'center',
-                fontFamily: fonts.RLight,
-                fontSize: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: 200,
               }}>
-              {strings.noGalleryFound}
-            </Text>
-          </View>
-        }
-        data={galleryData}
-        bounces={false}
-        renderItem={allGalleryRenderItem}
-        numColumns={3}
-        style={{marginHorizontal: 1.5}}
-        keyExtractor={(item, index) => `mainGallery${index}`}
-      />
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontFamily: fonts.RLight,
+                  fontSize: 16,
+                }}>
+                {strings.noGalleryFound}
+              </Text>
+            </View>
+          }
+          data={galleryData}
+          bounces={false}
+          renderItem={allGalleryRenderItem}
+          numColumns={3}
+          style={{marginHorizontal: 1.5}}
+          keyExtractor={(item, index) => `mainGallery${index}`}
+        />
+      </View>
     </SafeAreaView>
   );
 };
