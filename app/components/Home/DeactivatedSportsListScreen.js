@@ -17,9 +17,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
 import ActionSheet from 'react-native-actionsheet';
-import FastImage from 'react-native-fast-image';
 import * as Utility from '../../utils';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
@@ -93,12 +91,10 @@ export default function DeactivatedSportsListScreen({navigation}) {
   const sportsView = useCallback(
     ({item}) => (
       <View style={styles.sportView}>
-        <LinearGradient
-          colors={[colors.yellowColor, colors.orangeGradientColor]}
-          style={styles.backgroundView}></LinearGradient>
+        <View style={styles.backgroundView} />
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
-            <FastImage
+            <Image
               source={{
                 uri: `${image_url}${Utility.getSportImage(
                   item.sport,
@@ -107,7 +103,6 @@ export default function DeactivatedSportsListScreen({navigation}) {
                 )}`,
               }}
               style={styles.sportIcon}
-              resizeMode={'cover'}
             />
             <View>
               <Text style={styles.sportName}>
@@ -117,11 +112,11 @@ export default function DeactivatedSportsListScreen({navigation}) {
             </View>
           </View>
           <TouchableOpacity onPress={() => activateSport(item)}>
-            <LinearGradient
-              colors={[colors.yellowColor, colors.darkThemeColor]}
-              style={styles.activateView}>
-              <Text style={styles.activateButtonText}>ACTIVATE</Text>
-            </LinearGradient>
+            <View style={styles.activateView}>
+              <Text style={styles.activateButtonText}>
+                {strings.activateText}
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -133,9 +128,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
   const refereeSportsView = useCallback(
     ({item}) => (
       <View style={styles.sportView}>
-        <LinearGradient
-          colors={[colors.darkThemeColor, colors.darkThemeColor]}
-          style={styles.backgroundView}></LinearGradient>
+        <View style={styles.backgroundView} />
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <Image
@@ -156,11 +149,11 @@ export default function DeactivatedSportsListScreen({navigation}) {
             </View>
           </View>
           <TouchableOpacity onPress={() => activateSport(item)}>
-            <LinearGradient
-              colors={[colors.yellowColor, colors.darkThemeColor]}
-              style={styles.activateView}>
-              <Text style={styles.activateButtonText}>ACTIVATE</Text>
-            </LinearGradient>
+            <View style={styles.activateView}>
+              <Text style={styles.activateButtonText}>
+                {strings.activateText}
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -172,9 +165,8 @@ export default function DeactivatedSportsListScreen({navigation}) {
   const scorekeeperSportsView = useCallback(
     ({item}) => (
       <View style={styles.sportView}>
-        <LinearGradient
-          colors={[colors.blueGradiantEnd, colors.blueGradiantStart]}
-          style={styles.backgroundView}></LinearGradient>
+        <View style={styles.backgroundView} />
+
         <View style={styles.innerViewContainer}>
           <View style={styles.viewContainer}>
             <Image
@@ -195,11 +187,11 @@ export default function DeactivatedSportsListScreen({navigation}) {
             </View>
           </View>
           <TouchableOpacity onPress={() => activateSport(item)}>
-            <LinearGradient
-              colors={[colors.yellowColor, colors.darkThemeColor]}
-              style={styles.activateView}>
-              <Text style={styles.activateButtonText}>ACTIVATE</Text>
-            </LinearGradient>
+            <View style={styles.activateView}>
+              <Text style={styles.activateButtonText}>
+                {strings.activateText}
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -208,20 +200,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
     [activateSport],
   );
 
-  const noDataView = (text) => (
-    <Text
-      style={{
-        color: colors.userPostTimeColor,
-        fontFamily: fonts.RRegular,
-        fontSize: 16,
-        lineHeight: 24,
-        marginLeft: 27,
-        marginTop: 10,
-        marginBottom: 15,
-      }}>
-      {text}
-    </Text>
-  );
+  const noDataView = (text) => <Text style={styles.noDataView}>{text}</Text>;
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -325,7 +304,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
 }
 const styles = StyleSheet.create({
   listTitle: {
-    marginTop: 20,
+    marginBottom: 10,
     fontFamily: fonts.RBold,
     fontSize: 16,
     color: colors.lightBlackColor,
@@ -347,20 +326,20 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     shadowOpacity: 0.2,
     elevation: 5,
-    marginBottom: 20,
+    marginBottom: 15,
   },
   backgroundView: {
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
     height: 50,
-    width: 8,
+    width: 5,
+    backgroundColor: colors.placeHolderColor,
   },
   activateView: {
     borderRadius: 5,
-    height: 25,
-    width: 75,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.themeColor,
   },
   innerViewContainer: {
     flex: 1,
@@ -394,5 +373,17 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     fontSize: 12,
     color: colors.whiteColor,
+    lineHeight: 14,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  noDataView: {
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    lineHeight: 24,
+    marginLeft: 27,
+    marginTop: 10,
+    marginBottom: 15,
   },
 });

@@ -60,6 +60,8 @@ import {
   countNumberOfWeeks,
   getTCDate,
   ordinal_suffix_of,
+  formatCurrency,
+  getNumberFromCurrency,
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
@@ -154,7 +156,9 @@ export default function EditEventScreen({navigation, route}) {
         setEventPosted({...data.event_posted_at});
         setMinAttendees(data.min_attendees ?? '');
         setMaxAttendees(data.max_attendees ?? '');
-        setEventFee(data.event_fee.value ?? '');
+        setEventFee(
+          data.event_fee.value ? formatCurrency(data.event_fee.value) : '',
+        );
         setRefundPolicy(data.refund_policy ?? '');
         setEventStartdateTime(getJSDate(data.start_datetime));
         setEventEnddateTime(getJSDate(data.end_datetime));
@@ -567,7 +571,7 @@ export default function EditEventScreen({navigation, route}) {
         },
         event_posted_at: eventPosted,
         event_fee: {
-          value: Number(eventFee),
+          value: getNumberFromCurrency(eventFee),
           currency_type: Verbs.usd,
         },
         refund_policy: refundPolicy,
@@ -1219,7 +1223,13 @@ export default function EditEventScreen({navigation, route}) {
               <View style={[styles.feeContainer, {marginTop: 10}]}>
                 <TextInput
                   style={styles.eventFeeStyle}
-                  onChangeText={(value) => setEventFee(value)}
+                  onChangeText={(value) => {
+                    const formattedNumber = formatCurrency(
+                      value,
+                      selectedCurrency,
+                    );
+                    setEventFee(formattedNumber);
+                  }}
                   value={`${eventFee}`}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}

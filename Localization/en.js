@@ -2909,6 +2909,7 @@ export default {
   requestSwitchModalAlertMessage:
     'en_The team will be created after the team partner accepts your request to create it. Then, you will be able to switch to the team account.',
   deactivated: 'en_DEACTIVATED',
+  activateText: 'en_ACTIVATE',
   paused: 'en_PAUSED',
   terminated: 'en_TERMINATED',
   enterText: 'en_Enter',

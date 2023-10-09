@@ -2691,3 +2691,20 @@ export const calculateRatio = (sportsLength) => {
   }
   return 1.8;
 };
+
+export const getNumberFromCurrency = (value) => {
+  const temp = value.replace(/[^0-9.-]+/g, '');
+  const fee = parseFloat(temp);
+  return fee ?? 0;
+};
+
+export const formatCurrency = (value, currency) => {
+  const temp = value.replace(/[^0-9.-]+/g, '');
+  const fee = parseFloat(temp);
+  const formattedNumber = fee.toLocaleString('en-US', {
+    style: 'currency',
+    currency,
+  });
+
+  return formattedNumber;
+};

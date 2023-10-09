@@ -57,6 +57,8 @@ import {
   countNumberOfWeekFromDay,
   countNumberOfWeeks,
   getRoundedDate,
+  formatCurrency,
+  getNumberFromCurrency,
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
@@ -174,9 +176,10 @@ export default function CreateEventScreen({navigation, route}) {
 
   useEffect(() => {
     const currencyObj = getCountry(authContext.entity.obj.country);
-    if (currencyObj) {
+    if (currencyObj && !currency) {
       setSelectedCurrency(currencyObj.currency);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.entity.obj.country]);
 
   const handleStartDatePress = (date) => {
@@ -562,7 +565,7 @@ export default function CreateEventScreen({navigation, route}) {
           },
           event_posted_at: eventPosted,
           event_fee: {
-            value: Number(eventFee),
+            value: getNumberFromCurrency(eventFee),
             currency_type: currency,
           },
           refund_policy: refundPolicy,
@@ -1180,7 +1183,10 @@ export default function CreateEventScreen({navigation, route}) {
                   style={styles.eventFeeStyle}
                   // placeholder={'0'}
                   keyboardType={'decimal-pad'}
-                  onChangeText={(value) => setEventFee(value)}
+                  onChangeText={(value) => {
+                    const formattedNumber = formatCurrency(value, currency);
+                    setEventFee(formattedNumber);
+                  }}
                   value={`${eventFee}`}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
