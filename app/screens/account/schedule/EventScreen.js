@@ -517,11 +517,7 @@ export default function EventScreen({navigation, route}) {
           isEdit={!!eventData.background_thumbnail}
           isPreview={true}
           isImage={!!eventData.background_thumbnail}
-          imageURL={
-            eventData.background_thumbnail
-              ? {uri: eventData.background_thumbnail}
-              : eventData?.temp_background?.full_image
-          }
+          imageURL={{uri: eventData?.background_thumbnail}}
         />
         <View style={{paddingHorizontal: 15}}>
           <Text style={styles.eventTitleStyle}>{titleValue}</Text>

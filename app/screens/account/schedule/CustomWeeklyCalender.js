@@ -162,11 +162,12 @@ const CustomWeeklyCalender = ({
 
     return dates;
   };
+
   return (
     <View style={styles.calenderWrapper}>
-      {weeklyCalender ? (  
+      {weeklyCalender ? (
         <>
-              <AvailabilityHeader
+          <AvailabilityHeader
             isListView={isListView}
             selectedDate={selectedDate}
             onToggleView={onToggleView}
@@ -252,7 +253,7 @@ const CustomWeeklyCalender = ({
             selectedDayTextColor="white"
           />
         </>
-      )} 
+      )}
       <TouchableOpacity
         style={styles.toggleStyle}
         onPress={() => {
@@ -265,9 +266,8 @@ const CustomWeeklyCalender = ({
             {transform: [{rotateX: weeklyCalender ? '0deg' : '180deg'}]},
           ]}
         />
-      </TouchableOpacity>     
+      </TouchableOpacity>
     </View>
-
   );
 };
 

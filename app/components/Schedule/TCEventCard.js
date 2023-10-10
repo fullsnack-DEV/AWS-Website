@@ -43,11 +43,7 @@ export default function TCEventCard({onPress, data, owners = []}) {
     <Pressable onPress={onPress} style={styles.parent}>
       <ImageBackground
         imageStyle={styles.eventBackgroundImage}
-        source={
-          data?.background_thumbnail
-            ? {uri: data?.background_thumbnail}
-            : data?.temp_background?.thumbnail
-        }
+        source={{uri: data?.background_thumbnail}}
         resizeMode="cover"
         style={styles.backgroundImageContainer}>
         <Image source={images.threeDotIcon} style={styles.moreOptionsIcon} />

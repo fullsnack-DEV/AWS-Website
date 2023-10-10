@@ -10,7 +10,6 @@ import TCEventCard from '../../../components/Schedule/TCEventCard';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
 import {getJSDate, getTCDate} from '../../../utils';
-import images from '../../../Constants/ImagePath';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -130,21 +129,6 @@ export default function EventScheduleScreen({
     [filterOptions.time, getDateTime],
   );
 
-  const generateRandomImage = () => {
-    const imageUrls = [
-      {
-        thumbnail: images.backgroudPlaceholder,
-        full_image: images.backgroudFullImage,
-      },
-      {
-        thumbnail: images.backgroudPlaceholder1,
-        full_image: images.backgroudFullImage1,
-      },
-    ];
-    const randomIndex = Math.floor(Math.random() * imageUrls.length);
-    return imageUrls[randomIndex];
-  };
-
   const setEventList = useCallback((eventList = []) => {
     if (eventList.length > 0) {
       const result = _(eventList)
@@ -161,9 +145,6 @@ export default function EventScheduleScreen({
         if (property) {
           let temp = {};
           const value = result[property];
-          if (!value[0]?.background_thumbnail) {
-            value[0].temp_background = generateRandomImage();
-          }
           const start = getJSDate(result[property][0]?.start_datetime);
           start.setHours(0, 0, 0, 0);
 

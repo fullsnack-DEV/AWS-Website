@@ -33,11 +33,13 @@ function App() {
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [streamChatToken, setStreamChatToken] = useState(null);
   const [chatClient, setChatClient] = useState({});
+  const [baseUrlEventImages, setBaseUrlEventImages] = useState('');
 
   useEffect(() => {
     if (!chatClient.userID) {
       getAppSettingsWithoutAuth()
         .then((res) => {
+          setBaseUrlEventImages(res.payload.app.base_url_eventimages);
           const streamChatConfig = res.payload.app.stream;
           if (streamChatConfig.key) {
             const client = StreamChat.getInstance(streamChatConfig.key);
@@ -164,6 +166,7 @@ function App() {
       setStreamChatToken,
       chatClient,
       setentityList,
+      baseUrlEventImages,
     }),
     [
       role,
@@ -185,6 +188,7 @@ function App() {
       streamChatToken,
       chatClient,
       setentityList,
+      baseUrlEventImages,
     ],
   );
 

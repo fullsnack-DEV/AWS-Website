@@ -26,7 +26,6 @@ const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function AvailibilityScheduleScreen({
   allSlots,
-  onDayPress = () => {},
   isAdmin = false,
 }) {
   const [loading, setLoading] = useState(false);
@@ -511,7 +510,6 @@ export default function AvailibilityScheduleScreen({
         <CustomWeeklyCalender
           blockedDaySlots={blockedDaySlots}
           colors={colors}
-          onDayPress={onDayPress}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           customDatesStyles={customDatesStyles}

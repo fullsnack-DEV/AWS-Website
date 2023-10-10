@@ -534,6 +534,14 @@ export default function CreateEventScreen({navigation, route}) {
       });
   };
 
+  const generateRandomImage = () => {
+    const image1 = 'backgroundFullImage.png';
+    const image2 = 'backgroundFullImage1.png';
+    const imageUrls = [image1, image2];
+    const randomIndex = Math.floor(Math.random() * imageUrls.length);
+    return imageUrls[randomIndex];
+  };
+
   const onDonePress = () => {
     if (checkValidation()) {
       setloading(true);
@@ -643,6 +651,12 @@ export default function CreateEventScreen({navigation, route}) {
             }, 0.1);
           });
       } else {
+        const image = `${
+          authContext.baseUrlEventImages
+        }${generateRandomImage()}`;
+
+        data[0].background_thumbnail = image;
+        data[0].background_full_image = image;
         createEventDone(data);
       }
     }

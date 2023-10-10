@@ -83,7 +83,7 @@ const WritePostScreen = ({navigation, route}) => {
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
   const [showPreviewForUrl, setShowPreviewForUrl] = useState(true);
-
+  const [tagModalHeight, setTagModalHeight] = useState(0);
   const [privacySetting, setPrivacySetting] = useState({
     text: strings.everyoneTitleText,
     value: 0,
@@ -558,8 +558,17 @@ const WritePostScreen = ({navigation, route}) => {
         <View
           style={[
             styles.userListContainer,
-            {marginTop: searchFieldHeight + 5},
-          ]}>
+            // {marginTop: searchFieldHeight + 5},
+            {
+              top:
+                searchFieldHeight > Dimensions.get('window').height * 0.5
+                  ? searchFieldHeight - (tagModalHeight - 50)
+                  : searchFieldHeight + 90,
+            },
+          ]}
+          onLayout={(event) =>
+            setTagModalHeight(event?.nativeEvent?.layout?.height)
+          }>
           <FlatList
             data={arr}
             keyboardShouldPersistTaps={'always'}
@@ -900,7 +909,6 @@ const WritePostScreen = ({navigation, route}) => {
                 {searchText}
               </ParsedText>
             </TextInput>
-            {renderModalTagEntity()}
           </View>
 
           {route.params?.isRepost ? (
@@ -932,7 +940,7 @@ const WritePostScreen = ({navigation, route}) => {
             </View>
           )}
         </View>
-
+        {renderModalTagEntity()}
         <View style={styles.bottomSafeAreaStyle}>
           <TouchableOpacity
             style={styles.onlyMeViewStyle}

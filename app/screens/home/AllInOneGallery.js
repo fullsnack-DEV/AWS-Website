@@ -67,8 +67,7 @@ const AllInOneGallery = ({
       .catch(() => {
         setIsNextDataLoading(false);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [galleryType, entity_type, entity_id, authContext]);
 
   useEffect(() => {
     onLoadGallery();

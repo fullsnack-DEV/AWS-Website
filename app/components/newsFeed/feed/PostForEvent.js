@@ -5,7 +5,6 @@ import {View, StyleSheet, Text, Image, Dimensions} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
-import images from '../../../Constants/ImagePath';
 import {getPostData} from '../../../utils';
 import GroupIcon from '../../GroupIcon';
 import FeedProfile from './FeedProfile';
@@ -25,15 +24,6 @@ const PostForEvent = ({
     }
   }, [postData]);
 
-  const generateRandomImage = () => {
-    const imageUrls = [
-      images.backgroudPlaceholder,
-      images.backgroudPlaceholder1,
-    ];
-    const randomIndex = Math.floor(Math.random() * imageUrls.length);
-    return imageUrls[randomIndex];
-  };
-
   return (
     <View style={styles.parent}>
       <FeedProfile
@@ -48,11 +38,7 @@ const PostForEvent = ({
       <View style={styles.card}>
         <View style={styles.bacgroundImageContainer}>
           <Image
-            source={
-              eventData.background_full_image
-                ? {uri: eventData.background_full_image}
-                : generateRandomImage()
-            }
+            source={{uri: eventData.background_full_image}}
             style={styles.backgroundImage}
           />
           <View style={styles.maskView}>

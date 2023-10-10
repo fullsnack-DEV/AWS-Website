@@ -1542,11 +1542,7 @@ export default function ScheduleScreen({navigation, route}) {
               )}
 
               {scheduleIndexCounter === 1 && (
-                <AvailibilityScheduleScreen
-                  allSlots={allSlots}
-                  onDayPress={onDayPress}
-                  isAdmin
-                />
+                <AvailibilityScheduleScreen allSlots={allSlots} isAdmin />
               )}
             </>
           )}
