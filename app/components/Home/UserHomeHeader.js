@@ -91,10 +91,11 @@ const UserHomeHeader = ({
 
       if (loggedInEntity.role === Verbs.entityTypeTeam) {
         if (currentUserData.joined_teams?.length > 0) {
-          const team = currentUserData.joined_teams.find(
-            (item) => item.group_id === loggedInEntity.uid,
+          const team = currentUserData.teamIds.find(
+            (item) => item === loggedInEntity.uid,
           );
-          if (team?.group_id) {
+
+          if (team !== undefined) {
             flag = true;
           } else {
             flag = false;
@@ -180,6 +181,7 @@ const UserHomeHeader = ({
         <TouchableOpacity
           style={[
             styles.buttonContainer,
+
             isMember ? {flexDirection: 'row', alignItems: 'center'} : {},
           ]}
           onPress={() => handleButtonPress(buttonTitle)}>

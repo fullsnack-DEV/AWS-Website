@@ -159,7 +159,7 @@ export default function MembersProfileScreen({navigation, route}) {
                     marginRight: memberDetail?.connected ? 5 : 12,
                     height: 50,
                     width: 50,
-                    resizeMode: 'center',
+                    resizeMode: 'contain',
                   },
                 ]}
               />
@@ -528,21 +528,19 @@ export default function MembersProfileScreen({navigation, route}) {
           const updatedManagedEntities = authContext.managedEntities.filter(
             (item) => item.group_id !== groupId,
           );
-
-          authContext.setentityList(updatedManagedEntities);
-
-          await onSwitchProfile(authContext.managedEntities[0]);
-
+          onSwitchProfile(authContext.managedEntities[0]);
           navigation.navigate('Account', {
             screen: 'AccountScreen',
-            initial: false,
             params: {
               switchToUser: true,
               grpName: switchUser.obj.group_name,
             },
           });
-        } else if (response.payload.error_code === validator) {
+
+          await authContext.setentityList(updatedManagedEntities);
+
           setShowSwitchScreen(false);
+        } else if (response.payload.error_code === validator) {
           setloading(false);
           Alert.alert(
             strings.appName,

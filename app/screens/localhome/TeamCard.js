@@ -8,7 +8,12 @@ import {convertToKFormat} from './LocalHomeUtils';
 import Verbs from '../../Constants/Verbs';
 import GroupIcon from '../../components/GroupIcon';
 
-function TeamCard({item = {}, onPress = () => {}, placholder = false}) {
+function TeamCard({
+  item = {},
+  onPress = () => {},
+  placholder = false,
+  isdeactivated = false,
+}) {
   const getFooterComponent = () => (
     <View
       style={[
@@ -65,7 +70,10 @@ function TeamCard({item = {}, onPress = () => {}, placholder = false}) {
   );
 
   return (
-    <TouchableOpacity style={styles.cardContainer} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.cardContainer, {elevation: isdeactivated ? 0 : 6}]}
+      onPress={onPress}
+      disabled={isdeactivated}>
       {/* team Logo  */}
       {renderImageBgandName}
 
@@ -117,9 +125,6 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.4,
         shadowRadius: 7,
-      },
-      android: {
-        elevation: 7,
       },
     }),
   },

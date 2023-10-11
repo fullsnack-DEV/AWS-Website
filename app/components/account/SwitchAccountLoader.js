@@ -19,7 +19,7 @@ const SwitchAccountLoader = ({
   forCreateTeam = false,
 }) => {
   const [isIntermediate, setIsIntermediate] = useState(true);
-  console.log(entityName, 'From nanme');
+
   useEffect(() => {
     if (isVisible) {
       setTimeout(() => {

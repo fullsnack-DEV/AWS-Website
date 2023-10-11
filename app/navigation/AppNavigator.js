@@ -225,17 +225,19 @@ const AppNavigator = ({navigation}) => {
 
   return (
     <Tab.Navigator
-      lazy={true}
       backBehaviour="initialRoute"
       navigation={navigation}
       options={() => ({
         headerShown: false,
       })}
-      tabBarOptions={{
+      detachInactiveScreens
+      screenOptions={{
+        lazy: true,
         headerShown: false,
-        showLabel: false,
+
         activeTintColor: colors.tabFontColor,
         inactiveTintColor: colors.userPostTimeColor,
+        tabBarShowLabel: false,
 
         style: {
           backgroundColor: colors.offwhite,
@@ -251,6 +253,7 @@ const AppNavigator = ({navigation}) => {
         name="Local Home"
         component={LocalHomeNavigator}
         options={() => ({
+          lazy: true,
           tabBarTestID: 'localhome-tab',
           headerShown: false,
 
@@ -284,6 +287,7 @@ const AppNavigator = ({navigation}) => {
             : NewsFeedNavigator
         }
         options={() => ({
+          lazy: true,
           tabBarTestID: 'newsfeed-tab',
           headerShown: false,
           unmountOnBlur: true,
@@ -321,6 +325,7 @@ const AppNavigator = ({navigation}) => {
         name="Schedule"
         component={ScheduleNavigator}
         options={() => ({
+          lazy: true,
           tabBarTestID: 'schedule-tab',
           headerShown: false,
           unmountOnBlur: true,
@@ -355,7 +360,7 @@ const AppNavigator = ({navigation}) => {
         options={() => ({
           tabBarTestID: 'message-tab',
           headerShown: false,
-
+          lazy: true,
           ...(unreadCount > 0 && {
             tabBarBadge: unreadCount > 300 ? '300+' : unreadCount,
           }),
@@ -396,6 +401,7 @@ const AppNavigator = ({navigation}) => {
           },
         }}
         options={() => ({
+          lazy: true,
           ...(authContext.totalNotificationCount > 0 && {
             tabBarBadge:
               authContext.totalNotificationCount > 300

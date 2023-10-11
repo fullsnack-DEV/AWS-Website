@@ -74,7 +74,7 @@ export default function FollowTeams({route, navigation}) {
   const renderItem = ({item, index}) => (
     <>
       <View style={styles.listItemContainer}>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', flexShrink: 1}}>
           <TCProfileImage
             entityType={teams[index].entity_type}
             source={{uri: teams[index].thumbnail}}
@@ -83,21 +83,21 @@ export default function FollowTeams({route, navigation}) {
           />
           <View
             style={{
-              width: 180,
               marginHorizontal: 13,
-              paddingHorizontal: 0,
+
+              flex: 1,
             }}>
             <Text style={styles.teamNameText} numberOfLines={1}>
               {teams[index].group_name ?? teams[index].full_name}
             </Text>
-            <Text style={styles.cityText} numberOfLines={1}>
-              {teams[index].city}, {teams[index].state_abbr},{' '}
+            <Text style={styles.cityText} numberOfLines={2}>
+              {teams[index].city}, {teams[index].state_abbr},
               {teams[index].country}
             </Text>
           </View>
         </View>
 
-        <View>
+        <View style={{alignSelf: 'flex-start', marginTop: 5}}>
           <TouchableWithoutFeedback
             onPress={() => {
               followUnfollowClicked({item, index});
@@ -253,7 +253,12 @@ export default function FollowTeams({route, navigation}) {
   };
 
   return (
-    <SafeAreaView style={styles.mainContainer}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+
+        backgroundColor: colors.kHexColorFF8A01,
+      }}>
       <ActivityLoader visible={loading} />
       <FastImage
         resizeMode={'stretch'}
@@ -272,9 +277,7 @@ export default function FollowTeams({route, navigation}) {
 
       <FlatList
         style={{
-          width: Dimensions.get('window').width - 60,
           marginTop: 15,
-          alignSelf: 'center',
         }}
         data={teams}
         keyExtractor={(item, index) => index.toString()}
@@ -335,11 +338,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 20,
     justifyContent: 'space-between',
-  },
-  mainContainer: {
-    flex: 1,
-    paddingTop: 25,
-    backgroundColor: colors.reservationAmountColor,
+
+    paddingHorizontal: 20,
   },
 
   teamNameText: {

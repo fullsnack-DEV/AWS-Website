@@ -1,15 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {View, Text, StyleSheet, SafeAreaView, Dimensions} from 'react-native';
 
 import moment from 'moment';
 
 import {Tooltip} from 'react-native-elements';
-import LinearGradient from 'react-native-linear-gradient';
+
 import FastImage from 'react-native-fast-image';
 import DatePicker from 'react-native-date-picker';
 
@@ -20,6 +15,8 @@ import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import AuthScreenHeader from './AuthScreenHeader';
+
+const windowHeight = Dimensions.get('window').height;
 
 export default function AddBirthdayScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -65,29 +62,26 @@ export default function AddBirthdayScreen({navigation, route}) {
   };
 
   return (
-    <LinearGradient
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
       <ActivityLoader visible={loading} />
       <FastImage
         // resizeMode={'stretch'}
         style={styles.background}
         source={images.loginBg}
       />
-      <View style={{marginTop: 15}}>
-        <AuthScreenHeader
-          title={strings.addBirthdayText}
-          onBackPress={() => {
-            navigation.pop();
-          }}
-          onNextPress={() => {
-            const userParams = {
-              birthday: new Date(dateValue).getTime() / 1000,
-            };
-            navigateToGenderScreen(userParams);
-          }}
-        />
-      </View>
+
+      <AuthScreenHeader
+        title={strings.addBirthdayText}
+        onBackPress={() => {
+          navigation.pop();
+        }}
+        onNextPress={() => {
+          const userParams = {
+            birthday: new Date(dateValue).getTime() / 1000,
+          };
+          navigateToGenderScreen(userParams);
+        }}
+      />
 
       <View style={{flex: 1}}>
         <View style={styles.addBirthdayTextContainer}>
@@ -155,14 +149,15 @@ export default function AddBirthdayScreen({navigation, route}) {
           </Text>
         </View>
       </SafeAreaView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   background: {
-    height: hp('100%'),
     position: 'absolute',
-    width: wp('100%'),
+    width: '100%',
+    height: windowHeight,
+    resizeMode: 'cover',
   },
 
   dateText: {
@@ -170,10 +165,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 16,
   },
-  mainContainer: {
-    flex: 1,
-    paddingTop: 25,
-  },
+
   matchFeeTxt: {
     height: 40,
     justifyContent: 'center',

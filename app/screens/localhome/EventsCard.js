@@ -23,6 +23,7 @@ function EventsCard({
   owners,
   allUserData = [],
   forPlaceholder = false,
+  isdeactivated = false,
 }) {
   const authContext = useContext(AuthContext);
   const isGame = !!(data?.game_id && data?.game);
@@ -80,7 +81,8 @@ function EventsCard({
   return (
     <View style={{flex: 1}}>
       <TouchableOpacity
-        style={styles.containerStyle}
+        disabled={isdeactivated}
+        style={[styles.containerStyle, {elevation: isdeactivated ? 0 : 6}]}
         onPress={() => onItemPress()}>
         {MemoiZedImagetitle}
         {/* time and type */}
@@ -162,9 +164,6 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.8,
         shadowRadius: 7,
-      },
-      android: {
-        elevation: 7,
       },
     }),
   },

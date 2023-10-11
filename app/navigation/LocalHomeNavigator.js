@@ -252,6 +252,8 @@ import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen
 import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
 import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
 import EventsListScreen from '../screens/account/schedule/EventsListScreen';
+import JoinTeamScreen from '../screens/localhome/JoinTeamScreen';
+import JoinClubScreen from '../screens/localhome/JoinClubScreen';
 
 const Stack = createStackNavigator();
 
@@ -330,6 +332,21 @@ const LocalHomeNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+      name="JoinTeamScreen"
+      component={JoinTeamScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="JoinClubScreen"
+      component={JoinClubScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+
     <Stack.Screen
       name="UpcomingMatchScreen"
       component={UpcomingMatchScreen}

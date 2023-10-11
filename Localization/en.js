@@ -1127,6 +1127,8 @@ export default {
   refereeingTitleText: 'en_Refereeing',
   scorekeepingTitleText: 'en_Scorekeeping',
   addSportsTitle: 'en_Add Sport',
+  addRefreeTitle: 'en_Add Referee',
+  addScoreKeeperTitle: 'en_Add Scorekeeper',
   congratsModalTitle:
     'en_Congratulations!\nYou are now registered\nas a player in ',
   registerRefereeTitle: 'en_Register as Referee',
@@ -2795,7 +2797,7 @@ export default {
   allphoneParameter: 'en_Please fill all phone number parameter.',
   basicInfoItemSent: 'en_The basic info items were  sent',
   reviewIncomingchallengetitle: 'en_Review Incoming Challenge Settings >',
-  createGroupAccount: 'en_Create Group Account',
+  createGroupAccount: 'en_Create a Group',
   switchingTo: 'en_Switching to',
   SPORTStxt: 'en_SPORTS',
   functionNotAvailable: 'en_This function is not available now.',

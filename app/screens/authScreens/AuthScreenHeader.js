@@ -16,49 +16,53 @@ const AuthScreenHeader = ({
       marginHorizontal: 15,
       justifyContent: 'space-between',
       flexDirection: 'row',
-      alignItems: 'center',
-      marginTop: 15,
+      alignItems: 'flex-start',
+      marginTop: 8,
     }}>
     <View
       style={{
         alignItems: 'flex-start',
         flexDirection: 'row',
+        flex: 1,
       }}>
       <TouchableOpacity
         onPress={() => {
           onBackPress();
         }}>
         <Image
-          source={images.backArrow}
+          source={images.arrowSignUpBack}
           style={{
             tintColor: colors.whiteColor,
             height: 25,
             width: 25,
-            marginTop: 10,
+            marginTop: 9,
           }}
         />
       </TouchableOpacity>
+      <View style={{flex: 1}}>
+        <Text
+          allowFontScaling
+          style={{
+            marginLeft: 5,
 
-      <Text
-        allowFontScaling
-        style={{
-          marginLeft: 5,
-          fontSize: 25,
-          fontFamily: fonts.RBold,
-          color: colors.whiteColor,
-          lineHeight: 38,
-        }}>
-        {title}
-      </Text>
+            fontSize: 23,
+            fontFamily: fonts.RBold,
+            color: colors.whiteColor,
+            lineHeight: 38,
+          }}>
+          {title}
+        </Text>
+      </View>
     </View>
     {showNext && (
-      <TouchableOpacity onPress={() => onNextPress()}>
+      <TouchableOpacity style={{marginLeft: 5}} onPress={() => onNextPress()}>
         <Text
           style={{
             fontSize: 16,
             lineHeight: 20,
             fontFamily: fonts.RMedium,
             color: colors.whiteColor,
+            marginTop: 10,
           }}>
           {strings.next}
         </Text>

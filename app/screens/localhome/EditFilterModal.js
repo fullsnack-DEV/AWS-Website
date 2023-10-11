@@ -9,7 +9,9 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   Image,
+  ActivityIndicator,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import React, {useCallback, useEffect, useState, useContext} from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import DraggableFlatList from 'react-native-draggable-flatlist';
@@ -55,9 +57,13 @@ export default function EditFilterModal({
 
   const GetandSetSportsLists = async () => {
     // setLoading(true);
-    getStorage('appSetting').then((setting) => {
-      setImageBaseUrl(setting.base_url_sporticon);
-    });
+    getStorage('appSetting')
+      .then((setting) => {
+        setImageBaseUrl(setting.base_url_sporticon);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
 
     const newFavSports = [...favsport];
     sportList.forEach((item) => {
@@ -173,10 +179,16 @@ export default function EditFilterModal({
       const sportImage = sportDetails?.sport_image || '';
 
       return (
-        <Image
-          source={{uri: `${image_base_url}${sportImage}`}}
-          style={{height: 40, width: 40}}
-        />
+        <>
+          {image_base_url === '' ? (
+            <ActivityIndicator size={'small'} color={colors.blackColor} />
+          ) : (
+            <FastImage
+              source={{uri: `${image_base_url}${sportImage}`}}
+              style={{height: 40, width: 40}}
+            />
+          )}
+        </>
       );
     },
     [authContext.sports, image_base_url],

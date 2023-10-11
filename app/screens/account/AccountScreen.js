@@ -336,7 +336,25 @@ const AccountScreen = ({navigation, route}) => {
         setVisibleSportsModal(true);
 
         break;
+      case strings.addScoreKeeperTitle:
+        setNavigationOptions({
+          screenName: rowObj.navigateTo.screenName,
+          data: rowObj.navigateTo.data,
+        });
+        setSelectedMenuOptionType(rowObj.menuOptionType);
+        setVisibleSportsModal(true);
 
+        break;
+
+      case strings.addRefreeTitle:
+        setNavigationOptions({
+          screenName: rowObj.navigateTo.screenName,
+          data: rowObj.navigateTo.data,
+        });
+        setSelectedMenuOptionType(rowObj.menuOptionType);
+        setVisibleSportsModal(true);
+
+        break;
       case strings.sendnewinvoice:
         SetSendNewInvoice(true);
         break;

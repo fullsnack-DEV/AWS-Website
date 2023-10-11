@@ -74,10 +74,13 @@ export default function LocalHomeHeader({
 
             <TouchableOpacity
               hitSlop={getHitSlop(8)}
-              style={{}}
               onPress={() => navigation.navigate('NotificationsListScreen')}>
               <Image
-                source={images.notificationBellHome}
+                source={
+                  notificationCount > 0
+                    ? images.notificationBell
+                    : images.notificationBellStright
+                }
                 style={styles.notificationIcon}
               />
               {notificationCount > 0 && (
@@ -138,8 +141,8 @@ const styles = StyleSheet.create({
   },
 
   notificationIcon: {
-    width: 20,
-    height: 20,
+    width: 25,
+    height: 25,
     resizeMode: 'cover',
     marginLeft: 15,
   },

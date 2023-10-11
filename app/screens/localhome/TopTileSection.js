@@ -28,7 +28,10 @@ function TopTileSection({
   onRegisterAsTilePress,
   visibleSportsModalForTeam,
   visibleSportsModalForClub,
+  setClubModalVisible,
+  setJoinTeamModalvisible,
   setTeamModal,
+  isdeactivated = false,
   setClubModal,
 }) {
   const navigation = useNavigation();
@@ -121,10 +124,10 @@ function TopTileSection({
         break;
 
       case Verbs.JOIN_TEAM:
-        console.log('join team');
+        setJoinTeamModalvisible();
         break;
       case Verbs.JOIN_CLUB:
-        console.log('join club');
+        setClubModalVisible();
         break;
       case Verbs.JOIN_LEAGUE:
         console.log('join league');
@@ -146,6 +149,7 @@ function TopTileSection({
     const {icon} = item;
     return (
       <TouchableOpacity
+        disabled={isdeactivated}
         key={index}
         onPress={() => handleTileClick(item)}
         style={{}}>
@@ -164,9 +168,7 @@ function TopTileSection({
         <View style={styles.tiletitleContainer}>
           <Text style={styles.tiletitleText}>
             {item.title === strings.createEventhomeTitle &&
-
             authContext.entity.role !== Verbs.entityTypeClub
-
               ? strings.eventHomeTile
               : item.title}
           </Text>
@@ -191,7 +193,8 @@ function TopTileSection({
       key={index}
       onPress={() => {
         handleTileClick(item);
-      }}>
+      }}
+      disabled={isdeactivated}>
       <View
         key={index}
         style={[styles.clubTileView, {width: screenWidth >= 430 ? 123 : 105}]}>
@@ -225,6 +228,7 @@ function TopTileSection({
           <View style={styles.miniCardContainer}>
             {item.createData.map((i) => (
               <TouchableOpacity
+                disabled={isdeactivated}
                 key={i.index.toString()}
                 style={styles.miniCards}
                 onPress={() => onTilePress(i)}>
@@ -240,6 +244,7 @@ function TopTileSection({
 
   const RenderInviteMemberbutton = () => (
     <TouchableOpacity
+      disabled={isdeactivated}
       onPress={() =>
         handleTileClick({
           title: strings.inviteMemberClub,
@@ -273,7 +278,7 @@ function TopTileSection({
 
   return (
     <View>
-      <TouchableOpacity style={styles.tilesContainer}>
+      <TouchableOpacity style={styles.tilesContainer} disabled={isdeactivated}>
         {authContext.entity.role === Verbs.entityTypeClub ? (
           <>
             {tilesArray.clubSection.map((item, index) => (

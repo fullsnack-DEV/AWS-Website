@@ -296,17 +296,11 @@ const MemberListModal = ({
 
         setTimeout(() => {
           validateIfDoubleExist(
-            authContext.entity.auth.user.user_id,
+            authContext.entity.auth.user_id,
             item,
             doubleSport,
           );
         }, 10);
-
-        console.log(
-          followersSelection === item.user_id,
-          item.user_id,
-          'From foller selction',
-        );
       }}>
       <View
         style={{

@@ -301,6 +301,7 @@ const images = {
   referePH: require('../assets/images/referee_placeholder.png'),
   scorekeeperPH: require('../assets/images/scorekeeper_placeholder.png'),
   notificationBell: require('../assets/images/notification_bell.png'),
+  notificationBellStright: require('../assets/images/bellstright.png'),
   tabFeed: require('../assets/images/tab_feed.png'),
   tabSelectedFeed: require('../assets/images/tab_selected_feed.png'),
 
@@ -562,6 +563,7 @@ const images = {
   allsportlogo: require('../assets/images/allsportinworld.png'),
   newGroupTabIcon: require('../assets/images/groupTabIcon.png'),
   replyCancelImage: require('../assets/images/replyCancelImage.png'),
+  arrowSignUpBack: require('../assets/images/Arrow_sign_up.png'),
 };
 
 export default images;

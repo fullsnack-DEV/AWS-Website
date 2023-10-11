@@ -354,7 +354,12 @@ const UserHomeScreen = ({
           });
           break;
 
-        case strings.removeMemberFromTeamText:
+        case format(
+          strings.removeMemberFromTeamText,
+          authContext.entity.role === Verbs.entityTypeTeam
+            ? Verbs.entityTypeTeam
+            : Verbs.entityTypeClub,
+        ):
           removeUserFromGroup();
           break;
 
@@ -373,6 +378,7 @@ const UserHomeScreen = ({
       onDecline,
       cancelGroupInvitation,
       removeUserFromGroup,
+      authContext.entity.role,
     ],
   );
 

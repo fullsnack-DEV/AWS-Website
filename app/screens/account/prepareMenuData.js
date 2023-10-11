@@ -233,7 +233,7 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
         member: [
           ...refereeingMenu,
           {
-            option: strings.addSportsTitle,
+            option: strings.addRefreeTitle,
             icon: images.registerReferee,
             iconRight: images.nextArrow,
             menuOptionType: Verbs.entityTypeReferee,
@@ -249,7 +249,7 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
         member: [
           ...scorekeepingMenu,
           {
-            option: strings.addSportsTitle,
+            option: strings.addScoreKeeperTitle,
             icon: images.registerScorekeeper,
             iconRight: images.nextArrow,
             menuOptionType: Verbs.entityTypeScorekeeper,
@@ -309,7 +309,6 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
         },
       },
     ];
-
     return userMenu;
   } catch (error) {
     console.error(error);

@@ -95,8 +95,8 @@ export default function ManageChallengeScreen({navigation, route}) {
     },
     {key: strings.venue},
     {key: strings.gameRulesTitle},
-    {key: strings.Referee},
-    {key: strings.scorekeeperText},
+    // {key: strings.Referee},
+    // {key: strings.scorekeeperText},
   ];
 
   const getSettingValue = (option) => {

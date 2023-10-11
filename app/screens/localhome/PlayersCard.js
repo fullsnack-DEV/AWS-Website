@@ -26,6 +26,7 @@ function PlayersCard({
   playeravail = false,
 
   onPress = () => {},
+  isdeactivated = false,
 }) {
   const getEntityName = () => item.full_name;
 
@@ -214,6 +215,7 @@ function PlayersCard({
 
   return (
     <TouchableOpacity
+      disabled={isdeactivated}
       activeOpacity={0.9}
       style={styles.cardContainer}
       onPress={onPress}>
@@ -221,7 +223,17 @@ function PlayersCard({
         defaultSource={images.defaultPlayerBg}
         style={styles.inneimgContainer}
         source={imageSource()}
-        blurRadius={8}>
+        blurRadius={8}
+        imageStyle={{
+          overflow: 'hidden',
+
+          height: 100,
+          zIndex: -3,
+        }}
+        borderBottomRightRadius={5}
+        borderBottomLeftRadius={5}
+        borderTopLeftRadius={5}
+        borderTopRightRadius={5}>
         <Text numberOfLines={1} style={styles.nameStyle}>
           {getName}
           {/* {sportText} */}
@@ -236,7 +248,7 @@ function PlayersCard({
           resizeMode="contain"
           style={styles.imageContaienrstyle}>
           <View style={styles.teamLogoContainer}>{renderFastImage}</View>
-          <View style={{marginTop: -25}}>
+          <View style={{position: 'absolute', top: 15}}>
             <View style={styles.mainContentcontainer}>
               <Text style={styles.teamnameTextStyle} numberOfLines={1}>
                 {getEntityName()}
@@ -305,6 +317,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     lineHeight: 21,
     alignSelf: 'flex-start',
+    textTransform: 'capitalize',
   },
   locationNameTextStyle: {
     fontFamily: fonts.RRegular,
@@ -325,15 +338,12 @@ const styles = StyleSheet.create({
     width: 125,
     zIndex: 100,
     marginTop: 15,
-    overflow: 'hidden',
   },
   inneimgContainer: {
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
-    overflow: 'hidden',
-    zIndex: 2,
   },
   nameStyle: {
     fontFamily: fonts.RBold,

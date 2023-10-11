@@ -1,10 +1,11 @@
 import React, {
   useState,
-  Fragment,
   useEffect,
   useContext,
   useCallback,
+  Fragment,
 } from 'react';
+import {View, Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import SplashScreen from 'react-native-splash-screen';
@@ -17,15 +18,17 @@ import AuthNavigator from './app/navigation/AuthNavigator';
 import AppNavigator from './app/navigation/AppNavigator';
 import navigationTheme from './app/navigation/navigationTheme';
 import * as Utility from './app/utils/index';
-import ActivityLoader from './app/components/loader/ActivityLoader';
 import LoneStackNavigator from './app/navigation/LoneStackNavigator';
 import {getSportsList} from './app/api/Games';
 import {connectUserToStreamChat} from './app/utils/streamChat';
+import images from './app/Constants/ImagePath';
+import colors from './app/Constants/Colors';
+
 // import {getUnreadNotificationCount} from './app/utils/accountUtils';
 
 const Stack = createStackNavigator();
 
-export default function NavigationMainContainer() {
+function NavigationMainContainer() {
   const authContext = useContext(AuthContext);
   const {setTokenData, setEntity, setUser} = authContext;
   const [loading, setLoading] = useState(false);
@@ -35,10 +38,6 @@ export default function NavigationMainContainer() {
       authContext.setSports(res.payload);
     });
   }, [authContext]);
-
-  useEffect(() => {
-    SplashScreen.hide();
-  }, []);
 
   useEffect(() => {
     if (authContext.entity?.isLoggedIn && authContext.sports?.length === 0) {
@@ -109,12 +108,6 @@ export default function NavigationMainContainer() {
     });
   }, [setTokenData, setLocalData]);
 
-  // useEffect(() => {
-  //   if (authContext.tokenData?.token) {
-  //     getUnreadNotificationCount(authContext);
-  //   }
-  // }, [authContext.tokenData]);
-
   useEffect(() => {
     authContext.setIsAccountDeactivated(
       authContext?.entity?.obj?.is_pause ||
@@ -128,12 +121,19 @@ export default function NavigationMainContainer() {
     }
   }, [authContext.entity?.uid, authContext.chatClient?.key]);
 
+  useEffect(() => {
+    if (!loading) {
+      SplashScreen.hide();
+    }
+  }, [loading]);
+
   return (
     <Fragment>
       {!loading ? (
         <NavigationContainer theme={navigationTheme}>
           <Host>
-            {authContext.entity?.isLoggedIn ? (
+            {authContext.entity?.isLoggedIn &&
+            authContext.entity?.isLoggedIn !== undefined ? (
               <Stack.Navigator
                 initialRouteName="App"
                 detachInactiveScreens={true}>
@@ -154,8 +154,27 @@ export default function NavigationMainContainer() {
           </Host>
         </NavigationContainer>
       ) : (
-        <ActivityLoader visible={true} />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: colors.kHexColorFF8A01,
+          }}>
+          <View>
+            <Image
+              resizeMethod="resize"
+              style={{
+                width: 250,
+                height: 60,
+              }}
+              source={images.townsCupLogoNew}
+            />
+          </View>
+        </View>
       )}
     </Fragment>
   );
 }
+
+export default React.memo(NavigationMainContainer);

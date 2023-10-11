@@ -52,7 +52,7 @@ function PlayersCardPlaceHolder({
         horizontal
         extraData={data}
         style={{
-          opacity: 0.3,
+          opacity: 0.5,
           flexDirection: 'row',
           flex: 1,
           paddingVertical: 6,

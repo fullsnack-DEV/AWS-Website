@@ -14,6 +14,8 @@ import {
   TouchableOpacity,
   Platform,
   Linking,
+  Dimensions,
+  SafeAreaView,
 } from 'react-native';
 
 import {
@@ -44,6 +46,8 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import Verbs from '../../Constants/Verbs';
 import locationModalStyles from '../../Constants/LocationModalStyle';
 import AuthScreenHeader from './AuthScreenHeader';
+
+const windowHeight = Dimensions.get('window').height;
 
 export default function ChooseLocationScreen({navigation, route}) {
   const [cityData, setCityData] = useState([]);
@@ -287,20 +291,16 @@ export default function ChooseLocationScreen({navigation, route}) {
     str.replace(/[^\x20-\x7E]/g, '');
 
   return (
-    <LinearGradient
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
       <ActivityLoader visible={loading} />
       <FastImage style={styles.background} source={images.loginBg} />
 
-      <View style={{marginTop: 25}}>
-        <AuthScreenHeader
-          title={strings.locationText}
-          onBackPress={() => navigation.pop()}
-          onNextPress={() => {}}
-          showNext={false}
-        />
-      </View>
+      <AuthScreenHeader
+        title={strings.locationText}
+        onBackPress={() => navigation.pop()}
+        onNextPress={() => {}}
+        showNext={false}
+      />
 
       <View style={styles.locationTextContainer}>
         <Text style={styles.LocationDescription}>
@@ -375,7 +375,7 @@ export default function ChooseLocationScreen({navigation, route}) {
           keyExtractor={(item) => item.place_id}
         />
       )}
-    </LinearGradient>
+    </SafeAreaView>
   );
 }
 
@@ -390,9 +390,10 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   background: {
-    height: hp('100%'),
     position: 'absolute',
-    width: wp('100%'),
+    width: '100%',
+    height: windowHeight,
+    resizeMode: 'cover',
   },
   cityList: {
     color: colors.whiteColor,
@@ -416,10 +417,6 @@ const styles = StyleSheet.create({
   listItem: {
     flexDirection: 'row',
     marginHorizontal: 30,
-  },
-  mainContainer: {
-    flex: 1,
-    paddingTop: 25,
   },
 
   searchImg: {

@@ -1,24 +1,19 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable consistent-return */
 /* eslint-disable no-return-assign */
-import React, {useEffect, useState, useContext, useLayoutEffect} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   StyleSheet,
   View,
   Text,
   FlatList,
   Alert,
-  TouchableOpacity,
-  Image,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
 import Config from 'react-native-config';
 import messaging from '@react-native-firebase/messaging';
 import {createUser} from '../../api/Users';
@@ -37,6 +32,8 @@ import apiCall from '../../utils/apiCall';
 import {generateUserStreamToken} from '../../utils/streamChat';
 import AuthScreenHeader from './AuthScreenHeader';
 
+const windowHeight = Dimensions.get('window').height;
+
 export default function ChooseSportsScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -47,41 +44,6 @@ export default function ChooseSportsScreen({navigation, route}) {
   const dummyAuthContext = {...authContext};
   const selectedSports = [];
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.pop();
-          }}>
-          <Image
-            source={images.backArrow}
-            style={{
-              height: 20,
-              width: 15,
-              marginLeft: 20,
-              tintColor: colors.whiteColor,
-            }}
-          />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <Text
-          testID="next-signupSport-button"
-          style={styles.nextButtonStyle}
-          onPress={() => {
-            if (selected.length > 0) {
-              getTeamsData();
-            } else {
-              Alert.alert(strings.appName, strings.chooseOneSportText);
-              return false;
-            }
-          }}>
-          {strings.next}
-        </Text>
-      ),
-    });
-  });
   useEffect(() => {
     getSportsList(authContext)
       .then((response) => {
@@ -412,9 +374,7 @@ export default function ChooseSportsScreen({navigation, route}) {
   };
 
   return (
-    <LinearGradient
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
       <ActivityLoader visible={loading} />
       <FastImage style={styles.background} source={images.loginBg} />
       <SafeAreaView style={styles.container}>
@@ -443,15 +403,16 @@ export default function ChooseSportsScreen({navigation, route}) {
           renderItem={renderItem}
         />
       </SafeAreaView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   background: {
-    height: hp('100%'),
     position: 'absolute',
-    width: wp('100%'),
+    width: '100%',
+    height: windowHeight,
+    resizeMode: 'cover',
   },
   checkbox: {},
   unCheckboxImg: {
@@ -470,10 +431,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 40,
     paddingVertical: 20,
   },
-  mainContainer: {
-    flex: 1,
-    paddingTop: 25,
-  },
+
   sportImg: {
     width: 25,
     height: 25,
@@ -484,12 +442,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
   },
 
-  nextButtonStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    marginRight: 15,
-    color: colors.whiteColor,
-  },
   container: {
     flex: 1,
   },

@@ -221,7 +221,7 @@ export default function FollowFollowingModal({
             <>
               <View style={[styles.row, {justifyContent: 'space-between'}]}>
                 <TouchableOpacity
-                  style={styles.row}
+                  style={[styles.row, {flex: 0.7}]}
                   onPress={() => {
                     navigation.navigate('HomeScreen', {
                       uid: item.user_id ?? item.group_id,
@@ -234,7 +234,7 @@ export default function FollowFollowingModal({
                     containerStyle={styles.iconContainer}
                   />
                   <View style={{marginLeft: 10}}>
-                    <Text style={styles.userName}>
+                    <Text style={styles.userName} numberOfLines={1}>
                       {item.group_name ?? item.full_name}
                     </Text>
                     <Text style={styles.locationText}>

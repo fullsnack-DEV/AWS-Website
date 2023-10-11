@@ -56,6 +56,7 @@ const LocalHomeMenuItems = memo(
     navigateToScoreKeeper,
     owners,
     allUserData,
+    isdeactivated = false,
     cardLoader,
   }) => {
     const navigation = useNavigation();
@@ -360,6 +361,7 @@ const LocalHomeMenuItems = memo(
                 data={[]}
                 extraData={[]}
                 horizontal
+                renderToHardwareTextureAndroid
                 scrollEnabled={items.data.length > 0}
                 contentContainerStyle={{paddingVertical: 6}}
                 showsHorizontalScrollIndicator={false}
@@ -394,7 +396,7 @@ const LocalHomeMenuItems = memo(
                 title={strings.completedMatches}
                 showArrow={true}
                 viewStyle={{marginBottom: 15, marginTop: 25}}
-                isDisabled={!(items.data.length > 0)}
+                isDisabled={!(items.data.length > 0) || isdeactivated}
                 onPress={() => onTitlePress(item)}
               />
 
@@ -412,6 +414,7 @@ const LocalHomeMenuItems = memo(
                         {section.data.map((item) => (
                           <View key={item.id} style={{marginRight: 10}}>
                             <HorizontalsCards
+                              isdeactivated={isdeactivated}
                               item={item}
                               onPress={() => onCardPress(items, item)}
                             />
@@ -438,7 +441,7 @@ const LocalHomeMenuItems = memo(
                 title={strings.upcomingMatchesTitle}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
-                isDisabled={!(items.data.length > 0)}
+                isDisabled={!(items.data.length > 0) || isdeactivated}
                 onPress={() => onTitlePress(item)}
               />
 
@@ -456,6 +459,7 @@ const LocalHomeMenuItems = memo(
                         {section.data.map((item) => (
                           <View key={item.id} style={{marginRight: 10}}>
                             <HorizontalsCards
+                              isdeactivated={isdeactivated}
                               item={item}
                               onPress={() => onCardPress(items, item)}
                             />
@@ -491,7 +495,7 @@ const LocalHomeMenuItems = memo(
                     title={strings.eventHometitle}
                     showArrow={true}
                     viewStyle={{marginTop: 20, marginBottom: 10}}
-                    isDisabled={!(items?.data?.length > 0)}
+                    isDisabled={!(items?.data?.length > 0) || isdeactivated}
                     onPress={() =>
                       navigation.navigate('Schedule', {
                         screen: 'EventScheduleScreen',
@@ -504,6 +508,7 @@ const LocalHomeMenuItems = memo(
                     scrollEnabled={items.data?.length > 0}
                     contentContainerStyle={{paddingVertical: 6}}
                     showsHorizontalScrollIndicator={false}
+                    renderToHardwareTextureAndroid
                     removeClippedSubviews={true}
                     initialNumToRender={10}
                     maxToRenderPerBatch={10}
@@ -531,6 +536,7 @@ const LocalHomeMenuItems = memo(
                             });
                           }
                         }}
+                        isdeactivated={isdeactivated}
                       />
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
@@ -564,13 +570,14 @@ const LocalHomeMenuItems = memo(
                   <TCTitleWithArrow
                     title={strings.teamAvailableforChallenge}
                     showArrow={true}
-                    isDisabled={!(items.data.length > 0)}
+                    isDisabled={!(items.data.length > 0) || isdeactivated}
                     onPress={() => onTitlePress(item)}
                     viewStyle={{marginTop: 20, marginBottom: 15}}
                   />
                   <FlatList
                     data={items.data}
                     horizontal={true}
+                    renderToHardwareTextureAndroid
                     scrollEnabled={items.data.length > 0}
                     contentContainerStyle={{paddingVertical: 6}}
                     showsHorizontalScrollIndicator={false}
@@ -578,6 +585,7 @@ const LocalHomeMenuItems = memo(
                       <TeamCard
                         item={item}
                         onPress={() => onCardPress(items, item)}
+                        isdeactivated={isdeactivated}
                       />
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
@@ -621,7 +629,7 @@ const LocalHomeMenuItems = memo(
                     title={strings.playersAvailableforChallenge}
                     showArrow={true}
                     viewStyle={{marginTop: 20, marginBottom: 15}}
-                    isDisabled={!(items.data.length > 0)}
+                    isDisabled={!(items.data.length > 0) || isdeactivated}
                     onPress={() => onTitlePress(item)}
                   />
                   <FlatList
@@ -636,6 +644,7 @@ const LocalHomeMenuItems = memo(
                         : items.data
                     }
                     horizontal={true}
+                    renderToHardwareTextureAndroid
                     removeClippedSubviews={true}
                     initialNumToRender={10}
                     maxToRenderPerBatch={10}
@@ -650,6 +659,7 @@ const LocalHomeMenuItems = memo(
                         item={item}
                         playeravail={true}
                         onPress={() => onCardPress(items, item)}
+                        isdeactivated={isdeactivated}
                       />
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
@@ -686,7 +696,7 @@ const LocalHomeMenuItems = memo(
                 title={strings.refreesAvailable}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
-                isDisabled={!(items?.data?.length > 0)}
+                isDisabled={!(items?.data?.length > 0) || isdeactivated}
                 onPress={() => onTitlePress(item)}
               />
               <FlatList
@@ -695,6 +705,7 @@ const LocalHomeMenuItems = memo(
                 contentContainerStyle={{paddingVertical: 6}}
                 showsHorizontalScrollIndicator={false}
                 initialNumToRender={10}
+                renderToHardwareTextureAndroid
                 maxToRenderPerBatch={10}
                 getItemLayout={getItemLayoutForPlayerCard}
                 renderItem={({item}) => (
@@ -704,6 +715,7 @@ const LocalHomeMenuItems = memo(
                     item={item}
                     onPress={() => onCardPress(items, item)}
                     refree={true}
+                    isdeactivated={isdeactivated}
                   />
                 )}
                 ListFooterComponent={() => <View style={{width: 15}} />}
@@ -736,13 +748,14 @@ const LocalHomeMenuItems = memo(
                 title={strings.scorekeepersAvailable}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
-                isDisabled={!(items.data.length > 0)}
+                isDisabled={!(items.data.length > 0) || isdeactivated}
                 onPress={() => onTitlePress(item)}
               />
               <FlatList
                 data={items.data}
                 scrollEnabled={items.data.length > 0}
                 horizontal={true}
+                renderToHardwareTextureAndroid
                 contentContainerStyle={{paddingVertical: 6}}
                 showsHorizontalScrollIndicator={false}
                 initialNumToRender={10}
@@ -755,6 +768,7 @@ const LocalHomeMenuItems = memo(
                     item={item}
                     onPress={() => onCardPress(items, item)}
                     scoreKeeper={true}
+                    isdeactivated={isdeactivated}
                   />
                 )}
                 ListFooterComponent={() => <View style={{width: 15}} />}
@@ -788,7 +802,7 @@ const LocalHomeMenuItems = memo(
                   <TCTitleWithArrow
                     title={strings.hiringPlayerTitle}
                     showArrow={true}
-                    isDisabled={!(items.data.length > 0)}
+                    isDisabled={!(items.data.length > 0) || isdeactivated}
                     viewStyle={{
                       marginTop: 20,
                       marginBottom: 15,
@@ -798,6 +812,7 @@ const LocalHomeMenuItems = memo(
                   <FlatList
                     data={items.data}
                     horizontal={true}
+                    renderToHardwareTextureAndroid
                     scrollEnabled={items.data.length > 0}
                     contentContainerStyle={{
                       paddingVertical: 6,
@@ -807,6 +822,7 @@ const LocalHomeMenuItems = memo(
                       <TeamCard
                         item={item}
                         onPress={() => onCardPress(items, item)}
+                        isdeactivated={isdeactivated}
                       />
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
@@ -842,13 +858,14 @@ const LocalHomeMenuItems = memo(
                   <TCTitleWithArrow
                     title={strings.lookingForTeamTitle}
                     showArrow={true}
-                    isDisabled={!(items.data.length > 0)}
+                    isDisabled={!(items.data.length > 0) || isdeactivated}
                     onPress={() => onTitlePress(item)}
                     viewStyle={{marginTop: 20, marginBottom: 15}}
                   />
 
                   <FlatList
                     data={items.data}
+                    renderToHardwareTextureAndroid
                     scrollEnabled={items.data.length > 0}
                     horizontal={true}
                     contentContainerStyle={{paddingVertical: 6}}
@@ -863,6 +880,7 @@ const LocalHomeMenuItems = memo(
                         item={item}
                         onPress={() => onCardPress(items, item)}
                         lookingTeamClub={true}
+                        isdeactivated={isdeactivated}
                       />
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}

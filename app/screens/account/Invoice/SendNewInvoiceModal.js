@@ -97,14 +97,6 @@ const SendNewInvoiceModal = ({
       setRecipientMemberData(updatedMembers);
       setIsRecipientDataFetched(true);
     }
-
-    if (eventID) {
-      const updatedMembers = member.map((members) => ({
-        ...members,
-        connected: true,
-      }));
-      setSelectedRecipients(updatedMembers);
-    }
   }, [isVisible, isSingleInvoice, eventID]);
 
   const handleCancelDueDatePress = () => {
@@ -112,8 +104,8 @@ const SendNewInvoiceModal = ({
   };
 
   const getGroupMembersData = async () => {
-    setLoading(true);
     if (invoiceType === InvoiceType.Invoice) {
+      setLoading(true);
       if (authContext.entity.role === Verbs.entityTypeClub) {
         const promises = [
           getGroupMembers(authContext.entity.uid, authContext),
@@ -143,6 +135,16 @@ const SendNewInvoiceModal = ({
           },
         );
       }
+    } else if (invoiceType === InvoiceType.Event) {
+      setLoading(true);
+      const updatedMembers = member.map((members) => ({
+        ...members,
+        connected: true,
+      }));
+      setShowRecipientsModal(true);
+      setIsRecipientDataFetched(true);
+      setRecipientMemberData([...updatedMembers]);
+      setLoading(false);
     }
   };
 

@@ -12,10 +12,12 @@ export default function HorizontalsCards({
   upComingMatch = false,
   onPress,
   placeholder = false,
+  isdeactivated = false,
 }) {
   return (
     <View>
       <TouchableOpacity
+        disabled={isdeactivated}
         onPress={onPress}
         style={[
           styles.mainContaianer,

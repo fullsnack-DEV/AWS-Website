@@ -75,7 +75,8 @@ const CustomModalWrapper = ({
     } else if (event.nativeEvent.state === State.END) {
       if (isGestureActive) {
         isGestureActive = false;
-        if (event.nativeEvent.translationY > 0) {
+
+        if (event.nativeEvent.translationY > 50) {
           handleCloseModal();
         } else {
           InteractionManager.runAfterInteractions(() => {

@@ -87,8 +87,8 @@ export default function IncomingChallengeSettings({navigation, route}) {
     {key: settingType === 'Set' ? strings.setGamesDuration : ''},
     {key: strings.venue},
     {key: strings.gameRulesTitle},
-    {key: strings.Referee},
-    {key: strings.scorekeeperText},
+    // {key: strings.Referee},
+    // {key: strings.scorekeeperText},
   ];
 
   useEffect(() => {

@@ -38,9 +38,8 @@ const SportsListModal = ({
   ]);
 
   const onModalVisible = useCallback(() => {
-    console.log('in the sports');
     setSelectedSport(sport);
-  }, [isVisible]);
+  }, [sport]);
 
   const isIconCheckedOrNot = ({item, index}) => {
     rolesArray[index].isChecked = !item.isChecked;
@@ -239,6 +238,13 @@ const SportsListModal = ({
           if (forTeam) {
             onNextPress(selectedSport);
           }
+          setVisibleRoleModal(false);
+          setRoleArray([
+            {name: 'en_Player', isChecked: false},
+            {name: 'en_Coach ', isChecked: false},
+            {name: 'en_Parent', isChecked: false},
+            {name: 'en_Other', isChecked: false},
+          ]);
         }}
         modalType={ModalTypes.style1}>
         <TCKeyboardView

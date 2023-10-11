@@ -13,7 +13,14 @@ const AccountHeader = ({
   <View style={styles.parent}>
     <Text style={styles.label}>{strings.account}</Text>
     <TouchableOpacity style={styles.iconButton} onPress={onPressNotification}>
-      <Image source={images.notificationBell} style={styles.image} />
+      <Image
+        source={
+          notificationCount > 0
+            ? images.notificationBell
+            : images.notificationBellStright
+        }
+        style={styles.image}
+      />
       {notificationCount > 0 && (
         <View style={styles.countContainer}>
           <Text style={styles.count}>

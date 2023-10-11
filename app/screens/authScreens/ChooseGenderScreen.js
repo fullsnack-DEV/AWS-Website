@@ -6,14 +6,10 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 
 import {Tooltip} from 'react-native-elements';
-import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
@@ -22,6 +18,8 @@ import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 import Verbs from '../../Constants/Verbs';
 import AuthScreenHeader from './AuthScreenHeader';
+
+const windowHeight = Dimensions.get('window').height;
 
 export default function ChooseGenderScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -113,26 +111,22 @@ export default function ChooseGenderScreen({navigation, route}) {
   );
 
   return (
-    <LinearGradient
-      colors={[colors.themeColor1, colors.themeColor3]}
-      style={styles.mainContainer}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.kHexColorFF8A01}}>
       <FastImage style={styles.background} source={images.loginBg} />
 
-      <View style={{marginTop: 15}}>
-        <AuthScreenHeader
-          title={strings.addGenderText}
-          onBackPress={() => {
-            navigation.pop();
-          }}
-          onNextPress={async () => {
-            let gender = {};
-            if (selected === 0) gender = Verbs.male;
-            else if (selected === 1) gender = Verbs.female;
-            else if (selected === 2) gender = strings.other;
-            navigateToChooseLocationScreen(gender);
-          }}
-        />
-      </View>
+      <AuthScreenHeader
+        title={strings.addGenderText}
+        onBackPress={() => {
+          navigation.pop();
+        }}
+        onNextPress={async () => {
+          let gender = {};
+          if (selected === 0) gender = Verbs.male;
+          else if (selected === 1) gender = Verbs.female;
+          else if (selected === 2) gender = strings.other;
+          navigateToChooseLocationScreen(gender);
+        }}
+      />
 
       <View style={{flex: 1}}>
         <View style={styles.genderTextContainer}>
@@ -205,21 +199,18 @@ export default function ChooseGenderScreen({navigation, route}) {
           </Text>
         </View>
       </SafeAreaView>
-    </LinearGradient>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   background: {
-    height: hp('100%'),
     position: 'absolute',
-    width: wp('100%'),
+    width: '100%',
+    height: windowHeight,
+    resizeMode: 'cover',
   },
 
-  mainContainer: {
-    flex: 1,
-    paddingTop: 25,
-  },
   radioButtonView: {
     flexDirection: 'row',
     marginLeft: 5,
