@@ -197,7 +197,7 @@ import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInv
 import EntityStatScreen from '../screens/home/EntityStatScreen';
 import RequestBasicInfoScreen from '../screens/account/groupConnections/RequestBasicInfoScreen';
 import EditMemberAuthInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberAuthInfoScreen';
-import MessageNavigator from './MessageNavigator';
+
 import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import DeactivatedSportsListScreen from '../components/Home/DeactivatedSportsListScreen';
 import ActivitySettingScreen from '../screens/account/userSettingPrivacy/sportsActivity/ActivitySettingScreen';
@@ -1474,16 +1474,7 @@ const MembersNavigator = () => (
         headerTintColor: colors.blackColor,
       }}
     />
-    <Stack.Screen
-      name="MessageChat"
-      component={MessageNavigator}
-      options={{
-        title: 'Message Chat',
-        headerTintColor: colors.blackColor,
 
-        headerShown: false,
-      }}
-    />
     <Stack.Screen
       name="EditChallenge"
       component={EditChallenge}

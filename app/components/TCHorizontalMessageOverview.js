@@ -7,7 +7,6 @@ import {widthPercentageToDP as wp} from '../utils';
 import fonts from '../Constants/Fonts';
 import colors from '../Constants/Colors';
 import TCBadge from './TCBadge';
-import MessageOccupantsProfilePic from './message/MessageOccupantsProfilePic';
 
 const TCHorizontalMessageOverview = memo(
   ({
@@ -18,7 +17,7 @@ const TCHorizontalMessageOverview = memo(
     numberOfUnreadMessages = 0,
     lastMessageDate = new Date(),
     onPress,
-    occupantsIds,
+    // occupantsIds,
   }) => {
     // eslint-disable-next-line no-restricted-globals
     const getDateAndMonth = useMemo(
@@ -30,7 +29,7 @@ const TCHorizontalMessageOverview = memo(
       <TouchableOpacity
         style={styles.horizontalMessageOverviewContainer}
         onPress={onPress}>
-        <MessageOccupantsProfilePic occupantsIds={occupantsIds} />
+        {/* <MessageOccupantsProfilePic occupantsIds={occupantsIds} /> */}
         <View style={styles.rightContainer}>
           <View style={styles.rightTitleContainer}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>

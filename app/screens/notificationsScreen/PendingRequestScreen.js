@@ -29,9 +29,6 @@ import {getEventById} from '../../api/Schedule';
 import {getRefereeReservationDetail} from '../referee/RefereeUtility';
 import {getScorekeeperReservationDetail} from '../scorekeeper/ScorekeeperUtility';
 import {getChallengeDetail} from '../challenge/ChallengeUtility';
-import {getUserDetails} from '../../api/Users';
-import {getGroupDetails} from '../../api/Groups';
-import {getQBAccountType, QBcreateUser} from '../../utils/QuickBlox';
 import RefereeReservationStatus from '../../Constants/RefereeReservationStatus';
 import ScorekeeperReservationStatus from '../../Constants/ScorekeeperReservationStatus';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -309,42 +306,8 @@ function PendingRequestScreen({navigation}) {
     }
   };
 
-  const onMessagePress = (item) => {
-    const entityId = item?.entityId;
-    const entityType = item?.entityType;
-    const navigateToMessage = (userId) => {
-      setloading(false);
-      navigation.navigate('MessageChat', {
-        screen: 'MessageChat',
-        params: {userId},
-      });
-    };
-    const createQBUser = (userData) => {
-      const accountType = getQBAccountType(entityType);
-      QBcreateUser(entityId, userData, accountType)
-        .then(() => {
-          navigateToMessage(entityId);
-        })
-        .catch(() => {
-          navigateToMessage(entityId);
-        });
-    };
-    if (entityType && entityId) {
-      setloading(true);
-      if (entityType === 'player' || entityType === 'user') {
-        getUserDetails(entityId, authContext)
-          .then((uData) => {
-            createQBUser(uData?.payload);
-          })
-          .catch(() => setloading(false));
-      } else {
-        getGroupDetails(entityId, authContext)
-          .then((gData) => {
-            createQBUser(gData?.payload);
-          })
-          .catch(() => setloading(false));
-      }
-    }
+  const onMessagePress = () => {
+    //  handle button press for message
   };
 
   const onAccept = (requestId) => {

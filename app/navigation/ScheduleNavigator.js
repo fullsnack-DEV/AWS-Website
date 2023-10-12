@@ -175,7 +175,7 @@ import EntityStatScreen from '../screens/home/EntityStatScreen';
 import RequestBasicInfoScreen from '../screens/account/groupConnections/RequestBasicInfoScreen';
 import RequestMultipleBasicInfoScreen from '../screens/account/groupConnections/RequestMultipleBasicInfoScreen';
 import EditMemberAuthInfoScreen from '../screens/account/groupConnections/editMemberProfile/EditMemberAuthInfoScreen';
-import MessageNavigator from './MessageNavigator';
+
 import SportSettingScreen from '../screens/localhome/SportSettingScreen';
 import SportAccountSettingScreen from '../screens/account/SportAccountSettingScreen';
 import ChangeSportsOrderScreen from '../screens/account/schedule/ChangeSportsOrderScreen';
@@ -1696,23 +1696,7 @@ const ScheduleNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name="MessageChat"
-      component={MessageNavigator}
-      options={{
-        title: 'Message Chat',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
+
     <Stack.Screen
       name="EditChallenge"
       component={EditChallenge}

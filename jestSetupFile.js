@@ -12,12 +12,7 @@ jest.mock('react-native-keyboard-aware-scroll-view', () => {
   const KeyboardAwareScrollView = ({children}) => children;
   return {KeyboardAwareScrollView};
 });
-jest.mock('./app/utils/QuickBlox.js', () => {});
 
 jest.mock('./app/components/TCKeyboardView', () =>
   jest.genMockFromModule('./app/components/TCKeyboardView'),
 );
-
-jest.mock('quickblox-react-native-sdk', () => ({
-  addListener: jest.fn(),
-}));

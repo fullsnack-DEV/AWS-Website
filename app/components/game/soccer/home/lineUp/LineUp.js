@@ -173,11 +173,8 @@ export default function LineUp({navigation, gameData}) {
               Alert.alert(err);
             });
         }
-        if (bType === 'message') {          
-          navigation.navigate('MessageChat', {
-            screen: 'MessageChat',
-            params: {userId: item?.profile?.user_id},
-          });
+        if (bType === 'message') {
+          //
         }
       }}
       OnRowPress={(userInfo) => {
@@ -238,7 +235,7 @@ export default function LineUp({navigation, gameData}) {
                 gameData.away_team.group_id === entity.uid &&
                 (gameData.status === GameStatus.accepted ||
                   gameData.status === GameStatus.reset))) && (
-                  <TouchableOpacity
+              <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={getHitSlop(15)}
                 onPress={() =>
@@ -247,8 +244,8 @@ export default function LineUp({navigation, gameData}) {
                     selectedTeam: selected === 1 ? 'home' : 'away',
                   })
                 }>
-                    <Image source={images.editSection} style={styles.editButton} />
-                  </TouchableOpacity>
+                <Image source={images.editSection} style={styles.editButton} />
+              </TouchableOpacity>
             )}
           </View>
           <Text
@@ -337,7 +334,7 @@ export default function LineUp({navigation, gameData}) {
                 gameData.away_team.group_id === entity.uid &&
                 (gameData.status === GameStatus.accepted ||
                   gameData.status === GameStatus.reset))) && (
-                  <TouchableOpacity
+              <TouchableOpacity
                 style={styles.editTouchArea}
                 hitSlop={getHitSlop(15)}
                 onPress={() =>
@@ -346,8 +343,8 @@ export default function LineUp({navigation, gameData}) {
                     selectedTeam: selected === 1 ? 'home' : 'away',
                   })
                 }>
-                    <Image source={images.editSection} style={styles.editButton} />
-                  </TouchableOpacity>
+                <Image source={images.editSection} style={styles.editButton} />
+              </TouchableOpacity>
             )}
           </View>
 

@@ -426,10 +426,7 @@ const SportActivityHome = ({navigation, route}) => {
         isLookingForClub={sportObj?.lookingForTeamClub}
         isAdmin={isAdmin}
         onMessageClick={() => {
-          navigation.push('MessageChat', {
-            screen: 'MessageChat',
-            params: {userId: userData.user_id},
-          });
+          //
         }}
         level={sportObj?.level}
         loading={isFectchingUser}
@@ -527,10 +524,7 @@ const SportActivityHome = ({navigation, route}) => {
           });
         }}
         onMessageClick={() => {
-          navigation.push('MessageChat', {
-            screen: 'MessageChat',
-            params: {userId: userData?.user_id},
-          });
+          //
         }}
         entityType={entityType}
         continueToChallenge={() => {

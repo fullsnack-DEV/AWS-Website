@@ -24,7 +24,6 @@ function App() {
   const [role, setRole] = useState('user');
   const [entity, setEntity] = useState(null);
   const [tokenData, setToken] = useState(null);
-  const [QBCredential, setQBCredential] = useState({});
   const [alertData, setAlertData] = useState(null);
   const [selectedLocation, setSelectedLoaction] = useState('');
   const [managedEntities, setManagedEntityList] = useState([]);
@@ -144,8 +143,7 @@ function App() {
       setUser,
       entity,
       setEntity,
-      setQBCredential,
-      QBCredential,
+
       setSports,
       sports,
       tokenData,
@@ -172,7 +170,6 @@ function App() {
       role,
       user,
       entity,
-      QBCredential,
       sports,
       tokenData,
       setTokenData,

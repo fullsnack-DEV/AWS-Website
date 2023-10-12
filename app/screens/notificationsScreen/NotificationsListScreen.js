@@ -47,15 +47,6 @@ import {strings} from '../../../Localization/translation';
 import * as RefereeUtils from '../referee/RefereeUtility';
 import * as ScorekeeperUtils from '../scorekeeper/ScorekeeperUtility';
 import * as challengeUtility from '../challenge/ChallengeUtility';
-import {
-  getQBAccountType,
-  QB_ACCOUNT_TYPE,
-  QBconnectAndSubscribe,
-  QBcreateUser,
-  QBlogin,
-  QBLogout,
-} from '../../utils/QuickBlox';
-import {getUserDetails} from '../../api/Users';
 import {getGroupDetails} from '../../api/Groups';
 import NotificationListShimmer from '../../components/shimmer/account/NotificationListShimmer';
 
@@ -70,6 +61,7 @@ import SendRequestModal from '../../components/SendRequestModal/SendRequestModal
 import ScreenHeader from '../../components/ScreenHeader';
 import JoinButtonModal from '../home/JoinButtomModal';
 import Verbs from '../../Constants/Verbs';
+import useSwitchAccount from '../../hooks/useSwitchAccount';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
@@ -359,136 +351,20 @@ function NotificationsListScreen({navigation}) {
     }
   };
 
-  const onMessagePress = (item) => {
+  const onMessagePress = () => {
     if (activeScreen) {
-      const entityId = item?.entityId;
-      const entityType = item?.entityType;
-      const navigateToMessage = (userId) => {
-        setloading(false);
-        navigation.navigate('MessageChat', {
-          screen: 'MessageChat',
-          params: {userId},
-        });
-      };
-      const createQBUser = (userData) => {
-        const accountType = getQBAccountType(entityType);
-        QBcreateUser(entityId, userData, accountType)
-          .then(() => {
-            navigateToMessage(entityId);
-          })
-          .catch(() => {
-            navigateToMessage(entityId);
-          });
-      };
-      if (entityType && entityId) {
-        setloading(true);
-        if (entityType === 'player' || entityType === 'user') {
-          getUserDetails(entityId, authContext)
-            .then((uData) => {
-              createQBUser(uData?.payload);
-            })
-            .catch(() => setloading(false));
-        } else {
-          getGroupDetails(entityId, authContext)
-            .then((gData) => {
-              createQBUser(gData?.payload);
-            })
-            .catch(() => setloading(false));
-        }
-      }
+      // handle button press for message
     } else {
       showSwitchProfilePopup();
     }
   };
 
-  const switchProfile = async (item) => {
-    let currentEntity = authContext.entity;
+  const {onSwitchProfile} = useSwitchAccount();
 
-    if (item.entity_type === 'player') {
-      currentEntity = {
-        ...currentEntity,
-        uid: item.user_id,
-        role: 'user',
-        obj: item,
-      };
-    } else if (item.entity_type === 'team') {
-      currentEntity = {
-        ...currentEntity,
-        uid: item.group_id,
-        role: 'team',
-        obj: item,
-      };
-    } else if (item.entity_type === 'club') {
-      currentEntity = {
-        ...currentEntity,
-        uid: item.group_id,
-        role: 'club',
-        obj: item,
-      };
-    }
-    authContext.setEntity({...currentEntity});
-    await Utility.setStorage('authContextEntity', {...currentEntity});
-    return currentEntity;
-  };
-  const switchQBAccount = async (accountData, entity) => {
-    let currentEntity = entity;
-    const entityType = accountData?.entity_type;
-    const uid = entityType === 'player' ? 'user_id' : 'group_id';
-    QBLogout()
-      .then(() => {
-        const {USER, CLUB, TEAM} = QB_ACCOUNT_TYPE;
-        let accountType = USER;
-        if (entityType === 'club') accountType = CLUB;
-        else if (entityType === 'team') accountType = TEAM;
-
-        QBlogin(
-          accountData[uid],
-          {
-            ...accountData,
-            full_name: accountData.group_name,
-          },
-          accountType,
-        )
-          .then(async (res) => {
-            currentEntity = {
-              ...currentEntity,
-              QB: {...res.user, connected: true, token: res?.session?.token},
-            };
-            authContext.setEntity({...currentEntity});
-            await Utility.setStorage('authContextEntity', {...currentEntity});
-            QBconnectAndSubscribe(currentEntity)
-              .then((qbRes) => {
-                setloading(false);
-                if (qbRes?.error) {
-                  //
-                }
-              })
-              .catch(() => {
-                setloading(false);
-              });
-          })
-          .catch(() => {
-            setloading(false);
-          });
-      })
-      .catch(() => {
-        setloading(false);
-      });
-  };
-
-  const onSwitchProfile = async (item) => {
+  const handleSwitchProfile = async (item) => {
     setloading(true);
-    switchProfile(item)
-      .then((currentEntity) => {
-        setActiveScreen(true);
-        switchQBAccount(item, currentEntity);
-      })
-      .catch((e) => {
-        setloading(false);
-        setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
-        }, 10);
-      });
+    await onSwitchProfile(item);
+    setloading(false);
   };
 
   const showSwitchProfilePopup = () => {
@@ -504,7 +380,7 @@ function NotificationsListScreen({navigation}) {
           text: strings.cancel,
           style: 'cancel',
         },
-        {text: strings.yes, onPress: () => onSwitchProfile(selectedEntity)},
+        {text: strings.yes, onPress: () => handleSwitchProfile(selectedEntity)},
       ],
       {cancelable: true},
     );

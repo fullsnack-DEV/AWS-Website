@@ -6,7 +6,6 @@ import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import * as Utility from '../../../utils/index';
-// import {getQBAccountType, QBupdateUser} from '../../../utils/QuickBlox';
 import ScreenHeader from '../../../components/ScreenHeader';
 import EditBasicInfoComponent from '../../../components/EditBasicInfoComponent';
 import AccountBasicInfoShimmer from '../../../components/shimmer/account/AccountBasicInfoShimmer';

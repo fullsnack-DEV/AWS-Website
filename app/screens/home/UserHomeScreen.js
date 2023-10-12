@@ -149,24 +149,7 @@ const UserHomeScreen = ({
           ]);
         }, 10);
       });
-  }, [authContext, currentUserData, userID]);
-
-  const onMessageButtonPress = useCallback(
-    (user) => {
-      const uid =
-        user?.entity_type === Verbs.entityTypePlayer ||
-        user?.entity_type === Verbs.entityTypeUser
-          ? user?.user_id
-          : user?.group_id;
-
-      // navigation.navigate('MessageChat', {userId: uid});
-      navigation.push('MessageChat', {
-        screen: 'MessageChat',
-        params: {userId: uid},
-      });
-    },
-    [navigation],
-  );
+  }, [authContext, currentUserData, userID, navigation]);
 
   const onAccept = useCallback(
     (requestId) => {
@@ -344,10 +327,6 @@ const UserHomeScreen = ({
           onDecline(currentUserData.invite_request.activity_id);
           break;
 
-        case Verbs.messageVerb:
-          onMessageButtonPress(currentUserData);
-          break;
-
         case Verbs.editVerb:
           navigation.navigate('PersonalInformationScreen', {
             isEditProfile: true,
@@ -373,7 +352,6 @@ const UserHomeScreen = ({
       clubInviteUser,
       currentUserData,
       navigation,
-      onMessageButtonPress,
       onAccept,
       onDecline,
       cancelGroupInvitation,

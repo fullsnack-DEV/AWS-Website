@@ -145,7 +145,6 @@ import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestS
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import NotificationsListScreen from '../screens/notificationsScreen/NotificationsListScreen';
 import EditChallenge from '../screens/challenge/alterChallenge/EditChallenge';
-import MessageNavigator from './MessageNavigator';
 import AddCardScreen from '../screens/account/payment/AddCardScreen';
 import PayoutMethodScreen from '../screens/account/payment/PayoutMethodScreen';
 import PayoutMethodList from '../screens/account/payment/PayoutMethodList';
@@ -296,23 +295,7 @@ const LocalHomeNavigator = () => (
         },
       }}
     />
-    <Stack.Screen
-      name="MessageChat"
-      component={MessageNavigator}
-      options={{
-        title: 'Message Chat',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
+
     <Stack.Screen
       name="RecentMatchScreen"
       component={RecentMatchScreen}

@@ -37,7 +37,6 @@ import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 
 import * as Utility from '../../../utils';
-import {getQBAccountType, QBcreateUser} from '../../../utils/QuickBlox';
 import TCGradientDivider from '../../../components/TCThinGradientDivider';
 import PlayInReviewsView from './stats/PlayInReviewsView';
 import TCScrollableTabs from '../../../components/TCScrollableTabs';
@@ -408,21 +407,8 @@ const PlayInModule = ({
   ]);
 
   const onMessageButtonPress = useCallback(() => {
-    const navigateToMessage = (userId) => {
-      navigation.push('MessageChat', {
-        screen: 'MessageChat',
-        params: {userId},
-      });
-    };
-    const accountType = getQBAccountType(currentUserData?.entity_type);
-    const entityId = ['user', 'player']?.includes(currentUserData?.entity_type)
-      ? currentUserData?.user_id
-      : currentUserData?.group_id;
-    QBcreateUser(entityId, currentUserData, accountType).finally(() => {
-      onClose();
-      navigateToMessage(entityId);
-    });
-  }, [currentUserData, navigation, onClose]);
+    // handle message button press
+  }, []);
 
   const onChangeTab = useCallback((ChangeTab) => {
     setCurrentTab(ChangeTab.i);

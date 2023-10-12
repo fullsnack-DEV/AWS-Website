@@ -4,7 +4,6 @@ import React, {
   useContext,
   useCallback,
   useRef,
-  useMemo,
 } from 'react';
 import {Image, StyleSheet, StatusBar, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -13,7 +12,6 @@ import NewsFeedNavigator from './NewsFeedNavigator';
 import colors from '../Constants/Colors';
 import images from '../Constants/ImagePath';
 import MessageNavigator from './MessageNavigator';
-import {QB_UNREAD_MESSAGE_COUNT_API} from '../utils/QuickBlox';
 import AuthContext from '../auth/context';
 import AccountNavigator from './AccountNavigator';
 import LocalHomeNavigator from './LocalHomeNavigator';
@@ -40,24 +38,9 @@ const AppNavigator = ({navigation}) => {
     StatusBar.setBackgroundColor('white');
   }, []);
 
-  const getQBToken = useMemo(
-    async () => authContext.entity?.QB?.token ?? null,
-    [authContext.entity?.QB?.token],
-  );
-
   const getUnReadMessageHandler = useCallback(async () => {
-    const token = await getQBToken;
-    if (token) {
-      fetch(QB_UNREAD_MESSAGE_COUNT_API + token)
-        .then((response) => response.json())
-        .then((jsonData) => {
-          setUnreadCount(jsonData?.total ?? 0);
-        })
-        .catch(() => {
-          setUnreadCount(0);
-        });
-    }
-  }, [getQBToken]);
+    setUnreadCount(0);
+  }, []);
 
   useEffect(() => {
     getUnreadNotificationCount(authContext);

@@ -84,7 +84,6 @@ import JoinedTeamsScreen from '../screens/account/JoinedTeamsScreen';
 import EntityStatScreen from '../screens/home/EntityStatScreen';
 import GameTennisDuration from '../screens/challenge/manageChallenge/settings/GameTennisDuration';
 import {strings} from '../../Localization/translation';
-import MessageNavigator from './MessageNavigator';
 import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
 import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
 import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
@@ -179,23 +178,7 @@ const NewsFeedNavigator = () => (
       }}
       // options={{headerShown: false}}
     />
-    <Stack.Screen
-      name="MessageChat"
-      component={MessageNavigator}
-      options={{
-        title: 'Message Chat',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
-    />
+
     <Stack.Screen
       name="FullVideoScreen"
       component={FullVideoScreen}

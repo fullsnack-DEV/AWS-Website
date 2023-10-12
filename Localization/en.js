@@ -2389,7 +2389,6 @@ export default {
   currentMatchReservation: 'en_Curruent Match Reservation',
   currentRefreeReservation: 'en_Curruent Referee Reservation',
   paymentMethod: 'en_Payment Methods',
-  messageChat: 'en_Message Chat',
   notifications: 'en_Notifications',
   pendingRequest: 'en_Pending Request',
   gameReservation: 'en_Game Reservation',

@@ -16,11 +16,6 @@ import {
   // TextInput,
   // Platform,
 } from 'react-native';
-
-// import firebase from '@react-native-firebase/app';
-
-// import {useIsFocused} from '@react-navigation/native';
-// import {QBLogout} from '../../../utils/QuickBlox';
 import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import images from '../../../Constants/ImagePath';
