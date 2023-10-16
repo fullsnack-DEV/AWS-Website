@@ -18,6 +18,7 @@ import {
   FlatList,
   Platform,
   Pressable,
+  BackHandler,
 } from 'react-native';
 import moment from 'moment';
 import {
@@ -675,7 +676,7 @@ export default function CreateEventScreen({navigation, route}) {
 
   const handleBackPress = () => {
     Alert.alert(
-      strings.areYouSureQuitCreateEvent,
+      strings.areYouWantToUnsavedChanges,
       '',
       [
         {
@@ -684,7 +685,7 @@ export default function CreateEventScreen({navigation, route}) {
           style: 'cancel',
         },
         {
-          text: strings.quit,
+          text: strings.discardText,
           onPress: () => {
             if (route.params?.comeName === 'LocalHomeScreen') {
               navigation.navigate('Local Home', {
@@ -699,6 +700,19 @@ export default function CreateEventScreen({navigation, route}) {
       {cancelable: false},
     );
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   const getOptions = () => {
     if (

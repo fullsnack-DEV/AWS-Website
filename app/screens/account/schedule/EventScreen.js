@@ -507,7 +507,7 @@ export default function EventScreen({navigation, route}) {
           }
           setShowActionSheet(true);
         }}
-        containerStyle={{marginLeft: 7}}
+        containerStyle={{marginLeft: 8}}
         // loading={loading}
       />
       <ActivityLoader visible={loading} />

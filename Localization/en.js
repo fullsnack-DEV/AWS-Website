@@ -1397,10 +1397,11 @@ export default {
   doesNotRepeat: 'en_Does not repeat',
   areYouSureQuitCreateEvent:
     'en_Are you sure you want to quit to create this event?',
-  quit: 'en_Quit',
+   areYouWantToUnsavedChanges:'Are you sure you want to discard your unsaved change?',
+   quit: 'en_Quit',
+  moreThanOneOrganizerJoinText:"If a user other than the organizer joins an event, the organizer can't edit the date & time, venue, event fee, and refund policy of the event.",
   thisFeaturesNotAvailable:
     'en_This feature is not available (on this device / in this context)',
-
   eventTitleValidation: 'en_Please Enter Event Title.',
   chooseSportText: 'en_Please choose sport.',
   eventDescriptionValidation: 'en_Please Enter Event Description.',

@@ -11,6 +11,7 @@ function EventTimeSelectItem({
   toggle,
   headerTextStyle,
   style,
+  labelStyle
 }) {
   return (
     <TouchableOpacity
@@ -25,9 +26,9 @@ function EventTimeSelectItem({
           flexDirection: 'row',
           flex: 1,
         }}>
-        <Text style={styles.dateTextStyle}>{date},</Text>
+        <Text style={[styles.dateTextStyle,labelStyle]}>{date},</Text>
         {toggle && (
-          <Text style={[styles.dateTextStyle, {marginLeft: 5}]}>{time}</Text>
+          <Text style={[styles.dateTextStyle, {marginLeft: 5},labelStyle]}>{time}</Text>
         )}
       </View>
     </TouchableOpacity>

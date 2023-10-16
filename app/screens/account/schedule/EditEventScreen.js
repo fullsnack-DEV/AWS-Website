@@ -19,6 +19,7 @@ import {
   Dimensions,
   Platform,
   Pressable,
+  BackHandler,
 } from 'react-native';
 import moment from 'moment';
 import {
@@ -184,6 +185,9 @@ export default function EditEventScreen({navigation, route}) {
         if (goingList.length > 0) {
           setCanOrganizerEdit(false);
         }
+         setTimeout(() => {
+              Alert.alert('',strings.moreThanOneOrganizerJoinText);
+            }, 1000);
       }
     }
   }, [isFocused, route.params?.data]);
@@ -535,8 +539,8 @@ export default function EditEventScreen({navigation, route}) {
     editEvent(entityRole, uid, obj, authContext)
       .then(() => {
         setloading(false);
-        navigation.navigate('EventScreen', {
-          event: obj,
+        navigation.navigate('EventScreen',{
+          event: obj,     
         });
       })
       .catch((e) => {
@@ -546,6 +550,45 @@ export default function EditEventScreen({navigation, route}) {
       });
     return true;
   };
+
+  const handleBackPress = () => {
+    Alert.alert(
+      strings.areYouWantToUnsavedChanges,
+      '',
+      [
+        {
+          text: strings.cancel,
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: strings.discardText,
+          onPress: () => {
+            if (route.params?.comeName === 'EventScreen') {
+              navigation.navigate('EventScreen', {
+                screen: 'EventScreen',
+              });
+            } else{
+              navigation.goBack();
+            }
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   const onDonePress = (recurrringOption = '') => {
     if (checkValidation()) {
@@ -858,9 +901,7 @@ export default function EditEventScreen({navigation, route}) {
       <ScreenHeader
         title={strings.editEvent}
         leftIcon={images.backArrow}
-        leftIconPress={() => {
-          navigation.goBack();
-        }}
+        leftIconPress={handleBackPress}
         isRightIconText
         rightButtonText={strings.done}
         onRightButtonPress={() => {
@@ -1078,6 +1119,7 @@ export default function EditEventScreen({navigation, route}) {
                 onDatePress={() =>
                   canOrganizerEdit ? setStartDateVisible(!startDateVisible) : {}
                 }
+                labelStyle={canOrganizerEdit ? {}:{color:colors.placeHolderColor}}
               />
               <EventTimeSelectItem
                 title={strings.ends}
@@ -1096,6 +1138,7 @@ export default function EditEventScreen({navigation, route}) {
                 onDatePress={() =>
                   canOrganizerEdit ? setEndDateVisible(!endDateVisible) : {}
                 }
+                labelStyle={canOrganizerEdit ? {}:{color:colors.placeHolderColor}}
               />
 
               <View
@@ -1103,7 +1146,7 @@ export default function EditEventScreen({navigation, route}) {
                   flexDirection: 'row',
                   justifyContent: 'flex-end',
                   marginBottom: 20,
-                }}>
+                                  }}>
                 <Text>{strings.timezone} &nbsp;</Text>
                 <TouchableOpacity
                   onPress={() => {
@@ -1301,8 +1344,7 @@ export default function EditEventScreen({navigation, route}) {
                 {strings.numberOfAttend}
               </Text>
               <Text style={styles.subTitleText}>
-                The event may be canceled by the organizer if the minimum number
-                of the attendees isn’t met.
+                {strings.eventMayBeCancelledByOrganizerText}
               </Text>
               <NumberOfAttendees
                 onChangeMinText={setMinAttendees}
@@ -1634,7 +1676,7 @@ const styles = StyleSheet.create({
     height: 100,
     paddingHorizontal: 10,
     paddingVertical: 9,
-  },
+    },
   detailsInputStyle: {
     padding: 0,
     fontSize: 16,
