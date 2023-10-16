@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,7 +17,7 @@ import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import AuthContext from '../../../auth/context';
 import TCKeyboardView from '../../../components/TCKeyboardView';
-import {getSportName} from '../../../utils';
+import {getSportName, setAuthContextData} from '../../../utils';
 import TCFormProgress from '../../../components/TCFormProgress';
 import TCLabel from '../../../components/TCLabel';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -26,6 +27,8 @@ import fonts from '../../../Constants/Fonts';
 import uploadImages from '../../../utils/imageAction';
 import TCInnerLoader from '../../../components/TCInnerLoader';
 import {getExcludedSportsList} from '../../../utils/sportsActivityUtils';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import {sportActivate} from '../../../api/Users';
 
 const MAX_CERTIFICATE_UPLOAD = 5;
 const certificate = {title: '', url: '', thumbnail: '', isLoading: false};
@@ -36,7 +39,7 @@ const RegisterReferee = ({navigation, route}) => {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [bio, setBio] = useState('');
   const [certificateList, setCertificateList] = useState([certificate]);
-
+  const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
   const bioInputRef = useRef();
 
@@ -54,9 +57,22 @@ const RegisterReferee = ({navigation, route}) => {
     }
   }, [route.params]);
 
+  const checkIfDeactivated = () => {
+    let isActive = true; // Default to false
+
+    if (authContext.entity.obj?.referee_data) {
+      authContext.entity.obj.referee_data.forEach((item) => {
+        if (item.sport_name === selectedSport.sport_name) {
+          isActive = item.is_active;
+        }
+      });
+    }
+    return isActive;
+  };
+
   const checkValidation = () => {
     let isValid = true;
-    certificateList.forEach((item) => {
+    certificateList?.forEach((item) => {
       if (item.title === '' && item.url === '') {
         isValid = isValid && true;
       } else if (item.url && !item.title) {
@@ -73,9 +89,49 @@ const RegisterReferee = ({navigation, route}) => {
     });
     return isValid;
   };
+  const activateSport = (sportObj) => {
+    setLoading(true);
+
+    const body = {
+      sport: sportObj.sport,
+      sport_type: sportObj.sport_type,
+      entity_type: Verbs.entityTypeReferee,
+    };
+
+    sportActivate(body, authContext)
+      .then(async (response) => {
+        setLoading(false);
+        await setAuthContextData(response.payload, authContext);
+        navigation.pop(2);
+      })
+      .catch((e) => {
+        setLoading(false);
+        Alert.alert(strings.alertmessagetitle, e.message);
+      });
+  };
 
   const onNextPress = () => {
     const isValid = checkValidation();
+
+    if (!checkIfDeactivated()) {
+      Alert.alert(
+        Platform.OS === 'android' ? '' : strings.userDeactivatedSport,
+        Platform.OS === 'android' ? strings.userDeactivatedSport : '',
+        [
+          {
+            text: strings.yes,
+            onPress: () => activateSport(selectedSport),
+          },
+          {
+            text: strings.cancel,
+            onPress: () => console.log('Pressed'),
+          },
+        ],
+        {cancelable: false},
+      );
+      return;
+    }
+
     if (isValid) {
       const bodyParams = {
         sport: selectedSport.sport,
@@ -164,6 +220,7 @@ const RegisterReferee = ({navigation, route}) => {
 
   return (
     <TCKeyboardView style={{flex: 1}}>
+      <ActivityLoader visible={loading} />
       <ScreenHeader
         title={strings.registerRefereeTitle}
         leftIcon={images.backArrow}

@@ -11,6 +11,7 @@ import {ModalTypes} from '../../../../../Constants/GeneralConstants';
 import fonts from '../../../../../Constants/Fonts';
 import TCTextField from '../../../../../components/TCTextField';
 import TCKeyboardView from '../../../../../components/TCKeyboardView';
+import MemberListModal from '../../../../../components/MemberListModal/MemberListModal';
 
 const SportsListModal = ({
   isVisible = false,
@@ -21,12 +22,17 @@ const SportsListModal = ({
   title = '',
   forTeam = false,
   authContext,
-  setdoubleSportHandler = () => {},
-  setMemberListModalHandler = () => {},
+  memberListModalvisible = false,
+
+  playerList = [],
   rightButtonText = strings.next,
 }) => {
   const [selectedSport, setSelectedSport] = useState(null);
   const [visibleRoleModal, setVisibleRoleModal] = useState(false);
+  const [memberListModal, setMemberListModal] = useState(
+    memberListModalvisible,
+  );
+  const [doubleSport, setDoubleSport] = useState({});
   const [otherText, setOtherText] = useState('');
   const navigation = useNavigation();
   const scrollRef = useRef();
@@ -85,13 +91,14 @@ const SportsListModal = ({
   const onNextPress = (sport_data) => {
     if (
       sport_data.sport_type === Verbs.doubleSport &&
-      authContext?.entity?.role ===
-        (Verbs.entityTypeUser || Verbs.entityTypePlayer)
+      (authContext?.entity?.role === Verbs.entityTypeUser ||
+        authContext?.entity?.role === Verbs.entityTypePlayer)
     ) {
-      closeList();
-      setdoubleSportHandler(sport_data);
+      console.log('From the next press');
 
-      setMemberListModalHandler(true);
+      setMemberListModal(true);
+
+      setDoubleSport(sport_data);
     } else if (authContext.entity.role === Verbs.entityTypeClub) {
       closeList();
 
@@ -109,20 +116,6 @@ const SportsListModal = ({
       closeList();
 
       setVisibleRoleModal(false);
-
-      // just in Case if Parametrs doe not REfreseh
-      // navigation.reset({
-      //   index: 1,
-      //   routes: [
-      //     {
-      //       name: 'Account',
-      //       params: {
-      //         screen: 'CreateTeamForm1',
-      //         params: {},
-      //       },
-      //     },
-      //   ],
-      // });
 
       navigation.navigate('Account', {
         screen: 'CreateTeamForm1',
@@ -164,7 +157,13 @@ const SportsListModal = ({
         }
 
         if (forTeam) {
-          if (authContext.entity.role !== Verbs.entityTypeClub) {
+          if (
+            selectedSport.sport_type === Verbs.doubleSport &&
+            (authContext?.entity?.role === Verbs.entityTypeUser ||
+              authContext?.entity?.role === Verbs.entityTypePlayer)
+          ) {
+            onNextPress(selectedSport);
+          } else if (authContext.entity.role !== Verbs.entityTypeClub) {
             setVisibleRoleModal(true);
           } else {
             onNextPress(selectedSport);
@@ -324,6 +323,17 @@ const SportsListModal = ({
           />
         </TCKeyboardView>
       </CustomModalWrapper>
+
+      <MemberListModal
+        isVisible={memberListModal}
+        title={strings.createTeamText}
+        closeList={() => {
+          closeList();
+          setMemberListModal(false);
+        }}
+        doubleSport={doubleSport}
+        sportsList={playerList}
+      />
     </CustomModalWrapper>
   );
 };

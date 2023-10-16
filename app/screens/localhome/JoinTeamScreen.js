@@ -39,14 +39,9 @@ import JoinButtonModal from '../home/JoinButtomModal';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import ScreenHeader from '../../components/ScreenHeader';
 
-let stopFetchMore = true;
-
 function JoinTeamScreen({route}) {
-  console.log(route.params, 'from sport');
-
-  const [pageSize] = useState(10);
   const JoinButtonModalRef = useRef(null);
-  const [teamsPageFrom, setTeamsPageFrom] = useState(0);
+
   const [teams, setTeams] = useState([]);
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -79,8 +74,6 @@ function JoinTeamScreen({route}) {
     setSmallLoader(true);
 
     const teamsQuery = {
-      size: pageSize,
-      from: teamsPageFrom,
       query: {
         bool: {
           must: [{match: {entity_type: Verbs.entityTypeTeam}}],
@@ -98,7 +91,6 @@ function JoinTeamScreen({route}) {
     }
 
     if (sport !== strings.allSport) {
-      console.log('in the spo');
       teamsQuery.query.bool.must.push({
         term: {
           'sport.keyword': {
@@ -116,8 +108,6 @@ function JoinTeamScreen({route}) {
           group_name: `*${searchQuery.toLowerCase()}*`,
         },
       });
-
-      console.log(JSON.stringify(teamsQuery));
     }
 
     getGroupIndex(teamsQuery)
@@ -127,11 +117,9 @@ function JoinTeamScreen({route}) {
         if (res.length > 0) {
           const modifiedResult = modifiedTeamElasticSearchResult(res);
 
-          const fetchedData = [...teams, ...modifiedResult];
+          const fetchedData = [...modifiedResult];
 
           setTeams(fetchedData);
-          setTeamsPageFrom(teamsPageFrom + pageSize);
-          stopFetchMore = true;
         }
       })
       .catch((e) => {
@@ -141,15 +129,7 @@ function JoinTeamScreen({route}) {
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [
-    sport,
-    locations,
-    pageSize,
-    teamsPageFrom,
-    searchQuery,
-    modifiedTeamElasticSearchResult,
-    teams,
-  ]);
+  }, [sport, locations, searchQuery, modifiedTeamElasticSearchResult]);
 
   useEffect(() => {
     getTeamList();
@@ -393,7 +373,6 @@ function JoinTeamScreen({route}) {
             onChangeText={(text) => {
               setSearchQuery(text);
 
-              setTeamsPageFrom(0);
               setTeams([]);
             }}
             placeholder={strings.searchText}
@@ -422,33 +401,7 @@ function JoinTeamScreen({route}) {
             ItemSeparatorComponent={renderSeparator}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
-            onScrollBeginDrag={() => {
-              stopFetchMore = false;
-            }}
             ListEmptyComponent={listEmptyComponent}
-            onEndReachedThreshold={0.5}
-            onScrollEndDrag={() => {
-              if (!stopFetchMore) {
-                getTeamList();
-                stopFetchMore = true;
-              }
-            }}
-            ListFooterComponent={() => (
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                {!stopFetchMore && (
-                  <ActivityIndicator
-                    style={styles.loaderStyle}
-                    size="small"
-                    color={colors.blackColor}
-                  />
-                )}
-              </View>
-            )}
           />
         </View>
 

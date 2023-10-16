@@ -416,6 +416,10 @@ const HomeScreen = ({navigation, route}) => {
       });
     } else if (route.params?.isEntityCreated) {
       navigation.pop(4);
+    } else if (route.params?.comeFrom === 'LocalHomeScreen') {
+      navigation.navigate('Local Home', {
+        screen: 'JoinTeamScreen',
+      });
     } else {
       navigation.goBack();
     }

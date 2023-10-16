@@ -30,6 +30,7 @@ import TeamStatus from './TeamStatus';
 import images from '../../../../Constants/ImagePath';
 import Verbs from '../../../../Constants/Verbs';
 import useSwitchAccount from '../../../../hooks/useSwitchAccount';
+import {getUnreadNotificationCount} from '../../../../utils/accountUtils';
 
 export default function RespondToInviteScreen({navigation, route}) {
   const [teamObject, SetteamObject] = useState(route.params.teamObject);
@@ -41,7 +42,7 @@ export default function RespondToInviteScreen({navigation, route}) {
   const [sportsetting, Setsportsetting] = useState(
     route.params?.incomingchallengeSettings,
   );
-  const {onSwitchProfile, loading: switchingAccount} = useSwitchAccount();
+  const {onSwitchProfile} = useSwitchAccount();
 
   useEffect(() => {
     SetteamObject(route.params.teamObject);
@@ -75,21 +76,22 @@ export default function RespondToInviteScreen({navigation, route}) {
         setloading(false);
 
         if (type === 'accept') {
-          onSwitchProfile(response.payload)
-            .then(() => {
-              navigation.push('HomeScreen', {
-                uid: response.payload.group_id,
-                role: response.payload.entity_type,
-                backButtonVisible: false,
-                menuBtnVisible: false,
-                isEntityCreated: true,
-                groupName: response.payload.group_name,
-                entityObj: response.payload,
-              });
-            })
-            .catch((err) => {
-              console.log({err});
-            });
+          getUnreadNotificationCount(authContext);
+          onSwitchProfile(response.payload);
+
+          navigation.navigate('Account', {
+            screen: 'HomeScreen',
+            params: {
+              uid: response.payload.group_id,
+              role: response.payload.entity_type,
+              backButtonVisible: false,
+              menuBtnVisible: false,
+              isEntityCreated: true,
+              groupName: response.payload.group_name,
+              entityObj: response.payload,
+              comeFrom: Verbs.INCOMING_CHALLENGE_SCREEN,
+            },
+          });
         } else {
           Alert.alert(
             strings.requestWasDeclined,
@@ -259,7 +261,7 @@ export default function RespondToInviteScreen({navigation, route}) {
           </View>
         </View>
 
-        <ActivityLoader visible={loading || switchingAccount} />
+        <ActivityLoader visible={loading} />
 
         <TCInfoField
           title={strings.sportsEventsTitle}

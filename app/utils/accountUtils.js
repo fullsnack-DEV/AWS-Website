@@ -84,7 +84,6 @@ const onResendRequest = (
     request_id,
     seLoaderHandler,
     handleMemberModal,
-    authContext,
   };
   seLoaderHandler(true);
 

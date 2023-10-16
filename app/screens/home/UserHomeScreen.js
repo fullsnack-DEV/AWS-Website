@@ -26,6 +26,11 @@ import {getEntitySport} from '../../utils/sportsActivityUtils';
 import PostsTabView from '../../components/Home/PostsTabView';
 import HomeFeed from '../homeFeed/HomeFeed';
 import UserConnectionModal from './UserConnectionsModal';
+import errorCode from '../../Constants/errorCode';
+import SwitchAccountLoader from '../../components/account/SwitchAccountLoader';
+import images from '../../Constants/ImagePath';
+import useSwitchAccount from '../../hooks/useSwitchAccount';
+import {showAlert} from '../../utils';
 
 const UserHomeScreen = ({
   navigation,
@@ -40,8 +45,12 @@ const UserHomeScreen = ({
 }) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
+  const [Groupmembers] = useState(routeParams.Groupmembers);
   const [currentUserData, setCurrentUserData] = useState({});
   const [loading, setloading] = useState(false);
+  const [switchUser, setSwitchUser] = useState({});
+  const [showSwitchScreen, setShowSwitchScreen] = useState(false);
+
   const [addSportActivityModal, setAddSportActivityModal] = useState(false);
 
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
@@ -50,13 +59,22 @@ const UserHomeScreen = ({
   const mainFlatListRef = useRef();
   const ModalRef = useRef();
 
+  const {onSwitchProfile} = useSwitchAccount();
+
   useEffect(() => {
     if (userData?.user_id) {
       setCurrentUserData(userData);
     }
-  }, [userData]);
+
+    const entity = authContext.entity;
+    setSwitchUser(entity);
+  }, [authContext.entity, userData]);
 
   const callFollowUser = useCallback(async () => {
+    if (userData.is_deactivate) {
+      showAlert(strings.userAccountdeactivated);
+      return;
+    }
     setCurrentUserData({...currentUserData});
 
     const params = {
@@ -80,7 +98,7 @@ const UserHomeScreen = ({
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
       });
-  }, [authContext, currentUserData, userID]);
+  }, [authContext, currentUserData, userData.is_deactivate, userID]);
 
   const callUnfollowUser = useCallback(async () => {
     const params = {
@@ -223,13 +241,144 @@ const UserHomeScreen = ({
     [authContext, currentUserData],
   );
 
-  const removeUserFromGroup = useCallback(() => {
-    setloading(true);
+  const deleteMemberValidations = (groupId, memberId) => {
+    const adminCount = Groupmembers.filter((item) => item.is_admin === true);
 
-    deleteMember(authContext.entity.uid, userID, authContext)
-      .then(() => {
+    if (
+      Groupmembers.length === 1 &&
+      adminCount.length === 1 &&
+      userID === authContext.entity.auth.user_id
+    ) {
+      Alert.alert(
+        strings.appName,
+
+        format(strings.lastmember, authContext.entity.role),
+        [
+          {
+            text: strings.cancel,
+            onPress: () => console.log('PRessed'),
+          },
+          {
+            text: strings.remove,
+            onPress: () => {
+              const toaccount = true;
+              setloading(true);
+
+              onDeleteMemberProfile(groupId, memberId, toaccount);
+            },
+          },
+        ],
+      );
+    } else if (
+      userID === authContext.entity.auth.user_id &&
+      Groupmembers.length > 1 &&
+      adminCount.length >= 2
+    ) {
+      Alert.alert(
+        strings.alertmessagetitle,
+        format(
+          strings.doYouWantToRemoText_dy,
+          userData.first_name,
+          userData.last_name,
+          switchUser.obj?.group_name,
+        ),
+
+        [
+          {
+            text: strings.cancel,
+            onPress: () => console.log('Cancel cancel'),
+            style: 'cancel',
+          },
+          {
+            text: strings.removeTextTitle,
+            style: 'destructive',
+            onPress: () => {
+              const toaccount = true;
+              setloading(true);
+              onDeleteMemberProfile(groupId, memberId, toaccount);
+            },
+          },
+        ],
+        {cancelable: false},
+      );
+    } else if (
+      userID === authContext.entity.auth.user_id &&
+      Groupmembers.length > 1 &&
+      adminCount.length === 1
+    ) {
+      Alert.alert(
+        strings.alertmessagetitle,
+        format(
+          strings.onlyAdmin,
+          userData.first_name,
+          switchUser.obj.group_name,
+        ),
+
+        [
+          {
+            text: strings.OkText,
+            onPress: () => console.log('PRessed'),
+          },
+        ],
+        {cancelable: false},
+      );
+    } else {
+      Alert.alert(
+        strings.alertmessagetitle,
+        format(
+          strings.doYouWantToRemoText_dy,
+          userData.first_name,
+          userData.last_name,
+          switchUser.obj.group_name,
+        ),
+
+        [
+          {
+            text: strings.cancel,
+            onPress: () => console.log('Cancel cancel'),
+            style: 'cancel',
+          },
+          {
+            text: strings.removeTextTitle,
+            style: 'destructive',
+            onPress: () => {
+              setloading(true);
+              onDeleteMemberProfile(groupId, memberId);
+            },
+          },
+        ],
+        {cancelable: false},
+      );
+    }
+  };
+
+  const onDeleteMemberProfile = (groupId, memberId, toaccount = false) => {
+    if (userData?.teams?.length > 0) {
+      setloading(false);
+      Alert.alert(
+        strings.appName,
+        strings.childMemberError,
+        [
+          {
+            text: strings.OkText,
+            onPress: () => console.log('PRessed'),
+          },
+        ],
+        {cancelable: false},
+      );
+      return;
+    }
+
+    if (toaccount) {
+      setShowSwitchScreen(true);
+    } else {
+      setloading(true);
+    }
+
+    deleteMember(groupId, memberId, authContext)
+      .then(async (response) => {
+        const validator = errorCode.ChildMemberError;
         const obj = {...currentUserData};
-
         if (authContext.entity.role === Verbs.entityTypeTeam) {
           obj.joined_teams = (currentUserData.joined_teams ?? []).filter(
             (item) => item.group_id !== authContext.entity.uid,
@@ -239,16 +388,49 @@ const UserHomeScreen = ({
             (item) => item.group_id !== authContext.entity.uid,
           );
         }
-        setCurrentUserData(obj);
-        setloading(false);
+
+        if (toaccount && Object.keys(response.payload).length === 0) {
+          const updatedManagedEntities = authContext.managedEntities.filter(
+            (item) => item.group_id !== groupId,
+          );
+          onSwitchProfile(authContext.managedEntities[0]);
+          navigation.navigate('Account', {
+            screen: 'AccountScreen',
+            params: {
+              switchToUser: true,
+              grpName: switchUser.obj.group_name,
+            },
+          });
+
+          await authContext.setentityList(updatedManagedEntities);
+
+          setShowSwitchScreen(false);
+        } else if (response.payload.error_code === validator) {
+          setloading(false);
+          Alert.alert(
+            strings.appName,
+            strings.childMemberError,
+            [
+              {
+                text: strings.OkText,
+                onPress: () => console.log('PRessed'),
+              },
+            ],
+            {cancelable: false},
+          );
+        } else {
+          navigation.replace('GroupMembersScreen');
+          setCurrentUserData(obj);
+        }
       })
-      .catch((error) => {
+      .catch((e) => {
         setloading(false);
+        setShowSwitchScreen(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, error.message);
+          Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  }, [authContext, userID, currentUserData]);
+  };
 
   const cancelGroupInvitation = useCallback(() => {
     setloading(true);
@@ -283,8 +465,11 @@ const UserHomeScreen = ({
         }, 10);
       });
   }, [authContext, currentUserData]);
+
   const onUserAction = useCallback(
     (action) => {
+      console.log(action, 'frommact');
+
       switch (action) {
         case Verbs.followVerb:
           callFollowUser();
@@ -339,7 +524,7 @@ const UserHomeScreen = ({
             ? Verbs.entityTypeTeam
             : Verbs.entityTypeClub,
         ):
-          removeUserFromGroup();
+          deleteMemberValidations(authContext.entity.uid, userID);
           break;
 
         default:
@@ -355,7 +540,7 @@ const UserHomeScreen = ({
       onAccept,
       onDecline,
       cancelGroupInvitation,
-      removeUserFromGroup,
+
       authContext.entity.role,
     ],
   );
@@ -510,6 +695,18 @@ const UserHomeScreen = ({
         userId={route.params.uid ?? authContext.entity.uid}
         userName={currentUserData.full_name}
         tab={tab}
+      />
+
+      <SwitchAccountLoader
+        isVisible={showSwitchScreen}
+        entityName={authContext.managedEntities[0]?.full_name}
+        entityType={Verbs.entityTypePlayer}
+        entityImage={
+          authContext.managedEntities[0]?.thumbnail
+            ? {uri: authContext.managedEntities[0].thumbnail}
+            : images.profilePlaceHolder
+        }
+        stopLoading={() => {}}
       />
     </>
   );

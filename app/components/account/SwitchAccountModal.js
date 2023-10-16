@@ -52,7 +52,7 @@ const SwitchAccountModal = ({
   const {onSwitchProfile} = useSwitchAccount();
 
   useEffect(() => {
-    if (isVisible && authContext.managedEntities?.length > 0) {
+    if (isVisible) {
       setIsFetchingList(true);
       getTeamPendingRequest(authContext)
         .then((res) => {

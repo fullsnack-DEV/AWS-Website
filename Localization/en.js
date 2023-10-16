@@ -3163,4 +3163,7 @@ export default {
   creatChatRoomForEvent:
     'en_Do you want to create a chat room and invite all attendees?',
   createAndInvite: 'en_Create & Invite',
+  userAccountdeactivated: 'en_This user has deactivated their account.',
+  userDeactivatedSport:
+    'en_This Sport Activity has been deactivated. Do you want to Activate it again?',
 };

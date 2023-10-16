@@ -137,7 +137,12 @@ const SetsGamesDurationModal = ({gameDuration = {}, onChange = () => {}}) => {
         </View>
 
         {gameDuration?.apply_tiebreaker_in_game ? (
-          <View style={{marginLeft: 64, marginTop: 15}}>
+          <View
+            style={{
+              marginTop: 15,
+              paddingLeft: 27,
+              paddingRight: 15,
+            }}>
             <Text style={[styles.label, {marginBottom: 10}]}>
               {strings.tieBreakerAppliedAt}
             </Text>
@@ -157,6 +162,7 @@ const SetsGamesDurationModal = ({gameDuration = {}, onChange = () => {}}) => {
             <Text style={[styles.label, {marginBottom: 10}]}>
               {strings.winTieBreakerSetAt}
             </Text>
+
             <CustomDropDown
               selectedValue={gameDuration?.winning_point_in_tiebreaker}
               maxCount={99}

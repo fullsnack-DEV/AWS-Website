@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import {groupValidate} from '../../../api/Groups';
-import {patchPlayer} from '../../../api/Users';
+import {patchPlayer, sportActivate} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import ScreenHeader from '../../../components/ScreenHeader';
 import TCFormProgress from '../../../components/TCFormProgress';
@@ -24,32 +24,23 @@ import Verbs from '../../../Constants/Verbs';
 import {getTCDate, setAuthContextData} from '../../../utils';
 import {getExcludedSportsList} from '../../../utils/sportsActivityUtils';
 import CongratulationsModal from './modals/CongratulationsModal';
-// import LanguagesListModal from './modals/LanguagesListModal';
 import SportsListModal from './modals/SportsListModal';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 const RegisterPlayer = ({navigation, route}) => {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
-  // const [showLanguageModal, setShowLanguageModal] = useState(false);
+
   const [showCongratulationsModal, setShowCongratulationsModal] =
     useState(false);
-  // const [languages, setLanguages] = useState([]);
-  // const [selectedLanguages, setSelectedLanguages] = useState([]);
+
   const [sportsData, setSportsData] = useState([]);
   const [selectedSport, setSelectedSport] = useState(null);
-  // const [languageName, setLanguageName] = useState('');
+
   const [bio, setBio] = useState('');
   const [loading, setLoading] = useState(false);
 
   const authContext = useContext(AuthContext);
   const bioInputRef = useRef(null);
-
-  // useEffect(() => {
-  //   const arr = languageList.map((item) => ({
-  //     ...item,
-  //     isChecked: false,
-  //   }));
-  //   setLanguages(arr);
-  // }, []);
 
   useEffect(() => {
     const sportArr = getExcludedSportsList(authContext);
@@ -62,30 +53,77 @@ const RegisterPlayer = ({navigation, route}) => {
     }
   }, [route.params]);
 
-  // useEffect(() => {
-  //   if (selectedLanguages.length > 0) {
-  //     let name = '';
-  //     selectedLanguages.forEach((item) => {
-  //       name += name ? `, ${item.language}` : item.language;
-  //     });
-  //     setLanguageName(name);
-  //   }
-  // }, [selectedLanguages]);
+  const checkIfDeactivated = () => {
+    let isActive = true; // Default to false
 
-  // const handleLanguageSelection = (language) => {
-  //   const newList = languages.map((item) => ({
-  //     ...item,
-  //     isChecked: item.id === language.id ? !item.isChecked : item.isChecked,
-  //   }));
-  //   setLanguages([...newList]);
+    authContext.entity?.obj?.registered_sports?.forEach((item) => {
+      if (selectedSport.sport_type === Verbs.sportTypeDouble) {
+        if (
+          item.sport === selectedSport.sport &&
+          item.sport_type === selectedSport.sport_type
+        ) {
+          isActive = item.is_active;
+        }
+      } else if (selectedSport.sport_type === Verbs.sportTypeSingle) {
+        if (
+          item.sport === selectedSport.sport &&
+          item.sport_type === selectedSport.sport_type
+        ) {
+          isActive = item.is_active;
+        }
+      } else if (item.sport === item.sport_type) {
+        if (
+          item.sport === selectedSport.sport &&
+          item.sport_type === selectedSport.sport_type
+        ) {
+          isActive = item.is_active;
+        }
+      }
+    });
+    return isActive;
+  };
 
-  //   const list = newList.filter((item) => item.isChecked);
-  //   setSelectedLanguages([...list]);
-  // };
+  const activateSport = (sportObj) => {
+    setLoading(true);
+
+    const body = {
+      sport: sportObj.sport,
+      sport_type: sportObj.sport_type,
+      entity_type: Verbs.entityTypePlayer,
+    };
+
+    sportActivate(body, authContext)
+      .then(async (response) => {
+        setLoading(false);
+        await setAuthContextData(response.payload, authContext);
+
+        navigation.pop(2);
+      })
+      .catch((e) => {
+        setLoading(false);
+        Alert.alert(strings.alertmessagetitle, e.message);
+      });
+  };
 
   const handleNextOrApply = () => {
     if (!selectedSport?.sport_type && !selectedSport?.sport_name) {
       Alert.alert(strings.sportNameValidationText);
+    } else if (!checkIfDeactivated()) {
+      Alert.alert(
+        Platform.OS === 'android' ? '' : strings.userDeactivatedSport,
+        Platform.OS === 'android' ? strings.userDeactivatedSport : '',
+        [
+          {
+            text: strings.yes,
+            onPress: () => activateSport(selectedSport),
+          },
+          {
+            text: strings.cancel,
+            onPress: () => console.log('Pressed'),
+          },
+        ],
+        {cancelable: false},
+      );
     } else if (bio.length > 50) {
       Alert.alert('Please fill in Bio with at least 50 characters.');
     } else {
@@ -190,6 +228,7 @@ const RegisterPlayer = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.parent}>
+      <ActivityLoader visible={loading} />
       <ScreenHeader
         title={strings.registerAsPlayerTitle}
         leftIcon={images.backArrow}
@@ -209,7 +248,6 @@ const RegisterPlayer = ({navigation, route}) => {
             : strings.done
         }
         onRightButtonPress={handleNextOrApply}
-        loading={loading}
         containerStyle={styles.headerRow}
       />
       {selectedSport?.sport_type === Verbs.singleSport ? (
@@ -345,6 +383,7 @@ const RegisterPlayer = ({navigation, route}) => {
               createdSportName: selectedSport?.sport_name,
               sportType: selectedSport?.sport_type,
               isSearchPlayerForDoubles: true,
+              doubleSport: selectedSport,
             });
           }
         }}

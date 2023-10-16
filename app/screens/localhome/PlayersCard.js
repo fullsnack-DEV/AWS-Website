@@ -220,7 +220,6 @@ function PlayersCard({
       style={styles.cardContainer}
       onPress={onPress}>
       <ImageBackground
-        defaultSource={images.defaultPlayerBg}
         style={styles.inneimgContainer}
         source={imageSource()}
         blurRadius={8}
@@ -242,7 +241,6 @@ function PlayersCard({
         {/* team Logo  */}
 
         <ImageBackground
-          defaultSource={images.curvecut}
           source={images.curvecut}
           tintColor={colors.offwhite}
           resizeMode="contain"

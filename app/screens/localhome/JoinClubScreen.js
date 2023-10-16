@@ -39,14 +39,9 @@ import JoinButtonModal from '../home/JoinButtomModal';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import ScreenHeader from '../../components/ScreenHeader';
 
-let stopFetchMore = true;
-
 function JoinClubScreen({route}) {
-  console.log(route.params, 'from sport');
-
-  const [pageSize] = useState(10);
   const JoinButtonModalRef = useRef(null);
-  const [clubsPageFrom, setClubsPageFrom] = useState(0);
+
   const [clubs, setClubs] = useState([]);
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -84,8 +79,6 @@ function JoinClubScreen({route}) {
   const getClubList = useCallback(() => {
     setSmallLoader(true);
     const clubsQuery = {
-      size: pageSize,
-      from: clubsPageFrom,
       query: {
         bool: {
           must: [{match: {entity_type: Verbs.entityTypeClub}}],
@@ -136,8 +129,6 @@ function JoinClubScreen({route}) {
           const modifiedResult = modifiedClubElasticSearchResult(res);
           const fetchedData = [...modifiedResult];
           setClubs(fetchedData);
-          setClubsPageFrom(clubsPageFrom + pageSize);
-          stopFetchMore = true;
         }
       })
       .catch((e) => {
@@ -147,8 +138,6 @@ function JoinClubScreen({route}) {
         }, 10);
       });
   }, [
-    pageSize,
-    clubsPageFrom,
     locations,
     sport,
     searchQuery,
@@ -398,7 +387,6 @@ function JoinClubScreen({route}) {
             onChangeText={(text) => {
               setSearchQuery(text);
 
-              setClubsPageFrom(0);
               setClubs([]);
             }}
             placeholder={strings.searchText}
@@ -427,33 +415,7 @@ function JoinClubScreen({route}) {
             ItemSeparatorComponent={renderSeparator}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
-            onScrollBeginDrag={() => {
-              stopFetchMore = false;
-            }}
             ListEmptyComponent={listEmptyComponent}
-            onEndReachedThreshold={0.5}
-            onScrollEndDrag={() => {
-              if (!stopFetchMore) {
-                getClubList();
-                stopFetchMore = true;
-              }
-            }}
-            ListFooterComponent={() => (
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                {!stopFetchMore && (
-                  <ActivityIndicator
-                    style={styles.loaderStyle}
-                    size="small"
-                    color={colors.blackColor}
-                  />
-                )}
-              </View>
-            )}
           />
         </View>
 

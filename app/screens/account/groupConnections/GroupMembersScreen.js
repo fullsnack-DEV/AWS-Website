@@ -551,10 +551,11 @@ export default function GroupMembersScreen({navigation, route}) {
           role: Verbs.entityTypeUser,
           backButtonVisible: true,
           menuBtnVisible: false,
+          Groupmembers: members,
         });
       }
     },
-    [navigation],
+    [members, navigation],
   );
 
   const checkIfClubAdmin = async () => {

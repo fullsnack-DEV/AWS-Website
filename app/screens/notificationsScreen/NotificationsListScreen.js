@@ -575,6 +575,7 @@ function NotificationsListScreen({navigation}) {
     verb.includes(NotificationType.inviteToEvent) ||
     verb.includes(NotificationType.sendBasicInfoToMember) ||
     verb.includes(NotificationType.userRequestedJoingroup);
+
   const openHomePage = (item) => {
     if (activeScreen) {
       if (item?.entityType && item?.entityId) {

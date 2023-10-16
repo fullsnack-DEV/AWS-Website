@@ -420,17 +420,21 @@ function LocalHomeScreen({navigation, route}) {
   }, [authContext, isFocused]);
 
   useEffect(() => {
-    getSportsList(authContext).then(async (res) => {
-      const sport = [];
-      res.payload.map((item) =>
-        sport.push({
-          label: item.sport_name,
-          value: item.sport_name.toLowerCase(),
-        }),
-      );
+    getSportsList(authContext)
+      .then(async (res) => {
+        const sport = [];
+        res.payload.map((item) =>
+          sport.push({
+            label: item.sport_name,
+            value: item.sport_name.toLowerCase(),
+          }),
+        );
 
-      setCustomSports([...sport]);
-    });
+        setCustomSports([...sport]);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }, [authContext]);
 
   useEffect(() => {

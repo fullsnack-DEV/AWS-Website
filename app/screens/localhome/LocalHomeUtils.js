@@ -498,6 +498,7 @@ const LocalHomeQuery = async (
     // Wrap the API calls in promises
     // getGameIndex(recentMatchQuery).then((games) => getGamesList(games)  ),
     // getGameIndex(upcomingMatchQuery).then((games) => getGamesList(games)),
+
     getUserIndex(playerAvailableForchallengeQuery).then((players) =>
       filterCurrentUserFromData(players, authContext),
     ),
@@ -556,10 +557,16 @@ const LocalHomeQuery = async (
       // }
 
       setCardLoader(false);
-      setChallengeeMatch(playerData);
 
-      setCardLoader(false);
-      setChallengeeMatch(teamData ?? []);
+      if (
+        authContext.entity.role === Verbs.entityTypeClub ||
+        authContext.entity.role === Verbs.entityTypeTeam
+      ) {
+        setCardLoader(false);
+        setChallengeeMatch(teamData ?? []);
+      } else {
+        setChallengeeMatch(playerData);
+      }
 
       setCardLoader(false);
       setHiringPlayers(hiringPlayers ?? []);

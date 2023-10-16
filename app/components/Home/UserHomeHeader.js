@@ -144,7 +144,9 @@ const UserHomeHeader = ({
         setOptions([
           format(
             strings.removeMemberFromTeamText,
-            loggedInEntity.role === Verbs.entityTypeTeam ? 'Team' : 'Club',
+            loggedInEntity.role === Verbs.entityTypeTeam
+              ? Verbs.entityTypeTeam
+              : Verbs.entityTypeClub,
           ),
         ]);
         setShowModal(true);

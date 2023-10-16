@@ -87,8 +87,6 @@ export default function IncomingChallengeSettings({navigation, route}) {
     {key: settingType === 'Set' ? strings.setGamesDuration : ''},
     {key: strings.venue},
     {key: strings.gameRulesTitle},
-    // {key: strings.Referee},
-    // {key: strings.scorekeeperText},
   ];
 
   useEffect(() => {
@@ -363,7 +361,6 @@ export default function IncomingChallengeSettings({navigation, route}) {
               setloading(false);
               setShowSwitchScreen(false);
               await onSwitchProfile(response.payload);
-
               getUnreadNotificationCount(authContext);
               navigation.navigate('HomeScreen', {
                 uid: response.payload.group_id,

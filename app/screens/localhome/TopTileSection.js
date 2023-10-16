@@ -17,7 +17,6 @@ import AuthContext from '../../auth/context';
 import Verbs from '../../Constants/Verbs';
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 import SportsListModal from '../account/registerPlayer/modals/SportsListModal';
-import MemberListModal from '../../components/MemberListModal/MemberListModal';
 import {getTeamSportOnlyList} from './LocalHomeUtils';
 import {getUserIndex} from '../../api/elasticSearch';
 import TCThinDivider from '../../components/TCThinDivider';
@@ -43,9 +42,7 @@ function TopTileSection({
   const updateWidth = () => {
     setScreenWidth(Dimensions.get('window').width);
   };
-  const [doubleSport, setDoubleSport] = useState();
-  const [memberListModal, setMemberListModal] = useState(false);
-  const [loading, setloading] = useState(false);
+
   const [players, setPlayers] = useState([]);
   const [teamSport, setTeamSport] = useState([]);
 
@@ -60,7 +57,7 @@ function TopTileSection({
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const response = await getUserIndex(generalsQuery);
-      setloading(false);
+
       if (response.length > 0) {
         const result = response.map((obj) => ({
           ...obj,
@@ -100,16 +97,6 @@ function TopTileSection({
       setTeamSport([]);
     };
   }, [screenWidth, authContext]);
-
-  const setMemberListModalHandler = (val) => {
-    setTeamModal(true);
-
-    setMemberListModal(val);
-  };
-
-  const setdoubleSportHandler = (sport) => {
-    setDoubleSport(sport);
-  };
 
   const onTilePress = (i) => {
     switch (i.action) {
@@ -321,19 +308,6 @@ function TopTileSection({
         }}
       />
 
-      {/* Team Modal */}
-      <MemberListModal
-        isVisible={memberListModal}
-        title={strings.createTeamText}
-        loading={loading}
-        closeList={() => {
-          setTeamModal(false);
-          setMemberListModal(false);
-        }}
-        doubleSport={doubleSport}
-        sportsList={players}
-      />
-
       <SportsListModal
         isVisible={visibleSportsModalForTeam}
         closeList={() => setTeamModal(false)}
@@ -341,8 +315,7 @@ function TopTileSection({
         sportsList={teamSport}
         forTeam={true}
         authContext={authContext}
-        setMemberListModalHandler={setMemberListModalHandler}
-        setdoubleSportHandler={setdoubleSportHandler}
+        playerList={players}
       />
     </View>
   );

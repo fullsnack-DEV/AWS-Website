@@ -74,8 +74,11 @@ const AccountScreen = ({navigation, route}) => {
   const [showOnlyTeamSport, setShowOnlyTeamSport] = useState(false);
   const [sportsData, setSportsData] = useState([]);
   const [onlyteamSport, setOnlyTeamSport] = useState();
-  const [doubleSport, setDoubleSport] = useState();
-  const [memberListModal, setMemberListModal] = useState(false);
+  // this is for the DoubleSport when we come from search Player on congratulationsModal
+  const [doubleSport, setdoubleSport] = useState();
+
+  const [memberListModalForDoubles, setMemberListModalForDoubles] =
+    useState(false);
 
   const [players, setPlayers] = useState([]);
   const [onLoad, setOnLoad] = useState(false);
@@ -162,7 +165,9 @@ const AccountScreen = ({navigation, route}) => {
       route.params?.sportType === Verbs.doubleSport
     ) {
       getUsers();
-      setMemberListModal(true);
+      setdoubleSport(route.params?.doubleSport);
+
+      setMemberListModalForDoubles(true);
     }
   }, [route.params, getUsers, isFocused]);
 
@@ -406,10 +411,8 @@ const AccountScreen = ({navigation, route}) => {
 
         // check type
         if (type === Verbs.cancelVerb) {
-          // getTeamsList();
           Alert.alert(strings.teamRequestCancelledText);
         } else if (type === Verbs.acceptVerb) {
-          setMemberListModal(false);
           navigation.push('HomeScreen', {
             uid: response.payload.group_id,
             role: response.payload.entity_type,
@@ -449,17 +452,7 @@ const AccountScreen = ({navigation, route}) => {
     setLoading(val);
   };
   const handleMemberModal = (val) => {
-    setMemberListModal(val);
-  };
-
-  const setdoubleSportHandler = (sport) => {
-    setDoubleSport(sport);
-  };
-
-  const setMemberListModalHandler = () => {
-    setTimeout(() => {
-      setMemberListModal(true);
-    });
+    setMemberListModalForDoubles(val);
   };
 
   const onWithdrawRequest = (rowItem) => {
@@ -681,13 +674,23 @@ const AccountScreen = ({navigation, route}) => {
 
       <SportsListModal
         isVisible={visibleSportsModalForTeam}
+        playerList={players}
         closeList={() => setVisibleSportsModalForTeam(false)}
         title={strings.createTeamText}
         sportsList={showOnlyTeamSport ? onlyteamSport : sportsData}
         forTeam={true}
         authContext={authContext}
-        setdoubleSportHandler={setdoubleSportHandler}
-        setMemberListModalHandler={setMemberListModalHandler}
+      />
+
+      <MemberListModal
+        isVisible={memberListModalForDoubles}
+        title={strings.createTeamText}
+        closeList={() => {
+          setMemberListModalForDoubles(false);
+        }}
+        doubleSport={doubleSport}
+        sportsList={players}
+        loading={loading}
       />
 
       {/* sport, group */}
@@ -700,16 +703,6 @@ const AccountScreen = ({navigation, route}) => {
           navigation.navigate(navigationOptions.screenName, sports);
         }}
       />
-
-      <MemberListModal
-        isVisible={memberListModal}
-        title={strings.createTeamText}
-        loading={loading}
-        closeList={() => setMemberListModal(false)}
-        doubleSport={doubleSport}
-        sportsList={players}
-      />
-
       <SendNewInvoiceModal
         isVisible={sendNewInvoice}
         onClose={() => SetSendNewInvoice(false)}
