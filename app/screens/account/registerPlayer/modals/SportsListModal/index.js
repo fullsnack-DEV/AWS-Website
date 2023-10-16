@@ -106,7 +106,7 @@ const SportsListModal = ({
 
       obj.grp_id = authContext.entity.obj.group_id;
 
-      navigation.navigate('Account', {
+      navigation.navigate('AccountStack', {
         screen: 'CreateTeamForm1',
         params: {
           sportData: {...sport_data},
@@ -117,7 +117,21 @@ const SportsListModal = ({
 
       setVisibleRoleModal(false);
 
-      navigation.navigate('Account', {
+      // just in Case if Parametrs doe not REfreseh
+      // navigation.reset({
+      //   index: 1,
+      //   routes: [
+      //     {
+      //       name: 'Account',
+      //       params: {
+      //         screen: 'CreateTeamForm1',
+      //         params: {},
+      //       },
+      //     },
+      //   ],
+      // });
+
+      navigation.navigate('AccountStack', {
         screen: 'CreateTeamForm1',
         params: {
           sportData: {...sport_data},

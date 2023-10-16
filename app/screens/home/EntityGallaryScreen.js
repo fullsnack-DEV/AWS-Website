@@ -70,14 +70,17 @@ export default function EntityGallaryScreen({navigation, route}) {
         entity_type={currentUserData?.entity_type ?? authContext.entity?.role}
         entity_id={route?.params?.uid ?? authContext.entity?.uid}
         onAddPhotoPress={(pickImages) => {
-          navigation.navigate('WritePostScreen', {
-            comeFrom: 'EntityGallaryScreen',
-            postData: currentUserData,
-            selectedImageList: pickImages,
-            routeParams: {
-              uid: currentUserData.group_id,
-              role: currentUserData.entity_type,
-              ...route.params,
+          navigation.navigate('NewsFeedStack', {
+            screen: 'WritePostScreen',
+            params: {
+              comeFrom: 'EntityGallaryScreen',
+              postData: currentUserData,
+              selectedImageList: pickImages,
+              routeParams: {
+                uid: currentUserData.group_id,
+                role: currentUserData.entity_type,
+                ...route.params,
+              },
             },
           });
         }}

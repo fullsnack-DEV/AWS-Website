@@ -561,9 +561,12 @@ function LocalHomeScreen({navigation, route}) {
         selectedLocationOption,
         authContext,
       );
-      navigation.navigate('RefereesListScreen', {
-        filters: data.filters,
-        teamSportData: data.teamSportData,
+      navigation.navigate('LocalHomeStack', {
+        screen: 'RefereesListScreen',
+        params: {
+          filters: data.filters,
+          teamSportData: data.teamSportData,
+        },
       });
     } else {
       const data = getDataForNextScreen(
@@ -573,8 +576,11 @@ function LocalHomeScreen({navigation, route}) {
         selectedLocationOption,
         authContext,
       );
-      navigation.navigate('RefereesListScreen', {
-        filters: data,
+      navigation.navigate('LocalHomeStack', {
+        screen: 'RefereesListScreen',
+        params: {
+          filters: data,
+        },
       });
     }
   };
@@ -588,9 +594,12 @@ function LocalHomeScreen({navigation, route}) {
         selectedLocationOption,
         authContext,
       );
-      navigation.navigate('ScorekeeperListScreen', {
-        filters: data.filters,
-        teamSportData: data.teamSportData,
+      navigation.navigate('LocalHomeStack', {
+        screen: 'ScorekeeperListScreen',
+        params: {
+          filters: data.filters,
+          teamSportData: data.teamSportData,
+        },
       });
     } else {
       const data = getDataForNextScreen(
@@ -600,8 +609,11 @@ function LocalHomeScreen({navigation, route}) {
         selectedLocationOption,
         authContext,
       );
-      navigation.navigate('ScorekeeperListScreen', {
-        filters: data,
+      navigation.navigate('LocalHomeStack', {
+        screen: 'ScorekeeperListScreen',
+        params: {
+          filters: data,
+        },
       });
     }
   };
@@ -828,17 +840,23 @@ function LocalHomeScreen({navigation, route}) {
   };
 
   const setJoinTeamModalvisible = () => {
-    navigation.navigate('JoinTeamScreen', {
-      locations: location,
-      sport: selectedSport,
+    navigation.navigate('LocalHomeStack', {
+      screen: 'JoinTeamScreen',
+      params: {
+        locations: location,
+        sport: selectedSport,
+      },
     });
   };
   const setClubModalVisible = () => {
-    navigation.navigate('JoinClubScreen', {
-      locations: location,
-      sport: selectedSport,
-      sporttype: sportType,
-      sport_name: selectedSport,
+    navigation.navigate('LocalHomeStack', {
+      screen: 'JoinClubScreen',
+      params: {
+        locations: location,
+        sport: selectedSport,
+        sporttype: sportType,
+        sport_name: selectedSport,
+      },
     });
   };
 
@@ -854,14 +872,6 @@ function LocalHomeScreen({navigation, route}) {
     ),
     [customSports, location, notificationCount],
   );
-
-  useEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: {
-        display: loading ? 'none' : 'flex',
-      },
-    });
-  }, [navigation, loading]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -1119,9 +1129,12 @@ function LocalHomeScreen({navigation, route}) {
         onNext={(sport) => {
           setVisibleSportsModal(false);
 
-          navigation.navigate('Account', {
+          navigation.navigate('AccountStack', {
             screen: navigationOptions.screenName,
-            params: sport,
+            params: {
+              ...sport,
+              comeFrom: 'LocalHome',
+            },
           });
         }}
       />

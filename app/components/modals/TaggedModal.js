@@ -81,15 +81,18 @@ const TaggedModal = ({
         <TouchableOpacity
           onPress={() => {
             onBackdropPress();
-            navigation.push('HomeScreen', {
-              uid: item?.entity_id,
-              role: [Verbs.entityTypePlayer, Verbs.entityTypeUser]?.includes(
-                item?.entity_type,
-              )
-                ? Verbs.entityTypeUser
-                : item?.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
+            navigation.push('HomeStack', {
+              screen: 'HomeScreen',
+              params: {
+                uid: item?.entity_id,
+                role: [Verbs.entityTypePlayer, Verbs.entityTypeUser]?.includes(
+                  item?.entity_type,
+                )
+                  ? Verbs.entityTypeUser
+                  : item?.entity_type,
+                backButtonVisible: true,
+                menuBtnVisible: false,
+              },
             });
           }}
           style={{

@@ -614,13 +614,17 @@ export default function LookingForChallengeScreen({navigation, route}) {
                 setPlayerDetail(data);
                 setPlayerDetailPopup(true);
               } else {
-                navigation.navigate('SportActivityHome', {
-                  sport: sportsObj[0].sport,
-                  sportType: sportsObj[0]?.sport_type,
-                  uid: item?.user_id,
-                  entityType: item?.entity_type,
-                  showPreview: true,
-                  backScreen: 'LookingForChallengeScreen',
+                navigation.navigate('HomeStack', {
+                  screen: 'SportActivityHome',
+                  params: {
+                    sport: sportsObj[0].sport,
+                    sportType: sportsObj[0]?.sport_type,
+                    uid: item?.user_id,
+                    entityType: item?.entity_type,
+                    showPreview: true,
+                    parentStack: 'AccountStack',
+                    backScreen: 'LookingForChallengeScreen',
+                  },
                 });
               }
             }}

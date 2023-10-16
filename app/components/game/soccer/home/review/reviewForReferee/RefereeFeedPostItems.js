@@ -425,7 +425,7 @@ function RefereeFeedPostItems({
 
         <ActionSheet
           ref={actionSheet}
-          title={'News Feed Post'}
+          title={'NewsFeed Post'}
           options={['Edit Post', 'Delete Post', strings.cancel]}
           cancelButtonIndex={2}
           destructiveButtonIndex={1}

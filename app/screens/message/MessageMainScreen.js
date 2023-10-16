@@ -29,14 +29,6 @@ const MessageMainScreen = ({navigation}) => {
   const isFocused = useIsFocused();
   const [streamChatId, setStreamChatId] = useState('');
 
-  useEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: {
-        display: isFocused ? 'flex' : 'none',
-      },
-    });
-  }, [navigation, isFocused]);
-
   const getUserChannel = useCallback(() => {
     getStreamChatIdBasedOnRole(authContext).then((chatId) => {
       setStreamChatId(chatId);
@@ -85,14 +77,18 @@ const MessageMainScreen = ({navigation}) => {
           <TouchableOpacity
             style={[styles.iconContainer, {marginRight: 15}]}
             onPress={() => {
-              navigation.navigate('MessageInviteScreen');
+              navigation.navigate('MessageStack', {
+                screen: 'MessageInviteScreen',
+              });
             }}>
             <Image source={images.chatCreate} style={styles.icon} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconContainer}
             onPress={() => {
-              navigation.navigate('MessageSearchScreen');
+              navigation.navigate('MessageStack', {
+                screen: 'MessageSearchScreen',
+              });
             }}>
             <Image source={images.chatSearch} style={styles.icon} />
           </TouchableOpacity>

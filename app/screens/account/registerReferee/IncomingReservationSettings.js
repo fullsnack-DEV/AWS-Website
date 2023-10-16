@@ -267,15 +267,19 @@ const IncomingReservationSettings = ({navigation, route}) => {
         sport={settingObj.sport}
         goToSportActivityHome={() => {
           setShowCongratulationsModal(false);
-          navigation.navigate('SportActivityHome', {
-            sport,
-            entityType,
-            uid: authContext.entity.uid,
-            selectedTab: strings.infoTitle,
-            backScreen: 'AccountScreen',
-            backScreenParams: {
-              createdSportName: sport,
-              // sportType: selectedSport?.sport_type,
+          navigation.navigate('HomeStack', {
+            screen: 'SportActivityHome',
+            params: {
+              sport,
+              entityType,
+              uid: authContext.entity.uid,
+              selectedTab: strings.infoTitle,
+              parentStack: 'App',
+              backScreen: 'Account',
+              backScreenParams: {
+                createdSportName: sport,
+                // sportType: selectedSport?.sport_type,
+              },
             },
           });
         }}

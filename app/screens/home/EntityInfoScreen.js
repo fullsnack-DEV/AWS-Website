@@ -165,8 +165,8 @@ const EntityInfoScreen = ({navigation, route}) => {
           onSeeAll={(option = '', clubsofteam = []) => {
             switch (option) {
               case strings.membersTitle:
-                navigation.navigate('News Feed', {
-                  screen: 'GroupMembersScreen',
+                navigation.navigate('App', {
+                  screen: 'Members',
                   params: {
                     groupObj: currentUserData,
                     groupID: currentUserData.group_id,

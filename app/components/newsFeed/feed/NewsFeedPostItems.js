@@ -86,8 +86,11 @@ const NewsFeedPostItems = memo(
     const onActionSheetItemPress = (selectedOption) => {
       switch (selectedOption) {
         case strings.edit:
-          navigation.navigate('EditPostScreen', {
-            postData: item,
+          navigation.navigate('NewsFeedStack', {
+            screen: 'EditPostScreen',
+            params: {
+              postData: item,
+            },
           });
           setShowMoreOptions(false);
           break;
@@ -130,11 +133,14 @@ const NewsFeedPostItems = memo(
 
       switch (option) {
         case strings.repost:
-          navigation.navigate('WritePostScreen', {
-            postData: entityDetails,
-            selectedImageList: [],
-            isRepost: true,
-            repostData: {...item},
+          navigation.navigate('NewsFeedStack', {
+            screen: 'WritePostScreen',
+            params: {
+              postData: entityDetails,
+              selectedImageList: [],
+              isRepost: true,
+              repostData: {...item},
+            },
           });
           break;
 
@@ -279,9 +285,12 @@ const NewsFeedPostItems = memo(
           showLikeModal={showLikeModal}
           closeModal={() => setShowLikeModal(false)}
           onClickProfile={(obj = {}) => {
-            navigation.push('HomeScreen', {
-              uid: obj?.user_id,
-              role: obj.user.data.entity_type,
+            navigation.push('HomeStack', {
+              screen: 'HomeScreen',
+              params: {
+                uid: obj?.user_id,
+                role: obj.user.data.entity_type,
+              },
             });
           }}
           handleFollowUnfollow={handleFollowUnfollow}
@@ -296,9 +305,12 @@ const NewsFeedPostItems = memo(
           closeModal={() => setShowCommentModal(false)}
           onProfilePress={(data = {}) => {
             setShowCommentModal(false);
-            navigation.navigate('HomeScreen', {
-              uid: data.userId,
-              role: data.entityType,
+            navigation.navigate('HomeStack', {
+              screen: 'HomeScreen',
+              params: {
+                uid: data.userId,
+                role: data.entityType,
+              },
             });
           }}
           postOwnerId={item.actor?.id}

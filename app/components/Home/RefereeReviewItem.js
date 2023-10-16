@@ -260,18 +260,19 @@ function RefereeReviewItem({
               justifyContent: 'flex-end',
               alignItems: 'center',
             }}>
-            {item.reaction_counts && item.reaction_counts.clap !== undefined && (
-              <Text
-                style={[
-                  styles.commentlengthStyle,
-                  {
-                    color:
-                      like === true ? '#FF8A01' : colors.reactionCountColor,
-                  },
-                ]}>
-                {likeCount === 0 ? '' : likeCount}
-              </Text>
-            )}
+            {item.reaction_counts &&
+              item.reaction_counts.clap !== undefined && (
+                <Text
+                  style={[
+                    styles.commentlengthStyle,
+                    {
+                      color:
+                        like === true ? '#FF8A01' : colors.reactionCountColor,
+                    },
+                  ]}>
+                  {likeCount === 0 ? '' : likeCount}
+                </Text>
+              )}
             <TouchableOpacity
               onPress={() => {
                 setLike(!like);
@@ -301,7 +302,7 @@ function RefereeReviewItem({
         </View>
         <ActionSheet
           ref={actionSheet}
-          title={'News Feed Post'}
+          title={'NewsFeed Post'}
           options={['Edit Post', 'Delete Post', strings.cancel]}
           cancelButtonIndex={2}
           destructiveButtonIndex={1}

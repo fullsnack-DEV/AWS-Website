@@ -44,9 +44,6 @@ import ScorekeeperSelectMatch from '../screens/game/bookScorekeeper/selectMatch/
 import PendingRequestScreen from '../screens/notificationsScreen/PendingRequestScreen';
 import TrashScreen from '../screens/notificationsScreen/TrashScreen';
 import {strings} from '../../Localization/translation';
-import SportActivityHome from '../screens/home/SportActivity/SportActivityHome';
-import EditWrapperScreen from '../screens/home/SportActivity/EditWrapperScreen';
-import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScreen';
 
 const Stack = createStackNavigator();
 
@@ -556,22 +553,6 @@ const ReservationNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
-    />
-
-    <Stack.Screen
-      name="SportActivityHome"
-      component={SportActivityHome}
-      options={{headerShown: false}}
-    />
-    <Stack.Screen
-      name="EditWrapperScreen"
-      component={EditWrapperScreen}
-      options={{headerShown: false}}
-    />
-    <Stack.Screen
-      name="ReviewDetailsScreen"
-      component={ReviewDetailsScreen}
-      options={{headerShown: false}}
     />
   </Stack.Navigator>
 );

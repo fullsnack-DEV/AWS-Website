@@ -359,7 +359,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
     <>
       <ActionSheet
         ref={actionSheet}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={[strings.camera, strings.album, strings.cancelTitle]}
         cancelButtonIndex={2}
         onPress={(index) => {
@@ -376,7 +376,7 @@ export default function EditPersonalProfileScreen({navigation, route}) {
       />
       <ActionSheet
         ref={actionSheetWithDelete}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={[
           strings.camera,
           strings.album,

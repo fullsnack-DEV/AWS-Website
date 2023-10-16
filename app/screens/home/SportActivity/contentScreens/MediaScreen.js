@@ -36,11 +36,14 @@ const MediaScreen = ({navigation, route}) => {
           <TouchableOpacity
             style={[styles.button, {width: 25, height: 25, marginRight: 10}]}
             onPress={() => {
-              navigation.navigate('SportActivityHome', {
-                sport,
-                sportType,
-                uid: userId,
-                selectedTab: strings.reviews,
+              navigation.navigate('HomeStack', {
+                screen: 'SportActivityHome',
+                params: {
+                  sport,
+                  sportType,
+                  uid: userId,
+                  selectedTab: strings.reviews,
+                },
               });
             }}>
             <Image source={images.whiteBackArrow} style={styles.image} />

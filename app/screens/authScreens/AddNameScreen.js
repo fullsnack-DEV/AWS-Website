@@ -338,7 +338,7 @@ export default function SignupScreen({navigation, route}) {
 
       <ActionSheet
         ref={actionSheet}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={[strings.camera, strings.album, strings.cancel]}
         cancelButtonIndex={2}
         onPress={(index) => {
@@ -351,7 +351,7 @@ export default function SignupScreen({navigation, route}) {
       />
       <ActionSheet
         ref={actionSheetWithDelete}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={[
           strings.camera,
           strings.album,

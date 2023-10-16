@@ -14,7 +14,7 @@ const Gallery = ({navigation, gameData, isAdmin, galleryRef}) => {
         entity_type={'game'}
         entity_id={gameData?.game_id}
         onAddPhotoPress={(pickImages) => {
-          navigation.navigate('News Feed', {
+          navigation.navigate('NewsFeedStack', {
             screen: 'WritePostScreen',
             params: {
               postData: authContext.entity.obj ?? {},

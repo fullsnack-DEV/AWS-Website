@@ -154,11 +154,14 @@ const CertificateDisplayScreen = ({navigation, route}) => {
         setLoading(false);
         setIsUpdating(false);
         await setAuthContextData(res.payload, authContext);
-        navigation.navigate('SportActivityHome', {
-          sport: sportObj?.sport,
-          sportType: sportObj?.sport_type,
-          uid: userData.user_id,
-          entityType,
+        navigation.navigate('HomeStack', {
+          screen: 'SportActivityHome',
+          params: {
+            sport: sportObj?.sport,
+            sportType: sportObj?.sport_type,
+            uid: userData.user_id,
+            entityType,
+          },
         });
       })
       .catch((error) => {
@@ -186,7 +189,9 @@ const CertificateDisplayScreen = ({navigation, route}) => {
       isValid = isValid && true;
     } else if (updatedCertificate?.url && !updatedCertificate?.title) {
       isValid = false;
-      Alert.alert(strings.warningCertificateTitleText,'',[{test:strings.okTitleText}]);
+      Alert.alert(strings.warningCertificateTitleText, '', [
+        {test: strings.okTitleText},
+      ]);
     } else if (updatedCertificate?.title && !updatedCertificate?.url) {
       isValid = false;
       Alert.alert(strings.warningCertificateImageText);

@@ -196,13 +196,14 @@ const GroupHomeScreen = ({
         });
         break;
       case strings.scheduleTitle:
-        navigation.navigate('ScheduleScreen', {
-          // screen: 'ScheduleScreen',
-          uid: groupId,
-          isAdmin,
-          // entityType: groupData.entity_type,
-          // isBackVisible: true,
-          isFromHomeScreen: true,
+        navigation.navigate('App', {
+          screen: 'Schedule',
+          params: {
+            uid: groupId,
+            isAdmin,
+            isFromHomeScreen: true,
+            role: route.params?.role ?? authContext.entity.role,
+          },
         });
         break;
       case strings.scoreboard:
@@ -247,8 +248,8 @@ const GroupHomeScreen = ({
         isAdmin={isAdmin}
         onClickMembers={() => {
           if (isAdmin) {
-            navigation.navigate('News Feed', {
-              screen: 'GroupMembersScreen',
+            navigation.navigate('App', {
+              screen: 'Members',
               params: {
                 groupObj: groupData,
                 groupID: groupId,
@@ -283,8 +284,8 @@ const GroupHomeScreen = ({
           });
         }}
         onPressMore={() => {
-          navigation.navigate('News Feed', {
-            screen: 'GroupMembersScreen',
+          navigation.navigate('App', {
+            screen: 'Members',
             params: {
               groupObj: groupData,
               groupID: groupId,
@@ -299,7 +300,7 @@ const GroupHomeScreen = ({
           });
         }}
         addMember={() => {
-          navigation.navigate('News Feed', {
+          navigation.navigate('NewsFeed', {
             screen: 'CreateMemberProfileForm1',
             params: {
               showBackArrow: true,

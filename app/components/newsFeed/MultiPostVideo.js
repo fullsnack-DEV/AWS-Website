@@ -37,11 +37,14 @@ function MultiPostVideo({
 
   const toggleModal = () => {
     // setModalVisible(!isModalVisible);
-    navigation.navigate('FeedViewScreen', {
-      feedItem: item,
-      currentPage: itemNumber,
-      updateCommentCount,
-      onLikePress,
+    navigation.navigate('NewsFeedStack', {
+      screen: 'FeedViewScreen',
+      params: {
+        feedItem: item,
+        currentPage: itemNumber,
+        updateCommentCount,
+        onLikePress,
+      },
     });
   };
 

@@ -38,7 +38,7 @@ import {
   getExcludedSportsList,
   getTitleForRegister,
 } from '../../utils/sportsActivityUtils';
-import SportsListModal from './registerPlayer/modals/SportsListModal';
+
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 import SendNewInvoiceModal from './Invoice/SendNewInvoiceModal';
 import MemberListModal from '../../components/MemberListModal/MemberListModal';
@@ -50,6 +50,7 @@ import AccountShimmer from '../../components/shimmer/account/AccountShimmer';
 import {getUnreadCount} from '../../api/Notificaitons';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {onResendRequest} from '../../utils/accountUtils';
+import SportsListModal from './registerPlayer/modals/SportsListModal';
 
 const AccountScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -82,14 +83,6 @@ const AccountScreen = ({navigation, route}) => {
 
   const [players, setPlayers] = useState([]);
   const [onLoad, setOnLoad] = useState(false);
-
-  useEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: {
-        display: isFocused ? 'flex' : 'none',
-      },
-    });
-  }, [navigation, isFocused]);
 
   const getUsers = useCallback(() => {
     const generalsQuery = {
@@ -366,13 +359,17 @@ const AccountScreen = ({navigation, route}) => {
 
       default:
         if (authContext.entity.role === Verbs.entityTypeUser && rowObj.sport) {
-          navigation.navigate('SportActivityHome', {
-            sport: rowObj.sport.sport,
-            sportType: rowObj.sport.sport_type ?? Verbs.sportTypeSingle,
-            uid: authContext.entity.obj.user_id,
-            selectedTab: strings.infoTitle,
-            entityType: rowObj.sport.type,
-            backScreen: 'AccountScreen',
+          navigation.navigate('HomeStack', {
+            screen: 'SportActivityHome',
+            params: {
+              sport: rowObj.sport.sport,
+              sportType: rowObj.sport.sport_type ?? Verbs.sportTypeSingle,
+              uid: authContext.entity.obj.user_id,
+              selectedTab: strings.infoTitle,
+              entityType: rowObj.sport.type,
+              parentStack: 'App',
+              backScreen: 'Account',
+            },
           });
         } else {
           navigation.navigate(
@@ -413,14 +410,18 @@ const AccountScreen = ({navigation, route}) => {
         if (type === Verbs.cancelVerb) {
           Alert.alert(strings.teamRequestCancelledText);
         } else if (type === Verbs.acceptVerb) {
-          navigation.push('HomeScreen', {
-            uid: response.payload.group_id,
-            role: response.payload.entity_type,
-            backButtonVisible: false,
-            menuBtnVisible: false,
-            isEntityCreated: true,
-            groupName: response.payload.group_name,
-            entityObj: response.payload,
+          // setMemberListModal(false);
+          navigation.push('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid: response.payload.group_id,
+              role: response.payload.entity_type,
+              backButtonVisible: false,
+              menuBtnVisible: false,
+              isEntityCreated: true,
+              groupName: response.payload.group_name,
+              entityObj: response.payload,
+            },
           });
         } else if (type === Verbs.declineVerb) {
           Alert.alert(
@@ -527,11 +528,14 @@ const AccountScreen = ({navigation, route}) => {
             entity={authContext.entity.obj}
             onSwitchAccount={() => setShowSwitchAccountModal(true)}
             onPress={() => {
-              navigation.navigate('HomeScreen', {
-                uid: authContext.entity.uid,
-                role: authContext.entity.role,
-                backButtonVisible: true,
-                menuBtnVisible: false,
+              navigation.navigate('HomeStack', {
+                screen: 'HomeScreen',
+                params: {
+                  uid: authContext.entity.uid,
+                  role: authContext.entity.role,
+                  backButtonVisible: true,
+                  menuBtnVisible: false,
+                },
               });
             }}
           />
@@ -700,7 +704,11 @@ const AccountScreen = ({navigation, route}) => {
         title={strings.createClubText}
         onNext={(sports) => {
           setVisibleSportsModalForClub(false);
-          navigation.navigate(navigationOptions.screenName, sports);
+
+          navigation.navigate(navigationOptions.screenName, {
+            screen: navigationOptions.data.screen,
+            params: sports,
+          });
         }}
       />
       <SendNewInvoiceModal

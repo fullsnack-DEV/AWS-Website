@@ -181,18 +181,24 @@ const SportActivityHome = ({navigation, route}) => {
 
   const handleEditNavigation = (sectionName, title) => {
     if (sectionName === strings.matchVenues) {
-      navigation.navigate('ManageChallengeScreen', {
-        groupObj: userData,
-        sportName: sportObj?.sport,
-        sportType: sportObj?.sport_type,
+      navigation.navigate('AccountStack', {
+        screen: 'ManageChallengeScreen',
+        params: {
+          groupObj: userData,
+          sportName: sportObj?.sport,
+          sportType: sportObj?.sport_type,
+        },
       });
     } else {
-      navigation.navigate('EditWrapperScreen', {
-        section: sectionName,
-        title,
-        sportObj,
-        sportIcon,
-        entityType,
+      navigation.navigate('AccountStack', {
+        screen: 'EditWrapperScreen',
+        params: {
+          section: sectionName,
+          title,
+          sportObj,
+          sportIcon,
+          entityType,
+        },
       });
     }
   };
@@ -212,25 +218,32 @@ const SportActivityHome = ({navigation, route}) => {
     setShowMoreOptions(false);
     switch (selectedOption) {
       case strings.incomingChallengeSettingsTitle:
-        navigation.navigate('ManageChallengeScreen', {
-          groupObj: userData,
-          sportName: sportObj?.sport,
-          sportType: sportObj?.sport_type,
+        navigation.navigate('AccountStack', {
+          screen: 'ManageChallengeScreen',
+          params: {
+            groupObj: userData,
+            sportName: sportObj?.sport,
+            sportType: sportObj?.sport_type,
+          },
         });
         break;
 
       case strings.lookingForClubText:
       case strings.lookingForTeamText:
-        navigation.navigate('LookingForSettingScreen', {
-          sport: sportObj,
-          entityType,
-          comeFrom: 'SportActivityHome',
-          routeParams: {
-            sport: sportObj?.sport,
-            sportType: sportObj?.sport_type,
-            uid: route.params.uid,
+        navigation.navigate('AccountStack', {
+          screen: 'LookingForSettingScreen',
+          params: {
+            sport: sportObj,
             entityType,
-            backScreen: 'AccountScreen',
+            comeFrom: 'SportActivityHome',
+            routeParams: {
+              sport: sportObj?.sport,
+              sportType: sportObj?.sport_type,
+              uid: route.params.uid,
+              entityType,
+              parentStack: 'App',
+              backScreen: 'Account',
+            },
           },
         });
         break;
@@ -301,9 +314,12 @@ const SportActivityHome = ({navigation, route}) => {
             sport={sportObj?.sport}
             entityType={entityType}
             onCardPress={(item = {}) => {
-              navigation.navigate('EventScreen', {
-                data: item,
-                gameData: item,
+              navigation.navigate('ScheduleStack', {
+                screen: 'EventScreen',
+                params: {
+                  data: item,
+                  gameData: item,
+                },
               });
             }}
           />
@@ -399,7 +415,12 @@ const SportActivityHome = ({navigation, route}) => {
         )}`}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          if (backScreen) {
+          if (route.params?.parentStack) {
+            navigation.navigate(route.params.parentStack, {
+              screen: backScreen,
+              params: {...backScreenParams},
+            });
+          } else if (backScreen) {
             navigation.navigate(backScreen, {...backScreenParams});
           } else {
             navigation.navigate('HomeScreen', {

@@ -54,14 +54,6 @@ const FeedsScreen = ({navigation, route}) => {
     setVisited(true);
   }, []);
 
-  useEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: {
-        display: isFocused ? 'flex' : 'none',
-      },
-    });
-  }, [navigation, isFocused]);
-
   const getFeeds = useCallback(() => {
     if (!visited) {
       setFirstTimeLoading(true);
@@ -270,9 +262,12 @@ const FeedsScreen = ({navigation, route}) => {
         <TouchableOpacity
           style={[styles.headerIconContainer, {marginRight: 8}]}
           onPress={() => {
-            navigation.navigate('WritePostScreen', {
-              postData: currentUserDetail,
-              selectedImageList: [],
+            navigation.navigate('NewsFeedStack', {
+              screen: 'WritePostScreen',
+              params: {
+                postData: currentUserDetail,
+                selectedImageList: [],
+              },
             });
           }}>
           <Image source={images.feedPlusIcon} style={styles.icon} />
@@ -282,6 +277,8 @@ const FeedsScreen = ({navigation, route}) => {
             navigation.navigate('EntitySearchScreen', {
               sportsList: sports,
               sportsArray: sportArr,
+              parentStack: 'App',
+              screen: 'NewsFeed',
             });
           }}
           style={[styles.headerIconContainer, {marginLeft: 7}]}>
@@ -308,11 +305,6 @@ const FeedsScreen = ({navigation, route}) => {
 
     createPost(body, authContext)
       .then(() => {
-        // if (route.params?.comeFrom) {
-        //   navigation.pop(2);
-        // } else {
-        //   navigation.goBack();
-        // }
         setVisited(false);
         getFeeds();
         setloading(false);

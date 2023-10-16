@@ -120,7 +120,7 @@ export default function MembersProfileScreen({navigation, route}) {
         params: {...route.params?.routeParams},
       });
     } else {
-      navigation.replace('GroupMembersScreen');
+      navigation.replace('App', {screen: 'Members'});
     }
   }, [navigation, route.params]);
 
@@ -554,7 +554,7 @@ export default function MembersProfileScreen({navigation, route}) {
             {cancelable: false},
           );
         } else {
-          navigation.replace('GroupMembersScreen');
+          navigation.replace('App', {screen: 'Members'});
         }
       })
       .catch((e) => {
@@ -676,7 +676,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
         // eslint-disable-next-line no-unused-expressions
         authContext.entity.role === Verbs.entityTypeClub
-          ? navigation.goBack()
+          ? navigation.navigate('App', {screen: 'Members'})
           : getMemberInformation();
 
         setShowAdminPrivillege(false);
@@ -1360,7 +1360,7 @@ export default function MembersProfileScreen({navigation, route}) {
         .then(async (channel) => {
           if (channel) {
             await channel.watch();
-            navigation.navigate('Message', {
+            navigation.navigate('MessageStack', {
               screen: 'MessageChatScreen',
               params: {
                 channel,
@@ -1799,7 +1799,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
               <ActionSheet
                 ref={actionSheet}
-                // title={'News Feed Post'}
+                // title={'NewsFeed Post'}
                 options={[
                   strings.sendrequestForBaicInfoText,
                   strings.editAdminPrivillege,

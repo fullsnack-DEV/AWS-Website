@@ -250,9 +250,12 @@ const FeedViewScreen = ({navigation, route}) => {
         showLikeModal={showLikeModal}
         closeModal={() => setShowLikeModal(false)}
         onClickProfile={(obj = {}) => {
-          navigation.push('HomeScreen', {
-            uid: obj?.user_id,
-            role: obj.user.data.entity_type,
+          navigation.push('Account', {
+            screen: 'HomeScreen',
+            params: {
+              uid: obj?.user_id,
+              role: obj.user.data.entity_type,
+            },
           });
         }}
         // handleFollowUnfollow={handleFollowUnfollow}
@@ -264,9 +267,12 @@ const FeedViewScreen = ({navigation, route}) => {
         closeModal={() => setShowCommentModal(false)}
         onProfilePress={(data = {}) => {
           setShowCommentModal(false);
-          navigation.navigate('HomeScreen', {
-            uid: data.userId,
-            role: data.entityType,
+          navigation.navigate('Account', {
+            screen: 'HomeScreen',
+            params: {
+              uid: data.userId,
+              role: data.entityType,
+            },
           });
         }}
       />

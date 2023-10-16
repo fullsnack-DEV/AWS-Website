@@ -306,7 +306,7 @@ const GameFeed = (
         navigation={navigation}
         postDataItem={currentUserData}
         onWritePostPress={() => {
-          navigation.navigate('News Feed', {
+          navigation.navigate('NewsFeedStack', {
             screen: 'WritePostScreen',
             params: {
               postData: currentUserData,

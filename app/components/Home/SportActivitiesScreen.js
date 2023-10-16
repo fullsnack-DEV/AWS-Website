@@ -82,13 +82,16 @@ const SportActivitiesScreen = ({navigation, route}) => {
         break;
     }
     if (screenName) {
-      navigation.navigate(screenName, {
-        comeFrom: 'SportActivitiesScreen',
-        routeParams: {
-          isAdmin,
-          uid: uid ?? authContext.entity.uid,
+      navigation.navigate('AccountStack', {
+        screen: screenName,
+        params: {
+          comeFrom: 'SportActivitiesScreen',
+          routeParams: {
+            isAdmin,
+            uid: uid ?? authContext.entity.uid,
+          },
+          ...sport,
         },
-        ...sport,
       });
     }
   };

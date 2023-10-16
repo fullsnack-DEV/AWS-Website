@@ -1025,7 +1025,7 @@ export default function SoccerRecording({navigation, route}) {
           </View>
           <ActionSheet
             ref={actionSheet}
-            // title={'News Feed Post'}
+            // title={'NewsFeed Post'}
             options={getOpetions()}
             cancelButtonIndex={2}
             destructiveButtonIndex={1}

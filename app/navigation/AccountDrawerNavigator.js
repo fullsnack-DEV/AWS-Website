@@ -6,7 +6,6 @@ import AccountScreen from '../screens/account/AccountScreen';
 import HomeNavigator from './HomeNavigator';
 import colors from '../Constants/Colors';
 
-// import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 // import GameDetail from '../screens/account/schedule/GameDetail';
 // import SoccerRecording from '../screens/account/schedule/SoccerRecording';
 // import GameDetailRecord from '../screens/account/schedule/GameDetailRecord';
@@ -26,8 +25,6 @@ import colors from '../Constants/Colors';
 // import CreateClubForm2 from '../screens/account/createGroup/createClub/createClubForm2';
 // import CreateClubForm3 from '../screens/account/createGroup/createClub/createClubForm3';
 // import ClubCreatedScreen from '../screens/account/createGroup/createClub/clubCreated';
-
-// import SearchLocationScreen from '../screens/account/commonScreen/searchLocation';
 
 // import JoinedTeamsScreen from '../screens/account/teams';
 // import JoinedClubsScreen from '../screens/account/clubs';

@@ -513,8 +513,11 @@ const UserHomeScreen = ({
           break;
 
         case Verbs.editVerb:
-          navigation.navigate('PersonalInformationScreen', {
-            isEditProfile: true,
+          navigation.navigate('AccountStack', {
+            screen: 'PersonalInformationScreen',
+            params: {
+              isEditProfile: true,
+            },
           });
           break;
 
@@ -572,11 +575,11 @@ const UserHomeScreen = ({
           showPreview: true,
         });
       } else if (type === Verbs.entityTypePlayer) {
-        navigation.navigate('RegisterPlayer');
+        navigation.navigate('AccountStack', {screen: 'RegisterPlayer'});
       } else if (type === Verbs.entityTypeReferee) {
-        navigation.navigate('RegisterReferee');
+        navigation.navigate('AccountStack', {screen: 'RegisterReferee'});
       } else if (type === Verbs.entityTypeScorekeeper) {
-        navigation.navigate('RegisterScorekeeper');
+        navigation.navigate('AccountStack', {screen: 'RegisterScorekeeper'});
       }
     }
   };
@@ -585,15 +588,18 @@ const UserHomeScreen = ({
     setAddSportActivityModal(false);
     switch (option) {
       case strings.addPlaying:
-        navigation.navigate('RegisterPlayer', {comeFrom: 'HomeScreen'});
+        navigation.navigate('AccountStack', {
+          screen: 'RegisterPlayer',
+          params: {comeFrom: 'HomeScreen'},
+        });
         break;
 
       case strings.addRefereeing:
-        navigation.navigate('RegisterReferee');
+        navigation.navigate('AccountStack', {screen: 'RegisterReferee'});
         break;
 
       case strings.addScorekeeping:
-        navigation.navigate('RegisterScorekeeper');
+        navigation.navigate('AccountStack', {screen: 'RegisterScorekeeper'});
         break;
 
       default:
@@ -639,9 +645,14 @@ const UserHomeScreen = ({
               currentUserData,
             });
           } else if (option === strings.event) {
-            navigation.navigate('ScheduleScreen', {
-              isAdmin,
-              isFromHomeScreen: true,
+            navigation.navigate('App', {
+              screen: 'Schedule',
+              params: {
+                isAdmin,
+                isFromHomeScreen: true,
+                role: route.params?.role ?? authContext.entity.role,
+                uid: route.params?.uid ?? authContext.entity.uid,
+              },
             });
           }
         }}

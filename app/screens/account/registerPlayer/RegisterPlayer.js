@@ -233,12 +233,16 @@ const RegisterPlayer = ({navigation, route}) => {
         title={strings.registerAsPlayerTitle}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          if (route.params?.comeFrom) {
+          if (route.params?.comeFrom === 'LocalHome') {
+            navigation.navigate('App', {
+              screen: 'LocalHome',
+            });
+          } else if (route.params?.comeFrom) {
             navigation.navigate(route.params.comeFrom, {
               ...route.params.routeParams,
             });
           } else {
-            navigation.navigate('AccountScreen');
+            navigation.navigate('App', {screen: 'Account'});
           }
         }}
         isRightIconText
@@ -420,15 +424,19 @@ const RegisterPlayer = ({navigation, route}) => {
         }}
         goToSportActivityHome={({sport, sportType}) => {
           setShowCongratulationsModal(false);
-          navigation.navigate('SportActivityHome', {
-            sport,
-            sportType,
-            uid: authContext.entity.uid,
-            selectedTab: strings.infoTitle,
-            backScreen: 'AccountScreen',
-            backScreenParams: {
-              createdSportName: selectedSport?.sport_name,
-              sportType: selectedSport?.sport_type,
+          navigation.navigate('HomeStack', {
+            screen: 'SportActivityHome',
+            params: {
+              sport,
+              sportType,
+              uid: authContext.entity.uid,
+              selectedTab: strings.infoTitle,
+              parentStack: 'App',
+              backScreen: 'Account',
+              backScreenParams: {
+                createdSportName: selectedSport?.sport_name,
+                sportType: selectedSport?.sport_type,
+              },
             },
           });
         }}

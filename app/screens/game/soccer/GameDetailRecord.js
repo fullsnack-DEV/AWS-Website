@@ -1569,7 +1569,7 @@ export default function GameDetailRecord({navigation, route}) {
           </View>
           <ActionSheet
             ref={actionSheet}
-            // title={'News Feed Post'}
+            // title={'NewsFeed Post'}
             options={[
               strings.editRosterNonRoster,
               strings.resetMatchRecords,

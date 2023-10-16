@@ -69,11 +69,14 @@ const PrivacySettingsScreen = ({navigation, route}) => {
       .then(async (res) => {
         setLoading(false);
         await setAuthContextData(res.payload, authContext);
-        navigation.navigate('SportActivityHome', {
-          sport,
-          sportType,
-          entityType,
-          uid: userData.user_id,
+        navigation.navigate('HomeStack', {
+          screen: 'SportActivityHome',
+          params: {
+            sport,
+            sportType,
+            entityType,
+            uid: userData.user_id,
+          },
         });
       })
       .catch((error) => {

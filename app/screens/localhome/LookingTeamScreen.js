@@ -303,13 +303,17 @@ export default function LookingTeamScreen({navigation, route}) {
               setPlayerDetail(data);
               setPlayerDetailPopup(true);
             } else {
-              navigation.navigate('SportActivityHome', {
-                sport: sportsObj[0].sport,
-                sportType: sportsObj[0]?.sport_type,
-                uid: item?.user_id,
-                entityType: item?.entity_type,
-                showPreview: true,
-                backScreen: 'LookingTeamScreen',
+              navigation.navigate('HomeStack', {
+                screen: 'SportActivityHome',
+                params: {
+                  sport: sportsObj[0].sport,
+                  sportType: sportsObj[0]?.sport_type,
+                  uid: item?.user_id,
+                  entityType: item?.entity_type,
+                  showPreview: true,
+                  parentStack: 'AccountStack',
+                  backScreen: 'LookingTeamScreen',
+                },
               });
             }
           }}
@@ -459,13 +463,17 @@ export default function LookingTeamScreen({navigation, route}) {
       ]}
       onPress={() => {
         setPlayerDetailPopup(false);
-        navigation.navigate('SportActivityHome', {
-          sport: item.sport,
-          sportType: item?.sport_type,
-          uid: playerDetail.uid,
-          entityType: playerDetail.entity_type,
-          showPreview: true,
-          backScreen: 'LookingTeamScreen',
+        navigation.navigate('HomeStack', {
+          screen: 'SportActivityHome',
+          params: {
+            sport: item.sport,
+            sportType: item?.sport_type,
+            uid: playerDetail.uid,
+            entityType: playerDetail.entity_type,
+            showPreview: true,
+            parentStack: 'AccountStack',
+            backScreen: 'LookingTeamScreen',
+          },
         });
       }}
       disabled={item.is_hide}>

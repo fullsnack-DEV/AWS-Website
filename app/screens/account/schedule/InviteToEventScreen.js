@@ -1,10 +1,4 @@
-import React, {
-  useLayoutEffect,
-  useState,
-  useEffect,
-  useContext,
-  useCallback,
-} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {
   Text,
   View,
@@ -38,12 +32,6 @@ export default function InviteToEventScreen({navigation, route}) {
   const [filteredList, setFilteredList] = useState([]);
 
   const {start_datetime, end_datetime, eventId} = route.params;
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
 
   const getUsers = useCallback(() => {
     const membersQuery = {

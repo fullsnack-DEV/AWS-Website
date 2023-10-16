@@ -24,6 +24,7 @@ import {
   // Dimensions,
   ScrollView,
   StatusBar,
+  BackHandler,
 } from 'react-native';
 
 import {
@@ -200,14 +201,17 @@ export default function ScheduleScreen({navigation, route}) {
   const [isFromHomeScreen] = useState(route?.params?.isFromHomeScreen);
 
   useEffect(() => {
-    navigation.getParent()?.setOptions({
-      // tabBarStyle: {
-      //   display: isFocused ? 'flex' : 'none',
-      // },
+    navigation.setOptions({
       tabBarStyle: {
         display: isFromHomeScreen ? 'none' : 'flex',
       },
     });
+
+    return () => {
+      navigation.setParams({
+        isFromHomeScreen: false,
+      });
+    };
   }, [navigation, isFocused]);
 
   // Get Future Date:
@@ -1221,6 +1225,30 @@ export default function ScheduleScreen({navigation, route}) {
       </>
     );
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      if (isFromHomeScreen) {
+        navigation.navigate('HomeStack', {
+          screen: 'HomeScreen',
+          params: {
+            uid: route.params?.uid,
+            role: route.params?.role,
+            comeFrom: 'ScheduleScreen',
+          },
+        });
+      } else {
+        navigation.goBack();
+      }
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [isFromHomeScreen, navigation, route.params?.uid, route.params?.role]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View
@@ -1229,14 +1257,26 @@ export default function ScheduleScreen({navigation, route}) {
         {isFromHomeScreen ? (
           <ScreenHeader
             leftIcon={images.backArrow}
-            leftIconPress={() => navigation.goBack()}
+            leftIconPress={() => {
+              navigation.navigate('HomeStack', {
+                screen: 'HomeScreen',
+                params: {
+                  uid: route.params?.uid,
+                  role: route.params?.role,
+                  comeFrom: 'ScheduleScreen',
+                },
+              });
+            }}
             title={strings.events}
             rightIcon1={isAdmin ? images.addEvent : null}
             rightIcon2={images.vertical3Dot}
             rightIcon1Press={() =>
-              navigation.navigate('CreateEventScreen', {
-                comeName: 'ScheduleScreen',
-                isAdmin,
+              navigation.navigate('ScheduleStack', {
+                screen: 'CreateEventScreen',
+                params: {
+                  comeName: 'ScheduleScreen',
+                  isAdmin,
+                },
               })
             }
             rightIcon2Press={() => setFilterPopup(true)}
@@ -1274,8 +1314,11 @@ export default function ScheduleScreen({navigation, route}) {
 
                   <TouchableOpacity
                     onPress={() => {
-                      navigation.navigate('CreateEventScreen', {
-                        comeName: 'ScheduleScreen',
+                      navigation.navigate('ScheduleStack', {
+                        screen: 'CreateEventScreen',
+                        params: {
+                          comeName: 'ScheduleScreen',
+                        },
                       });
                     }}>
                     <Image
@@ -1522,9 +1565,12 @@ export default function ScheduleScreen({navigation, route}) {
                       }
                     } else {
                       setIndigator(false);
-                      navigation.navigate('EventScreen', {
-                        data: item,
-                        gameData: item,
+                      navigation.navigate('ScheduleStack', {
+                        screen: 'EventScreen',
+                        params: {
+                          data: item,
+                          gameData: item,
+                        },
                       });
                     }
                   }}
@@ -1574,16 +1620,26 @@ export default function ScheduleScreen({navigation, route}) {
               authContext.entity.role === Verbs.entityTypeUser
             ) {
               if (index === 0) {
-                navigation.navigate('DefaultColorScreen');
+                navigation.navigate('ScheduleStack', {
+                  screen: 'DefaultColorScreen',
+                });
               } else if (index === 1) {
-                navigation.navigate('GroupEventScreen');
+                navigation.navigate('ScheduleStack', {
+                  screen: 'GroupEventScreen',
+                });
               } else if (index === 2) {
-                navigation.navigate('ViewPrivacyScreen');
+                navigation.navigate('ScheduleStack', {
+                  screen: 'ViewPrivacyScreen',
+                });
               }
             } else if (index === 0) {
-              navigation.navigate('DefaultColorScreen');
+              navigation.navigate('ScheduleStack', {
+                screen: 'DefaultColorScreen',
+              });
             } else if (index === 1) {
-              navigation.navigate('ViewPrivacyScreen');
+              navigation.navigate('ScheduleStack', {
+                screen: 'ViewPrivacyScreen',
+              });
             }
           }}
         />
@@ -1902,9 +1958,13 @@ export default function ScheduleScreen({navigation, route}) {
           closeModal={() => setSettingsModal(false)}
           onSelect={(option) => {
             if (option === strings.eventsViewSettings) {
-              navigation.navigate('ViewEventSettingsScreen');
+              navigation.navigate('ScheduleStack', {
+                screen: 'ViewEventSettingsScreen',
+              });
             } else {
-              navigation.navigate('ViewPrivacyScreen');
+              navigation.navigate('ScheduleStack', {
+                screen: 'ViewPrivacyScreen',
+              });
             }
             setSettingsModal(false);
           }}
@@ -2021,15 +2081,21 @@ export default function ScheduleScreen({navigation, route}) {
             if (
               actionSheetOpetions()?.[index] === strings.changeEventColorText
             ) {
-              navigation.navigate('EditEventScreen', {
-                data: selectedEventItem,
-                gameData: selectedEventItem,
+              navigation.navigate('ScheduleStack', {
+                screen: 'EditEventScreen',
+                params: {
+                  data: selectedEventItem,
+                  gameData: selectedEventItem,
+                },
               });
             }
             if (actionSheetOpetions()?.[index] === 'Edit') {
-              navigation.navigate('EditEventScreen', {
-                data: selectedEventItem,
-                gameData: selectedEventItem,
+              navigation.navigate('ScheduleStack', {
+                screen: 'EditEventScreen',
+                params: {
+                  data: selectedEventItem,
+                  gameData: selectedEventItem,
+                },
               });
             }
 

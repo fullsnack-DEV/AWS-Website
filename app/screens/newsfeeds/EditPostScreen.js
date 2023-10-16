@@ -629,7 +629,9 @@ const EditPostScreen = ({navigation, route}) => {
     updatePost(dataParams, authContext)
       .then(() => {
         setloading(false);
-        navigation.goBack();
+        navigation.navigate('App', {
+          screen: 'NewsFeed',
+        });
       })
       .catch((e) => {
         Alert.alert('', e.messages);
@@ -754,7 +756,11 @@ const EditPostScreen = ({navigation, route}) => {
       <ScreenHeader
         title={strings.editPost}
         leftIcon={images.backArrow}
-        leftIconPress={() => navigation.goBack()}
+        leftIconPress={() => {
+          navigation.navigate('App', {
+            screen: 'NewsFeed',
+          });
+        }}
         isRightIconText
         rightButtonText={strings.done}
         onRightButtonPress={handleDone}
@@ -853,7 +859,6 @@ const EditPostScreen = ({navigation, route}) => {
             <TouchableOpacity
               style={[styles.icon, {marginHorizontal: 10}]}
               onPress={() => {
-                console.log('tagsOfEntity ==>', tagsOfEntity);
                 navigation.navigate('UserTagSelectionListScreen', {
                   postData,
                   routeParams: route.params.isRepost ? {...route.params} : {},

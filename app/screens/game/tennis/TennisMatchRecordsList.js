@@ -715,7 +715,7 @@ const TennisMatchRecordsList = (
       <ActivityLoader visible={fullScreenLoading} />
       <ActionSheet
         ref={matchRecords3DotRef}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={
           gameData?.status === GameStatus.playing ||
           gameData?.status === GameStatus.paused ||

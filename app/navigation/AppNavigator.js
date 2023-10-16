@@ -8,17 +8,18 @@ import React, {
 import {Image, StyleSheet, StatusBar, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
-import NewsFeedNavigator from './NewsFeedNavigator';
+import {TransitionPresets} from '@react-navigation/stack';
 import colors from '../Constants/Colors';
 import images from '../Constants/ImagePath';
-import MessageNavigator from './MessageNavigator';
 import AuthContext from '../auth/context';
-import AccountNavigator from './AccountNavigator';
-import LocalHomeNavigator from './LocalHomeNavigator';
-import ScheduleNavigator from './ScheduleNavigator';
-import MembersNavigator from './MembersNavigator';
 import {getUnreadNotificationCount} from '../utils/accountUtils';
 import Verbs from '../Constants/Verbs';
+import MessageMainScreen from '../screens/message/MessageMainScreen';
+import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
+import FeedsScreen from '../screens/newsfeeds/FeedsScreen';
+import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
+import LocalHomeScreen from '../screens/localhome/LocalHomeScreen';
+import AccountScreen from '../screens/account/AccountScreen';
 
 const MAX_COUNT_FOR_BOTTOM_TAB = 8;
 const Tab = createBottomTabNavigator();
@@ -187,32 +188,11 @@ const AppNavigator = ({navigation}) => {
     [authContext?.entity?.obj?.thumbnail, role, onTabPress],
   );
 
-  const getTabIcon = (focused = false) => {
-    if (focused) {
-      if (
-        authContext.entity.role === Verbs.entityTypeTeam ||
-        authContext.entity.role === Verbs.entityTypeClub
-      ) {
-        return images.tab_members_selected;
-      }
-      return images.tabSelectedFeed;
-    }
-    if (
-      authContext.entity.role === Verbs.entityTypeTeam ||
-      authContext.entity.role === Verbs.entityTypeClub
-    ) {
-      return images.tab_members;
-    }
-    return images.tabFeed;
-  };
-
   return (
     <Tab.Navigator
       backBehaviour="initialRoute"
       navigation={navigation}
-      options={() => ({
-        headerShown: false,
-      })}
+      options={() => ({headerShown: false})}
       detachInactiveScreens
       screenOptions={{
         lazy: true,
@@ -233,14 +213,12 @@ const AppNavigator = ({navigation}) => {
         },
       }}>
       <Tab.Screen
-        name="Local Home"
-        component={LocalHomeNavigator}
+        name="LocalHome"
+        component={LocalHomeScreen}
         options={() => ({
           lazy: true,
           tabBarTestID: 'localhome-tab',
           headerShown: false,
-
-          tabBarStyle: {display: 'none'},
           tabBarIcon: ({focused}) => {
             if (focused);
             return (
@@ -251,62 +229,53 @@ const AppNavigator = ({navigation}) => {
             );
           },
         })}
-        listeners={{
-          tabPress: (e) => {
-            e.preventDefault();
-
-            navigation.navigate('Local Home', {
-              screen: 'LocalHomeScreen',
-            });
-          },
-        }}
       />
-      <Tab.Screen
-        name="News Feed"
-        component={
-          authContext.entity.role === 'team' ||
-          authContext.entity.role === 'club'
-            ? MembersNavigator
-            : NewsFeedNavigator
-        }
-        options={() => ({
-          lazy: true,
-          tabBarTestID: 'newsfeed-tab',
-          headerShown: false,
-          unmountOnBlur: true,
-          tabBarStyle: {display: 'none'},
-          tabBarIcon: ({focused}) => {
-            if (focused);
-            return (
-              <Image
-                source={getTabIcon(focused)}
-                style={focused ? styles.selectedTabImg : styles.tabImg}
-              />
-            );
-          },
-        })}
-        listeners={{
-          tabPress: (e) => {
-            e.preventDefault();
-            if (
-              authContext.entity.role === 'team' ||
-              authContext.entity.role === 'club'
-            ) {
-              navigation.navigate('News Feed', {
-                screen: 'GroupMembersScreen',
-              });
-            } else {
-              navigation.navigate('News Feed', {
-                screen: 'FeedsScreen',
-              });
-            }
-          },
-        }}
-      />
+      {authContext.entity.role === Verbs.entityTypeTeam ||
+      authContext.entity.role === Verbs.entityTypeClub ? (
+        <Tab.Screen
+          name="Members"
+          component={GroupMembersScreen}
+          options={() => ({
+            lazy: true,
+            headerShown: false,
+            unmountOnBlur: true,
+            tabBarIcon: ({focused}) => {
+              if (focused);
+              return (
+                <Image
+                  source={
+                    focused ? images.tab_members_selected : images.tab_members
+                  }
+                  style={focused ? styles.selectedTabImg : styles.tabImg}
+                />
+              );
+            },
+          })}
+        />
+      ) : (
+        <Tab.Screen
+          name="NewsFeed"
+          component={FeedsScreen}
+          options={() => ({
+            lazy: true,
+            headerShown: false,
+            unmountOnBlur: true,
+            tabBarIcon: ({focused}) => {
+              if (focused);
+              return (
+                <Image
+                  source={focused ? images.tabSelectedFeed : images.tabFeed}
+                  style={focused ? styles.selectedTabImg : styles.tabImg}
+                />
+              );
+            },
+          })}
+        />
+      )}
 
       <Tab.Screen
         name="Schedule"
-        component={ScheduleNavigator}
+        component={ScheduleScreen}
         options={() => ({
           lazy: true,
           tabBarTestID: 'schedule-tab',
@@ -327,19 +296,10 @@ const AppNavigator = ({navigation}) => {
             );
           },
         })}
-        listeners={{
-          tabPress: (e) => {
-            e.preventDefault();
-
-            navigation.navigate('Schedule', {
-              screen: 'EventScheduleScreen',
-            });
-          },
-        }}
       />
       <Tab.Screen
         name="Message"
-        component={MessageNavigator}
+        component={MessageMainScreen}
         options={() => ({
           tabBarTestID: 'message-tab',
           headerShown: false,
@@ -347,7 +307,6 @@ const AppNavigator = ({navigation}) => {
           ...(unreadCount > 0 && {
             tabBarBadge: unreadCount > 300 ? '300+' : unreadCount,
           }),
-          tabBarStyle: {display: 'none'},
           tabBarIcon: ({focused}) => {
             if (focused) onTabPress();
             return (
@@ -360,29 +319,11 @@ const AppNavigator = ({navigation}) => {
             );
           },
         })}
-        listeners={{
-          tabPress: (e) => {
-            e.preventDefault();
-
-            navigation.navigate('Message', {
-              screen: 'MessageMainScreen',
-            });
-          },
-        }}
       />
       <Tab.Screen
         name="Account"
         navigation={navigation}
-        component={AccountNavigator}
-        listeners={{
-          tabPress: (e) => {
-            e.preventDefault();
-
-            navigation.navigate('Account', {
-              screen: 'AccountScreen',
-            });
-          },
-        }}
+        component={AccountScreen}
         options={() => ({
           lazy: true,
           ...(authContext.totalNotificationCount > 0 && {
@@ -394,11 +335,13 @@ const AppNavigator = ({navigation}) => {
           unmountOnBlur: false,
           freezeOnBlur: false,
           tabBarBadgeStyle: {zIndex: 10, fontSize: 12},
-          tabBarStyle: {display: 'none'},
           tabBarIcon: renderTabIcon,
           headerShown: false,
           tabBarTestID: 'account-tab',
+          animationEnabled: true,
+          ...TransitionPresets.ModalSlideFromBottomIOS,
         })}
+        initialParams={{switchToUser: false}}
       />
     </Tab.Navigator>
   );

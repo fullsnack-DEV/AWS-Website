@@ -452,7 +452,7 @@ export default function EditGroupProfileScreen({navigation}) {
         />
         <ActionSheet
           ref={actionSheetWithDelete}
-          // title={'News Feed Post'}
+          // title={'NewsFeed Post'}
           options={[
             strings.camera,
             strings.album,

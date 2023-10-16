@@ -67,6 +67,8 @@ export default function LocalHomeHeader({
                 navigation.navigate('EntitySearchScreen', {
                   sportsList: customSports,
                   sportsArray: customSports,
+                  parentStack: 'App',
+                  screen: 'LocalHome',
                 });
               }}>
               <Image source={images.home_search} style={styles.townsCupIcon} />
@@ -74,7 +76,11 @@ export default function LocalHomeHeader({
 
             <TouchableOpacity
               hitSlop={getHitSlop(8)}
-              onPress={() => navigation.navigate('NotificationsListScreen')}>
+              onPress={() =>
+                navigation.navigate('NotificationNavigator', {
+                  screen: 'NotificationsListScreen',
+                })
+              }>
               <Image
                 source={
                   notificationCount > 0

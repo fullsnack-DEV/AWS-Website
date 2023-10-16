@@ -83,13 +83,17 @@ const LocalHomeMenuItems = memo(
         ]}
         onPress={() => {
           setPlayerDetailPopup(false);
-          navigation.navigate('SportActivityHome', {
-            sport: item.sport,
-            sportType: item?.sport_type,
-            uid: playerDetail.user_id,
-            entityType: playerDetail.entity_type,
-            showPreview: true,
-            backScreen: 'LocalHomeScreen',
+          navigation.navigate('HomeStack', {
+            screen: 'SportActivityHome',
+            params: {
+              sport: item.sport,
+              sportType: item?.sport_type,
+              uid: playerDetail.user_id,
+              entityType: playerDetail.entity_type,
+              showPreview: true,
+              parentStack: 'App',
+              backScreen: 'LocalHome',
+            },
           });
         }}
         disabled={item.is_hide}>
@@ -127,22 +131,29 @@ const LocalHomeMenuItems = memo(
           sports: sportsList,
         });
       } else {
-        navigation.navigate('SportActivityHome', {
-          sport: sportsList[0]?.sport,
-          sportType: sportsList[0]?.sport_type,
-          uid,
-          entityType: role,
-          showPreview: true,
-          backScreen: 'LocalHomeScreen',
+        navigation.navigate('HomeStack', {
+          screen: 'SportActivityHome',
+          params: {
+            sport: sportsList[0]?.sport,
+            sportType: sportsList[0]?.sport_type,
+            uid,
+            entityType: role,
+            showPreview: true,
+            parentStack: 'App',
+            backScreen: 'LocalHome',
+          },
         });
       }
     };
     const navigateToHomeScreen = (uid, role) => {
-      navigation.navigate('HomeScreen', {
-        uid,
-        role,
-        backButtonVisible: true,
-        menuBtnVisible: false,
+      navigation.navigate('HomeStack', {
+        screen: 'HomeScreen',
+        params: {
+          uid,
+          role,
+          backButtonVisible: true,
+          menuBtnVisible: false,
+        },
       });
     };
 
@@ -211,9 +222,12 @@ const LocalHomeMenuItems = memo(
 
       switch (item.key) {
         case strings.playersAvailableforChallenge:
-          navigation.navigate('LookingForChallengeScreen', {
-            filters: data,
-            registerFavSports: getSingleSportList(sports),
+          navigation.navigate('LocalHomeStack', {
+            screen: 'LookingForChallengeScreen',
+            params: {
+              filters: data,
+              registerFavSports: getSingleSportList(sports),
+            },
           });
           break;
 
@@ -226,8 +240,11 @@ const LocalHomeMenuItems = memo(
           break;
 
         case strings.hiringPlayerTitle:
-          navigation.navigate('RecruitingPlayerScreen', {
-            filters: data,
+          navigation.navigate('LocalHomeStack', {
+            screen: 'RecruitingPlayerScreen',
+            params: {
+              filters: data,
+            },
           });
           break;
 
@@ -243,24 +260,26 @@ const LocalHomeMenuItems = memo(
               selectedLocationOption,
               authContext,
             );
-            navigation.navigate(
-              item.key === strings.completedMatches
-                ? 'RecentMatchScreen'
-                : 'UpcomingMatchScreen',
-              {
+            navigation.navigate('LocalHomeStack', {
+              screen:
+                item.key === strings.completedMatches
+                  ? 'RecentMatchScreen'
+                  : 'UpcomingMatchScreen',
+              params: {
                 filters: teamData.filters,
                 teamSportData: teamData.teamSportData,
               },
-            );
+            });
           } else {
-            navigation.navigate(
-              item.key === strings.completedMatches
-                ? 'RecentMatchScreen'
-                : 'UpcomingMatchScreen',
-              {
+            navigation.navigate('LocalHomeStack', {
+              screen:
+                item.key === strings.completedMatches
+                  ? 'RecentMatchScreen'
+                  : 'UpcomingMatchScreen',
+              params: {
                 filters: data,
               },
-            );
+            });
           }
           break;
 
@@ -273,10 +292,13 @@ const LocalHomeMenuItems = memo(
               selectedLocationOption,
               authContext,
             );
-            navigation.navigate('LookingForChallengeScreen', {
-              filters: teamData.filters,
-              teamSportData: teamData.teamSportData,
-              registerFavSports: sports,
+            navigation.navigate('LocalHomeStack', {
+              screen: 'LookingForChallengeScreen',
+              params: {
+                filters: teamData.filters,
+                teamSportData: teamData.teamSportData,
+                registerFavSports: sports,
+              },
             });
           }
           break;
@@ -290,13 +312,19 @@ const LocalHomeMenuItems = memo(
               selectedLocationOption,
               authContext,
             );
-            navigation.navigate('LookingTeamScreen', {
-              filters: teamData.filters,
-              teamSportData: teamData.teamSportData,
+            navigation.navigate('LocalHomeStack', {
+              screen: 'LookingTeamScreen',
+              params: {
+                filters: teamData.filters,
+                teamSportData: teamData.teamSportData,
+              },
             });
           } else {
-            navigation.navigate('LookingTeamScreen', {
-              filters: data,
+            navigation.navigate('LocalHomeStack', {
+              screen: 'LookingTeamScreen',
+              params: {
+                filters: data,
+              },
             });
           }
           break;
@@ -497,8 +525,8 @@ const LocalHomeMenuItems = memo(
                     viewStyle={{marginTop: 20, marginBottom: 10}}
                     isDisabled={!(items?.data?.length > 0) || isdeactivated}
                     onPress={() =>
-                      navigation.navigate('Schedule', {
-                        screen: 'EventScheduleScreen',
+                      navigation.navigate('App', {
+                        screen: 'Schedule',
                       })
                     }
                   />
@@ -530,9 +558,12 @@ const LocalHomeMenuItems = memo(
                               });
                             }
                           } else {
-                            navigation.navigate('EventScreen', {
-                              data: item,
-                              gameData: item,
+                            navigation.navigate('ScheduleStack', {
+                              screen: 'EventScreen',
+                              params: {
+                                data: item,
+                                gameData: item,
+                              },
                             });
                           }
                         }}

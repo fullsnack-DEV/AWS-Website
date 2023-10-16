@@ -1,4 +1,3 @@
-/* eslint-disable no-unsafe-optional-chaining */
 import React, {useState, useContext, useEffect} from 'react';
 
 import {Alert, StyleSheet, View} from 'react-native';
@@ -82,7 +81,7 @@ export default function UserGalleryScreen({navigation, route}) {
         }
         entity_id={entityID}
         onAddPhotoPress={(pickImages) => {
-          navigation.navigate('News Feed', {
+          navigation.navigate('NewsFeedStack', {
             screen: 'WritePostScreen',
             params: {
               comeFrom: 'UserGalleryScreen',
@@ -98,7 +97,7 @@ export default function UserGalleryScreen({navigation, route}) {
         }}
         navigation={navigation}
         handleBackPress={() => {
-          navigation.navigate('Account', {
+          navigation.navigate('HomeStack', {
             screen: 'HomeScreen',
             params: {
               uid: route.params.uid,

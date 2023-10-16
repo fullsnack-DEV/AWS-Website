@@ -10,6 +10,7 @@ import {
   FlatList,
   Dimensions,
   Platform,
+  BackHandler,
 } from 'react-native';
 import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -387,7 +388,9 @@ export default function EventScreen({navigation, route}) {
       .then(() => {
         setTimeout(() => {
           setloading(false);
-          navigation.navigate('ScheduleScreen');
+          navigation.navigate('App', {
+            screen: 'Schedule',
+          });
         }, 1000);
       })
       .catch((e) => {
@@ -474,7 +477,9 @@ export default function EventScreen({navigation, route}) {
       .then(() => {
         setloading(false);
         goingModalRef.current.dismiss();
-        navigation.goBack();
+        navigation.navigate('App', {
+          screen: 'Schedule',
+        });
       })
       .catch((e) => {
         setloading(false);
@@ -484,13 +489,29 @@ export default function EventScreen({navigation, route}) {
       });
   };
 
+  useEffect(() => {
+    const backAction = () => {
+      navigation.navigate('App', {
+        screen: 'Schedule',
+      });
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [navigation]);
+
   return (
     <SafeAreaView style={styles.mainContainerStyle}>
       <ScreenHeader
         title={strings.event}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          navigation.goBack();
+          navigation.navigate('App', {
+            screen: 'Schedule',
+          });
         }}
         rightIcon1={images.unlikeImage}
         rightIcon2={images.vertical3Dot}
@@ -1117,9 +1138,12 @@ export default function EventScreen({navigation, route}) {
         goingList={going}
         isOwner={eventData.owner_id === authContext.entity.uid}
         onProfilePress={(obj) => {
-          navigation.push('HomeScreen', {
-            role: obj.entity_type,
-            uid: obj.user_id ?? obj.group_id,
+          navigation.push('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              role: obj.entity_type,
+              uid: obj.user_id ?? obj.group_id,
+            },
           });
         }}
         onRemovePress={(item) => {

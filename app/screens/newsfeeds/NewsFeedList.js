@@ -60,9 +60,12 @@ const NewsFeedList = ({
   const onProfilePress = useCallback(
     (item) => {
       if (item?.actor?.id) {
-        navigation.push('HomeScreen', {
-          uid: item.actor.id,
-          role: item?.actor?.data?.entity_type,
+        navigation.push('HomeStack', {
+          screen: 'HomeScreen',
+          params: {
+            uid: item.actor.id,
+            role: item?.actor?.data?.entity_type,
+          },
         });
       }
     },

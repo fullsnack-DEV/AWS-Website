@@ -205,9 +205,19 @@ export default function EntitySearchScreen({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [smallLoader, setSmallLoader] = useState(false);
 
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
   useEffect(() => {
     const backAction = () => {
-      navigation.popToTop();
+      handleBackPress();
       return true;
     };
 
@@ -217,7 +227,7 @@ export default function EntitySearchScreen({navigation, route}) {
     );
 
     return () => backHandler.remove();
-  }, [navigation]);
+  }, [handleBackPress]);
 
   useEffect(() => {
     getStorage('appSetting').then((setting) => {
@@ -1734,22 +1744,27 @@ export default function EntitySearchScreen({navigation, route}) {
                 }
                 onPress={(sportsObj) => {
                   if (currentSubTab === strings.generalText) {
-                    navigation.navigate('HomeScreen', {
-                      uid: [
-                        Verbs.entityTypeUser,
-                        Verbs.entityTypePlayer,
-                      ]?.includes(item?.entity_type)
-                        ? item?.user_id
-                        : item?.group_id,
-                      role: [
-                        Verbs.entityTypeUser,
-                        Verbs.entityTypePlayer,
-                      ]?.includes(item?.entity_type)
-                        ? Verbs.entityTypeUser
-                        : item.entity_type,
-                      backButtonVisible: true,
-                      menuBtnVisible: false,
-                      comeFrom: 'EntitySearchScreen',
+                    navigation.navigate('HomeStack', {
+                      screen: 'HomeScreen',
+                      params: {
+                        uid: [
+                          Verbs.entityTypeUser,
+                          Verbs.entityTypePlayer,
+                        ]?.includes(item?.entity_type)
+                          ? item?.user_id
+                          : item?.group_id,
+                        role: [
+                          Verbs.entityTypeUser,
+                          Verbs.entityTypePlayer,
+                        ]?.includes(item?.entity_type)
+                          ? Verbs.entityTypeUser
+                          : item.entity_type,
+                        backButtonVisible: true,
+                        menuBtnVisible: false,
+                        comeFrom: 'EntitySearchScreen',
+                        parentStack: route.params?.parentStack,
+                        screen: route.params.screen,
+                      },
                     });
                   } else if (sportsObj.length > 1) {
                     const data = {
@@ -1760,14 +1775,17 @@ export default function EntitySearchScreen({navigation, route}) {
                     setPlayerDetail(data);
                     setPlayerDetailPopup(true);
                   } else {
-                    navigation.navigate('SportActivityHome', {
-                      sport: sportsObj[0]?.sport,
-                      sportType:
-                        sportsObj[0]?.sport_type ?? Verbs.sportTypeSingle,
-                      uid: item?.user_id,
-                      entityType: sportsObj[0]?.type,
-                      showPreview: true,
-                      backScreen: 'EntitySearchScreen',
+                    navigation.navigate('HomeStack', {
+                      screen: 'SportActivityHome',
+                      params: {
+                        sport: sportsObj[0]?.sport,
+                        sportType:
+                          sportsObj[0]?.sport_type ?? Verbs.sportTypeSingle,
+                        uid: item?.user_id,
+                        entityType: sportsObj[0]?.type,
+                        showPreview: true,
+                        backScreen: 'EntitySearchScreen',
+                      },
                     });
                   }
                 }}
@@ -1837,22 +1855,27 @@ export default function EntitySearchScreen({navigation, route}) {
                   (currentSubTab === strings.clubsTitleText && clubFilters)
                 }
                 onPress={() => {
-                  navigation.navigate('HomeScreen', {
-                    uid: [
-                      Verbs.entityTypeUser,
-                      Verbs.entityTypePlayer,
-                    ]?.includes(item?.entity_type)
-                      ? item?.user_id
-                      : item?.group_id,
-                    role: [
-                      Verbs.entityTypeUser,
-                      Verbs.entityTypePlayer,
-                    ]?.includes(item?.entity_type)
-                      ? Verbs.entityTypeUser
-                      : item.entity_type,
-                    backButtonVisible: true,
-                    menuBtnVisible: false,
-                    comeFrom: 'EntitySearchScreen',
+                  navigation.navigate('HomeStack', {
+                    screen: 'HomeScreen',
+                    params: {
+                      uid: [
+                        Verbs.entityTypeUser,
+                        Verbs.entityTypePlayer,
+                      ]?.includes(item?.entity_type)
+                        ? item?.user_id
+                        : item?.group_id,
+                      role: [
+                        Verbs.entityTypeUser,
+                        Verbs.entityTypePlayer,
+                      ]?.includes(item?.entity_type)
+                        ? Verbs.entityTypeUser
+                        : item.entity_type,
+                      backButtonVisible: true,
+                      menuBtnVisible: false,
+                      comeFrom: 'EntitySearchScreen',
+                      parentStack: route.params?.parentStack,
+                      screen: route.params?.screen,
+                    },
                   });
                 }}
                 onPressChallengeButton={(dataObj) => {
@@ -1907,6 +1930,7 @@ export default function EntitySearchScreen({navigation, route}) {
         )}
       </View>
     ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       currentSubTab,
       currentTab,
@@ -1929,13 +1953,16 @@ export default function EntitySearchScreen({navigation, route}) {
       ]}
       onPress={() => {
         setPlayerDetailPopup(false);
-        navigation.navigate('SportActivityHome', {
-          sport: item.sport,
-          sportType: item?.sport_type,
-          uid: playerDetail.uid,
-          entityType: playerDetail.entity_type,
-          showPreview: true,
-          backScreen: 'EntitySearchScreen',
+        navigation.navigate('HomeStack', {
+          screen: 'SportActivityHome',
+          params: {
+            sport: item.sport,
+            sportType: item?.sport_type,
+            uid: playerDetail.uid,
+            entityType: playerDetail.entity_type,
+            showPreview: true,
+            backScreen: 'EntitySearchScreen',
+          },
         });
       }}
       disabled={item.is_hide}>
@@ -1970,11 +1997,7 @@ export default function EntitySearchScreen({navigation, route}) {
       <ScreenHeader
         title={strings.searchText}
         leftIcon={images.backArrow}
-        leftIconPress={() =>
-          navigation.navigate('Local Home', {
-            screen: 'LocalHomeScreen',
-          })
-        }
+        leftIconPress={() => handleBackPress()}
       />
       <ActivityLoader visible={loading} />
       <View style={styles.floatingInput}>
@@ -2314,11 +2337,14 @@ export default function EntitySearchScreen({navigation, route}) {
                   ) {
                     setChallengePopup(false);
 
-                    navigation.navigate('ChallengeScreen', {
-                      setting: obj,
-                      sportName: currentUserData?.sport,
-                      sportType: currentUserData?.sport_type,
-                      groupObj: currentUserData,
+                    navigation.navigate('HomeStack', {
+                      screen: 'ChallengeScreen',
+                      params: {
+                        setting: obj,
+                        sportName: currentUserData?.sport,
+                        sportType: currentUserData?.sport_type,
+                        groupObj: currentUserData,
+                      },
                     });
                   } else {
                     Alert.alert(strings.teamHaveNoCompletedSetting);
@@ -2350,11 +2376,14 @@ export default function EntitySearchScreen({navigation, route}) {
                   } else {
                     setChallengePopup(false);
 
-                    navigation.navigate('ChallengeScreen', {
-                      setting: obj,
-                      sportName: obj?.sport,
-                      sportType: obj?.sport_type,
-                      groupObj: currentUserData,
+                    navigation.navigate('HomeStack', {
+                      screen: 'ChallengeScreen',
+                      params: {
+                        setting: obj,
+                        sportName: obj?.sport,
+                        sportType: obj?.sport_type,
+                        groupObj: currentUserData,
+                      },
                     });
                   }
                 }
@@ -2416,11 +2445,14 @@ export default function EntitySearchScreen({navigation, route}) {
                         format(strings.groupPaused, myGroupDetail.group_name),
                       );
                     } else {
-                      navigation.navigate('InviteChallengeScreen', {
-                        setting: obj,
-                        sportName: currentUserData?.sport,
-                        sportType: currentUserData?.sport_type,
-                        groupObj: currentUserData,
+                      navigation.navigate('HomeStack', {
+                        screen: 'InviteChallengeScreen',
+                        params: {
+                          setting: obj,
+                          sportName: currentUserData?.sport,
+                          sportType: currentUserData?.sport_type,
+                          groupObj: currentUserData,
+                        },
                       });
                     }
                   } else {
@@ -2439,10 +2471,13 @@ export default function EntitySearchScreen({navigation, route}) {
                               if (currentUserData?.is_pause === true) {
                                 Alert.alert(strings.yourTeamPaused);
                               } else {
-                                navigation.navigate('ManageChallengeScreen', {
-                                  groupObj: currentUserData,
-                                  sportName: currentUserData.sport,
-                                  sportType: currentUserData?.sport_type,
+                                navigation.navigate('AccountStack', {
+                                  screen: 'ManageChallengeScreen',
+                                  params: {
+                                    groupObj: currentUserData,
+                                    sportName: currentUserData.sport,
+                                    sportType: currentUserData?.sport_type,
+                                  },
                                 });
                               }
                             },
@@ -2480,11 +2515,14 @@ export default function EntitySearchScreen({navigation, route}) {
                     Alert.alert(strings.yourTeamPaused);
                   } else {
                     setChallengePopup(false);
-                    navigation.navigate('InviteChallengeScreen', {
-                      setting: obj,
-                      sportName: currentUserData?.sport,
-                      sportType: currentUserData?.sport_type,
-                      groupObj: currentUserData,
+                    navigation.navigate('HomeStack', {
+                      screen: 'InviteChallengeScreen',
+                      params: {
+                        setting: obj,
+                        sportName: currentUserData?.sport,
+                        sportType: currentUserData?.sport_type,
+                        groupObj: currentUserData,
+                      },
                     });
                   }
                 }

@@ -1459,7 +1459,7 @@ export default function TennisRecording({navigation, route}) {
       )}
       <ActionSheet
         ref={actionSheet}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={periodOpetions}
         cancelButtonIndex={periodOpetions.length - 1}
         // destructiveButtonIndex={1}
@@ -1497,7 +1497,7 @@ export default function TennisRecording({navigation, route}) {
       />
       <ActionSheet
         ref={headerActionSheet}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={
           gameObj?.status === GameStatus.playing ||
           gameObj?.status === GameStatus.paused ||

@@ -49,7 +49,9 @@ export default function GoingListScreen({navigation, route}) {
     removeAttendeeFromEvent(eventData.cal_id, [userData.user_id], authContext)
       .then(() => {
         setloading(false);
-        navigation.pop(2);
+        navigation.navigate('App', {
+          screen: 'Schedule',
+        });
       })
       .catch((e) => {
         setloading(false);

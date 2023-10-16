@@ -34,10 +34,13 @@ const prepareSportsSubMenuOfUser = (
           : images.accountMyScoreKeeping,
         iconRight: images.settingSport,
         navigateTo: {
-          screenName: 'SportAccountSettingScreen',
+          screenName: 'AccountStack',
           data: {
-            type: entityType,
-            sport: item,
+            screen: 'SportAccountSettingScreen',
+            params: {
+              type: entityType,
+              sport: item,
+            },
           },
         },
         sport: item,
@@ -58,12 +61,15 @@ const prepareGroupsSubMenu = (groupList) =>
         icon: item.thumbnail,
         // iconRight: images.settingSport,
         navigateTo: {
-          screenName: 'HomeScreen',
+          screenName: 'HomeStack',
           data: {
-            uid: item.group_id,
-            role: item.entity_type,
-            backButtonVisible: true,
-            menuBtnVisible: false,
+            screen: 'HomeScreen',
+            params: {
+              uid: item.group_id,
+              role: item.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            },
           },
         },
       }));
@@ -80,7 +86,7 @@ const paymentMethodMenu = () => [
         option: strings.paymentMethodTitle,
         icon: images.Payment_method,
         navigateTo: {
-          screenName: 'Account',
+          screenName: 'AccountStack',
           data: {
             screen: 'PaymentMethodsScreen',
             params: {
@@ -93,9 +99,12 @@ const paymentMethodMenu = () => [
         option: strings.payoutMethodTitle,
         icon: images.Payout_method,
         navigateTo: {
-          screenName: 'PayoutMethodList',
+          screenName: 'AccountStack',
           data: {
-            comeFrom: 'AccountScreen',
+            screen: 'PayoutMethodList',
+            params: {
+              comeFrom: 'AccountScreen',
+            },
           },
         },
       },
@@ -112,7 +121,7 @@ const invoicesMenuForUser = () => [
         option: strings.invoicereceived,
         icon: images.invoiceRecievedIcon,
         navigateTo: {
-          screenName: 'Account',
+          screenName: 'AccountStack',
           data: {
             screen: 'InvoiceReceivedScreen',
             params: {
@@ -125,9 +134,12 @@ const invoicesMenuForUser = () => [
         option: strings.invoicesent,
         icon: images.invoiceIcon,
         navigateTo: {
-          screenName: 'InvoiceSentScreen',
+          screenName: 'AccountStack',
           data: {
-            comeFrom: 'AccountScreen',
+            screen: 'InvoiceSentScreen',
+            params: {
+              comeFrom: 'AccountScreen',
+            },
           },
         },
       },
@@ -148,7 +160,7 @@ const invoicesMenuForGroup = () => [
         option: strings.invoicereceived,
         icon: images.invoiceRecievedIcon,
         navigateTo: {
-          screenName: 'Account',
+          screenName: 'AccountStack',
           data: {
             screen: 'InvoiceReceivedScreen',
             params: {
@@ -161,15 +173,19 @@ const invoicesMenuForGroup = () => [
         option: strings.invoicesent,
         icon: images.invoiceIcon,
         navigateTo: {
-          screenName: 'InvoiceSentScreen',
+          screenName: 'AccountStack',
           data: {
-            comeFrom: 'AccountScreen',
+            screenName: 'InvoiceSentScreen',
+            params: {
+              comeFrom: 'AccountScreen',
+            },
           },
         },
       },
     ],
   },
 ];
+
 export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
   try {
     const userSport = await getUserDetails(authContext.entity.uid, authContext);
@@ -222,7 +238,10 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
             iconRight: images.nextArrow,
             menuOptionType: Verbs.entityTypePlayer,
             navigateTo: {
-              screenName: 'RegisterPlayer',
+              screenName: 'AccountStack',
+              data: {
+                screen: 'RegisterPlayer',
+              },
             },
           },
         ],
@@ -238,7 +257,10 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
             iconRight: images.nextArrow,
             menuOptionType: Verbs.entityTypeReferee,
             navigateTo: {
-              screenName: 'RegisterReferee',
+              screenName: 'AccountStack',
+              data: {
+                screen: 'RegisterReferee',
+              },
             },
           },
         ],
@@ -254,7 +276,10 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
             iconRight: images.nextArrow,
             menuOptionType: Verbs.entityTypeScorekeeper,
             navigateTo: {
-              screenName: 'RegisterScorekeeper',
+              screenName: 'AccountStack',
+              data: {
+                screen: 'RegisterScorekeeper',
+              },
             },
           },
         ],
@@ -269,7 +294,10 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
             icon: images.createTeam,
             iconRight: images.nextArrow,
             navigateTo: {
-              screenName: 'CreateTeamForm1',
+              screenName: 'AccountStack',
+              data: {
+                screen: 'CreateTeamForm1',
+              },
             },
           },
         ],
@@ -284,7 +312,10 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
             icon: images.createClub,
             iconRight: images.nextArrow,
             navigateTo: {
-              screenName: 'CreateClubForm1',
+              screenName: 'AccountStack',
+              data: {
+                screen: 'CreateClubForm1',
+              },
             },
           },
         ],
@@ -305,7 +336,10 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
         key: strings.settingsTitleText,
         icon: images.accountSettingPrivacy,
         navigateTo: {
-          screenName: 'UserSettingPrivacyScreen',
+          screenName: 'AccountStack',
+          data: {
+            screen: 'UserSettingPrivacyScreen',
+          },
         },
       },
     ];
@@ -332,11 +366,14 @@ export const prepareTeamMenu = (authContext, clubs) => {
       key: strings.incomingChallengeSettingsTitle,
       icon: images.manageChallengeIcon,
       navigateTo: {
-        screenName: 'ManageChallengeScreen',
+        screenName: 'AccountStack',
         data: {
-          groupObj: authContext.entity.obj,
-          sportName: authContext.entity?.obj?.sport,
-          sportType: authContext.entity?.obj?.sport_type,
+          screen: 'ManageChallengeScreen',
+          params: {
+            groupObj: authContext.entity.obj,
+            sportName: authContext.entity?.obj?.sport,
+            sportType: authContext.entity?.obj?.sport_type,
+          },
         },
       },
     },
@@ -361,7 +398,10 @@ export const prepareTeamMenu = (authContext, clubs) => {
       key: strings.settingsTitleText,
       icon: images.accountSettingPrivacy,
       navigateTo: {
-        screenName: 'GroupSettingPrivacyScreen',
+        screenName: 'AccountStack',
+        data: {
+          screen: 'GroupSettingPrivacyScreen',
+        },
       },
     },
   ];
@@ -389,7 +429,10 @@ export const prepareClubMenu = (authContext, teams) => {
       key: strings.settingsTitleText,
       icon: images.accountSettingPrivacy,
       navigateTo: {
-        screenName: 'GroupSettingPrivacyScreen',
+        screenName: 'AccountStack',
+        data: {
+          screen: 'GroupSettingPrivacyScreen',
+        },
       },
     },
   ];

@@ -195,8 +195,8 @@ const HomeScreen = ({navigation, route}) => {
         break;
 
       case strings.recruitingMembers:
-        navigation.navigate('News Feed', {
-          screen: 'GroupMembersScreen',
+        navigation.navigate('App', {
+          screen: 'Members',
           params: {
             groupID: route.params.uid,
             groupObj: currentUserData,
@@ -316,7 +316,7 @@ const HomeScreen = ({navigation, route}) => {
               routeParams.comeFrom = 'EntitySearchScreen';
             }
 
-            navigation.navigate('Message', {
+            navigation.navigate('MessageStack', {
               screen: 'MessageChatScreen',
               params: {
                 channel,
@@ -400,24 +400,31 @@ const HomeScreen = ({navigation, route}) => {
       route.params?.comeFrom === 'IncomingChallengeSettings' ||
       route.params?.comeFrom === 'IncomingChallengeScreen'
     ) {
-      navigation.navigate('AccountScreen');
+      navigation.navigate('App', {screen: 'Account'});
     } else if (route.params?.comeFrom === 'EntitySearchScreen') {
-      navigation.push('EntitySearchScreen');
+      navigation.navigate('EntitySearchScreen', {
+        parentStack: route.params?.parentStack,
+        screen: route.params.screen,
+      });
     } else if (route.params?.comeFrom === 'MessageChatScreen') {
-      navigation.navigate('Message', {
+      navigation.navigate('MessageStack', {
         screen: 'MessageChatScreen',
         params: {channel: route.params.routeParams},
       });
     } else if (route.params?.comeFrom === 'createClub') {
-      navigation.navigate('AccountScreen');
+      navigation.navigate('App', {screen: 'Account'});
+    } else if (route.params?.comeFrom === 'ScheduleScreen') {
+      navigation.navigate('App', {screen: 'Account'});
     } else if (route.params?.comeFrom) {
       navigation.navigate(route.params.comeFrom, {
         ...route.params.routeParams,
       });
     } else if (route.params?.isEntityCreated) {
-      navigation.pop(4);
+      navigation.navigate('App', {
+        screen: 'Account',
+      });
     } else if (route.params?.comeFrom === 'LocalHomeScreen') {
-      navigation.navigate('Local Home', {
+      navigation.navigate('LocalHomeStack', {
         screen: 'JoinTeamScreen',
       });
     } else {

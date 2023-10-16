@@ -235,12 +235,16 @@ const RegisterScorekeeper = ({navigation, route}) => {
         leftIcon={images.backArrow}
         leftIconStyle={{width: 40}}
         leftIconPress={() => {
-          if (route.params?.comeFrom) {
+          if (route.params?.comeFrom === 'LocalHome') {
+            navigation.navigate('App', {
+              screen: 'LocalHome',
+            });
+          } else if (route.params?.comeFrom) {
             navigation.navigate(route.params.comeFrom, {
               ...route.params.routeParams,
             });
           } else {
-            navigation.navigate('AccountScreen');
+            navigation.navigate('App', {screen: 'Account'});
           }
         }}
         containerStyle={{paddingBottom: 14}}

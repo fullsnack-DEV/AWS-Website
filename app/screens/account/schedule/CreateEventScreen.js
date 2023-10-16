@@ -524,8 +524,11 @@ export default function CreateEventScreen({navigation, route}) {
       .then((response) => {
         setTimeout(() => {
           setloading(false);
-          navigation.navigate('ScheduleScreen', {
-            event: response.payload[0],
+          navigation.navigate('App', {
+            screen: 'Schedule',
+            params: {
+              event: response.payload[0],
+            },
           });
         }, 1000);
       })
@@ -688,11 +691,13 @@ export default function CreateEventScreen({navigation, route}) {
           text: strings.discardText,
           onPress: () => {
             if (route.params?.comeName === 'LocalHomeScreen') {
-              navigation.navigate('Local Home', {
-                screen: 'LocalHomeScreen',
+              navigation.navigate('App', {
+                screen: 'LocalHome',
               });
             } else {
-              navigation.goBack();
+              navigation.navigate('App', {
+                screen: 'Schedule',
+              });
             }
           },
         },
@@ -1497,7 +1502,7 @@ export default function CreateEventScreen({navigation, route}) {
 
       <ActionSheet
         ref={actionSheet}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={[strings.camera, strings.album, strings.cancelTitle]}
         cancelButtonIndex={2}
         onPress={(index) => {
@@ -1510,7 +1515,7 @@ export default function CreateEventScreen({navigation, route}) {
       />
       <ActionSheet
         ref={actionSheetWithDelete}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={[
           strings.camera,
           strings.album,

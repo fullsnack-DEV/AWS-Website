@@ -140,7 +140,10 @@ export default function LookingForSettingScreen({navigation, route}) {
         leftIcon={images.backArrow}
         leftIconPress={() => {
           if (comeFrom) {
-            navigation.navigate(comeFrom, {...routeParams});
+            navigation.navigate('HomeStack', {
+              screen: comeFrom,
+              params: {...routeParams},
+            });
           } else {
             navigation.goBack();
           }

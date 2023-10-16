@@ -180,8 +180,18 @@ const WritePostScreen = ({navigation, route}) => {
       };
 
       if (route.params?.comeFrom === 'HomeScreen') {
-        navigation.navigate('Account', {
+        navigation.navigate('HomeStaack', {
           screen: 'HomeScreen',
+          params: {
+            isCreatePost: true,
+            dataParams,
+            imageArray,
+            ...route.params.routeParams,
+          },
+        });
+      } else if (route.params?.comeFrom === 'UserGalleryScreen') {
+        navigation.navigate('HomeStack', {
+          screen: 'UserGalleryScreen',
           params: {
             isCreatePost: true,
             dataParams,
@@ -197,10 +207,13 @@ const WritePostScreen = ({navigation, route}) => {
           ...route.params.routeParams,
         });
       } else {
-        navigation.navigate('FeedsScreen', {
-          isCreatePost: true,
-          dataParams,
-          imageArray,
+        navigation.navigate('App', {
+          screen: 'NewsFeed',
+          params: {
+            isCreatePost: true,
+            dataParams,
+            imageArray,
+          },
         });
       }
     }
@@ -771,7 +784,10 @@ const WritePostScreen = ({navigation, route}) => {
         {
           text: strings.remove,
           style: 'destructive',
-          onPress: () => navigation.goBack(),
+          onPress: () =>
+            navigation.navigate('App', {
+              screen: 'NewsFeed',
+            }),
         },
       ]);
     } else if (
@@ -787,11 +803,30 @@ const WritePostScreen = ({navigation, route}) => {
         {
           text: strings.discardText,
           style: 'destructive',
-          onPress: () => navigation.goBack(),
+          onPress: () =>
+            navigation.navigate('App', {
+              screen: 'NewsFeed',
+            }),
         },
       ]);
+    } else if (route.params?.comeFrom === 'HomeScreen') {
+      navigation.navigate('HomeStack', {
+        screen: 'HomeScreen',
+        params: {
+          ...route.params.routeParams,
+        },
+      });
+    } else if (route.params?.comeFrom === 'UserGalleryScreen') {
+      navigation.navigate('HomeStack', {
+        screen: 'UserGalleryScreen',
+        params: {
+          ...route.params.routeParams,
+        },
+      });
     } else {
-      navigation.goBack();
+      navigation.navigate('App', {
+        screen: 'NewsFeed',
+      });
     }
   }, [
     navigation,
@@ -799,6 +834,8 @@ const WritePostScreen = ({navigation, route}) => {
     searchText,
     selectImage,
     tagsOfEntity,
+    route.params?.comeFrom,
+    route.params.routeParams,
   ]);
 
   useEffect(() => {

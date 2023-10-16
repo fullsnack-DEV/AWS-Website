@@ -55,7 +55,10 @@ const ChannelView = ({channel, latestMessagePreview}) => {
     <TouchableHighlight
       onPress={async () => {
         await channel.watch();
-        navigate('MessageChatScreen', {channel});
+        navigate('MessageStack', {
+          screen: 'MessageChatScreen',
+          params: {channel},
+        });
       }}
       underlayColor={colors.grayBackgroundColor}
       style={styles.parent}>

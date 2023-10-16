@@ -131,10 +131,13 @@ export default function MemberProfileCreatedScreen({navigation, route}) {
         borderColor={colors.whiteColor}
         marginTop={20}
         onPress={() =>
-          navigation.navigate('GroupMembersScreen', {
-            groupID: entity.uid,
-            groupObj: entity.obj,
-            showBackArrow: true,
+          navigation.navigate('App', {
+            screen: 'Members',
+            params: {
+              groupID: entity.uid,
+              groupObj: entity.obj,
+              showBackArrow: true,
+            },
           })
         }
         fontSize={16}

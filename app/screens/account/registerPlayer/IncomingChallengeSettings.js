@@ -284,7 +284,8 @@ export default function IncomingChallengeSettings({navigation, route}) {
                     [
                       {
                         text: strings.okTitleText,
-                        onPress: () => navigation.navigate('AccountScreen'),
+                        onPress: () =>
+                          navigation.navigate('App', {screen: 'Account'}),
                       },
                     ],
                     {cancelable: false},
@@ -304,15 +305,18 @@ export default function IncomingChallengeSettings({navigation, route}) {
                   getUnreadNotificationCount(authContext);
                   await onSwitchProfile(response.payload);
 
-                  navigation.navigate('HomeScreen', {
-                    uid: response.payload.group_id,
-                    role: response.payload.entity_type,
-                    backButtonVisible: true,
-                    menuBtnVisible: false,
-                    isEntityCreated: true,
-                    groupName: response.payload.group_name,
-                    entityObj: response.payload,
-                    comeFrom: Verbs.INCOMING_CHALLENGE_SCREEN,
+                  navigation.navigate('HomeStack', {
+                    screen: 'HomeScreen',
+                    params: {
+                      uid: response.payload.group_id,
+                      role: response.payload.entity_type,
+                      backButtonVisible: true,
+                      menuBtnVisible: false,
+                      isEntityCreated: true,
+                      groupName: response.payload.group_name,
+                      entityObj: response.payload,
+                      comeFrom: Verbs.INCOMING_CHALLENGE_SCREEN,
+                    },
                   });
                 })
                 .catch((e) => {
@@ -343,7 +347,8 @@ export default function IncomingChallengeSettings({navigation, route}) {
                 [
                   {
                     text: strings.okTitleText,
-                    onPress: () => navigation.navigate('AccountScreen'),
+                    onPress: () =>
+                      navigation.navigate('App', {screen: 'Account'}),
                   },
                 ],
                 {cancelable: false},
@@ -362,15 +367,18 @@ export default function IncomingChallengeSettings({navigation, route}) {
               setShowSwitchScreen(false);
               await onSwitchProfile(response.payload);
               getUnreadNotificationCount(authContext);
-              navigation.navigate('HomeScreen', {
-                uid: response.payload.group_id,
-                role: response.payload.entity_type,
-                backButtonVisible: true,
-                menuBtnVisible: false,
-                isEntityCreated: true,
-                groupName: response.payload.group_name,
-                entityObj: response.payload,
-                comeFrom: Verbs.INCOMING_CHALLENGE_SCREEN,
+              navigation.navigate('HomeStack', {
+                screen: 'HomeScreen',
+                params: {
+                  uid: response.payload.group_id,
+                  role: response.payload.entity_type,
+                  backButtonVisible: true,
+                  menuBtnVisible: false,
+                  isEntityCreated: true,
+                  groupName: response.payload.group_name,
+                  entityObj: response.payload,
+                  comeFrom: Verbs.INCOMING_CHALLENGE_SCREEN,
+                },
               });
             })
             .catch((e) => {
@@ -555,9 +563,12 @@ export default function IncomingChallengeSettings({navigation, route}) {
               ...route.params.routeParams,
             });
           } else {
-            navigation.navigate('AccountScreen', {
-              createdSportName: sportName,
-              sportType: sportType,
+            navigation.navigate('App', {
+              screen: 'Account',
+              params: {
+                createdSportName: sportName,
+                sportType: sportType,
+              },
             });
           }
         }}
@@ -585,31 +596,40 @@ export default function IncomingChallengeSettings({navigation, route}) {
         }}
         searchPlayer={(filters) => {
           if (filters.sport_type === Verbs.sportTypeSingle) {
-            navigation.navigate('LookingForChallengeScreen', {
-              filters,
+            navigation.navigate('AccountStack', {
+              screen: 'LookingForChallengeScreen',
+              params: {
+                filters,
+              },
             });
           }
           if (filters.sport_type === Verbs.sportTypeDouble) {
-            navigation.navigate('AccountScreen', {
-              createdSportName: sportName,
-              sportType: sportType,
-              isSearchPlayerForDoubles: true,
+            navigation.navigate('App', {
+              screen: 'Account',
+              params: {
+                createdSportName: sportName,
+                sportType: sportType,
+                isSearchPlayerForDoubles: true,
+              },
             });
           }
         }}
         onUserClick={(userData) => {
           if (!userData) return;
-          navigation.navigate('HomeScreen', {
-            uid:
-              userData.entity_type === Verbs.entityTypePlayer ||
-              userData.entity_type === Verbs.entityTypeUser
-                ? userData.user_id
-                : userData.group_id,
-            role: ['user', 'player']?.includes(userData.entity_type)
-              ? 'user'
-              : userData.entity_type,
-            backButtonVisible: true,
-            menuBtnVisible: false,
+          navigation.navigate('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid:
+                userData.entity_type === Verbs.entityTypePlayer ||
+                userData.entity_type === Verbs.entityTypeUser
+                  ? userData.user_id
+                  : userData.group_id,
+              role: ['user', 'player']?.includes(userData.entity_type)
+                ? 'user'
+                : userData.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            },
           });
         }}
         searchTeam={(filters) => {
@@ -631,15 +651,19 @@ export default function IncomingChallengeSettings({navigation, route}) {
         goToSportActivityHome={({sport, sportType}) => {
           setCongratulationsModal(false);
 
-          navigation.navigate('SportActivityHome', {
-            sport,
-            sportType,
-            uid: authContext.entity.uid,
-            selectedTab: strings.infoTitle,
-            backScreen: 'AccountScreen',
-            backScreenParams: {
-              createdSportName: sport,
+          navigation.navigate('HomeStack', {
+            screen: 'SportActivityHome',
+            params: {
+              sport,
               sportType,
+              uid: authContext.entity.uid,
+              selectedTab: strings.infoTitle,
+              parentStack: 'App',
+              backScreen: 'Account',
+              backScreenParams: {
+                createdSportName: sport,
+                sportType,
+              },
             },
           });
         }}

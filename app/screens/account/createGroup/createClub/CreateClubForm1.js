@@ -209,15 +209,18 @@ export default function CreateClubForm1({navigation, route}) {
               getUnreadNotificationCount(authContext);
               onSwitchProfile(response.payload);
               setloading(false);
-              navigation.push('HomeScreen', {
-                uid: response.payload.group_id,
-                role: response.payload.entity_type,
-                backButtonVisible: false,
-                menuBtnVisible: false,
-                isEntityCreated: true,
-                groupName: response.payload.group_name,
-                entityObj: response.payload,
-                restrictReturn: true,
+              navigation.navigate('HomeStack', {
+                screen: 'HomeScreen',
+                params: {
+                  uid: response.payload.group_id,
+                  role: response.payload.entity_type,
+                  backButtonVisible: false,
+                  menuBtnVisible: false,
+                  isEntityCreated: true,
+                  groupName: response.payload.group_name,
+                  entityObj: response.payload,
+                  restrictReturn: true,
+                },
               });
 
               setShowSwitchScreen(false);
@@ -250,16 +253,19 @@ export default function CreateClubForm1({navigation, route}) {
           getUnreadNotificationCount(authContext);
           onSwitchProfile(response.payload);
           setloading(false);
-          navigation.push('HomeScreen', {
-            uid: response.payload.group_id,
-            role: response.payload.entity_type,
-            backButtonVisible: false,
-            menuBtnVisible: false,
-            isEntityCreated: true,
-            groupName: response.payload.group_name,
-            entityObj: response.payload,
-            comeFrom: 'createClub',
-            restrictReturn: true,
+          navigation.navigate('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid: response.payload.group_id,
+              role: response.payload.entity_type,
+              backButtonVisible: false,
+              menuBtnVisible: false,
+              isEntityCreated: true,
+              groupName: response.payload.group_name,
+              entityObj: response.payload,
+              comeFrom: 'createClub',
+              restrictReturn: true,
+            },
           });
 
           setShowSwitchScreen(false);
@@ -701,7 +707,7 @@ export default function CreateClubForm1({navigation, route}) {
 
       <ActionSheet
         ref={actionSheet}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={[strings.camera, strings.album, strings.cancelTitle]}
         cancelButtonIndex={2}
         onPress={(index) => {
@@ -719,7 +725,7 @@ export default function CreateClubForm1({navigation, route}) {
 
       <ActionSheet
         ref={actionSheetWithDelete}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={[
           strings.camera,
           strings.album,

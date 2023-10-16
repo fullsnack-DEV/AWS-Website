@@ -362,11 +362,14 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                 handleSelection(item);
               }}
               onClickProfile={() => {
-                navigation.navigate('HomeScreen', {
-                  uid: item.user_id ?? item.group_id,
-                  role: item.entity_type,
-                  comeFrom: 'UserTagSelectionListScreen',
-                  routeParams: {...route.params, tagsOfEntity: seletedEntity},
+                navigation.navigate('Account', {
+                  screen: 'HomeScreen',
+                  params: {
+                    uid: item.user_id ?? item.group_id,
+                    role: item.entity_type,
+                    comeFrom: 'UserTagSelectionListScreen',
+                    routeParams: {...route.params, tagsOfEntity: seletedEntity},
+                  },
                 });
               }}
               entityId={item.user_id ?? item.group_id}

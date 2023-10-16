@@ -49,9 +49,12 @@ const NewsFeedDescription = ({
           (fetchedEntity.entity_id === authContext.entity.uid &&
             isNewsFeedScreen)
         ) {
-          navigation.push('HomeScreen', {
-            uid: fetchedEntity.entity_id,
-            role: fetchedEntity.entity_type ?? Verbs.entityTypePlayer,
+          navigation.push('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid: fetchedEntity.entity_id,
+              role: fetchedEntity.entity_type ?? Verbs.entityTypePlayer,
+            },
           });
         }
       }

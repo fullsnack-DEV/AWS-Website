@@ -147,11 +147,14 @@ const EditWrapperScreen = ({navigation, route}) => {
       .then(async (res) => {
         setLoading(false);
         await setAuthContextData(res.payload, authContext);
-        navigation.navigate('SportActivityHome', {
-          sport: sportObj?.sport,
-          sportType: sportObj?.sport_type,
-          uid: userData.user_id,
-          entityType,
+        navigation.navigate('HomeStack', {
+          screen: 'SportActivityHome',
+          params: {
+            sport: sportObj?.sport,
+            sportType: sportObj?.sport_type,
+            uid: userData.user_id,
+            entityType,
+          },
         });
       })
       .catch((error) => {
@@ -170,7 +173,10 @@ const EditWrapperScreen = ({navigation, route}) => {
         isValid = isValid && true;
       } else if (item.url && !item.title) {
         isValid = false;
-        Alert.alert(strings.warningCertificateTitleText,''[{text:strings.okTitleText}]);
+        Alert.alert(
+          strings.warningCertificateTitleText,
+          ''[{text: strings.okTitleText}],
+        );
       } else if (item.title && !item.url) {
         isValid = false;
         Alert.alert(strings.warningCertificateImageText);

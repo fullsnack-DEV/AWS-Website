@@ -56,7 +56,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
         break;
 
       case strings.sportActivityText:
-        navigation.navigate('SportActivityScreen');
+        navigation.navigate('HomeStack', {screen: 'SportActivityScreen'});
         break;
 
       case strings.team:

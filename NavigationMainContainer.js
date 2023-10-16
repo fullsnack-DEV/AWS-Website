@@ -23,6 +23,17 @@ import {getSportsList} from './app/api/Games';
 import {connectUserToStreamChat} from './app/utils/streamChat';
 import images from './app/Constants/ImagePath';
 import colors from './app/Constants/Colors';
+import MessageNavigator from './app/navigation/MessageNavigator';
+import ScheduleNavigator from './app/navigation/ScheduleNavigator';
+import NewsFeedNavigator from './app/navigation/NewsFeedNavigator';
+import MembersNavigator from './app/navigation/MembersNavigator';
+import LocalHomeNavigator from './app/navigation/LocalHomeNavigator';
+import EntitySearchScreen from './app/screens/EntitySearchScreen';
+import AccountNavigator from './app/navigation/AccountNavigator';
+import HomeNavigator from './app/navigation/HomeNavigator';
+import NotificationNavigator from './app/navigation/NotificationNavigator';
+import ReservationNavigator from './app/navigation/ReservationNavigator';
+import SingleNotificationScreen from './app/screens/notificationsScreen/SingleNotificationScreen';
 
 // import {getUnreadNotificationCount} from './app/utils/accountUtils';
 
@@ -141,6 +152,75 @@ function NavigationMainContainer() {
                   name="App"
                   component={AppNavigator}
                   options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="MessageStack"
+                  component={MessageNavigator}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="ScheduleStack"
+                  component={ScheduleNavigator}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="NewsFeedStack"
+                  component={NewsFeedNavigator}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="MebmersStack"
+                  component={MembersNavigator}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="LocalHomeStack"
+                  component={LocalHomeNavigator}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="EntitySearchScreen"
+                  component={EntitySearchScreen}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="AccountStack"
+                  component={AccountNavigator}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="HomeStack"
+                  component={HomeNavigator}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="NotificationNavigator"
+                  component={NotificationNavigator}
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="ReservationNavigator"
+                  component={ReservationNavigator}
+                  options={{headerShown: false}}
+                />
+
+                <Stack.Screen
+                  name="SingleNotificationScreen"
+                  component={SingleNotificationScreen}
+                  options={{
+                    title: '',
+                    headerTintColor: colors.blackColor,
+                    headerTitleStyle: {
+                      fontWeight: '500',
+                    },
+                    headerStyle: {
+                      backgroundColor: colors.whiteColor,
+                      borderBottomColor: colors.grayColor,
+                      borderBottomWidth: 0.3,
+                    },
+                  }}
                 />
                 <Stack.Screen
                   name="LoneStack"

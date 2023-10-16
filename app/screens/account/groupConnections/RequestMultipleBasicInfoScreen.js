@@ -192,8 +192,11 @@ export default function RequestMultipleBasicInfoScreen({navigation, route}) {
             showAlert(
               format(strings.multipleRequestSent, selectedList?.length),
               () => {
-                navigation.navigate('GroupMembersScreen', {
-                  ...route.params?.routeParams,
+                navigation.navigate('App', {
+                  screen: 'Members',
+                  params: {
+                    ...route.params?.routeParams,
+                  },
                 });
               },
             );

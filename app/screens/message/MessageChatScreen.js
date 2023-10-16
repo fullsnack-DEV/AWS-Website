@@ -82,7 +82,7 @@ const MessageChatScreen = ({navigation, route}) => {
   const handleBackPress = useCallback(() => {
     navigation.setOptions({});
     if (route.params?.comeFrom === 'MembersProfileScreen') {
-      navigation.navigate('News Feed', {
+      navigation.navigate('NewsFeed', {
         screen: 'MembersProfileScreen',
         params: {...route.params.routeParams, from: 'chatscreen'},
       });
@@ -91,7 +91,9 @@ const MessageChatScreen = ({navigation, route}) => {
         ...route.params.routeParams,
       });
     } else {
-      navigation.replace('MessageMainScreen');
+      navigation.replace('App', {
+        screen: 'Message',
+      });
     }
   }, [navigation, route.params?.comeFrom, route.params.routeParams]);
 

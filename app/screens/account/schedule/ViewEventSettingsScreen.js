@@ -260,7 +260,12 @@ export default function ViewEventSettingsScreen({navigation}) {
         <ActivityLoader visible={loading} />
         <Header
           leftComponent={
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('App', {
+                  screen: 'Schedule',
+                });
+              }}>
               <Image source={images.backArrow} style={styles.backImageStyle} />
             </TouchableOpacity>
           }
@@ -274,9 +279,12 @@ export default function ViewEventSettingsScreen({navigation}) {
               style={{padding: 2}}
               onPress={async () => {
                 await onDonePress();
-                navigation.navigate('ScheduleScreen', {
-                  refresh: Date.now(),
-                  optionValue,
+                navigation.navigate('App', {
+                  screen: 'Schedule',
+                  params: {
+                    refresh: Date.now(),
+                    optionValue,
+                  },
                 });
               }}>
               <Text style={{fontFamily: fonts.RMedium, fontSize: 16}}>

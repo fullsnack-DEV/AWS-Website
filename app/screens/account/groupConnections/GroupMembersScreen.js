@@ -116,14 +116,6 @@ export default function GroupMembersScreen({navigation, route}) {
     return () => backHandler.remove();
   }, []);
 
-  useEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: {
-        display: isFocused ? 'flex' : 'none',
-      },
-    });
-  }, [navigation, isFocused]);
-
   const callGroup = async (groupIDs, authContexts) => {
     const response = await getGroupDetails(groupIDs, authContexts);
 
@@ -472,12 +464,15 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const onPressProfile = useCallback(
     (item) => {
-      navigation.navigate('MembersProfileScreen', {
-        memberID: item?.user_id,
-        whoSeeID: item?.group_id,
-        groupID,
-        members,
-        routeParams: {...route.params},
+      navigation.navigate('MebmersStack', {
+        screen: 'MembersProfileScreen',
+        params: {
+          memberID: item?.user_id,
+          whoSeeID: item?.group_id,
+          groupID,
+          members,
+          routeParams: {...route.params},
+        },
       });
     },
     [navigation, groupID, members, route.params],
@@ -546,16 +541,18 @@ export default function GroupMembersScreen({navigation, route}) {
   const onPressProfilePhotoAndTitle = useCallback(
     (item) => {
       if (item.connected) {
-        navigation.push('HomeScreen', {
-          uid: item?.user_id,
-          role: Verbs.entityTypeUser,
-          backButtonVisible: true,
-          menuBtnVisible: false,
-          Groupmembers: members,
+        navigation.push('Account', {
+          screen: 'HomeScreen',
+          params: {
+            uid: item?.user_id,
+            role: Verbs.entityTypeUser,
+            backButtonVisible: true,
+            menuBtnVisible: false,
+          },
         });
       }
     },
-    [members, navigation],
+    [navigation],
   );
 
   const checkIfClubAdmin = async () => {
@@ -885,8 +882,11 @@ export default function GroupMembersScreen({navigation, route}) {
           if (index === 0) {
             setShowInviteMember(true);
           } else if (index === 1) {
-            navigation.navigate('CreateMemberProfileForm1', {
-              routeParams: {...route.params},
+            navigation.navigate('MebmersStack', {
+              screen: 'CreateMemberProfileForm1',
+              params: {
+                routeParams: {...route.params},
+              },
             });
           }
         }}

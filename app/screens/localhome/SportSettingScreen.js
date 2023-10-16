@@ -19,7 +19,7 @@ import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import AuthContext from '../../auth/context';
-import { strings } from '../../../Localization/translation';
+import {strings} from '../../../Localization/translation';
 
 export default function SportSettingScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -39,7 +39,7 @@ export default function SportSettingScreen({navigation, route}) {
   const onPressSave = () => {
     console.log('sportsSource', sportsSource);
     Utility.setStorage('sportSetting', sportsSource).then(() => {
-      navigation.navigate('LocalHomeScreen');
+      navigation.navigate('App', {screen: 'LocalHomeScreen'});
     });
   };
   const keyExtractor = useCallback((item, index) => index.toString(), []);

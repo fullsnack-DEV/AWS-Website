@@ -203,13 +203,16 @@ const HomeFeed = ({
           navigation={navigation}
           postDataItem={currentUserData}
           onWritePostPress={() => {
-            navigation.navigate('WritePostScreen', {
-              postData: currentUserData,
-              selectedImageList: [],
-              comeFrom: 'HomeScreen',
-              routeParams: {
-                uid: routeParams.uid,
-                role: routeParams.role,
+            navigation.navigate('NewsFeedStack', {
+              screen: 'WritePostScreen',
+              params: {
+                postData: currentUserData,
+                selectedImageList: [],
+                comeFrom: 'HomeScreen',
+                routeParams: {
+                  uid: routeParams.uid,
+                  role: routeParams.role,
+                },
               },
             });
           }}

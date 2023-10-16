@@ -2,7 +2,7 @@ import React from 'react';
 
 import {createStackNavigator} from '@react-navigation/stack';
 
-import MessageMainScreen from '../screens/message/MessageMainScreen';
+// import MessageMainScreen from '../screens/message/MessageMainScreen';
 import MessageInviteScreen from '../screens/message/MessageInviteScreen';
 import MessageNewGroupScreen from '../screens/message/MessageNewGroupScreen';
 import MessageSearchScreen from '../screens/message/search/MessageSearchScreen';
@@ -13,12 +13,12 @@ import LongTextMessageScreen from '../screens/message/LongTextMessageScreen';
 const Stack = createStackNavigator();
 
 const MessageNavigator = () => (
-  <Stack.Navigator initialRouteName="MessageMainScreen">
-    <Stack.Screen
+  <Stack.Navigator initialRouteName="MessageChatScreen">
+    {/* <Stack.Screen
       name="MessageMainScreen"
       component={MessageMainScreen}
       options={{headerShown: false}}
-    />
+    /> */}
     <Stack.Screen
       name="MessageSearchScreen"
       component={MessageSearchScreen}
@@ -35,7 +35,6 @@ const MessageNavigator = () => (
       component={MessageInviteScreen}
       options={{headerShown: false}}
     />
-
     <Stack.Screen
       name="MessageNewGroupScreen"
       component={MessageNewGroupScreen}

@@ -854,7 +854,7 @@ export default function EditLineUpScreen({navigation, route}) {
       </Modal>
       <ActionSheet
         ref={actionSheet}
-        // title={'News Feed Post'}
+        // title={'NewsFeed Post'}
         options={[
           strings.clearAllStarting,
           strings.clearAllSubs,

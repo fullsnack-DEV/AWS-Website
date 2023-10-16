@@ -60,10 +60,13 @@ function SingleImage({
   };
 
   const toggleModal = useCallback(() => {
-    navigation.navigate('FeedViewScreen', {
-      feedItem: item,
-      updateCommentCount,
-      onLikePress,
+    navigation.navigate('NewsFeedStack', {
+      screen: 'FeedViewScreen',
+      params: {
+        feedItem: item,
+        updateCommentCount,
+        onLikePress,
+      },
     });
   }, [item, navigation, onLikePress, updateCommentCount]);
 
