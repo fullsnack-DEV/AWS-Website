@@ -485,9 +485,9 @@ const OrderedSporList = ({
         type="ios"
         closeModal={() => setShowAddActivityModal(false)}
         optionList={[
-          strings.addPlaying,
-          strings.addRefereeing,
-          strings.addScorekeeping,
+          strings.playingTitleText,
+          strings.refereeingTitleText,
+          strings.scorekeepingTitleText,
         ]}
         onSelect={(option) => {
           setShowAddActivityModal(false);

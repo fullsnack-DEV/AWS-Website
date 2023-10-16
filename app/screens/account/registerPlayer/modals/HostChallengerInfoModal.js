@@ -15,7 +15,7 @@ const HostChallengerInfoModal = ({
     isVisible={isVisible}
     closeModal={closeModal}
     modalType={ModalTypes.style2}
-    ratio={2.5}>
+    ratio={2.4}>
     <View style={{marginBottom: 25}}>
       <Text style={styles.titleText}>{strings.matchHostChallengeText}</Text>
       <Text style={styles.description}>
@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     marginBottom: 10,
-  },
+
+     },
   description: {
     fontSize: 16,
     lineHeight: 24,

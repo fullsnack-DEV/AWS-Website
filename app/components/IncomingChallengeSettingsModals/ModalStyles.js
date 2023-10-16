@@ -58,13 +58,14 @@ const styles = StyleSheet.create({
   linkButton: {
     alignSelf: 'flex-end',
     marginTop: -30,
-   
-  },
+    
+
+     },
   linkButtonText: {
     fontSize: 14,
     lineHeight: 21,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RLight,
+    fontFamily:fonts.RLight,
     textDecorationLine: 'underline',
     
   },

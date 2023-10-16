@@ -68,6 +68,7 @@ const SportActivityModal = ({
         if (sportObj?.sport_type === Verbs.singleSport) {
           setOptions([
             strings.incomingChallengeSettingsTitle,
+            strings.IncomingMatchOfferSettings,
             strings.lookingForClubText,
             strings.deactivateActivityText,
           ]);
@@ -305,6 +306,7 @@ const SportActivityModal = ({
           </ScrollView>
         </View>
         <BottomSheet
+        type='ios'
           isVisible={showMoreOptions}
           closeModal={() => {
             setShowMoreOptions(false);
@@ -341,7 +343,8 @@ const styles = StyleSheet.create({
     padding: 0,
     paddingHorizontal: 10,
     paddingVertical: 2,
-  },
+
+     },
 });
 
 export default SportActivityModal;

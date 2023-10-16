@@ -100,9 +100,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     fontFamily: fonts.RRegular,
-    marginBottom: 25,
+    marginBottom: 18,
   },
   linkButtonText: {
+    fontFamily: fonts.RRegular,
     fontSize: 14,
     lineHeight: 21,
     textDecorationLine: 'underline',

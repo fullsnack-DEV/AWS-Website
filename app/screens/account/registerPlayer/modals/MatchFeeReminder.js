@@ -67,7 +67,7 @@ const MatchFeeReminder = ({
                 </Text>
               </Text>
 
-              <Text style={[styles.description, {marginBottom: 23}]}>
+              <Text style={[styles.description, {marginBottom: 20,}]}>
                 {strings.matchFeeModalInfo}
               </Text>
               {/* {isDoubleSport ? (
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     lineHeight: 24,
-    color: colors.lightBlackColor,
+    color: colors.blackColor,
     fontFamily: fonts.RRegular,
     textAlign: 'left',
   },

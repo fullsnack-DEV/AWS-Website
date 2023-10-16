@@ -346,6 +346,7 @@ export default {
   languageTitle: 'en_Language',
   languagePlaceholder: 'en_What languages can you speak?',
   refereeFeesTitle: 'en_Referee Fee',
+  rEFereeFeesText:'en_REferee Fee',
   deleteTitle: 'en_Delete',
   log: 'en_Log',
   profilePhotoUser: 'en_Profile Photo Of User Account',
@@ -2243,7 +2244,7 @@ export default {
   writeplayerreviewplacholder:
     "en_Describe what you thought about the player's performance and sportsmanship pertaining to the match.",
 
-  sportQuestion: 'en_What sports do you play?',
+  sportQuestion: 'en_What sport do you play?',
   sportQuestionDescription:
     'en_Do you play multiple sports? Register as a player in one sport first, and then register in another sport. ',
   bioDescription: 'en_Describe yourself as a player in this sport.',
@@ -2251,7 +2252,7 @@ export default {
   sportNameValidationText: 'en_Please fill in sport.',
   incomingChallengeSettingsTitle: 'en_Incoming Challenge Settings',
   incomingChallengeSettingsInfo:
-    'en_Please review your incoming challenge settings. These settings will be applied to (the match reservation process) and  the match (a match) ONLY when you are the match host.\nWhen you are the  Challenger, the opponent’s incoming challenge settings Will be applied.',
+    'en_Please review your incoming challenge settings.These settings are only applicable to the match reservation when you are the match host. When you are the Challenger, the opponent’s incoming challenge settings Will be applied.',
   congratulationModalInfo:
     'en_You can now not only send challenges to others, but you can also receive a challenge from them.',
   searchForPlayer: 'en_Search for more players',
@@ -2292,7 +2293,7 @@ export default {
     'en_The match result has an effect on TC points and TC rankings of the challenger and you.',
   gameTypeFriendlyInfo:
     'en_The match result has no effect on TC points and TC rankings of the challenger and you.',
-  matchFeeModalTitle: 'en_How much do you want to Charge for The match fee?',
+  matchFeeModalTitle: 'en_How much do you want to Charge for the match fee?',
   chooseCancellationPolicyTitle: 'en_Choose Cancellation Policy.',
   refeereModalTitle:
     'en_How many referees will you hire for a match at your own cost?',
@@ -3163,6 +3164,7 @@ export default {
   creatChatRoomForEvent:
     'en_Do you want to create a chat room and invite all attendees?',
   createAndInvite: 'en_Create & Invite',
+  IncomingMatchOfferSettings:'en_Incoming Match Offer Settings',
   userAccountdeactivated: 'en_This user has deactivated their account.',
   userDeactivatedSport:
     'en_This Sport Activity has been deactivated. Do you want to Activate it again?',
