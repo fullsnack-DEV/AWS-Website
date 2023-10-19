@@ -301,7 +301,8 @@ function TrashScreen({navigation, route}) {
     verb.includes(NotificationType.inviteToDoubleTeam) ||
     verb.includes(NotificationType.inviteToEvent) ||
     verb.includes(NotificationType.sendBasicInfoToMember) ||
-    verb.includes(NotificationType.userRequestedJoingroup);
+    verb.includes(NotificationType.userRequestedJoingroup) ||
+    verb.includes(NotificationType.followRequest);
 
   const openHomePage = (item) => {
     if (item?.entityType && item?.entityId) {

@@ -346,7 +346,7 @@ export default {
   languageTitle: 'en_Language',
   languagePlaceholder: 'en_What languages can you speak?',
   refereeFeesTitle: 'en_Referee Fee',
-  rEFereeFeesText:'en_REferee Fee',
+  rEFereeFeesText: 'en_REferee Fee',
   deleteTitle: 'en_Delete',
   log: 'en_Log',
   profilePhotoUser: 'en_Profile Photo Of User Account',
@@ -995,6 +995,7 @@ export default {
   isYourTeamRecruitingMember:
     'en_Are you recruiting a new member? Do you want to display the badge below on your {0} profile?',
   whoCanJoinGroupText: 'en_Who Can Join {0}',
+  whoCanSeeFollwerText: 'en_Who Can Follow',
   configureYourRefereeSetting:
     'en_You can’t send offer, please configure your referee setting first.',
   emailPasswordWrong: 'en_The email and password you entered dont match.',
@@ -1398,9 +1399,11 @@ export default {
   doesNotRepeat: 'en_Does not repeat',
   areYouSureQuitCreateEvent:
     'en_Are you sure you want to quit to create this event?',
-   areYouWantToUnsavedChanges:'Are you sure you want to discard your unsaved change?',
-   quit: 'en_Quit',
-  moreThanOneOrganizerJoinText:"If a user other than the organizer joins an event, the organizer can't edit the date & time, venue, event fee, and refund policy of the event.",
+  areYouWantToUnsavedChanges:
+    'Are you sure you want to discard your unsaved change?',
+  quit: 'en_Quit',
+  moreThanOneOrganizerJoinText:
+    "If a user other than the organizer joins an event, the organizer can't edit the date & time, venue, event fee, and refund policy of the event.",
   thisFeaturesNotAvailable:
     'en_This feature is not available (on this device / in this context)',
   eventTitleValidation: 'en_Please Enter Event Title.',
@@ -2741,7 +2744,7 @@ export default {
   inviteCanceled: 'en_Invite Canceled',
   removeTeamFromClub: 'en_Remove Team from Club',
   leaveClub: 'en_Leave Club',
-  alertTitle1: 'en_Congratualtions! You are now a member of "{0}".',
+  alertTitle1: 'en_Congratulations! You are now a member of "{0}".',
   alertTitle2: 'en_Your join request is sent to "{0}". ',
   alertTitle4: 'en_Request Canceled',
   alertTitle5: 'en_Invite Declined',
@@ -3164,8 +3167,25 @@ export default {
   creatChatRoomForEvent:
     'en_Do you want to create a chat room and invite all attendees?',
   createAndInvite: 'en_Create & Invite',
-  IncomingMatchOfferSettings:'en_Incoming Match Offer Settings',
   userAccountdeactivated: 'en_This user has deactivated their account.',
   userDeactivatedSport:
     'en_This Sport Activity has been deactivated. Do you want to Activate it again?',
+  followReqSentText: 'en_Follow Request Sent',
+  cancelFollowReqText: 'en_Cancel Follow Request',
+  youHaveLeftTheteam: 'en_You have left the {0}',
+  followReqCanceled: 'en_Follow request is cancelled',
+  noAvailableContentToShow: 'en_No available contents to show',
+  wouldyouAcceptText:
+    'en_Would you like to accept {0} as a member of your team?',
+  joinReqDeclineText: 'en_Join request declined',
+  followReqDeclineText: 'en_Follow request has been declined',
+  joinReqAccepted: 'en_Join request accepted',
+  followReqAccepted: 'en_Follow request has been accepted',
+  thisGroupIsInviteOnly: 'en_This {0} is invite only',
+  IncomingMatchOfferSettings: 'en_Incoming Match Offer Settings',
+  userAccountdeactivated: 'en_This user has deactivated their account.',
+  userDeactivatedSport:
+    'en_This Sport Activity has been deactivated. Do you want to Activate it again?',
+  joinRequestTitle: 'en_Join Request',
+  thisGroupIsPausedText: 'en_This {0} is paused',
 };

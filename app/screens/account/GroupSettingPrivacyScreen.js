@@ -81,10 +81,11 @@ export default function GroupSettingPrivacyScreen({navigation}) {
 
       case strings.account:
         Alert.alert(strings.thisFeatureisUnderDevelopment);
+
         break;
 
       case strings.privacyText:
-        Alert.alert(strings.thisFeatureisUnderDevelopment);
+        navigation.navigate('GroupOwnPrivacySetting');
         break;
 
       case strings.pauseClubTitle:

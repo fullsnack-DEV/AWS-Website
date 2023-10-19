@@ -515,7 +515,9 @@ const AccountScreen = ({navigation, route}) => {
       <AccountHeader
         notificationCount={unreadNotificationCount}
         onPressNotification={() =>
-          navigation.navigate('NotificationsListScreen')
+          navigation.navigate('NotificationNavigator', {
+            screen: 'NotificationsListScreen',
+          })
         }
       />
       <ActivityLoader visible={onLoad} />

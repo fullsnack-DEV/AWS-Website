@@ -140,8 +140,7 @@ const SetsGamesDurationModal = ({gameDuration = {}, onChange = () => {}}) => {
           <View
             style={{
               marginTop: 15,
-              paddingLeft: 27,
-              paddingRight: 15,
+              paddingLeft: 60,
             }}>
             <Text style={[styles.label, {marginBottom: 10}]}>
               {strings.tieBreakerAppliedAt}
@@ -204,7 +203,7 @@ const SetsGamesDurationModal = ({gameDuration = {}, onChange = () => {}}) => {
                 )}
               </TouchableOpacity>
 
-              <Text style={styles.label}>
+              <Text style={[styles.label, {flexShrink: 1}]}>
                 {strings.winSetByOneInTieBreaker}
               </Text>
             </View>
@@ -236,7 +235,7 @@ const SetsGamesDurationModal = ({gameDuration = {}, onChange = () => {}}) => {
                 )}
               </TouchableOpacity>
 
-              <Text style={styles.label}>
+              <Text style={[styles.label, {flexShrink: 1}]}>
                 {strings.winSetByTwoInTieBreaker}
               </Text>
             </View>

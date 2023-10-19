@@ -304,6 +304,7 @@ const AppNavigator = ({navigation}) => {
           tabBarTestID: 'message-tab',
           headerShown: false,
           lazy: true,
+          unmountOnBlur: false,
           ...(unreadCount > 0 && {
             tabBarBadge: unreadCount > 300 ? '300+' : unreadCount,
           }),

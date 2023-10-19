@@ -15,13 +15,12 @@ function PRNotificationTeamInvite({
   onPress,
   onRespond,
   disabled = false,
+  isRepond = false,
 }) {
   const [dataDictionary, setDataDictionary] = useState();
 
   useEffect(() => {
     parseInviteRequest(item, selectedEntity).then((data) => {
-      console.log('Invite request component:=>', data);
-
       setDataDictionary(data);
     });
   }, [item, selectedEntity]);
@@ -76,18 +75,37 @@ function PRNotificationTeamInvite({
             </View>
           </View>
 
-          <TouchableOpacity
-            style={
-              disabled
-                ? [styles.buttonContainer, {opacity: 0.5}]
-                : styles.buttonContainer
-            }
-            disabled={disabled}
-            onPress={onRespond}>
-            <Text style={styles.buttonText}>
-              {strings.venueDetailsPlaceholder}
-            </Text>
-          </TouchableOpacity>
+          {!isRepond ? (
+            <TouchableOpacity
+              style={
+                disabled
+                  ? [styles.buttonContainer, {opacity: 0.5}]
+                  : styles.buttonContainer
+              }
+              disabled={disabled}
+              onPress={onRespond}>
+              <Text style={styles.buttonText}>
+                {strings.venueDetailsPlaceholder}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={
+                disabled
+                  ? [styles.respondbuttonContainer, {opacity: 0.5}]
+                  : styles.respondbuttonContainer
+              }
+              disabled={disabled}
+              onPress={onRespond}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  {color: colors.whiteColor, textTransform: 'uppercase'},
+                ]}>
+                {strings.respond}
+              </Text>
+            </TouchableOpacity>
+          )}
         </TouchableOpacity>
       )}
     </View>
@@ -126,6 +144,11 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
     backgroundColor: colors.grayBackgroundColor,
+  },
+  respondbuttonContainer: {
+    padding: 5,
+    borderRadius: 5,
+    backgroundColor: colors.themeColor,
   },
   buttonText: {
     fontSize: 12,

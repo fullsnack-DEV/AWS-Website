@@ -79,6 +79,9 @@ export default function UserSettingPrivacyScreen({navigation}) {
         break;
 
       case strings.privacyText:
+        navigation.navigate('GroupOwnPrivacySetting', {
+          type: Verbs.entityTypeUser,
+        });
         break;
 
       case strings.timezoneText:

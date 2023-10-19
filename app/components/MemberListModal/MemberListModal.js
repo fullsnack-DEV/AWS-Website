@@ -355,7 +355,7 @@ const MemberListModal = ({
       onRightButtonPress={() => {
         if (!doubleExist) {
           closeList();
-          navigation.navigate('Account', {
+          navigation.navigate('AccountStack', {
             screen: 'CreateTeamForm1',
             params: {
               sports: doubleSport,

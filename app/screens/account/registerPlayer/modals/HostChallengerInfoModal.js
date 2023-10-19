@@ -38,8 +38,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RBold,
     marginBottom: 10,
-
-     },
+  },
   description: {
     fontSize: 16,
     lineHeight: 24,

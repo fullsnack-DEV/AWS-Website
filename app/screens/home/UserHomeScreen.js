@@ -11,7 +11,12 @@ import {format} from 'react-string-format';
 import colors from '../../Constants/Colors';
 
 import AuthContext from '../../auth/context';
-import {followUser, unfollowUser, inviteUser} from '../../api/Users';
+import {
+  followUser,
+  unfollowUser,
+  inviteUser,
+  cancelFollowRequest,
+} from '../../api/Users';
 import {cancelGroupInvite, deleteMember} from '../../api/Groups';
 import {acceptRequest, declineRequest} from '../../api/Notificaitons';
 import ActivityLoader from '../../components/loader/ActivityLoader';
@@ -31,6 +36,7 @@ import SwitchAccountLoader from '../../components/account/SwitchAccountLoader';
 import images from '../../Constants/ImagePath';
 import useSwitchAccount from '../../hooks/useSwitchAccount';
 import {showAlert} from '../../utils';
+import JoinRequestModal from '../../components/notificationComponent/JoinRequestModal';
 
 const UserHomeScreen = ({
   navigation,
@@ -42,15 +48,20 @@ const UserHomeScreen = ({
   userData = {},
   pulltoRefresh,
   routeParams = {},
+  loggedInGroupMembers = [],
 }) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
-  const [Groupmembers] = useState(routeParams.Groupmembers);
+  const JoinRequestModalRef = useRef(null);
+  const [Groupmembers] = useState(
+    routeParams.Groupmembers || loggedInGroupMembers,
+  );
+  const [messageText, setMessageText] = useState('');
   const [currentUserData, setCurrentUserData] = useState({});
   const [loading, setloading] = useState(false);
   const [switchUser, setSwitchUser] = useState({});
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
-
+  const [followRequestSent, setFollowRequestSent] = useState(false);
   const [addSportActivityModal, setAddSportActivityModal] = useState(false);
 
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
@@ -82,14 +93,35 @@ const UserHomeScreen = ({
     };
     setloading(true);
     followUser(params, userID, authContext)
-      .then(() => {
-        const obj = {
-          ...currentUserData,
-          is_following: true,
-          follower_count: currentUserData.follower_count + 1,
-        };
-        setCurrentUserData(obj);
-        setRefreshModal(true);
+      .then((res) => {
+        if (res.payload.error_code === errorCode.invitePlayerToJoin) {
+          const {user_message} = res.payload;
+          setFollowRequestSent(true);
+          showAlert(user_message);
+
+          setloading(false);
+        } else if (res.payload.is_request) {
+          const obj = {
+            ...currentUserData,
+            follow_request: {
+              activity_id: res.payload.id,
+              follower_id: res.payload.foreign_id,
+              following_id: res.payload.target_uid,
+            },
+          };
+
+          setCurrentUserData(obj);
+          setloading(false);
+        } else if (typeof res.payload === 'boolean') {
+          const obj = {
+            ...currentUserData,
+            is_following: true,
+            follower_count: currentUserData.follower_count + 1,
+          };
+          setCurrentUserData(obj);
+          setRefreshModal(true);
+          setloading(false);
+        }
         setloading(false);
       })
       .catch((error) => {
@@ -115,6 +147,7 @@ const UserHomeScreen = ({
               ? currentUserData.follower_count - 1
               : 0,
         };
+
         setCurrentUserData(obj);
         setRefreshModal(true);
         setloading(false);
@@ -136,6 +169,7 @@ const UserHomeScreen = ({
     inviteUser(params, userID, authContext)
       .then((response) => {
         setloading(false);
+
         const inviteRequest = {
           activity_id: response.payload.id,
           entity_type: authContext.entity.role,
@@ -143,7 +177,9 @@ const UserHomeScreen = ({
           invited_id: userID,
           action: Verbs.inviteVerb,
         };
+
         const obj = {...currentUserData, invite_request: inviteRequest};
+
         setCurrentUserData(obj);
         setTimeout(() => {
           Alert.alert(
@@ -175,6 +211,7 @@ const UserHomeScreen = ({
       acceptRequest({}, requestId, authContext)
         .then(() => {
           // Succefully join case
+          JoinRequestModalRef.current.close();
           mainFlatListRef.current.close();
           const obj = {...currentUserData};
           if (authContext.entity.role === Verbs.entityTypeTeam) {
@@ -214,6 +251,7 @@ const UserHomeScreen = ({
       setloading(true);
       declineRequest(requestId, authContext)
         .then(() => {
+          JoinRequestModalRef.current.close();
           const obj = {
             ...currentUserData,
             invite_request: {
@@ -242,7 +280,7 @@ const UserHomeScreen = ({
   );
 
   const deleteMemberValidations = (groupId, memberId) => {
-    const adminCount = Groupmembers.filter((item) => item.is_admin === true);
+    const adminCount = Groupmembers?.filter((item) => item.is_admin === true);
 
     if (
       Groupmembers.length === 1 &&
@@ -378,16 +416,6 @@ const UserHomeScreen = ({
     deleteMember(groupId, memberId, authContext)
       .then(async (response) => {
         const validator = errorCode.ChildMemberError;
-        const obj = {...currentUserData};
-        if (authContext.entity.role === Verbs.entityTypeTeam) {
-          obj.joined_teams = (currentUserData.joined_teams ?? []).filter(
-            (item) => item.group_id !== authContext.entity.uid,
-          );
-        } else if (authContext.entity.role === Verbs.entityTypeClub) {
-          obj.joined_clubs = (currentUserData.joined_clubs ?? []).filter(
-            (item) => item.group_id !== authContext.entity.uid,
-          );
-        }
 
         if (toaccount && Object.keys(response.payload).length === 0) {
           const updatedManagedEntities = authContext.managedEntities.filter(
@@ -419,7 +447,19 @@ const UserHomeScreen = ({
             {cancelable: false},
           );
         } else {
-          navigation.replace('GroupMembersScreen');
+          setloading(false);
+
+          const obj = {...currentUserData};
+          if (authContext.entity.role === Verbs.entityTypeTeam) {
+            obj.teamIds = (currentUserData.teamIds ?? []).filter(
+              (item) => item !== authContext.entity.uid,
+            );
+          } else if (authContext.entity.role === Verbs.entityTypeClub) {
+            obj.clubIds = (currentUserData.clubIds ?? []).filter(
+              (item) => item !== authContext.entity.uid,
+            );
+          }
+
           setCurrentUserData(obj);
         }
       })
@@ -466,11 +506,44 @@ const UserHomeScreen = ({
       });
   }, [authContext, currentUserData]);
 
+  const callCancelReq = async () => {
+    const params = {
+      follower_id: currentUserData?.follow_request.follower_id,
+      following_id: currentUserData?.follow_request.following_id,
+      activity_id: currentUserData?.follow_request.activity_id,
+    };
+
+    setloading(true);
+
+    cancelFollowRequest(params, authContext)
+      .then(() => {
+        showAlert(strings.followReqCanceled);
+        const obj = {
+          ...currentUserData,
+        };
+        delete obj.follow_request;
+
+        setCurrentUserData(obj);
+        setloading(false);
+      })
+      .catch((error) => {
+        showAlert(error.message);
+        setloading(false);
+      });
+  };
+
   const onUserAction = useCallback(
     (action) => {
-      console.log(action, 'frommact');
-
       switch (action) {
+        case strings.requestPendingText:
+          setMessageText(currentUserData?.invite_request?.message);
+          JoinRequestModalRef.current.present();
+          break;
+
+        case strings.cancelFollowReqText:
+          callCancelReq();
+          break;
+
         case Verbs.followVerb:
           callFollowUser();
           break;
@@ -504,7 +577,7 @@ const UserHomeScreen = ({
 
         case strings.acceptInvitateRequest:
         case strings.acceptRequet:
-          onAccept(currentUserData.invite_request.activity_id);
+          // onAccept(currentUserData.invite_request.activity_id);
           break;
 
         case strings.declineMemberRequest:
@@ -542,9 +615,14 @@ const UserHomeScreen = ({
       navigation,
       onAccept,
       onDecline,
+      navigation,
       cancelGroupInvitation,
 
       authContext.entity.role,
+      authContext.entity.uid,
+
+      userID,
+      cancelGroupInvitation,
     ],
   );
 
@@ -602,6 +680,10 @@ const UserHomeScreen = ({
         navigation.navigate('AccountStack', {screen: 'RegisterScorekeeper'});
         break;
 
+      case strings.cancel:
+        setAddSportActivityModal(false);
+        break;
+
       default:
         break;
     }
@@ -623,6 +705,7 @@ const UserHomeScreen = ({
         }}
         onAction={onUserAction}
         isAdmin={isAdmin}
+        followRequestSent={followRequestSent}
         loggedInEntity={authContext.entity}
       />
       <View style={styles.activityList}>
@@ -695,6 +778,7 @@ const UserHomeScreen = ({
           strings.addPlaying,
           strings.addRefereeing,
           strings.addScorekeeping,
+          strings.cancel,
         ]}
         onSelect={handleSportActivityOption}
       />
@@ -718,6 +802,18 @@ const UserHomeScreen = ({
             : images.profilePlaceHolder
         }
         stopLoading={() => {}}
+      />
+
+      <JoinRequestModal
+        JoinRequestModalRef={JoinRequestModalRef}
+        currentUserData={currentUserData}
+        onAcceptPress={() =>
+          onAccept(currentUserData.invite_request.activity_id)
+        }
+        onDeclinePress={() =>
+          onDecline(currentUserData.invite_request.activity_id)
+        }
+        messageText={messageText}
       />
     </>
   );

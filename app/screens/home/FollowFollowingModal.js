@@ -62,6 +62,7 @@ export default function FollowFollowingModal({
   followModalRef,
   closeModal,
   groupID,
+  showFollower = true,
 }) {
   const snapPoints = useMemo(() => ['95%', '95%'], []);
   const [loading, setLoading] = useState(false);
@@ -72,7 +73,9 @@ export default function FollowFollowingModal({
   const navigation = useNavigation();
 
   useEffect(() => {
-    fetchList(groupID);
+    if (groupID && showFollower) {
+      fetchList(groupID);
+    }
   }, [groupID, visibleMemberModal]);
 
   const callUnfollowUser = useCallback(
@@ -207,7 +210,7 @@ export default function FollowFollowingModal({
   };
 
   const renderList = () => {
-    if (followersList.length > 0) {
+    if (followersList.length > 0 && showFollower) {
       const filteredList = followersList.filter((item) => {
         const itemName = item.group_name ?? item.full_name;
         return itemName.toLowerCase().includes(searchQuery.toLowerCase());
@@ -254,9 +257,14 @@ export default function FollowFollowingModal({
 
     return (
       <View style={{flex: 1}}>
-        <TCNoDataView
-          title={format(strings.noTabsFoundText_dy, Verbs.privacyTypeFollowers)}
-        />
+        {showFollower && (
+          <TCNoDataView
+            title={format(
+              strings.noTabsFoundText_dy,
+              Verbs.privacyTypeFollowers,
+            )}
+          />
+        )}
       </View>
     );
   };
@@ -307,6 +315,18 @@ export default function FollowFollowingModal({
               </TouchableOpacity>
             )}
           </View>
+
+          {!showFollower && (
+            <View style={styles.emptyContainer}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  textAlignVertical: 'center',
+                }}>
+                {strings.noAvailableContentToShow}
+              </Text>
+            </View>
+          )}
 
           {loading ? <UserListShimmer /> : renderList()}
         </View>
@@ -361,5 +381,11 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     padding: 0,
+  },
+  emptyContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    flex: 1,
   },
 });

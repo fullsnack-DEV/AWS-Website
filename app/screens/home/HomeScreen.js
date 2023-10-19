@@ -62,6 +62,7 @@ const HomeScreen = ({navigation, route}) => {
   const [visibleInviteMember, setVisibleInviteMember] = useState(false);
   const [settingObject, setSettingObject] = useState();
   const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
+  const [loggedInGroupMembers, setLoggedInGroupMembers] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -69,10 +70,10 @@ const HomeScreen = ({navigation, route}) => {
     });
   }, [navigation]);
 
-  const getUserData = (uid, admin, fromRefresh) => {
+  const getUserData = (uid, fromRefresh) => {
     setLoading(!fromRefresh);
 
-    getUserDetails(uid, authContext, !admin)
+    getUserDetails(uid, authContext, true)
       .then((res1) => {
         const userDetails = res1.payload;
         const groupQuery = {
@@ -104,7 +105,7 @@ const HomeScreen = ({navigation, route}) => {
       .catch((errResponse) => {
         setLoading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, errResponse);
+          Alert.alert(strings.alertmessagetitle, errResponse.message);
         }, 10);
         navigation.goBack();
       });
@@ -137,6 +138,16 @@ const HomeScreen = ({navigation, route}) => {
       });
   };
 
+  const getLoggedinGroupMembers = (userId) => {
+    getGroupMembers(userId, authContext)
+      .then((res) => {
+        setLoggedInGroupMembers(res.payload);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
   useEffect(() => {
     const loginEntity = authContext.entity;
 
@@ -152,6 +163,13 @@ const HomeScreen = ({navigation, route}) => {
     }
     if (role === Verbs.entityTypeClub || role === Verbs.entityTypeTeam) {
       fetchGroupDetails(uid, role, admin);
+    }
+
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam ||
+      authContext.entity.role === Verbs.entityTypeClub
+    ) {
+      getLoggedinGroupMembers(authContext.entity.uid);
     }
   }, [
     authContext.entity,
@@ -260,6 +278,7 @@ const HomeScreen = ({navigation, route}) => {
             getUserData(uid, admin, fromRefresh);
           }}
           routeParams={route.params}
+          loggedInGroupMembers={loggedInGroupMembers}
         />
       );
     }
@@ -449,7 +468,10 @@ const HomeScreen = ({navigation, route}) => {
       <View style={[styles.headerRow, {width: '100%'}]}>
         <View style={[styles.row, {flex: 1}]}>
           <Pressable style={styles.imageContainer} onPress={handleBackPress}>
-            <Image source={images.backArrow} style={styles.image} />
+            <Image
+              source={images.backIconBigger}
+              style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+            />
           </Pressable>
           <View
             style={{

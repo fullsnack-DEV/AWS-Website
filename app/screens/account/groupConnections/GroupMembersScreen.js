@@ -62,6 +62,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const actionSheet = useRef();
   const actionSheetPlus = useRef();
   const authContext = useContext(AuthContext);
+  const [refresh] = useState(route.params?.refresh);
 
   const isFocused = useIsFocused();
   // For activity indigator
@@ -156,7 +157,7 @@ export default function GroupMembersScreen({navigation, route}) {
 
         setActive(false);
       }
-    }, [isFocused]),
+    }, [active, authContext, groupID]),
   );
 
   // eslint-disable-next-line consistent-return
@@ -443,7 +444,7 @@ export default function GroupMembersScreen({navigation, route}) {
   useEffect(() => {
     callGroup(groupID, authContext);
     getGroupsLoggedInUser();
-  }, [authContext, getGroupsLoggedInUser, groupID]);
+  }, [authContext, getGroupsLoggedInUser, groupID, isFocused]);
 
   useEffect(() => {
     if (searchText.length > 0) {
@@ -541,18 +542,19 @@ export default function GroupMembersScreen({navigation, route}) {
   const onPressProfilePhotoAndTitle = useCallback(
     (item) => {
       if (item.connected) {
-        navigation.push('Account', {
+        navigation.push('HomeStack', {
           screen: 'HomeScreen',
           params: {
             uid: item?.user_id,
             role: Verbs.entityTypeUser,
             backButtonVisible: true,
             menuBtnVisible: false,
+            Groupmembers: members,
           },
         });
       }
     },
-    [navigation],
+    [members, navigation],
   );
 
   const checkIfClubAdmin = async () => {

@@ -676,7 +676,6 @@ const LocalHomeMenuItems = memo(
                     }
                     horizontal={true}
                     renderToHardwareTextureAndroid
-                    removeClippedSubviews={true}
                     initialNumToRender={10}
                     maxToRenderPerBatch={10}
                     getItemLayout={getItemLayoutForPlayerCard}

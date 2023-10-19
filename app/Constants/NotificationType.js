@@ -77,6 +77,9 @@ const NotificationType = {
 
   // join group new verbs
   userRequestedJoingroup: 'userRequestedJoingroup',
+
+  // follow Request
+  followRequest: 'followRequest',
 };
 
 export default NotificationType;

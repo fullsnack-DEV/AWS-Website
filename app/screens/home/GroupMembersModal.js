@@ -36,7 +36,6 @@ import TCFollowUnfollwButton from '../../components/TCFollowUnfollwButton';
 import colors from '../../Constants/Colors';
 import {followUser, unfollowUser} from '../../api/Users';
 import {getHitSlop} from '../../utils';
-
 import fonts from '../../Constants/Fonts';
 
 export default function GroupMembersModal({
@@ -44,9 +43,9 @@ export default function GroupMembersModal({
   visibleMemberModal = false,
   groupID,
   closeModal,
+  showMember = true,
 }) {
   const [members, setMembers] = useState([]);
-
   const [searchMember, setSearchMember] = useState();
   const [loading, setloading] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -60,7 +59,7 @@ export default function GroupMembersModal({
     setloading(loading);
     setIsRefreshing(true);
 
-    if (groupIDs) {
+    if (groupIDs && showMember) {
       getGroupMembers(groupIDs, authContexts, grp_ids)
         .then((response) => {
           const unsortedReponse = response.payload;
@@ -426,6 +425,18 @@ export default function GroupMembersModal({
         {/* <ActivityLoader visible={loading} /> */}
         {SearchBox()}
 
+        {!showMember && (
+          <View style={styles.emptyContaier}>
+            <Text
+              style={{
+                textAlign: 'center',
+                textAlignVertical: 'center',
+              }}>
+              {strings.noAvailableContentToShow}
+            </Text>
+          </View>
+        )}
+
         <BottomSheetFlatList
           extraData={searchMember}
           data={searchMember}
@@ -554,5 +565,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     zIndex: 1,
     width: '90%',
+  },
+  emptyContaier: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    flex: 1,
   },
 });

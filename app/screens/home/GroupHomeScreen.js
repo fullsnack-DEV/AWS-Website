@@ -30,6 +30,7 @@ import {
   leaveTeam,
   unfollowGroup,
 } from '../../api/Groups';
+
 import AuthContext from '../../auth/context';
 import GroupHomeHeader from '../../components/Home/GroupHomeHeader';
 import PostsTabView from '../../components/Home/PostsTabView';
@@ -40,7 +41,7 @@ import Verbs from '../../Constants/Verbs';
 import HomeFeed from '../homeFeed/HomeFeed';
 import GroupHomeButton from './GroupHomeButton';
 import {ErrorCodes} from '../../utils/constant';
-import {getGamesList} from '../../utils';
+import {getGamesList, showAlert} from '../../utils';
 import MemberList from '../../components/Home/MemberList';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import {createPost} from '../../api/NewsFeeds';
@@ -53,6 +54,10 @@ import GroupMembersModal from './GroupMembersModal';
 import FollowFollowingModal from './FollowFollowingModal';
 import JoinButtonModal from './JoinButtomModal';
 import EditGroupProfileModal from './EditGroupProfileModal';
+import BottomSheet from '../../components/modals/BottomSheet';
+import errorCode from '../../Constants/errorCode';
+import {JoinPrivacy} from '../../Constants/GeneralConstants';
+import {cancelFollowRequest} from '../../api/Users';
 
 // import BottomSheet from '../../components/modals/BottomSheet';
 
@@ -71,9 +76,11 @@ const GroupHomeScreen = ({
   const authContext = useContext(AuthContext);
 
   const [currentUserData, setCurrentUserData] = useState({});
+  const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
   const mainFlatListRef = useRef();
+  const [options, setOptions] = useState([]);
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
   const handleMainRefOnScroll = Animated.event(
@@ -340,21 +347,75 @@ const GroupHomeScreen = ({
     </>
   );
 
+  const callCancelReq = async () => {
+    const params = {
+      follower_id: currentUserData.follow_request.follower_id,
+      following_id: currentUserData.follow_request.following_id,
+      activity_id: currentUserData.follow_request.activity_id,
+    };
+
+    setLoading(true);
+    cancelFollowRequest(params, authContext)
+      .then(() => {
+        showAlert(strings.followReqCanceled);
+        const obj = {
+          ...currentUserData,
+        };
+        delete obj.follow_request;
+
+        setCurrentUserData(obj);
+
+        setLoading(false);
+      })
+      .catch((error) => {
+        showAlert(error.message);
+        setLoading(false);
+      });
+  };
+
   const callFollowGroup = async (silentlyCall = false) => {
+    if (currentUserData.is_pause) {
+      showAlert(
+        format(strings.thisGroupIsPausedText, currentUserData.entity_type),
+      );
+      return;
+    }
+
     const params = {
       entity_type: currentUserData.entity_type,
     };
     setLoading(true);
     followGroup(params, groupId, authContext)
-      .then(() => {
-        setRefreshMemberModal(true);
-        const obj = {
-          ...currentUserData,
-          is_following: true,
-          follower_count: currentUserData.follower_count + 1,
-        };
-        setCurrentUserData(obj);
-        setLoading(false);
+      .then((res) => {
+        if (res.payload.error_code === errorCode.invitePlayerToJoin) {
+          const {user_message} = res.payload;
+
+          showAlert(user_message);
+
+          setLoading(false);
+        } else if (res.payload.is_request) {
+          setLoading(false);
+
+          const obj = {
+            ...currentUserData,
+            follow_request: {
+              activity_id: res.payload.id,
+              follower_id: res.payload.foreign_id,
+              following_id: res.payload.target_uid,
+            },
+          };
+
+          setCurrentUserData(obj);
+        } else {
+          setRefreshMemberModal(true);
+          const obj = {
+            ...currentUserData,
+            is_following: true,
+            follower_count: currentUserData.follower_count + 1,
+          };
+          setCurrentUserData(obj);
+          setLoading(false);
+        }
       })
       .catch((error) => {
         setLoading(false);
@@ -368,7 +429,7 @@ const GroupHomeScreen = ({
 
   const callUnfollowGroup = async () => {
     const params = {
-      entity_type: currentUserData.entity_type,
+      entity_type: currentUserData.follow_request,
     };
     setLoading(true);
     unfollowGroup(params, groupId, authContext)
@@ -688,13 +749,18 @@ const GroupHomeScreen = ({
     setCurrentUserData(obj);
   };
 
-  const userJoinGroup = (isMemberAlreadyExists = false) => {
+  const userJoinGroup = (message = '', isMemberAlreadyExists = false) => {
     setLoading(true);
 
     const params = {};
     if (isMemberAlreadyExists) {
       params.is_confirm = true;
     }
+
+    if (currentUserData.who_can_join_for_member === JoinPrivacy.acceptedByMe) {
+      params.message = message;
+    }
+
     joinTeam(params, groupId, authContext)
       .then((response) => {
         setRefreshMemberModal(true);
@@ -785,8 +851,11 @@ const GroupHomeScreen = ({
     leaveTeam(params, groupId, authContext)
       .then(() => {
         setCurrentGroupData(Verbs.leaveVerb);
+
         setLoading(false);
         setRefreshMemberModal(true);
+
+        showAlert(format(strings.youHaveLeftTheteam, groupData.entity_type));
       })
       .catch((error) => {
         setLoading(false);
@@ -1325,6 +1394,17 @@ const GroupHomeScreen = ({
     ListEmptyComponent: listEmptyComponent,
     style: {marginTop: 15},
   };
+
+  const handleGroupJoinModal = () => {
+    if (currentUserData?.who_can_join_for_member === JoinPrivacy.inviteOnly) {
+      showAlert(
+        format(strings.thisGroupIsInviteOnly, currentUserData.entity_type),
+      );
+    } else {
+      JoinButtonModalRef.current.present();
+    }
+  };
+
   const handleGroupActions = (action) => {
     switch (action) {
       case strings.editprofiletitle:
@@ -1344,13 +1424,18 @@ const GroupHomeScreen = ({
         break;
 
       case strings.join:
-        JoinButtonModalRef.current.present();
-        // userJoinGroup();
+        handleGroupJoinModal();
         break;
 
       case strings.following:
       case strings.unfollowText:
         callUnfollowGroup();
+        break;
+
+      case strings.followReqSentText:
+        // Alert.alert('From Alert');
+        setOptions([strings.cancelFollowReqText, strings.cancel]);
+        setShowModal(true);
         break;
 
       case strings.follow:
@@ -1401,6 +1486,14 @@ const GroupHomeScreen = ({
 
       default:
         break;
+    }
+  };
+
+  const handleOptions = (option) => {
+    setShowModal(false);
+
+    if (option === strings.cancelFollowReqText) {
+      callCancelReq();
     }
   };
 
@@ -1492,6 +1585,7 @@ const GroupHomeScreen = ({
         visibleMemberModal={refreshMemberModal}
         closeModal={() => setRefreshMemberModal(false)}
         groupID={groupId}
+        showMember={groupData.show_members}
       />
 
       <FollowFollowingModal
@@ -1499,11 +1593,12 @@ const GroupHomeScreen = ({
         visibleMemberModal={refreshMemberModal}
         closeModal={() => setRefreshMemberModal(false)}
         groupID={groupId}
+        showFollower={groupData.show_followers}
       />
       <JoinButtonModal
         JoinButtonModalRef={JoinButtonModalRef}
         currentUserData={currentUserData}
-        onJoinPress={() => userJoinGroup()}
+        onJoinPress={(message) => userJoinGroup(message)}
         onAcceptPress={() =>
           onAccept(currentUserData.invite_request.activity_id)
         }
@@ -1512,6 +1607,14 @@ const GroupHomeScreen = ({
       <EditGroupProfileModal
         visible={visibleEditProfileModal}
         closeModal={() => setVisibleEditProfileModal(false)}
+      />
+
+      <BottomSheet
+        isVisible={showModal}
+        type="ios"
+        closeModal={() => setShowModal(false)}
+        optionList={options}
+        onSelect={handleOptions}
       />
     </>
   );

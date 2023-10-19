@@ -15,6 +15,12 @@ const privacySettingEnum = {
   3: strings.followerTitleText,
 };
 
+const JoinPrivacy = {
+  everyone: 0,
+  acceptedByMe: 1,
+  inviteOnly: 2,
+};
+
 const privacyKey = {
   bio: 'who_can_see_bio',
   basicInfo: {
@@ -63,6 +69,16 @@ export const InvoiceActionType = {
   Resend: 0,
   ResendBatch: 1,
   AddRecipient: 2,
+};
+
+export const ShowFollower = {
+  visible: 1,
+  notVisible: 0,
+};
+
+export const ShowMember = {
+  visible: 1,
+  notVisible: 0,
 };
 
 export const LogType = {
@@ -195,7 +211,7 @@ export const privacyOptionForWhoCanSee = {
 };
 
 export default EntityStatus;
-export {privacySettingEnum, privacyKey};
+export {privacySettingEnum, privacyKey, JoinPrivacy};
 
 export const urlRegex =
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/gim;

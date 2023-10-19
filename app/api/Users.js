@@ -152,6 +152,14 @@ export const followUser = (params, userID, authContext) =>
     authContext,
   });
 
+export const cancelFollowRequest = (params, authContext) =>
+  makeAPIRequest({
+    method: 'delete',
+    url: `${Config.BASE_URL}/follow/cancel`,
+    data: params,
+    authContext,
+  });
+
 export const unfollowUser = (params, userID, authContext) =>
   makeAPIRequest({
     method: 'post',

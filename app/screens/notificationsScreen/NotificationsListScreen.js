@@ -61,14 +61,19 @@ import SendRequestModal from '../../components/SendRequestModal/SendRequestModal
 import ScreenHeader from '../../components/ScreenHeader';
 import JoinButtonModal from '../home/JoinButtomModal';
 import Verbs from '../../Constants/Verbs';
+import JoinRequestModal from '../../components/notificationComponent/JoinRequestModal';
 import useSwitchAccount from '../../hooks/useSwitchAccount';
+import {getUserDetails} from '../../api/Users';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
   const JoinButtonModalRef = useRef(null);
+  const JoinRequestModalRef = useRef(null);
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
+  const [userInfo, setUserInfo] = useState([]);
   const [notifAPI, setNotifAPI] = useState();
+  const [currentReqItem, setCurrentReqItem] = useState({});
   const authContext = useContext(AuthContext);
   const [mainNotificationsList, setMainNotificationsList] = useState();
   const currentDate = new Date();
@@ -79,6 +84,7 @@ function NotificationsListScreen({navigation}) {
   const [groupData, setGroupData] = useState();
   const isFocused = useIsFocused();
   const [isNotificationListName, setIsNotificationListName] = useState(0);
+  const [messageText, setMessageText] = useState('');
 
   const [loading, setloading] = useState(false);
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
@@ -404,7 +410,6 @@ function NotificationsListScreen({navigation}) {
       showSwitchProfilePopup();
     }
   };
-  // 9692d3be-5227-4619-a06d-00bc8c47a493
 
   const onAccept = (item) => {
     const requestId = item.activities[0].id;
@@ -414,6 +419,7 @@ function NotificationsListScreen({navigation}) {
       .then((response) => {
         setloading(false);
         JoinButtonModalRef.current.close();
+        JoinRequestModalRef.current.close();
         if (
           item.verb.includes(NotificationType.invitePlayerToJoinTeam) ||
           item.verb.includes(NotificationType.invitePlayerToJoinClub)
@@ -457,6 +463,12 @@ function NotificationsListScreen({navigation}) {
             .then(() => setloading(false))
             .catch(() => setloading(false));
         }
+
+        if (item.verb.includes(NotificationType.userRequestedJoingroup)) {
+          Utility.showAlert(strings.joinReqAccepted);
+        } else if (item.verb.includes(NotificationType.followRequest)) {
+          Utility.showAlert(strings.followReqAccepted);
+        }
       })
       .catch((error) => {
         setloading(false);
@@ -467,11 +479,18 @@ function NotificationsListScreen({navigation}) {
       });
   };
 
-  const onDecline = (requestId) => {
+  const onDecline = (requestId, item) => {
     setloading(true);
     if (activeScreen) {
       declineRequest(requestId, authContext)
         .then(() => {
+          JoinRequestModalRef.current.close();
+          // Utility.showAlert('Join request accepted ');
+          if (item.verb.includes(NotificationType.userRequestedJoingroup)) {
+            Utility.showAlert(strings.joinReqDeclineText);
+          } else if (item.verb.includes(NotificationType.followRequest)) {
+            Utility.showAlert(strings.followReqDeclineText);
+          }
           callNotificationList()
             .then(() => setloading(false))
             .catch(() => setloading(false));
@@ -495,6 +514,20 @@ function NotificationsListScreen({navigation}) {
       setGrpInfo(payload);
       setIsAccept(true);
       JoinButtonModalRef.current?.present();
+    } catch (error) {
+      setloading(false);
+    }
+  };
+
+  const getUserInfo = async (grpid) => {
+    setloading(true);
+    try {
+      const {payload} = await getUserDetails(grpid, authContext);
+
+      setUserInfo(payload);
+      setloading(false);
+
+      JoinRequestModalRef.current?.present();
     } catch (error) {
       setloading(false);
     }
@@ -574,7 +607,8 @@ function NotificationsListScreen({navigation}) {
     verb.includes(NotificationType.inviteToDoubleTeam) ||
     verb.includes(NotificationType.inviteToEvent) ||
     verb.includes(NotificationType.sendBasicInfoToMember) ||
-    verb.includes(NotificationType.userRequestedJoingroup);
+    verb.includes(NotificationType.userRequestedJoingroup) ||
+    verb.includes(NotificationType.followRequest);
 
   const openHomePage = (item) => {
     if (activeScreen) {
@@ -682,16 +716,38 @@ function NotificationsListScreen({navigation}) {
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
         item.activities[0].verb.includes(NotificationType.inviteToEvent) ||
-        item.activities[0].verb.includes(NotificationType.inviteToJoinClub)
+        item.activities[0].verb.includes(NotificationType.inviteToJoinClub) ||
+        item.activities[0].verb.includes(
+          NotificationType.userRequestedJoingroup,
+        )
       ) {
         return (
           <PRNotificationTeamInvite
             item={item}
             selectedEntity={selectedEntity}
             // onAccept={() => onAccept(item.activities[0].id)}
-            onRespond={() => onRespond(item)} // JSON.parse(item.activities[0].object))
+            onRespond={() => {
+              if (
+                item.activities[0].verb.includes(
+                  NotificationType.userRequestedJoingroup,
+                )
+              ) {
+                const PardsedObj = JSON.parse(item?.activities[0]?.object);
+
+                setMessageText(PardsedObj?.message);
+                getUserInfo(item.activities[0]?.foreign_id);
+                setCurrentReqItem(item);
+                return;
+              }
+
+              onRespond(item);
+            }}
+            // JSON.parse(item.activities[0].object))
             onPress={() => onNotificationClick(item)}
             onPressFirstEntity={openHomePage}
+            isRepond={item.activities[0].verb.includes(
+              NotificationType.userRequestedJoingroup,
+            )}
           />
         );
       }
@@ -720,13 +776,14 @@ function NotificationsListScreen({navigation}) {
               authContext.entity.role === Verbs.entityTypeTeam
             ) {
               onAccept(item);
-              return;
+            } else if (item.verb.includes(NotificationType.followRequest)) {
+              onAccept(item);
+            } else {
+              setCurrentNotificationData(item);
+              getGroupInfo(item.activities[0]?.foreign_id);
             }
-            setCurrentNotificationData(item);
-
-            getGroupInfo(item.activities[0]?.foreign_id);
           }}
-          onDecline={() => onDecline(item.activities[0].id)}
+          onDecline={() => onDecline(item.activities[0].id, item)}
           onPress={() => onNotificationClick(item)}
           onPressFirstEntity={openHomePage}
         />
@@ -848,6 +905,7 @@ function NotificationsListScreen({navigation}) {
               (item) => item?.group_id === entityId,
             );
             setGroupList(groups);
+
             setNotifAPI(1);
             setCurrentTab(tabIndex !== -1 ? tabIndex : 0);
             checkActiveScreen(groups[0]);
@@ -1052,6 +1110,9 @@ function NotificationsListScreen({navigation}) {
         leftIcon={images.backArrow}
         rightIcon1={images.chat3Dot}
         leftIconPress={() => navigation.goBack()}
+        rightIcon1Press={() => {
+          actionSheet.current.show();
+        }}
       />
       {firstTimeLoading && <NotificationListShimmer />}
 
@@ -1158,6 +1219,16 @@ function NotificationsListScreen({navigation}) {
         isInvited={isAccept}
         onJoinPress={() => onAccept(currentNotificationData)}
         onAcceptPress={() => onAccept(currentNotificationData)}
+        hideMessageBox={true}
+      />
+      <JoinRequestModal
+        JoinRequestModalRef={JoinRequestModalRef}
+        currentUserData={userInfo}
+        onAcceptPress={() => onAccept(currentReqItem)}
+        onDeclinePress={() =>
+          onDecline(currentReqItem.activities[0].id, currentReqItem)
+        }
+        messageText={messageText}
       />
     </SafeAreaView>
   );

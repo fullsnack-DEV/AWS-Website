@@ -203,6 +203,7 @@ const Verbs = {
   NonTeamMember_Role: 'non-Team-Member',
   PHONE_NUMBER_KEY: 'phone_numbers',
   attendeeVerb: 'attendee',
+  FOLLOW_REQ_SENT: 'followReqSent',
 };
 
 export default Verbs;

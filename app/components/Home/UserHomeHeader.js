@@ -40,7 +40,9 @@ const UserHomeHeader = ({
           loggedInEntity.role === Verbs.entityTypePlayer ||
           loggedInEntity.role === Verbs.entityTypeUser
         ) {
-          if (currentUserData.is_following) {
+          if (currentUserData.follow_request) {
+            name = strings.followReqSentText;
+          } else if (currentUserData.is_following) {
             name = strings.following;
           } else {
             name = strings.follow;
@@ -68,18 +70,18 @@ const UserHomeHeader = ({
 
       setButtonTitle(name);
     },
-    [isAdmin, currentUserData, loggedInEntity],
+    [isAdmin, currentUserData, loggedInEntity, currentUserData.follow_request],
   );
 
   useEffect(() => {
     if (isFocused) {
       let flag = false;
       if (loggedInEntity.role === Verbs.entityTypeClub) {
-        if (currentUserData.joined_clubs?.length > 0) {
-          const club = currentUserData.joined_clubs.find(
-            (item) => item.group_id === loggedInEntity.uid,
+        if (currentUserData.clubIds?.length > 0) {
+          const club = currentUserData.clubIds.find(
+            (item) => item === loggedInEntity.uid,
           );
-          if (club?.group_id) {
+          if (club !== undefined) {
             flag = true;
           } else {
             flag = false;
@@ -90,7 +92,7 @@ const UserHomeHeader = ({
       }
 
       if (loggedInEntity.role === Verbs.entityTypeTeam) {
-        if (currentUserData.joined_teams?.length > 0) {
+        if (currentUserData.teamIds?.length > 0) {
           const team = currentUserData.teamIds.find(
             (item) => item === loggedInEntity.uid,
           );
@@ -115,6 +117,11 @@ const UserHomeHeader = ({
         onAction(Verbs.editVerb);
         break;
 
+      case strings.followReqSentText:
+        setOptions([strings.cancelFollowReqText]);
+        setShowModal(true);
+        break;
+
       case strings.following:
         setOptions([strings.unfollowText]);
         setShowModal(true);
@@ -136,8 +143,8 @@ const UserHomeHeader = ({
         break;
 
       case strings.requestPendingText:
-        setOptions([strings.acceptRequet, strings.declineRequest]);
-        setShowModal(true);
+        onAction(strings.requestPendingText);
+
         break;
 
       case strings.member:

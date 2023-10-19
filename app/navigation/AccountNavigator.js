@@ -95,6 +95,11 @@ import WhoCanInviteEventScreen from '../screens/account/GroupSetting/WhoCanInvit
 import LanguageSettingScreen from '../screens/account/userSettingPrivacy/LanguageSettingScreen';
 import IncomingReservationSettings from '../screens/account/registerReferee/IncomingReservationSettings';
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
+
+import WhoCanSeeFollowers from '../screens/account/GroupSetting/WhoCanSeeFollwersScreen';
+import GroupOwnPrivacySetting from '../screens/account/GroupSetting/GroupOwnPrivacySettings';
+// Scorekeeper Review Screen
+
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 
 const Stack = createStackNavigator();
@@ -1078,6 +1083,24 @@ const AccountNavigator = () => (
     />
 
     <Stack.Screen
+      name="WhoCanSeeFollowers"
+      component={WhoCanSeeFollowers}
+      options={{
+        title: strings.whoCanJoinTeam,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
       name="GroupInviteYouScreen"
       component={GroupInviteYouScreen}
       options={{
@@ -1264,6 +1287,24 @@ const AccountNavigator = () => (
       component={TeamSettingPrivacyScreen}
       options={{
         title: strings.team,
+        headerTintColor: colors.blackColor,
+        headerTitleStyle: {
+          fontWeight: '500',
+        },
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.whiteColor,
+          borderBottomColor: colors.grayColor,
+          borderBottomWidth: 0.3,
+        },
+      }}
+    />
+
+    <Stack.Screen
+      name="GroupOwnPrivacySetting"
+      component={GroupOwnPrivacySetting}
+      options={{
+        title: 'Team',
         headerTintColor: colors.blackColor,
         headerTitleStyle: {
           fontWeight: '500',

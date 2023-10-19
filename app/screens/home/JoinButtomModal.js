@@ -44,6 +44,7 @@ export default function JoinButtonModal({
   onJoinPress,
   onAcceptPress,
   isInvited = false,
+  hideMessageBox = false,
 }) {
   const snapPoints = useMemo(() => ['95%', '95%'], []);
   const [selectedVenue] = useState([]);
@@ -141,10 +142,11 @@ export default function JoinButtonModal({
             }}
             selectedVenue={selectedVenue}
             forJoinButton={true}
-            onJoinPress={() => onJoinPress()}
+            onJoinPress={(message) => onJoinPress(message)}
             onAcceptPress={() => onAcceptPress()}
             isInvited={isInvited}
             isAccept={isInvited}
+            hideMessageBox={hideMessageBox}
           />
         </View>
       </BottomSheetModal>

@@ -94,8 +94,6 @@ const SportsListModal = ({
       (authContext?.entity?.role === Verbs.entityTypeUser ||
         authContext?.entity?.role === Verbs.entityTypePlayer)
     ) {
-      console.log('From the next press');
-
       setMemberListModal(true);
 
       setDoubleSport(sport_data);
@@ -116,20 +114,6 @@ const SportsListModal = ({
       closeList();
 
       setVisibleRoleModal(false);
-
-      // just in Case if Parametrs doe not REfreseh
-      // navigation.reset({
-      //   index: 1,
-      //   routes: [
-      //     {
-      //       name: 'Account',
-      //       params: {
-      //         screen: 'CreateTeamForm1',
-      //         params: {},
-      //       },
-      //     },
-      //   ],
-      // });
 
       navigation.navigate('AccountStack', {
         screen: 'CreateTeamForm1',

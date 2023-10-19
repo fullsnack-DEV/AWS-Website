@@ -63,9 +63,11 @@ const GroupHomeButton = ({
       loggedInEntity.role === Verbs.entityTypePlayer ||
       loggedInEntity.role === Verbs.entityTypeUser
     ) {
-      if (groupData.is_following) {
+      if (groupData?.follow_request) {
+        obj.btn2 = strings.followReqSentText;
+      } else if (groupData.is_following) {
         obj.btn2 = strings.following;
-        setOptions2([strings.unfollowText]);
+        setOptions2([strings.unfollowText, strings.cancel]);
       } else {
         obj.btn2 = strings.follow;
       }
@@ -83,11 +85,12 @@ const GroupHomeButton = ({
       if (isScorekeeper) {
         list.push(strings.scorekeeperOffer);
       }
+      list.push(strings.cancel);
       setOptions3(list);
 
       if (groupData.is_joined) {
         obj.btn1 = strings.joining;
-        setOptions([strings.leaveTeam]);
+        setOptions([strings.leaveTeam, strings.cancel]);
       } else if (groupData.invite_request?.action === Verbs.requestVerb) {
         obj.btn1 = strings.requestSent;
         setOptions([strings.cancelRequestText, strings.cancel]);
@@ -96,7 +99,11 @@ const GroupHomeButton = ({
         );
       } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
         obj.btn1 = strings.invitePending;
-        setOptions([strings.acceptInvite, strings.declineInvite]);
+        setOptions([
+          strings.acceptInvite,
+          strings.declineInvite,
+          strings.strings.cancel,
+        ]);
       } else {
         obj.btn1 = strings.join;
       }
@@ -244,6 +251,13 @@ const GroupHomeButton = ({
 
         break;
 
+      case strings.cancel:
+        setShowOptions2(false);
+        setShowOptions(false);
+        setShowOptions3(false);
+        setShowOptions4(false);
+        break;
+
       default:
         onPress(option);
     }
@@ -274,7 +288,9 @@ const GroupHomeButton = ({
               buttons.btn1 === strings.challenge
                 ? {color: colors.whiteColor}
                 : {},
-
+              buttons.btn1 === strings.invite
+                ? {color: colors.reservationAmountColor}
+                : {},
               buttons.btn1 === strings.join ||
               buttons.btn1 === strings.invitePending
                 ? {color: colors.themeColor}

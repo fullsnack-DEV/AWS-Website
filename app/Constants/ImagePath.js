@@ -564,6 +564,7 @@ const images = {
   newGroupTabIcon: require('../assets/images/groupTabIcon.png'),
   replyCancelImage: require('../assets/images/replyCancelImage.png'),
   arrowSignUpBack: require('../assets/images/Arrow_sign_up.png'),
+  backIconBigger: require('../assets/images/originalBackIcon.png'),
 };
 
 export default images;

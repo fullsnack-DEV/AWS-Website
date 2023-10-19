@@ -21,6 +21,7 @@ import EditHomeFacilityScreen from '../../screens/home/SportActivity/contentScre
 import GroupIcon from '../GroupIcon';
 import TCThinDivider from '../TCThinDivider';
 import TCTextField from '../TCTextField';
+import {JoinPrivacy} from '../../Constants/GeneralConstants';
 
 const teamOptions = [
   strings.bio,
@@ -78,12 +79,14 @@ export default function GroupInfo({
   onAcceptPress = () => {},
   isInvited = false,
   isAccept = false,
+  hideMessageBox = false,
 }) {
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalOptions, setModalOptions] = useState([]);
   const [clubTeams, setClubTeams] = useState([]);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (groupDetails.entity_type) {
@@ -101,7 +104,7 @@ export default function GroupInfo({
         );
       }
     }
-  }, [groupDetails]);
+  }, [forJoinButton, groupDetails]);
 
   useEffect(() => {
     const fetchClubTeams = async () => {
@@ -465,37 +468,44 @@ export default function GroupInfo({
     </View>
   );
 
+  const MeesageFiled = () => (
+    <TCTextField
+      style={{
+        marginHorizontal: 15,
+        backgroundColor: colors.textFieldBackground,
+        height: 100,
+        marginVertical: 15,
+        borderRadius: 5,
+        paddingHorizontal: 15,
+        paddingVertical: 15,
+      }}
+      onChangeText={(text) => setMessage(text)}
+      placeholder={strings.sendMessagePlaceHolder}
+      height={100}
+      multiline
+    />
+  );
+
   const renderFooterComponent = () => (
     <View>
-      {groupDetails.who_can_join_for_member !== 0 && (
-        <>
-          <Text style={[styles.headingLabel, {marginHorizontal: 15}]}>
-            {format(strings.messageToJoinTeam, groupDetails.group_name)}
-          </Text>
-          <TCTextField
-            style={{
-              marginHorizontal: 15,
-              backgroundColor: colors.textFieldBackground,
-              height: 100,
-              marginVertical: 15,
-              borderRadius: 5,
-              paddingHorizontal: 15,
-              paddingVertical: 15,
-            }}
-            placeholder={strings.sendMessagePlaceHolder}
-            height={100}
-            multiline
-          />
-          <TCThinDivider
-            height={7}
-            marginTop={20}
-            marginBottom={25}
-            width={'100%'}
-          />
-        </>
-      )}
+      {groupDetails.who_can_join_for_member !== JoinPrivacy.everyone &&
+        !hideMessageBox && (
+          <>
+            <Text style={[styles.headingLabel, {marginHorizontal: 15}]}>
+              {format(strings.messageToJoinTeam, groupDetails.group_name)}
+            </Text>
+            {MeesageFiled()}
+            <TCThinDivider
+              height={7}
+              marginTop={20}
+              marginBottom={25}
+              width={'100%'}
+            />
+          </>
+        )}
 
-      {groupDetails.who_can_join_for_member === 0 || isInvited ? (
+      {groupDetails.who_can_join_for_member === JoinPrivacy.everyone ||
+      isInvited ? (
         <TouchableOpacity
           onPress={isAccept ? onAcceptPress : onJoinPress}
           style={{
@@ -519,7 +529,13 @@ export default function GroupInfo({
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
-          onPress={isAccept ? onAcceptPress : onJoinPress}
+          onPress={
+            isAccept
+              ? onAcceptPress
+              : () => {
+                  onJoinPress(message);
+                }
+          }
           style={{
             marginHorizontal: 15,
             backgroundColor: colors.reservationAmountColor,
@@ -721,7 +737,7 @@ export default function GroupInfo({
           </>
         )}
         ListHeaderComponent={forJoinButton ? RenderHeader : null}
-        ListFooterComponent={forJoinButton ? renderFooterComponent : null}
+        ListFooterComponent={forJoinButton ? renderFooterComponent() : null}
       />
       <BottomSheet
         isVisible={showModal}
