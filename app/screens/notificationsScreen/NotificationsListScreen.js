@@ -464,6 +464,12 @@ function NotificationsListScreen({navigation}) {
             .catch(() => setloading(false));
         }
 
+        if (
+          item.verb.includes(NotificationType.invitePlayerToJoinClub) ||
+          item.verb.includes(NotificationType.invitePlayerToJoinTeam)
+        ) {
+          Utility.showAlert(format(strings.alertTitle1, grpInfo.group_name));
+        }
         if (item.verb.includes(NotificationType.userRequestedJoingroup)) {
           Utility.showAlert(strings.joinReqAccepted);
         } else if (item.verb.includes(NotificationType.followRequest)) {
@@ -490,7 +496,13 @@ function NotificationsListScreen({navigation}) {
             Utility.showAlert(strings.joinReqDeclineText);
           } else if (item.verb.includes(NotificationType.followRequest)) {
             Utility.showAlert(strings.followReqDeclineText);
+          } else if (
+            item.verb.includes(NotificationType.invitePlayerToJoinClub) ||
+            item.verb.includes(NotificationType.invitePlayerToJoinTeam)
+          ) {
+            Utility.showAlert(strings.invitationDeclinedText);
           }
+
           callNotificationList()
             .then(() => setloading(false))
             .catch(() => setloading(false));

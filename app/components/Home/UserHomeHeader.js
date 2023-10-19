@@ -194,7 +194,15 @@ const UserHomeHeader = ({
             isMember ? {flexDirection: 'row', alignItems: 'center'} : {},
           ]}
           onPress={() => handleButtonPress(buttonTitle)}>
-          <Text style={styles.buttonText}>{buttonTitle}</Text>
+          <Text
+            style={[
+              styles.buttonText,
+              buttonTitle === strings.follow
+                ? {color: colors.darkYellowColor}
+                : {},
+            ]}>
+            {buttonTitle}
+          </Text>
           {isMember ? (
             <Image source={images.check} style={styles.checkIcon} />
           ) : null}

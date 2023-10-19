@@ -1,6 +1,7 @@
 // @flow
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Modal, Text, Image} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import * as Progress from 'react-native-progress';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
@@ -17,6 +18,7 @@ const SwitchAccountLoader = ({
   entityType = Verbs.entityTypePlayer,
   stopLoading = () => {},
   forCreateTeam = false,
+  forCreateClub = false,
 }) => {
   const [isIntermediate, setIsIntermediate] = useState(true);
 
@@ -48,7 +50,20 @@ const SwitchAccountLoader = ({
     <>
       <View style={styles.teamPatContainer}>
         <View>
-          <Image source={images.teamPatch} style={styles.patchImagestyle} />
+          <FastImage source={images.teamPatch} style={styles.patchImagestyle} />
+        </View>
+        <Image source={entityImage} style={styles.enityImageStyle} />
+        <View style={styles.namePatchContainer}>
+          <Text style={styles.namePatchtxt}>{entityName.charAt(0)}</Text>
+        </View>
+      </View>
+    </>
+  );
+  const ClubPatchforSwitch = () => (
+    <>
+      <View style={styles.teamPatContainer}>
+        <View>
+          <FastImage source={images.clubPatch} style={styles.patchImagestyle} />
         </View>
         <Image source={entityImage} style={styles.enityImageStyle} />
         <View style={styles.namePatchContainer}>
@@ -58,18 +73,26 @@ const SwitchAccountLoader = ({
     </>
   );
 
+  const RenderGroupIcon = () => {
+    if (forCreateTeam) {
+      return <TeamPatchforSwitch />;
+    }
+    if (forCreateClub) {
+      return <ClubPatchforSwitch />;
+    }
+    return (
+      <GroupIcon
+        imageUrl={entityImage}
+        groupName={entityName}
+        entityType={entityType}
+      />
+    );
+  };
+
   return (
     <Modal visible={isVisible} transparent animationType="fade">
       <View style={styles.parent}>
-        {forCreateTeam ? (
-          <TeamPatchforSwitch />
-        ) : (
-          <GroupIcon
-            imageUrl={entityImage}
-            groupName={entityName}
-            entityType={entityType}
-          />
-        )}
+        <RenderGroupIcon />
 
         <View style={{marginTop: 15}}>
           <Text style={[styles.label, {fontFamily: fonts.RRegular}]}>

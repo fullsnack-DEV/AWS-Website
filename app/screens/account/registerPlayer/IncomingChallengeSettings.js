@@ -357,6 +357,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
             .catch((e) => {
               setShowSwitchScreen(false);
               setTimeout(() => {
+                setloading(false);
                 Alert.alert(strings.appName, e.messages);
               }, 0.1);
             });

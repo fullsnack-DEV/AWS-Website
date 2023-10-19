@@ -3188,4 +3188,5 @@ export default {
     'en_This Sport Activity has been deactivated. Do you want to Activate it again?',
   joinRequestTitle: 'en_Join Request',
   thisGroupIsPausedText: 'en_This {0} is paused',
+  invitationDeclinedText: 'en_Invitation declined',
 };

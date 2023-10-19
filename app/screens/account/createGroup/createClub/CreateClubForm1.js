@@ -9,16 +9,11 @@ import React, {
 import {
   View,
   Text,
-  Image,
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Dimensions,
   Platform,
   Alert,
-  StyleSheet,
-  Animated,
-  Pressable,
   SafeAreaView,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -27,12 +22,11 @@ import ActionSheet from 'react-native-actionsheet';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
 import {useIsFocused} from '@react-navigation/native';
-import LinearGradient from 'react-native-linear-gradient';
+
 import AuthContext from '../../../../auth/context';
 import images from '../../../../Constants/ImagePath';
 import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
-import fonts from '../../../../Constants/Fonts';
 
 import TCLabel from '../../../../components/TCLabel';
 
@@ -57,6 +51,7 @@ import {getSportName} from '../../../../utils/sportsActivityUtils';
 import ScreenHeader from '../../../../components/ScreenHeader';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
 import {getUnreadNotificationCount} from '../../../../utils/accountUtils';
+import SwitchAccountLoader from '../../../../components/account/SwitchAccountLoader';
 
 export default function CreateClubForm1({navigation, route}) {
   const isFocused = useIsFocused();
@@ -83,7 +78,6 @@ export default function CreateClubForm1({navigation, route}) {
 
   const actionSheetWithDelete = useRef();
 
-  const animProgress = React.useState(new Animated.Value(0))[0];
   const {onSwitchProfile} = useSwitchAccount();
   const [visibleSportsModalForClub, setVisibleSportsModalForClub] =
     useState(false);
@@ -136,16 +130,7 @@ export default function CreateClubForm1({navigation, route}) {
     return true;
   }, [clubName, location]);
 
-  const onANimate = (val) => {
-    Animated.timing(animProgress, {
-      useNativeDriver: false,
-      toValue: val,
-      duration: 800,
-    }).start();
-  };
-
   const onNextPressed = async () => {
-    onANimate(20);
     setShowSwitchScreen(true);
 
     const bodyParams = {
@@ -204,10 +189,9 @@ export default function CreateClubForm1({navigation, route}) {
             entity.role === Verbs.entityTypeTeam && Verbs.entityTypeTeam,
             authContext,
           )
-            .then((response) => {
-              onANimate(100);
+            .then(async (response) => {
               getUnreadNotificationCount(authContext);
-              onSwitchProfile(response.payload);
+              await onSwitchProfile(response.payload);
               setloading(false);
               navigation.navigate('HomeStack', {
                 screen: 'HomeScreen',
@@ -239,8 +223,6 @@ export default function CreateClubForm1({navigation, route}) {
           }, 0.1);
         });
     } else {
-      onANimate(100);
-
       createGroup(
         bodyParams,
         // entity.uid,
@@ -249,9 +231,9 @@ export default function CreateClubForm1({navigation, route}) {
         entity.role === Verbs.entityTypeTeam && Verbs.entityTypeTeam,
         authContext,
       )
-        .then((response) => {
+        .then(async (response) => {
           getUnreadNotificationCount(authContext);
-          onSwitchProfile(response.payload);
+          await onSwitchProfile(response.payload);
           setloading(false);
           navigation.navigate('HomeStack', {
             screen: 'HomeScreen',
@@ -413,161 +395,23 @@ export default function CreateClubForm1({navigation, route}) {
       });
   };
 
-  const animWidthPrecent = animProgress.interpolate({
-    inputRange: [0, 50, 100],
-    outputRange: ['0%', '50%', '100%'],
-  });
-
   const placeHolder = images.clubPlaceholderSmall;
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      {!showSwitchScreen && (
-        <ScreenHeader
-          title={strings.createClubText}
-          leftIcon={images.backArrow}
-          leftIconPress={() => navigation.goBack()}
-          isRightIconText
-          rightButtonText={strings.done}
-          onRightButtonPress={() => {
-            if (checkClubValidations()) {
-              onNextPressed();
-            }
-          }}
-        />
-      )}
-      {showSwitchScreen && (
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: colors.whiteColor,
+      <ScreenHeader
+        title={strings.createClubText}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isRightIconText
+        rightButtonText={strings.done}
+        onRightButtonPress={() => {
+          if (checkClubValidations()) {
+            onNextPressed();
+          }
+        }}
+      />
 
-            justifyContent: 'center',
-            alignItems: 'center',
-            ...StyleSheet.absoluteFillObject,
-
-            zIndex: 1000,
-          }}>
-          <ActivityLoader visible={false} />
-          <Pressable
-            style={{
-              marginBottom: 89,
-              position: 'absolute',
-              marginTop: 300,
-            }}>
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-
-                borderRadius: 100,
-                alignSelf: 'center',
-                width: 60,
-                height: 60,
-                borderWidth: 1,
-                borderColor: '#DDDDDD',
-              }}>
-              <View>
-                <Image
-                  source={images.clubPatch}
-                  style={{
-                    height: 15,
-                    width: 15,
-                    resizeMode: 'cover',
-                    position: 'absolute',
-                    left: 10,
-                    top: 45,
-                  }}
-                />
-              </View>
-              <Image
-                source={placeHolder}
-                style={{
-                  height: 50,
-                  width: 50,
-
-                  borderRadius: 25,
-                  resizeMode: 'contain',
-                  alignSelf: 'center',
-                  marginTop: 5,
-                }}
-              />
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  alignSelf: 'center',
-                  position: 'absolute',
-                  top: 0,
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                }}>
-                <Text
-                  style={{
-                    marginTop: -5,
-                    textAlign: 'center',
-                    color: colors.whiteColor,
-                    fontFamily: fonts.RBold,
-                    fontSize: 16,
-                  }}>
-                  {clubName.charAt(0)}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                marginTop: 15,
-              }}>
-              <Text
-                style={{
-                  lineHeight: 24,
-                  fontFamily: fonts.RMedium,
-                  fontSize: 16,
-                  textAlign: 'center',
-                }}>
-                Switching to
-              </Text>
-              <Text
-                style={{
-                  lineHeight: 24,
-                  fontFamily: fonts.RBold,
-                  fontSize: 16,
-                  textAlign: 'center',
-                }}>
-                {clubName}
-              </Text>
-            </View>
-          </Pressable>
-
-          <Animated.View
-            style={{
-              width: 135,
-              height: 5,
-              backgroundColor: '#F2F2F2',
-              borderRadius: 20,
-              marginTop: Dimensions.get('screen').height * 0.8,
-            }}>
-            <Animated.View
-              style={[
-                styles.progressBar,
-                {
-                  width: animWidthPrecent,
-                },
-              ]}>
-              <LinearGradient
-                style={styles.progressBar}
-                colors={[
-                  colors.createClubGradientfrom,
-                  colors.createClubGradientto,
-                ]}
-                start={{x: 0, y: 0.5}}
-                end={{x: 1, y: 0.5}}
-              />
-            </Animated.View>
-          </Animated.View>
-        </View>
-      )}
       <ActivityLoader visible={loading} />
       <View style={styles.mainContainer}>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -777,6 +621,15 @@ export default function CreateClubForm1({navigation, route}) {
           setSelectedSports(newSportArray);
           setVisibleSportsModalForClub(false);
         }}
+      />
+
+      <SwitchAccountLoader
+        isVisible={showSwitchScreen}
+        entityName={clubName}
+        entityType={Verbs.entityTypeClub}
+        entityImage={placeHolder}
+        stopLoading={() => {}}
+        forCreateClub={true}
       />
     </SafeAreaView>
   );

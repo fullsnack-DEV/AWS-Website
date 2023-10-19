@@ -420,7 +420,7 @@ export default function CreateTeamForm1({navigation, route}) {
     };
     // if double team
     if (showDouble) {
-      groupData.player1 = authContext.entity.auth.user.user_id;
+      groupData.player1 = authContext.entity.uid;
       groupData.player2 = doublePlayer.user_id;
 
       groupData.sport_type = route.params.sports.sport_type;

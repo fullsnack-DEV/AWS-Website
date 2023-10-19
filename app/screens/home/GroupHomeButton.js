@@ -154,7 +154,9 @@ const GroupHomeButton = ({
       loggedInEntity.role === Verbs.entityTypePlayer ||
       loggedInEntity.role === Verbs.entityTypeUser
     ) {
-      if (groupData.is_following) {
+      if (groupData?.follow_request) {
+        obj.btn2 = strings.followReqSentText;
+      } else if (groupData.is_following) {
         obj.btn2 = strings.following;
         setOptions2([strings.unfollowText]);
       } else {
@@ -226,6 +228,7 @@ const GroupHomeButton = ({
   }, [isFocused, getButtonTitle]);
 
   const handleButtonPress = (option) => {
+    console.log(option, 'from option');
     switch (option) {
       case strings.member:
         setShowOptions(true);

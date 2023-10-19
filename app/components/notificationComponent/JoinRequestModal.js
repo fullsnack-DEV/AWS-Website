@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
     marginHorizontal: 15,
-    marginTop: 15,
+    paddingVertical: 5,
   },
   label: {
     fontSize: 16,

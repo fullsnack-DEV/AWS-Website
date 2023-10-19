@@ -72,14 +72,14 @@ export default function RespondToInviteScreen({navigation, route}) {
 
     setloading(true);
     actionOnGroupRequest(type, groupId, authContext, {setting})
-      .then((response) => {
+      .then(async (response) => {
         setloading(false);
 
         if (type === 'accept') {
           getUnreadNotificationCount(authContext);
-          onSwitchProfile(response.payload);
+          await onSwitchProfile(response.payload);
 
-          navigation.navigate('Account', {
+          navigation.navigate('HomeStack', {
             screen: 'HomeScreen',
             params: {
               uid: response.payload.group_id,
