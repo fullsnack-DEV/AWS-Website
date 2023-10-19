@@ -1,6 +1,12 @@
 // @flow
-import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {StyleSheet, SafeAreaView} from 'react-native';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {StyleSheet, SafeAreaView, ScrollView, View} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {strings} from '../../../../Localization/translation';
 import {getGroupIndex} from '../../../api/elasticSearch';
@@ -9,49 +15,68 @@ import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import Verbs from '../../../Constants/Verbs';
 import ChallengeButton from './components/ChallengeButton';
-import InfoContentScreen from './contentScreens/InfoContentScreen';
-import ReviewsContentScreen from './contentScreens/ReviewsContentScreen';
-import ScoreboardContentScreen from './contentScreens/ScoreboardContentScreen';
-import SportActivityTabBar from './components/SportActivityTabBar';
 import UserInfo from './components/UserInfo';
-import {getStorage} from '../../../utils';
+import {getCalendar, getStorage, getTCDate} from '../../../utils';
 import ScreenHeader from '../../../components/ScreenHeader';
 import BottomSheet from '../../../components/modals/BottomSheet';
-import StatsContentScreen from './contentScreens/StatsContentScreen';
-import AvailabilityScreen from './contentScreens/AvailabilityContentScreen';
-import {getGameHomeScreen} from '../../../utils/gameUtils';
 import {
   getEntitySportList,
   getHeaderTitle,
   getIsAvailable,
+  getScoreboardListTitle,
   getSportDetails,
   getSportName,
 } from '../../../utils/sportsActivityUtils';
-import SportActivityModal from './SportActivityModal';
+import AvailabilitySection from './components/availability/AvailabilitySection';
+import TeamsList from './components/TeamsList';
+import ScoreBoardList from './components/ScoreBoardList';
+import {
+  getGameScoreboardEvents,
+  getGameStatsData,
+  getRefereedMatch,
+  getScorekeeperMatch,
+} from '../../../api/Games';
+import StatSection from './components/StatSection';
+import ReviewSection from './components/ReviewSection';
+import SectionWrapperModal from './SectionWrapperModal';
+import colors from '../../../Constants/Colors';
+import InfoSection from './components/InfoSection';
+import LookingForSettingModal from './contentScreens/LookingForSettingModal';
+import EditWrapperScreen from './EditWrapperScreen';
+import PrivacySettingsScreen from './PrivacySettingsScreen';
 
 const SportActivityHome = ({navigation, route}) => {
   const [userData, setCurrentUserData] = useState({});
   const [isAdmin, setIsAdmin] = useState(false);
-  const [activeTab, setActiveTab] = useState('');
   const [sportObj, setSportObj] = useState({});
   const [isFectchingUser, setIsFetchingUser] = useState(false);
   const [sportIcon, setSportIcon] = useState('');
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [options, setOptions] = useState([]);
-  const [showSportsModal, setShowSportsModal] = useState(false);
+  const [availabilityList, setAvailabilityList] = useState([]);
+  const [fetchingAvailability, setFectchingAavailability] = useState(false);
+  const [matchList, setMatchList] = useState([]);
+  const [isFetchingMatchList, setIsFetchingMatchList] = useState(false);
+  const [statsObject, setStatsObject] = useState({
+    totalWins: 0,
+    totalLosses: 0,
+    totalDraws: 0,
+    totalMatches: 0,
+  });
+  const [activeTab, setActiveTab] = useState(strings.infoTitle);
+  const [settingModalObj, setSettingModalObj] = useState({
+    option: '',
+    title: '',
+  });
 
-  const {
-    sport,
-    sportType,
-    uid,
-    selectedTab,
-    backScreen,
-    backScreenParams,
-    entityType,
-    showPreview,
-  } = route.params;
+  const {sport, sportType, uid, backScreen, backScreenParams, entityType} =
+    route.params;
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
+  const modalRef = useRef();
+  const lookingForModalRef = useRef();
+  const settingWrraperModalRef = useRef();
+  const privacySettingModalRef = useRef();
 
   const getUserData = useCallback(
     (userId) => {
@@ -111,21 +136,6 @@ const SportActivityHome = ({navigation, route}) => {
   }, [sport, authContext, entityType, sportType]);
 
   useEffect(() => {
-    if (selectedTab) {
-      if (
-        selectedTab === strings.refereedMatchesTitle ||
-        selectedTab === strings.scorekeptMatches
-      ) {
-        setActiveTab(strings.matchesTitleText);
-      } else {
-        setActiveTab(selectedTab);
-      }
-    } else {
-      setActiveTab(strings.infoTitle);
-    }
-  }, [selectedTab]);
-
-  useEffect(() => {
     if (uid) {
       setIsAdmin(authContext.entity.auth.user_id === uid);
       getUserData(uid);
@@ -150,6 +160,7 @@ const SportActivityHome = ({navigation, route}) => {
         if (sportType === Verbs.singleSport) {
           setOptions([
             strings.incomingChallengeSettingsTitle,
+            strings.incomingMatchOfferSettings,
             strings.lookingForClubText,
             strings.deactivateActivityText,
           ]);
@@ -165,6 +176,8 @@ const SportActivityHome = ({navigation, route}) => {
           strings.deactivateActivityText,
         ]);
       }
+    } else if (sportType === Verbs.doubleSport) {
+      setOptions([strings.reportThisAccount, strings.blockThisAccount]);
     } else {
       setOptions([
         strings.reportThisSportActivityPage,
@@ -172,12 +185,6 @@ const SportActivityHome = ({navigation, route}) => {
       ]);
     }
   }, [isAdmin, sportType, entityType]);
-
-  useEffect(() => {
-    if (showPreview) {
-      setShowSportsModal(true);
-    }
-  }, [showPreview]);
 
   const handleEditNavigation = (sectionName, title) => {
     if (sectionName === strings.matchVenues) {
@@ -190,28 +197,32 @@ const SportActivityHome = ({navigation, route}) => {
         },
       });
     } else {
-      navigation.navigate('AccountStack', {
-        screen: 'EditWrapperScreen',
-        params: {
-          section: sectionName,
-          title,
-          sportObj,
-          sportIcon,
-          entityType,
-        },
-      });
+      setSettingModalObj({option: sectionName, title});
+      settingWrraperModalRef.current?.present();
+      // navigation.navigate('HomeStack', {
+      //   screen: 'EditWrapperScreen',
+      //   params: {
+      //     section: sectionName,
+      //     title,
+      //     sportObj,
+      //     sportIcon,
+      //     entityType,
+      //   },
+      // });
     }
   };
 
   const handlePrivacySettings = (sectionName, privacyKey) => {
-    navigation.navigate('PrivacySettingsScreen', {
-      sportIcon,
-      section: sectionName,
-      sport: sportObj?.sport,
-      sportType: sportObj?.sport_type,
-      privacyKey,
-      entityType,
-    });
+    // navigation.navigate('PrivacySettingsScreen', {
+    //   sportIcon,
+    //   section: sectionName,
+    //   sport: sportObj?.sport,
+    //   sportType: sportObj?.sport_type,
+    //   privacyKey,
+    //   entityType,
+    // });
+    setSettingModalObj({option: sectionName, privacyKey});
+    privacySettingModalRef.current?.present();
   };
 
   const handleMoreOptions = (selectedOption) => {
@@ -230,167 +241,181 @@ const SportActivityHome = ({navigation, route}) => {
 
       case strings.lookingForClubText:
       case strings.lookingForTeamText:
-        navigation.navigate('AccountStack', {
-          screen: 'LookingForSettingScreen',
-          params: {
-            sport: sportObj,
-            entityType,
-            comeFrom: 'SportActivityHome',
-            routeParams: {
-              sport: sportObj?.sport,
-              sportType: sportObj?.sport_type,
-              uid: route.params.uid,
-              entityType,
-              parentStack: 'App',
-              backScreen: 'Account',
-            },
-          },
-        });
+        // navigation.navigate('AccountStack', {
+        //   screen: 'LookingForSettingScreen',
+        //   params: {
+        //     sport: sportObj,
+        //     entityType,
+        //     comeFrom: 'SportActivityHome',
+        //     routeParams: {
+        //       sport: sportObj?.sport,
+        //       sportType: sportObj?.sport_type,
+        //       uid: route.params.uid,
+        //       entityType,
+        //       parentStack: 'App',
+        //       backScreen: 'Account',
+        //     },
+        //   },
+        // });
+        lookingForModalRef.current?.present();
         break;
 
       case strings.incomingReservationSettings:
         if (entityType === Verbs.entityTypeReferee) {
-          navigation.navigate('RefereeReservationSetting', {
-            sportName: sportObj?.sport,
+          navigation.navigate('AccountStack', {
+            screen: 'RefereeReservationSetting',
+            params: {
+              sportName: sportObj?.sport,
+            },
           });
         }
 
         if (entityType === Verbs.entityTypeScorekeeper) {
-          navigation.navigate('ScorekeeperReservationSetting', {
-            sportName: sportObj?.sport,
+          navigation.navigate('AccountStack', {
+            screen: 'ScorekeeperReservationSetting',
+            params: {
+              sportName: sportObj?.sport,
+            },
           });
         }
         break;
 
       case strings.deactivateActivityText:
-        navigation.navigate('DeactivateSportScreen', {
-          sportObj,
+        navigation.navigate('AccountStack', {
+          screen: 'DeactivateSportScreen',
+          params: {
+            sportObj,
+          },
         });
         break;
 
       case strings.reportThisSportActivityPage:
-        break;
-
       case strings.blockUserAccount:
         break;
 
+      case strings.reportThisAccount:
+      case strings.blockThisAccount:
+        break;
+
       default:
         break;
     }
   };
 
-  const renderContent = () => {
-    if (!activeTab) return null;
-    switch (activeTab) {
-      case strings.infoTitle:
-        return (
-          <InfoContentScreen
-            user={userData}
-            sportObj={sportObj}
-            isAdmin={isAdmin}
-            handleEditOption={handleEditNavigation}
-            openPrivacySettings={handlePrivacySettings}
-            entityType={entityType}
-            onPressCertificate={(certificate, count) => {
-              navigation.navigate('LoneStack', {
-                screen: 'CertificateDisplayScreen',
-                params: {
-                  user: userData,
-                  certificate,
-                  count,
-                  sport,
-                  entityType,
-                },
-              });
-            }}
-          />
-        );
+  const getAvailability = useCallback(() => {
+    const date = new Date();
+    date.setDate(new Date().getDate() + 7);
+    setFectchingAavailability(true);
+    getCalendar(
+      userData.user_id,
+      getTCDate(new Date()),
+      getTCDate(date),
+      'blocked',
+    )
+      .then((res) => {
+        setAvailabilityList(res);
+        setFectchingAavailability(false);
+      })
+      .catch((err) => {
+        console.log({err});
+        setFectchingAavailability(false);
+      });
+  }, [userData]);
 
-      case strings.scoreboard:
-      case strings.matchesTitleText:
-        return (
-          <ScoreboardContentScreen
-            userData={userData}
-            sport={sportObj?.sport}
-            entityType={entityType}
-            onCardPress={(item = {}) => {
-              navigation.navigate('ScheduleStack', {
-                screen: 'EventScreen',
-                params: {
-                  data: item,
-                  gameData: item,
-                },
-              });
-            }}
-          />
-        );
+  const getMatchList = useCallback(() => {
+    setIsFetchingMatchList(true);
+    const params = {
+      sport,
+      role: Verbs.entityTypePlayer,
+    };
 
-      case strings.reviews:
-        return (
-          <ReviewsContentScreen
-            userId={userData.user_id}
-            sportObj={sportObj}
-            entityType={entityType}
-            onPressMore={(review, dateTime) => {
-              navigation.navigate('ReviewDetailsScreen', {
-                review,
-                dateTime,
-                sport,
-                sportType,
-              });
-            }}
-            isAdmin={isAdmin}
-            onReply={(activityId) => {
-              navigation.navigate('ReplyScreen', {
-                sport,
-                sportType,
-                activityId,
-              });
-            }}
-            onPressMedia={(list, user, date) => {
-              navigation.navigate('LoneStack', {
-                screen: 'MediaScreen',
-                params: {
-                  mediaList: list,
-                  user,
-                  sport,
-                  sportType,
-                  userId: user.id,
-                  createDate: date,
-                },
-              });
-            }}
-            onPressGame={(review) => {
-              if (review.game.id && review.game.data.sport) {
-                const gameHome = getGameHomeScreen(
-                  review.game.data.sport.replace(' ', '_'),
-                );
+    getGameScoreboardEvents(userData.user_id, params, authContext)
+      .then((res) => {
+        setMatchList(res.payload);
+        setIsFetchingMatchList(false);
+      })
+      .catch(() => {
+        setIsFetchingMatchList(false);
+      });
+  }, [authContext, sport, userData]);
 
-                navigation.navigate(gameHome, {
-                  gameId: review.game.id,
-                });
-              }
-            }}
-          />
-        );
+  const loadStatsData = useCallback(() => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - 6);
+    const chartParameter = {
+      sport,
+      fromDate: getTCDate(date),
+    };
+    getGameStatsData(userData?.user_id, chartParameter, authContext)
+      .then((res) => {
+        const list = res.payload.filter((item) => item.sport_name === sport);
+        let totalMatches = 0;
+        let totalWins = 0;
+        let totalLosses = 0;
+        let totalDraws = 0;
+        list.forEach((item) => {
+          totalMatches += item.stats.all.total_games;
+          totalWins += item.stats.all.winner;
+          totalLosses += item.stats.all.looser;
+          totalDraws += item.stats.all.draw;
+        });
+        setStatsObject({totalMatches, totalWins, totalLosses, totalDraws});
+      })
+      .catch((err) => {
+        console.log({err});
+      });
+  }, [authContext, sport, userData]);
 
-      case strings.stats:
-        return (
-          <StatsContentScreen
-            sportType={sportObj?.sport_type}
-            sport={sportObj?.sport}
-            authContext={authContext}
-            userId={userData?.user_id}
-          />
-        );
+  const getRefereeMatchList = useCallback(() => {
+    setIsFetchingMatchList(true);
+    getRefereedMatch(userData?.user_id, sport, authContext)
+      .then((res) => {
+        setMatchList(res.payload);
+        setIsFetchingMatchList(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsFetchingMatchList(false);
+      });
+  }, [userData, sport, authContext]);
 
-      case strings.availability:
-        return <AvailabilityScreen userData={userData} />;
+  const getScorekeeperMatchList = useCallback(() => {
+    setIsFetchingMatchList(true);
+    getScorekeeperMatch(userData?.user_id, sport, authContext)
+      .then((res) => {
+        setMatchList(res.payload);
+        setIsFetchingMatchList(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsFetchingMatchList(false);
+      });
+  }, [userData, sport, authContext]);
 
-      default:
-        return null;
+  useEffect(() => {
+    if (isFocused) {
+      getAvailability();
+
+      if (entityType === Verbs.entityTypePlayer) {
+        getMatchList();
+        loadStatsData();
+      }
+      if (entityType === Verbs.entityTypeReferee) {
+        getRefereeMatchList();
+      }
+      if (entityType === Verbs.entityTypeScorekeeper) {
+        getScorekeeperMatchList();
+      }
     }
-  };
+  }, [
+    isFocused,
+    getAvailability,
+    entityType,
+    getMatchList,
+    loadStatsData,
+    getRefereeMatchList,
+    getScorekeeperMatchList,
+  ]);
 
   const handleSectionClick = (section) => {
     if (
@@ -401,7 +426,23 @@ const SportActivityHome = ({navigation, route}) => {
     } else {
       setActiveTab(section);
     }
-    setShowSportsModal(false);
+    modalRef.current?.present();
+  };
+
+  const getHeaderBorderColor = () => {
+    switch (entityType) {
+      case Verbs.entityTypePlayer:
+        return colors.tabFontColor;
+
+      case Verbs.entityTypeReferee:
+        return colors.redColorCard;
+
+      case Verbs.entityTypeScorekeeper:
+        return colors.lightBlueColorCard;
+
+      default:
+        return colors.tabFontColor;
+    }
   };
 
   return (
@@ -423,93 +464,157 @@ const SportActivityHome = ({navigation, route}) => {
           } else if (backScreen) {
             navigation.navigate(backScreen, {...backScreenParams});
           } else {
-            navigation.navigate('HomeScreen', {
-              uid: userData.user_id,
-              role: userData.entity_type,
-              backButtonVisible: true,
-              menuBtnVisible: false,
+            navigation.navigate('HomeStack', {
+              screen: 'HomeScreen',
+              params: {
+                uid: userData.user_id,
+                role: userData.entity_type,
+                backButtonVisible: true,
+                menuBtnVisible: false,
+              },
             });
           }
         }}
         rightIcon1={!isAdmin ? images.tab_message : null}
         rightIcon2={images.chat3Dot}
-        containerStyle={{paddingBottom: 10}}
+        containerStyle={{
+          paddingBottom: 7,
+          borderBottomWidth: 3,
+          borderBottomColor: getHeaderBorderColor(),
+        }}
         rightIcon2Press={() => {
           setShowMoreOptions(true);
         }}
         leftIconStyle={{width: 70}}
       />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <UserInfo
+          user={userData}
+          containerStyle={styles.userInfoContainer}
+          isLookingForClub={sportObj?.lookingForTeamClub}
+          isAdmin={isAdmin}
+          onMessageClick={() => {
+            //
+          }}
+          level={sportObj?.level}
+          loading={isFectchingUser}
+          entityType={entityType}
+          onPressUser={() => {
+            navigation.navigate('HomeStack', {
+              screen: 'HomeScreen',
+              params: {
+                uid: userData.user_id,
+                role: userData.entity_type,
+                backButtonVisible: true,
+                menuBtnVisible: false,
+              },
+            });
+          }}
+          sportType={sportObj?.sport_type}
+        />
 
-      <UserInfo
-        screenType={Verbs.screenTypeMainScreen}
-        user={userData}
-        containerStyle={styles.userInfoContainer}
-        isLookingForClub={sportObj?.lookingForTeamClub}
-        isAdmin={isAdmin}
-        onMessageClick={() => {
-          //
-        }}
-        level={sportObj?.level}
-        loading={isFectchingUser}
-        entityType={entityType}
-        onPressUser={() => {
-          navigation.navigate('HomeScreen', {
-            uid: userData.user_id,
-            role: userData.entity_type,
-            backButtonVisible: true,
-            menuBtnVisible: false,
-          });
-        }}
-        sportType={sportObj?.sport_type}
-      />
+        <InfoSection
+          description={sportObj?.descriptions}
+          onMore={() => handleSectionClick(strings.infoTitle)}
+          containerStyle={{paddingHorizontal: 15}}
+          loading={isFectchingUser}
+        />
 
-      <ChallengeButton
-        isAdmin={isAdmin}
-        loggedInEntity={authContext.entity.obj}
-        sportObj={sportObj}
-        isAvailable={getIsAvailable(sportObj, entityType)}
-        inviteToChallenge={() => {
-          navigation.navigate('InviteChallengeScreen', {
-            setting: sportObj?.setting,
-            sportName: sportObj?.sport,
-            sportType: sportObj?.sport_type,
-            groupObj: userData,
-          });
-        }}
-        containerStyle={{paddingHorizontal: 16, marginTop: 0, marginBottom: 20}}
-        continueToChallenge={() => {
-          navigation.navigate('ChallengeScreen', {
-            setting: sportObj?.setting ?? {},
-            sportName: sportObj?.sport,
-            sportType: sportObj?.sport_type,
-            groupObj: userData,
-          });
-        }}
-        bookReferee={() => {
-          navigation.navigate('RefereeBookingDateAndTime', {
-            userData,
-            showMatches: true,
-            sportName: sportObj?.sport,
-            settingObj: sportObj?.setting ?? {},
-          });
-        }}
-        bookScoreKeeper={() => {
-          navigation.navigate('ScorekeeperBookingDateAndTime', {
-            userData,
-            showMatches: true,
-            sportName: sportObj?.sport,
-            settingObj: sportObj?.setting ?? {},
-          });
-        }}
-      />
+        <ChallengeButton
+          isAdmin={isAdmin}
+          loggedInEntity={authContext.entity.obj}
+          sportObj={sportObj}
+          isAvailable={getIsAvailable(sportObj, entityType)}
+          inviteToChallenge={() => {
+            navigation.navigate('InviteChallengeScreen', {
+              setting: sportObj?.setting,
+              sportName: sportObj?.sport,
+              sportType: sportObj?.sport_type,
+              groupObj: userData,
+            });
+          }}
+          containerStyle={{
+            paddingHorizontal: 16,
+            marginTop: 0,
+            marginBottom: 20,
+          }}
+          continueToChallenge={() => {
+            navigation.navigate('ChallengeScreen', {
+              setting: sportObj?.setting ?? {},
+              sportName: sportObj?.sport,
+              sportType: sportObj?.sport_type,
+              groupObj: userData,
+            });
+          }}
+          bookReferee={() => {
+            navigation.navigate('RefereeBookingDateAndTime', {
+              userData,
+              showMatches: true,
+              sportName: sportObj?.sport,
+              settingObj: sportObj?.setting ?? {},
+            });
+          }}
+          bookScoreKeeper={() => {
+            navigation.navigate('ScorekeeperBookingDateAndTime', {
+              userData,
+              showMatches: true,
+              sportName: sportObj?.sport,
+              settingObj: sportObj?.setting ?? {},
+            });
+          }}
+        />
 
-      <SportActivityTabBar
-        sportType={sportObj?.sport_type}
-        activeTab={activeTab || strings.infoTitle}
-        onTabChange={(tab) => setActiveTab(tab)}
-        entityType={entityType}
-      />
-      {renderContent()}
+        <View style={{paddingHorizontal: 15}}>
+          {sportObj?.sport_type === Verbs.singleSport ||
+          entityType !== Verbs.entityTypePlayer ? (
+            <AvailabilitySection
+              list={availabilityList}
+              loading={fetchingAvailability}
+              onSeeAll={() => handleSectionClick(strings.availability)}
+            />
+          ) : null}
+
+          {sportObj?.sport_type !== Verbs.singleSport &&
+          entityType === Verbs.entityTypePlayer ? (
+            <TeamsList
+              list={userData.joined_teams ?? []}
+              sportType={sportObj?.sport_type}
+              sport={sportObj?.sport}
+              showHorizontalList
+            />
+          ) : null}
+
+          <ScoreBoardList
+            loading={isFetchingMatchList}
+            matchList={matchList}
+            onSeeAll={() =>
+              handleSectionClick(getScoreboardListTitle(entityType))
+            }
+            screenType={Verbs.screenTypeModal}
+            title={getScoreboardListTitle(entityType)}
+          />
+          {entityType === Verbs.entityTypePlayer ? (
+            <StatSection
+              onSeeAll={() => handleSectionClick(strings.statsTitle)}
+              sportType={sportObj?.sport_type}
+              {...statsObject}
+            />
+          ) : null}
+
+          {sportObj?.sport_type === Verbs.singleSport ||
+          entityType !== Verbs.entityTypePlayer ? (
+            <ReviewSection
+              onSeeAll={() => handleSectionClick(strings.reviews)}
+              ratings={
+                sportObj?.avg_review?.total_avg
+                  ? parseFloat(sportObj.avg_review.total_avg).toFixed(1)
+                  : 0.0
+              }
+            />
+          ) : null}
+        </View>
+      </ScrollView>
+
       <BottomSheet
         isVisible={showMoreOptions}
         closeModal={() => {
@@ -519,61 +624,56 @@ const SportActivityHome = ({navigation, route}) => {
         onSelect={(option) => {
           handleMoreOptions(option);
         }}
+        type="ios"
+      />
+      <SectionWrapperModal
+        modalRef={modalRef}
+        closeModal={() => modalRef.current.dismiss()}
+        handleEditNavigation={handleEditNavigation}
+        handlePrivacySettings={handlePrivacySettings}
+        selectedOption={activeTab}
+        userData={userData}
+        isAdmin={isAdmin}
+        sportObj={sportObj}
+        entityType={entityType}
+        navigation={navigation}
+        sport={sport}
+        sportType={sportType}
+        sportIcon={sportIcon}
       />
 
-      <SportActivityModal
-        isVisible={showSportsModal}
-        closeModal={() => {
-          setShowSportsModal(false);
-        }}
-        isAdmin={isAdmin}
-        userData={userData}
-        sport={sportObj?.sport}
+      <LookingForSettingModal
+        modalRef={lookingForModalRef}
+        closeModal={() => lookingForModalRef.current.dismiss()}
         sportObj={sportObj}
-        sportName={getSportName(
-          sportObj?.sport,
-          sportObj?.sport_type,
-          authContext.sports,
-        )}
-        onSeeAll={handleSectionClick}
-        handleChallengeClick={() => {
-          navigation.navigate('InviteChallengeScreen', {
-            setting: sportObj?.setting,
-            sportName: sportObj?.sport,
-            sportType: sportObj?.sport_type,
-            groupObj: userData,
-          });
-        }}
-        onMessageClick={() => {
-          //
+        entityType={entityType}
+        sportType={sportObj?.sport_type}
+      />
+
+      <EditWrapperScreen
+        modalRef={settingWrraperModalRef}
+        closeModal={() => {
+          settingWrraperModalRef.current.dismiss();
+          modalRef.current.dismiss();
         }}
         entityType={entityType}
-        continueToChallenge={() => {
-          setShowSportsModal(false);
-          navigation.navigate('ChallengeScreen', {
-            setting: sportObj?.setting ?? {},
-            sportName: sportObj?.sport,
-            sportType: sportObj?.sport_type,
-            groupObj: userData,
-          });
+        section={settingModalObj.option}
+        title={settingModalObj.title}
+        sportIcon={sportIcon}
+        sportObj={sportObj}
+      />
+
+      <PrivacySettingsScreen
+        modalRef={privacySettingModalRef}
+        closeModal={() => {
+          privacySettingModalRef.current.dismiss();
+          modalRef.current.dismiss();
         }}
-        bookReferee={() => {
-          navigation.navigate('RefereeBookingDateAndTime', {
-            settingObj: sportObj?.setting ?? {},
-            userData,
-            showMatches: true,
-            sportName: sportObj?.sport,
-          });
-        }}
-        bookScoreKeeper={() => {
-          navigation.navigate('ScorekeeperBookingDateAndTime', {
-            settingObj: sportObj?.setting ?? {},
-            userData,
-            showMatches: true,
-            sportName: sportObj?.sport,
-          });
-        }}
-        handleMoreOptions={handleMoreOptions}
+        section={settingModalObj.option}
+        sport={sport}
+        sportType={sportType}
+        sportIcon={sportIcon}
+        privacyKey={settingModalObj.title}
       />
     </SafeAreaView>
   );
@@ -586,7 +686,6 @@ const styles = StyleSheet.create({
   userInfoContainer: {
     paddingHorizontal: 15,
     paddingTop: 16,
-    paddingBottom: 20,
   },
 });
 

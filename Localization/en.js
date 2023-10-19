@@ -2255,7 +2255,7 @@ export default {
   sportNameValidationText: 'en_Please fill in sport.',
   incomingChallengeSettingsTitle: 'en_Incoming Challenge Settings',
   incomingChallengeSettingsInfo:
-    'en_Please review your incoming challenge settings.These settings are only applicable to the match reservation when you are the match host. When you are the Challenger, the opponent’s incoming challenge settings Will be applied.',
+    'en_Please review your incoming challenge settings. These settings are only applicable to the match reservation when you are the match host. When you are the Challenger, the opponent’s incoming challenge settings will be applied.',
   congratulationModalInfo:
     'en_You can now not only send challenges to others, but you can also receive a challenge from them.',
   searchForPlayer: 'en_Search for more players',
@@ -3095,7 +3095,7 @@ export default {
     "en_Your team doesn't have a confirmed match to book this scorekeeper for.",
   chatroomText: 'en_Chatroom',
   ratingText:
-    'en_Ratings shows the average ratings that the referee received from teams regarding their matches. The following questions are used to collect ratings from teams.',
+    'en_Ratings shows the average ratings that the referee received from opposing players referees or scorekeepers, regarding their matches.The following questions are used to collect ratings from them.',
   signUpPasswordText: 'en_Your password must be at least 8 characters.',
   Minimum: 'en_Minimum',
   writePostText: 'en_Write a post...',
@@ -3167,6 +3167,7 @@ export default {
   creatChatRoomForEvent:
     'en_Do you want to create a chat room and invite all attendees?',
   createAndInvite: 'en_Create & Invite',
+  incomingMatchOfferSettings: 'en_Incoming Match Offer Settings',
   userAccountdeactivated: 'en_This user has deactivated their account.',
   userDeactivatedSport:
     'en_This Sport Activity has been deactivated. Do you want to Activate it again?',
@@ -3182,11 +3183,9 @@ export default {
   joinReqAccepted: 'en_Join request accepted',
   followReqAccepted: 'en_Follow request has been accepted',
   thisGroupIsInviteOnly: 'en_This {0} is invite only',
-  IncomingMatchOfferSettings: 'en_Incoming Match Offer Settings',
-  userAccountdeactivated: 'en_This user has deactivated their account.',
-  userDeactivatedSport:
-    'en_This Sport Activity has been deactivated. Do you want to Activate it again?',
   joinRequestTitle: 'en_Join Request',
   thisGroupIsPausedText: 'en_This {0} is paused',
   invitationDeclinedText: 'en_Invitation declined',
+  alretMessageForEmptyTeam:
+    "en_You can't send message to team with no members.",
 };

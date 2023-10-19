@@ -10,14 +10,7 @@ const AvailabilityContentScreen = ({userData}) => {
   const getSlotData = useCallback(() => {
     Utility.getEventsSlots([userData.user_id ?? userData.group_id]).then(
       (response) => {
-        let resCalenders = [];
-        resCalenders = response.filter((obj) => {
-          if (obj.cal_type === 'blocked') {
-            return obj;
-          }
-          return false;
-        });
-        setData(resCalenders);
+        setData(response);
       },
     );
   }, [userData.user_id, userData.group_id]);

@@ -1,15 +1,18 @@
 // @flow
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {
   View,
   StyleSheet,
   Text,
-  SafeAreaView,
   Pressable,
   Image,
   Alert,
   ScrollView,
+  StatusBar,
+  Platform,
+  Dimensions,
 } from 'react-native';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {strings} from '../../../../Localization/translation';
 import {patchPlayer} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
@@ -19,16 +22,30 @@ import fonts from '../../../Constants/Fonts';
 import {privacySettingEnum} from '../../../Constants/GeneralConstants';
 import images from '../../../Constants/ImagePath';
 import {setAuthContextData} from '../../../utils';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
+import ModalBackDrop from '../../../components/ModalBackDrop';
 
 const settingsOption = [0, 3, 2, 1];
+const layout = Dimensions.get('window');
 
-const PrivacySettingsScreen = ({navigation, route}) => {
+const PrivacySettingsScreen = ({
+  modalRef,
+  closeModal = () => {},
+  section,
+  sport,
+  sportType,
+  sportIcon,
+  privacyKey,
+}) => {
   const [loading, setLoading] = useState(false);
   const [sportObj, setSportObj] = useState({});
 
-  const {sportIcon, section, sport, sportType, privacyKey, entityType} =
-    route.params;
   const authContext = useContext(AuthContext);
+
+  const snapPoints = useMemo(
+    () => [layout.height - 40, layout.height - 40],
+    [],
+  );
 
   useEffect(() => {
     const {entity} = authContext;
@@ -69,15 +86,16 @@ const PrivacySettingsScreen = ({navigation, route}) => {
       .then(async (res) => {
         setLoading(false);
         await setAuthContextData(res.payload, authContext);
-        navigation.navigate('HomeStack', {
-          screen: 'SportActivityHome',
-          params: {
-            sport,
-            sportType,
-            entityType,
-            uid: userData.user_id,
-          },
-        });
+        // navigation.navigate('HomeStack', {
+        //   screen: 'SportActivityHome',
+        //   params: {
+        //     sport,
+        //     sportType,
+        //     entityType,
+        //     uid: userData.user_id,
+        //   },
+        // });
+        closeModal();
       })
       .catch((error) => {
         setLoading(false);
@@ -282,32 +300,71 @@ const PrivacySettingsScreen = ({navigation, route}) => {
   };
 
   return (
-    <SafeAreaView style={styles.parent}>
-      <ScreenHeader
-        leftIcon={images.backArrow}
-        leftIconPress={() => {
-          navigation.goBack();
+    <BottomSheetModalProvider>
+      <BottomSheetModal
+        onDismiss={closeModal}
+        ref={modalRef}
+        backgroundStyle={{
+          borderRadius: 10,
+          paddingTop: 0,
         }}
-        sportIcon={sportIcon}
-        title={strings.privacySettings}
-        isRightIconText
-        rightButtonText={strings.save}
-        onRightButtonPress={handleSave}
-        loading={loading}
-      />
+        index={1}
+        snapPoints={snapPoints}
+        enablePanDownToClose
+        enableDismissOnClose
+        backdropComponent={ModalBackDrop}
+        handleComponent={() => (
+          <ScreenHeader
+            leftIcon={images.backArrow}
+            leftIconPress={() => {
+              closeModal();
+            }}
+            sportIcon={sportIcon}
+            title={strings.privacySettings}
+            isRightIconText
+            rightButtonText={strings.save}
+            onRightButtonPress={handleSave}
+          />
+        )}>
+        {Platform.OS === 'android' && (
+          <StatusBar
+            backgroundColor={colors.modalBackgroundColor}
+            barStyle="light-content"
+          />
+        )}
+        <ActivityLoader visible={loading} />
+        <View style={styles.container}>
+          <Text style={styles.title}>{renderTitle()}</Text>
+          {renderContent()}
+        </View>
+      </BottomSheetModal>
+    </BottomSheetModalProvider>
+    // <SafeAreaView style={styles.parent}>
+    //   <ScreenHeader
+    //     leftIcon={images.backArrow}
+    //     leftIconPress={() => {
+    //       navigation.goBack();
+    //     }}
+    //     sportIcon={sportIcon}
+    //     title={strings.privacySettings}
+    //     isRightIconText
+    //     rightButtonText={strings.save}
+    //     onRightButtonPress={handleSave}
+    //     loading={loading}
+    //   />
 
-      <View style={styles.container}>
-        <Text style={styles.title}>{renderTitle()}</Text>
-        {renderContent()}
-      </View>
-    </SafeAreaView>
+    //   <View style={styles.container}>
+    //     <Text style={styles.title}>{renderTitle()}</Text>
+    //     {renderContent()}
+    //   </View>
+    // </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  parent: {
-    flex: 1,
-  },
+  // parent: {
+  //   flex: 1,
+  // },
   container: {
     flex: 1,
     paddingHorizontal: 15,

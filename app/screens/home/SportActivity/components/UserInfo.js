@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
-import ReadMore from '@fawazahmed/react-native-read-more';
+
 import {strings} from '../../../../../Localization/translation';
 import LevelBars from '../../../../components/LevelBars';
 import {ShimmerView} from '../../../../components/shimmer/commonComponents/ShimmerCommonComponents';
@@ -20,16 +20,13 @@ import {displayLocation} from '../../../../utils';
 
 const UserInfo = ({
   user = {},
-  onMore = () => {},
   isLookingForClub = false,
   onMessageClick = () => {},
   isAdmin = false,
   containerStyle = {},
-  screenType = Verbs.screenTypeModal,
   level = 0,
   loading = false,
   entityType = Verbs.entityTypePlayer,
-  description = '',
   sportType = '',
   onPressUser = () => {},
 }) => {
@@ -49,7 +46,7 @@ const UserInfo = ({
   };
 
   return loading ? (
-    <View style={[styles.row, containerStyle]}>
+    <View style={[styles.row, {marginBottom: 25}, containerStyle]}>
       <ShimmerView
         style={{marginRight: 10, borderRadius: 50}}
         width={50}
@@ -101,7 +98,7 @@ const UserInfo = ({
           </View>
           {getLookingForContainer()}
         </View>
-        {!isAdmin && screenType === Verbs.screenTypeModal ? (
+        {!isAdmin ? (
           <TouchableOpacity
             style={styles.messageIconContainer}
             onPress={onMessageClick}>
@@ -109,37 +106,6 @@ const UserInfo = ({
           </TouchableOpacity>
         ) : null}
       </Pressable>
-      {screenType === Verbs.screenTypeMainScreen ? null : (
-        // <Text style={styles.description}>
-        //   {description}{' '}
-        //   <TouchableOpacity onPress={onMore}>
-        //     <Text style={styles.moreText}>{strings.moreText}</Text>
-        //   </TouchableOpacity>
-        // </Text>
-        <>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-            <View>
-              <Text style={styles.title}>{strings.infoTitle}</Text>
-            </View>
-            <TouchableOpacity style={styles.nextIcon} onPress={onMore}>
-              <Image
-                source={images.rightArrow}
-                style={[styles.image, {borderRadius: 0}]}
-              />
-            </TouchableOpacity>
-          </View>
-          <ReadMore
-            style={styles.description}
-            numberOfLines={3}
-            seeMoreText={strings.moreText}
-            seeLessText={strings.lessText}
-            seeLessStyle={styles.moreText}
-            seeMoreStyle={styles.moreText}
-            onSeeMoreBlocked={onMore}>
-            {description}
-          </ReadMore>
-        </>
-      )}
     </View>
   );
 };
@@ -153,12 +119,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
-  title: {
-    fontSize: 20,
-    lineHeight: 25,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
+
   imageContainer: {
     width: 45,
     height: 45,
@@ -179,19 +140,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
-  description: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: colors.lightBlackColor,
-    marginTop: 10,
-    fontFamily: fonts.RRegular,
-  },
-  moreText: {
-    fontSize: 12,
-    // lineHeight: 18,
-    color: colors.userPostTimeColor,
-    fontFamily: fonts.RRegular,
-  },
+
   lookingForClubContainer: {
     backgroundColor: colors.yellowColorCard,
     alignItems: 'center',
@@ -235,16 +184,6 @@ const styles = StyleSheet.create({
     lineHeight: 14,
     fontFamily: fonts.RMedium,
     color: colors.yellowColor,
-  },
-  nextIcon: {
-    width: 16,
-    height: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 8,
-    padding: 4,
-    backgroundColor: colors.grayBackgroundColor,
-    marginLeft: 5,
   },
 });
 export default UserInfo;

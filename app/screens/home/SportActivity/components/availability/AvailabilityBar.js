@@ -1,11 +1,12 @@
 // @flow
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import colors from '../../../../../Constants/Colors';
 import {getJSDate} from '../../../../../utils';
 
-const totalBarWidth = 120;
+const screenWidth = Dimensions.get('window').width;
+const totalBarWidth = parseInt(screenWidth * 0.3, 10);
 
 const AvailabilityBar = ({list = []}) => {
   const [timeSlots, setTimeSlots] = useState([]);

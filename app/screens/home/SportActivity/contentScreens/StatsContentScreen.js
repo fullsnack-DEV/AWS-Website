@@ -7,9 +7,9 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import {strings} from '../../../../../Localization/translation';
 import {getGameStatsData, getStatsRDMData} from '../../../../api/Games';

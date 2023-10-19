@@ -180,7 +180,7 @@ const WritePostScreen = ({navigation, route}) => {
       };
 
       if (route.params?.comeFrom === 'HomeScreen') {
-        navigation.navigate('HomeStaack', {
+        navigation.navigate('HomeStack', {
           screen: 'HomeScreen',
           params: {
             isCreatePost: true,

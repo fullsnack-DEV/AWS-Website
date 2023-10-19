@@ -674,7 +674,10 @@ const AccountScreen = ({navigation, route}) => {
         sportsList={sportsData}
         onNext={(sport) => {
           setVisibleSportsModal(false);
-          navigation.navigate(navigationOptions.screenName, sport);
+          navigation.navigate(navigationOptions.screenName, {
+            screen: navigationOptions.data.screen,
+            params: sport,
+          });
         }}
       />
 

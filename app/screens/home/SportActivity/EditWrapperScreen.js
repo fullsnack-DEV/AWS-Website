@@ -1,6 +1,7 @@
 // @flow
-import React, {useContext, useEffect, useState} from 'react';
-import {SafeAreaView, Alert} from 'react-native';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
+import {Alert, Dimensions, Platform, StatusBar} from 'react-native';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {strings} from '../../../../Localization/translation';
 import {patchPlayer} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
@@ -16,14 +17,27 @@ import {getEntitySportList} from '../../../utils/sportsActivityUtils';
 import Verbs from '../../../Constants/Verbs';
 import {DEFAULT_NTRP} from '../../../Constants/GeneralConstants';
 import AvailableServiceAreas from './contentScreens/AvailableServiceAreas';
+import ModalBackDrop from '../../../components/ModalBackDrop';
+import colors from '../../../Constants/Colors';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
-const EditWrapperScreen = ({navigation, route}) => {
+const layout = Dimensions.get('window');
+
+const EditWrapperScreen = ({
+  modalRef,
+  closeModal = () => {},
+  section,
+  title,
+  sportObj,
+  sportIcon,
+  entityType,
+}) => {
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
   const [selectedCertificates, setSelectedCertificates] = useState([]);
   const [updatedSportObj, setUpdatedSportObj] = useState({});
 
-  const {section, title, sportObj, sportIcon, entityType} = route.params;
+  // const {section, title, sportObj, sportIcon, entityType} = route.params;
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
@@ -147,15 +161,16 @@ const EditWrapperScreen = ({navigation, route}) => {
       .then(async (res) => {
         setLoading(false);
         await setAuthContextData(res.payload, authContext);
-        navigation.navigate('HomeStack', {
-          screen: 'SportActivityHome',
-          params: {
-            sport: sportObj?.sport,
-            sportType: sportObj?.sport_type,
-            uid: userData.user_id,
-            entityType,
-          },
-        });
+        // navigation.navigate('HomeStack', {
+        //   screen: 'SportActivityHome',
+        //   params: {
+        //     sport: sportObj?.sport,
+        //     sportType: sportObj?.sport_type,
+        //     uid: userData.user_id,
+        //     entityType,
+        //   },
+        // });
+        closeModal();
       })
       .catch((error) => {
         setLoading(false);
@@ -228,23 +243,64 @@ const EditWrapperScreen = ({navigation, route}) => {
     }
   };
 
-  return (
-    <SafeAreaView style={{flex: 1}}>
-      <ScreenHeader
-        sportIcon={sportIcon}
-        title={title}
-        leftIcon={images.backArrow}
-        leftIconPress={() => {
-          navigation.goBack();
-        }}
-        isRightIconText
-        rightButtonText={strings.save}
-        onRightButtonPress={handleSave}
-        loading={loading}
-      />
+  const snapPoints = useMemo(
+    () => [layout.height - 40, layout.height - 40],
+    [],
+  );
 
-      {renderView()}
-    </SafeAreaView>
+  return (
+    <BottomSheetModalProvider>
+      <BottomSheetModal
+        onDismiss={closeModal}
+        ref={modalRef}
+        backgroundStyle={{
+          borderRadius: 10,
+          paddingTop: 0,
+        }}
+        index={1}
+        snapPoints={snapPoints}
+        enablePanDownToClose
+        enableDismissOnClose
+        backdropComponent={ModalBackDrop}
+        handleComponent={() => (
+          <ScreenHeader
+            sportIcon={sportIcon}
+            title={title}
+            leftIcon={images.backArrow}
+            leftIconPress={() => {
+              closeModal();
+            }}
+            isRightIconText
+            rightButtonText={strings.save}
+            onRightButtonPress={handleSave}
+          />
+        )}>
+        {Platform.OS === 'android' && (
+          <StatusBar
+            backgroundColor={colors.modalBackgroundColor}
+            barStyle="light-content"
+          />
+        )}
+        <ActivityLoader visible={loading} />
+        {renderView()}
+      </BottomSheetModal>
+    </BottomSheetModalProvider>
+    // <SafeAreaView style={{flex: 1}}>
+    //   <ScreenHeader
+    //     sportIcon={sportIcon}
+    //     title={title}
+    //     leftIcon={images.backArrow}
+    //     leftIconPress={() => {
+    //       navigation.goBack();
+    //     }}
+    //     isRightIconText
+    //     rightButtonText={strings.save}
+    //     onRightButtonPress={handleSave}
+    //     loading={loading}
+    //   />
+
+    //   {renderView()}
+    // </SafeAreaView>
   );
 };
 

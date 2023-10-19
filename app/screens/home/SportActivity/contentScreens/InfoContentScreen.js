@@ -6,11 +6,11 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  FlatList,
   Modal,
   Pressable,
   Dimensions,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import ReadMore from '@fawazahmed/react-native-read-more';

@@ -31,7 +31,7 @@ export default function PauseGroupScreen({navigation}) {
         getUnreadNotificationCount(authContext);
         await setAuthContextData(response.payload, authContext);
         setloading(false);
-        navigation.navigate('AccountScreen');
+        navigation.navigate('App', {screen: 'Account'});
       })
       .catch((e) => {
         setloading(false);
@@ -47,7 +47,7 @@ export default function PauseGroupScreen({navigation}) {
       .then(async (response) => {
         await setAuthContextData(response.payload, authContext);
         setloading(false);
-        navigation.navigate('AccountScreen');
+        navigation.navigate('App', {screen: 'Account'});
       })
       .catch((e) => {
         setloading(false);

@@ -315,39 +315,43 @@ const HomeScreen = ({navigation, route}) => {
   };
 
   const onMessageButtonPress = (entityData = {}) => {
-    const invitee = [
-      {
-        id: entityData.group_id ?? entityData.user_id,
-        name: entityData.group_name ?? entityData.full_name,
-        image: entityData.full_image ?? entityData.thumbnail,
-        entityType: entityData.entity_type,
-        city: entityData.city,
-      },
-    ];
+    if (entityData.joined_members?.length > 0) {
+      const invitee = [
+        {
+          id: entityData.group_id ?? entityData.user_id,
+          name: entityData.group_name ?? entityData.full_name,
+          image: entityData.full_image ?? entityData.thumbnail,
+          entityType: entityData.entity_type,
+          city: entityData.city,
+        },
+      ];
 
-    if (invitee[0]?.id) {
-      createChannel(invitee)
-        .then(async (channel) => {
-          if (channel) {
-            await channel.watch();
-            const routeParams = {...route.params};
-            if (route.params?.comeFrom === 'EntitySearchScreen') {
-              routeParams.comeFrom = 'EntitySearchScreen';
+      if (invitee[0]?.id) {
+        createChannel(invitee)
+          .then(async (channel) => {
+            if (channel) {
+              await channel.watch();
+              const routeParams = {...route.params};
+              if (route.params?.comeFrom === 'EntitySearchScreen') {
+                routeParams.comeFrom = 'EntitySearchScreen';
+              }
+
+              navigation.navigate('MessageStack', {
+                screen: 'MessageChatScreen',
+                params: {
+                  channel,
+                  comeFrom: 'HomeScreen',
+                  routeParams,
+                },
+              });
             }
-
-            navigation.navigate('MessageStack', {
-              screen: 'MessageChatScreen',
-              params: {
-                channel,
-                comeFrom: 'HomeScreen',
-                routeParams,
-              },
-            });
-          }
-        })
-        .catch((err) => {
-          Alert.alert(strings.alertmessagetitle, err.message);
-        });
+          })
+          .catch((err) => {
+            Alert.alert(strings.alertmessagetitle, err.message);
+          });
+      }
+    } else {
+      Alert.alert('', strings.alretMessageForEmptyTeam);
     }
   };
 
@@ -578,10 +582,13 @@ const HomeScreen = ({navigation, route}) => {
                 authContext,
               );
 
-              navigation.navigate('LookingForChallengeScreen', {
-                filters: teamData.filters,
-                teamSportData: teamData.teamSportData,
-                registerFavSports: filters.sport,
+              navigation.navigate('AccountStack', {
+                screen: 'LookingForChallengeScreen',
+                params: {
+                  filters: teamData.filters,
+                  teamSportData: teamData.teamSportData,
+                  registerFavSports: filters.sport,
+                },
               });
             }}
             searchPlayer={() => {

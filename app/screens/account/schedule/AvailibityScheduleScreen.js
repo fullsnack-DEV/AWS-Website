@@ -1,12 +1,6 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  ScrollView,
-} from 'react-native';
+import {Text, View, TouchableOpacity, StyleSheet} from 'react-native';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import moment from 'moment';
 import {getJSDate} from '../../../utils';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';

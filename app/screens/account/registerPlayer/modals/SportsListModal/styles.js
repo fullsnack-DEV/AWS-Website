@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 30,
     flex: 1,
-
   },
   title: {
     fontSize: 20,
@@ -67,8 +66,10 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
+    lineHeight: 21,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+    marginBottom: 5,
   },
   listItem: {
     flexDirection: 'row',

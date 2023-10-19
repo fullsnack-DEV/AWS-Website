@@ -1,13 +1,7 @@
 // @flow
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  ActivityIndicator,
-  ScrollView,
-} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {View, StyleSheet, Text, ActivityIndicator} from 'react-native';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import {AirbnbRating} from 'react-native-ratings';
 import {strings} from '../../../../../Localization/translation';
 import {getReviewsByRole} from '../../../../api/Games';
@@ -157,7 +151,8 @@ const ReviewsContentScreen = ({
       <CustomModalWrapper
         isVisible={showModal}
         closeModal={() => setShowModal(false)}
-        modalType={ModalTypes.style2}>
+        modalType={ModalTypes.style2}
+        containerStyle={{marginBottom: 25}}>
         <Text style={[styles.label, {marginBottom: 25}]}>
           {strings.ratingText}
         </Text>

@@ -348,9 +348,12 @@ const RegisterPlayer = ({navigation, route}) => {
               ...route.params.routeParams,
             });
           } else {
-            navigation.navigate('AccountScreen', {
-              createdSportName: selectedSport?.sport_name,
-              sportType: selectedSport?.sport_type,
+            navigation.navigate('App', {
+              screen: 'Account',
+              params: {
+                createdSportName: selectedSport?.sport_name,
+                sportType: selectedSport?.sport_type,
+              },
             });
           }
         }}
@@ -378,32 +381,41 @@ const RegisterPlayer = ({navigation, route}) => {
         }}
         searchPlayer={(filters) => {
           if (filters.sport_type === Verbs.sportTypeSingle) {
-            navigation.navigate('LookingForChallengeScreen', {
-              filters,
+            navigation.navigate('AccountStack', {
+              screen: 'LookingForChallengeScreen',
+              params: {
+                filters,
+              },
             });
           }
           if (filters.sport_type === Verbs.sportTypeDouble) {
-            navigation.navigate('AccountScreen', {
-              createdSportName: selectedSport?.sport_name,
-              sportType: selectedSport?.sport_type,
-              isSearchPlayerForDoubles: true,
-              doubleSport: selectedSport,
+            navigation.navigate('App', {
+              screen: 'Account',
+              params: {
+                createdSportName: selectedSport?.sport_name,
+                sportType: selectedSport?.sport_type,
+                isSearchPlayerForDoubles: true,
+                doubleSport: selectedSport,
+              },
             });
           }
         }}
         onUserClick={(userData) => {
           if (!userData) return;
-          navigation.navigate('HomeScreen', {
-            uid:
-              userData.entity_type === Verbs.entityTypePlayer ||
-              userData.entity_type === Verbs.entityTypeUser
-                ? userData.user_id
-                : userData.group_id,
-            role: ['user', 'player']?.includes(userData.entity_type)
-              ? 'user'
-              : userData.entity_type,
-            backButtonVisible: true,
-            menuBtnVisible: false,
+          navigation.navigate('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid:
+                userData.entity_type === Verbs.entityTypePlayer ||
+                userData.entity_type === Verbs.entityTypeUser
+                  ? userData.user_id
+                  : userData.group_id,
+              role: ['user', 'player']?.includes(userData.entity_type)
+                ? 'user'
+                : userData.entity_type,
+              backButtonVisible: true,
+              menuBtnVisible: false,
+            },
           });
         }}
         searchTeam={(filters) => {

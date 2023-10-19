@@ -6,12 +6,12 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  FlatList,
   ScrollView,
   Image,
   ImageBackground,
 } from 'react-native';
 import moment from 'moment';
+import {FlatList} from 'react-native-gesture-handler';
 import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   loaderView: {
-    minHeight: 150,
+    minHeight: 188,
     alignItems: 'center',
     justifyContent: 'center',
   },
