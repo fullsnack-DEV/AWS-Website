@@ -60,7 +60,12 @@ const GroupHomeHeader = ({
         <View
           style={[
             styles.row,
-            {flex: 1, justifyContent: 'space-between', marginLeft: 7},
+
+            {
+              flex: 1,
+              justifyContent: 'space-between',
+              marginLeft: 7,
+            },
           ]}>
           {groupData.entity_type === Verbs.entityTypeTeam && (
             <View style={!groupData.level ? {marginTop: 6} : {}}>
@@ -81,7 +86,17 @@ const GroupHomeHeader = ({
             </View>
           )}
 
-          <View style={[styles.row, {flex: 1, justifyContent: 'flex-end'}]}>
+          <View
+            style={[
+              styles.row,
+              {
+                justifyContent: 'flex-end',
+
+                flexShrink: 1,
+
+                paddingLeft: 5,
+              },
+            ]}>
             <Pressable
               style={[
                 styles.row,
@@ -91,8 +106,12 @@ const GroupHomeHeader = ({
                 },
               ]}
               onPress={onClickMembers}>
-              <Text style={styles.count}>{groupData.member_count}</Text>
-              <Text style={styles.label}>{strings.membersTitle}</Text>
+              <Text style={styles.count} allowFontScaling>
+                {groupData.member_count}
+              </Text>
+              <Text allowFontScaling style={[styles.label, {flexShrink: 1}]}>
+                {strings.membersTitle}
+              </Text>
             </Pressable>
             <Pressable
               style={[styles.row, {justifyContent: 'flex-end'}]}

@@ -67,7 +67,6 @@ export default function AvailibilityReferee({navigation, route}) {
     registerdRefereeData.push(selectedSport);
 
     const body = {
-      ...authContext?.entity?.obj,
       referee_data: registerdRefereeData,
     };
 

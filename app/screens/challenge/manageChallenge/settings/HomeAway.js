@@ -26,13 +26,12 @@ import Verbs from '../../../../Constants/Verbs';
 
 export default function HomeAway({navigation, route}) {
   const authContext = useContext(AuthContext);
-  console.log('Auth:=>', authContext);
+
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
   const [loading, setloading] = useState(false);
 
-  console.log('route?.params?.settingObj', route?.params?.settingObj);
   const [teams, setteams] = useState(
     route?.params?.settingObj?.home_away
       ? route?.params?.settingObj?.home_away === 'Home'
@@ -57,9 +56,6 @@ export default function HomeAway({navigation, route}) {
 
   const swapTeam = () => {
     setteams(([teams[0], teams[1]] = [teams[1], teams[0]]));
-
-    console.log('Team[0]:=>', teams[0]);
-    console.log('Team[1]:=>', teams[1]);
   };
 
   const saveUser = () => {
@@ -93,17 +89,15 @@ export default function HomeAway({navigation, route}) {
     registerdPlayerData.push(selectedSport);
 
     const body = {
-      ...authContext?.entity?.obj,
       registered_sports: registerdPlayerData,
     };
-    console.log('Body::::--->', body);
 
     patchPlayer(body, authContext)
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
-          console.log('Register player response IS:: ', response.payload);
+
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({...entity});
@@ -118,7 +112,7 @@ export default function HomeAway({navigation, route}) {
         } else {
           Alert.alert(strings.appName, response.messages);
         }
-        console.log('RESPONSE IS:: ', response);
+
         setloading(false);
       })
       .catch((e) => {
@@ -143,14 +137,11 @@ export default function HomeAway({navigation, route}) {
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
-    const body = {...selectedTeam};
-    console.log('Body Team::::--->', body);
+    const body = {...bodyParams};
 
     patchGroup(authContext.entity.uid, body, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
-
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;

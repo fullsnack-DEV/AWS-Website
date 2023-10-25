@@ -152,8 +152,6 @@ export default function CreateClubForm1({navigation, route}) {
       bodyParams.background_thumbnail = backgroundThumbnail;
     }
 
-    const entity = authContext.entity;
-
     if (bodyParams?.thumbnail || bodyParams?.background_thumbnail) {
       const imageArray = [];
       if (bodyParams?.thumbnail) {
@@ -183,12 +181,8 @@ export default function CreateClubForm1({navigation, route}) {
             bodyParams.background_full_image = bgInfo.url;
           }
 
-          createGroup(
-            bodyParams,
-            entity.role === Verbs.entityTypeTeam && entity.uid,
-            entity.role === Verbs.entityTypeTeam && Verbs.entityTypeTeam,
-            authContext,
-          )
+          createGroup(bodyParams, authContext)
+
             .then(async (response) => {
               getUnreadNotificationCount(authContext);
               await onSwitchProfile(response.payload);
@@ -225,10 +219,7 @@ export default function CreateClubForm1({navigation, route}) {
     } else {
       createGroup(
         bodyParams,
-        // entity.uid,
-        // entity.role === 'team' ? 'team' : 'user',
-        entity.role === Verbs.entityTypeTeam && entity.uid,
-        entity.role === Verbs.entityTypeTeam && Verbs.entityTypeTeam,
+
         authContext,
       )
         .then(async (response) => {

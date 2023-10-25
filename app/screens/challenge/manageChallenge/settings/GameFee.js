@@ -110,22 +110,17 @@ export default function GameFee({navigation, route}) {
         setting: {...selectedSport?.setting, ...bodyParams},
       };
       registerdPlayerData.push(selectedSport);
-      console.log('registerdPlayerData::::--->', registerdPlayerData);
-      console.log('selectedSport::::--->', selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         registered_sports: registerdPlayerData,
       };
-
-      console.log('Body::::--->', body);
 
       patchPlayer(body, authContext)
         .then(async (response) => {
           if (response.status === true) {
             setloading(false);
             const entity = authContext.entity;
-            console.log('Register player response IS:: ', response.payload);
+
             entity.auth.user = response.payload;
             entity.obj = response.payload;
             authContext.setEntity({...entity});
@@ -141,7 +136,7 @@ export default function GameFee({navigation, route}) {
           } else {
             Alert.alert(strings.appName, response.messages);
           }
-          console.log('RESPONSE IS:: ', response);
+
           setloading(false);
         })
         .catch((e) => {
@@ -164,19 +159,14 @@ export default function GameFee({navigation, route}) {
       },
     };
 
-    console.log('Fee team:', bodyParams);
-
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
     const body = {...selectedTeam};
-    console.log('Body Team::::--->', body);
 
     patchGroup(authContext.entity.uid, body, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
-
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
@@ -271,13 +261,15 @@ export default function GameFee({navigation, route}) {
           keyboardType={'decimal-pad'}></TextInput>
         <Text style={styles.curruency}>{currencyType}</Text>
       </View>
-      {route.params.comeFrom === 'ManageChallengeScreen' && (<Text
-        style={[styles.changeCurruency, {textDecorationLine: 'underline'}]}
-        onPress={() => {
-          setVisibleCurrencyModal(true);
-        }}>
-        {strings.changeCurrency}
-      </Text>)}
+      {route.params.comeFrom === 'ManageChallengeScreen' && (
+        <Text
+          style={[styles.changeCurruency, {textDecorationLine: 'underline'}]}
+          onPress={() => {
+            setVisibleCurrencyModal(true);
+          }}>
+          {strings.changeCurrency}
+        </Text>
+      )}
       <Modal
         isVisible={visibleCurrencyModal}
         backdropColor="black"

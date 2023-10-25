@@ -59,6 +59,7 @@ const GroupHomeButton = ({
 
   const getTeamButtons = useCallback(() => {
     const obj = {};
+
     if (
       loggedInEntity.role === Verbs.entityTypePlayer ||
       loggedInEntity.role === Verbs.entityTypeUser
@@ -99,10 +100,11 @@ const GroupHomeButton = ({
         );
       } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
         obj.btn1 = strings.invitePending;
+
         setOptions([
           strings.acceptInvite,
           strings.declineInvite,
-          strings.strings.cancel,
+          strings.cancel,
         ]);
       } else {
         obj.btn1 = strings.join;
@@ -281,6 +283,7 @@ const GroupHomeButton = ({
             groupData.sport_type === Verbs.doubleSport
               ? {height: 25, paddingVertical: 0}
               : {},
+            buttons.btn1 === strings.invite ? {paddingVertical: 4} : {},
           ]}
           onPress={() => handleButtonPress(buttons.btn1)}>
           <Text

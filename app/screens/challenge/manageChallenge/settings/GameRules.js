@@ -86,17 +86,15 @@ export default function GameRules({navigation, route}) {
       registerdPlayerData.push(selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         registered_sports: registerdPlayerData,
       };
-      console.log('Body::::--->', body);
 
       patchPlayer(body, authContext)
         .then(async (response) => {
           if (response.status === true) {
             setloading(false);
             const entity = authContext.entity;
-            console.log('Register player response IS:: ', response.payload);
+
             entity.auth.user = response.payload;
             entity.obj = response.payload;
             authContext.setEntity({...entity});
@@ -112,7 +110,7 @@ export default function GameRules({navigation, route}) {
           } else {
             Alert.alert(strings.appName, response.messages);
           }
-          console.log('RESPONSE IS:: ', response);
+
           setloading(false);
         })
         .catch((e) => {
@@ -134,15 +132,12 @@ export default function GameRules({navigation, route}) {
     };
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
-    selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
-    const body = {...selectedTeam};
-    console.log('Body Team::::--->', body);
+    selectedTeam.setting = {...selectedTeam.setting};
+    const body = {...bodyParams};
 
     patchGroup(authContext.entity.uid, body, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
-
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;

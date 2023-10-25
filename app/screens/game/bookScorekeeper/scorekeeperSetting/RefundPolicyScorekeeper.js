@@ -114,7 +114,6 @@ export default function RefundPolicyScorekeeper({navigation, route}) {
       registerdScorekeeperData.push(selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         scorekeeper_data: registerdScorekeeperData,
       };
 

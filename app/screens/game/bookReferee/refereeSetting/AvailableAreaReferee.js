@@ -173,7 +173,6 @@ export default function AvailableAreaReferee({navigation, route}) {
     registerdRefereeData.push(selectedSport);
 
     const body = {
-      ...authContext?.entity?.obj,
       referee_data: registerdRefereeData,
     };
 
@@ -294,7 +293,6 @@ export default function AvailableAreaReferee({navigation, route}) {
   const getNearbyCityData = (lat, long, radius) => {
     searchNearByCityState(radius, lat, long)
       .then((response) => {
-        console.log('searchNearByCityState', response);
         const list = response.filter(
           (obj) =>
             !(
@@ -303,7 +301,6 @@ export default function AvailableAreaReferee({navigation, route}) {
             ),
         );
         setNearbyCities(list);
-        console.log('list', list);
         setLoading(false);
       })
       .catch((e) => {
@@ -338,7 +335,6 @@ export default function AvailableAreaReferee({navigation, route}) {
         if (e.name === Verbs.gpsErrorDeined) {
           setCurrentLocation(null);
           setUserDeniedLocPerm(true);
-          console.log('userD denied the to fetch GPS Location');
         } else {
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);

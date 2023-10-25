@@ -28,6 +28,7 @@ import MenuItem from './components/MenuItem';
 import RefereeCongratulationsModal from './components/RefereeCongratulationsModal';
 
 import {currencyList} from '../../../Constants/GeneralConstants';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 const IncomingReservationSettings = ({navigation, route}) => {
   const [settingsObject, setSettingObject] = useState({});
@@ -160,6 +161,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.parent}>
+      <ActivityLoader visible={loading} />
       <ScreenHeader
         title={
           entityType === Verbs.entityTypeReferee
@@ -176,7 +178,6 @@ const IncomingReservationSettings = ({navigation, route}) => {
         isRightIconText
         rightButtonText={strings.done}
         onRightButtonPress={onSave}
-        loading={loading}
         labelStyle={{alignSelf: 'center'}}
       />
       <TCFormProgress totalSteps={2} curruentStep={2} />
@@ -255,10 +256,11 @@ const IncomingReservationSettings = ({navigation, route}) => {
               ...route.params.routeParams,
             });
           } else {
-            navigation.navigate('AccountScreen', {
-              createdSportName: sportName,
-              // eslint-disable-next-line
-              // sportType: sportType,
+            navigation.navigate('App', {
+              screen: 'Account',
+              params: {
+                createdSportName: sportName,
+              },
             });
           }
         }}

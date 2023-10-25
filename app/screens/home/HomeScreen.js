@@ -173,10 +173,13 @@ const HomeScreen = ({navigation, route}) => {
     }
   }, [
     authContext.entity,
-    route.params.role,
-    route.params.uid,
+    route.params?.role,
+    route.params?.uid,
     route.params?.comeFrom,
     isFocused,
+    getUserData,
+    fetchGroupDetails,
+    getLoggedinGroupMembers,
   ]);
 
   useEffect(() => {

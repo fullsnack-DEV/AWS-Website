@@ -1,7 +1,23 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {StyleSheet, View, Text, Image, TextInput, TouchableOpacity, TouchableWithoutFeedback, Alert, FlatList, Dimensions, Platform, ScrollView} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Alert,
+  FlatList,
+  Dimensions,
+  Platform,
+  ScrollView,
+} from 'react-native';
 
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 import Modal from 'react-native-modal';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -72,7 +88,13 @@ export default function RegisterPlayerForm2({navigation, route}) {
           justifyContent: 'space-between',
         }}>
         <Text style={styles.languageList}>{item.language}</Text>
-        <View style={styles.checkbox}>{languages[index].isChecked ? <Image source={images.orangeCheckBox} style={styles.checkboxImg} /> : <Image source={images.uncheckWhite} style={styles.checkboxImg} />}</View>
+        <View style={styles.checkbox}>
+          {languages[index].isChecked ? (
+            <Image source={images.orangeCheckBox} style={styles.checkboxImg} />
+          ) : (
+            <Image source={images.uncheckWhite} style={styles.checkboxImg} />
+          )}
+        </View>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -93,14 +115,22 @@ export default function RegisterPlayerForm2({navigation, route}) {
 
     let registerdPlayerData = authContext?.entity?.obj?.registered_sports || [];
 
-    if (authContext?.entity?.obj?.registered_sports?.some((obj) => obj.sport === bodyParams.sport && obj.sport_type === bodyParams.sport_type)) {
-      registerdPlayerData = authContext?.entity?.obj?.registered_sports.map((item) =>
-        item.sport === bodyParams.sport && item.sport_type === bodyParams.sport_type
-          ? {
-              ...item,
-              is_published: true,
-            }
-          : item,
+    if (
+      authContext?.entity?.obj?.registered_sports?.some(
+        (obj) =>
+          obj.sport === bodyParams.sport &&
+          obj.sport_type === bodyParams.sport_type,
+      )
+    ) {
+      registerdPlayerData = authContext?.entity?.obj?.registered_sports.map(
+        (item) =>
+          item.sport === bodyParams.sport &&
+          item.sport_type === bodyParams.sport_type
+            ? {
+                ...item,
+                is_published: true,
+              }
+            : item,
       );
     } else {
       registerdPlayerData.push(bodyParams);
@@ -111,16 +141,11 @@ export default function RegisterPlayerForm2({navigation, route}) {
       registered_sports: registerdPlayerData,
     };
 
-    console.log('body', body);
-    console.log('body params', bodyParams);
-    console.log('body registerdPlayerData', registerdPlayerData);
-
     patchPlayer(body, authContext)
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
-          console.log('Register player response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({...entity});
@@ -161,7 +186,13 @@ export default function RegisterPlayerForm2({navigation, route}) {
           <Text style={styles.LocationText}>{strings.languageText}</Text>
           <TouchableOpacity testID="choose-language" onPress={toggleModal}>
             <View style={styles.searchView}>
-              <TextInput style={styles.searchTextField} placeholder={strings.languagePlaceholder} value={languagesName} editable={false} pointerEvents="none" />
+              <TextInput
+                style={styles.searchTextField}
+                placeholder={strings.languagePlaceholder}
+                value={languagesName}
+                editable={false}
+                pointerEvents="none"
+              />
             </View>
           </TouchableOpacity>
           <View
@@ -169,9 +200,21 @@ export default function RegisterPlayerForm2({navigation, route}) {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <Text style={styles.LocationText}>{strings.descriptionTextDetails}</Text>
+            <Text style={styles.LocationText}>
+              {strings.descriptionTextDetails}
+            </Text>
           </View>
-          <TextInput testID="register-player-description" style={styles.descriptionTxt} onChangeText={(text) => setDescription(text)} value={description} multiline textAlignVertical={'top'} numberOfLines={4} maxLength={1000} placeholder={strings.descriptionTextDetails} />
+          <TextInput
+            testID="register-player-description"
+            style={styles.descriptionTxt}
+            onChangeText={(text) => setDescription(text)}
+            value={description}
+            multiline
+            textAlignVertical={'top'}
+            numberOfLines={4}
+            maxLength={1000}
+            placeholder={strings.descriptionTextDetails}
+          />
           <View style={{flex: 1}} />
         </ScrollView>
       </KeyboardAwareScrollView>
@@ -209,7 +252,10 @@ export default function RegisterPlayerForm2({navigation, route}) {
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
-            <TouchableOpacity hitSlop={Utility.getHitSlop(15)} style={styles.closeButton} onPress={() => setModalVisible(false)}>
+            <TouchableOpacity
+              hitSlop={Utility.getHitSlop(15)}
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}>
               <Image source={images.cancelImage} style={styles.closeButton} />
             </TouchableOpacity>
             <Text
@@ -245,10 +291,20 @@ export default function RegisterPlayerForm2({navigation, route}) {
             </TouchableOpacity>
           </View>
           <View style={styles.separatorLine} />
-          <FlatList ItemSeparatorComponent={() => <TCThinDivider />} data={languages} keyExtractor={(item, index) => index.toString()} renderItem={renderLanguage} />
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={languages}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderLanguage}
+          />
         </View>
       </Modal>
-      <TCGradientButton isDisabled={languagesName === ''} title={strings.doneTitle} style={{marginBottom: 30}} onPress={doneOnPress} />
+      <TCGradientButton
+        isDisabled={languagesName === ''}
+        title={strings.doneTitle}
+        style={{marginBottom: 30}}
+        onPress={doneOnPress}
+      />
     </View>
   );
 }

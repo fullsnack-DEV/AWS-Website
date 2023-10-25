@@ -565,6 +565,8 @@ const images = {
   replyCancelImage: require('../assets/images/replyCancelImage.png'),
   arrowSignUpBack: require('../assets/images/Arrow_sign_up.png'),
   backIconBigger: require('../assets/images/originalBackIcon.png'),
+  allOrangeIcon: require('../assets/images/allOrange.png'),
+  allSportOrangeIcon: require('../assets/images/allSportIconOrange.png'),
 };
 
 export default images;

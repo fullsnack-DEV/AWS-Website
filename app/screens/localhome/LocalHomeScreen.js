@@ -75,6 +75,7 @@ function LocalHomeScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
   const [customSports, setCustomSports] = useState([]);
   const [locationPopup, setLocationPopup] = useState(false);
+
   const [selectedLocationOption, setSelectedLocationOption] = useState(1);
   const [location, setLocation] = useState(
     authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
@@ -92,6 +93,7 @@ function LocalHomeScreen({navigation, route}) {
   const [lookingTeam, setLookingTeam] = useState([]);
   const [referees, setReferees] = useState([]);
   const [scorekeepers, setScorekeepers] = useState([]);
+
   const [image_base_url, setImageBaseUrl] = useState('');
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   // const [pointEvent] = useState('auto');
@@ -250,6 +252,13 @@ function LocalHomeScreen({navigation, route}) {
     showSwitchAccountModal,
   ]);
 
+  useEffect(() => {
+    setFilters({
+      sport: selectedSport,
+      sport_type: sportType,
+      location,
+    });
+  }, [location, selectedSport, sportType]);
   const memoizedLocalHomeQuery = useMemo(() => LocalHomeQuery, []);
 
   useFocusEffect(
@@ -265,54 +274,6 @@ function LocalHomeScreen({navigation, route}) {
       locationContext.setSelectedLoaction(location);
     }, [location, locationContext]),
   );
-
-  useEffect(() => {
-    if (isFocused) {
-      if (
-        selectedSport !== undefined &&
-        sportType !== undefined &&
-        selectedSport !== null &&
-        sportType !== null
-      ) {
-        memoizedLocalHomeQuery(
-          location,
-          defaultPageSize,
-          selectedSport,
-          sportType,
-          authContext,
-          setRecentMatch,
-          setUpcomingMatch,
-          setChallengeeMatch,
-          setHiringPlayers,
-          setLookingTeam,
-          setReferees,
-          setScorekeepers,
-          setCardLoader,
-        );
-      }
-    }
-  }, [
-    isFocused,
-    selectedSport,
-    location,
-    sportType,
-    setRecentMatch,
-    setUpcomingMatch,
-    setChallengeeMatch,
-    setHiringPlayers,
-    setLookingTeam,
-    setReferees,
-    setScorekeepers,
-    memoizedLocalHomeQuery,
-  ]);
-
-  useEffect(() => {
-    setFilters({
-      sport: selectedSport,
-      sport_type: sportType,
-      location,
-    });
-  }, [location, selectedSport, sportType]);
 
   const getEventdata = useMemo(
     () => async () => {
@@ -470,6 +431,47 @@ function LocalHomeScreen({navigation, route}) {
     }
   };
 
+  useEffect(() => {
+    if (isFocused) {
+      if (
+        selectedSport !== undefined &&
+        sportType !== undefined &&
+        selectedSport !== null &&
+        sportType !== null
+      ) {
+        memoizedLocalHomeQuery(
+          location,
+          defaultPageSize,
+          selectedSport,
+          sportType,
+          authContext,
+          setRecentMatch,
+          setUpcomingMatch,
+          setChallengeeMatch,
+          setHiringPlayers,
+          setLookingTeam,
+          setReferees,
+          setScorekeepers,
+          setCardLoader,
+        );
+      }
+    }
+  }, [
+    isFocused,
+    selectedSport,
+    location,
+    sportType,
+    setRecentMatch,
+    setUpcomingMatch,
+    setChallengeeMatch,
+    setHiringPlayers,
+    setLookingTeam,
+    setReferees,
+    setScorekeepers,
+    memoizedLocalHomeQuery,
+    authContext,
+  ]);
+
   // Call the scrollToFirstItem function when data changes
   useEffect(() => {
     scrollToFirstItem();
@@ -508,10 +510,24 @@ function LocalHomeScreen({navigation, route}) {
     (item) => {
       if (item.sport === strings.allType) {
         return (
-          <FastImage
-            source={images.allSportIcon}
-            style={styles.allSportIconStyle}
-          />
+          <>
+            {selectedSport === item.sport && sportType === item.sport_type ? (
+              <FastImage
+                resizeMode="cover"
+                source={images.allSportOrangeIcon}
+                style={{
+                  height: 43,
+                  width: 43,
+                  top: 1,
+                }}
+              />
+            ) : (
+              <FastImage
+                source={images.allSportIcon}
+                style={styles.allSportIconStyle}
+              />
+            )}
+          </>
         );
       }
       if (item.sport === strings.editType) {
@@ -530,6 +546,7 @@ function LocalHomeScreen({navigation, route}) {
       );
 
       const sportImage = sportDetails?.sport_image || '';
+      const sportOrangeImage = sportDetails?.sport_image_orange || '';
 
       return (
         <View>
@@ -541,15 +558,23 @@ function LocalHomeScreen({navigation, route}) {
               />
             </View>
           ) : (
-            <FastImage
-              source={{uri: `${image_base_url}${sportImage}`}}
-              style={styles.sportIconStyle}
-            />
+            <>
+              <FastImage
+                source={{
+                  uri:
+                    selectedSport === item.sport &&
+                    sportType === item.sport_type
+                      ? `${image_base_url}${sportOrangeImage}`
+                      : `${image_base_url}${sportImage}`,
+                }}
+                style={styles.sportIconStyle}
+              />
+            </>
           )}
         </View>
       );
     },
-    [authContext, image_base_url],
+    [authContext.sports, image_base_url, selectedSport, sportType],
   );
 
   const navigateToRefreeScreen = () => {
@@ -561,6 +586,7 @@ function LocalHomeScreen({navigation, route}) {
         selectedLocationOption,
         authContext,
       );
+
       navigation.navigate('LocalHomeStack', {
         screen: 'RefereesListScreen',
         params: {
@@ -576,6 +602,7 @@ function LocalHomeScreen({navigation, route}) {
         selectedLocationOption,
         authContext,
       );
+
       navigation.navigate('LocalHomeStack', {
         screen: 'RefereesListScreen',
         params: {
@@ -901,6 +928,7 @@ function LocalHomeScreen({navigation, route}) {
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled
             removeClippedSubviews={true}
+            renderToHardwareTextureAndroid
             initialNumToRender={10}
             maxToRenderPerBatch={10}
             windowSize={21}

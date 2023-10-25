@@ -101,19 +101,13 @@ const SportActivityTagScreen = ({navigation}) => {
   const onSavePress = () => {
     setloading(true);
     const userObj = {
-      ...authContext.entity.obj,
       sport_setting: {
-        // entity_order: entitySource,
-        // selectedOpetion: selectedRadio,
-        // isChecked: selectedCheck,
-        // activity_order: activityList,
         orderType: selectedOption,
         isClassifyByCategory,
         categoryOrder,
         sportOrder: sportList,
       },
     };
-    console.log('userObj==>', JSON.stringify(userObj));
 
     patchPlayer(userObj, authContext)
       .then(async (res) => {

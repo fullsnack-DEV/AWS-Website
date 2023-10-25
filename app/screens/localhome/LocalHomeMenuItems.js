@@ -57,6 +57,9 @@ const LocalHomeMenuItems = memo(
     owners,
     allUserData,
     isdeactivated = false,
+    isdeactivatedForRefree = false,
+    isdeactivatedForScorekeeper = false,
+    isdeactivateForLookingForTeamsAndClubs = false,
     cardLoader,
   }) => {
     const navigation = useNavigation();
@@ -83,6 +86,7 @@ const LocalHomeMenuItems = memo(
         ]}
         onPress={() => {
           setPlayerDetailPopup(false);
+
           navigation.navigate('HomeStack', {
             screen: 'SportActivityHome',
             params: {
@@ -125,6 +129,7 @@ const LocalHomeMenuItems = memo(
     const navigateAndSetDataForSportActivityView = (uid, role, sportsList) => {
       if (sportsList.length > 1) {
         setPlayerDetailPopup(true);
+
         setPlayerDetail({
           user_id: uid,
           entity_type: role,
@@ -184,12 +189,20 @@ const LocalHomeMenuItems = memo(
         switch (card.key) {
           case strings.refreesAvailable:
             sportsList = item.referee_data ?? [];
-            navigateAndSetDataForSportActivityView(uid, role, sportsList);
+            navigateAndSetDataForSportActivityView(
+              uid,
+              Verbs.entityTypeReferee,
+              sportsList,
+            );
             break;
 
           case strings.scorekeepersAvailable:
             sportsList = item.scorekeeper_data ?? [];
-            navigateAndSetDataForSportActivityView(uid, role, sportsList);
+            navigateAndSetDataForSportActivityView(
+              uid,
+              Verbs.entityTypeScorekeeper,
+              sportsList,
+            );
             break;
           case strings.playersAvailableforChallenge:
             sportsList = item.registered_sports ?? [];
@@ -517,86 +530,84 @@ const LocalHomeMenuItems = memo(
         case strings.eventHometitle:
           return (
             <>
-              {authContext.entity.role === Verbs.entityTypeUser && (
-                <>
-                  <TCTitleWithArrow
-                    title={strings.eventHometitle}
-                    showArrow={true}
-                    viewStyle={{marginTop: 20, marginBottom: 10}}
-                    isDisabled={!(items?.data?.length > 0) || isdeactivated}
-                    onPress={() =>
-                      navigation.navigate('App', {
-                        screen: 'Schedule',
-                      })
-                    }
-                  />
-                  <FlatList
-                    data={items.data}
-                    horizontal={true}
-                    scrollEnabled={items.data?.length > 0}
-                    contentContainerStyle={{paddingVertical: 6}}
-                    showsHorizontalScrollIndicator={false}
-                    renderToHardwareTextureAndroid
-                    removeClippedSubviews={true}
-                    initialNumToRender={10}
-                    maxToRenderPerBatch={10}
-                    getItemLayout={getItemLayout}
-                    renderItem={({item}) => (
-                      <EventsCard
-                        data={item}
-                        owners={owners}
-                        allUserData={allUserData}
-                        onItemPress={() => {
-                          if (item?.game_id) {
-                            if (item?.game?.sport) {
-                              const gameHome = getGameHomeScreen(
-                                item.game.sport.replace(' ', '_'),
-                              );
+              {authContext.entity.role === Verbs.entityTypeUser ||
+                (authContext.entity.role === Verbs.entityTypePlayer && (
+                  <>
+                    <TCTitleWithArrow
+                      title={strings.eventHometitle}
+                      showArrow={true}
+                      viewStyle={{marginTop: 20, marginBottom: 10}}
+                      isDisabled={!(items?.data?.length > 0) || isdeactivated}
+                      onPress={() =>
+                        navigation.navigate('App', {
+                          screen: 'Schedule',
+                        })
+                      }
+                    />
+                    <FlatList
+                      data={items.data}
+                      horizontal={true}
+                      scrollEnabled={items.data?.length > 0}
+                      contentContainerStyle={{paddingVertical: 6}}
+                      showsHorizontalScrollIndicator={false}
+                      renderToHardwareTextureAndroid
+                      removeClippedSubviews={true}
+                      initialNumToRender={10}
+                      maxToRenderPerBatch={10}
+                      getItemLayout={getItemLayout}
+                      renderItem={({item}) => (
+                        <EventsCard
+                          data={item}
+                          owners={owners}
+                          allUserData={allUserData}
+                          onItemPress={() => {
+                            if (item?.game_id) {
+                              if (item?.game?.sport) {
+                                const gameHome = getGameHomeScreen(
+                                  item.game.sport.replace(' ', '_'),
+                                );
 
-                              navigation.navigate(gameHome, {
-                                gameId: item?.game_id,
+                                navigation.navigate(gameHome, {
+                                  gameId: item?.game_id,
+                                });
+                              }
+                            } else {
+                              navigation.navigate('ScheduleStack', {
+                                screen: 'EventScreen',
+                                params: {
+                                  data: item,
+                                  gameData: item,
+                                },
                               });
                             }
-                          } else {
-                            navigation.navigate('ScheduleStack', {
-                              screen: 'EventScreen',
-                              params: {
-                                data: item,
-                                gameData: item,
-                              },
-                            });
-                          }
-                        }}
-                        isdeactivated={isdeactivated}
-                      />
-                    )}
-                    ListFooterComponent={() => <View style={{width: 15}} />}
-                    ListEmptyComponent={() => (
-                      <PlayersCardPlaceHolder
-                        forevent={true}
-                        data={dummyEventdata}
-                        placeholdertext={'No Events'}
-                      />
-                    )}
-                  />
-                  <TCThinDivider
-                    height={7}
-                    backgroundColor={colors.grayBackgroundColor}
-                    width={'100%'}
-                    marginTop={25}
-                  />
-                </>
-              )}
+                          }}
+                          isdeactivated={isdeactivated}
+                        />
+                      )}
+                      ListFooterComponent={() => <View style={{width: 15}} />}
+                      ListEmptyComponent={() => (
+                        <PlayersCardPlaceHolder
+                          forevent={true}
+                          data={dummyEventdata}
+                          placeholdertext={'No Events'}
+                        />
+                      )}
+                    />
+                    <TCThinDivider
+                      height={7}
+                      backgroundColor={colors.grayBackgroundColor}
+                      width={'100%'}
+                      marginTop={25}
+                    />
+                  </>
+                ))}
             </>
           );
 
         case strings.teamAvailableforChallenge:
           return (
             <>
-              {((authContext.entity.role === Verbs.entityTypeTeam &&
-                selectedSport === strings.all) ||
-                (authContext.entity.role === Verbs.entityTypeTeam &&
-                  sportType !== Verbs.singleSport)) && (
+              {
                 <>
                   <TCTitleWithArrow
                     title={strings.teamAvailableforChallenge}
@@ -641,7 +652,7 @@ const LocalHomeMenuItems = memo(
                     marginTop={25}
                   />
                 </>
-              )}
+              }
             </>
           );
 
@@ -726,7 +737,11 @@ const LocalHomeMenuItems = memo(
                 title={strings.refreesAvailable}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
-                isDisabled={!(items?.data?.length > 0) || isdeactivated}
+                isDisabled={
+                  !(items?.data?.length > 0) ||
+                  isdeactivated ||
+                  isdeactivatedForRefree
+                }
                 onPress={() => onTitlePress(item)}
               />
               <FlatList
@@ -737,6 +752,9 @@ const LocalHomeMenuItems = memo(
                 initialNumToRender={10}
                 renderToHardwareTextureAndroid
                 maxToRenderPerBatch={10}
+                style={{
+                  opacity: isdeactivatedForRefree ? 0.5 : 1,
+                }}
                 getItemLayout={getItemLayoutForPlayerCard}
                 renderItem={({item}) => (
                   <PlayersCard
@@ -745,7 +763,7 @@ const LocalHomeMenuItems = memo(
                     item={item}
                     onPress={() => onCardPress(items, item)}
                     refree={true}
-                    isdeactivated={isdeactivated}
+                    isdeactivated={isdeactivated || isdeactivatedForRefree}
                   />
                 )}
                 ListFooterComponent={() => <View style={{width: 15}} />}
@@ -778,7 +796,11 @@ const LocalHomeMenuItems = memo(
                 title={strings.scorekeepersAvailable}
                 showArrow={true}
                 viewStyle={{marginTop: 20, marginBottom: 15}}
-                isDisabled={!(items.data.length > 0) || isdeactivated}
+                isDisabled={
+                  !(items.data.length > 0) ||
+                  isdeactivated ||
+                  isdeactivatedForScorekeeper
+                }
                 onPress={() => onTitlePress(item)}
               />
               <FlatList
@@ -789,6 +811,9 @@ const LocalHomeMenuItems = memo(
                 contentContainerStyle={{paddingVertical: 6}}
                 showsHorizontalScrollIndicator={false}
                 initialNumToRender={10}
+                style={{
+                  opacity: isdeactivatedForScorekeeper ? 0.5 : 1,
+                }}
                 maxToRenderPerBatch={10}
                 getItemLayout={getItemLayoutForPlayerCard}
                 renderItem={({item}) => (
@@ -798,7 +823,7 @@ const LocalHomeMenuItems = memo(
                     item={item}
                     onPress={() => onCardPress(items, item)}
                     scoreKeeper={true}
-                    isdeactivated={isdeactivated}
+                    isdeactivated={isdeactivated || isdeactivatedForScorekeeper}
                   />
                 )}
                 ListFooterComponent={() => <View style={{width: 15}} />}
@@ -882,13 +907,20 @@ const LocalHomeMenuItems = memo(
         case strings.lookingForTeamTitle:
           return (
             <>
-              {(authContext.entity.role === Verbs.entityTypeTeam ||
-                authContext.entity.role === Verbs.entityTypeClub) && (
+              {
                 <>
                   <TCTitleWithArrow
-                    title={strings.lookingForTeamTitle}
+                    title={
+                      sportType === Verbs.sportTypeSingle
+                        ? strings.lookingForClubTitle
+                        : strings.lookingForTeamTitle
+                    }
                     showArrow={true}
-                    isDisabled={!(items.data.length > 0) || isdeactivated}
+                    isDisabled={
+                      !(items.data.length > 0) ||
+                      isdeactivated ||
+                      isdeactivateForLookingForTeamsAndClubs
+                    }
                     onPress={() => onTitlePress(item)}
                     viewStyle={{marginTop: 20, marginBottom: 15}}
                   />
@@ -901,6 +933,9 @@ const LocalHomeMenuItems = memo(
                     contentContainerStyle={{paddingVertical: 6}}
                     showsHorizontalScrollIndicator={false}
                     initialNumToRender={10}
+                    style={{
+                      opacity: isdeactivateForLookingForTeamsAndClubs ? 0.5 : 1,
+                    }}
                     maxToRenderPerBatch={10}
                     getItemLayout={getItemLayoutForPlayerCard}
                     renderItem={({item}) => (
@@ -910,7 +945,10 @@ const LocalHomeMenuItems = memo(
                         item={item}
                         onPress={() => onCardPress(items, item)}
                         lookingTeamClub={true}
-                        isdeactivated={isdeactivated}
+                        isdeactivated={
+                          isdeactivated ||
+                          isdeactivateForLookingForTeamsAndClubs
+                        }
                       />
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
@@ -934,7 +972,7 @@ const LocalHomeMenuItems = memo(
                     marginTop={25}
                   />
                 </>
-              )}
+              }
             </>
           );
 

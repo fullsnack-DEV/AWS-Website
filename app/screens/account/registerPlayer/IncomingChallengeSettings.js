@@ -298,7 +298,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
                   }, 0.1);
                 });
             } else {
-              createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
+              createGroup(bodyParams, authContext)
                 .then(async (response) => {
                   setloading(false);
                   setShowSwitchScreen(false);
@@ -362,7 +362,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
               }, 0.1);
             });
         } else {
-          createGroup(bodyParams, entity.uid, entity.obj.role, authContext)
+          createGroup(bodyParams, authContext)
             .then(async (response) => {
               setloading(false);
               setShowSwitchScreen(false);

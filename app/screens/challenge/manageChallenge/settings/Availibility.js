@@ -15,14 +15,8 @@ import {patchGroup} from '../../../../api/Groups';
 import Verbs from '../../../../Constants/Verbs';
 
 export default function Availibility({navigation, route}) {
-  // const [comeFrom] = useState(route?.params?.comeFrom);
-  // const [sportName] = useState(route?.params?.sportName);
-  // const [sportType] = useState(route?.params?.sportType);
-  // const [groupObj] = useState(route?.params?.groupObj);
-
   const {comeFrom, sportName, sportType, groupObj} = route.params;
 
-  console.log('groupObjgroupObjgroupObj', groupObj);
   const authContext = useContext(AuthContext);
 
   const [loading, setloading] = useState(false);
@@ -98,7 +92,6 @@ export default function Availibility({navigation, route}) {
       registerdPlayerData.push(selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         registered_sports: registerdPlayerData,
       };
 
@@ -143,7 +136,6 @@ export default function Availibility({navigation, route}) {
     setloading(true);
     let selectedTeam = {...authContext?.entity?.obj};
     selectedTeam = {
-      ...selectedTeam,
       setting: {...selectedTeam?.setting, ...bodyParams},
     };
     const body = {...selectedTeam};

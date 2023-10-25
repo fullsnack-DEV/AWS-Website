@@ -520,6 +520,7 @@ const AccountScreen = ({navigation, route}) => {
           })
         }
       />
+      {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       <ActivityLoader visible={onLoad} />
 
       {accountMenu.length === 0 ? (
@@ -541,7 +542,6 @@ const AccountScreen = ({navigation, route}) => {
               });
             }}
           />
-          {authContext.isAccountDeactivated && <TCAccountDeactivate />}
 
           <AccountMenuList
             menuList={accountMenu}

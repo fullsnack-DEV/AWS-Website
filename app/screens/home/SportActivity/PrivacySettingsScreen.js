@@ -77,7 +77,6 @@ const PrivacySettingsScreen = ({
     });
 
     const userData = {
-      ...user,
       registered_sports: [...sportsList],
     };
 

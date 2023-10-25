@@ -129,9 +129,6 @@ const PlayInModule = ({
             const entity = authContext.entity;
             entity.auth.user = res.payload;
             entity.obj = res.payload;
-            // authContext.setEntity({...entity});
-            // await Utility.setStorage('authContextUser', res.payload);
-            // authContext.setUser(res.payload);
             setCurrentUserData({...res?.payload});
             resolve(res);
           })

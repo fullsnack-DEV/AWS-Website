@@ -87,6 +87,7 @@ export default function RefereesListScreen({navigation, route}) {
 
   useEffect(() => {
     const tempFilter = {...filters};
+
     tempFilter.location = location;
     setFilters({
       ...tempFilter,
@@ -324,7 +325,7 @@ export default function RefereesListScreen({navigation, route}) {
               const data = {
                 sports: sportsObj,
                 uid: item?.user_id,
-                entityType: item?.entity_type,
+                entitType: item?.entity_type,
               };
               setPlayerDetail(data);
               setPlayerDetailPopup(true);

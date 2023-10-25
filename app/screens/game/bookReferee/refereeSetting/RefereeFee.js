@@ -110,7 +110,6 @@ export default function RefereeFee({navigation, route}) {
       registerdRefereeData.push(selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         referee_data: registerdRefereeData,
       };
 
@@ -296,7 +295,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: wp('3.8%'),
     height: 40,
-    width: '90%'
+    width: '90%',
   },
   curruency: {
     alignSelf: 'center',

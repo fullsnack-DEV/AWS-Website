@@ -39,7 +39,7 @@ export default function GroupInviteYouScreen({navigation, route}) {
   }, [navigation]);
 
   const saveUser = () => {
-    const bodyParams = {...authContext.entity.obj};
+    const bodyParams = {};
 
     if (type === strings.inviteToDoubleTeamTitle) {
       bodyParams.who_can_invite_for_doubles_team = value;

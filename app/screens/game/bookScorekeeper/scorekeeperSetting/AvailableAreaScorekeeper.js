@@ -147,7 +147,6 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
     registerdScorekeeperData.push(selectedSport);
 
     const body = {
-      ...authContext?.entity?.obj,
       scorekeeper_data: registerdScorekeeperData,
     };
 
@@ -156,7 +155,6 @@ export default function AvailableAreaScorekeeper({navigation, route}) {
         if (response.status === true) {
           setloading(false);
           const entity = authContext.entity;
-          console.log('Register scorekeeper response IS:: ', response.payload);
           entity.auth.user = response.payload;
           entity.obj = response.payload;
           authContext.setEntity({...entity});

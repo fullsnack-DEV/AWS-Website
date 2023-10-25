@@ -61,7 +61,6 @@ export default function SportHideUnhideScreen({navigation}) {
     });
 
     const body = {
-      ...authContext.entity.obj,
       registered_sports: registeredSports,
       referee_data: refereeSports,
       scorekeeper_data: scorekeeperSports,

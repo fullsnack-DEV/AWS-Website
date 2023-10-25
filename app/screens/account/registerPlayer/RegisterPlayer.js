@@ -146,7 +146,6 @@ const RegisterPlayer = ({navigation, route}) => {
       ];
 
       const body = {
-        ...authContext.entity.obj,
         registered_sports: registerdPlayerData,
       };
 

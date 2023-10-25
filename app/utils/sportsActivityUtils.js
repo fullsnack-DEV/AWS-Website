@@ -304,13 +304,16 @@ const getSportDetails = (
     ) {
       if (sportObj.format.length > 1 && sportType === Verbs.sportTypeDouble) {
         obj.sport_image = sportObj.format[1].player_image;
+        obj.sport_image_orange = sportObj.format[1].player_image_orange_doubles;
       } else if (
         sportObj.format.length > 1 &&
         sportType === Verbs.sportTypeSingle
       ) {
         obj.sport_image = sportObj.format[0].player_image;
+        obj.sport_image_orange = sportObj.format[0].player_image_orange;
       } else {
         obj.sport_image = sportObj.player_image;
+        obj.sport_image_orange = sportObj.player_image_orange;
       }
     }
   }

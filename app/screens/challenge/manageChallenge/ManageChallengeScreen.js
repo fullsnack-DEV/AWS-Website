@@ -344,7 +344,6 @@ export default function ManageChallengeScreen({navigation, route}) {
     }
     const updatedSettings = {...settingObject, ...settings};
     const body = {
-      ...groupObj,
       setting: {...updatedSettings},
     };
 

@@ -200,6 +200,11 @@ const UserHomeHeader = ({
               buttonTitle === strings.follow
                 ? {color: colors.darkYellowColor}
                 : {},
+
+              buttonTitle === strings.invite
+                ? {color: colors.darkYellowColor}
+                : {},
+
             ]}>
             {buttonTitle}
           </Text>

@@ -54,12 +54,7 @@ export default function ScorekeeperFee({navigation, route}) {
         </Text>
       ),
     });
-  }, [
-    basicFee,
-    comeFrom,
-    currencyType,
-    navigation,
-  ]);
+  }, [basicFee, comeFrom, currencyType, navigation]);
 
   const onSavePressed = () => {
     if (basicFee < 1 && basicFee > 0) {
@@ -106,7 +101,6 @@ export default function ScorekeeperFee({navigation, route}) {
       registerdScorekeeperData.push(selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         scorekeeper_data: registerdScorekeeperData,
       };
 
@@ -293,7 +287,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: wp('3.8%'),
     height: 40,
-    width: '90%'
+    width: '90%',
   },
   curruency: {
     alignSelf: 'center',

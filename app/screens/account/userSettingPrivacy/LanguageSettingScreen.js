@@ -49,7 +49,6 @@ export default function LanguageSettingScreen({navigation}) {
   const saveUser = () => {
     setloading(true);
     const params = {
-      ...authContext.entity.obj,
       language_setting: confirmLanguage,
       device_language: isEnabled,
     };

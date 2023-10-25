@@ -774,6 +774,8 @@ export default {
   shortsTitle: 'en_Shorts',
   hiringPlayerTitle: 'en_Recruiting Members',
   lookingForTeamTitle: 'en_Looking For Team/Club',
+  lookingForClubTitle: 'en_Looking For Club',
+
   refereesTitle: 'en_Referees',
   chooseSetting: 'en_Choose Setting',
   scorekeeperTitle: 'en_Scorekeepers',
@@ -2903,7 +2905,7 @@ export default {
   addRecipientToBatch: 'en_Add Recipients to Batch',
   YourAccountIsUnderTermination: 'en_Your account is under termination.',
   YourAccountHasBeenDeactivated: 'en_Your account has been deactivated',
-  accountPaused: 'en_This {0} account has been paused.',
+  accountPaused: 'en_This account has been paused.',
   throughStripe: 'en_Through Stripe',
   addedMeesages: 'en_Added Message ({0})',
   sentBy: 'en_sent by',

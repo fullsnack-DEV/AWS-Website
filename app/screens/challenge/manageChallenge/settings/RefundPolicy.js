@@ -138,7 +138,6 @@ export default function RefundPolicy({navigation, route}) {
       });
 
       const body = {
-        ...authContext?.entity?.obj,
         registered_sports: registerdPlayerData,
       };
 
@@ -184,7 +183,7 @@ export default function RefundPolicy({navigation, route}) {
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
-    const body = {...selectedTeam};
+    const body = {...bodyParams};
 
     patchGroup(authContext.entity.uid, body, authContext)
       .then(async (response) => {

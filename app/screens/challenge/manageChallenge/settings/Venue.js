@@ -303,17 +303,15 @@ pointerEvents="none"
       registerdPlayerData.push(selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         registered_sports: registerdPlayerData,
       };
-      console.log('Body::::--->', body);
 
       patchPlayer(body, authContext)
         .then(async (response) => {
           if (response.status === true) {
             setloading(false);
             const entity = authContext.entity;
-            console.log('Register player response IS:: ', response.payload);
+
             entity.auth.user = response.payload;
             entity.obj = response.payload;
             authContext.setEntity({...entity});
@@ -329,7 +327,7 @@ pointerEvents="none"
           } else {
             Alert.alert(strings.appName, response.messages);
           }
-          console.log('RESPONSE IS:: ', response);
+
           setloading(false);
         })
         .catch((e) => {
@@ -354,14 +352,11 @@ pointerEvents="none"
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
-    const body = {...selectedTeam};
-    console.log('Body Team::::--->', body);
+    const body = {...bodyParams};
 
     patchGroup(authContext.entity.uid, body, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
-
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;
@@ -394,7 +389,6 @@ pointerEvents="none"
 
   const getLatLongData = (addressDescription) => {
     getLatLong(addressDescription, authContext).then((response) => {
-      console.log('Lat/Long response::=>', response);
       const ven = [...venue];
       let city, state, country;
       response.results[0].address_components.map((e) => {
@@ -427,7 +421,6 @@ pointerEvents="none"
         longitudeDelta: 0.0421,
       };
 
-      console.log('Ven:=>', ven);
       setVenue(ven);
     });
   };

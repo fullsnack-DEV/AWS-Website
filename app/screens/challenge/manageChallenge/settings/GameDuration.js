@@ -1,7 +1,17 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable array-callback-return */
 import React, {useState, useLayoutEffect, useCallback, useContext} from 'react';
-import {Alert, StyleSheet, View, Text, FlatList, SafeAreaView, TextInput, Image, TouchableOpacity} from 'react-native';
+import {
+  Alert,
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  SafeAreaView,
+  TextInput,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 
 // import { useIsFocused } from '@react-navigation/native';
 import {format} from 'react-string-format';
@@ -31,12 +41,26 @@ export default function GameDuration({navigation, route}) {
   const [sportType] = useState(route?.params?.sportType);
   // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
-  const [firstPeriod, setFirstPeriod] = useState(route?.params?.settingObj?.game_duration ? route?.params?.settingObj?.game_duration?.first_period : 0);
+  const [firstPeriod, setFirstPeriod] = useState(
+    route?.params?.settingObj?.game_duration
+      ? route?.params?.settingObj?.game_duration?.first_period
+      : 0,
+  );
 
   const [loading, setloading] = useState(false);
-  const [withOverTime, setWithOverTime] = useState(!!route?.params?.settingObj?.game_duration?.overtime);
-  const [tiebreakers, setTiebreakers] = useState(route?.params?.settingObj?.game_duration ? route?.params?.settingObj?.game_duration?.tiebreakers : '');
-  const [details, setDetails] = useState(route?.params?.settingObj?.game_duration ? route?.params?.settingObj?.game_duration?.details : '');
+  const [withOverTime, setWithOverTime] = useState(
+    !!route?.params?.settingObj?.game_duration?.overtime,
+  );
+  const [tiebreakers, setTiebreakers] = useState(
+    route?.params?.settingObj?.game_duration
+      ? route?.params?.settingObj?.game_duration?.tiebreakers
+      : '',
+  );
+  const [details, setDetails] = useState(
+    route?.params?.settingObj?.game_duration
+      ? route?.params?.settingObj?.game_duration?.details
+      : '',
+  );
   const [period, setPeriod] = useState(
     route?.params?.settingObj?.game_duration?.period
       ? route?.params?.settingObj?.game_duration?.period
@@ -64,7 +88,15 @@ export default function GameDuration({navigation, route}) {
     navigation.setOptions({
       headerShown: false,
     });
-  }, [navigation, firstPeriod, details, tiebreakers, withOverTime, period, overTime]);
+  }, [
+    navigation,
+    firstPeriod,
+    details,
+    tiebreakers,
+    withOverTime,
+    period,
+    overTime,
+  ]);
 
   const addPeriod = () => {
     if (period.length < 10) {
@@ -110,7 +142,9 @@ export default function GameDuration({navigation, route}) {
         <View style={styles.viewContainer}>
           <View style={styles.textTitle}>
             <View style={{flex: 1}}>
-              <Text style={[styles.minText, {marginLeft: 10}]}>{strings.intervalText}</Text>
+              <Text style={[styles.minText, {marginLeft: 10}]}>
+                {strings.intervalText}
+              </Text>
             </View>
             <View style={styles.textInputContainer}>
               <TextInput
@@ -186,7 +220,10 @@ export default function GameDuration({navigation, route}) {
                 }}
                 value={overTime[index].interval}
               />
-              <Text style={[styles.minText, {marginRight: 15}]}> {strings.minuteText}</Text>
+              <Text style={[styles.minText, {marginRight: 15}]}>
+                {' '}
+                {strings.minuteText}
+              </Text>
             </View>
           </View>
 
@@ -194,7 +231,10 @@ export default function GameDuration({navigation, route}) {
             <View style={{flex: 1}}>
               <Text style={styles.minText}>
                 {/* {strings.firstOverTimeText} */}
-                {format(strings.FirstPeriodOfOverTime, getNumberSuffix(index + 1))}
+                {format(
+                  strings.FirstPeriodOfOverTime,
+                  getNumberSuffix(index + 1),
+                )}
               </Text>
             </View>
             <View style={styles.textInputContainer}>
@@ -208,7 +248,10 @@ export default function GameDuration({navigation, route}) {
                 }}
                 value={overTime[index].overTime}
               />
-              <Text style={[styles.minText, {marginRight: 15}]}> {strings.minuteText}</Text>
+              <Text style={[styles.minText, {marginRight: 15}]}>
+                {' '}
+                {strings.minuteText}
+              </Text>
             </View>
           </View>
         </View>
@@ -294,17 +337,19 @@ export default function GameDuration({navigation, route}) {
 
       bodyParams.game_duration.totalHours = calculateDuration().hours;
       bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
-      console.log('body params:=>', bodyParams);
 
       setloading(true);
-      const registerdPlayerData = authContext?.entity?.obj?.registered_sports?.filter((obj) => {
-        if (obj.sport === sportName && obj.sport_type === sportType) {
-          return null;
-        }
-        return obj;
-      });
+      const registerdPlayerData =
+        authContext?.entity?.obj?.registered_sports?.filter((obj) => {
+          if (obj.sport === sportName && obj.sport_type === sportType) {
+            return null;
+          }
+          return obj;
+        });
 
-      let selectedSport = authContext?.entity?.obj?.registered_sports?.filter((obj) => obj?.sport === sportName && obj?.sport_type === sportType)[0];
+      let selectedSport = authContext?.entity?.obj?.registered_sports?.filter(
+        (obj) => obj?.sport === sportName && obj?.sport_type === sportType,
+      )[0];
 
       selectedSport = {
         ...selectedSport,
@@ -313,10 +358,9 @@ export default function GameDuration({navigation, route}) {
       registerdPlayerData.push(selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         registered_sports: registerdPlayerData,
       };
-      console.log('Body::::--->', body);
+
       if (calculateDuration().hours > MAX_HOUR_LIMIT) {
         Alert.alert(`Please enter less than ${MAX_HOUR_LIMIT} hours`);
       } else {
@@ -325,7 +369,6 @@ export default function GameDuration({navigation, route}) {
             if (response.status === true) {
               setloading(false);
               const entity = authContext.entity;
-              console.log('Register player response IS:: ', response.payload);
               entity.auth.user = response.payload;
               entity.obj = response.payload;
               authContext.setEntity({...entity});
@@ -333,12 +376,15 @@ export default function GameDuration({navigation, route}) {
               await Utility.setStorage('authContextUser', response.payload);
               await Utility.setStorage('authContextEntity', {...entity});
               navigation.navigate(comeFrom, {
-                settingObj: response.payload.registered_sports.filter((obj) => obj.sport === sportName && obj.sport_type === sportType)[0].setting,
+                settingObj: response.payload.registered_sports.filter(
+                  (obj) =>
+                    obj.sport === sportName && obj.sport_type === sportType,
+                )[0].setting,
               });
             } else {
               Alert.alert(strings.appName, response.messages);
             }
-            console.log('RESPONSE IS:: ', response);
+
             setloading(false);
           })
           .catch((e) => {
@@ -377,12 +423,11 @@ export default function GameDuration({navigation, route}) {
 
     bodyParams.game_duration.totalHours = calculateDuration().hours;
     bodyParams.game_duration.totalMinutes = calculateDuration().minutes;
-    console.log('body params:=>', bodyParams);
+
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
     const body = {...selectedTeam};
-    console.log('Body Team::::--->', body);
 
     if (calculateDuration().hours > MAX_HOUR_LIMIT) {
       Alert.alert(`Please enter less than ${MAX_HOUR_LIMIT} hours`);
@@ -390,8 +435,6 @@ export default function GameDuration({navigation, route}) {
       patchGroup(authContext.entity.uid, body, authContext)
         .then(async (response) => {
           if (response.status === true) {
-            console.log('Team patch::::--->', response.payload);
-
             setloading(false);
             const entity = authContext.entity;
             entity.obj = response.payload;
@@ -461,11 +504,17 @@ export default function GameDuration({navigation, route}) {
         <ActivityLoader visible={loading} />
 
         <View>
-          <TCLabel title={strings.PeriodsAndIntermissions} required style={{marginRight: 15, marginTop: 20}} />
+          <TCLabel
+            title={strings.PeriodsAndIntermissions}
+            required
+            style={{marginRight: 15, marginTop: 20}}
+          />
           <View style={[styles.viewContainer, {marginTop: 10}]}>
             <View style={styles.textTitle}>
               <View style={{flex: 1}}>
-                <Text style={[styles.minText, {marginLeft: 10}]}>{strings.firstPeriodText}</Text>
+                <Text style={[styles.minText, {marginLeft: 10}]}>
+                  {strings.firstPeriodText}
+                </Text>
               </View>
               <View style={styles.textInputContainer}>
                 <TextInput
@@ -483,7 +532,12 @@ export default function GameDuration({navigation, route}) {
               </View>
             </View>
           </View>
-          <FlatList data={period} renderItem={renderPeriods} keyExtractor={(item, index) => index.toString()} style={{marginBottom: 15}} />
+          <FlatList
+            data={period}
+            renderItem={renderPeriods}
+            keyExtractor={(item, index) => index.toString()}
+            style={{marginBottom: 15}}
+          />
           {/* <TCMessageButton
             title={strings.addIntervalPeriod}
             width={180}
@@ -511,7 +565,10 @@ export default function GameDuration({navigation, route}) {
             </Text>
           </TouchableOpacity>
 
-          <TCLabel title={strings.Overtime} style={{marginHorizontal: 15, marginTop: 40}} />
+          <TCLabel
+            title={strings.Overtime}
+            style={{marginHorizontal: 15, marginTop: 40}}
+          />
           <TCLabel
             title={strings.gameDurationTitle2}
             style={{
@@ -531,8 +588,26 @@ export default function GameDuration({navigation, route}) {
               onPress={() => {
                 setWithOverTime(!withOverTime);
               }}>
-              <View>{withOverTime === false ? <Image source={images.radioCheckYellow} style={styles.checkboxImg} /> : <Image source={images.radioUnselect} style={styles.checkboxImg} />}</View>
-              <Text style={[styles.minText, {marginLeft: 10, fontFamily: fonts.RRegular}]}>{strings.withoutOverTimeText}</Text>
+              <View>
+                {withOverTime === false ? (
+                  <Image
+                    source={images.radioCheckYellow}
+                    style={styles.checkboxImg}
+                  />
+                ) : (
+                  <Image
+                    source={images.radioUnselect}
+                    style={styles.checkboxImg}
+                  />
+                )}
+              </View>
+              <Text
+                style={[
+                  styles.minText,
+                  {marginLeft: 10, fontFamily: fonts.RRegular},
+                ]}>
+                {strings.withoutOverTimeText}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -547,23 +622,63 @@ export default function GameDuration({navigation, route}) {
               onPress={() => {
                 setWithOverTime(!withOverTime);
               }}>
-              <View>{withOverTime === true ? <Image source={images.radioCheckYellow} style={styles.checkboxImg} /> : <Image source={images.radioUnselect} style={styles.checkboxImg} />}</View>
-              <Text style={[styles.minText, {marginLeft: 10, fontFamily: fonts.RRegular}]}>{strings.withOverTimeText}</Text>
+              <View>
+                {withOverTime === true ? (
+                  <Image
+                    source={images.radioCheckYellow}
+                    style={styles.checkboxImg}
+                  />
+                ) : (
+                  <Image
+                    source={images.radioUnselect}
+                    style={styles.checkboxImg}
+                  />
+                )}
+              </View>
+              <Text
+                style={[
+                  styles.minText,
+                  {marginLeft: 10, fontFamily: fonts.RRegular},
+                ]}>
+                {strings.withOverTimeText}
+              </Text>
             </TouchableOpacity>
           </View>
           {withOverTime ? (
             <View style={{marginLeft: 54}}>
-              <FlatList data={overTime} renderItem={renderOverTime} keyExtractor={(item, index) => index.toString()} style={{marginBottom: 15}} />
+              <FlatList
+                data={overTime}
+                renderItem={renderOverTime}
+                keyExtractor={(item, index) => index.toString()}
+                style={{marginBottom: 15}}
+              />
 
-              <TouchableOpacity onPress={() => addOverTime()} style={styles.btnContainer}>
-                <Text style={styles.btnText}>{strings.addIntervalOverTime}</Text>
+              <TouchableOpacity
+                onPress={() => addOverTime()}
+                style={styles.btnContainer}>
+                <Text style={styles.btnText}>
+                  {strings.addIntervalOverTime}
+                </Text>
               </TouchableOpacity>
             </View>
           ) : null}
           <View style={styles.totalTimeContainer}>
-            <Text style={[styles.minText, {marginLeft: 10, fontFamily: fonts.RBold}]}>{strings.totalDuration}</Text>
+            <Text
+              style={[
+                styles.minText,
+                {marginLeft: 10, fontFamily: fonts.RBold},
+              ]}>
+              {strings.totalDuration}
+            </Text>
 
-            <Text style={styles.totalTimeText}>{format(strings.hmTime, calculateDuration().hours !== null && calculateDuration().hours, calculateDuration().minutes !== null && calculateDuration().minutes)}</Text>
+            <Text style={styles.totalTimeText}>
+              {format(
+                strings.hmTime,
+                calculateDuration().hours !== null && calculateDuration().hours,
+                calculateDuration().minutes !== null &&
+                  calculateDuration().minutes,
+              )}
+            </Text>
           </View>
           <TCLabel title={strings.Tiebreakers} style={{marginRight: 15}} />
           <TCTextInputClear
@@ -577,7 +692,10 @@ export default function GameDuration({navigation, route}) {
             }}
             multiline={true}
           />
-          <TCLabel title={strings.otherDetails} style={{marginRight: 15, marginTop: 35}} />
+          <TCLabel
+            title={strings.otherDetails}
+            style={{marginRight: 15, marginTop: 35}}
+          />
           <TCTextInputClear
             placeholder={strings.otherDetailsPlaceholder}
             onChangeText={(text) => {

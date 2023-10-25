@@ -133,7 +133,7 @@ export default function WelcomeScreen({navigation}) {
           getRedirectionScreenName(townscupUser)
             .then((responseScreen) => {
               setloading(false);
-              navigation.replace(responseScreen?.screen, {
+              navigation.navigate(responseScreen?.screen, {
                 ...responseScreen?.params,
               });
             })
@@ -284,7 +284,7 @@ export default function WelcomeScreen({navigation}) {
                           },
                         };
 
-                        await loginFinalRedirection(
+                        loginFinalRedirection(
                           response?.payload,
                           dummyAuthContext,
                         );
@@ -444,13 +444,13 @@ export default function WelcomeScreen({navigation}) {
       setloading(true);
       await GoogleSignin.hasPlayServices();
       const {idToken} = await GoogleSignin.signIn();
-      const accessToken = await (await GoogleSignin.getTokens()).accessToken;
-      const googleCredential = await auth.GoogleAuthProvider.credential(
+      const accessToken = (await GoogleSignin.getTokens()).accessToken;
+      const googleCredential = auth.GoogleAuthProvider.credential(
         idToken,
         accessToken,
       );
 
-      signInSignUpWithSocialCredential(googleCredential);
+      await signInSignUpWithSocialCredential(googleCredential);
     } catch (error) {
       setloading(false);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {

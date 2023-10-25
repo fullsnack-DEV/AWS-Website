@@ -1,5 +1,11 @@
 import React from 'react';
-import {ActivityIndicator, Modal, StyleSheet, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Modal,
+  StyleSheet,
+  View,
+  StatusBar,
+} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 
@@ -7,6 +13,7 @@ function ActivityLoader({visible = false}) {
   if (!visible) return null;
   return (
     <Modal visible={true} transparent={true} style={{backgroundColor: '#fff'}}>
+      <StatusBar backgroundColor={colors.ActivityLoaderColor} />
       <View style={styles.containerStyle}>
         <View style={styles.indicatorViewStyle}>
           <ActivityIndicator size={'large'} color={colors.whiteColor} />
@@ -19,7 +26,7 @@ function ActivityLoader({visible = false}) {
 const styles = StyleSheet.create({
   containerStyle: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: colors.ActivityLoaderColor,
     height: '100%',
     justifyContent: 'center',
     position: 'absolute',

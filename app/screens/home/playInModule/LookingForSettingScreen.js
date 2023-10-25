@@ -64,19 +64,16 @@ export default function LookingForSettingScreen({navigation, route}) {
     let body = {};
     if (entityType === Verbs.entityTypeReferee) {
       body = {
-        ...authContext.entity.obj,
         referee_data: sportList,
       };
     }
     if (entityType === Verbs.entityTypeScorekeeper) {
       body = {
-        ...authContext.entity.obj,
         scorekeeper_data: sportList,
       };
     }
     if (entityType === Verbs.entityTypePlayer) {
       body = {
-        ...authContext.entity.obj,
         registered_sports: sportList,
       };
     }

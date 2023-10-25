@@ -115,7 +115,6 @@ export default function RefundPolicyReferee({navigation, route}) {
       registerdRefereeData.push(selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         referee_data: registerdRefereeData,
       };
 

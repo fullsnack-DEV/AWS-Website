@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   deactivateText: {
     fontFamily: fonts.RMedium,
-    fontSize: 14,
+    fontSize: 13,
     color: colors.googleColor,
   },
   deactivateContainer: {

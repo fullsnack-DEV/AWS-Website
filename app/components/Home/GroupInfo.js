@@ -50,7 +50,7 @@ const clubOptiosnForJoin = [
   strings.basicInfoText,
   // strings.homeFacility,
   strings.matchVenues,
-  strings.membershipFee,
+  strings.membershipFeesTitle,
   strings.bylaw,
 ];
 
@@ -168,7 +168,7 @@ export default function GroupInfo({
         optionList = [strings.privacySettingText];
         break;
 
-      case strings.membershipFee:
+      case strings.membershipFee || strings.membershipFeesTitle:
         optionList = [
           format(strings.editOption, strings.membershipFee),
           strings.privacySettingText,
@@ -361,6 +361,9 @@ export default function GroupInfo({
       case strings.membershipFee:
         return renderMatchFeeSection();
 
+      case strings.membershipFeesTitle:
+        return renderMatchFeeSection();
+
       case strings.teams:
         return (
           <View>
@@ -476,8 +479,7 @@ export default function GroupInfo({
         height: 100,
         marginVertical: 15,
         borderRadius: 5,
-        paddingHorizontal: 15,
-        paddingVertical: 15,
+        paddingHorizontal: 12,
       }}
       onChangeText={(text) => setMessage(text)}
       placeholder={strings.sendMessagePlaceHolder}
@@ -677,6 +679,13 @@ export default function GroupInfo({
     </View>
   );
 
+  const renderTitle = (item) => {
+    if (item === strings.matchVenues && forJoinButton) {
+      return <Text style={styles.headingLabel}>{strings.homeFacility}</Text>;
+    }
+    return <Text style={styles.headingLabel}>{item.toUpperCase()}</Text>;
+  };
+
   return (
     <View style={{flex: 1, paddingTop: 20}}>
       <FlatList
@@ -687,8 +696,8 @@ export default function GroupInfo({
             <View style={styles.container}>
               <View style={[styles.row, {marginBottom: 15}]}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text style={styles.headingLabel}>{item.toUpperCase()}</Text>
-                  {item === strings.matchVenues ? (
+                  {renderTitle(item)}
+                  {item === strings.matchVenues && !forJoinButton ? (
                     <TouchableOpacity
                       style={{width: 15, height: 15, marginLeft: 5}}>
                       <Image source={images.infoIcon} style={styles.image} />

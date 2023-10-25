@@ -310,7 +310,7 @@ const LocalHomeQuery = async (
       },
     });
   }
-  if (selectedSport !== strings.allType) {
+  if (selectedSport && sportType && selectedSport !== strings.allType) {
     teamAvailableForchallengeQuery.query.bool.must.push({
       term: {
         'sport.keyword': {
@@ -566,7 +566,7 @@ const LocalHomeQuery = async (
         setChallengeeMatch(teamData ?? []);
       } else {
         setCardLoader(false);
-        console.log(playerData, 'Fromplayer Datat');
+
         setChallengeeMatch(playerData);
       }
 

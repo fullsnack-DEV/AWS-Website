@@ -194,7 +194,6 @@ export default function RefereesSetting({navigation, route}) {
       registerdPlayerData.push(selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         registered_sports: registerdPlayerData,
       };
 
@@ -203,7 +202,6 @@ export default function RefereesSetting({navigation, route}) {
           if (response.status === true) {
             setloading(false);
             const entity = authContext.entity;
-
             entity.auth.user = response.payload;
             entity.obj = response.payload;
             authContext.setEntity({...entity});
@@ -265,7 +263,7 @@ export default function RefereesSetting({navigation, route}) {
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
     selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
-    const body = {...selectedTeam};
+    const body = {...bodyParams};
 
     patchGroup(authContext.entity.uid, body, authContext)
       .then(async (response) => {

@@ -212,7 +212,7 @@ const EditWrapperScreen = ({
       }
       return item;
     });
-    const updatedObj = {...userData, referee_data: refereeData};
+    const updatedObj = {referee_data: refereeData};
     setUserData(updatedObj);
 
     if (checkValidation()) {

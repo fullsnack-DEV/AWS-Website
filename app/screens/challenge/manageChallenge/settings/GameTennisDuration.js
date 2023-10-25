@@ -13,20 +13,17 @@ import {
   Dimensions,
 } from 'react-native';
 
-// import { useIsFocused } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import {format} from 'react-string-format';
 import AuthContext from '../../../../auth/context';
 import {patchPlayer} from '../../../../api/Users';
 import {patchGroup} from '../../../../api/Groups';
-
 import * as Utility from '../../../../utils';
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
 import {strings} from '../../../../../Localization/translation';
 import fonts from '../../../../Constants/Fonts';
 import colors from '../../../../Constants/Colors';
 import TCKeyboardView from '../../../../components/TCKeyboardView';
-
 import TCTextInputClear from '../../../../components/TCTextInputClear';
 import images from '../../../../Constants/ImagePath';
 import TCThinDivider from '../../../../components/TCThinDivider';
@@ -47,24 +44,16 @@ export default function GameTennisDuration({navigation, route}) {
   const [comeFrom] = useState(route?.params?.comeFrom);
   const [sportName] = useState(route?.params?.sportName);
   const [sportType] = useState(route?.params?.sportType);
-  // const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
-
   const [loading, setloading] = useState(false);
   const [toolTipVisible, setToolTipVisible] = useState(false);
-
   const [visibleWinMatchModal, setVisibleWinMatchModal] = useState(false);
   const [visibleWinSetModal, setVisibleWinSetModal] = useState(false);
   const [visiblePlayTieModal, setVisiblePlayTieModal] = useState(false);
   const [visibleWinPointModal, setVisibleWinPointModal] = useState(false);
-  //  const [visibleWinGameModal, setVisibleWinGameModal] = useState(false);
   const [visibleMatchDurationModal, setVisibleMatchDurationModal] =
     useState(false);
 
-  console.log(
-    'route?.params?.settingObj?.score_rules',
-    route?.params?.settingObj?.score_rules,
-  );
   const [matchSetting, setMatchSetting] = useState(
     route?.params?.settingObj && route?.params?.settingObj?.score_rules
       ? route?.params?.settingObj.score_rules
@@ -192,17 +181,15 @@ export default function GameTennisDuration({navigation, route}) {
       registerdPlayerData.push(selectedSport);
 
       const body = {
-        ...authContext?.entity?.obj,
         registered_sports: registerdPlayerData,
       };
-      console.log('Body::::--->', body);
 
       patchPlayer(body, authContext)
         .then(async (response) => {
           if (response.status === true) {
             setloading(false);
             const entity = authContext.entity;
-            console.log('Register player response IS:: ', response.payload);
+
             entity.auth.user = response.payload;
             entity.obj = response.payload;
             authContext.setEntity({...entity});
@@ -218,7 +205,7 @@ export default function GameTennisDuration({navigation, route}) {
           } else {
             Alert.alert(strings.appName, response.messages);
           }
-          console.log('RESPONSE IS:: ', response);
+
           setloading(false);
         })
         .catch((e) => {
@@ -239,23 +226,17 @@ export default function GameTennisDuration({navigation, route}) {
         ...matchSetting,
         winning_point_in_game: 4,
         win_game_by_two_points: true,
-
-        // apply_duece_in_set: true,
-        // apply_duece_in_tiebreaker: true,
       },
     };
-    console.log('body params:=>', bodyParams);
+
     setloading(true);
     const selectedTeam = authContext?.entity?.obj;
-    selectedTeam.setting = {...selectedTeam.setting, ...bodyParams};
-    const body = {...selectedTeam};
-    console.log('Body Team::::--->', body);
+    selectedTeam.setting = {...selectedTeam.setting};
+    const body = {...bodyParams};
 
     patchGroup(authContext.entity.uid, body, authContext)
       .then(async (response) => {
         if (response.status === true) {
-          console.log('Team patch::::--->', response.payload);
-
           setloading(false);
           const entity = authContext.entity;
           entity.obj = response.payload;

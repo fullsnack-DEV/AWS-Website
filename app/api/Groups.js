@@ -9,7 +9,7 @@ export const getGroupDetails = (groupID, authContext, getRequest = false) =>
     authContext,
   });
 
-export const createGroup = (params, caller_id, caller, authContext) =>
+export const createGroup = (params, authContext) =>
   makeAPIRequest({
     method: 'post',
     url: `${Config.BASE_URL}groups`,

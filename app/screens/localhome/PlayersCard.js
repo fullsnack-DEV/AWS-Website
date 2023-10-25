@@ -217,7 +217,7 @@ function PlayersCard({
     <TouchableOpacity
       disabled={isdeactivated}
       activeOpacity={0.9}
-      style={styles.cardContainer}
+      style={[styles.cardContainer, {overflow: 'hidden'}]}
       onPress={onPress}>
       <ImageBackground
         style={styles.inneimgContainer}
@@ -226,8 +226,7 @@ function PlayersCard({
         imageStyle={{
           overflow: 'hidden',
 
-          height: 100,
-          zIndex: -3,
+          zIndex: -10,
         }}
         borderBottomRightRadius={5}
         borderBottomLeftRadius={5}
@@ -244,9 +243,14 @@ function PlayersCard({
           source={images.curvecut}
           tintColor={colors.offwhite}
           resizeMode="contain"
+          imageStyle={{
+            zIndex: 10,
+          }}
           style={styles.imageContaienrstyle}>
-          <View style={styles.teamLogoContainer}>{renderFastImage}</View>
-          <View style={{position: 'absolute', top: 15}}>
+          <View style={[styles.teamLogoContainer, {zIndex: 20}]}>
+            {renderFastImage}
+          </View>
+          <View style={{position: 'absolute', top: 15, zIndex: 20}}>
             <View style={styles.mainContentcontainer}>
               <Text style={styles.teamnameTextStyle} numberOfLines={1}>
                 {getEntityName()}
@@ -268,7 +272,7 @@ function PlayersCard({
 
 const styles = StyleSheet.create({
   cardContainer: {
-    height: 178,
+    height: 176,
     width: 125,
     backgroundColor: '#FCFCFC',
     borderRadius: 5,
@@ -334,7 +338,7 @@ const styles = StyleSheet.create({
   imageContaienrstyle: {
     height: 130,
     width: 125,
-    zIndex: 100,
+    zIndex: 200,
     marginTop: 15,
   },
   inneimgContainer: {

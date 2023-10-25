@@ -202,13 +202,12 @@ const AppNavigator = ({navigation}) => {
         inactiveTintColor: colors.userPostTimeColor,
         tabBarShowLabel: false,
 
-        style: {
+        tabBarStyle: {
           backgroundColor: colors.offwhite,
           shadowColor: '#000',
           shadowOffset: {width: 0, height: -10},
           shadowOpacity: 0.15,
           shadowRadius: 50,
-          elevation: 50,
           borderTopColor: colors.thinLineGrayColor,
         },
       }}>

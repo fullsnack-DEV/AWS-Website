@@ -145,11 +145,13 @@ const SportActivityHome = ({navigation, route}) => {
   useEffect(() => {
     if (userData.user_id && isFocused) {
       const sports = getEntitySportList(userData, entityType);
+
       const obj = sports.find((item) =>
         entityType === Verbs.entityTypePlayer
           ? item.sport === sport && item.sport_type === sportType
           : item.sport === sport,
       );
+
       setSportObj(obj);
     }
   }, [userData, sport, sportType, entityType, isFocused]);
