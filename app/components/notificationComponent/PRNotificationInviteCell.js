@@ -17,6 +17,7 @@ function PRNotificationInviteCell({
   disabled = false,
   isTrash = false,
   entityType = 'user',
+  isRespond = false,
 }) {
   const [dataDictionary, setDataDictionary] = useState();
 
@@ -95,29 +96,46 @@ function PRNotificationInviteCell({
               )}
             </View>
           </View>
-          <View style={[styles.buttonView, disabled ? {opacity: 0.5} : {}]}>
-            <TouchableOpacity
-              style={[
-                styles.buttonContainer,
-                {
-                  marginRight: 5,
-                  backgroundColor: colors.grayBackgroundColor,
-                },
-              ]}
-              onPress={onDecline}
-              disabled={disabled}>
-              <Text
-                style={[styles.buttonText, {color: colors.lightBlackColor}]}>
-                {strings.decline}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={onAccept}
-              disabled={disabled}>
-              <Text style={styles.buttonText}>{strings.accept}</Text>
-            </TouchableOpacity>
-          </View>
+
+          <>
+            {isRespond ? (
+              <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={onAccept}
+                disabled={disabled}>
+                <Text style={[styles.buttonText, {textTransform: 'uppercase'}]}>
+                  {strings.respond}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={[styles.buttonView, disabled ? {opacity: 0.5} : {}]}>
+                <TouchableOpacity
+                  style={[
+                    styles.buttonContainer,
+                    {
+                      marginRight: 5,
+                      backgroundColor: colors.grayBackgroundColor,
+                    },
+                  ]}
+                  onPress={onDecline}
+                  disabled={disabled}>
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      {color: colors.lightBlackColor},
+                    ]}>
+                    {strings.decline}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.buttonContainer}
+                  onPress={onAccept}
+                  disabled={disabled}>
+                  <Text style={styles.buttonText}>{strings.accept}</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </>
         </TouchableOpacity>
       )}
       <TCThinDivider />

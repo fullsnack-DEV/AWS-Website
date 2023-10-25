@@ -3190,4 +3190,6 @@ export default {
   invitationDeclinedText: 'en_Invitation declined',
   alretMessageForEmptyTeam:
     "en_You can't send message to team with no members.",
+  memberShipInvitationText: 'en_Membership Invitation',
+  invitedYouToJoinGroup: 'en_invited you to join their {0}',
 };

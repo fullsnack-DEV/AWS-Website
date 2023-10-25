@@ -41,10 +41,13 @@ const renderBackdrop = (props) => (
 export default function JoinButtonModal({
   JoinButtonModalRef,
   currentUserData,
-  onJoinPress,
+  onJoinPress = () => {},
   onAcceptPress,
   isInvited = false,
   hideMessageBox = false,
+  title = '',
+  forUserRespond = false,
+  onDecline = () => {},
 }) {
   const snapPoints = useMemo(() => ['95%', '95%'], []);
   const [selectedVenue] = useState([]);
@@ -83,7 +86,9 @@ export default function JoinButtonModal({
                 marginTop: 5,
                 marginBottom: 5,
               }}>
-              {format(strings.joinModaltitle, currentUserData?.entity_type)}
+              {title === ''
+                ? format(strings.joinModaltitle, currentUserData?.entity_type)
+                : title}
             </Text>
             <TCThinDivider height={1} width={'100%'} marginTop={5} />
           </View>
@@ -146,7 +151,9 @@ export default function JoinButtonModal({
             onAcceptPress={() => onAcceptPress()}
             isInvited={isInvited}
             isAccept={isInvited}
+            forUserRespond={forUserRespond}
             hideMessageBox={hideMessageBox}
+            onDecline={onDecline}
           />
         </View>
       </BottomSheetModal>

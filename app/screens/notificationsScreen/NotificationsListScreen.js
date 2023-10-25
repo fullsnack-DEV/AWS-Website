@@ -69,6 +69,7 @@ function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
   const JoinButtonModalRef = useRef(null);
   const JoinRequestModalRef = useRef(null);
+
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
@@ -491,6 +492,7 @@ function NotificationsListScreen({navigation}) {
       declineRequest(requestId, authContext)
         .then(() => {
           JoinRequestModalRef.current.close();
+          JoinButtonModalRef.current.close();
           // Utility.showAlert('Join request accepted ');
           if (item.verb.includes(NotificationType.userRequestedJoingroup)) {
             Utility.showAlert(strings.joinReqDeclineText);
@@ -798,6 +800,14 @@ function NotificationsListScreen({navigation}) {
           onDecline={() => onDecline(item.activities[0].id, item)}
           onPress={() => onNotificationClick(item)}
           onPressFirstEntity={openHomePage}
+          isRespond={
+            item.activities[0].verb.includes(
+              NotificationType.invitePlayerToJoinClub,
+            ) ||
+            item.activities[0].verb.includes(
+              NotificationType.invitePlayerToJoinTeam,
+            )
+          }
         />
       );
     }
@@ -1232,7 +1242,16 @@ function NotificationsListScreen({navigation}) {
         onJoinPress={() => onAccept(currentNotificationData)}
         onAcceptPress={() => onAccept(currentNotificationData)}
         hideMessageBox={true}
+        title={strings.memberShipInvitationText}
+        forUserRespond={true}
+        onDecline={() =>
+          onDecline(
+            currentNotificationData.activities[0].id,
+            currentNotificationData,
+          )
+        }
       />
+
       <JoinRequestModal
         JoinRequestModalRef={JoinRequestModalRef}
         currentUserData={userInfo}

@@ -41,7 +41,7 @@ const teamOptiosnForJoin = [
   strings.basicInfoText,
   // strings.homeFacility,
   strings.matchVenues,
-  strings.membershipFee,
+  strings.membershipFeesTitle,
   strings.bylaw,
 ];
 
@@ -80,6 +80,8 @@ export default function GroupInfo({
   isInvited = false,
   isAccept = false,
   hideMessageBox = false,
+  forUserRespond = false,
+  onDecline = () => {},
 }) {
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState('');
@@ -421,26 +423,102 @@ export default function GroupInfo({
 
   const RenderHeader = () => (
     <View>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginHorizontal: 15,
-        }}>
-        <GroupIcon
-          entityType={groupDetails.entity_type}
-          groupName={groupDetails.group_name}
-          imageUrl={groupDetails.full_image}
-        />
-        <View style={{marginLeft: 15}}>
+      {!forUserRespond ? (
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginHorizontal: 15,
+          }}>
+          <GroupIcon
+            entityType={groupDetails.entity_type}
+            groupName={groupDetails.group_name}
+            imageUrl={groupDetails.full_image}
+          />
+          <View style={{marginLeft: 15}}>
+            <Text
+              style={{
+                fontFamily: fonts.RBold,
+                fontSize: 16,
+                lineHeight: 24,
+              }}>
+              {' '}
+              {groupDetails.group_name}{' '}
+            </Text>
+            <Text
+              style={{
+                marginLeft: 5,
+                fontFamily: fonts.RLight,
+                fontSize: 14,
+                lineHeight: 21,
+              }}>
+              {groupDetails.city} {groupDetails.state_abbr}
+            </Text>
+            <Text
+              style={{
+                marginLeft: 5,
+                fontFamily: fonts.RLight,
+                fontSize: 14,
+                lineHeight: 21,
+              }}>
+              {strings.tcLevel} {groupDetails.level ?? '5'}
+            </Text>
+          </View>
+        </View>
+      ) : (
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginHorizontal: 15,
+          }}>
+          <Text
+            style={{
+              fontSize: 20,
+              fontFamily: fonts.RMedium,
+              lineHeight: 30,
+              textAlign: 'center',
+              marginHorizontal: 35,
+            }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: fonts.RBold,
+                lineHeight: 30,
+                textAlign: 'center',
+                marginHorizontal: 35,
+              }}>
+              {groupDetails.group_name}{' '}
+            </Text>
+            {format(strings.invitedYouToJoinGroup, groupDetails.entity_type)}
+          </Text>
+          <View style={styles.backgroundImage}>
+            {groupDetails.background_full_image ? (
+              <Image
+                source={{uri: groupDetails.background_full_image}}
+                style={[styles.image, {borderRadius: 5, resizeMode: 'cover'}]}
+              />
+            ) : null}
+          </View>
+          <View
+            style={{
+              position: 'absolute',
+              top: 180,
+            }}>
+            <GroupIcon
+              entityType={groupDetails.entity_type}
+              groupName={groupDetails.group_name}
+              imageUrl={groupDetails.full_image}
+            />
+          </View>
           <Text
             style={{
               fontFamily: fonts.RBold,
               fontSize: 16,
               lineHeight: 24,
+              marginTop: 30,
             }}>
-            {' '}
-            {groupDetails.group_name}{' '}
+            {groupDetails.group_name}
           </Text>
           <Text
             style={{
@@ -451,17 +529,9 @@ export default function GroupInfo({
             }}>
             {groupDetails.city} {groupDetails.state_abbr}
           </Text>
-          <Text
-            style={{
-              marginLeft: 5,
-              fontFamily: fonts.RLight,
-              fontSize: 14,
-              lineHeight: 21,
-            }}>
-            {strings.tcLevel} {groupDetails.level ?? '5'}
-          </Text>
         </View>
-      </View>
+      )}
+
       <TCThinDivider
         height={7}
         marginBottom={25}
@@ -508,27 +578,45 @@ export default function GroupInfo({
 
       {groupDetails.who_can_join_for_member === JoinPrivacy.everyone ||
       isInvited ? (
-        <TouchableOpacity
-          onPress={isAccept ? onAcceptPress : onJoinPress}
-          style={{
-            marginHorizontal: 15,
-            backgroundColor: colors.reservationAmountColor,
-            borderRadius: 30,
-            marginBottom: 100,
-          }}>
-          <Text
+        <>
+          <TouchableOpacity
+            onPress={isAccept ? onAcceptPress : onJoinPress}
             style={{
-              textAlign: 'center',
-              fontFamily: fonts.RBold,
-              fontSize: 16,
-              lineHeight: 24,
-              paddingVertical: 8,
-              color: colors.whiteColor,
-              textTransform: 'uppercase',
+              marginHorizontal: 15,
+              backgroundColor: colors.reservationAmountColor,
+              borderRadius: 30,
+              marginBottom: 25,
             }}>
-            {isAccept ? strings.acceptTitle : strings.join}
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                textAlign: 'center',
+                fontFamily: fonts.RBold,
+                fontSize: 16,
+                lineHeight: 24,
+                paddingVertical: 8,
+                color: colors.whiteColor,
+                textTransform: 'uppercase',
+              }}>
+              {isAccept ? strings.acceptTitle : strings.join}
+            </Text>
+          </TouchableOpacity>
+          {forUserRespond && (
+            <TouchableOpacity onPress={() => onDecline()}>
+              <Text
+                style={{
+                  textTransform: 'uppercase',
+                  color: colors.googleColor,
+                  marginBottom: 100,
+                  textAlign: 'center',
+                  fontFamily: fonts.RBold,
+                  fontSize: 16,
+                  textDecorationLine: 'underline',
+                }}>
+                {strings.decline}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </>
       ) : (
         <TouchableOpacity
           onPress={
@@ -680,10 +768,15 @@ export default function GroupInfo({
   );
 
   const renderTitle = (item) => {
-    if (item === strings.matchVenues && forJoinButton) {
+
+    if (
+      (item === strings.matchVenues && forJoinButton) ||
+      (item === strings.matchVenues && forUserRespond)
+    ) {
       return <Text style={styles.headingLabel}>{strings.homeFacility}</Text>;
     }
-    return <Text style={styles.headingLabel}>{item.toUpperCase()}</Text>;
+    return <Text style={styles.headingLabel}>{item}</Text>;
+
   };
 
   return (
@@ -831,5 +924,14 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     color: colors.whiteColor,
     fontFamily: fonts.RBold,
+  },
+  backgroundImage: {
+    height: 137,
+    width: '100%',
+    borderRadius: 5,
+    backgroundColor: colors.textFieldBackground,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
   },
 });
