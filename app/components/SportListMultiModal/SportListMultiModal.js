@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {FlatList, Image, Text, View, StyleSheet, Pressable} from 'react-native';
+import {Image, Text, View, StyleSheet, Pressable} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';

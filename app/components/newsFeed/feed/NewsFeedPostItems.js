@@ -2,8 +2,6 @@ import React, {useCallback, memo, useEffect, useState, useContext} from 'react';
 import {Alert, View} from 'react-native';
 import Share from 'react-native-share';
 import Clipboard from '@react-native-clipboard/clipboard';
-import CommentModal from '../CommentModal';
-import LikersModal from '../../modals/LikersModal';
 import AuthContext from '../../../auth/context';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
@@ -12,7 +10,6 @@ import FeedFooter from './FeedFooter';
 import Post from './Post';
 import PostForEvent from './PostForEvent';
 import {getPostData} from '../../../utils';
-import {followUser, unfollowUser} from '../../../api/Users';
 import colors from '../../../Constants/Colors';
 
 const NewsFeedPostItems = memo(
@@ -29,7 +26,8 @@ const NewsFeedPostItems = memo(
     isNewsFeedScreen,
     openProfilId,
     entityDetails = {},
-    fetchFeeds = () => {},
+    openLikeModal = () => {},
+    openCommentModal = () => {},
   }) => {
     const authContext = useContext(AuthContext);
     const [childIndex, setChildIndex] = useState(0);
@@ -37,8 +35,7 @@ const NewsFeedPostItems = memo(
     const [likeCount, setLikeCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
     const [repostCount, setRepostCount] = useState(0);
-    const [showCommentModal, setShowCommentModal] = useState(false);
-    const [showLikeModal, setShowLikeModal] = useState(false);
+
     const [showShareOptionsModal, setShowShareOptionsModal] = useState(false);
     const [postType, setPostType] = useState('');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -165,39 +162,8 @@ const NewsFeedPostItems = memo(
     };
 
     const onWriteCommentPress = useCallback(() => {
-      setShowCommentModal(true);
-    }, []);
-
-    const handleFollowUnfollow = (
-      userId,
-      isFollowing = false,
-      entityType = Verbs.entityTypePlayer,
-    ) => {
-      const params = {
-        entity_type: entityType,
-      };
-      if (!isFollowing) {
-        followUser(params, userId, authContext)
-          .then(() => {
-            fetchFeeds();
-          })
-          .catch((error) => {
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, error.message);
-            }, 10);
-          });
-      } else {
-        unfollowUser(params, userId, authContext)
-          .then(() => {
-            fetchFeeds();
-          })
-          .catch((error) => {
-            setTimeout(() => {
-              Alert.alert(strings.alertmessagetitle, error.message);
-            }, 10);
-          });
-      }
-    };
+      openCommentModal(item);
+    }, [item, openCommentModal]);
 
     return (
       <View
@@ -271,7 +237,7 @@ const NewsFeedPostItems = memo(
           repostCount={repostCount}
           commentCount={commentCount}
           setShowLikeModal={() => {
-            setShowLikeModal(true);
+            openLikeModal(item);
           }}
           setShowShareOptionsModal={() => {
             setShowShareOptionsModal(true);
@@ -280,41 +246,6 @@ const NewsFeedPostItems = memo(
           onNewsFeedLikePress={onNewsFeedLikePress}
         />
 
-        <LikersModal
-          data={item}
-          showLikeModal={showLikeModal}
-          closeModal={() => setShowLikeModal(false)}
-          onClickProfile={(obj = {}) => {
-            navigation.push('HomeStack', {
-              screen: 'HomeScreen',
-              params: {
-                uid: obj?.user_id,
-                role: obj.user.data.entity_type,
-              },
-            });
-          }}
-          handleFollowUnfollow={handleFollowUnfollow}
-        />
-        <CommentModal
-          postId={item.id}
-          showCommentModal={showCommentModal}
-          updateCommentCount={(updatedCommentData) => {
-            updateCommentCount(updatedCommentData);
-            setCommentCount(updatedCommentData?.count);
-          }}
-          closeModal={() => setShowCommentModal(false)}
-          onProfilePress={(data = {}) => {
-            setShowCommentModal(false);
-            navigation.navigate('HomeStack', {
-              screen: 'HomeScreen',
-              params: {
-                uid: data.userId,
-                role: data.entityType,
-              },
-            });
-          }}
-          postOwnerId={item.actor?.id}
-        />
         <BottomSheet
           type="ios"
           isVisible={showMoreOptions}

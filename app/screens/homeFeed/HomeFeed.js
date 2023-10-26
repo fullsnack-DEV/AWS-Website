@@ -24,6 +24,10 @@ import WritePost from '../../components/newsFeed/WritePost';
 import Verbs from '../../Constants/Verbs';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
+import LikersModal from '../../components/modals/LikersModal';
+import {followUser, unfollowUser} from '../../api/Users';
+import {strings} from '../../../Localization/translation';
+import CommentModal from '../../components/newsFeed/CommentModal';
 
 let onEndReachedCalledDuringMomentum = true;
 
@@ -48,6 +52,9 @@ const HomeFeed = ({
   const [totalUserPostCount, setTotalUserPostCount] = useState(0);
   const [isNextDataLoading, setIsNextDataLoading] = useState(false);
   const [footerLoading, setFooterLoading] = useState(false);
+  const [selectedPost, setSelectedPost] = useState({});
+  const [showLikeModal, setShowLikeModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
 
   const isFocused = useIsFocused();
   const imageUploadContext = useContext(ImageUploadContext);
@@ -305,6 +312,37 @@ const HomeFeed = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeParams?.isCreatePost]);
 
+  const handleFollowUnfollow = (
+    userId,
+    isFollowing = false,
+    entityType = Verbs.entityTypePlayer,
+  ) => {
+    const params = {
+      entity_type: entityType,
+    };
+    if (!isFollowing) {
+      followUser(params, userId, authContext)
+        .then(() => {
+          getTimeLine(false);
+        })
+        .catch((error) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    } else {
+      unfollowUser(params, userId, authContext)
+        .then(() => {
+          getTimeLine(false);
+        })
+        .catch((error) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    }
+  };
+
   return (
     <View style={{flex: 1}}>
       <ActivityLoader visible={fullScreenLoading} />
@@ -324,10 +362,55 @@ const HomeFeed = ({
         postData={currentTab === 0 ? postData : []}
         onLikePress={onLikePress}
         onEndReached={onEndReached}
-        fetchFeeds={getTimeLine}
         footerLoading={footerLoading && isNextDataLoading}
         openProfilId={userID}
         entityDetails={currentUserData}
+        openLikeModal={(postItem = {}) => {
+          setSelectedPost(postItem);
+          setShowCommentModal(false);
+          setShowLikeModal(true);
+        }}
+        openCommentModal={(postItem = {}) => {
+          setSelectedPost(postItem);
+          setShowLikeModal(false);
+          setShowCommentModal(true);
+        }}
+      />
+      <LikersModal
+        data={selectedPost}
+        showLikeModal={showLikeModal}
+        closeModal={() => setShowLikeModal(false)}
+        onClickProfile={(obj = {}) => {
+          navigation.push('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid: obj?.user_id,
+              role: obj.user.data.entity_type,
+            },
+          });
+        }}
+        handleFollowUnfollow={handleFollowUnfollow}
+      />
+
+      <CommentModal
+        postId={selectedPost.id}
+        showCommentModal={showCommentModal}
+        updateCommentCount={(updatedCommentData) => {
+          updateCommentCount(updatedCommentData);
+          // setCommentCount(updatedCommentData?.count);
+        }}
+        closeModal={() => setShowCommentModal(false)}
+        onProfilePress={(data = {}) => {
+          setShowCommentModal(false);
+          navigation.navigate('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid: data.userId,
+              role: data.entityType,
+            },
+          });
+        }}
+        postOwnerId={selectedPost.actor?.id}
       />
     </View>
   );

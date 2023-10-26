@@ -30,6 +30,9 @@ import {getSportsList} from '../../api/Games'; // getRecentGameDetails
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import Verbs from '../../Constants/Verbs';
 import FeedsShimmer from '../../components/shimmer/newsFeed/FeedsShimmer';
+import LikersModal from '../../components/modals/LikersModal';
+import {followUser, unfollowUser} from '../../api/Users';
+import CommentModal from '../../components/newsFeed/CommentModal';
 
 const FeedsScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -49,6 +52,9 @@ const FeedsScreen = ({navigation, route}) => {
   const [sportArr, setSportArr] = useState([]);
   const [pointEvent] = useState('auto');
   const [visited, setVisited] = useState(false);
+  const [selectedPost, setSelectedPost] = useState({});
+  const [showLikeModal, setShowLikeModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
 
   useEffect(() => {
     setVisited(true);
@@ -249,7 +255,16 @@ const FeedsScreen = ({navigation, route}) => {
       feedAPI={feedCalled}
       isNewsFeedScreen={true}
       entityDetails={currentUserDetail}
-      fetchFeeds={() => getFeeds(false)}
+      openLikeModal={(postItem = {}) => {
+        setSelectedPost(postItem);
+        setShowCommentModal(false);
+        setShowLikeModal(true);
+      }}
+      openCommentModal={(postItem = {}) => {
+        setSelectedPost(postItem);
+        setShowLikeModal(false);
+        setShowCommentModal(true);
+      }}
     />
   );
 
@@ -332,6 +347,37 @@ const FeedsScreen = ({navigation, route}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route.params?.isCreatePost, isFocused]);
 
+  const handleFollowUnfollow = (
+    userId,
+    isFollowing = false,
+    entityType = Verbs.entityTypePlayer,
+  ) => {
+    const params = {
+      entity_type: entityType,
+    };
+    if (!isFollowing) {
+      followUser(params, userId, authContext)
+        .then(() => {
+          getFeeds(false);
+        })
+        .catch((error) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    } else {
+      unfollowUser(params, userId, authContext)
+        .then(() => {
+          getFeeds(false);
+        })
+        .catch((error) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
@@ -347,6 +393,42 @@ const FeedsScreen = ({navigation, route}) => {
         {firstTimeLoading ? <FeedsShimmer /> : renderNewsFeedList()}
         {renderImageProgress}
       </View>
+      <LikersModal
+        data={selectedPost}
+        showLikeModal={showLikeModal}
+        closeModal={() => setShowLikeModal(false)}
+        onClickProfile={(obj = {}) => {
+          navigation.push('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid: obj?.user_id,
+              role: obj.user.data.entity_type,
+            },
+          });
+        }}
+        handleFollowUnfollow={handleFollowUnfollow}
+      />
+
+      <CommentModal
+        postId={selectedPost.id}
+        showCommentModal={showCommentModal}
+        updateCommentCount={(updatedCommentData) => {
+          updateCommentCount(updatedCommentData);
+          // setCommentCount(updatedCommentData?.count);
+        }}
+        closeModal={() => setShowCommentModal(false)}
+        onProfilePress={(data = {}) => {
+          setShowCommentModal(false);
+          navigation.navigate('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid: data.userId,
+              role: data.entityType,
+            },
+          });
+        }}
+        postOwnerId={selectedPost.actor?.id}
+      />
     </SafeAreaView>
   );
 };

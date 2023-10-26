@@ -41,7 +41,7 @@ import {strings} from '../../../Localization/translation';
 import GroupIcon from '../GroupIcon';
 import ActivityLoader from '../loader/ActivityLoader';
 import LikersModal from '../modals/LikersModal';
-import {ModalTypes, tagRegex} from '../../Constants/GeneralConstants';
+import {tagRegex} from '../../Constants/GeneralConstants';
 
 const SwipeOptions = [
   {
@@ -489,119 +489,126 @@ const CommentModal = ({
   };
 
   return (
-    <CustomModalWrapper
-      isVisible={showCommentModal}
-      modalType={ModalTypes.style2}
-      closeModal={closeModal}
-      containerStyle={{padding: 0, height: '97%'}}>
-      <View style={styles.headerStyle}>
-        <Text style={styles.headerTitle}>{strings.comments}</Text>
-      </View>
-      <KeyboardAwareScrollView
-        contentContainerStyle={{flex: 1}}
-        nestedScrollEnabled
-        keyboardVerticalOffset={0}
-        behavior={Platform.OS === 'ios' ? 'height' : 'height'}>
-        <ActivityLoader visible={loading} />
-        <View style={{flex: 1}}>
-          <FlatList
-            data={commentData}
-            keyExtractor={(item, index) => index.toString()}
-            nestedScrollEnabled
-            renderItem={renderComments}
-            ListEmptyComponent={listEmptyComponent}
-            showsVerticalScrollIndicator={false}
-            scrollEventThrottle={16}
-            removeClippedSubviews={true}
-            legacyImplementation={true}
-            maxToRenderPerBatch={10}
-            initialNumToRender={5}
-            onEndReachedThreshold={0.3}
-            onEndReached={onEndReached}
-            ListFooterComponent={() =>
-              isMoreLoading ? (
-                <View>
-                  <ActivityIndicator size={'small'} />
-                </View>
-              ) : null
-            }
-          />
-        </View>
-
-        <View style={styles.bottomContainer}>
-          {replyParams?.activity_id ? (
-            <View
-              style={[
-                styles.row,
-                {justifyContent: 'space-between', marginBottom: 11},
-              ]}>
-              <View style={{flex: 1, marginRight: 10}}>
-                <Text style={styles.replyingToText} numberOfLines={1}>
-                  Replying to {replyingTo.entity_name}
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={styles.crossIcon}
-                onPress={() => {
-                  setReplyParams({});
-                  const tags = commentTxt?.match(tagRegex);
-                  const words = commentTxt.split(' ');
-                  const finalWords = words.filter((item) => item !== tags[0]);
-                  setCommentText(finalWords.join(' '));
-                }}>
-                <Image
-                  source={images.crossImage}
-                  style={{width: '100%', height: '100%', resizeMode: 'contain'}}
-                />
-              </TouchableOpacity>
-            </View>
-          ) : null}
-
-          <View style={styles.row}>
-            <GroupIcon
-              imageUrl={authContext.entity.obj.thumbnail}
-              groupName={authContext.entity.obj.group_name}
-              entityType={authContext.entity.obj.entity_type}
-              containerStyle={styles.profileIcon}
+    <>
+      <CustomModalWrapper
+        isVisible={showCommentModal}
+        closeModal={closeModal}
+        containerStyle={{padding: 0, flex: 1}}
+        title={strings.comments}>
+        <KeyboardAwareScrollView
+          contentContainerStyle={{
+            flex: 1,
+            paddingTop: 25,
+            paddingHorizontal: 15,
+          }}
+          nestedScrollEnabled
+          keyboardVerticalOffset={0}
+          behavior={Platform.OS === 'ios' ? 'height' : 'height'}>
+          <ActivityLoader visible={loading} />
+          <View style={{flex: 1}}>
+            <FlatList
+              data={commentData}
+              keyExtractor={(item, index) => index.toString()}
+              nestedScrollEnabled
+              renderItem={renderComments}
+              ListEmptyComponent={listEmptyComponent}
+              showsVerticalScrollIndicator={false}
+              scrollEventThrottle={16}
+              removeClippedSubviews={true}
+              legacyImplementation={true}
+              maxToRenderPerBatch={10}
+              initialNumToRender={5}
+              onEndReachedThreshold={0.3}
+              onEndReached={onEndReached}
+              ListFooterComponent={() =>
+                isMoreLoading ? (
+                  <View>
+                    <ActivityIndicator size={'small'} />
+                  </View>
+                ) : null
+              }
             />
-            <View style={styles.inputContainer}>
-              <TextInput
-                textAlignVertical="center"
-                placeholder={strings.leaveComment}
-                placeholderTextColor={colors.userPostTimeColor}
-                ref={inputRef}
-                onChangeText={(text) => {
-                  setCommentText(text);
-                  if (!text) {
-                    setReplyParams({});
-                  }
-                }}
-                style={styles.writeCommectStyle}>
-                <ParsedText
-                  parse={[{pattern: tagRegex, renderText: renderTagText}]}
-                  childrenProps={{allowFontScaling: false}}>
-                  {commentTxt}
-                </ParsedText>
-              </TextInput>
-              {commentTxt.trim().length > 0 && (
+          </View>
+
+          <View style={styles.bottomContainer}>
+            {replyParams?.activity_id ? (
+              <View
+                style={[
+                  styles.row,
+                  {justifyContent: 'space-between', marginBottom: 11},
+                ]}>
+                <View style={{flex: 1, marginRight: 10}}>
+                  <Text style={styles.replyingToText} numberOfLines={1}>
+                    Replying to {replyingTo.entity_name}
+                  </Text>
+                </View>
                 <TouchableOpacity
+                  style={styles.crossIcon}
                   onPress={() => {
-                    if (replyParams.activity_id) {
-                      handleCommentReply();
-                    } else {
-                      handleComment();
+                    setReplyParams({});
+                    const tags = commentTxt?.match(tagRegex);
+                    const words = commentTxt.split(' ');
+                    const finalWords = words.filter((item) => item !== tags[0]);
+                    setCommentText(finalWords.join(' '));
+                  }}>
+                  <Image
+                    source={images.crossImage}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      resizeMode: 'contain',
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
+            ) : null}
+
+            <View style={styles.row}>
+              <GroupIcon
+                imageUrl={authContext.entity.obj.thumbnail}
+                groupName={authContext.entity.obj.group_name}
+                entityType={authContext.entity.obj.entity_type}
+                containerStyle={styles.profileIcon}
+              />
+              <View style={styles.inputContainer}>
+                <TextInput
+                  textAlignVertical="center"
+                  placeholder={strings.leaveComment}
+                  placeholderTextColor={colors.userPostTimeColor}
+                  ref={inputRef}
+                  onChangeText={(text) => {
+                    setCommentText(text);
+                    if (!text) {
+                      setReplyParams({});
                     }
                   }}
-                  style={{paddingLeft: 7}}>
-                  <Text style={styles.sendTextStyle}>
-                    {strings.send.toUpperCase()}
-                  </Text>
-                </TouchableOpacity>
-              )}
+                  style={styles.writeCommectStyle}>
+                  <ParsedText
+                    parse={[{pattern: tagRegex, renderText: renderTagText}]}
+                    childrenProps={{allowFontScaling: false}}>
+                    {commentTxt}
+                  </ParsedText>
+                </TextInput>
+                {commentTxt.trim().length > 0 && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (replyParams.activity_id) {
+                        handleCommentReply();
+                      } else {
+                        handleComment();
+                      }
+                    }}
+                    style={{paddingLeft: 7}}>
+                    <Text style={styles.sendTextStyle}>
+                      {strings.send.toUpperCase()}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           </View>
-        </View>
-      </KeyboardAwareScrollView>
+        </KeyboardAwareScrollView>
+      </CustomModalWrapper>
       <ReportCommentModal
         commentData={selectedCommentData}
         reportCommentModalRef={reportCommentModalRef}
@@ -618,7 +625,7 @@ const CommentModal = ({
         }}
         handleFollowUnfollow={handleFollowUnfollow}
       />
-    </CustomModalWrapper>
+    </>
   );
 };
 
@@ -640,20 +647,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     marginTop: '20%',
-  },
-  headerStyle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.grayBackgroundColor,
-    marginBottom: 25,
-  },
-  headerTitle: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RBold,
-    color: colors.lightBlackColor,
   },
   writeCommectStyle: {
     flex: 1,
@@ -684,7 +677,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     paddingVertical: 8,
-   
   },
   tagText: {
     fontSize: 16,

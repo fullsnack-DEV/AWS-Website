@@ -39,7 +39,8 @@ const NewsFeedList = ({
   isNewsFeedScreen = false,
   openProfilId,
   entityDetails = {},
-  fetchFeeds = () => {},
+  openLikeModal = () => {},
+  openCommentModal = () => {},
   dummyCall = () => {},
 }) => {
   const [userID, setUserID] = useState('');
@@ -91,7 +92,8 @@ const NewsFeedList = ({
           isNewsFeedScreen={isNewsFeedScreen}
           openProfilId={openProfilId}
           entityDetails={entityDetails}
-          fetchFeeds={fetchFeeds}
+          openLikeModal={openLikeModal}
+          openCommentModal={openCommentModal}
         />
         <View
           style={{backgroundColor: colors.grayBackgroundColor, height: 7}}

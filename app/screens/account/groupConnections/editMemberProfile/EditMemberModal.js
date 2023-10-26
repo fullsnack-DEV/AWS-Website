@@ -7,9 +7,9 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  ScrollView,
   Alert,
 } from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -197,146 +197,147 @@ function EditMemberModal({isVisible, closeModal = () => {}, Info}) {
   };
 
   return (
-    <CustomModalWrapper
-      isVisible={isVisible}
-      closeModal={closeModal}
-      modalType={ModalTypes.style1}
-      headerRightButtonText={strings.save}
-      onRightButtonPress={() => {
-        if (checkValidation()) {
-          editInfo();
-        }
-      }}
-      title={strings.editprofiletitle}
-      containerStyle={{padding: 0, flex: 1}}>
-      <ScrollView style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
+    <>
+      <CustomModalWrapper
+        isVisible={isVisible}
+        closeModal={closeModal}
+        modalType={ModalTypes.style1}
+        headerRightButtonText={strings.save}
+        onRightButtonPress={() => {
+          if (checkValidation()) {
+            editInfo();
+          }
+        }}
+        title={strings.editprofiletitle}
+        containerStyle={{padding: 0, flex: 1}}>
+        <ScrollView style={styles.mainContainer}>
+          <ActivityLoader visible={loading} />
 
-        <TCKeyboardView>
-          <View style={styles.profileView}>
-            <Image
-              source={
-                memberInfo.full_image
-                  ? {uri: memberInfo.full_image}
-                  : images.profilePlaceHolder
-              }
-              style={styles.profileChoose}
-            />
-            <TouchableOpacity
-              style={styles.choosePhoto}
-              onPress={() => onProfileImageClicked()}>
+          <TCKeyboardView>
+            <View style={styles.profileView}>
               <Image
-                source={images.certificateUpload}
-                style={styles.choosePhoto}
+                source={
+                  memberInfo.full_image
+                    ? {uri: memberInfo.full_image}
+                    : images.profilePlaceHolder
+                }
+                style={styles.profileChoose}
               />
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                style={styles.choosePhoto}
+                onPress={() => onProfileImageClicked()}>
+                <Image
+                  source={images.certificateUpload}
+                  style={styles.choosePhoto}
+                />
+              </TouchableOpacity>
+            </View>
 
-          <View
-            style={{
-              marginTop: 8,
-              marginHorizontal: 5,
-            }}>
-            <TCLable title={strings.nameText.toUpperCase()} required={true} />
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginTop: 10,
+                marginTop: 8,
+                marginHorizontal: 5,
               }}>
-              <TCTextField
+              <TCLable title={strings.nameText.toUpperCase()} required={true} />
+              <View
                 style={{
-                  flex: 1,
-                  marginHorizontal: 8,
-                }}
-                value={memberInfo?.first_name}
-                autoCapitalize="none"
-                autoCorrect={false}
-                onChangeText={(text) =>
-                  setMemberInfo({...memberInfo, first_name: text})
-                }
-                placeholder={strings.firstName}
-              />
-              <TCTextField
-                style={{
-                  flex: 1,
-                  marginHorizontal: 8,
-                }}
-                value={memberInfo?.last_name}
-                autoCapitalize="none"
-                autoCorrect={false}
-                onChangeText={(text) =>
-                  setMemberInfo({...memberInfo, last_name: text})
-                }
-                placeholder={strings.lastName}
-              />
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: 10,
+                }}>
+                <TCTextField
+                  style={{
+                    flex: 1,
+                    marginHorizontal: 8,
+                  }}
+                  value={memberInfo?.first_name}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  onChangeText={(text) =>
+                    setMemberInfo({...memberInfo, first_name: text})
+                  }
+                  placeholder={strings.firstName}
+                />
+                <TCTextField
+                  style={{
+                    flex: 1,
+                    marginHorizontal: 8,
+                  }}
+                  value={memberInfo?.last_name}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  onChangeText={(text) =>
+                    setMemberInfo({...memberInfo, last_name: text})
+                  }
+                  placeholder={strings.lastName}
+                />
+              </View>
             </View>
-          </View>
-          <View>
-            <TCLable
-              title={strings.homeCity.toUpperCase()}
-              required={true}
-              style={{marginBottom: 10, marginTop: 25}}
-            />
-            <TouchableOpacity onPress={() => setVisibleLocationModal(true)}>
-              <TCTextField
-                value={homeCity}
-                autoCapitalize="none"
-                autoCorrect={false}
-                placeholder={strings.homeCity}
-                pointerEvents="none"
-                editable={false}
+            <View>
+              <TCLable
+                title={strings.homeCity.toUpperCase()}
+                required={true}
+                style={{marginBottom: 10, marginTop: 25}}
               />
-            </TouchableOpacity>
-          </View>
-          <View>
-            <TCLable
-              title={strings.emailtitle.toUpperCase()}
-              required={true}
-              style={{marginBottom: 10, marginTop: 25}}
-            />
-            <TCTextField
-              value={memberInfo?.email}
-              autoCapitalize="none"
-              editable={false}
-              autoCorrect={false}
-              placeholder={strings.emailPlaceHolder}
-              keyboardType={'email-address'}
-            />
-            <Text style={styles.notesStyle}>
-              {format(strings.emailNotes, authContext.entity.role)}
-            </Text>
-          </View>
-        </TCKeyboardView>
+              <TouchableOpacity onPress={() => setVisibleLocationModal(true)}>
+                <TCTextField
+                  value={homeCity}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  placeholder={strings.homeCity}
+                  pointerEvents="none"
+                  editable={false}
+                />
+              </TouchableOpacity>
+            </View>
+            <View>
+              <TCLable
+                title={strings.emailtitle.toUpperCase()}
+                required={true}
+                style={{marginBottom: 10, marginTop: 25}}
+              />
+              <TCTextField
+                value={memberInfo?.email}
+                autoCapitalize="none"
+                editable={false}
+                autoCorrect={false}
+                placeholder={strings.emailPlaceHolder}
+                keyboardType={'email-address'}
+              />
+              <Text style={styles.notesStyle}>
+                {format(strings.emailNotes, authContext.entity.role)}
+              </Text>
+            </View>
+          </TCKeyboardView>
 
-        <LocationModal
-          visibleLocationModal={visibleLocationModal}
-          title={strings.homeCityTitleText}
-          setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
-          onLocationSelect={handleSetLocationOptions}
-          placeholder={strings.searchByCity}
-        />
-
-        <ActionSheet
-          ref={actionSheet}
-          options={actionSheetOpetions()}
-          cancelButtonIndex={memberInfo.connected ? 3 : 2}
-          onPress={(index) => {
-            if (index === 0) {
-              openCamera();
-            } else if (index === 1) {
-              openImagePicker();
-            } else if (index === 2) {
-              if (memberInfo.connected) {
-                if (checkValidation()) {
-                  editInfo();
+          <ActionSheet
+            ref={actionSheet}
+            options={actionSheetOpetions()}
+            cancelButtonIndex={memberInfo.connected ? 3 : 2}
+            onPress={(index) => {
+              if (index === 0) {
+                openCamera();
+              } else if (index === 1) {
+                openImagePicker();
+              } else if (index === 2) {
+                if (memberInfo.connected) {
+                  if (checkValidation()) {
+                    editInfo();
+                  }
                 }
               }
-            }
-          }}
-        />
-      </ScrollView>
-    </CustomModalWrapper>
+            }}
+          />
+        </ScrollView>
+      </CustomModalWrapper>
+      <LocationModal
+        visibleLocationModal={visibleLocationModal}
+        title={strings.homeCityTitleText}
+        setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
+        onLocationSelect={handleSetLocationOptions}
+        placeholder={strings.searchByCity}
+      />
+    </>
   );
 }
 

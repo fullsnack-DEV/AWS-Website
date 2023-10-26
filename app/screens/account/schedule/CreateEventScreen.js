@@ -12,14 +12,14 @@ import {
   Image,
   Text,
   SafeAreaView,
-  ScrollView,
   Alert,
   TextInput,
-  FlatList,
   Platform,
   Pressable,
   BackHandler,
+  Dimensions,
 } from 'react-native';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import moment from 'moment';
 import {
   widthPercentageToDP as wp,
@@ -119,6 +119,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
   const [selectedSport, setSelectedSport] = useState({});
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   const see = 'see';
   const join = 'join';
@@ -1491,13 +1492,24 @@ export default function CreateEventScreen({navigation, route}) {
           padding: 15,
           marginBottom: Platform.OS === 'ios' ? 35 : 0,
         }}
-        ratio={0.5}>
-        <FlatList
-          data={getOptions()}
-          renderItem={renderWhoCan}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-        />
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}>
+          <FlatList
+            data={getOptions()}
+            renderItem={renderWhoCan}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
       </CustomModalWrapper>
 
       <ActionSheet

@@ -1,27 +1,29 @@
 // @flow
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
+import {View, StyleSheet, Dimensions, Platform, StatusBar} from 'react-native';
 import {
-  View,
-  StyleSheet,
-  Modal,
-  Dimensions,
-  Animated,
-  Pressable,
-  InteractionManager,
-  Platform,
-  StatusBar,
-} from 'react-native';
-import {
-  GestureHandlerRootView,
-  PanGestureHandler,
-  State,
-} from 'react-native-gesture-handler';
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+
 import colors from '../Constants/Colors';
 import {ModalTypes} from '../Constants/GeneralConstants';
 import images from '../Constants/ImagePath';
 import ScreenHeader from './ScreenHeader';
 
-const screenHeight = Dimensions.get('window').height;
+const renderBackdrop = (props) => (
+  <BottomSheetBackdrop
+    {...props}
+    disappearsOnIndex={-1}
+    appearsOnIndex={1}
+    style={styles.backdropStyle}
+    opacity={6}
+  />
+);
+
+const layout = Dimensions.get('window');
+const topMargin = Platform.OS === 'ios' ? 50 : 80;
 
 const CustomModalWrapper = ({
   loading = false,
@@ -32,325 +34,178 @@ const CustomModalWrapper = ({
   onRightButtonPress = () => {},
   headerRightButtonText = '',
   modalType = ModalTypes.default,
-  headerBottomBorderColor = colors.grayBackgroundColor,
+  // headerBottomBorderColor = colors.grayBackgroundColor,
   children = null,
-  Top = 50,
-  isSwipeUp = false,
-  showBackButton = false,
-  ratio = 2.5,
-  parentStyle = {},
   isFullTitle = false,
   headerLeftIconStyle = {},
-  extraHeaderStyle = {},
-  onModalShow = () => {},
-  isTransparent = false,
+  backIcon = null,
+  externalSnapPoints = [],
+  rightIcon1 = null,
+  rightIcon1Press = () => {},
+  rightIcon2 = null,
+  rightIcon2Press = () => {},
+  iconContainerStyle = {},
 }) => {
-  const [isFullHeight, setIsFullHeight] = useState(isSwipeUp);
-  const translateY = new Animated.Value(0);
-  let isGestureActive = false;
+  const snapPoints = useMemo(() => {
+    switch (modalType) {
+      case ModalTypes.style5:
+        return [layout.height - topMargin, layout.height * 0.66];
 
-  const SWIPE_THRESHOLD = 50;
+      case ModalTypes.style6:
+      case ModalTypes.style7:
+        return [
+          layout.height - (topMargin + 10),
+          layout.height - (topMargin + 10),
+        ];
 
-  const onPanGestureEvent = Animated.event(
-    [{nativeEvent: {translationY: translateY}}],
-    {
-      useNativeDriver: false,
-      listener: (event) => {
-        if (event.nativeEvent.translationY <= 0) {
-          translateY.setValue(0);
-          if (isSwipeUp && event.nativeEvent.translationY < -SWIPE_THRESHOLD) {
-            setIsFullHeight(true);
-            translateY.setValue(0);
-          }
-        } else if (event.nativeEvent.translationY > 0) {
-          translateY.setValue(event.nativeEvent.translationY);
-        }
-      },
-    },
-  );
+      case ModalTypes.style9:
+      case ModalTypes.style10:
+        return [
+          layout.height - (topMargin + 20),
+          layout.height - (topMargin + 20),
+        ];
 
-  const onPanGestureStateChange = (event) => {
-    if (event.nativeEvent.state === State.ACTIVE) {
-      isGestureActive = true;
-    } else if (event.nativeEvent.state === State.END) {
-      if (isGestureActive) {
-        isGestureActive = false;
-
-        if (event.nativeEvent.translationY > 50) {
-          handleCloseModal();
-        } else {
-          InteractionManager.runAfterInteractions(() => {
-            Animated.spring(translateY, {
-              toValue: 0,
-              useNativeDriver: true,
-            }).start();
-          });
-        }
-      }
+      default:
+        return [layout.height - topMargin, layout.height - topMargin];
     }
-  };
-
-  useEffect(() => {
-    setIsFullHeight(false);
-  }, [isVisible]);
-
-  const handleCloseModal = () => {
-    closeModal();
-  };
+  }, [modalType]);
 
   const getModalHeader = () => {
     switch (modalType) {
       case ModalTypes.style1:
-      case ModalTypes.style4:
+      case ModalTypes.style6:
+      case ModalTypes.style10:
         return (
           <ScreenHeader
-            leftIcon={showBackButton ? images.backArrow : images.crossImage}
-            leftIconPress={handleCloseModal}
+            leftIcon={backIcon ?? images.crossImage}
+            leftIconPress={() => {
+              modalRef?.current?.dismiss();
+              closeModal();
+            }}
             title={title}
             isRightIconText
             rightButtonText={headerRightButtonText}
             onRightButtonPress={onRightButtonPress}
             loading={loading}
-            containerStyle={styles.headerStyle}
             isFullTitle={isFullTitle}
             leftIconStyle={headerLeftIconStyle}
           />
         );
 
       case ModalTypes.style2:
+      case ModalTypes.style5:
       case ModalTypes.style7:
+      case ModalTypes.style9:
         return <View style={styles.handle} />;
 
       case ModalTypes.style3:
         return (
           <ScreenHeader
-            rightIcon2={images.crossImage}
-            rightIcon2Press={handleCloseModal}
-            title={title}
-            containerStyle={[
-              styles.headerStyle,
-              {
-                paddingRight: 15,
-                ...extraHeaderStyle,
-              },
-            ]}
+            rightIcon1={images.crossImage}
+            rightIcon1Press={() => {
+              modalRef?.current?.dismiss();
+              closeModal();
+            }}
           />
         );
 
-      case ModalTypes.style6:
       case ModalTypes.style8:
         return (
           <ScreenHeader
             title={title}
-            rightIcon2={images.crossImage}
-            rightIcon2Press={handleCloseModal}
-            containerStyle={[
-              styles.headerStyle,
-              {paddingRight: 15},
-              modalType === ModalTypes.style8
-                ? {
-                    borderBottomColor: headerBottomBorderColor,
-                    borderBottomWidth: 2,
-                  }
-                : {},
-            ]}
+            rightIcon1={images.crossImage}
+            rightIcon1Press={() => {
+              modalRef?.current?.dismiss();
+              closeModal();
+            }}
           />
         );
 
       default:
+        if (title) {
+          return (
+            <>
+              <View style={[styles.handle, {marginBottom: 0}]} />
+              <ScreenHeader
+                title={title}
+                rightIcon1={rightIcon1}
+                rightIcon1Press={rightIcon1Press}
+                rightIcon2={rightIcon2}
+                rightIcon2Press={rightIcon2Press}
+                iconContainerStyle={iconContainerStyle}
+              />
+            </>
+          );
+        }
         return <View style={styles.handle} />;
     }
   };
 
-  const getCardStyle = () => {
-    if (isFullHeight) {
-      const animatedTranslateY = new Animated.Value(300);
+  const modalRef = useRef();
 
-      const animatedStyle = {
-        transform: [
-          {
-            translateY: animatedTranslateY,
-          },
-        ],
-      };
-
-      Animated.timing(animatedTranslateY, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-
-      return [styles.card, animatedStyle];
+  useEffect(() => {
+    if (isVisible) {
+      modalRef?.current?.present();
+    } else {
+      modalRef?.current?.dismiss();
     }
-
-    switch (modalType) {
-      case ModalTypes.style1:
-        return [styles.card, {flex: 1}, parentStyle];
-
-      case ModalTypes.style2:
-        return [styles.card, {shadowRadius: isTransparent ? 25 : 5}];
-
-      case ModalTypes.style3:
-        return [styles.card, {flex: 1}];
-      case ModalTypes.style4:
-        return [styles.card, {flex: 1}];
-
-      case ModalTypes.style5:
-        return [styles.card, {height: screenHeight * 0.66}];
-
-      default:
-        return [styles.card, {flex: 1}];
-    }
-  };
-
-  const panRef = useRef();
-  const scrollRef = useRef();
+  }, [isVisible]);
 
   return (
-    <Modal
-      visible={isVisible}
-      collapsable
-      transparent
-      style={{
-        backgroundColor: 'rgba(255,255,255,0.1',
-      }}
-      animationType="fade"
-      onShow={() => onModalShow()}
-      onRequestClose={() => handleCloseModal()}>
-      {Platform.OS === 'android' && (
-        <StatusBar
-          backgroundColor={colors.modalBackgroundColor}
-          barStyle="light-content"
-        />
-      )}
-      <GestureHandlerRootView style={{flex: 1}}>
-        <Pressable
-          style={[
-            styles.parent,
-            {
-              paddingTop: Top,
-              backgroundColor: isTransparent
-                ? colors.modalTransparentBG
-                : colors.modalBackgroundColor,
-            },
-          ]}
-          onPress={handleCloseModal}>
-          {(modalType === ModalTypes.style7 ||
-            modalType === ModalTypes.style2 ||
-            modalType === ModalTypes.default) && (
-            <PanGestureHandler
-              ref={panRef}
-              onGestureEvent={onPanGestureEvent}
-              onHandlerStateChange={onPanGestureStateChange}
-              simultaneousHandlers={scrollRef}>
-              <Animated.View
-                style={[
-                  getCardStyle(),
-                  {
-                    transform: [
-                      {
-                        translateY,
-                      },
-                    ],
-                  },
-                ]}>
-                <Pressable onPress={() => {}}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignSelf: 'stretch',
-                      justifyContent: 'center',
-                    }}>
-                    {getModalHeader()}
-                  </View>
-
-                  <View
-                    style={[
-                      {
-                        height: !isFullHeight
-                          ? Dimensions.get('window').height -
-                            Dimensions.get('window').height / ratio
-                          : '100%',
-                        padding: 25,
-                      },
-                      containerStyle,
-                    ]}>
-                    {children}
-                  </View>
-                </Pressable>
-              </Animated.View>
-            </PanGestureHandler>
-          )}
-
-          {modalType !== ModalTypes.style7 &&
-            modalType !== ModalTypes.style2 &&
-            modalType !== ModalTypes.default && (
-              <Animated.View
-                style={[
-                  getCardStyle(),
-                  {
-                    transform: [
-                      {
-                        translateY,
-                      },
-                    ],
-                  },
-                ]}>
-                <Pressable
-                  onPress={() => {}}
-                  style={{
-                    flex: 1,
-                  }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignSelf: 'stretch',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                    {getModalHeader()}
-                  </View>
-                  <View style={[{padding: 25}, containerStyle]}>
-                    {children}
-                  </View>
-                </Pressable>
-              </Animated.View>
-            )}
-        </Pressable>
-      </GestureHandlerRootView>
-    </Modal>
+    <BottomSheetModalProvider>
+      <BottomSheetModal
+        onDismiss={() => {
+          modalRef?.current?.dismiss();
+          closeModal();
+        }}
+        ref={modalRef}
+        backgroundStyle={styles.bottomSheetStyle}
+        index={1}
+        snapPoints={
+          externalSnapPoints.length > 0 ? externalSnapPoints : snapPoints
+        }
+        enablePanDownToClose
+        enableDismissOnClose
+        backdropComponent={renderBackdrop}
+        handleComponent={() => getModalHeader()}
+        keyboardBehavior={Platform.OS === 'ios' ? 'extend' : 'interactive'}
+        keyboardBlurBehavior="restore"
+        android_keyboardInputMode="adjustResize">
+        {Platform.OS === 'android' && (
+          <StatusBar
+            backgroundColor={colors.modalBackgroundColor}
+            barStyle="light-content"
+          />
+        )}
+        <View style={[styles.parent, containerStyle]}>{children}</View>
+      </BottomSheetModal>
+    </BottomSheetModalProvider>
   );
 };
 
 const styles = StyleSheet.create({
   parent: {
-    flex: 1,
-    paddingTop: 40,
-    justifyContent: 'flex-end',
+    padding: 25,
   },
-  card: {
-    backgroundColor: colors.whiteColor,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    shadowColor: colors.blackColor,
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 5,
+  backdropStyle: {
+    backgroundColor: colors.modalBackgroundColor,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  bottomSheetStyle: {
+    borderRadius: 10,
+    paddingTop: 0,
   },
   handle: {
     backgroundColor: colors.modalHandleColor,
     width: 40,
     height: 5,
-    marginTop: 12,
+    marginTop: 10,
     alignSelf: 'center',
     borderRadius: 5,
-  },
-  headerStyle: {
-    height: '100%',
-    width: '100%',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.greyBorderColor,
   },
 });
 

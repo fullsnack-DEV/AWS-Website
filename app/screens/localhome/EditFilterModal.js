@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  FlatList,
   Pressable,
   Modal,
   TouchableWithoutFeedback,
@@ -13,7 +12,7 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import React, {useCallback, useEffect, useState, useContext} from 'react';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {FlatList, GestureHandlerRootView} from 'react-native-gesture-handler';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
@@ -382,122 +381,124 @@ export default function EditFilterModal({
   };
 
   return (
-    <Modal visible={visible} collapsable transparent animationType="fade">
-      <GestureHandlerRootView style={{flex: 1}}>
-        <View style={styles.parent}>
-          <View style={styles.Mcard}>
-            <ScreenHeader
-              leftIcon={images.crossImage}
-              leftIconPress={() => {
-                onCloseModal();
-                setAddedsport([]);
-              }}
-              rightButtonText={strings.apply}
-              title={strings.editFavSportTitle}
-              onRightButtonPress={() => onEditSport()}
-              isRightIconText
-            />
-            <View style={{marginHorizontal: 20}}>
-              <ActivityLoader visible={loading} />
-              <Text style={styles.topText}> {strings.settingModaltitle} </Text>
-              <TouchableWithoutFeedback>
-                <DraggableFlatList
-                  scrollEnabled
-                  autoscrollSpeed={200}
-                  style={{
-                    height: Dimensions.get('window').height * 0.75,
-                  }}
-                  data={sports}
-                  onDragEnd={({data}) => {
-                    setsports(data);
-                  }}
-                  keyExtractor={(item, index) => index.toString()}
-                  renderItem={renderItem}
-                  ListFooterComponent={() => (
-                    <TouchableOpacity
-                      style={styles.addordeletebtn}
-                      onPress={() => setVisibleAddModal(true)}>
-                      <Text style={styles.adddeletetext}>
-                        {strings.addOrDelete}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  bounces={false}
-                  showsVerticalScrollIndicator={false}
-                />
-              </TouchableWithoutFeedback>
-
-              <CustomModalWrapper
-                isVisible={visibleAddModal}
-                title={strings.addorDeleteFavSportTitle}
-                closeModal={() => {
-                  setVisibleAddModal(false);
-                  setAddedsport([...sportList]);
-                  if (authContext.entity.role !== Verbs.entityTypeClub) {
-                    setAddedsport([...notRegisterSport, ...registerSports]);
-                  } else {
-                    setAddedsport([...sportList]);
-                  }
+    <>
+      <Modal visible={visible} collapsable transparent animationType="fade">
+        <GestureHandlerRootView style={{flex: 1}}>
+          <View style={styles.parent}>
+            <View style={styles.Mcard}>
+              <ScreenHeader
+                leftIcon={images.crossImage}
+                leftIconPress={() => {
+                  onCloseModal();
+                  setAddedsport([]);
                 }}
-                modalType={ModalTypes.style1}
-                headerRightButtonText={strings.save}
-                onRightButtonPress={() => {
-                  setisSaved(true);
-
-                  setsports([...addedSport]);
-
-                  setVisibleAddModal(false);
-                }}>
-                <FlatList
-                  data={allSports}
-                  style={{marginTop: -20}}
-                  keyExtractor={(item, index) => `${item?.sport_type}/${index}`}
-                  showsVerticalScrollIndicator={false}
-                  renderItem={({item}) => (
-                    <>
-                      <Pressable
-                        style={styles.listItem}
-                        onPress={() => {
-                          if (CheckisRegister(item)) {
-                            toggleSport(item);
-                            return;
-                          }
-
-                          if (!FavSportCheck(item)) {
-                            toggleSport(item);
-                          }
-                        }}>
-                        <Text style={styles.listLabel}>{item.sport_name}</Text>
-                        <View
-                          style={[
-                            styles.listIconContainer,
-                            {
-                              opacity: FavSportImageCheck(item) ? 0.6 : 1,
-                            },
-                          ]}>
-                          <Image
-                            source={
-                              checkSportAdded(item)
-                                ? images.orangeCheckBox
-                                : images.uncheckBox
-                            }
-                            style={styles.image}
-                          />
-                        </View>
-                      </Pressable>
-                      <View style={styles.lineSeparator} />
-                    </>
-                  )}
-                  ListFooterComponent={() => (
-                    <View style={{marginBottom: 50}} />
-                  )}
-                />
-              </CustomModalWrapper>
+                rightButtonText={strings.apply}
+                title={strings.editFavSportTitle}
+                onRightButtonPress={() => onEditSport()}
+                isRightIconText
+              />
+              <View style={{marginHorizontal: 20}}>
+                <ActivityLoader visible={loading} />
+                <Text style={styles.topText}>
+                  {' '}
+                  {strings.settingModaltitle}{' '}
+                </Text>
+                <TouchableWithoutFeedback>
+                  <DraggableFlatList
+                    scrollEnabled
+                    autoscrollSpeed={200}
+                    style={{
+                      height: Dimensions.get('window').height * 0.75,
+                    }}
+                    data={sports}
+                    onDragEnd={({data}) => {
+                      setsports(data);
+                    }}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={renderItem}
+                    ListFooterComponent={() => (
+                      <TouchableOpacity
+                        style={styles.addordeletebtn}
+                        onPress={() => setVisibleAddModal(true)}>
+                        <Text style={styles.adddeletetext}>
+                          {strings.addOrDelete}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    bounces={false}
+                    showsVerticalScrollIndicator={false}
+                  />
+                </TouchableWithoutFeedback>
+              </View>
             </View>
           </View>
-        </View>
-      </GestureHandlerRootView>
-    </Modal>
+        </GestureHandlerRootView>
+      </Modal>
+      <CustomModalWrapper
+        isVisible={visibleAddModal}
+        title={strings.addorDeleteFavSportTitle}
+        closeModal={() => {
+          setVisibleAddModal(false);
+          setAddedsport([...sportList]);
+          if (authContext.entity.role !== Verbs.entityTypeClub) {
+            setAddedsport([...notRegisterSport, ...registerSports]);
+          } else {
+            setAddedsport([...sportList]);
+          }
+        }}
+        modalType={ModalTypes.style6}
+        headerRightButtonText={strings.save}
+        onRightButtonPress={() => {
+          setisSaved(true);
+
+          setsports([...addedSport]);
+
+          setVisibleAddModal(false);
+        }}>
+        <FlatList
+          data={allSports}
+          style={{marginTop: -20}}
+          keyExtractor={(item, index) => `${item?.sport_type}/${index}`}
+          showsVerticalScrollIndicator={false}
+          renderItem={({item}) => (
+            <>
+              <Pressable
+                style={styles.listItem}
+                onPress={() => {
+                  if (CheckisRegister(item)) {
+                    toggleSport(item);
+                    return;
+                  }
+
+                  if (!FavSportCheck(item)) {
+                    toggleSport(item);
+                  }
+                }}>
+                <Text style={styles.listLabel}>{item.sport_name}</Text>
+                <View
+                  style={[
+                    styles.listIconContainer,
+                    {
+                      opacity: FavSportImageCheck(item) ? 0.6 : 1,
+                    },
+                  ]}>
+                  <Image
+                    source={
+                      checkSportAdded(item)
+                        ? images.orangeCheckBox
+                        : images.uncheckBox
+                    }
+                    style={styles.image}
+                  />
+                </View>
+              </Pressable>
+              <View style={styles.lineSeparator} />
+            </>
+          )}
+          ListFooterComponent={() => <View style={{marginBottom: 50}} />}
+        />
+      </CustomModalWrapper>
+    </>
   );
 }
 

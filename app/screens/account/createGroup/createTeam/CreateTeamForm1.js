@@ -6,13 +6,13 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  FlatList,
   Text,
   TouchableWithoutFeedback,
   Platform,
   Pressable,
   SafeAreaView,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {useIsFocused} from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import ActionSheet from 'react-native-actionsheet';

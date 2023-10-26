@@ -1,7 +1,7 @@
 // @flow
 /* eslint-disable no-param-reassign */
 import React, {useState, useCallback, useContext, useEffect} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, Dimensions} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
@@ -39,6 +39,7 @@ const SelectedRecipientsModal = ({
     strings.peopleTitleText,
     strings.teamsTitleText,
   ]);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   const tabChangePress = useCallback((changeTab) => {
     switch (changeTab) {
@@ -120,32 +121,44 @@ const SelectedRecipientsModal = ({
       isVisible={isVisible}
       closeModal={() => onClose()}
       modalType={ModalTypes.style2}
-      containerStyle={{padding: 0, height: '98%'}}
-      Top={100}>
-      {isShowTabs && invoiceType === InvoiceType.Invoice && (
-        <View style={{backgroundColor: '#FFFFFF'}}>
-          <CustomScrollTabs
-            tabsItem={tabs}
-            setCurrentTab={tabChangePress}
-            currentTab={currentTab}
+      containerStyle={{padding: 0, flex: 1}}
+      externalSnapPoints={snapPoints}>
+      <View
+        onLayout={(event) => {
+          const contentHeight = event.nativeEvent.layout.height + 80;
+
+          setSnapPoints([
+            '50%',
+            contentHeight,
+            Dimensions.get('window').height - 40,
+          ]);
+        }}
+        style={{flex: 1}}>
+        {isShowTabs && invoiceType === InvoiceType.Invoice && (
+          <View style={{backgroundColor: '#FFFFFF'}}>
+            <CustomScrollTabs
+              tabsItem={tabs}
+              setCurrentTab={tabChangePress}
+              currentTab={currentTab}
+            />
+          </View>
+        )}
+        {/* People list */}
+        <View style={{flex: 1}}>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={
+              currentTab === InvoiceRecipientTabType.Teams
+                ? selectedTeamsRecipient
+                : selectedPeopleRecipient
+            }
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
+            renderItem={renderRecipient}
+            ListEmptyComponent={listEmptyComponent}
+            ListFooterComponent={() => <View style={{marginBottom: 180}} />}
           />
         </View>
-      )}
-      {/* People list */}
-      <View style={{flex: 1}}>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={
-            currentTab === InvoiceRecipientTabType.Teams
-              ? selectedTeamsRecipient
-              : selectedPeopleRecipient
-          }
-          keyExtractor={(item, index) => index.toString()}
-          ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
-          renderItem={renderRecipient}
-          ListEmptyComponent={listEmptyComponent}
-          ListFooterComponent={() => <View style={{marginBottom: 180}} />}
-        />
       </View>
     </CustomModalWrapper>
   );

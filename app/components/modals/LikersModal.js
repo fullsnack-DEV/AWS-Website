@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import TCUserList from '../../screens/account/connections/TCUserList';
@@ -19,6 +20,7 @@ const LikersModal = ({
   const authContext = useContext(AuthContext);
   const userRole = authContext.entity.role;
   const [list, setList] = useState([]);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   useEffect(() => {
     if (showLikeModal) {
@@ -59,25 +61,37 @@ const LikersModal = ({
       isVisible={showLikeModal}
       closeModal={closeModal}
       modalType={ModalTypes.style2}
-      containerStyle={{padding: 0}}>
-      <View style={styles.headerStyle}>
-        <Text style={styles.titleText}>{strings.likesTitle}</Text>
+      containerStyle={{padding: 0}}
+      externalSnapPoints={snapPoints}>
+      <View
+        onLayout={(event) => {
+          const contentHeight = event.nativeEvent.layout.height + 80;
+
+          setSnapPoints([
+            '50%',
+            contentHeight,
+            Dimensions.get('window').height - 40,
+          ]);
+        }}>
+        <View style={styles.headerStyle}>
+          <Text style={styles.titleText}>{strings.likesTitle}</Text>
+        </View>
+        <View style={styles.likersHeaderContainer}>
+          <Text style={styles.likedByText}>{strings.likedBy}</Text>
+          <Text style={styles.likesCountText}>
+            {list.length}{' '}
+            {list.length > 1 ? strings.likesTitle : strings.likeTitle}
+          </Text>
+        </View>
+        <FlatList
+          data={list}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderEntity}
+          contentContainerStyle={{paddingHorizontal: 15}}
+          ListEmptyComponent={listEmptyComponent}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
-      <View style={styles.likersHeaderContainer}>
-        <Text style={styles.likedByText}>{strings.likedBy}</Text>
-        <Text style={styles.likesCountText}>
-          {list.length}{' '}
-          {list.length > 1 ? strings.likesTitle : strings.likeTitle}
-        </Text>
-      </View>
-      <FlatList
-        data={list}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderEntity}
-        contentContainerStyle={{paddingHorizontal: 15}}
-        ListEmptyComponent={listEmptyComponent}
-        showsVerticalScrollIndicator={false}
-      />
     </CustomModalWrapper>
   );
 };

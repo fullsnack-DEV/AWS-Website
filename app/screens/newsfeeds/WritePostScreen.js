@@ -15,7 +15,6 @@ import {
   StyleSheet,
   SafeAreaView,
   Platform,
-  FlatList,
   Alert,
   KeyboardAvoidingView,
   Dimensions,
@@ -26,6 +25,7 @@ import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
 import ImagePicker from 'react-native-image-crop-picker';
 import _ from 'lodash';
+import {FlatList} from 'react-native-gesture-handler';
 import ParsedText from 'react-native-parsed-text';
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
@@ -1031,8 +1031,7 @@ const WritePostScreen = ({navigation, route}) => {
         onRightButtonPress={() => {
           setVisibleWhoModal(false);
           setPrivacySetting(privacySetting);
-        }}
-        ratio={1.7}>
+        }}>
         <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
         <FlatList
           showsVerticalScrollIndicator={false}

@@ -7,6 +7,7 @@ import {
   View,
   TouchableOpacity,
   Pressable,
+  Dimensions,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import colors from '../../Constants/Colors';
@@ -28,6 +29,7 @@ const TaggedModal = ({
   const [gameTagList, setGameTagList] = useState([]);
   const [entityTagList, setEntityTagList] = useState([]);
   const [teamTagList, setTeamTagList] = useState([]);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   useEffect(() => {
     if (taggedData?.length) {
@@ -199,23 +201,34 @@ const TaggedModal = ({
       closeModal={onBackdropPress}
       isVisible={showTaggedModal}
       modalType={ModalTypes.style2}
-      isSwipeUp={true}
-      containerStyle={{padding: 0}}>
-      {ModalHeader()}
-      <ScrollView style={{flex: 1}}>
-        <SectionList
-          style={{paddingBottom: 40}}
-          sections={sections}
-          renderToHardwareTextureAndroid
-          scrollEnabled
-          nestedScrollEnabled
-          keyboardShouldPersistTaps="handled"
-          stickyHeaderHiddenOnScroll={false}
-          stickySectionHeadersEnabled={true}
-          keyExtractor={(item, index) => item + index}
-          renderSectionHeader={renderSectionHeader}
-        />
-      </ScrollView>
+      containerStyle={{padding: 0}}
+      externalSnapPoints={snapPoints}>
+      <View
+        onLayout={(event) => {
+          const contentHeight = event.nativeEvent.layout.height + 80;
+
+          setSnapPoints([
+            '50%',
+            contentHeight,
+            Dimensions.get('window').height - 40,
+          ]);
+        }}>
+        {ModalHeader()}
+        <ScrollView style={{flex: 1}}>
+          <SectionList
+            style={{paddingBottom: 40}}
+            sections={sections}
+            renderToHardwareTextureAndroid
+            scrollEnabled
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+            stickyHeaderHiddenOnScroll={false}
+            stickySectionHeadersEnabled={true}
+            keyExtractor={(item, index) => item + index}
+            renderSectionHeader={renderSectionHeader}
+          />
+        </ScrollView>
+      </View>
     </CustomModalWrapper>
   );
 };

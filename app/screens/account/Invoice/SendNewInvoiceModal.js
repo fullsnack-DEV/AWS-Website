@@ -3,18 +3,16 @@
 
 import React, {useState, useContext, useEffect, useRef} from 'react';
 import {
-  FlatList,
   Image,
   TextInput,
   TouchableOpacity,
   Text,
   View,
   StyleSheet,
-  ScrollView,
   Alert,
   Platform,
 } from 'react-native';
-
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import moment from 'moment';
 import {getCountry} from 'country-currency-map';
 import images from '../../../Constants/ImagePath';
@@ -320,245 +318,255 @@ const SendNewInvoiceModal = ({
   );
 
   return (
-    <CustomModalWrapper
-      isVisible={isVisible}
-      closeModal={() => onCloseThisModal()}
-      modalType={ModalTypes.style1}
-      title={strings.newInvoice}
-      containerStyle={{padding: 0, width: '100%', height: '100%'}}
-      headerRightButtonText={strings.send}
-      onRightButtonPress={() => onSendInvoice()}>
-      <ActivityLoader visible={loading} />
-      <TCKeyboardView
-        enableOnAndroid
-        scrollReference={scrollViewRef}
-        extraHeight={200}
-        containerStyle={{
-          flexGrow: 1,
-        }}>
-        <ScrollView
-          ref={scrollViewRef}
-          style={{flex: 1}}
-          showsVerticalScrollIndicator={false}>
-          {/* Code for Invoice Title */}
+    <>
+      <CustomModalWrapper
+        isVisible={isVisible}
+        closeModal={() => onCloseThisModal()}
+        modalType={ModalTypes.style1}
+        title={strings.newInvoice}
+        containerStyle={{padding: 0, flex: 1}}
+        headerRightButtonText={strings.send}
+        onRightButtonPress={() => onSendInvoice()}>
+        <ActivityLoader visible={loading} />
+        <TCKeyboardView
+          enableOnAndroid
+          scrollReference={scrollViewRef}
+          extraHeight={200}
+          containerStyle={{
+            flexGrow: 1,
+          }}>
+          <ScrollView
+            ref={scrollViewRef}
+            style={{flex: 1}}
+            showsVerticalScrollIndicator={false}>
+            {/* Code for Invoice Title */}
 
-          <TCLabel
-            style={{marginTop: 20, marginBottom: 5, lineHeight: 24}}
-            title={strings.titlePlaceholder.toUpperCase()}
-            required={true}
-          />
-
-          <TCTextField
-            style={{
-              height: 35,
-            }}
-            placeholder={strings.enterText}
-            onChangeText={(text) => setInvoiceTitle(text)}
-            value={invoiceTitle}
-          />
-
-          {/* Code for Invoice Amount */}
-          <View>
             <TCLabel
-              style={{marginTop: 25}}
-              title={strings.amountTitle.toUpperCase()}
+              style={{marginTop: 20, marginBottom: 5, lineHeight: 24}}
+              title={strings.titlePlaceholder.toUpperCase()}
               required={true}
             />
-            <View style={{marginTop: 5, height: 35}}>
-              <TCTextField
-                onChangeText={(text) => {
-                  if (IsNumeric(text)) {
-                    setAmount(text);
-                  }
-                }}
-                placeholder={strings.enterAmount}
-                textStyle={{
-                  marginTop: Platform.OS === 'android' ? 0 : -2,
-                }}
-                value={amount}
-                keyboardType={'decimal-pad'}
-                textAlign="right"
-                leftView={<Text style={styles.leftViewStyle}>{currency}</Text>}
-              />
-            </View>
-          </View>
-          {/* Code for Change Currency */}
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => setShowCurrencyModal(true)}>
-            <Text style={styles.linkButtonText}>{strings.changeCurrency}</Text>
-          </TouchableOpacity>
-          {/* Code for DueDate */}
-          <View style={{marginTop: 25}}>
-            <View style={{}}>
+
+            <TCTextField
+              style={{
+                height: 35,
+              }}
+              placeholder={strings.enterText}
+              onChangeText={(text) => setInvoiceTitle(text)}
+              value={invoiceTitle}
+            />
+
+            {/* Code for Invoice Amount */}
+            <View>
               <TCLabel
-                style={{marginTop: 12}}
-                title={strings.duedate.toUpperCase()}
+                style={{marginTop: 25}}
+                title={strings.amountTitle.toUpperCase()}
                 required={true}
               />
-              <TouchableOpacity
-                onPress={() => setDueDateVisible(true)}
-                style={{
-                  marginHorizontal: 15,
-                  flexDirection: 'row',
-                  alignSelf: 'stretch',
-                  alignItems: 'center',
-                  backgroundColor: colors.textFieldBackground,
-                  borderRadius: 4,
-                  flex: 1,
-                  marginTop: 6,
-                  height: 35,
-                }}>
-                <Text
+              <View style={{marginTop: 5, height: 35}}>
+                <TCTextField
+                  onChangeText={(text) => {
+                    if (IsNumeric(text)) {
+                      setAmount(text);
+                    }
+                  }}
+                  placeholder={strings.enterAmount}
+                  textStyle={{
+                    marginTop: Platform.OS === 'android' ? 0 : -2,
+                  }}
+                  value={amount}
+                  keyboardType={'decimal-pad'}
+                  textAlign="right"
+                  leftView={
+                    <Text style={styles.leftViewStyle}>{currency}</Text>
+                  }
+                />
+              </View>
+            </View>
+            {/* Code for Change Currency */}
+            <TouchableOpacity
+              style={styles.linkButton}
+              onPress={() => setShowCurrencyModal(true)}>
+              <Text style={styles.linkButtonText}>
+                {strings.changeCurrency}
+              </Text>
+            </TouchableOpacity>
+            {/* Code for DueDate */}
+            <View style={{marginTop: 25}}>
+              <View style={{}}>
+                <TCLabel
+                  style={{marginTop: 12}}
+                  title={strings.duedate.toUpperCase()}
+                  required={true}
+                />
+                <TouchableOpacity
+                  onPress={() => setDueDateVisible(true)}
                   style={{
-                    textAlign: 'center',
+                    marginHorizontal: 15,
+                    flexDirection: 'row',
+                    alignSelf: 'stretch',
+                    alignItems: 'center',
+                    backgroundColor: colors.textFieldBackground,
+                    borderRadius: 4,
                     flex: 1,
-                    fontFamily: fonts.RRegular,
-                    fontSize: 16,
-                    paddingHorizontal: 10,
-                    color: selectedDueDate
-                      ? colors.lightBlackColor
-                      : colors.magnifyIconColor,
+                    marginTop: 6,
+                    height: 35,
                   }}>
-                  {selectedDueDate
-                    ? moment(selectedDueDate).format('MMM DD, YYYY')
-                    : strings.select}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {/* Code for Timezone */}
-            <View style={styles.linkButton}>
-              <Text style={styles.timeZoneText}>
-                {' '}
-                {`${strings.time} ${strings.zone}  `}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  Alert.alert(
-                    Platform.OS === 'android' ? '' : strings.datetimesetting,
-                    Platform.OS === 'android' ? strings.datetimesetting : '',
-                    [
-                      {
-                        text: strings.okTitleText,
-                      },
-                    ],
-                  );
-                }}>
-                <Text style={styles.timeZoneUnderlineText}>
-                  {Intl.DateTimeFormat()
-                    ?.resolvedOptions()
-                    .timeZone.split('/')
-                    .pop()}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Code for Description */}
-          <View style={{height: 132, marginTop: 25}}>
-            <TCLabel
-              style={{marginTop: 9}}
-              title={strings.descriptionText.toUpperCase()}
-            />
-            <TextInput
-              showSoftInputOnFocus
-              style={styles.descriptionTxt}
-              multiline
-              textAlignVertical="top"
-              placeholder={strings.enterDescription}
-              onChangeText={(text) => {
-                setDescription(text);
-              }}
-              value={description}
-            />
-          </View>
-          {/* Code for Recipients Header */}
-          <View
-            style={{
-              height: 59,
-              paddingTop: 35,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}>
-            <View style={{flexDirection: 'row'}}>
-              <Text
-                style={{
-                  marginLeft: 15,
-                  color: colors.lightBlackColor,
-                  fontSize: 16,
-                  textAlign: 'left',
-                  fontFamily: fonts.RBold,
-                  lineHeight: 24,
-                }}>
-                {strings.recipients.toUpperCase()}
-              </Text>
-
-              <Text style={{marginTop: 4, color: 'red'}}> {strings.star}</Text>
-            </View>
-
-            {isSingleInvoice ? null : (
-              <TouchableOpacity onPress={() => showRecipientsClicked()}>
-                <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
                   <Text
                     style={{
-                      color: colors.orangeColorCard,
-                      fontSize: 16,
-                      textAlign: 'right',
+                      textAlign: 'center',
+                      flex: 1,
                       fontFamily: fonts.RRegular,
-                      paddingEnd: 8,
-                      lineHeight: 24,
+                      fontSize: 16,
+                      paddingHorizontal: 10,
+                      color: selectedDueDate
+                        ? colors.lightBlackColor
+                        : colors.magnifyIconColor,
                     }}>
-                    {strings.addText}
+                    {selectedDueDate
+                      ? moment(selectedDueDate).format('MMM DD, YYYY')
+                      : strings.select}
                   </Text>
-                  <Image source={images.nextArrow} style={styles.nextArrow} />
-                </View>
-              </TouchableOpacity>
-            )}
-          </View>
-          {/* recipient lists */}
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={selectedRecipients}
-            keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
-            renderItem={renderRecipient}
-            ListEmptyComponent={listEmptyComponent}
-            ListFooterComponent={() => <View style={{marginBottom: 100}} />}
-          />
-          {/* Code for DueDate Model */}
-          <DateTimePickerView
-            date={selectedDueDate}
-            visible={dueDateVisible}
-            onDone={handleDueDatePress}
-            onCancel={handleCancelDueDatePress}
-            onHide={handleCancelDueDatePress}
-            minimumDate={new Date()}
-            minutesGap={15}
-            mode={'datetime'}
-          />
+                </TouchableOpacity>
+              </View>
+              {/* Code for Timezone */}
+              <View style={styles.linkButton}>
+                <Text style={styles.timeZoneText}>
+                  {' '}
+                  {`${strings.time} ${strings.zone}  `}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    Alert.alert(
+                      Platform.OS === 'android' ? '' : strings.datetimesetting,
+                      Platform.OS === 'android' ? strings.datetimesetting : '',
+                      [
+                        {
+                          text: strings.okTitleText,
+                        },
+                      ],
+                    );
+                  }}>
+                  <Text style={styles.timeZoneUnderlineText}>
+                    {Intl.DateTimeFormat()
+                      ?.resolvedOptions()
+                      .timeZone.split('/')
+                      .pop()}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
 
-          <CurrencyModal
-            isVisible={showCurrencyModal}
-            closeList={() => setShowCurrencyModal(false)}
-            onNext={(item) => {
-              setCurrency(item);
-              setShowCurrencyModal(false);
-            }}
-          />
+            {/* Code for Description */}
+            <View style={{height: 132, marginTop: 25}}>
+              <TCLabel
+                style={{marginTop: 9}}
+                title={strings.descriptionText.toUpperCase()}
+              />
+              <TextInput
+                showSoftInputOnFocus
+                style={styles.descriptionTxt}
+                multiline
+                textAlignVertical="top"
+                placeholder={strings.enterDescription}
+                onChangeText={(text) => {
+                  setDescription(text);
+                }}
+                value={description}
+              />
+            </View>
+            {/* Code for Recipients Header */}
+            <View
+              style={{
+                height: 59,
+                paddingTop: 35,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View style={{flexDirection: 'row'}}>
+                <Text
+                  style={{
+                    marginLeft: 15,
+                    color: colors.lightBlackColor,
+                    fontSize: 16,
+                    textAlign: 'left',
+                    fontFamily: fonts.RBold,
+                    lineHeight: 24,
+                  }}>
+                  {strings.recipients.toUpperCase()}
+                </Text>
 
-          <AddRecipientsModal
-            isVisible={showRecipientsModal}
-            onDone={onAddRecipients}
-            onClose={() => setShowRecipientsModal(false)}
-            recipientMembers={recipientMemberData}
-            recipientTeams={recipientTeamData}
-            selectedRecipients={selectedRecipients}
-            invoiceType={invoiceType}
-            modalTitle={strings.addRecipientText}
-          />
-        </ScrollView>
-      </TCKeyboardView>
-    </CustomModalWrapper>
+                <Text style={{marginTop: 4, color: 'red'}}>
+                  {' '}
+                  {strings.star}
+                </Text>
+              </View>
+
+              {isSingleInvoice ? null : (
+                <TouchableOpacity onPress={() => showRecipientsClicked()}>
+                  <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
+                    <Text
+                      style={{
+                        color: colors.orangeColorCard,
+                        fontSize: 16,
+                        textAlign: 'right',
+                        fontFamily: fonts.RRegular,
+                        paddingEnd: 8,
+                        lineHeight: 24,
+                      }}>
+                      {strings.addText}
+                    </Text>
+                    <Image source={images.nextArrow} style={styles.nextArrow} />
+                  </View>
+                </TouchableOpacity>
+              )}
+            </View>
+            {/* recipient lists */}
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={selectedRecipients}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
+              renderItem={renderRecipient}
+              ListEmptyComponent={listEmptyComponent}
+              ListFooterComponent={() => <View style={{marginBottom: 100}} />}
+            />
+            {/* Code for DueDate Model */}
+            <DateTimePickerView
+              date={selectedDueDate}
+              visible={dueDateVisible}
+              onDone={handleDueDatePress}
+              onCancel={handleCancelDueDatePress}
+              onHide={handleCancelDueDatePress}
+              minimumDate={new Date()}
+              minutesGap={15}
+              mode={'datetime'}
+            />
+          </ScrollView>
+        </TCKeyboardView>
+      </CustomModalWrapper>
+
+      <CurrencyModal
+        isVisible={showCurrencyModal}
+        closeList={() => setShowCurrencyModal(false)}
+        onNext={(item) => {
+          setCurrency(item);
+          setShowCurrencyModal(false);
+        }}
+        modalType={ModalTypes.style6}
+      />
+
+      <AddRecipientsModal
+        isVisible={showRecipientsModal}
+        onDone={onAddRecipients}
+        onClose={() => setShowRecipientsModal(false)}
+        recipientMembers={recipientMemberData}
+        recipientTeams={recipientTeamData}
+        selectedRecipients={selectedRecipients}
+        invoiceType={invoiceType}
+        modalTitle={strings.addRecipientText}
+      />
+    </>
   );
 };
 

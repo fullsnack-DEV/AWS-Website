@@ -18,13 +18,13 @@ import {
   Image,
   Alert,
   Platform,
-  ScrollView,
   Pressable,
   TextInput,
   ActivityIndicator,
   BackHandler,
+  Dimensions,
 } from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
@@ -204,6 +204,7 @@ export default function EntitySearchScreen({navigation, route}) {
   const [playerDetail, setPlayerDetail] = useState();
   const [searchText, setSearchText] = useState('');
   const [smallLoader, setSmallLoader] = useState(false);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   const handleBackPress = useCallback(() => {
     if (route.params?.parentStack) {
@@ -2554,12 +2555,21 @@ export default function EntitySearchScreen({navigation, route}) {
           setPlayerDetailPopup(false);
         }}
         modalType={ModalTypes.style2}
-        ratio={Utility.calculateRatio(playerDetail?.sports.length)}>
-        <View style={{paddingTop: 0, paddingHorizontal: 0}}>
+        containerStyle={{paddingBottom: 0, paddingHorizontal: 15}}
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}>
           <FlatList
             data={playerDetail?.sports}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({item, index}) => sportsView(item, item.type, index)}
+            renderItem={({item}) => sportsView(item)}
             showsVerticalScrollIndicator={false}
           />
         </View>

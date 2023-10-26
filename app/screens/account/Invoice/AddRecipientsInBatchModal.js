@@ -6,10 +6,9 @@ import {
   TouchableOpacity,
   Image,
   Alert,
-  FlatList,
-  ScrollView,
 } from 'react-native';
 import React, {useEffect, useState, useContext} from 'react';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import ReadMore from '@fawazahmed/react-native-read-more';
 import moment from 'moment';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
@@ -317,234 +316,230 @@ export default function AddRecipientsInBatchModal({
   };
 
   return (
-    <CustomModalWrapper
-      isVisible={visible}
-      closeModal={() => onCloseModal()}
-      modalType={ModalTypes.style1}
-      headerRightButtonText={strings.send}
-      title={title}
-      onRightButtonPress={onDonePress}
-      containerStyle={{
-        padding: 0,
-        width: '100%',
-        height: '100%',
-      }}>
-      <ActivityLoader visible={mLoading} />
-      <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
-        <View style={styles.headertitle}>
-          <Text style={styles.headerTextstyle}>{getModalTitle()}</Text>
-        </View>
-        {/* Detail fields */}
-        <View style={styles.detailfielsstyle}>
-          {/* title  */}
-          <View style={styles.Rowsstyle}>
-            <Text style={styles.titleStyles}>
-              {strings.title.toUpperCase()}
-            </Text>
-            <Text style={styles.invoicetitletext}>
-              {currentInvoice.invoice_title}
-            </Text>
+    <>
+      <CustomModalWrapper
+        isVisible={visible}
+        closeModal={() => onCloseModal()}
+        modalType={ModalTypes.style1}
+        headerRightButtonText={strings.send}
+        title={title}
+        onRightButtonPress={onDonePress}
+        containerStyle={{padding: 0, flex: 1}}>
+        <ActivityLoader visible={mLoading} />
+        <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
+          <View style={styles.headertitle}>
+            <Text style={styles.headerTextstyle}>{getModalTitle()}</Text>
           </View>
-
-          {/* amount */}
-          <View style={styles.Rowsstyle}>
-            <Text style={styles.titleStyles}>
-              {strings.amountTitle.toUpperCase()}
-            </Text>
-            <Text style={styles.invoicetitletext}>
-              {`${currentInvoice.amount_due.toFixed(2)} ${
-                currentInvoice.currency_type
-              }`}
-            </Text>
-          </View>
-
-          {/* Due Date */}
-          <View style={styles.Rowsstyle}>
-            <Text style={styles.titleStyles}>
-              {strings.duedate.toUpperCase()}
-            </Text>
-            <Text style={styles.invoicetitletext}>
-              {moment(getJSDate(currentInvoice.due_date)).format(
-                Verbs.DATE_FORMAT,
-              )}
-            </Text>
-          </View>
-
-          {/* description */}
-          <View style={styles.Rowsstyle}>
-            <Text style={styles.titleStyles}>
-              {strings.description.toUpperCase()}
-            </Text>
-
-            <ReadMore
-              numberOfLines={3}
-              style={styles.ReadMorestyles}
-              seeMoreText={strings.moreText}
-              seeLessText={strings.lessText}
-              seeLessStyle={[
-                styles.moreLessText,
-                {
-                  color: colors.userPostTimeColor,
-                },
-              ]}
-              seeMoreStyle={[
-                styles.moreLessText,
-                {
-                  color: colors.userPostTimeColor,
-                },
-              ]}>
-              {currentInvoice.invoice_description}
-            </ReadMore>
-          </View>
-
-          {/* Add new ,essage */}
-          <View
-            style={{
-              marginTop: 25,
-            }}>
-            <Text style={styles.titleStyles}>
-              {strings.addnewMessage.toUpperCase()}
-            </Text>
-
-            {/* Textinp */}
-
-            <TextInput
-              style={styles.TextInputStyles}
-              multiline
-              textAlignVertical="top"
-              onChangeText={(text) => setResendMessage(text)}
-              value={resendMessage}
-            />
-          </View>
-
-          {/* Recipients  * */}
-          {invoiceAction === InvoiceActionType.AddRecipient && (
-            <View style={styles.RecepintContainerStyle}>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={styles.RecipentTextStyle}>
-                  {`${strings.newRecipents} `.toUpperCase()}
-                </Text>
-                {selectedRecipients.length > 0 && (
-                  <Text style={styles.selectedText}>
-                    {' ('}
-                    {selectedRecipients.length}
-                    {')'}
-                  </Text>
-                )}
-                <Text style={{marginTop: 4, color: 'red'}}>
-                  {' '}
-                  {strings.star}
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                }}
-                onPress={() => showRecipientsClicked()}>
-                <Text style={styles.addTextStyle}>{strings.addText}</Text>
-                <Image source={images.nextArrow} style={styles.ArrowStyle} />
-              </TouchableOpacity>
+          {/* Detail fields */}
+          <View style={styles.detailfielsstyle}>
+            {/* title  */}
+            <View style={styles.Rowsstyle}>
+              <Text style={styles.titleStyles}>
+                {strings.title.toUpperCase()}
+              </Text>
+              <Text style={styles.invoicetitletext}>
+                {currentInvoice.invoice_title}
+              </Text>
             </View>
-          )}
-          {invoiceAction === InvoiceActionType.ResendBatch && (
-            <View style={styles.RecepintContainerStyle}>
-              <View style={{flexDirection: 'row'}}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontFamily: fonts.RBold,
-                    lineHeight: 24,
-                  }}>
-                  {`${strings.recipients} `.toUpperCase()}
-                </Text>
-                {selectedRecipients.length > 0 && (
-                  <Text style={styles.selectedText}>
-                    {' ('}
-                    {selectedRecipients.length}
-                    {')'}
-                  </Text>
-                )}
-              </View>
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                }}
-                onPress={() => onChooseRecipientsClicked()}>
-                <Text style={styles.addTextStyle}>{strings.choose}</Text>
-                <Image source={images.nextArrow} style={styles.ArrowStyle} />
-              </TouchableOpacity>
+
+            {/* amount */}
+            <View style={styles.Rowsstyle}>
+              <Text style={styles.titleStyles}>
+                {strings.amountTitle.toUpperCase()}
+              </Text>
+              <Text style={styles.invoicetitletext}>
+                {`${currentInvoice.amount_due.toFixed(2)} ${
+                  currentInvoice.currency_type
+                }`}
+              </Text>
             </View>
-          )}
-          {invoiceAction === InvoiceActionType.Resend && (
+
+            {/* Due Date */}
+            <View style={styles.Rowsstyle}>
+              <Text style={styles.titleStyles}>
+                {strings.duedate.toUpperCase()}
+              </Text>
+              <Text style={styles.invoicetitletext}>
+                {moment(getJSDate(currentInvoice.due_date)).format(
+                  Verbs.DATE_FORMAT,
+                )}
+              </Text>
+            </View>
+
+            {/* description */}
+            <View style={styles.Rowsstyle}>
+              <Text style={styles.titleStyles}>
+                {strings.description.toUpperCase()}
+              </Text>
+
+              <ReadMore
+                numberOfLines={3}
+                style={styles.ReadMorestyles}
+                seeMoreText={strings.moreText}
+                seeLessText={strings.lessText}
+                seeLessStyle={[
+                  styles.moreLessText,
+                  {
+                    color: colors.userPostTimeColor,
+                  },
+                ]}
+                seeMoreStyle={[
+                  styles.moreLessText,
+                  {
+                    color: colors.userPostTimeColor,
+                  },
+                ]}>
+                {currentInvoice.invoice_description}
+              </ReadMore>
+            </View>
+
+            {/* Add new ,essage */}
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
                 marginTop: 25,
-                color: colors.lightBlackColor,
               }}>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={styles.RecipentTextStyle}>
-                  {`${strings.recipients} `.toUpperCase()}
-                </Text>
-              </View>
+              <Text style={styles.titleStyles}>
+                {strings.addnewMessage.toUpperCase()}
+              </Text>
+
+              {/* Textinp */}
+
+              <TextInput
+                style={styles.TextInputStyles}
+                multiline
+                textAlignVertical="top"
+                onChangeText={(text) => setResendMessage(text)}
+                value={resendMessage}
+              />
             </View>
+
+            {/* Recipients  * */}
+            {invoiceAction === InvoiceActionType.AddRecipient && (
+              <View style={styles.RecepintContainerStyle}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text style={styles.RecipentTextStyle}>
+                    {`${strings.newRecipents} `.toUpperCase()}
+                  </Text>
+                  {selectedRecipients.length > 0 && (
+                    <Text style={styles.selectedText}>
+                      {' ('}
+                      {selectedRecipients.length}
+                      {')'}
+                    </Text>
+                  )}
+                  <Text style={{marginTop: 4, color: 'red'}}>
+                    {' '}
+                    {strings.star}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                  }}
+                  onPress={() => showRecipientsClicked()}>
+                  <Text style={styles.addTextStyle}>{strings.addText}</Text>
+                  <Image source={images.nextArrow} style={styles.ArrowStyle} />
+                </TouchableOpacity>
+              </View>
+            )}
+            {invoiceAction === InvoiceActionType.ResendBatch && (
+              <View style={styles.RecepintContainerStyle}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontFamily: fonts.RBold,
+                      lineHeight: 24,
+                    }}>
+                    {`${strings.recipients} `.toUpperCase()}
+                  </Text>
+                  {selectedRecipients.length > 0 && (
+                    <Text style={styles.selectedText}>
+                      {' ('}
+                      {selectedRecipients.length}
+                      {')'}
+                    </Text>
+                  )}
+                </View>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                  }}
+                  onPress={() => onChooseRecipientsClicked()}>
+                  <Text style={styles.addTextStyle}>{strings.choose}</Text>
+                  <Image source={images.nextArrow} style={styles.ArrowStyle} />
+                </TouchableOpacity>
+              </View>
+            )}
+            {invoiceAction === InvoiceActionType.Resend && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: 25,
+                  color: colors.lightBlackColor,
+                }}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text style={styles.RecipentTextStyle}>
+                    {`${strings.recipients} `.toUpperCase()}
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
+          {/* recipient lists */}
+
+          {invoiceAction === InvoiceActionType.Resend && (
+            <ResendInvoiceCell invoice={currentInvoice} />
           )}
-        </View>
-        {/* recipient lists */}
 
-        {invoiceAction === InvoiceActionType.Resend && (
-          <ResendInvoiceCell invoice={currentInvoice} />
-        )}
+          {invoiceAction === InvoiceActionType.AddRecipient && (
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={selectedRecipients}
+              style={{marginTop: 10}}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
+              renderItem={renderRecipient}
+              ListEmptyComponent={listEmptyComponent}
+              ListFooterComponent={() => <View style={{marginBottom: 100}} />}
+            />
+          )}
 
-        {invoiceAction === InvoiceActionType.AddRecipient && (
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={selectedRecipients}
-            style={{marginTop: 10}}
-            keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
-            renderItem={renderRecipient}
-            ListEmptyComponent={listEmptyComponent}
-            ListFooterComponent={() => <View style={{marginBottom: 100}} />}
-          />
-        )}
-
-        {invoiceAction === InvoiceActionType.ResendBatch && (
-          <FlatList
-            style={{marginTop: 10}}
-            data={selectedRecipients}
-            keyExtractor={(item, index) => index.toString()}
-            ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
-            renderItem={renderResendRecipient}
-            ListEmptyComponent={listEmptyComponent}
-            nestedScrollEnabled
-          />
-        )}
-
-        <AddRecipientsModal
-          isVisible={showRecipientsModal}
-          onDone={onAddRecipients}
-          onClose={() => setShowRecipientsModal(false)}
-          recipientMembers={newMembers}
-          recipientTeams={newTeams}
+          {invoiceAction === InvoiceActionType.ResendBatch && (
+            <FlatList
+              style={{marginTop: 10}}
+              data={selectedRecipients}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
+              renderItem={renderResendRecipient}
+              ListEmptyComponent={listEmptyComponent}
+              nestedScrollEnabled
+            />
+          )}
+        </ScrollView>
+      </CustomModalWrapper>
+      <AddRecipientsModal
+        isVisible={showRecipientsModal}
+        onDone={onAddRecipients}
+        onClose={() => setShowRecipientsModal(false)}
+        recipientMembers={newMembers}
+        recipientTeams={newTeams}
+        selectedRecipients={selectedRecipients}
+        invoiceType={currentInvoice.invoice_type}
+        rightbuttonText={strings.addText}
+      />
+      {invoiceAction === InvoiceActionType.ResendBatch && (
+        <AddResendRecipientsModal
+          isVisible={showChooseRecipientsModal}
+          onDone={onAddResendRecipients}
+          onClose={() => setShowChooseRecipientsModal(false)}
+          invoices={batchData.invoices ?? []}
           selectedRecipients={selectedRecipients}
-          invoiceType={currentInvoice.invoice_type}
-          rightbuttonText={strings.addText}
+          ModalTitle={strings.addresendRecipintModaltitle}
         />
-
-        {invoiceAction === InvoiceActionType.ResendBatch && (
-          <AddResendRecipientsModal
-            isVisible={showChooseRecipientsModal}
-            onDone={onAddResendRecipients}
-            onClose={() => setShowChooseRecipientsModal(false)}
-            invoices={batchData.invoices ?? []}
-            selectedRecipients={selectedRecipients}
-            ModalTitle={strings.addresendRecipintModaltitle}
-          />
-        )}
-      </ScrollView>
-    </CustomModalWrapper>
+      )}
+    </>
   );
 }
 

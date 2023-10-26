@@ -1,12 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  FlatList,
-  Pressable,
-} from 'react-native';
+import {View, StyleSheet, Text, TextInput, Pressable} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 
 import CustomModalWrapper from './CustomModalWrapper';
 

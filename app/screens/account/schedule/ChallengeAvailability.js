@@ -5,9 +5,9 @@ import {
   TouchableOpacity,
   Image,
   Text,
-  FlatList,
   Alert,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import moment from 'moment';
 import {format} from 'react-string-format';
 
@@ -354,7 +354,7 @@ export default function ChallengeAvailability({
       headerRightButtonText={strings.save}
       onRightButtonPress={handleSave}
       containerStyle={{paddingHorizontal: 15}}>
-      <View style={isFromSlot ? {} : {height: '95%'}}>
+      <View>
         <ActivityLoader visible={loading} />
         <FlatList
           data={challengeAvailable}

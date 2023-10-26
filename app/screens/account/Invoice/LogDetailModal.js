@@ -154,11 +154,7 @@ export default function LogDetailModal({
       modalType={ModalTypes.style8}
       headerRightButtonText={strings.done}
       title={strings.log}
-      containerStyle={{
-        padding: 0,
-        width: '100%',
-        height: '90%',
-      }}
+      containerStyle={{padding: 0, flex: 1}}
       showBackButton>
       <ActivityLoader visible={loading} />
       <View

@@ -15,10 +15,10 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
-  FlatList,
   Alert,
   Dimensions,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
 import ParsedText from 'react-native-parsed-text';
@@ -86,6 +86,7 @@ const EditPostScreen = ({navigation, route}) => {
   const [privacySetting, setPrivacySetting] = useState({});
   const [showPreviewForUrl, setShowPreviewForUrl] = useState(true);
   const [tagsOfGame, setTagsOfGame] = useState([]);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   useEffect(() => {
     if (isFocused && postData && postData.object) {
@@ -886,23 +887,29 @@ const EditPostScreen = ({navigation, route}) => {
           paddingTop: 15,
           paddingHorizontal: 30,
         }}
-        ratio={
-          authContext.entity.role === Verbs.entityTypeClub ||
-          authContext.entity.role === Verbs.entityTypeTeam
-            ? 1.7
-            : 1.5
-        }>
-        <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={
-            ['user', 'player'].includes(authContext.entity.role)
-              ? whoCanDataSourceUser
-              : whoCanDataSourceGroup
-          }
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderWhoCan}
-        />
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}>
+          <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={
+              ['user', 'player'].includes(authContext.entity.role)
+                ? whoCanDataSourceUser
+                : whoCanDataSourceGroup
+            }
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderWhoCan}
+          />
+        </View>
       </CustomModalWrapper>
     </SafeAreaView>
   );

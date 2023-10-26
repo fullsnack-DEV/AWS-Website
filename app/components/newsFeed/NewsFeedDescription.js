@@ -1,4 +1,4 @@
-import React, {useContext, useCallback, useRef, useState} from 'react';
+import React, {useContext, useCallback, useState} from 'react';
 import {StyleSheet, View, Text, FlatList, Dimensions} from 'react-native';
 import ReadMore from '@fawazahmed/react-native-read-more';
 
@@ -33,7 +33,6 @@ const NewsFeedDescription = ({
   onCollapse = () => {},
   tagStyle = {},
 }) => {
-  const taggedModalRef = useRef(null);
   const authContext = useContext(AuthContext);
   const [showTaggedModal, setShowTaggedModal] = useState(false);
 
@@ -175,7 +174,6 @@ const NewsFeedDescription = ({
       </View>
       <TaggedModal
         navigation={navigation}
-        taggedModalRef={taggedModalRef}
         taggedData={tagData}
         showTaggedModal={showTaggedModal}
         onBackdropPress={() => setShowTaggedModal(false)}

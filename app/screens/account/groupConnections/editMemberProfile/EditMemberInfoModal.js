@@ -5,16 +5,14 @@ import {
   View,
   Text,
   Alert,
-  FlatList,
   TextInput,
   Image,
   Platform,
   TouchableOpacity,
-  ScrollView,
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
-
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import {
   widthPercentageToDP,
   widthPercentageToDP as wp,
@@ -508,226 +506,226 @@ function EditMemberBasicInfoModal({
   };
 
   return (
-    <CustomModalWrapper
-      isVisible={isVisible}
-      closeModal={closeModal}
-      onModalShow={() => onModalShow()}
-      modalType={ModalTypes.style1}
-      headerRightButtonText={strings.save}
-      onRightButtonPress={() => {
-        if (checkValidation()) {
-          editMemberBasicInfo();
-        }
-      }}
-      title={strings.editbasicinfotitle}
-      containerStyle={{padding: 0, flex: 1}}>
-      <>
-        <TCKeyboardView>
-          <ScrollView>
-            <ActivityLoader visible={loading} />
+    <>
+      <CustomModalWrapper
+        isVisible={isVisible}
+        closeModal={closeModal}
+        onModalShow={() => onModalShow()}
+        modalType={ModalTypes.style1}
+        headerRightButtonText={strings.save}
+        onRightButtonPress={() => {
+          if (checkValidation()) {
+            editMemberBasicInfo();
+          }
+        }}
+        title={strings.editbasicinfotitle}
+        containerStyle={{padding: 0, flex: 1}}>
+        <>
+          <TCKeyboardView>
+            <ScrollView>
+              <ActivityLoader visible={loading} />
 
-            {memberInfo.connected && (
-              <View>
-                <TouchableOpacity
-                  onPress={() => {
-                    sendRequestForBasicInfo();
-                  }}
-                  style={styles.outerContainerStyle}>
-                  <LinearGradient
-                    colors={[colors.lightGrey, colors.lightGrey]}
-                    style={styles.containerStyle}>
-                    <Text
-                      style={[
-                        styles.buttonText,
-                        {color: colors.lightBlackColor},
-                      ]}>
-                      {strings.sendRequestText}
-                    </Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-                <Text style={styles.basicInfoText}>
-                  {strings.collectMemberInfoText}
-                </Text>
-                <TCThickDivider />
-              </View>
-            )}
+              {memberInfo.connected && (
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      sendRequestForBasicInfo();
+                    }}
+                    style={styles.outerContainerStyle}>
+                    <LinearGradient
+                      colors={[colors.lightGrey, colors.lightGrey]}
+                      style={styles.containerStyle}>
+                      <Text
+                        style={[
+                          styles.buttonText,
+                          {color: colors.lightBlackColor},
+                        ]}>
+                        {strings.sendRequestText}
+                      </Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                  <Text style={styles.basicInfoText}>
+                    {strings.collectMemberInfoText}
+                  </Text>
+                  <TCThickDivider />
+                </View>
+              )}
 
-            <View
-              style={{
-                marginTop: -10,
-              }}>
-              <TCLabel
-                title={strings.gender}
-                style={{
-                  textTransform: 'uppercase',
-                  lineHeight: 24,
-                  marginBottom: 10,
-                }}
-              />
-              <TCPicker
-                dataSource={DataSource.Gender}
-                color={colors.userPostTimeColor}
-                placeholder={strings.selectGenderPlaceholder}
-                value={memberInfo?.gender}
-                onValueChange={(value) =>
-                  value !== '' && setMemberInfo({...memberInfo, gender: value})
-                }
-              />
-            </View>
-            <View>
-              <TCLabel
-                title={strings.birthDatePlaceholder}
-                style={{
-                  textTransform: 'uppercase',
-                  lineHeight: 24,
-                  marginBottom: 10,
-                }}
-              />
-              <TCTouchableLabel
-                title={
-                  memberInfo.birthday &&
-                  `${`${
-                    monthNames[new Date(memberInfo.birthday).getMonth()]
-                  } ${new Date(memberInfo.birthday).getDate()}`}, ${new Date(
-                    memberInfo.birthday,
-                  ).getFullYear()}`
-                }
-                textStyle={{
-                  textAlign: 'center',
-
-                  fontFamily: fonts.RRegular,
-                }}
-                placeholderTextColor={'#999999'}
-                placeholder={strings.birthDatePlaceholder}
-                onPress={() => setShowDate(!showDate)}
-              />
-            </View>
-
-            <TCLabel
-              title={strings.height}
-              style={{
-                textTransform: 'uppercase',
-                lineHeight: 24,
-                marginBottom: 10,
-              }}
-            />
-            {heightView()}
-
-            <TCLabel
-              title={strings.weight}
-              style={{
-                textTransform: 'uppercase',
-                lineHeight: 24,
-                marginBottom: 10,
-              }}
-            />
-            {weightView()}
-
-            <View>
-              <TCLabel
-                title={strings.emailPlaceHolder}
-                required={true}
-                style={{
-                  textTransform: 'uppercase',
-                  lineHeight: 24,
-                  marginBottom: 10,
-                }}
-              />
-              <TCTextField
-                editable={false}
-                value={memberInfo.email}
-                onChangeText={(text) =>
-                  setMemberInfo({...memberInfo, email: text})
-                }
-                placeholder={strings.addressPlaceholder}
-                keyboardType={'email-address'}
-              />
-            </View>
-
-            <View>
-              <TCLabel
-                title={strings.phone}
-                style={{
-                  textTransform: 'uppercase',
-                  lineHeight: 24,
-                  marginBottom: 10,
-                }}
-              />
-              <FlatList
-                data={phoneNumber}
-                style={{marginHorizontal: 10}}
-                renderItem={renderPhoneNumber}
-                keyExtractor={(item, index) => index.toString()}
-              />
-            </View>
-            <TCMessageButton
-              borderColor={colors.whiteColor}
-              color={colors.lightBlackColor}
-              title={strings.addPhone}
-              backgroundColor={colors.lightGrey}
-              paddingVertical={5}
-              elevation={0}
-              width={120}
-              height={28}
-              alignSelf="center"
-              styletext={{
-                fontFamily: fonts.RBold,
-              }}
-              marginTop={20}
-              onPress={() => addPhoneNumber()}
-            />
-
-            <TouchableOpacity
-              onPress={() => {
-                setVisibleLocationModal(true);
-              }}>
               <View
                 style={{
-                  paddingBottom: 20,
+                  marginTop: -10,
                 }}>
                 <TCLabel
-                  title={strings.address.toUpperCase()}
-                  style={{marginBottom: 10, marginTop: 27}}
+                  title={strings.gender}
+                  style={{
+                    textTransform: 'uppercase',
+                    lineHeight: 24,
+                    marginBottom: 10,
+                  }}
                 />
-
-                <TCTextField
-                  value={location}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  placeholder={strings.address}
-                  pointerEvents="none"
-                  editable={false}
+                <TCPicker
+                  dataSource={DataSource.Gender}
+                  color={colors.userPostTimeColor}
+                  placeholder={strings.selectGenderPlaceholder}
+                  value={memberInfo?.gender}
+                  onValueChange={(value) =>
+                    value !== '' &&
+                    setMemberInfo({...memberInfo, gender: value})
+                  }
                 />
               </View>
-            </TouchableOpacity>
-
-            {showDate && (
               <View>
-                <DateTimePickerView
-                  visible={showDate}
-                  date={date}
-                  onDone={handleDonePress}
-                  onCancel={handleCancelPress}
-                  onHide={handleCancelPress}
-                  maximumDate={maxDateValue}
-                  mode={'date'}
+                <TCLabel
+                  title={strings.birthDatePlaceholder}
+                  style={{
+                    textTransform: 'uppercase',
+                    lineHeight: 24,
+                    marginBottom: 10,
+                  }}
+                />
+                <TCTouchableLabel
+                  title={
+                    memberInfo.birthday &&
+                    `${`${
+                      monthNames[new Date(memberInfo.birthday).getMonth()]
+                    } ${new Date(memberInfo.birthday).getDate()}`}, ${new Date(
+                      memberInfo.birthday,
+                    ).getFullYear()}`
+                  }
+                  textStyle={{
+                    textAlign: 'center',
+
+                    fontFamily: fonts.RRegular,
+                  }}
+                  placeholderTextColor={'#999999'}
+                  placeholder={strings.birthDatePlaceholder}
+                  onPress={() => setShowDate(!showDate)}
                 />
               </View>
-            )}
 
-            <AddressLocationModal
-              visibleLocationModal={visibleLocationModal}
-              setVisibleAddressModalhandler={() =>
-                setVisibleLocationModal(false)
-              }
-              onAddressSelect={onSelectAddress}
-              handleSetLocationOptions={onSelectAddress}
-              onDonePress={(street, code) => setCityandPostal(street, code)}
-            />
-          </ScrollView>
-        </TCKeyboardView>
-      </>
-    </CustomModalWrapper>
+              <TCLabel
+                title={strings.height}
+                style={{
+                  textTransform: 'uppercase',
+                  lineHeight: 24,
+                  marginBottom: 10,
+                }}
+              />
+              {heightView()}
+
+              <TCLabel
+                title={strings.weight}
+                style={{
+                  textTransform: 'uppercase',
+                  lineHeight: 24,
+                  marginBottom: 10,
+                }}
+              />
+              {weightView()}
+
+              <View>
+                <TCLabel
+                  title={strings.emailPlaceHolder}
+                  required={true}
+                  style={{
+                    textTransform: 'uppercase',
+                    lineHeight: 24,
+                    marginBottom: 10,
+                  }}
+                />
+                <TCTextField
+                  editable={false}
+                  value={memberInfo.email}
+                  onChangeText={(text) =>
+                    setMemberInfo({...memberInfo, email: text})
+                  }
+                  placeholder={strings.addressPlaceholder}
+                  keyboardType={'email-address'}
+                />
+              </View>
+
+              <View>
+                <TCLabel
+                  title={strings.phone}
+                  style={{
+                    textTransform: 'uppercase',
+                    lineHeight: 24,
+                    marginBottom: 10,
+                  }}
+                />
+                <FlatList
+                  data={phoneNumber}
+                  style={{marginHorizontal: 10}}
+                  renderItem={renderPhoneNumber}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              </View>
+              <TCMessageButton
+                borderColor={colors.whiteColor}
+                color={colors.lightBlackColor}
+                title={strings.addPhone}
+                backgroundColor={colors.lightGrey}
+                paddingVertical={5}
+                elevation={0}
+                width={120}
+                height={28}
+                alignSelf="center"
+                styletext={{
+                  fontFamily: fonts.RBold,
+                }}
+                marginTop={20}
+                onPress={() => addPhoneNumber()}
+              />
+
+              <TouchableOpacity
+                onPress={() => {
+                  setVisibleLocationModal(true);
+                }}>
+                <View
+                  style={{
+                    paddingBottom: 20,
+                  }}>
+                  <TCLabel
+                    title={strings.address.toUpperCase()}
+                    style={{marginBottom: 10, marginTop: 27}}
+                  />
+
+                  <TCTextField
+                    value={location}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    placeholder={strings.address}
+                    pointerEvents="none"
+                    editable={false}
+                  />
+                </View>
+              </TouchableOpacity>
+
+              {showDate && (
+                <View>
+                  <DateTimePickerView
+                    visible={showDate}
+                    date={date}
+                    onDone={handleDonePress}
+                    onCancel={handleCancelPress}
+                    onHide={handleCancelPress}
+                    maximumDate={maxDateValue}
+                    mode={'date'}
+                  />
+                </View>
+              )}
+            </ScrollView>
+          </TCKeyboardView>
+        </>
+      </CustomModalWrapper>
+      <AddressLocationModal
+        visibleLocationModal={visibleLocationModal}
+        setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}
+        onAddressSelect={onSelectAddress}
+        handleSetLocationOptions={onSelectAddress}
+        onDonePress={(street, code) => setCityandPostal(street, code)}
+      />
+    </>
   );
 }
 

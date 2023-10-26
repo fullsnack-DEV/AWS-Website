@@ -20,7 +20,8 @@ import styles from './WrapperModalStyles';
 import ScreenHeader from '../ScreenHeader';
 import AuthContext from '../../auth/context';
 
-import {currencyList} from '../../Constants/GeneralConstants';
+import {ModalTypes, currencyList} from '../../Constants/GeneralConstants';
+import CurrencyModal from '../CurrencyModal/CurrencyModal';
 
 const WrapperModal = ({
   isVisible = false,
@@ -33,10 +34,10 @@ const WrapperModal = ({
   show_Double = 'false',
 }) => {
   const [settings, setSettings] = useState({});
+  const [currency, setCurrency] = useState();
+  const [showCurrencyModal, setShowCurrencyModal] = useState(false);
 
   const authContext = useContext(AuthContext);
-
-  const [currency, setCurrency] = useState();
 
   useEffect(() => {
     const gettingCurrency = getCountry(authContext.entity.obj.country);
@@ -94,17 +95,11 @@ const WrapperModal = ({
                 game_fee: {...settings.game_fee, fee: gameFee},
               });
             }}
-            onChangeCurrency={(selectedCurrency) => {
-              setSettings({
-                ...settings,
-                game_fee: {
-                  ...settings.game_fee,
-                  currency_type: selectedCurrency,
-                },
-              });
-            }}
             currency={currency ?? Verbs.cad}
             entityType={entityType}
+            openCurrencyModal={() => {
+              setShowCurrencyModal(true);
+            }}
           />
         );
 
@@ -226,6 +221,22 @@ const WrapperModal = ({
             onRightButtonPress={() => onSave(settings)}
           />
           <View style={styles.container}>{getScreen(title)}</View>
+          <CurrencyModal
+            isVisible={showCurrencyModal}
+            closeList={() => setShowCurrencyModal(false)}
+            selectedcurrency={currency}
+            modalType={ModalTypes.style6}
+            onNext={(item) => {
+              setSettings({
+                ...settings,
+                game_fee: {
+                  ...settings.game_fee,
+                  currency_type: item,
+                },
+              });
+              setShowCurrencyModal(false);
+            }}
+          />
         </View>
       </View>
     </Modal>

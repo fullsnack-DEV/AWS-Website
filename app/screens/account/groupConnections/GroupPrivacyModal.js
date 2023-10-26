@@ -6,11 +6,11 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  ScrollView,
   Alert,
   Pressable,
 } from 'react-native';
 import Modal from 'react-native-modal';
+import {ScrollView} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import {ModalTypes} from '../../../Constants/GeneralConstants';
@@ -133,106 +133,127 @@ function GroupPrivacyModal({isVisible, closeModal = () => {}, grpId}) {
   );
 
   return (
-    <CustomModalWrapper
-      isVisible={isVisible}
-      closeModal={() => {
-        closeModal();
-        SetObj({
-          members:
-            authContext.entity.obj.who_can_see_member ??
-            Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
-          followers:
-            authContext.entity.obj.who_can_see_follower ??
-            Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
-          profiles:
-            authContext.entity.obj.who_can_see_member_profile ??
-            Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
-        });
-      }}
-      modalType={ModalTypes.style1}
-      headerRightButtonText={strings.save}
-      onRightButtonPress={() => saveGroupSetting()}
-      title={strings.viewPrivacy}
-      onModalShow={() => callTheGrp()}
-      containerStyle={{padding: 0, flex: 1}}>
-      <>
-        <ActivityLoader visible={loading} />
-        <OpenInfoModal />
-        <ScrollView>
-          <Text style={styles.titleStyle}>{strings.membersTitle}</Text>
-          <View style={[styles.privacyCell, {marginTop: 15}]}>
-            <Text style={styles.privacyNameStyle}>
-              {strings.whocanseeMember}
-            </Text>
-            <View style={styles.radioMainView}>
-              <TouchableOpacity
-                style={styles.radioButtonView}
-                onPress={() => {
-                  SetObj({
-                    ...obj,
-                    members: Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
-                  });
-                }}>
-                <Text style={styles.radioText}>
-                  {strings.everyoneTitleText}
-                </Text>
-                <Image
-                  source={
-                    obj.members === Verbs.PRIVACY_GROUP_MEMBER_EVERYONE
-                      ? images.radioRoundOrange
-                      : images.radioUnselect
-                  }
-                  style={styles.radioImage}
-                />
-              </TouchableOpacity>
+    <>
+      <CustomModalWrapper
+        isVisible={isVisible}
+        closeModal={() => {
+          closeModal();
+          SetObj({
+            members:
+              authContext.entity.obj.who_can_see_member ??
+              Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
+            followers:
+              authContext.entity.obj.who_can_see_follower ??
+              Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
+            profiles:
+              authContext.entity.obj.who_can_see_member_profile ??
+              Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
+          });
+        }}
+        modalType={ModalTypes.style1}
+        headerRightButtonText={strings.save}
+        onRightButtonPress={() => saveGroupSetting()}
+        title={strings.viewPrivacy}
+        onModalShow={() => callTheGrp()}
+        containerStyle={{padding: 0, flex: 1}}>
+        <>
+          <ActivityLoader visible={loading} />
 
-              {grpInfo?.parent_groups?.length >= 1 &&
-              authContext.entity.role === Verbs.entityTypeTeam ? (
+          <ScrollView>
+            <Text style={styles.titleStyle}>{strings.membersTitle}</Text>
+            <View style={[styles.privacyCell, {marginTop: 15}]}>
+              <Text style={styles.privacyNameStyle}>
+                {strings.whocanseeMember}
+              </Text>
+              <View style={styles.radioMainView}>
                 <TouchableOpacity
                   style={styles.radioButtonView}
                   onPress={() => {
                     SetObj({
                       ...obj,
-                      members: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
+                      members: Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
                     });
                   }}>
                   <Text style={styles.radioText}>
-                    {strings.folloersAndClubMembers}
+                    {strings.everyoneTitleText}
                   </Text>
                   <Image
                     source={
-                      obj.members === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
+                      obj.members === Verbs.PRIVACY_GROUP_MEMBER_EVERYONE
                         ? images.radioRoundOrange
                         : images.radioUnselect
                     }
                     style={styles.radioImage}
                   />
                 </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={styles.radioButtonView}
-                  onPress={() => {
-                    SetObj({
-                      ...obj,
-                      members: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
-                    });
-                  }}>
-                  <Text style={styles.radioText}>
-                    {strings.followerTitleText}
-                  </Text>
-                  <Image
-                    source={
-                      obj.members === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
-                        ? images.radioRoundOrange
-                        : images.radioUnselect
-                    }
-                    style={styles.radioImage}
-                  />
-                </TouchableOpacity>
-              )}
 
-              {grpInfo?.parent_groups?.length >= 1 &&
-                authContext.entity.role === Verbs.entityTypeTeam && (
+                {grpInfo?.parent_groups?.length >= 1 &&
+                authContext.entity.role === Verbs.entityTypeTeam ? (
+                  <TouchableOpacity
+                    style={styles.radioButtonView}
+                    onPress={() => {
+                      SetObj({
+                        ...obj,
+                        members: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
+                      });
+                    }}>
+                    <Text style={styles.radioText}>
+                      {strings.folloersAndClubMembers}
+                    </Text>
+                    <Image
+                      source={
+                        obj.members === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
+                          ? images.radioRoundOrange
+                          : images.radioUnselect
+                      }
+                      style={styles.radioImage}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.radioButtonView}
+                    onPress={() => {
+                      SetObj({
+                        ...obj,
+                        members: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
+                      });
+                    }}>
+                    <Text style={styles.radioText}>
+                      {strings.followerTitleText}
+                    </Text>
+                    <Image
+                      source={
+                        obj.members === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
+                          ? images.radioRoundOrange
+                          : images.radioUnselect
+                      }
+                      style={styles.radioImage}
+                    />
+                  </TouchableOpacity>
+                )}
+
+                {grpInfo?.parent_groups?.length >= 1 &&
+                  authContext.entity.role === Verbs.entityTypeTeam && (
+                    <TouchableOpacity
+                      style={styles.radioButtonView}
+                      onPress={() => {
+                        SetObj({
+                          ...obj,
+                          members: Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
+                        });
+                      }}>
+                      <Text style={styles.radioText}>{strings.clubMember}</Text>
+                      <Image
+                        source={
+                          obj.members === Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS
+                            ? images.radioRoundOrange
+                            : images.radioUnselect
+                        }
+                        style={styles.radioImage}
+                      />
+                    </TouchableOpacity>
+                  )}
+                {authContext.entity.role === Verbs.entityTypeClub && (
                   <TouchableOpacity
                     style={styles.radioButtonView}
                     onPress={() => {
@@ -252,164 +273,167 @@ function GroupPrivacyModal({isVisible, closeModal = () => {}, grpId}) {
                     />
                   </TouchableOpacity>
                 )}
-              {authContext.entity.role === Verbs.entityTypeClub && (
+
+                {authContext.entity.role === Verbs.entityTypeTeam && (
+                  <>
+                    <TouchableOpacity
+                      style={styles.radioButtonView}
+                      onPress={() => {
+                        SetObj({
+                          ...obj,
+                          members: Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS,
+                        });
+                      }}>
+                      <View style={styles.infoIconContainer}>
+                        <Text style={styles.radioText}>
+                          {strings.teamMember}
+                        </Text>
+                        <Pressable
+                          onPress={() => {
+                            setOpenInfo(true);
+
+                            setModalString('members');
+                          }}>
+                          <Image
+                            source={images.infoIcon}
+                            style={{
+                              height: 15,
+                              width: 15,
+                              marginLeft: -9,
+                              marginTop: 3,
+                              display:
+                                grpInfo?.parent_groups?.length >= 1
+                                  ? 'flex'
+                                  : 'none',
+                            }}
+                          />
+                        </Pressable>
+                      </View>
+
+                      <Image
+                        source={
+                          obj.members === Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
+                            ? images.radioRoundOrange
+                            : images.radioUnselect
+                        }
+                        style={styles.radioImage}
+                      />
+                    </TouchableOpacity>
+                    {grpInfo?.parent_groups?.length >= 1 &&
+                      authContext.entity.role === Verbs.entityTypeTeam && (
+                        <Text
+                          style={[
+                            styles.radioText,
+                            {
+                              color: colors.userPostTimeColor,
+                              fontSize: 14,
+                              fontFamily: fonts.RRegular,
+                              marginTop: 14,
+                              alignSelf: 'flex-start',
+                            },
+                          ]}>
+                          {strings.clubteamPrivacyText}
+                        </Text>
+                      )}
+                  </>
+                )}
+              </View>
+            </View>
+
+            <View style={styles.privacyCell}>
+              <Text style={styles.privacyNameStyle}>
+                {strings.whoCanSeefollwer}
+              </Text>
+              <View style={styles.radioMainView}>
                 <TouchableOpacity
                   style={styles.radioButtonView}
                   onPress={() => {
                     SetObj({
                       ...obj,
-                      members: Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
+                      followers: Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
                     });
                   }}>
-                  <Text style={styles.radioText}>{strings.clubMember}</Text>
+                  <Text style={styles.radioText}>
+                    {strings.everyoneTitleText}
+                  </Text>
                   <Image
                     source={
-                      obj.members === Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS
+                      obj.followers === Verbs.PRIVACY_GROUP_MEMBER_EVERYONE
                         ? images.radioRoundOrange
                         : images.radioUnselect
                     }
                     style={styles.radioImage}
                   />
                 </TouchableOpacity>
-              )}
 
-              {authContext.entity.role === Verbs.entityTypeTeam && (
-                <>
+                {grpInfo?.parent_groups?.length >= 1 &&
+                authContext.entity.role === Verbs.entityTypeTeam ? (
                   <TouchableOpacity
                     style={styles.radioButtonView}
                     onPress={() => {
                       SetObj({
                         ...obj,
-                        members: Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS,
+                        followers: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
                       });
                     }}>
-                    <View style={styles.infoIconContainer}>
-                      <Text style={styles.radioText}>{strings.teamMember}</Text>
-                      <Pressable
-                        onPress={() => {
-                          setOpenInfo(true);
-
-                          setModalString('members');
-                        }}>
-                        <Image
-                          source={images.infoIcon}
-                          style={{
-                            height: 15,
-                            width: 15,
-                            marginLeft: -9,
-                            marginTop: 3,
-                            display:
-                              grpInfo?.parent_groups?.length >= 1
-                                ? 'flex'
-                                : 'none',
-                          }}
-                        />
-                      </Pressable>
-                    </View>
-
+                    <Text style={styles.radioText}>
+                      {strings.folloersAndClubMembers}
+                    </Text>
                     <Image
                       source={
-                        obj.members === Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
+                        obj.followers === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
                           ? images.radioRoundOrange
                           : images.radioUnselect
                       }
                       style={styles.radioImage}
                     />
                   </TouchableOpacity>
-                  {grpInfo?.parent_groups?.length >= 1 &&
-                    authContext.entity.role === Verbs.entityTypeTeam && (
-                      <Text
-                        style={[
-                          styles.radioText,
-                          {
-                            color: colors.userPostTimeColor,
-                            fontSize: 14,
-                            fontFamily: fonts.RRegular,
-                            marginTop: 14,
-                            alignSelf: 'flex-start',
-                          },
-                        ]}>
-                        {strings.clubteamPrivacyText}
-                      </Text>
-                    )}
-                </>
-              )}
-            </View>
-          </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.radioButtonView}
+                    onPress={() => {
+                      SetObj({
+                        ...obj,
+                        followers: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
+                      });
+                    }}>
+                    <Text style={styles.radioText}>
+                      {strings.followerTitleText}
+                    </Text>
+                    <Image
+                      source={
+                        obj.followers === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
+                          ? images.radioRoundOrange
+                          : images.radioUnselect
+                      }
+                      style={styles.radioImage}
+                    />
+                  </TouchableOpacity>
+                )}
 
-          <View style={styles.privacyCell}>
-            <Text style={styles.privacyNameStyle}>
-              {strings.whoCanSeefollwer}
-            </Text>
-            <View style={styles.radioMainView}>
-              <TouchableOpacity
-                style={styles.radioButtonView}
-                onPress={() => {
-                  SetObj({
-                    ...obj,
-                    followers: Verbs.PRIVACY_GROUP_MEMBER_EVERYONE,
-                  });
-                }}>
-                <Text style={styles.radioText}>
-                  {strings.everyoneTitleText}
-                </Text>
-                <Image
-                  source={
-                    obj.followers === Verbs.PRIVACY_GROUP_MEMBER_EVERYONE
-                      ? images.radioRoundOrange
-                      : images.radioUnselect
-                  }
-                  style={styles.radioImage}
-                />
-              </TouchableOpacity>
-
-              {grpInfo?.parent_groups?.length >= 1 &&
-              authContext.entity.role === Verbs.entityTypeTeam ? (
-                <TouchableOpacity
-                  style={styles.radioButtonView}
-                  onPress={() => {
-                    SetObj({
-                      ...obj,
-                      followers: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
-                    });
-                  }}>
-                  <Text style={styles.radioText}>
-                    {strings.folloersAndClubMembers}
-                  </Text>
-                  <Image
-                    source={
-                      obj.followers === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
-                        ? images.radioRoundOrange
-                        : images.radioUnselect
-                    }
-                    style={styles.radioImage}
-                  />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={styles.radioButtonView}
-                  onPress={() => {
-                    SetObj({
-                      ...obj,
-                      followers: Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER,
-                    });
-                  }}>
-                  <Text style={styles.radioText}>
-                    {strings.followerTitleText}
-                  </Text>
-                  <Image
-                    source={
-                      obj.followers === Verbs.PRIVACY_GROUP_MEMBER_FOLLOWER
-                        ? images.radioRoundOrange
-                        : images.radioUnselect
-                    }
-                    style={styles.radioImage}
-                  />
-                </TouchableOpacity>
-              )}
-
-              {grpInfo?.parent_groups?.length >= 1 &&
-                authContext.entity.role === Verbs.entityTypeTeam && (
+                {grpInfo?.parent_groups?.length >= 1 &&
+                  authContext.entity.role === Verbs.entityTypeTeam && (
+                    <TouchableOpacity
+                      style={styles.radioButtonView}
+                      onPress={() => {
+                        SetObj({
+                          ...obj,
+                          followers: Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
+                        });
+                      }}>
+                      <Text style={styles.radioText}>{strings.clubMember}</Text>
+                      <Image
+                        source={
+                          obj.followers ===
+                          Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS
+                            ? images.radioRoundOrange
+                            : images.radioUnselect
+                        }
+                        style={styles.radioImage}
+                      />
+                    </TouchableOpacity>
+                  )}
+                {authContext.entity.role === Verbs.entityTypeClub && (
                   <TouchableOpacity
                     style={styles.radioButtonView}
                     onPress={() => {
@@ -429,80 +453,65 @@ function GroupPrivacyModal({isVisible, closeModal = () => {}, grpId}) {
                     />
                   </TouchableOpacity>
                 )}
-              {authContext.entity.role === Verbs.entityTypeClub && (
-                <TouchableOpacity
-                  style={styles.radioButtonView}
-                  onPress={() => {
-                    SetObj({
-                      ...obj,
-                      followers: Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS,
-                    });
-                  }}>
-                  <Text style={styles.radioText}>{strings.clubMember}</Text>
-                  <Image
-                    source={
-                      obj.followers === Verbs.PRIVACY_GROUP_MEMBER_CLUBMEMBERS
-                        ? images.radioRoundOrange
-                        : images.radioUnselect
-                    }
-                    style={styles.radioImage}
-                  />
-                </TouchableOpacity>
-              )}
 
-              {authContext.entity.role === Verbs.entityTypeTeam && (
-                <>
-                  <TouchableOpacity
-                    style={styles.radioButtonView}
-                    onPress={() => {
-                      SetObj({
-                        ...obj,
-                        followers: Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS,
-                      });
-                    }}>
-                    <Pressable
-                      hitSlop={Utility.getHitSlop(15)}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                {authContext.entity.role === Verbs.entityTypeTeam && (
+                  <>
+                    <TouchableOpacity
+                      style={styles.radioButtonView}
+                      onPress={() => {
+                        SetObj({
+                          ...obj,
+                          followers: Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS,
+                        });
                       }}>
-                      <Text style={styles.radioText}>{strings.teamMember}</Text>
-                    </Pressable>
+                      <Pressable
+                        hitSlop={Utility.getHitSlop(15)}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                        <Text style={styles.radioText}>
+                          {strings.teamMember}
+                        </Text>
+                      </Pressable>
 
-                    <Image
-                      source={
-                        obj.followers === Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
-                          ? images.radioRoundOrange
-                          : images.radioUnselect
-                      }
-                      style={styles.radioImage}
-                    />
-                  </TouchableOpacity>
+                      <Image
+                        source={
+                          obj.followers ===
+                          Verbs.PRIVACY_GROUP_MEMBER_TEAMMEMBERS
+                            ? images.radioRoundOrange
+                            : images.radioUnselect
+                        }
+                        style={styles.radioImage}
+                      />
+                    </TouchableOpacity>
 
-                  {grpInfo?.parent_groups?.length >= 1 &&
-                    authContext.entity.role === Verbs.entityTypeTeam && (
-                      <Text
-                        style={[
-                          styles.radioText,
-                          {
-                            color: colors.userPostTimeColor,
-                            fontSize: 14,
-                            fontFamily: fonts.RRegular,
-                            marginTop: 14,
-                            alignSelf: 'flex-start',
-                          },
-                        ]}>
-                        {strings.clubteamPrivacyTextFollwers}
-                      </Text>
-                    )}
-                </>
-              )}
+                    {grpInfo?.parent_groups?.length >= 1 &&
+                      authContext.entity.role === Verbs.entityTypeTeam && (
+                        <Text
+                          style={[
+                            styles.radioText,
+                            {
+                              color: colors.userPostTimeColor,
+                              fontSize: 14,
+                              fontFamily: fonts.RRegular,
+                              marginTop: 14,
+                              alignSelf: 'flex-start',
+                            },
+                          ]}>
+                          {strings.clubteamPrivacyTextFollwers}
+                        </Text>
+                      )}
+                  </>
+                )}
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </>
-    </CustomModalWrapper>
+          </ScrollView>
+        </>
+      </CustomModalWrapper>
+      <OpenInfoModal />
+    </>
   );
 }
 

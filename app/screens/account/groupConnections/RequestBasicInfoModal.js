@@ -3,17 +3,16 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList,
   Pressable,
   Image,
   Alert,
-  ScrollView,
   TextInput,
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
 
 import React, {useState, useCallback, useEffect, useContext, memo} from 'react';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import Verbs from '../../../Constants/Verbs';
 import GroupIcon from '../../../components/GroupIcon';
@@ -41,6 +40,7 @@ function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
   const [filteredList, setFilteredList] = useState([]);
   const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
   const [showCheck, setShowCheck] = useState(false);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   const getMembers = () => {
     setSelectedList([]);
@@ -306,70 +306,79 @@ function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
   );
 
   return (
-    <CustomModalWrapper
-      isVisible={isVisible}
-      closeModal={onCloseModal}
-      modalType={ModalTypes.style1}
-      onModalShow={() => getMembers()}
-      headerRightButtonText={strings.send}
-      onRightButtonPress={() => sendRequestForBasicInfo()}
-      title={strings.sendrequestForBaicInfoText}
-      containerStyle={{padding: 0, flex: 1}}>
-      <View style={styles.mainContainer}>
-        <ActivityLoader visible={loading} />
+    <>
+      <CustomModalWrapper
+        isVisible={isVisible}
+        closeModal={onCloseModal}
+        modalType={ModalTypes.style1}
+        onModalShow={() => getMembers()}
+        headerRightButtonText={strings.send}
+        onRightButtonPress={() => sendRequestForBasicInfo()}
+        title={strings.sendrequestForBaicInfoText}
+        containerStyle={{padding: 0, flex: 1}}>
+        <View style={styles.mainContainer}>
+          <ActivityLoader visible={loading} />
 
-        <View style={styles.floatingInput}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              placeholderTextColor={colors.userPostTimeColor}
-              style={styles.textInputStyle}
-              value={searchText}
-              onChangeText={(text) => {
-                setSearchText(text);
-              }}
-              placeholder={strings.searchText}
-            />
-            {searchText.length > 0 && (
-              <TouchableOpacity
-                onPress={() => {
-                  setSearchText('');
-                }}>
-                <Image
-                  source={images.closeRound}
-                  style={{height: 15, width: 15}}
-                />
-              </TouchableOpacity>
-            )}
+          <View style={styles.floatingInput}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholderTextColor={colors.userPostTimeColor}
+                style={styles.textInputStyle}
+                value={searchText}
+                onChangeText={(text) => {
+                  setSearchText(text);
+                }}
+                placeholder={strings.searchText}
+              />
+              {searchText.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setSearchText('');
+                  }}>
+                  <Image
+                    source={images.closeRound}
+                    style={{height: 15, width: 15}}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
+
+          {players.length === 0 ? (
+            <InviteListShimmer />
+          ) : (
+            <FlatList
+              extraData={filteredList}
+              ItemSeparatorComponent={ItemSeparatorComponent}
+              ListHeaderComponent={listHeaderComponent}
+              showsVerticalScrollIndicator={false}
+              data={filteredList}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderPlayer}
+              stickyHeaderIndices={[0]}
+              ListEmptyComponent={listEmptyComponent}
+            />
+          )}
         </View>
-
-        {players.length === 0 ? (
-          <InviteListShimmer />
-        ) : (
-          <FlatList
-            extraData={filteredList}
-            ItemSeparatorComponent={ItemSeparatorComponent}
-            ListHeaderComponent={listHeaderComponent}
-            showsVerticalScrollIndicator={false}
-            data={filteredList}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderPlayer}
-            stickyHeaderIndices={[0]}
-            ListEmptyComponent={listEmptyComponent}
-          />
-        )}
-      </View>
-
+      </CustomModalWrapper>
       <CustomModalWrapper
         isVisible={isInfoModalVisible}
         closeModal={() => setIsInfoModalVisible(false)}
         modalType={ModalTypes.style3}
         containerStyle={{padding: 0, flex: 1}}
-        extraHeaderStyle={{borderBottomWidth: 0}}
-        Top={Dimensions.get('screen').height - 500}>
+        externalSnapPoints={snapPoints}>
         <View
           style={{
             flex: 1,
+          }}
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
           }}>
           <Text
             style={{
@@ -412,7 +421,7 @@ function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
           </View>
         </View>
       </CustomModalWrapper>
-    </CustomModalWrapper>
+    </>
   );
 }
 

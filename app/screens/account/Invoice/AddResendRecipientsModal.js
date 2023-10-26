@@ -3,7 +3,6 @@
 /* eslint-disable no-return-assign */
 import React, {useState, useEffect, useCallback} from 'react';
 import {
-  FlatList,
   Text,
   View,
   StyleSheet,
@@ -11,6 +10,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -334,14 +334,9 @@ const AddResendRecipientsModal = ({
       closeModal={() => onCloseThisModal()}
       modalType={ModalTypes.style1}
       title={strings.chooseReciepint}
-      containerStyle={{
-        padding: 0,
-        width: '100%',
-        height: '100%',
-      }}
+      containerStyle={{padding: 0, flex: 1}}
       headerRightButtonText={strings.done}
-      onRightButtonPress={() => onAddRecipients()}
-      Top={75}>
+      onRightButtonPress={() => onAddRecipients()}>
       {/* Recipient selections */}
       <View style={{flex: 1}}>
         <Text

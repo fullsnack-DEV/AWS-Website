@@ -1,21 +1,17 @@
 // @flow
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Text, TextInput, TouchableOpacity} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import fonts from '../../Constants/Fonts';
 import Verbs from '../../Constants/Verbs';
-import CurrencyModal from '../CurrencyModal/CurrencyModal';
 import styles from './ModalStyles';
 
 const MatchFeeModal = ({
   gameFee = {},
-  onChange = () => {},
-  onChangeCurrency = () => {},
-  currency = '',
   entityType = Verbs.entityTypePlayer,
+  onChange = () => {},
+  openCurrencyModal = () => {},
 }) => {
-  const [showCurrencyModal, setShowCurrencyModal] = useState(false);
-
   const getTitle = () => {
     switch (entityType) {
       case Verbs.entityTypePlayer:
@@ -78,21 +74,11 @@ const MatchFeeModal = ({
 
       <TouchableOpacity
         style={styles.linkButton}
-        onPress={() => setShowCurrencyModal(true)}>
+        onPress={() => openCurrencyModal()}>
         <Text style={styles.linkButtonText}>{strings.changeCurrency}</Text>
       </TouchableOpacity>
 
       {/* Match fee text */}
-
-      <CurrencyModal
-        isVisible={showCurrencyModal}
-        closeList={() => setShowCurrencyModal(false)}
-        selectedcurrency={currency}
-        onNext={(item) => {
-          onChangeCurrency(item);
-          setShowCurrencyModal(false);
-        }}
-      />
 
       {entityType === Verbs.entityTypePlayer && (
         <View

@@ -1,6 +1,12 @@
 // @flow
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {View, StyleSheet, Text, ActivityIndicator} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+  Dimensions,
+} from 'react-native';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import {AirbnbRating} from 'react-native-ratings';
 import {strings} from '../../../../../Localization/translation';
@@ -31,6 +37,7 @@ const ReviewsContentScreen = ({
   const [totalRatings, setTotalRatings] = useState(0);
   const [ratingsOption, setRatingsOption] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   const authContext = useContext(AuthContext);
 
@@ -152,22 +159,34 @@ const ReviewsContentScreen = ({
         isVisible={showModal}
         closeModal={() => setShowModal(false)}
         modalType={ModalTypes.style2}
-        containerStyle={{marginBottom: 25}}>
-        <Text style={[styles.label, {marginBottom: 25}]}>
-          {strings.ratingText}
-        </Text>
-        {ratingsOption.length > 0
-          ? ratingsOption.map((item, index) => (
-              <View key={index} style={{marginBottom: 25}}>
-                <Text style={[styles.label, {fontFamily: fonts.RBold}]}>
-                  {item.title}
-                </Text>
-                <Text style={[styles.label, {marginTop: 10}]}>
-                  {item.details}
-                </Text>
-              </View>
-            ))
-          : null}
+        containerStyle={{marginBottom: 25}}
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}>
+          <Text style={[styles.label, {marginBottom: 25}]}>
+            {strings.ratingText}
+          </Text>
+          {ratingsOption.length > 0
+            ? ratingsOption.map((item, index) => (
+                <View key={index} style={{marginBottom: 25}}>
+                  <Text style={[styles.label, {fontFamily: fonts.RBold}]}>
+                    {item.title}
+                  </Text>
+                  <Text style={[styles.label, {marginTop: 10}]}>
+                    {item.details}
+                  </Text>
+                </View>
+              ))
+            : null}
+        </View>
       </CustomModalWrapper>
     </View>
   );

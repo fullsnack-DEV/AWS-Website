@@ -75,6 +75,7 @@ export default function EventScreen({navigation, route}) {
   const ALLEVENT = 2;
 
   const goingModalRef = useRef();
+  const [snapPoints, setSnapPoints] = useState([]);
 
   const recurringEditList = [
     {
@@ -1117,21 +1118,32 @@ export default function EventScreen({navigation, route}) {
       <CustomModalWrapper
         isVisible={infoModal}
         modalType={ModalTypes.style2}
-        ratio={infoType === Verbs.attendeeVerb ? 1.28 : 1.23}
         closeModal={() => {
           setInfoModal(false);
-        }}>
-        {infoType === Verbs.attendeeVerb ? (
-          <View>
-            <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
-            <Text style={styles.contentText}>{strings.attendyText}</Text>
-          </View>
-        ) : (
-          <View>
-            <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
-            <Text style={styles.contentText}>{strings.feeText}</Text>
-          </View>
-        )}
+        }}
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}>
+          {infoType === Verbs.attendeeVerb ? (
+            <View>
+              <Text style={styles.titleText}>{strings.numberOfAttend}</Text>
+              <Text style={styles.contentText}>{strings.attendyText}</Text>
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.titleText}>{strings.eventFeeTitle}</Text>
+              <Text style={styles.contentText}>{strings.feeText}</Text>
+            </View>
+          )}
+        </View>
       </CustomModalWrapper>
       <GoingUsersModal
         modalRef={goingModalRef}

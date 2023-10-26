@@ -12,15 +12,14 @@ import {
   Image,
   Text,
   SafeAreaView,
-  ScrollView,
   Alert,
   TextInput,
-  FlatList,
   Dimensions,
   Platform,
   Pressable,
   BackHandler,
 } from 'react-native';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import moment from 'moment';
 import {
   widthPercentageToDP as wp,
@@ -146,6 +145,7 @@ export default function EditEventScreen({navigation, route}) {
   const venueInputRef = useRef();
   const refundPolicyInputRef = useRef();
   const [canOrganizerEdit, setCanOrganizerEdit] = useState(true);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   useEffect(() => {
     if (isFocused) {
@@ -185,9 +185,9 @@ export default function EditEventScreen({navigation, route}) {
         if (goingList.length > 0) {
           setCanOrganizerEdit(false);
         }
-         setTimeout(() => {
-              Alert.alert('',strings.moreThanOneOrganizerJoinText);
-            }, 1000);
+        setTimeout(() => {
+          Alert.alert('', strings.moreThanOneOrganizerJoinText);
+        }, 1000);
       }
     }
   }, [isFocused, route.params?.data]);
@@ -539,8 +539,8 @@ export default function EditEventScreen({navigation, route}) {
     editEvent(entityRole, uid, obj, authContext)
       .then(() => {
         setloading(false);
-        navigation.navigate('EventScreen',{
-          event: obj,     
+        navigation.navigate('EventScreen', {
+          event: obj,
         });
       })
       .catch((e) => {
@@ -568,7 +568,7 @@ export default function EditEventScreen({navigation, route}) {
               navigation.navigate('EventScreen', {
                 screen: 'EventScreen',
               });
-            } else{
+            } else {
               navigation.goBack();
             }
           },
@@ -1119,7 +1119,9 @@ export default function EditEventScreen({navigation, route}) {
                 onDatePress={() =>
                   canOrganizerEdit ? setStartDateVisible(!startDateVisible) : {}
                 }
-                labelStyle={canOrganizerEdit ? {}:{color:colors.placeHolderColor}}
+                labelStyle={
+                  canOrganizerEdit ? {} : {color: colors.placeHolderColor}
+                }
               />
               <EventTimeSelectItem
                 title={strings.ends}
@@ -1138,7 +1140,9 @@ export default function EditEventScreen({navigation, route}) {
                 onDatePress={() =>
                   canOrganizerEdit ? setEndDateVisible(!endDateVisible) : {}
                 }
-                labelStyle={canOrganizerEdit ? {}:{color:colors.placeHolderColor}}
+                labelStyle={
+                  canOrganizerEdit ? {} : {color: colors.placeHolderColor}
+                }
               />
 
               <View
@@ -1146,7 +1150,7 @@ export default function EditEventScreen({navigation, route}) {
                   flexDirection: 'row',
                   justifyContent: 'flex-end',
                   marginBottom: 20,
-                                  }}>
+                }}>
                 <Text>{strings.timezone} &nbsp;</Text>
                 <TouchableOpacity
                   onPress={() => {
@@ -1571,13 +1575,25 @@ export default function EditEventScreen({navigation, route}) {
         containerStyle={{
           padding: 15,
           marginBottom: Platform.OS === 'ios' ? 35 : 0,
-        }}>
-        <FlatList
-          data={getOptions()}
-          renderItem={renderWhoCan}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-        />
+        }}
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}>
+          <FlatList
+            data={getOptions()}
+            renderItem={renderWhoCan}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
       </CustomModalWrapper>
 
       <ActionSheet
@@ -1676,7 +1692,7 @@ const styles = StyleSheet.create({
     height: 100,
     paddingHorizontal: 10,
     paddingVertical: 9,
-    },
+  },
   detailsInputStyle: {
     padding: 0,
     fontSize: 16,

@@ -1157,14 +1157,6 @@ const SearchModal = ({
             setShowTimeActionSheet(false);
           }}
         />
-        <LocationModal
-          visibleLocationModal={visibleLocationModal}
-          title={strings.cityStateOrCountryTitle}
-          setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
-          onLocationSelect={handleSetLocationOptions}
-          placeholder={strings.searchTitle}
-          type={'country'}
-        />
         {fType === filterType.RECENTMATCHS ? (
           <DateTimePickerView
             visible={datePickerShow}
@@ -1184,67 +1176,73 @@ const SearchModal = ({
             minimumDate={new Date()}
           />
         )}
-
-        {fType === filterType.PLAYERAVAILABLECHALLENGE ? (
-          <CustomModalWrapper
-            isVisible={visibleSportsModal}
-            closeModal={() => {
-              setVisibleSportsModal(false);
-            }}
-            modalType={ModalTypes.style7}>
-            <SectionList
-              sections={sections}
-              renderItem={renderSports}
-              renderSectionHeader={({section: {title}}) => {
-                if (title === strings.otherSports) {
-                  return (
-                    <View
-                      style={{
-                        flex: 1,
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                      }}>
-                      <View
-                        style={{...styles.separatorLine, marginBottom: 35}}
-                      />
-                      <Header title={title} />
-                    </View>
-                  );
-                }
-                return <Header title={title} />;
-              }}
-              keyExtractor={(item, index) => index.toString()}
-              ItemSeparatorComponent={renderSeparator}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-            />
-          </CustomModalWrapper>
-        ) : (
-          <CustomModalWrapper
-            isVisible={visibleSportsModal}
-            ratio={9}
-            closeModal={() => {
-              setVisibleSportsModal(false);
-            }}
-            modalType={ModalTypes.style7}>
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingHorizontal: 15,
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}></View>
-            <FlatList
-              ItemSeparatorComponent={() => <TCThinDivider />}
-              data={sports}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderSports}
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-            />
-          </CustomModalWrapper>
-        )}
       </CustomModalWrapper>
+      <LocationModal
+        visibleLocationModal={visibleLocationModal}
+        title={strings.cityStateOrCountryTitle}
+        setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
+        onLocationSelect={handleSetLocationOptions}
+        placeholder={strings.searchTitle}
+        type={'country'}
+      />
+
+      {fType === filterType.PLAYERAVAILABLECHALLENGE ? (
+        <CustomModalWrapper
+          isVisible={visibleSportsModal}
+          closeModal={() => {
+            setVisibleSportsModal(false);
+          }}
+          modalType={ModalTypes.style7}>
+          <SectionList
+            sections={sections}
+            renderItem={renderSports}
+            renderSectionHeader={({section: {title}}) => {
+              if (title === strings.otherSports) {
+                return (
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                    }}>
+                    <View style={{...styles.separatorLine, marginBottom: 35}} />
+                    <Header title={title} />
+                  </View>
+                );
+              }
+              return <Header title={title} />;
+            }}
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={renderSeparator}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+          />
+        </CustomModalWrapper>
+      ) : (
+        <CustomModalWrapper
+          isVisible={visibleSportsModal}
+          ratio={9}
+          closeModal={() => {
+            setVisibleSportsModal(false);
+          }}
+          modalType={ModalTypes.style7}>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingHorizontal: 15,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}></View>
+          <FlatList
+            ItemSeparatorComponent={() => <TCThinDivider />}
+            data={sports}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderSports}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+          />
+        </CustomModalWrapper>
+      )}
     </View>
   );
 };

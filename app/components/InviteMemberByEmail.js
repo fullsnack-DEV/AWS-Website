@@ -1,7 +1,8 @@
-import {Text, View, StyleSheet, FlatList, SafeAreaView} from 'react-native';
+import {Text, View, StyleSheet, SafeAreaView} from 'react-native';
 import React, {useState, useContext} from 'react';
 import {format} from 'react-string-format';
 
+import {FlatList} from 'react-native-gesture-handler';
 import CustomModalWrapper from './CustomModalWrapper';
 import {ModalTypes} from '../Constants/GeneralConstants';
 import {strings} from '../../Localization/translation';
@@ -168,7 +169,7 @@ export default function InviteMemberbyEmailModal({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={onCloseModal}
-      modalType={ModalTypes.style1}
+      modalType={ModalTypes.style6}
       headerRightButtonText={strings.send}
       onRightButtonPress={() => sendInvitation()}
       title={strings.inviteByEmail}
@@ -181,7 +182,8 @@ export default function InviteMemberbyEmailModal({
           data={email}
           renderItem={renderItemEmail}
           keyExtractor={(item, index) => index.toString()}
-          style={styles.flateListStyle}></FlatList>
+          style={styles.flateListStyle}
+        />
 
         <TCMessageButton
           title={strings.addEmailText}

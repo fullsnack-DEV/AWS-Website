@@ -6,7 +6,6 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  Platform,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import React, {useEffect, useState, useContext} from 'react';
@@ -189,9 +188,8 @@ export default function PayInvoiceScreen({navigation, route}) {
         isVisible={visibleInfo}
         closeModal={() => setVisibleInfo(false)}
         modalType={ModalTypes.style7}
-        containerStyle={{padding: 0, width: '100%', height: '100%'}}
-        Top={Platform.OS === 'android' ? 570 : 700}>
-        <View style={{flex: 0.9}}>
+        containerStyle={{padding: 0, flex: 1}}>
+        <View style={{flex: 1}}>
           <Text style={styles.internationalFeeText}>
             {strings.internationalFeeText}
           </Text>

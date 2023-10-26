@@ -1,5 +1,6 @@
-import {View, StyleSheet, FlatList, Text} from 'react-native';
 import React from 'react';
+import {View, StyleSheet, Text} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import moment from 'moment';
 import {format} from 'react-string-format';
 import ReadMore from '@fawazahmed/react-native-read-more';
@@ -59,7 +60,7 @@ export default function AddedMessagesModal({isVisible, closeList, Messages}) {
       modalType={ModalTypes.style8}
       headerRightButtonText={strings.done}
       title={format(strings.addedMeesages, Messages?.length)}
-      containerStyle={{padding: 0, width: '100%', height: '90%'}}
+      containerStyle={{padding: 0, flex: 1}}
       showBackButton>
       <View
         style={{

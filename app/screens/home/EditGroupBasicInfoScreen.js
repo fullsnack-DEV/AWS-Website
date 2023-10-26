@@ -15,8 +15,8 @@ import {
   Image,
   SafeAreaView,
   Pressable,
-  FlatList,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import {useIsFocused} from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';

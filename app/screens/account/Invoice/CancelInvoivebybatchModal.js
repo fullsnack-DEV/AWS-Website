@@ -195,11 +195,7 @@ export default function CancelInvoivebybatchModal({
       headerRightButtonText={strings.send}
       onRightButtonPress={() => onCancelRecipients()}
       title={strings.cancelInvoiceText}
-      containerStyle={{
-        padding: 0,
-        width: '100%',
-        height: '100%',
-      }}>
+      containerStyle={{padding: 0, flex: 1}}>
       <ActivityLoader visible={loading} />
       {/* title */}
 

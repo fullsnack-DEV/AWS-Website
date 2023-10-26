@@ -20,6 +20,7 @@ import {
   Pressable,
   ActivityIndicator,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 
 import {FlatList} from 'react-native-gesture-handler';
@@ -32,7 +33,7 @@ import AuthContext from '../../auth/context';
 import * as Utility from '../../utils';
 import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
-import {widthPercentageToDP, getStorage, calculateRatio} from '../../utils';
+import {widthPercentageToDP, getStorage} from '../../utils';
 import fonts from '../../Constants/Fonts';
 import TCThinDivider from '../../components/TCThinDivider';
 import {strings} from '../../../Localization/translation';
@@ -92,6 +93,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   const [imageBaseUrl, setImageBaseUrl] = useState('');
   const [smallLoader, setSmallLoader] = useState(false);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   useEffect(() => {
     getStorage('appSetting').then((setting) => {
@@ -1253,8 +1255,18 @@ export default function LookingForChallengeScreen({navigation, route}) {
           setPlayerDetailPopup(false);
         }}
         modalType={ModalTypes.style2}
-        ratio={calculateRatio(playerDetail?.sports.length)}>
-        <View style={{paddingTop: 0, paddingHorizontal: 0}}>
+        externalSnapPoints={snapPoints}
+        containerStyle={{paddingTop: 0, paddingHorizontal: 0}}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}>
           <FlatList
             data={playerDetail?.sports}
             keyExtractor={(item, index) => index.toString()}

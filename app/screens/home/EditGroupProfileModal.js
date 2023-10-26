@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  ScrollView,
   Alert,
   StyleSheet,
   Keyboard,
@@ -19,6 +18,7 @@ import ActionSheet from 'react-native-actionsheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 
+import {ScrollView} from 'react-native-gesture-handler';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import {strings} from '../../../Localization/translation';
@@ -284,78 +284,56 @@ export default function EditGroupProfileModal({visible, closeModal}) {
   };
 
   return (
-    <CustomModalWrapper
-      modalType={ModalTypes.style1}
-      isVisible={visible}
-      closeModal={() => closeModal()}
-      title={strings.profile}
-      headerRightButtonText={strings.updateBtnText}
-      onRightButtonPress={() => {
-        onUpdateButtonClicked();
-      }}
-      containerStyle={{flex: 1, padding: 0}}>
-      <TCKeyboardView containerStyle={{flex: 1}}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <ActivityLoader visible={loading} />
-          <GroupProfileComponent
-            groupDetails={groupProfile}
-            onPressBGImage={() => onBGImageClicked()}
-            onPressProfileImage={() => onProfileImageClicked()}
-          />
-          <View style={{marginTop: 25, paddingHorizontal: 15}}>
-            <View style={{marginBottom: 35}}>
-              <Text style={styles.labelText}>
-                {authContext.entity.role === Verbs.entityTypeTeam
-                  ? strings.teamName.toUpperCase()
-                  : strings.clubName.toUpperCase()}
-                <Text
-                  style={[styles.labelText, {color: colors.darkThemeColor}]}>
-                  {' '}
-                  *
+    <>
+      <CustomModalWrapper
+        modalType={ModalTypes.style1}
+        isVisible={visible}
+        closeModal={() => closeModal()}
+        title={strings.profile}
+        headerRightButtonText={strings.updateBtnText}
+        onRightButtonPress={() => {
+          onUpdateButtonClicked();
+        }}
+        containerStyle={{flex: 1, padding: 0}}>
+        <TCKeyboardView containerStyle={{flex: 1}}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <ActivityLoader visible={loading} />
+            <GroupProfileComponent
+              groupDetails={groupProfile}
+              onPressBGImage={() => onBGImageClicked()}
+              onPressProfileImage={() => onProfileImageClicked()}
+            />
+            <View style={{marginTop: 25, paddingHorizontal: 15}}>
+              <View style={{marginBottom: 35}}>
+                <Text style={styles.labelText}>
+                  {authContext.entity.role === Verbs.entityTypeTeam
+                    ? strings.teamName.toUpperCase()
+                    : strings.clubName.toUpperCase()}
+                  <Text
+                    style={[styles.labelText, {color: colors.darkThemeColor}]}>
+                    {' '}
+                    *
+                  </Text>
                 </Text>
-              </Text>
 
-              <TextInput
-                placeholder={
-                  authContext.entity.role === Verbs.entityTypeTeam
-                    ? strings.teamNamePlaceholder
-                    : strings.clubNameplaceholder
-                }
-                onChangeText={(text) =>
-                  setGroupProfile({...groupProfile, group_name: text})
-                }
-                value={groupProfile.group_name}
-                style={styles.inputField}
-                placeholderTextColor={colors.userPostTimeColor}
-              />
-            </View>
+                <TextInput
+                  placeholder={
+                    authContext.entity.role === Verbs.entityTypeTeam
+                      ? strings.teamNamePlaceholder
+                      : strings.clubNameplaceholder
+                  }
+                  onChangeText={(text) =>
+                    setGroupProfile({...groupProfile, group_name: text})
+                  }
+                  value={groupProfile.group_name}
+                  style={styles.inputField}
+                  placeholderTextColor={colors.userPostTimeColor}
+                />
+              </View>
 
-            <View style={styles.containerStyle}>
-              <Text style={styles.labelText}>
-                {strings.homeCityTitle.toUpperCase()}
-                <Text
-                  style={[styles.labelText, {color: colors.darkThemeColor}]}>
-                  {' '}
-                  *
-                </Text>
-              </Text>
-              <Pressable
-                style={styles.inputContainer}
-                onPress={() => setVisibleLocationModal(true)}>
-                <Text
-                  style={[
-                    styles.labelText,
-                    {marginBottom: 0, fontFamily: fonts.RRegular},
-                  ]}>{`${groupProfile.city}, ${
-                  groupProfile.state_abbr ?? groupProfile.state
-                }, ${groupProfile.country}`}</Text>
-              </Pressable>
-            </View>
-
-            {authContext.entity.role === Verbs.entityTypeClub && (
               <View style={styles.containerStyle}>
                 <Text style={styles.labelText}>
-                  {strings.sportsTitleText.toUpperCase()}
+                  {strings.homeCityTitle.toUpperCase()}
                   <Text
                     style={[styles.labelText, {color: colors.darkThemeColor}]}>
                     {' '}
@@ -363,124 +341,150 @@ export default function EditGroupProfileModal({visible, closeModal}) {
                   </Text>
                 </Text>
                 <Pressable
-                  onPress={() => {
-                    setVisibleSportsModal(true);
-                  }}
-                  style={styles.inputContainer}>
+                  style={styles.inputContainer}
+                  onPress={() => setVisibleLocationModal(true)}>
                   <Text
                     style={[
                       styles.labelText,
                       {marginBottom: 0, fontFamily: fonts.RRegular},
-                    ]}>
-                    {sportsName}
-                  </Text>
+                    ]}>{`${groupProfile.city}, ${
+                    groupProfile.state_abbr ?? groupProfile.state
+                  }, ${groupProfile.country}`}</Text>
                 </Pressable>
               </View>
-            )}
 
-            {authContext.entity.role === Verbs.entityTypeTeam && (
+              {authContext.entity.role === Verbs.entityTypeClub && (
+                <View style={styles.containerStyle}>
+                  <Text style={styles.labelText}>
+                    {strings.sportsTitleText.toUpperCase()}
+                    <Text
+                      style={[
+                        styles.labelText,
+                        {color: colors.darkThemeColor},
+                      ]}>
+                      {' '}
+                      *
+                    </Text>
+                  </Text>
+                  <Pressable
+                    onPress={() => {
+                      setVisibleSportsModal(true);
+                    }}
+                    style={styles.inputContainer}>
+                    <Text
+                      style={[
+                        styles.labelText,
+                        {marginBottom: 0, fontFamily: fonts.RRegular},
+                      ]}>
+                      {sportsName}
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
+
+              {authContext.entity.role === Verbs.entityTypeTeam && (
+                <View style={styles.containerStyle}>
+                  <Text style={styles.labelText}>
+                    {strings.sportsTitleText.toUpperCase()}
+                  </Text>
+                  <Text style={styles.sport}>{sportsName}</Text>
+                </View>
+              )}
+
               <View style={styles.containerStyle}>
                 <Text style={styles.labelText}>
-                  {strings.sportsTitleText.toUpperCase()}
+                  {strings.slogan.toUpperCase()}
                 </Text>
-                <Text style={styles.sport}>{sportsName}</Text>
+                <TCTextField
+                  placeholder={
+                    authContext.entity.role === Verbs.entityTypeClub
+                      ? strings.writeClubSlogan
+                      : strings.writeTeamSlogan
+                  }
+                  onChangeText={(text) =>
+                    setGroupProfile({...groupProfile, bio: text})
+                  }
+                  multiline
+                  maxLength={120}
+                  value={groupProfile.bio}
+                  height={120}
+                  style={{marginHorizontal: 0}}
+                />
               </View>
-            )}
-
-            <View style={styles.containerStyle}>
-              <Text style={styles.labelText}>
-                {strings.slogan.toUpperCase()}
-              </Text>
-              <TCTextField
-                placeholder={
-                  authContext.entity.role === Verbs.entityTypeClub
-                    ? strings.writeClubSlogan
-                    : strings.writeTeamSlogan
-                }
-                onChangeText={(text) =>
-                  setGroupProfile({...groupProfile, bio: text})
-                }
-                multiline
-                maxLength={120}
-                value={groupProfile.bio}
-                height={120}
-                style={{marginHorizontal: 0}}
-              />
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
 
-        <LocationModal
-          visibleLocationModal={visibleLocationModal}
-          title={strings.homeCityTitle}
-          setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
-          onLocationSelect={handleSelectLocationOptions}
-          placeholder={strings.searchByCity}
-        />
-        <SportListMultiModal
-          isVisible={visibleSportsModal}
-          closeList={() => setVisibleSportsModal(false)}
-          title={strings.sportsTitleText}
-          onNext={(sports = []) => {
-            const selectSports = sports.map((sportItem) => ({
-              sport: sportItem.sport,
-              sport_type: sportItem.sport_type,
-            }));
-
-            setSelectedSports([...selectSports]);
-
-            setVisibleSportsModal(false);
-          }}
-          selectedSports={selectedSports}
-        />
-
-        <ActionSheet
-          ref={actionSheet}
-          options={[strings.camera, strings.album, strings.cancelTitle]}
-          cancelButtonIndex={2}
-          onPress={(index) => {
-            if (index === 0) {
-              openCamera();
-            } else if (index === 1) {
-              if (currentImageSelection) {
-                openImagePicker();
-              } else {
-                openImagePicker(750, 348);
+          <ActionSheet
+            ref={actionSheet}
+            options={[strings.camera, strings.album, strings.cancelTitle]}
+            cancelButtonIndex={2}
+            onPress={(index) => {
+              if (index === 0) {
+                openCamera();
+              } else if (index === 1) {
+                if (currentImageSelection) {
+                  openImagePicker();
+                } else {
+                  openImagePicker(750, 348);
+                }
               }
-            }
-          }}
-        />
-        <ActionSheet
-          ref={actionSheetWithDelete}
-          // title={'NewsFeed Post'}
-          options={[
-            strings.camera,
-            strings.album,
-            strings.deleteTitle,
-            strings.cancelTitle,
-          ]}
-          cancelButtonIndex={3}
-          destructiveButtonIndex={2}
-          onPress={(index) => {
-            if (index === 0) {
-              openCamera();
-            } else if (index === 1) {
-              if (currentImageSelection) {
-                openImagePicker();
-              } else {
-                openImagePicker(750, 348);
+            }}
+          />
+          <ActionSheet
+            ref={actionSheetWithDelete}
+            // title={'NewsFeed Post'}
+            options={[
+              strings.camera,
+              strings.album,
+              strings.deleteTitle,
+              strings.cancelTitle,
+            ]}
+            cancelButtonIndex={3}
+            destructiveButtonIndex={2}
+            onPress={(index) => {
+              if (index === 0) {
+                openCamera();
+              } else if (index === 1) {
+                if (currentImageSelection) {
+                  openImagePicker();
+                } else {
+                  openImagePicker(750, 348);
+                }
+              } else if (index === 2) {
+                deleteConfirmation(
+                  strings.appName,
+                  strings.deleteConfirmationText,
+                  () => deleteImage(),
+                );
               }
-            } else if (index === 2) {
-              deleteConfirmation(
-                strings.appName,
-                strings.deleteConfirmationText,
-                () => deleteImage(),
-              );
-            }
-          }}
-        />
-      </TCKeyboardView>
-    </CustomModalWrapper>
+            }}
+          />
+        </TCKeyboardView>
+      </CustomModalWrapper>
+      <LocationModal
+        visibleLocationModal={visibleLocationModal}
+        title={strings.homeCityTitle}
+        setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
+        onLocationSelect={handleSelectLocationOptions}
+        placeholder={strings.searchByCity}
+      />
+      <SportListMultiModal
+        isVisible={visibleSportsModal}
+        closeList={() => setVisibleSportsModal(false)}
+        title={strings.sportsTitleText}
+        onNext={(sports = []) => {
+          const selectSports = sports.map((sportItem) => ({
+            sport: sportItem.sport,
+            sport_type: sportItem.sport_type,
+          }));
+
+          setSelectedSports([...selectSports]);
+
+          setVisibleSportsModal(false);
+        }}
+        selectedSports={selectedSports}
+      />
+    </>
   );
 }
 const styles = StyleSheet.create({

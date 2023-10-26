@@ -4,12 +4,12 @@ import {
   View,
   Image,
   TouchableOpacity,
-  FlatList,
   Text,
   Alert,
   SafeAreaView,
   Pressable,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import ToggleSwitch from 'toggle-switch-react-native';
 import * as RNLocalize from 'react-native-localize';
 import images from '../../../Constants/ImagePath';

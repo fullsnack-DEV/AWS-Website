@@ -1,6 +1,7 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
+  Dimensions,
   Platform,
   Pressable,
   SafeAreaView,
@@ -83,6 +84,7 @@ const AccountScreen = ({navigation, route}) => {
 
   const [players, setPlayers] = useState([]);
   const [onLoad, setOnLoad] = useState(false);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   const getUsers = useCallback(() => {
     const generalsQuery = {
@@ -608,10 +610,17 @@ const AccountScreen = ({navigation, route}) => {
         isVisible={isRulesModalVisible}
         closeModal={() => setIsRulesModalVisible(false)}
         modalType={ModalTypes.style2}
-        containerStyle={{
-          marginBottom: Platform.OS === 'android' ? -70 : -150,
-        }}>
-        <View>
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}>
           <Text style={styles.modalTitle}>{strings.createTeamText}</Text>
           <Text style={[styles.rulesText, {marginBottom: 15}]}>
             {strings.teamCreateClubsText}

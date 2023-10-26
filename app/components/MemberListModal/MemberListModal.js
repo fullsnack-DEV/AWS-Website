@@ -2,7 +2,6 @@
 // @flow
 import React, {useEffect, useState, useContext} from 'react';
 import {
-  FlatList,
   Image,
   Text,
   View,
@@ -11,7 +10,7 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-
+import {FlatList} from 'react-native-gesture-handler';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
@@ -367,7 +366,7 @@ const MemberListModal = ({
       }}
       headerRightButtonText={strings.next}
       title={sport?.sport ? strings.sportTextTitle : title}
-      containerStyle={{padding: 0, width: '100%', height: '100%'}}
+      containerStyle={{padding: 0}}
       showBackButton>
       <CustomIosAlert
         visibleAlert={Visiblealert}

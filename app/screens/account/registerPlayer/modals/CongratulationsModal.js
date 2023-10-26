@@ -341,82 +341,83 @@ const CongratulationsModal = ({
   };
 
   return (
-    <CustomModalWrapper
-      isVisible={isVisible}
-      closeModal={closeModal}
-      modalType={ModalTypes.default}
-      containerStyle={{padding: 0, height: '97%'}}>
-      <View
-        style={
-          fromCreateTeam || fromCreateClub
-            ? styles.titleContainerForTeam
-            : styles.titleTextContainer
-        }>
-        {fromCreateTeam || fromCreateClub ? (
-          <Text
-            style={[
-              styles.congratsText,
-              {
-                alignSelf:
-                  fromCreateTeam || fromCreateClub ? 'flex-start' : 'center',
-              },
-            ]}>
-            <Text>
-              {strings.congratulationsTitle}
-              <Text style={styles.congratsTextStyle}>{title}</Text>
+    <>
+      <CustomModalWrapper
+        isVisible={isVisible}
+        closeModal={closeModal}
+        modalType={ModalTypes.default}
+        containerStyle={{padding: 0, flex: 1}}>
+        <View
+          style={
+            fromCreateTeam || fromCreateClub
+              ? styles.titleContainerForTeam
+              : styles.titleTextContainer
+          }>
+          {fromCreateTeam || fromCreateClub ? (
+            <Text
+              style={[
+                styles.congratsText,
+                {
+                  alignSelf:
+                    fromCreateTeam || fromCreateClub ? 'flex-start' : 'center',
+                },
+              ]}>
+              <Text>
+                {strings.congratulationsTitle}
+                <Text style={styles.congratsTextStyle}>{title}</Text>
+              </Text>
+
+              {strings.hasBeenCreated}
             </Text>
+          ) : (
+            <Text style={styles.congratsText}>
+              {title}
+              <Text style={styles.congratsSportText}>{sportName}.</Text>
+            </Text>
+          )}
 
-            {strings.hasBeenCreated}
-          </Text>
-        ) : (
-          <Text style={styles.congratsText}>
-            {title}
-            <Text style={styles.congratsSportText}>{sportName}.</Text>
-          </Text>
-        )}
+          {fromCreateTeam || fromCreateClub ? (
+            <Text
+              style={[
+                styles.description,
+                {marginHorizontal: 0, marginRight: 35},
+              ]}>
+              {subtitle}
+            </Text>
+          ) : null}
+        </View>
 
         {fromCreateTeam || fromCreateClub ? (
-          <Text
-            style={[
-              styles.description,
-              {marginHorizontal: 0, marginRight: 35},
-            ]}>
-            {subtitle}
-          </Text>
-        ) : null}
-      </View>
-
-      {fromCreateTeam || fromCreateClub ? (
-        <>
+          <>
+            <Pressable
+              style={styles.buttonContainer}
+              onPress={() => {
+                goToSportActivityHome();
+              }}>
+              <Text style={[styles.buttonText, {textTransform: 'uppercase'}]}>
+                {fromCreateTeam
+                  ? strings.inviteMemberText
+                  : strings.createTeamUnderYourClub}
+              </Text>
+            </Pressable>
+          </>
+        ) : (
           <Pressable
             style={styles.buttonContainer}
             onPress={() => {
-              goToSportActivityHome();
+              goToSportActivityHome({sport, sportType});
             }}>
-            <Text style={[styles.buttonText, {textTransform: 'uppercase'}]}>
-              {fromCreateTeam
-                ? strings.inviteMemberText
-                : strings.createTeamUnderYourClub}
+            <Text style={styles.buttonText}>
+              {strings.goToSportActivityHomeText}
             </Text>
           </Pressable>
-        </>
-      ) : (
-        <Pressable
-          style={styles.buttonContainer}
-          onPress={() => {
-            goToSportActivityHome({sport, sportType});
-          }}>
-          <Text style={styles.buttonText}>
-            {strings.goToSportActivityHomeText}
-          </Text>
-        </Pressable>
-      )}
+        )}
 
-      <Text style={styles.description}>{getModalInfo(sportType)}</Text>
-      <View style={styles.dividor} />
+        <Text style={styles.description}>{getModalInfo(sportType)}</Text>
+        <View style={styles.dividor} />
 
-      <View style={styles.renderListcontainer}>{renderList(sportType)}</View>
-
+        <View style={styles.renderListcontainer}>{renderList(sportType)}</View>
+      </CustomModalWrapper>
       <Modal visible={showChallengeModal} transparent>
         <View style={styles.parent}>
           <View style={styles.container1}>
@@ -451,7 +452,7 @@ const CongratulationsModal = ({
           </TouchableOpacity>
         </View>
       </Modal>
-    </CustomModalWrapper>
+    </>
   );
 };
 

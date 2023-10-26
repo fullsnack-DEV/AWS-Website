@@ -1,7 +1,8 @@
 // @flow
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useRef, useState} from 'react';
-import {FlatList, Image, Pressable, Text, View} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
+import {Image, Pressable, Text, View} from 'react-native';
 import {strings} from '../../../../../../Localization/translation';
 import images from '../../../../../Constants/ImagePath';
 import Verbs from '../../../../../Constants/Verbs';
@@ -141,78 +142,83 @@ const SportsListModal = ({
   };
 
   return (
-    <CustomModalWrapper
-      isVisible={isVisible}
-      closeModal={closeList}
-      modalType={ModalTypes.style1}
-      title={title}
-      onModalShow={() => onModalVisible()}
-      headerRightButtonText={rightButtonText}
-      containerStyle={styles.parent}
-      onRightButtonPress={() => {
-        if (!selectedSport?.sport_name) {
-          return;
-        }
-
-        if (forTeam) {
-          if (
-            selectedSport.sport_type === Verbs.doubleSport &&
-            (authContext?.entity?.role === Verbs.entityTypeUser ||
-              authContext?.entity?.role === Verbs.entityTypePlayer)
-          ) {
-            onNextPress(selectedSport);
-          } else if (authContext.entity.role !== Verbs.entityTypeClub) {
-            setVisibleRoleModal(true);
-          } else {
-            onNextPress(selectedSport);
+    <>
+      <CustomModalWrapper
+        isVisible={isVisible}
+        closeModal={closeList}
+        modalType={ModalTypes.style1}
+        title={title}
+        onModalShow={() => onModalVisible()}
+        headerRightButtonText={rightButtonText}
+        containerStyle={styles.parent}
+        onRightButtonPress={() => {
+          if (!selectedSport?.sport_name) {
+            return;
           }
-        } else {
-          onNext(selectedSport);
-        }
-      }}
-      isFullTitle={title === strings.registerScorekeeperTitle}
-      headerLeftIconStyle={
-        title === strings.registerScorekeeperTitle ? {width: 50} : {}
-      }>
-      <View style={{flex: 1}}>
-        {getQuestionAndDescription().question ? (
-          <Text style={styles.title}>
-            {getQuestionAndDescription().question}
-          </Text>
-        ) : null}
-        {getQuestionAndDescription().description ? (
-          <Text style={styles.description}>
-            {getQuestionAndDescription().description}
-          </Text>
-        ) : null}
 
-        <FlatList
-          data={sportsList}
-          keyExtractor={(item, index) => `${item?.sport_type}/${index}`}
-          showsVerticalScrollIndicator={false}
-          renderItem={({item}) => (
-            <>
-              <Pressable
-                style={styles.listItem}
-                onPress={() => setSelectedSport(item)}>
-                <Text style={styles.listLabel}>{item.sport_name}</Text>
-                <View style={styles.listIconContainer}>
-                  {selectedSport?.sport_name === item?.sport_name &&
-                  selectedSport?.sport_type === item?.sport_type ? (
-                    <Image
-                      source={images.radioCheckYellow}
-                      style={styles.image}
-                    />
-                  ) : (
-                    <Image source={images.radioUnselect} style={styles.image} />
-                  )}
-                </View>
-              </Pressable>
-              <View style={styles.lineSeparator} />
-            </>
-          )}
-        />
-      </View>
+          if (forTeam) {
+            if (
+              selectedSport.sport_type === Verbs.doubleSport &&
+              (authContext?.entity?.role === Verbs.entityTypeUser ||
+                authContext?.entity?.role === Verbs.entityTypePlayer)
+            ) {
+              onNextPress(selectedSport);
+            } else if (authContext.entity.role !== Verbs.entityTypeClub) {
+              setVisibleRoleModal(true);
+            } else {
+              onNextPress(selectedSport);
+            }
+          } else {
+            onNext(selectedSport);
+          }
+        }}
+        isFullTitle={title === strings.registerScorekeeperTitle}
+        headerLeftIconStyle={
+          title === strings.registerScorekeeperTitle ? {width: 50} : {}
+        }>
+        <View style={{flex: 1}}>
+          {getQuestionAndDescription().question ? (
+            <Text style={styles.title}>
+              {getQuestionAndDescription().question}
+            </Text>
+          ) : null}
+          {getQuestionAndDescription().description ? (
+            <Text style={styles.description}>
+              {getQuestionAndDescription().description}
+            </Text>
+          ) : null}
+
+          <FlatList
+            data={sportsList}
+            keyExtractor={(item, index) => `${item?.sport_type}/${index}`}
+            showsVerticalScrollIndicator={false}
+            renderItem={({item}) => (
+              <>
+                <Pressable
+                  style={styles.listItem}
+                  onPress={() => setSelectedSport(item)}>
+                  <Text style={styles.listLabel}>{item.sport_name}</Text>
+                  <View style={styles.listIconContainer}>
+                    {selectedSport?.sport_name === item?.sport_name &&
+                    selectedSport?.sport_type === item?.sport_type ? (
+                      <Image
+                        source={images.radioCheckYellow}
+                        style={styles.image}
+                      />
+                    ) : (
+                      <Image
+                        source={images.radioUnselect}
+                        style={styles.image}
+                      />
+                    )}
+                  </View>
+                </Pressable>
+                <View style={styles.lineSeparator} />
+              </>
+            )}
+          />
+        </View>
+      </CustomModalWrapper>
       <CustomModalWrapper
         isVisible={visibleRoleModal}
         title={strings.createTeamText}
@@ -243,7 +249,7 @@ const SportsListModal = ({
             {name: 'en_Other', isChecked: false},
           ]);
         }}
-        modalType={ModalTypes.style1}>
+        modalType={ModalTypes.style6}>
         <TCKeyboardView
           enableOnAndroid
           scrollReference={scrollRef}
@@ -321,7 +327,6 @@ const SportsListModal = ({
           />
         </TCKeyboardView>
       </CustomModalWrapper>
-
       <MemberListModal
         isVisible={memberListModal}
         title={strings.createTeamText}
@@ -332,7 +337,7 @@ const SportsListModal = ({
         doubleSport={doubleSport}
         sportsList={playerList}
       />
-    </CustomModalWrapper>
+    </>
   );
 };
 

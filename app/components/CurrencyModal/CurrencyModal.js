@@ -1,12 +1,6 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  FlatList,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import React, {useState, useContext, useEffect} from 'react';
-
+import {FlatList} from 'react-native-gesture-handler';
 import {getCountry} from 'country-currency-map';
 import CustomModalWrapper from '../CustomModalWrapper';
 import {
@@ -23,12 +17,13 @@ import AuthContext from '../../auth/context';
 import Verbs from '../../Constants/Verbs';
 import {showAlert} from '../../utils';
 
-export default function CurrencyModal({
+const CurrencyModal = ({
   isVisible,
-  closeList,
-  onNext,
+  closeList = () => {},
+  onNext = () => {},
   existedCurrency = '',
-}) {
+  modalType = ModalTypes.style1,
+}) => {
   const authContext = useContext(AuthContext);
   const [selectedCurrency, setSelectedCurrency] = useState(Verbs.usd);
   const [currencydata, setCurrencydata] = useState();
@@ -123,12 +118,9 @@ export default function CurrencyModal({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeList}
-      modalType={ModalTypes.style1}
-      // onRightButtonPress={() => onNext(selectedCurrency)}
-      // headerRightButtonText={strings.next}
+      modalType={modalType}
       title={strings.changeCurrency}
-      containerStyle={{padding: 0}}
-      parentStyle={{marginTop: 20}}>
+      containerStyle={{padding: 0}}>
       <FlatList
         data={currencydata}
         ItemSeparatorComponent={() => <TCThinDivider />}
@@ -137,7 +129,7 @@ export default function CurrencyModal({
       />
     </CustomModalWrapper>
   );
-}
+};
 
 const styles = StyleSheet.create({
   languageList: {
@@ -147,3 +139,5 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
 });
+
+export default CurrencyModal;

@@ -3,12 +3,11 @@ import {
   Text,
   View,
   Image,
-  FlatList,
   Alert,
-  ScrollView,
   TouchableOpacity,
 } from 'react-native';
 import React, {useState} from 'react';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import {strings} from '../../../../Localization/translation';
 import {ModalTypes} from '../../../Constants/GeneralConstants';

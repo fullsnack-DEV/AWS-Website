@@ -2,7 +2,6 @@
 /* eslint-disable no-param-reassign */
 import React, {useState, useCallback, useContext, useEffect} from 'react';
 import {
-  FlatList,
   TextInput,
   TouchableOpacity,
   Text,
@@ -11,6 +10,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
@@ -381,97 +381,93 @@ const AddRecipientsModal = ({
   };
 
   return (
-    <CustomModalWrapper
-      isVisible={isVisible}
-      closeModal={() => onCloseThisModal()}
-      modalType={ModalTypes.style1}
-      title={modalTitle || strings.newRecipents}
-      containerStyle={{
-        padding: 0,
-        width: '100%',
-        height: '100%',
-      }}
-      headerRightButtonText={rightbuttonText || strings.done}
-      onRightButtonPress={() => onAddRecipients()}
-      Top={75}>
-      {/* Code for Search Field */}
-      <View style={styles.searchSectionStyle}>
-        <TextInput
-          style={styles.searchTextInput}
-          placeholder={strings.searchText}
-          placeholderTextColor={colors.userPostTimeColor}
-          value={searchText}
-          onChangeText={(text) => setSearchText(text)}
-        />
-        {searchText.length > 0 && (
-          <TouchableOpacity
-            onPress={() => {
-              setSearchText('');
-            }}>
-            <Image
-              source={images.closeRound}
-              style={{height: 15, width: 15, marginRight: 10}}
-            />
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {/* Recipient selections */}
-      <TouchableOpacity
-        style={{marginHorizontal: 15}}
-        onPress={() => showSelectedRecipient()}>
-        <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
-          <Text
-            style={{
-              marginTop: 15,
-              color:
-                showSelectedRecipientsText() === strings.noneselected
-                  ? colors.placeHolderColor
-                  : colors.orangeColorCard,
-              fontSize: 16,
-              textAlign: 'right',
-              fontFamily: fonts.RRegular,
-              lineHeight: 24,
-            }}>
-            {showSelectedRecipientsText()}
-          </Text>
-        </View>
-      </TouchableOpacity>
-      {/* show the tabs if club is sending the invoice */}
-      {isShowTabs && invoiceType === InvoiceType.Invoice && (
-        <View style={{backgroundColor: '#FFFFFF'}}>
-          <CustomScrollTabs
-            tabsItem={TAB_ITEMS}
-            setCurrentTab={tabChangePress}
-            currentTab={currentTab}
+    <>
+      <CustomModalWrapper
+        isVisible={isVisible}
+        closeModal={() => onCloseThisModal()}
+        modalType={ModalTypes.style1}
+        title={modalTitle || strings.newRecipents}
+        containerStyle={{flex: 1, padding: 0}}
+        headerRightButtonText={rightbuttonText || strings.done}
+        onRightButtonPress={() => onAddRecipients()}>
+        {/* Code for Search Field */}
+        <View style={styles.searchSectionStyle}>
+          <TextInput
+            style={styles.searchTextInput}
+            placeholder={strings.searchText}
+            placeholderTextColor={colors.userPostTimeColor}
+            value={searchText}
+            onChangeText={(text) => setSearchText(text)}
           />
+          {searchText.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchText('');
+              }}>
+              <Image
+                source={images.closeRound}
+                style={{height: 15, width: 15, marginRight: 10}}
+              />
+            </TouchableOpacity>
+          )}
         </View>
-      )}
 
-      {showCurrentGroupAllMember()}
+        {/* Recipient selections */}
+        <TouchableOpacity
+          style={{marginHorizontal: 15}}
+          onPress={() => showSelectedRecipient()}>
+          <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
+            <Text
+              style={{
+                marginTop: 15,
+                color:
+                  showSelectedRecipientsText() === strings.noneselected
+                    ? colors.placeHolderColor
+                    : colors.orangeColorCard,
+                fontSize: 16,
+                textAlign: 'right',
+                fontFamily: fonts.RRegular,
+                lineHeight: 24,
+              }}>
+              {showSelectedRecipientsText()}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        {/* show the tabs if club is sending the invoice */}
+        {isShowTabs && invoiceType === InvoiceType.Invoice && (
+          <View style={{backgroundColor: '#FFFFFF'}}>
+            <CustomScrollTabs
+              tabsItem={TAB_ITEMS}
+              setCurrentTab={tabChangePress}
+              currentTab={currentTab}
+            />
+          </View>
+        )}
 
-      {(invoiceType === InvoiceType.Invoice ||
-        invoiceType === InvoiceType.Event) && (
-        <FlatList
-          extraData={
-            currentTab === InvoiceRecipientTabType.People
-              ? searchPeoples
-              : searchTeams
-          }
-          showsVerticalScrollIndicator={false}
-          data={
-            currentTab === InvoiceRecipientTabType.People
-              ? searchPeoples
-              : searchTeams
-          }
-          keyExtractor={(item, index) => index.toString()}
-          ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
-          renderItem={renderRecipient}
-          ListEmptyComponent={listEmptyComponent}
-          ListFooterComponent={() => <View style={{marginBottom: 100}} />}
-        />
-      )}
+        {showCurrentGroupAllMember()}
 
+        {(invoiceType === InvoiceType.Invoice ||
+          invoiceType === InvoiceType.Event) && (
+          <FlatList
+            extraData={
+              currentTab === InvoiceRecipientTabType.People
+                ? searchPeoples
+                : searchTeams
+            }
+            showsVerticalScrollIndicator={false}
+            data={
+              currentTab === InvoiceRecipientTabType.People
+                ? searchPeoples
+                : searchTeams
+            }
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={() => <View style={styles.dividerLine} />}
+            renderItem={renderRecipient}
+            ListEmptyComponent={listEmptyComponent}
+            ListFooterComponent={() => <View style={{marginBottom: 100}} />}
+          />
+        )}
+      </CustomModalWrapper>
       {/* People list */}
       <SelectedRecipientsModal
         isVisible={showSelectedRecipientsModal}
@@ -482,7 +478,7 @@ const AddRecipientsModal = ({
         teamsRecipient={selectedTeams}
         invoiceType={invoiceType}
       />
-    </CustomModalWrapper>
+    </>
   );
 };
 

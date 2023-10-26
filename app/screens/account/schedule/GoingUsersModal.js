@@ -5,7 +5,8 @@ import {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
 import React, {useMemo} from 'react';
-import {StyleSheet, Platform, StatusBar, View, FlatList} from 'react-native';
+import {StyleSheet, Platform, StatusBar, View} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import colors from '../../../Constants/Colors';
 import TCRemoveUser from '../connections/TCRemoveUser';
 import ScreenHeader from '../../../components/ScreenHeader';
