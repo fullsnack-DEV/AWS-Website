@@ -10,6 +10,7 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
 import {getEntitySport} from '../../utils/sportsActivityUtils';
+import {teamInvitePrivacy} from '../../Constants/GeneralConstants';
 
 const GroupHomeButton = ({
   groupData = {},
@@ -31,7 +32,6 @@ const GroupHomeButton = ({
     btn3: '',
   });
   const [actionSheetTitle, setActionSheetTitle] = useState('');
-
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -64,7 +64,19 @@ const GroupHomeButton = ({
       loggedInEntity.role === Verbs.entityTypePlayer ||
       loggedInEntity.role === Verbs.entityTypeUser
     ) {
-      if (groupData?.follow_request) {
+      if (
+        groupData.who_can_invite_member ===
+          teamInvitePrivacy.teamAndMemberPrivacy &&
+        groupData.is_joined
+      ) {
+        obj.btn2 = strings.inviteMemberText;
+      } else if (
+        groupData.who_can_invite_member ===
+          teamInvitePrivacy.teamOnlyPrivacyOption &&
+        groupData.is_joined
+      ) {
+        obj.btn2 = Verbs.HIDE_BUTTON;
+      } else if (groupData?.follow_request) {
         obj.btn2 = strings.followReqSentText;
       } else if (groupData.is_following) {
         obj.btn2 = strings.following;
@@ -311,7 +323,7 @@ const GroupHomeButton = ({
         </TouchableOpacity>
       ) : null}
 
-      {buttons.btn2 ? (
+      {buttons.btn2 !== Verbs.HIDE_BUTTON ? (
         <TouchableOpacity
           style={[
             styles.buttonContainer,
@@ -345,6 +357,7 @@ const GroupHomeButton = ({
             groupData.sport_type === Verbs.doubleSport
               ? {height: 25, paddingVertical: 0}
               : {},
+            buttons.btn2 === Verbs.HIDE_BUTTON ? {marginLeft: 7} : {},
           ]}
           onPress={() => {
             setShowOptions3(true);

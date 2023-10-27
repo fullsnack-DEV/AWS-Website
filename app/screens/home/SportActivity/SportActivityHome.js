@@ -447,15 +447,28 @@ const SportActivityHome = ({navigation, route}) => {
     }
   };
 
+  const getSportAcitivityName = () => {
+    const activityName = getSportName(
+      sportObj?.sport,
+      sportObj?.sport_type,
+      authContext.sports,
+    );
+
+    return activityName ?? '';
+  };
+
+  const getTitleForActivity = () => {
+    if (sportObj) {
+      return `${getHeaderTitle(entityType)} ${getSportAcitivityName()}`;
+    }
+    return '';
+  };
+
   return (
     <SafeAreaView style={styles.parent}>
       <ScreenHeader
         sportIcon={sportIcon}
-        title={`${getHeaderTitle(entityType)} ${getSportName(
-          sportObj?.sport,
-          sportObj?.sport_type,
-          authContext.sports,
-        )}`}
+        title={getTitleForActivity()}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           if (route.params?.parentStack) {

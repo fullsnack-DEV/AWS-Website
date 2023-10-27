@@ -204,6 +204,7 @@ const Verbs = {
   PHONE_NUMBER_KEY: 'phone_numbers',
   attendeeVerb: 'attendee',
   FOLLOW_REQ_SENT: 'followReqSent',
+  HIDE_BUTTON: 'hideButton',
 };
 
 export default Verbs;

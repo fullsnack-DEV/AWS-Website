@@ -1,12 +1,13 @@
 // @flow
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {View, StyleSheet, Dimensions, Platform} from 'react-native';
+import {View, StyleSheet, Dimensions, Platform, StatusBar} from 'react-native';
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
 import {useNavigation} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import colors from '../Constants/Colors';
 import {ModalTypes} from '../Constants/GeneralConstants';
@@ -51,26 +52,23 @@ const CustomModalWrapper = ({
   const modalRef = useRef();
   const navigation = useNavigation();
   const [topMargin, setTopMargin] = useState(50);
+  const {bottom, top} = useSafeAreaInsets();
 
   useEffect(() => {
     if (isVisible) {
       const type = navigation.getState().type;
 
+      let modalHeight =
+        Platform.OS === 'android'
+          ? layout.height * 0.049
+          : layout.height * 0.05;
+
       if (type === 'tab') {
-        setTopMargin(
-          Platform.OS === 'android'
-            ? layout.height * 0.1
-            : layout.height * 0.15,
-        );
-      } else {
-        setTopMargin(
-          Platform.OS === 'android'
-            ? layout.height * 0.049
-            : layout.height * 0.05,
-        );
+        modalHeight = modalHeight + bottom + top;
       }
+      setTopMargin(modalHeight);
     }
-  }, [isVisible, navigation]);
+  }, [isVisible, navigation, bottom, top]);
 
   const snapPoints = useMemo(() => {
     switch (modalType) {
@@ -94,7 +92,7 @@ const CustomModalWrapper = ({
       default:
         return [layout.height - topMargin, layout.height - topMargin];
     }
-  }, [modalType]);
+  }, [modalType, topMargin]);
 
   const getModalHeader = () => {
     switch (modalType) {
@@ -201,12 +199,12 @@ const CustomModalWrapper = ({
         keyboardBehavior={Platform.OS === 'ios' ? 'extend' : 'interactive'}
         keyboardBlurBehavior="restore"
         android_keyboardInputMode="adjustResize">
-        {/* {Platform.OS === 'android' && (
+        {Platform.OS === 'android' && (
           <StatusBar
             backgroundColor={colors.modalBackgroundColor}
             barStyle="light-content"
           />
-        )} */}
+        )}
         <View style={[styles.parent, containerStyle]}>{children}</View>
       </BottomSheetModal>
     </BottomSheetModalProvider>

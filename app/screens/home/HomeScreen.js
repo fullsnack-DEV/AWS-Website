@@ -70,8 +70,8 @@ const HomeScreen = ({navigation, route}) => {
     });
   }, [navigation]);
 
-  const getUserData = (uid, fromRefresh) => {
-    setLoading(!fromRefresh);
+  const getUserData = (uid) => {
+    setLoading(true);
 
     getUserDetails(uid, authContext, true)
       .then((res1) => {
@@ -174,12 +174,9 @@ const HomeScreen = ({navigation, route}) => {
   }, [
     authContext.entity,
     route.params?.role,
-    route.params?.uid,
+    route.params.uid,
     route.params?.comeFrom,
     isFocused,
-    getUserData,
-    fetchGroupDetails,
-    getLoggedinGroupMembers,
   ]);
 
   useEffect(() => {
@@ -275,10 +272,7 @@ const HomeScreen = ({navigation, route}) => {
 
             const uid = route.params.uid ?? loginEntity.uid;
 
-            const admin = loginEntity.uid === uid;
-
-            const fromRefresh = true;
-            getUserData(uid, admin, fromRefresh);
+            getUserData(uid);
           }}
           routeParams={route.params}
           loggedInGroupMembers={loggedInGroupMembers}

@@ -3192,4 +3192,6 @@ export default {
     "en_You can't send message to team with no members.",
   memberShipInvitationText: 'en_Membership Invitation',
   invitedYouToJoinGroup: 'en_invited you to join their {0}',
+  teamAndMemberPrivacy: 'en_Team and Members',
+  teamOnlyPrivacyOption: 'en_Team Only',
 };

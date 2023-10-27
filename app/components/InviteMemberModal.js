@@ -33,7 +33,12 @@ import InviteMemberbyEmailModal from './InviteMemberByEmail';
 import GroupIcon from './GroupIcon';
 import Verbs from '../Constants/Verbs';
 
-function InviteMemberModal({isVisible, closeModal = () => {}}) {
+function InviteMemberModal({
+  isVisible,
+  closeModal = () => {},
+  forUser = false,
+  currentUserData = {},
+}) {
   const [loading, setloading] = useState(true);
   const authContext = useContext(AuthContext);
   const [players, setPlayers] = useState([]);
@@ -90,9 +95,9 @@ function InviteMemberModal({isVisible, closeModal = () => {}}) {
     const entity = authContext.entity;
 
     const obj = {
-      entity_type: entity.role,
+      entity_type: forUser ? currentUserData.entity_type : entity.role,
       userIds: selectedList,
-      uid: entity.uid,
+      uid: forUser ? currentUserData.group_id : entity.uid,
     };
 
     sendInvitationInGroup(obj, authContext)

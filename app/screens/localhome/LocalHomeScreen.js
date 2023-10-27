@@ -275,7 +275,7 @@ function LocalHomeScreen({navigation, route}) {
         .catch((e) => {
           console.log(e);
         });
-      listRef.current.scrollToOffset({offset: 0, animated: true});
+
       locationContext.setSelectedLoaction(location);
     }, [location, locationContext]),
   );

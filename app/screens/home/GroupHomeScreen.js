@@ -58,6 +58,7 @@ import BottomSheet from '../../components/modals/BottomSheet';
 import errorCode from '../../Constants/errorCode';
 import {JoinPrivacy} from '../../Constants/GeneralConstants';
 import {cancelFollowRequest} from '../../api/Users';
+import InviteMemberModal from '../../components/InviteMemberModal';
 
 // import BottomSheet from '../../components/modals/BottomSheet';
 
@@ -102,10 +103,12 @@ const GroupHomeScreen = ({
   const [refreshMemberModal, setRefreshMemberModal] = useState(false);
   const [isInvited, setIsInvited] = useState(false);
   const [visibleEditProfileModal, setVisibleEditProfileModal] = useState(false);
+  const [showInviteMember, setShowInviteMember] = useState(false);
 
   const bottomSheetRef = useRef(null);
   const followModalRef = useRef(null);
   const JoinButtonModalRef = useRef(null);
+  const membershipInviteModalRef = useRef(null);
 
   const backButtonHandler = useCallback(() => {
     if (route.params.comeFrom === Verbs.INCOMING_CHALLENGE_SCREEN) {
@@ -936,7 +939,8 @@ const GroupHomeScreen = ({
     acceptRequest(params, requestId, authContext)
       .then((response) => {
         setRefreshMemberModal(true);
-        JoinButtonModalRef.current.close();
+
+        membershipInviteModalRef.current.close();
         if (
           response.payload?.error_code &&
           response.payload?.error_code === ErrorCodes.MEMBEREXISTERRORCODE
@@ -993,6 +997,7 @@ const GroupHomeScreen = ({
     setLoading(true);
     declineRequest(requestId, authContext)
       .then(() => {
+        membershipInviteModalRef.current.close();
         setLoading(false);
         setCurrentUserData({
           ...currentUserData,
@@ -1462,8 +1467,8 @@ const GroupHomeScreen = ({
       case strings.acceptRequest:
       case strings.acceptRequet:
         setIsInvited(true);
-
-        JoinButtonModalRef.current.present();
+        membershipInviteModalRef.current.present();
+        // JoinButtonModalRef.current.present();
         // onAccept(currentUserData.invite_request.activity_id);
         break;
 
@@ -1482,6 +1487,9 @@ const GroupHomeScreen = ({
       case strings.cancelInvite:
       case strings.cancelRequestText:
         cancelGroupInvitation(action);
+        break;
+      case strings.inviteMemberText:
+        setShowInviteMember(true);
         break;
 
       default:
@@ -1604,6 +1612,27 @@ const GroupHomeScreen = ({
         }
         isInvited={isInvited}
       />
+
+      <JoinButtonModal
+        JoinButtonModalRef={membershipInviteModalRef}
+        currentUserData={currentUserData}
+        onAcceptPress={() =>
+          onAccept(currentUserData.invite_request.activity_id)
+        }
+        hideMessageBox={true}
+        title={strings.memberShipInvitationText}
+        forUserRespond={true}
+        isInvited={isInvited}
+        onDecline={() => onDecline(currentUserData.invite_request.activity_id)}
+      />
+
+      <InviteMemberModal
+        isVisible={showInviteMember}
+        closeModal={() => setShowInviteMember(false)}
+        forUser={true}
+        currentUserData={currentUserData}
+      />
+
       <EditGroupProfileModal
         visible={visibleEditProfileModal}
         closeModal={() => setVisibleEditProfileModal(false)}

@@ -15,6 +15,11 @@ const privacySettingEnum = {
   3: strings.followerTitleText,
 };
 
+const teamInvitePrivacy = {
+  teamAndMemberPrivacy: 1,
+  teamOnlyPrivacyOption: 0,
+};
+
 const JoinPrivacy = {
   everyone: 0,
   acceptedByMe: 1,
@@ -211,7 +216,7 @@ export const privacyOptionForWhoCanSee = {
 };
 
 export default EntityStatus;
-export {privacySettingEnum, privacyKey, JoinPrivacy};
+export {privacySettingEnum, privacyKey, JoinPrivacy, teamInvitePrivacy};
 
 export const urlRegex =
   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/gim;
