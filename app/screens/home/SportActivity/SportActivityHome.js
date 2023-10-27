@@ -73,7 +73,7 @@ const SportActivityHome = ({navigation, route}) => {
     route.params;
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
-  const modalRef = useRef();
+  const [showSectionModal, setShowSetionModal] = useState(false);
   const lookingForModalRef = useRef();
   const settingWrraperModalRef = useRef();
   const privacySettingModalRef = useRef();
@@ -428,7 +428,7 @@ const SportActivityHome = ({navigation, route}) => {
     } else {
       setActiveTab(section);
     }
-    modalRef.current?.present();
+    setShowSetionModal(true);
   };
 
   const getHeaderBorderColor = () => {
@@ -629,8 +629,8 @@ const SportActivityHome = ({navigation, route}) => {
         type="ios"
       />
       <SectionWrapperModal
-        modalRef={modalRef}
-        closeModal={() => modalRef.current.dismiss()}
+        isVisible={showSectionModal}
+        closeModal={() => setShowSetionModal(false)}
         handleEditNavigation={handleEditNavigation}
         handlePrivacySettings={handlePrivacySettings}
         selectedOption={activeTab}
@@ -656,7 +656,7 @@ const SportActivityHome = ({navigation, route}) => {
         modalRef={settingWrraperModalRef}
         closeModal={() => {
           settingWrraperModalRef.current.dismiss();
-          modalRef.current.dismiss();
+          // setShowSetionModal(false);
         }}
         entityType={entityType}
         section={settingModalObj.option}
@@ -669,7 +669,7 @@ const SportActivityHome = ({navigation, route}) => {
         modalRef={privacySettingModalRef}
         closeModal={() => {
           privacySettingModalRef.current.dismiss();
-          modalRef.current.dismiss();
+          setShowSetionModal(false);
         }}
         section={settingModalObj.option}
         sport={sport}

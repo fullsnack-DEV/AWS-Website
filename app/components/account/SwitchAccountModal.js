@@ -29,7 +29,6 @@ import {
 } from '../../api/Groups';
 import Verbs from '../../Constants/Verbs';
 import SwitchAccountShimmer from './SwitchAccountShimmer';
-import ScreenHeader from '../ScreenHeader';
 
 const SwitchAccountModal = ({
   isVisible = false,
@@ -220,8 +219,6 @@ const SwitchAccountModal = ({
       closeModal={closeModal}
       title={strings.switchAccount}
       containerStyle={styles.modalContainer}>
-      <ScreenHeader title={strings.switchAccount} />
-
       {isFetchingList ? (
         <SwitchAccountShimmer />
       ) : (

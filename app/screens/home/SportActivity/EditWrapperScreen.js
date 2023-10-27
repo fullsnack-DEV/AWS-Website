@@ -285,22 +285,6 @@ const EditWrapperScreen = ({
         {renderView()}
       </BottomSheetModal>
     </BottomSheetModalProvider>
-    // <SafeAreaView style={{flex: 1}}>
-    //   <ScreenHeader
-    //     sportIcon={sportIcon}
-    //     title={title}
-    //     leftIcon={images.backArrow}
-    //     leftIconPress={() => {
-    //       navigation.goBack();
-    //     }}
-    //     isRightIconText
-    //     rightButtonText={strings.save}
-    //     onRightButtonPress={handleSave}
-    //     loading={loading}
-    //   />
-
-    //   {renderView()}
-    // </SafeAreaView>
   );
 };
 

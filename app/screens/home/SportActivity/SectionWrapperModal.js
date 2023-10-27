@@ -1,7 +1,6 @@
 // @flow
-import React, {useContext, useMemo} from 'react';
-import {View, StyleSheet, Dimensions, Platform, StatusBar} from 'react-native';
-import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import React, {useContext} from 'react';
+import {View, StyleSheet} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import InfoContentScreen from './contentScreens/InfoContentScreen';
 import Verbs from '../../../Constants/Verbs';
@@ -12,14 +11,12 @@ import {getGameHomeScreen} from '../../../utils/gameUtils';
 import StatsContentScreen from './contentScreens/StatsContentScreen';
 import AvailabilityScreen from './contentScreens/AvailabilityContentScreen';
 import colors from '../../../Constants/Colors';
-import ScreenHeader from '../../../components/ScreenHeader';
 import images from '../../../Constants/ImagePath';
-import ModalBackDrop from '../../../components/ModalBackDrop';
-
-const layout = Dimensions.get('window');
+import CustomModalWrapper from '../../../components/CustomModalWrapper';
+import {ModalTypes} from '../../../Constants/GeneralConstants';
 
 const SectionWrapperModal = ({
-  modalRef,
+  isVisible,
   closeModal = () => {},
   handleEditNavigation = () => {},
   handlePrivacySettings = () => {},
@@ -148,49 +145,25 @@ const SectionWrapperModal = ({
     }
   };
 
-  const snapPoints = useMemo(
-    () => [layout.height - 40, layout.height - 40],
-    [],
-  );
-
   return (
-    <BottomSheetModalProvider>
-      <BottomSheetModal
-        onDismiss={closeModal}
-        ref={modalRef}
-        backgroundStyle={{
-          borderRadius: 10,
-          paddingTop: 0,
-        }}
-        index={1}
-        snapPoints={snapPoints}
-        enablePanDownToClose
-        enableDismissOnClose
-        backdropComponent={ModalBackDrop}
-        handleComponent={() => (
-          <ScreenHeader
-            leftIcon={images.backArrow}
-            title={selectedOption}
-            showSportIcon
-            sportIcon={sportIcon}
-            containerStyle={{
-              paddingTop: 3,
-              paddingBottom: 5,
-              borderBottomWidth: 3,
-              borderBottomColor: colors.tabFontColor,
-            }}
-            leftIconPress={() => closeModal()}
-          />
-        )}>
-        {Platform.OS === 'android' && (
-          <StatusBar
-            backgroundColor={colors.modalBackgroundColor}
-            barStyle="light-content"
-          />
-        )}
-        <View style={styles.parent}>{renderContent()}</View>
-      </BottomSheetModal>
-    </BottomSheetModalProvider>
+    <CustomModalWrapper
+      isVisible={isVisible}
+      closeModal={closeModal}
+      modalType={ModalTypes.style1}
+      backIcon={images.backArrow}
+      title={selectedOption}
+      showSportIcon
+      sportIcon={sportIcon}
+      headerBottomBorderColor={colors.tabFontColor}
+      containerStyle={{padding: 0, flex: 1}}
+      headerStyle={{
+        paddingTop: 3,
+        paddingBottom: 5,
+        borderBottomWidth: 3,
+        borderBottomColor: colors.tabFontColor,
+      }}>
+      <View style={styles.parent}>{renderContent()}</View>
+    </CustomModalWrapper>
   );
 };
 

@@ -184,7 +184,7 @@ const getSingleSportList = (sports) => {
 };
 const getEntitySportList = (user = {}, role = Verbs.entityTypePlayer) => {
   let sportList = [];
-  if (role === Verbs.entityTypePlayer) {
+  if (role === Verbs.entityTypePlayer || role === Verbs.entityTypeUser) {
     sportList =
       user.registered_sports?.length > 0
         ? user.registered_sports.filter(

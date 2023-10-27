@@ -1244,18 +1244,34 @@ function LocalHomeScreen({navigation, route}) {
           style={{paddingTop: 0, paddingHorizontal: 0}}
           onLayout={(event) => {
             const contentHeight = event.nativeEvent.layout.height + 80;
-
-            setSnapPoints([
-              '50%',
-              contentHeight,
-              Dimensions.get('window').height - 40,
-            ]);
+            const screenHeight = Dimensions.get('window').height - 40;
+            if (contentHeight <= screenHeight) {
+              setSnapPoints(['50%', contentHeight, screenHeight]);
+            }
           }}>
           <FlatList
             data={playerDetail?.sports}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item}) => (
-              <SportView item={item} imageBaseUrl={image_base_url} />
+              <SportView
+                item={item}
+                imageBaseUrl={image_base_url}
+                onPress={() => {
+                  // console.log({item});
+                  setPlayerDetailPopup(false);
+                  navigation.navigate('HomeStack', {
+                    screen: 'SportActivityHome',
+                    params: {
+                      sport: item.sport,
+                      sportType: item?.sport_type,
+                      uid: playerDetail.user_id,
+                      entityType: playerDetail.entity_type,
+                      parentStack: 'App',
+                      backScreen: 'LocalHome',
+                    },
+                  });
+                }}
+              />
             )}
             showsVerticalScrollIndicator={false}
           />

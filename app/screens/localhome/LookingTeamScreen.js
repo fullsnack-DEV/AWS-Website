@@ -313,7 +313,7 @@ export default function LookingTeamScreen({navigation, route}) {
                   uid: item?.user_id,
                   entityType: item?.entity_type,
                   showPreview: true,
-                  parentStack: 'AccountStack',
+                  parentStack: 'LocalHomeStack',
                   backScreen: 'LookingTeamScreen',
                 },
               });
@@ -473,7 +473,7 @@ export default function LookingTeamScreen({navigation, route}) {
             uid: playerDetail.uid,
             entityType: playerDetail.entity_type,
             showPreview: true,
-            parentStack: 'AccountStack',
+            parentStack: 'LocalHomeStack',
             backScreen: 'LookingTeamScreen',
           },
         });

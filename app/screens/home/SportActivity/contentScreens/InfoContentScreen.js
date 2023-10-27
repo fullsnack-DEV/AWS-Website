@@ -30,6 +30,7 @@ import {getJSDate} from '../../../../utils';
 import CertificateList from '../components/CertificateList';
 import ServicableArea from '../components/ServicableArea';
 import {getTitleForRegister} from '../../../../utils/sportsActivityUtils';
+import CustomModalWrapper from '../../../../components/CustomModalWrapper';
 
 const OptionList = [
   strings.bio,
@@ -63,7 +64,7 @@ const InfoContentScreen = ({
     showPrivacy: false,
   });
   const [forHome] = useState(true);
-
+  const [snapPoints, setSnapPoints] = useState([]);
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -257,8 +258,9 @@ const InfoContentScreen = ({
         setEditModalInfo({
           section: sectionName,
           buttonText: strings.editHomePlaceText,
-          showPrivacy: true,
-          privacyKey: privacyKey.homeFacility,
+          showPrivacy: false,
+          // privacyKey: privacyKey.homeFacility,
+          privacyKey: '',
         });
         setShowEditModal(true);
         break;
@@ -312,7 +314,7 @@ const InfoContentScreen = ({
   };
 
   return (
-    <View style={styles.parent}>
+    <>
       <FlatList
         data={options}
         keyExtractor={(item, index) => index.toString()}
@@ -338,7 +340,7 @@ const InfoContentScreen = ({
                     : {},
                 ]}>
                 <View style={[styles.row, {justifyContent: 'center'}]}>
-                  <Text style={styles.sectionTitle}>{item.toUpperCase()}</Text>
+                  <Text style={styles.sectionTitle}>{item}</Text>
                   {item === strings.matchVenues ? (
                     <TouchableOpacity
                       style={styles.infoButtonContainer}
@@ -363,16 +365,24 @@ const InfoContentScreen = ({
           </View>
         )}
       />
-      <Modal visible={showInfo} transparent animationType="slide">
-        <Pressable
-          style={styles.modalParent}
-          onPress={() => setShowInfo(false)}>
-          <Pressable style={styles.modalCard} onPress={() => {}}>
-            <View style={styles.handle} />
-            <Text style={styles.label}>{strings.matchVenueInfo}</Text>
-          </Pressable>
-        </Pressable>
-      </Modal>
+      {/* <Modal visible={showInfo} transparent animationType="slide"></Modal> */}
+      <CustomModalWrapper
+        isVisible={showInfo}
+        closeModal={() => setShowInfo(false)}
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}>
+          <Text style={styles.label}>{strings.matchVenueInfo}</Text>
+        </View>
+      </CustomModalWrapper>
 
       <Modal visible={showEditModal} transparent animationType="slide">
         <View style={styles.modalParent}>
@@ -418,7 +428,7 @@ const InfoContentScreen = ({
           </Pressable>
         </View>
       </Modal>
-    </View>
+    </>
   );
 };
 

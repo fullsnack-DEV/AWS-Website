@@ -1,11 +1,12 @@
 // @flow
-import React, {useEffect, useMemo, useRef} from 'react';
-import {View, StyleSheet, Dimensions, Platform, StatusBar} from 'react-native';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {View, StyleSheet, Dimensions, Platform} from 'react-native';
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
+import {useNavigation} from '@react-navigation/native';
 
 import colors from '../Constants/Colors';
 import {ModalTypes} from '../Constants/GeneralConstants';
@@ -23,7 +24,6 @@ const renderBackdrop = (props) => (
 );
 
 const layout = Dimensions.get('window');
-const topMargin = Platform.OS === 'ios' ? 50 : 80;
 
 const CustomModalWrapper = ({
   loading = false,
@@ -34,7 +34,7 @@ const CustomModalWrapper = ({
   onRightButtonPress = () => {},
   headerRightButtonText = '',
   modalType = ModalTypes.default,
-  // headerBottomBorderColor = colors.grayBackgroundColor,
+  headerStyle = {},
   children = null,
   isFullTitle = false,
   headerLeftIconStyle = {},
@@ -45,7 +45,33 @@ const CustomModalWrapper = ({
   rightIcon2 = null,
   rightIcon2Press = () => {},
   iconContainerStyle = {},
+  showSportIcon = false,
+  sportIcon = null,
 }) => {
+  const modalRef = useRef();
+  const navigation = useNavigation();
+  const [topMargin, setTopMargin] = useState(50);
+
+  useEffect(() => {
+    if (isVisible) {
+      const type = navigation.getState().type;
+
+      if (type === 'tab') {
+        setTopMargin(
+          Platform.OS === 'android'
+            ? layout.height * 0.1
+            : layout.height * 0.15,
+        );
+      } else {
+        setTopMargin(
+          Platform.OS === 'android'
+            ? layout.height * 0.049
+            : layout.height * 0.05,
+        );
+      }
+    }
+  }, [isVisible, navigation]);
+
   const snapPoints = useMemo(() => {
     switch (modalType) {
       case ModalTypes.style5:
@@ -89,6 +115,9 @@ const CustomModalWrapper = ({
             loading={loading}
             isFullTitle={isFullTitle}
             leftIconStyle={headerLeftIconStyle}
+            containerStyle={headerStyle}
+            showSportIcon={showSportIcon}
+            sportIcon={sportIcon}
           />
         );
 
@@ -106,6 +135,7 @@ const CustomModalWrapper = ({
               modalRef?.current?.dismiss();
               closeModal();
             }}
+            containerStyle={headerStyle}
           />
         );
 
@@ -118,6 +148,7 @@ const CustomModalWrapper = ({
               modalRef?.current?.dismiss();
               closeModal();
             }}
+            containerStyle={headerStyle}
           />
         );
 
@@ -133,6 +164,7 @@ const CustomModalWrapper = ({
                 rightIcon2={rightIcon2}
                 rightIcon2Press={rightIcon2Press}
                 iconContainerStyle={iconContainerStyle}
+                containerStyle={headerStyle}
               />
             </>
           );
@@ -140,8 +172,6 @@ const CustomModalWrapper = ({
         return <View style={styles.handle} />;
     }
   };
-
-  const modalRef = useRef();
 
   useEffect(() => {
     if (isVisible) {
@@ -171,12 +201,12 @@ const CustomModalWrapper = ({
         keyboardBehavior={Platform.OS === 'ios' ? 'extend' : 'interactive'}
         keyboardBlurBehavior="restore"
         android_keyboardInputMode="adjustResize">
-        {Platform.OS === 'android' && (
+        {/* {Platform.OS === 'android' && (
           <StatusBar
             backgroundColor={colors.modalBackgroundColor}
             barStyle="light-content"
           />
-        )}
+        )} */}
         <View style={[styles.parent, containerStyle]}>{children}</View>
       </BottomSheetModal>
     </BottomSheetModalProvider>

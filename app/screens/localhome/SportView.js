@@ -6,7 +6,7 @@ import {getSportDetails} from '../../utils/sportsActivityUtils';
 import AuthContext from '../../auth/context';
 import fonts from '../../Constants/Fonts';
 
-const SportView = ({item = {}, imageBaseUrl = ''}) => {
+const SportView = ({item = {}, imageBaseUrl = '', onPress = () => {}}) => {
   const authContext = useContext(AuthContext);
   return (
     <Pressable
@@ -15,21 +15,7 @@ const SportView = ({item = {}, imageBaseUrl = ''}) => {
         styles.row,
         {borderLeftColor: colors.redColorCard},
       ]}
-      onPress={() => {
-        //   setPlayerDetailPopup(false);
-        //   navigation.navigate('HomeStack', {
-        //     screen: 'SportActivityHome',
-        //     params: {
-        //       sport: item.sport,
-        //       sportType: item?.sport_type,
-        //       uid: playerDetail.user_id,
-        //       entityType: playerDetail.entity_type,
-        //       showPreview: true,
-        //       parentStack: 'App',
-        //       backScreen: 'LocalHome',
-        //     },
-        //   });
-      }}
+      onPress={onPress}
       disabled={item.is_hide}>
       <View style={styles.innerViewContainer}>
         <View style={styles.row}>

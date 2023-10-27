@@ -647,33 +647,31 @@ const AccountScreen = ({navigation, route}) => {
               {strings.adminOfTeamWillClubAdminText}
             </Text>
           </View>
-        </View>
-        <Pressable
-          onPress={() => {
-            setIsRulesModalVisible(false);
-            setShowOnlyTeamSport(true);
-            setTimeout(() => setVisibleSportsModalForTeam(true), 1000);
-          }}
-          style={{
-            width: 345,
-            height: 40,
-            borderRadius: 22,
-            backgroundColor: colors.reservationAmountColor,
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignSelf: 'center',
-            marginTop: 35,
-          }}>
-          <Text
+          <Pressable
+            onPress={() => {
+              setIsRulesModalVisible(false);
+              setShowOnlyTeamSport(true);
+              setTimeout(() => setVisibleSportsModalForTeam(true), 1000);
+            }}
             style={{
-              fontSize: 16,
-              fontFamily: fonts.RBold,
-              lineHeight: 24,
-              color: colors.whiteColor,
+              height: 40,
+              borderRadius: 22,
+              backgroundColor: colors.reservationAmountColor,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 35,
             }}>
-            {strings.nextTitle}
-          </Text>
-        </Pressable>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: fonts.RBold,
+                lineHeight: 24,
+                color: colors.whiteColor,
+              }}>
+              {strings.nextTitle}
+            </Text>
+          </Pressable>
+        </View>
       </CustomModalWrapper>
 
       <SportsListModal
