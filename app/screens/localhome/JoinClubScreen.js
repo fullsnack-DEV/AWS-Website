@@ -40,8 +40,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import ScreenHeader from '../../components/ScreenHeader';
 
 function JoinClubScreen({route}) {
-  const JoinButtonModalRef = useRef(null);
-
+  const [showJoinModal, setShowJoinModal] = useState(false);
   const [clubs, setClubs] = useState([]);
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -188,7 +187,7 @@ function JoinClubScreen({route}) {
 
     joinTeam(params, groupId, authContext)
       .then((response) => {
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
 
         setloading(false);
 
@@ -253,7 +252,7 @@ function JoinClubScreen({route}) {
           response.payload.error_code === ErrorCodes.MEMBERINVITEONLYERRORCODE
         ) {
           Alert.alert(strings.alertmessagetitle, response.payload.user_message);
-          JoinButtonModalRef.current.close();
+          setShowJoinModal(false);
         } else if (response.payload.action === Verbs.joinVerb) {
           Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage, [
             {text: strings.okTitleText},
@@ -270,7 +269,7 @@ function JoinClubScreen({route}) {
       })
       .catch((error) => {
         setloading(false);
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message, [
             {text: strings.okTitleText},
@@ -315,7 +314,7 @@ function JoinClubScreen({route}) {
               }}
               onPressJoinButton={() => {
                 setGroupData(item);
-                JoinButtonModalRef.current.present();
+                setShowJoinModal(true);
               }}
             />
           </View>
@@ -331,7 +330,7 @@ function JoinClubScreen({route}) {
     acceptRequest({}, requestId, authContext)
       .then(() => {
         setloading(false);
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
         }, 10);
@@ -350,7 +349,7 @@ function JoinClubScreen({route}) {
     declineRequest(requestId, authContext)
       .then(() => {
         setloading(false);
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
@@ -449,7 +448,8 @@ function JoinClubScreen({route}) {
         />
 
         <JoinButtonModal
-          JoinButtonModalRef={JoinButtonModalRef}
+          isVisible={showJoinModal}
+          closeModal={() => setShowJoinModal(false)}
           currentUserData={groupData}
           onJoinPress={() => userJoinGroup(groupData.group_id)}
           onAcceptPress={() => userJoinGroup(groupData.group_id)}

@@ -2600,11 +2600,15 @@ export const getRatingsOptions = (
       properties = obj.referee_review_properties ?? [];
     }
 
+    if (entityType === Verbs.entityTypeTeam) {
+      properties = obj.team_review_properties;
+    }
+
     const list = properties.map((item) => {
       const option = {
         name: item.name,
         title: item.title,
-        details: item.details ?? item.description
+        details: item.details ?? item.description,
       };
       return option;
     });

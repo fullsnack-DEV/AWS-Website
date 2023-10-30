@@ -850,60 +850,6 @@ export default function CreateTeamForm1({navigation, route}) {
 
           <View style={{flex: 1}} />
 
-          {/* location modal */}
-
-          <LocationModal
-            visibleLocationModal={visibleLocationModal}
-            title={strings.homeCityTitleText}
-            setVisibleLocationModalhandler={() =>
-              setVisibleLocationModal(false)
-            }
-            onLocationSelect={handleSetLocationOptions}
-            placeholder={strings.searchByCity}
-          />
-
-          {/* gender Modal */}
-
-          <CustomModalWrapper
-            isVisible={visibleGendersModal}
-            title={strings.playersGenderText}
-            headerRightButtonText={strings.apply}
-            modalType={ModalTypes.style1}
-            closeModal={() => setVisibleGendersModal(false)}
-            onRightButtonPress={onApplyPress}
-            containerStyle={{margin: 0, padding: 0}}>
-            <FlatList
-              ItemSeparatorComponent={() => <TCThinDivider />}
-              data={groupMemberGenderItems}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderGenders}
-            />
-          </CustomModalWrapper>
-          {/* language modal */}
-          <CustomModalWrapper
-            isVisible={isModalVisible}
-            title={strings.languages}
-            headerRightButtonText={strings.apply}
-            modalType={ModalTypes.style1}
-            closeModal={() => setModalVisible(false)}
-            onRightButtonPress={() => {
-              for (const temp of languages) {
-                if (temp.isChecked) {
-                  selectedLanguage.push(temp.language);
-                }
-              }
-              setSelectedLanguages(selectedLanguage);
-              setModalVisible(false);
-            }}
-            containerStyle={{margin: 0, padding: 0}}>
-            <FlatList
-              ItemSeparatorComponent={() => <TCThinDivider />}
-              data={languages}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderLanguage}
-            />
-          </CustomModalWrapper>
-
           <ActionSheet
             ref={actionSheet}
             // title={'NewsFeed Post'}
@@ -957,6 +903,57 @@ export default function CreateTeamForm1({navigation, route}) {
           />
         </ScrollView>
       </TCKeyboardView>
+      {/* location modal */}
+
+      <LocationModal
+        visibleLocationModal={visibleLocationModal}
+        title={strings.homeCityTitleText}
+        setVisibleLocationModalhandler={() => setVisibleLocationModal(false)}
+        onLocationSelect={handleSetLocationOptions}
+        placeholder={strings.searchByCity}
+      />
+
+      {/* gender Modal */}
+
+      <CustomModalWrapper
+        isVisible={visibleGendersModal}
+        title={strings.playersGenderText}
+        headerRightButtonText={strings.apply}
+        modalType={ModalTypes.style1}
+        closeModal={() => setVisibleGendersModal(false)}
+        onRightButtonPress={onApplyPress}
+        containerStyle={{margin: 0, padding: 0}}>
+        <FlatList
+          ItemSeparatorComponent={() => <TCThinDivider />}
+          data={groupMemberGenderItems}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderGenders}
+        />
+      </CustomModalWrapper>
+      {/* language modal */}
+      <CustomModalWrapper
+        isVisible={isModalVisible}
+        title={strings.languages}
+        headerRightButtonText={strings.apply}
+        modalType={ModalTypes.style1}
+        closeModal={() => setModalVisible(false)}
+        onRightButtonPress={() => {
+          for (const temp of languages) {
+            if (temp.isChecked) {
+              selectedLanguage.push(temp.language);
+            }
+          }
+          setSelectedLanguages(selectedLanguage);
+          setModalVisible(false);
+        }}
+        containerStyle={{margin: 0, padding: 0}}>
+        <FlatList
+          ItemSeparatorComponent={() => <TCThinDivider />}
+          data={languages}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderLanguage}
+        />
+      </CustomModalWrapper>
     </SafeAreaView>
   );
 }

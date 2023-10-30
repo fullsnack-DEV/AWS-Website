@@ -427,13 +427,15 @@ export default function GroupInfo({
         <View
           style={{
             flexDirection: 'row',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             marginHorizontal: 15,
           }}>
           <GroupIcon
             entityType={groupDetails.entity_type}
             groupName={groupDetails.group_name}
             imageUrl={groupDetails.full_image}
+            containerStyle={{width: 40, height: 40}}
+            textstyle={{fontSize: 14}}
           />
           <View style={{marginLeft: 15}}>
             <Text
@@ -768,7 +770,6 @@ export default function GroupInfo({
   );
 
   const renderTitle = (item) => {
-
     if (
       (item === strings.matchVenues && forJoinButton) ||
       (item === strings.matchVenues && forUserRespond)
@@ -776,7 +777,6 @@ export default function GroupInfo({
       return <Text style={styles.headingLabel}>{strings.homeFacility}</Text>;
     }
     return <Text style={styles.headingLabel}>{item}</Text>;
-
   };
 
   return (

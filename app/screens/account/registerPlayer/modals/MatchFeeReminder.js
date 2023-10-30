@@ -2,6 +2,7 @@
 import React from 'react';
 import {View, StyleSheet, Text, TouchableOpacity, Platform} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {format} from 'react-string-format';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
@@ -18,6 +19,7 @@ const MatchFeeReminder = ({
   onCloseModal = () => {},
   // isDoubleSport = false,
 }) => {
+  const {bottom} = useSafeAreaInsets();
   const getTitle = () => {
     switch (entityType) {
       case Verbs.entityTypePlayer:
@@ -201,7 +203,7 @@ const MatchFeeReminder = ({
             ) : null}
 
             {entityType === Verbs.entityTypeScorekeeper ? (
-              <View style={{marginTop: 20}}>
+              <View style={{marginTop: 20, marginBottom: bottom + 17}}>
                 <TouchableOpacity
                   style={[
                     styles.buttonContainer,

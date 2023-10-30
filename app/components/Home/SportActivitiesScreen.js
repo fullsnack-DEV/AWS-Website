@@ -135,11 +135,11 @@ const SportActivitiesScreen = ({navigation, route}) => {
           showAddActivityButton
           isAdmin={isAdmin}
           onSelect={(option) => {
-            if (option === strings.addPlaying) {
+            if (option === strings.playingTitleText) {
               setSelectedMenuOptionType(Verbs.entityTypePlayer);
-            } else if (option === strings.addRefereeing) {
+            } else if (option === strings.refereeingTitleText) {
               setSelectedMenuOptionType(Verbs.entityTypeReferee);
-            } else if (option === strings.addScorekeeping) {
+            } else if (option === strings.scorekeepingTitleText) {
               setSelectedMenuOptionType(Verbs.entityTypeScorekeeper);
             }
             setVisibleSportsModal(true);

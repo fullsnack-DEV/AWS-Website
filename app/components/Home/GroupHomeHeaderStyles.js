@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     paddingTop: 3,
     paddingBottom: 2,
     paddingHorizontal: 5,
+    alignSelf: 'baseline',
   },
   newTeamText: {
     fontSize: 12,

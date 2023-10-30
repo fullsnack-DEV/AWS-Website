@@ -3194,4 +3194,6 @@ export default {
   invitedYouToJoinGroup: 'en_invited you to join their {0}',
   teamAndMemberPrivacy: 'en_Team and Members',
   teamOnlyPrivacyOption: 'en_Team Only',
+  aboutRatingsText: 'en_About ratings',
+  hideDeleteFromPosts: 'en_Hide/Delete from my posts',
 };

@@ -1,30 +1,34 @@
-import React, {memo} from 'react';
-import {StyleSheet, View, Image, Text, TouchableOpacity} from 'react-native';
-import images from '../../Constants/ImagePath';
+import React, {memo, useEffect, useState} from 'react';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
+import GroupIcon from '../GroupIcon';
 
-function WritePost({postDataItem, onWritePostPress}) {
-  let userImage = '';
-  if (postDataItem && postDataItem.thumbnail) {
-    userImage = postDataItem.thumbnail;
-  }
+const WritePost = ({postDataItem, onWritePostPress}) => {
+  const [entityData, setEntityData] = useState({});
+
+  useEffect(() => {
+    if (postDataItem) {
+      setEntityData(postDataItem);
+    }
+  }, [postDataItem]);
 
   return (
     <View style={styles.mainContainer}>
-      <View style={styles.writePostActorContainer}>
-        <Image
-          style={styles.profileImg}
-          source={userImage ? {uri: userImage} : images.profilePlaceHolder}
-        />
-      </View>
+      <GroupIcon
+        imageUrl={entityData.thumbnail}
+        entityType={entityData.entity_type}
+        groupName={entityData.group_name}
+        containerStyle={styles.writePostActorContainer}
+        textstyle={{fontSize: 14}}
+      />
       <TouchableOpacity style={styles.writePostView} onPress={onWritePostPress}>
         <Text style={styles.writePostText}> {strings.writePostText} </Text>
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -37,17 +41,7 @@ const styles = StyleSheet.create({
   writePostActorContainer: {
     width: 40,
     height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.greyBorderColor,
-  },
-  profileImg: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-    borderRadius: 20,
   },
   writePostView: {
     flex: 1,

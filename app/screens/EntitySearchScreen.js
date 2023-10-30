@@ -94,7 +94,7 @@ export default function EntitySearchScreen({navigation, route}) {
   };
   const getGameHomeScreen = (sportName) =>
     GAME_HOME[sportName?.split(' ').join('_').toLowerCase()];
-  const JoinButtonModalRef = useRef(null);
+  const [showJoinModal, setShowJoinModal] = useState(false);
 
   // For activity indigator
 
@@ -1454,7 +1454,7 @@ export default function EntitySearchScreen({navigation, route}) {
     const params = {};
     joinTeam(params, groupId, authContext)
       .then((response) => {
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
 
         setloading(false);
 
@@ -1519,7 +1519,7 @@ export default function EntitySearchScreen({navigation, route}) {
           response.payload.error_code === ErrorCodes.MEMBERINVITEONLYERRORCODE
         ) {
           Alert.alert(strings.alertmessagetitle, response.payload.user_message);
-          JoinButtonModalRef.current.close();
+          setShowJoinModal(false);
         } else if (response.payload.action === Verbs.joinVerb) {
           Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage, [
             {text: strings.okTitleText},
@@ -1536,7 +1536,7 @@ export default function EntitySearchScreen({navigation, route}) {
       })
       .catch((error) => {
         setloading(false);
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message, [
             {text: strings.okTitleText},
@@ -1574,7 +1574,7 @@ export default function EntitySearchScreen({navigation, route}) {
     acceptRequest({}, requestId, authContext)
       .then(() => {
         setloading(false);
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage);
         }, 10);
@@ -1593,7 +1593,7 @@ export default function EntitySearchScreen({navigation, route}) {
     declineRequest(requestId, authContext)
       .then(() => {
         setloading(false);
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
         setTimeout(() => {
           Alert.alert(
             strings.alertmessagetitle,
@@ -1887,7 +1887,7 @@ export default function EntitySearchScreen({navigation, route}) {
                 onPressJoinButton={() => {
                   setGroupData(item);
 
-                  JoinButtonModalRef.current.present();
+                  setShowJoinModal(true);
                 }}
               />
             </View>
@@ -2576,7 +2576,8 @@ export default function EntitySearchScreen({navigation, route}) {
       </CustomModalWrapper>
 
       <JoinButtonModal
-        JoinButtonModalRef={JoinButtonModalRef}
+        isVisible={showJoinModal}
+        setShowJoinModal={() => setShowJoinModal(false)}
         currentUserData={groupData}
         onJoinPress={() => userJoinGroup(groupData.group_id)}
         onAcceptPress={() => userJoinGroup(groupData.group_id)}

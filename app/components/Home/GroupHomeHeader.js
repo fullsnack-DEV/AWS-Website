@@ -91,10 +91,9 @@ const GroupHomeHeader = ({
               styles.row,
               {
                 justifyContent: 'flex-end',
-
                 flexShrink: 1,
-
                 paddingLeft: 5,
+                marginLeft: 5,
               },
             ]}>
             <Pressable

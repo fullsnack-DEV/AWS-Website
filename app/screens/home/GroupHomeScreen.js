@@ -105,10 +105,12 @@ const GroupHomeScreen = ({
   const [visibleEditProfileModal, setVisibleEditProfileModal] = useState(false);
   const [showInviteMember, setShowInviteMember] = useState(false);
 
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showMembershipInviteModal, setShowMembershipInviteModal] =
+    useState(false);
+
   const bottomSheetRef = useRef(null);
   const followModalRef = useRef(null);
-  const JoinButtonModalRef = useRef(null);
-  const membershipInviteModalRef = useRef(null);
 
   const backButtonHandler = useCallback(() => {
     if (route.params.comeFrom === Verbs.INCOMING_CHALLENGE_SCREEN) {
@@ -287,11 +289,25 @@ const GroupHomeScreen = ({
           paddingHorizontal: 15,
           paddingVertical: 25,
         }}
-        onPressMember={(groupObject) => {
-          navigation.push('HomeScreen', {
-            uid: groupObject?.group_id,
-            role: groupObject?.entity_type,
-          });
+        onPressMember={(groupObject = {}) => {
+          if (groupObject?.is_player) {
+            navigation.navigate('SportActivityHome', {
+              sport: groupData.sport,
+              sportType: groupData.sport_type,
+              uid: groupObject.user_id,
+              entityType: Verbs.entityTypePlayer,
+              backScreen: 'HomeScreen',
+              backScreenParams: {
+                uid: groupData.group_id,
+                role: groupData.entity_type,
+              },
+            });
+          } else {
+            navigation.push('HomeScreen', {
+              uid: groupObject.user_id ?? groupObject.group_id,
+              role: groupObject.entity_type ?? Verbs.entityTypePlayer,
+            });
+          }
         }}
         onPressMore={() => {
           navigation.navigate('App', {
@@ -768,7 +784,7 @@ const GroupHomeScreen = ({
       .then((response) => {
         setRefreshMemberModal(true);
 
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
 
         const inviteRequest = response.payload.data?.action
           ? {...response.payload.data}
@@ -940,7 +956,7 @@ const GroupHomeScreen = ({
       .then((response) => {
         setRefreshMemberModal(true);
 
-        membershipInviteModalRef.current.close();
+        setShowMembershipInviteModal(false);
         if (
           response.payload?.error_code &&
           response.payload?.error_code === ErrorCodes.MEMBEREXISTERRORCODE
@@ -986,7 +1002,7 @@ const GroupHomeScreen = ({
       })
       .catch((error) => {
         setLoading(false);
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -997,7 +1013,7 @@ const GroupHomeScreen = ({
     setLoading(true);
     declineRequest(requestId, authContext)
       .then(() => {
-        membershipInviteModalRef.current.close();
+        setShowMembershipInviteModal(false);
         setLoading(false);
         setCurrentUserData({
           ...currentUserData,
@@ -1406,7 +1422,7 @@ const GroupHomeScreen = ({
         format(strings.thisGroupIsInviteOnly, currentUserData.entity_type),
       );
     } else {
-      JoinButtonModalRef.current.present();
+      setShowJoinModal(true);
     }
   };
 
@@ -1467,7 +1483,7 @@ const GroupHomeScreen = ({
       case strings.acceptRequest:
       case strings.acceptRequet:
         setIsInvited(true);
-        membershipInviteModalRef.current.present();
+        setShowMembershipInviteModal(true);
         // JoinButtonModalRef.current.present();
         // onAccept(currentUserData.invite_request.activity_id);
         break;
@@ -1604,7 +1620,8 @@ const GroupHomeScreen = ({
         showFollower={groupData.show_followers}
       />
       <JoinButtonModal
-        JoinButtonModalRef={JoinButtonModalRef}
+        isVisible={showJoinModal}
+        closeModal={() => setShowJoinModal(false)}
         currentUserData={currentUserData}
         onJoinPress={(message) => userJoinGroup(message)}
         onAcceptPress={() =>
@@ -1614,7 +1631,8 @@ const GroupHomeScreen = ({
       />
 
       <JoinButtonModal
-        JoinButtonModalRef={membershipInviteModalRef}
+        isVisible={showMembershipInviteModal}
+        closeModal={() => setShowMembershipInviteModal(false)}
         currentUserData={currentUserData}
         onAcceptPress={() =>
           onAccept(currentUserData.invite_request.activity_id)

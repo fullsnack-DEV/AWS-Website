@@ -114,6 +114,7 @@ const NewsFeedPostItems = memo(
         case strings.blockUser:
         case strings.blockAccount:
         case strings.removeMyTagFromPost:
+        case strings.hideDeleteFromPosts:
           break;
 
         default:
@@ -207,6 +208,7 @@ const NewsFeedPostItems = memo(
               } else if (tagUser?.id) {
                 option = [
                   strings.removeMyTagFromPost,
+                  strings.hideDeleteFromPosts,
                   strings.report,
                   strings.blockUser,
                 ];

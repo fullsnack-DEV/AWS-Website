@@ -37,10 +37,10 @@ const MemberList = ({
             marginTop: 20,
             marginBottom: 25,
           }}>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-            <Pressable
-              style={[styles.memberIcon, {width: 25, height: 25}]}
-              onPress={() => onPressMember(list[0])}>
+          <Pressable
+            style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}
+            onPress={() => onPressMember(list[0])}>
+            <View style={[styles.memberIcon, {width: 25, height: 25}]}>
               <Image
                 source={
                   list[0].thumbnail
@@ -49,7 +49,7 @@ const MemberList = ({
                 }
                 style={styles.image}
               />
-            </Pressable>
+            </View>
             <View style={{flex: 1, marginLeft: 5}}>
               <Text
                 style={{
@@ -62,11 +62,11 @@ const MemberList = ({
                   1
                 }>{`${list[0].first_name} ${list[0].last_name}`}</Text>
             </View>
-          </View>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
-            <Pressable
-              style={[styles.memberIcon, {width: 25, height: 25}]}
-              onPress={() => onPressMember(list[1])}>
+          </Pressable>
+          <Pressable
+            style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}
+            onPress={() => onPressMember(list[1])}>
+            <View style={[styles.memberIcon, {width: 25, height: 25}]}>
               <Image
                 source={
                   list[1].thumbnail
@@ -75,7 +75,7 @@ const MemberList = ({
                 }
                 style={styles.image}
               />
-            </Pressable>
+            </View>
             <View style={{flex: 1, marginLeft: 5}}>
               <Text
                 style={{
@@ -88,7 +88,7 @@ const MemberList = ({
                   1
                 }>{`${list[1].first_name} ${list[1].last_name}`}</Text>
             </View>
-          </View>
+          </Pressable>
         </View>
       );
     }

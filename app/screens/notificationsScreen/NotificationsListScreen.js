@@ -67,9 +67,9 @@ import {getUserDetails} from '../../api/Users';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
-  const JoinButtonModalRef = useRef(null);
-  const JoinRequestModalRef = useRef(null);
 
+  const JoinRequestModalRef = useRef(null);
+  const [showJoinModal, setShowJoinModal] = useState(false);
   const [currentTab, setCurrentTab] = useState();
   const [groupList, setGroupList] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
@@ -419,7 +419,7 @@ function NotificationsListScreen({navigation}) {
     acceptRequest({}, requestId, authContext)
       .then((response) => {
         setloading(false);
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
         JoinRequestModalRef.current.close();
         if (
           item.verb.includes(NotificationType.invitePlayerToJoinTeam) ||
@@ -439,11 +439,11 @@ function NotificationsListScreen({navigation}) {
                         callNotificationList()
                           .then(() => setloading(false))
                           .catch(() => setloading(false));
-                        JoinButtonModalRef.current.close();
+                        setShowJoinModal(false);
                       })
                       .catch((error) => {
                         setTimeout(() => {
-                          JoinButtonModalRef.current.close();
+                          setShowJoinModal(false);
                           Alert.alert(strings.alertmessagetitle, error.message);
                         }, 10);
                       });
@@ -479,7 +479,7 @@ function NotificationsListScreen({navigation}) {
       })
       .catch((error) => {
         setloading(false);
-        JoinButtonModalRef.current.close();
+        setShowJoinModal(false);
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -492,7 +492,7 @@ function NotificationsListScreen({navigation}) {
       declineRequest(requestId, authContext)
         .then(() => {
           JoinRequestModalRef.current.close();
-          JoinButtonModalRef.current.close();
+          setShowJoinModal(false);
           // Utility.showAlert('Join request accepted ');
           if (item.verb.includes(NotificationType.userRequestedJoingroup)) {
             Utility.showAlert(strings.joinReqDeclineText);
@@ -527,7 +527,7 @@ function NotificationsListScreen({navigation}) {
       setloading(false);
       setGrpInfo(payload);
       setIsAccept(true);
-      JoinButtonModalRef.current?.present();
+      setShowJoinModal(true);
     } catch (error) {
       setloading(false);
     }
@@ -1236,7 +1236,8 @@ function NotificationsListScreen({navigation}) {
       />
 
       <JoinButtonModal
-        JoinButtonModalRef={JoinButtonModalRef}
+        isVisible={showJoinModal}
+        closeModal={() => setShowJoinModal(false)}
         currentUserData={grpInfo}
         isInvited={isAccept}
         onJoinPress={() => onAccept(currentNotificationData)}

@@ -542,19 +542,38 @@ export default function GroupMembersScreen({navigation, route}) {
   const onPressProfilePhotoAndTitle = useCallback(
     (item) => {
       if (item.connected) {
-        navigation.push('HomeStack', {
-          screen: 'HomeScreen',
-          params: {
-            uid: item?.user_id,
-            role: Verbs.entityTypeUser,
-            backButtonVisible: true,
-            menuBtnVisible: false,
-            Groupmembers: members,
-          },
-        });
+        if (item?.is_player) {
+          const groupInfo = route.params?.groupObj ?? {
+            ...authContext.entity.obj,
+          };
+          const obj = {
+            sport: groupInfo.sport,
+            sportType: groupInfo.sport_type,
+            uid: item.user_id,
+            entityType: Verbs.entityTypePlayer,
+            parentStack: 'App',
+            backScreen: 'Members',
+            backScreenParams: route.params
+              ? {...route.params}
+              : {groupID: authContext.entity.uid},
+          };
+          navigation.navigate('HomeStack', {
+            screen: 'SportActivityHome',
+            params: obj,
+          });
+        } else {
+          navigation.push('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid: item?.user_id,
+              role: Verbs.entityTypeUser,
+              Groupmembers: members,
+            },
+          });
+        }
       }
     },
-    [members, navigation],
+    [members, navigation, route.params, authContext.entity],
   );
 
   const checkIfClubAdmin = async () => {

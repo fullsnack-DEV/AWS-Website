@@ -1,7 +1,7 @@
 // @flow
 import {useIsFocused} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {View, StyleSheet, Text, Pressable, Dimensions} from 'react-native';
+import {View, StyleSheet, Text, Pressable} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import {strings} from '../../../../../Localization/translation';
@@ -18,7 +18,6 @@ import {getTCDate} from '../../../../utils';
 import ListShimmer from './ListShimmer';
 import MatchCard from './MatchCard';
 import CustomModalWrapper from '../../../../components/CustomModalWrapper';
-import {ModalTypes} from '../../../../Constants/GeneralConstants';
 
 const RefereeCongratulationsModal = ({
   isVisible,
@@ -32,7 +31,6 @@ const RefereeCongratulationsModal = ({
   const [loading, setLoading] = useState(false);
   const [teamsData, setTeamsData] = useState({});
   const [isTeamSport, setIsTeamSport] = useState(false);
-  const [snapPoints, setSnapPoints] = useState([]);
 
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
@@ -198,57 +196,43 @@ const RefereeCongratulationsModal = ({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeModal}
-      modalType={ModalTypes.style2}
-      containerStyle={{paddingHorizontal: 0}}
-      externalSnapPoints={snapPoints}>
-      <View
-        onLayout={(event) => {
-          const contentHeight = event.nativeEvent.layout.height + 80;
-
-          setSnapPoints([
-            '50%',
-            contentHeight,
-            Dimensions.get('window').height - 40,
-          ]);
-        }}>
-        <View style={{paddingHorizontal: 35}}>
-          <Text style={styles.congratsText}>
-            {entityType === Verbs.entityTypeReferee
-              ? strings.refereeCongratsModalTitle
-              : strings.scoreKeeperCongratsModalTitle}
-            <Text
-              style={[styles.congratsText, {color: colors.darkYellowColor}]}>
-              {' '}
-              {sportName}.
-            </Text>
+      containerStyle={{paddingHorizontal: 0}}>
+      <View style={{paddingHorizontal: 35}}>
+        <Text style={styles.congratsText}>
+          {entityType === Verbs.entityTypeReferee
+            ? strings.refereeCongratsModalTitle
+            : strings.scoreKeeperCongratsModalTitle}
+          <Text style={[styles.congratsText, {color: colors.darkYellowColor}]}>
+            {' '}
+            {sportName}.
           </Text>
-        </View>
-        <View style={{paddingHorizontal: 25}}>
-          <Pressable
-            style={styles.buttonContainer}
-            onPress={() => {
-              goToSportActivityHome();
-            }}>
-            <Text style={styles.buttonText}>
-              {strings.goToSportActivityHomeText}
-            </Text>
-          </Pressable>
-
-          <Text style={styles.description}>
-            {entityType === Verbs.entityTypeReferee
-              ? format(
-                  strings.refereeCongratulationsModal,
-                  isTeamSport ? strings.teams : strings.teamsAndPlayers,
-                )
-              : format(
-                  strings.scoreKeeperCongratulationsModal,
-                  isTeamSport ? strings.teams : strings.teamsAndPlayers,
-                )}
-          </Text>
-        </View>
-        <View style={styles.dividor} />
-        <View style={{flex: 1}}>{renderList()}</View>
+        </Text>
       </View>
+      <View style={{paddingHorizontal: 25}}>
+        <Pressable
+          style={styles.buttonContainer}
+          onPress={() => {
+            goToSportActivityHome();
+          }}>
+          <Text style={styles.buttonText}>
+            {strings.goToSportActivityHomeText}
+          </Text>
+        </Pressable>
+
+        <Text style={styles.description}>
+          {entityType === Verbs.entityTypeReferee
+            ? format(
+                strings.refereeCongratulationsModal,
+                isTeamSport ? strings.teams : strings.teamsAndPlayers,
+              )
+            : format(
+                strings.scoreKeeperCongratulationsModal,
+                isTeamSport ? strings.teams : strings.teamsAndPlayers,
+              )}
+        </Text>
+      </View>
+      <View style={styles.dividor} />
+      <View style={{flex: 1}}>{renderList()}</View>
     </CustomModalWrapper>
   );
 };
