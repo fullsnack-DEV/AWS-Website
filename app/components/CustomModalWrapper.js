@@ -1,11 +1,7 @@
 // @flow
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {View, StyleSheet, Dimensions, Platform, StatusBar} from 'react-native';
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
@@ -13,16 +9,7 @@ import colors from '../Constants/Colors';
 import {ModalTypes} from '../Constants/GeneralConstants';
 import images from '../Constants/ImagePath';
 import ScreenHeader from './ScreenHeader';
-
-const renderBackdrop = (props) => (
-  <BottomSheetBackdrop
-    {...props}
-    disappearsOnIndex={-1}
-    appearsOnIndex={1}
-    style={styles.backdropStyle}
-    opacity={6}
-  />
-);
+import ModalBackDrop from './ModalBackDrop';
 
 const layout = Dimensions.get('window');
 
@@ -194,7 +181,7 @@ const CustomModalWrapper = ({
         }
         enablePanDownToClose
         enableDismissOnClose
-        backdropComponent={renderBackdrop}
+        backdropComponent={ModalBackDrop}
         handleComponent={() => getModalHeader()}
         keyboardBehavior={Platform.OS === 'ios' ? 'extend' : 'interactive'}
         keyboardBlurBehavior="restore"
@@ -214,14 +201,6 @@ const CustomModalWrapper = ({
 const styles = StyleSheet.create({
   parent: {
     padding: 25,
-  },
-  backdropStyle: {
-    backgroundColor: colors.modalBackgroundColor,
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
   },
   bottomSheetStyle: {
     borderRadius: 10,

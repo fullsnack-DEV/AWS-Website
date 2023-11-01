@@ -1,6 +1,14 @@
 // @flow
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text, Modal, TouchableOpacity, Platform} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+  Platform,
+} from 'react-native';
+import Modal from 'react-native-modal';
 import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -9,11 +17,12 @@ const BottomSheet = ({
   isVisible = false,
   closeModal = () => {},
   optionList = [],
+  optionSubTextsList = [],
   onSelect = () => {},
-  type = 'default',
   itemStyle = {},
   cardStyle = {},
   title = '',
+  subTitle = '',
   headerStyle = {},
   headerTitleStyle = {},
   separatorLineStyle = {},
@@ -21,117 +30,171 @@ const BottomSheet = ({
   cancelButtonContainerStyle = {},
   cancelButtonTextStyle = {},
 }) => {
-  const [sheetType, setSheetType] = useState('default');
+  const [optionsWithSubText, setOptionsWithSubText] = useState([]);
 
   useEffect(() => {
-    if (type !== 'default') {
-      setSheetType(type);
-    } else {
-      setSheetType(Platform.OS);
+    if (isVisible && optionSubTextsList.length > 0) {
+      const updatedList = optionList.map((item, index) => {
+        const obj = {
+          label: item,
+          subText: optionSubTextsList[index],
+        };
+        return obj;
+      });
+      setOptionsWithSubText(updatedList);
     }
-  }, [type]);
+  }, [isVisible, optionList, optionSubTextsList]);
 
-  if (optionList.length > 0) {
-    if (sheetType === 'ios') {
+  const renderView = () => {
+    if (Platform.OS === 'ios') {
       return (
-        <Modal
-          visible={isVisible}
-          transparent
-          animationType="slide"
-          onRequestClose={closeModal}>
-          <TouchableOpacity style={styles.modalParent} onPress={closeModal}>
-            <TouchableOpacity style={[styles.card, cardStyle]} onPress={() => {}}>
-              {title ? (
-                <>
-                  <View
-                    style={[
-                      styles.modalButtonContainer,
-                      {paddingVertical: 15},
-                      headerStyle,
-                    ]}>
-                    <Text style={[styles.modalTitle, headerTitleStyle]}>
-                      {title}
+        <View style={styles.parent}>
+          <View style={[styles.card, cardStyle]}>
+            {title && (
+              <>
+                <View style={[styles.buttonContainer, headerStyle]}>
+                  <Text style={[styles.title, headerTitleStyle]}>{title}</Text>
+                  {subTitle && (
+                    <Text style={[styles.subTitle, {textAlign: 'center'}]}>
+                      {subTitle}
                     </Text>
-                  </View>
-                  <View
-                    style={[styles.modalLineSeparator, separatorLineStyle]}
-                  />
-                </>
-              ) : null}
-              {optionList.map((item, index) => (
-                <View key={index}>
-                  <TouchableOpacity
-                    style={[styles.modalButtonContainer, itemStyle]}
-                    onPress={() => onSelect(item)}>
+                  )}
+                </View>
+                <View style={[styles.dividor, separatorLineStyle]} />
+              </>
+            )}
+
+            {optionList.map((item, index) => (
+              <View key={index}>
+                <TouchableOpacity
+                  style={[styles.buttonContainer, itemStyle]}
+                  onPress={() => onSelect(item, index)}>
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      item?.includes('Delete') ? {color: colors.redColor} : {},
+                      textStyle,
+                    ]}>
+                    {optionsWithSubText.length > 0 ? item.label : item}
+                  </Text>
+                  {optionsWithSubText.length > 0 && (
                     <Text
                       style={[
-                        styles.modalButtonText,
-                        item?.includes('Delete')
-                          ? {color: colors.redColor}
-                          : {},
-                        textStyle,
+                        styles.subTitle,
+                        {color: colors.neonBlue, textAlign: 'center'},
                       ]}>
-                      {item}
+                      {item.subText}
                     </Text>
-                  </TouchableOpacity>
+                  )}
+                </TouchableOpacity>
+                {index !== optionList.length - 1 && (
+                  <View style={[styles.dividor, separatorLineStyle]} />
+                )}
+              </View>
+            ))}
+          </View>
 
-                  <View
-                    style={[styles.modalLineSeparator, separatorLineStyle]}
-                  />
-                </View>
-              ))}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modalCancelButton, cancelButtonContainerStyle]}
-              onPress={closeModal}>
-              <Text style={[styles.modalButtonText, cancelButtonTextStyle]}>
-                {strings.cancel}
-              </Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.buttonContainer,
+              {backgroundColor: colors.whiteColor, borderRadius: 12},
+              cancelButtonContainerStyle,
+            ]}
+            onPress={closeModal}>
+            <Text
+              style={[
+                styles.buttonText,
+                {fontFamily: fonts.RBold},
+                cancelButtonTextStyle,
+              ]}>
+              {strings.cancel}
+            </Text>
           </TouchableOpacity>
-        </Modal>
+        </View>
       );
     }
 
-    if (sheetType === 'android') {
+    if (Platform.OS === 'android') {
       return (
-        <Modal visible={isVisible} transparent animationType="fade">
-          <TouchableOpacity style={styles.modalParent} onPress={closeModal}>
+        <View style={[styles.parent, cardStyle]}>
+          <View style={styles.handle} />
+          {title && (
+            <View style={[{marginBottom: 30}, headerStyle]}>
+              <Text style={[styles.title, headerTitleStyle]}>{title}</Text>
+              {subTitle && <Text style={styles.subTitle}>{subTitle}</Text>}
+            </View>
+          )}
+
+          {optionList.map((item, index) => (
             <TouchableOpacity
-              style={[styles.cardAndroid, cardStyle]}
-              onPress={() => {}}>
-              {title ? (
-                <>
-                  <View
-                    style={[
-                      styles.modalButtonContainer,
-                      {paddingVertical: 15},
-                      headerStyle,
-                    ]}>
-                    <Text style={[styles.modalTitle, headerTitleStyle]}>
-                      {title}
-                    </Text>
-                  </View>
-                  <View
-                    style={[styles.modalLineSeparator, separatorLineStyle]}
-                  />
-                </>
-              ) : null}
-              {optionList.map((item) => (
-                <>
-                  <TouchableOpacity
-                    style={[styles.modalButtonContainerAndroid, itemStyle]}
-                    onPress={() => onSelect(item)}>
-                    <Text style={styles.modalButtonTextAndroid}>{item}</Text>
-                  </TouchableOpacity>
-                  <View
-                    style={[styles.modalLineSeparator, separatorLineStyle]}
-                  />
-                </>
-              ))}
+              style={[
+                {marginBottom: index !== optionList.length - 1 ? 30 : 0},
+                itemStyle,
+              ]}
+              key={index}
+              onPress={() => onSelect(item, index)}>
+              <Text style={[styles.androidButtonText, textStyle]}>
+                {optionsWithSubText.length > 0 ? item.label : item}
+              </Text>
+              {optionsWithSubText.length > 0 && (
+                <Text style={styles.subTitle}>{item.subText}</Text>
+              )}
             </TouchableOpacity>
-          </TouchableOpacity>
-        </Modal>
+          ))}
+        </View>
+      );
+    }
+
+    return null;
+  };
+
+  if (optionList.length > 0) {
+    return (
+      <Modal
+        isVisible={isVisible}
+        onBackButtonPress={closeModal}
+        onBackdropPress={closeModal}
+        avoidKeyboard
+        backdropColor={colors.blackColor}
+        deviceWidth={Dimensions.get('window').width}
+        swipeDirection={['down']}
+        onSwipeComplete={closeModal}
+        style={{
+          justifyContent: 'flex-end',
+          margin: 0,
+        }}>
+        {renderView()}
+      </Modal>
+    );
+  }
+
+  if (title) {
+    if (Platform.OS === 'ios') {
+      return (
+        <View style={styles.parent}>
+          <View style={[styles.card, cardStyle]}>
+            <View style={[styles.buttonContainer, headerStyle]}>
+              <Text style={[styles.title, headerTitleStyle]}>{title}</Text>
+              {subTitle && (
+                <Text style={[styles.subTitle, {textAlign: 'center'}]}>
+                  {subTitle}
+                </Text>
+              )}
+            </View>
+          </View>
+        </View>
+      );
+    }
+
+    if (Platform.OS === 'android') {
+      return (
+        <View style={[styles.parent, cardStyle]}>
+          <View style={styles.handle} />
+          <View style={headerStyle}>
+            <Text style={[styles.title, headerTitleStyle]}>{title}</Text>
+            {subTitle && <Text style={styles.subTitle}>{subTitle}</Text>}
+          </View>
+        </View>
       );
     }
   }
@@ -139,63 +202,69 @@ const BottomSheet = ({
 };
 
 const styles = StyleSheet.create({
-  modalParent: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'flex-end',
-  },
-  card: {
-    marginHorizontal: 15,
-    marginBottom: 6,
-    backgroundColor: colors.lightWhite,
-    opacity: 0.96,
-    borderRadius: 13,
-  },
-  cardAndroid: {
-    backgroundColor: colors.lightWhite,
-    paddingVertical: 15,
-    paddingHorizontal: 18,
-  },
-  modalButtonContainer: {
-    paddingVertical: 16,
+  parent: Platform.select({
+    ios: {
+      marginBottom: 50,
+      marginHorizontal: 8,
+    },
+    android: {
+      backgroundColor: colors.whiteColor,
+      borderTopLeftRadius: 12,
+      borderTopRightRadius: 12,
+      paddingHorizontal: 25,
+      paddingBottom: 50,
+      elevation: 5,
+    },
+  }),
+  card: Platform.select({
+    ios: {
+      backgroundColor: colors.iosActionSheetBgColor,
+      borderRadius: 12,
+      marginBottom: 10,
+    },
+    android: {},
+  }),
+  buttonContainer: {
+    paddingHorizontal: 25,
+    paddingVertical: 13,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  modalButtonContainerAndroid: {
-    paddingVertical: 8,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
-  modalButtonText: {
+  buttonText: {
     fontSize: 20,
-    lineHeight: 24,
+    lineHeight: 30,
     fontFamily: fonts.RRegular,
-    color: colors.eventBlueColor,
+    color: colors.neonBlue,
   },
-  modalButtonTextAndroid: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RMedium,
+  handle: {
+    backgroundColor: colors.modalHandleColor,
+    width: 40,
+    height: 5,
+    marginTop: 10,
+    alignSelf: 'center',
+    borderRadius: 5,
+    marginBottom: 25,
+  },
+  androidButtonText: {
+    fontSize: 17,
+    lineHeight: 25,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  modalLineSeparator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: '#09141F',
-    opacity: 0.5,
+  dividor: {
+    height: 1,
+    backgroundColor: colors.userPostTimeColor,
   },
-  modalCancelButton: {
-    backgroundColor: colors.whiteColor,
-    marginHorizontal: 15,
-    marginBottom: 35,
-    borderRadius: 13,
-    paddingVertical: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalTitle: {
-    fontSize: 16,
-    lineHeight: 24,
+  title: {
+    fontSize: 17,
+    lineHeight: 25,
     fontFamily: fonts.RBold,
+    color: colors.lightBlackColor,
+  },
+  subTitle: {
+    fontSize: 14,
+    lineHeight: 21,
+    fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
 });

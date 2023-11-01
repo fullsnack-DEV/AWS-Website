@@ -1,15 +1,7 @@
 // @flow
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  Modal,
-  Pressable,
-  Dimensions,
-} from 'react-native';
+import {View, Text, TouchableOpacity, Image, Dimensions} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
@@ -31,6 +23,7 @@ import CertificateList from '../components/CertificateList';
 import ServicableArea from '../components/ServicableArea';
 import {getTitleForRegister} from '../../../../utils/sportsActivityUtils';
 import CustomModalWrapper from '../../../../components/CustomModalWrapper';
+import BottomSheet from '../../../../components/modals/BottomSheet';
 
 const OptionList = [
   strings.bio,
@@ -60,9 +53,10 @@ const InfoContentScreen = ({
   const [showEditModal, setShowEditModal] = useState(false);
   const [editModalInfo, setEditModalInfo] = useState({
     section: '',
-    buttonText: '',
-    showPrivacy: false,
+    privacyKey: '',
   });
+  const [editButtonOptions, setEditButtonOptions] = useState([]);
+
   const [forHome] = useState(true);
   const [snapPoints, setSnapPoints] = useState([]);
   const isFocused = useIsFocused();
@@ -214,74 +208,65 @@ const InfoContentScreen = ({
   const editOptions = (sectionName) => {
     switch (sectionName) {
       case strings.bio:
-        setEditModalInfo({
-          section: sectionName,
-          buttonText: strings.editbio,
-          showPrivacy: true,
-          privacyKey: privacyKey.bio,
-        });
+        setEditModalInfo({section: sectionName, privacyKey: privacyKey.bio});
+        setEditButtonOptions([strings.editbio, strings.privacySettingText]);
         setShowEditModal(true);
         break;
 
       case strings.basicInfoText:
         setEditModalInfo({
           section: sectionName,
-          // buttonText: strings.editBasicInfoText,
-          buttonText: '',
-          showPrivacy: true,
           privacyKey: privacyKey.basicInfo,
         });
+        setEditButtonOptions([strings.privacySettingText]);
         setShowEditModal(true);
         break;
 
       case strings.clubstitle:
         setEditModalInfo({
           section: sectionName,
-          buttonText: '',
-          showPrivacy: true,
           privacyKey: privacyKey.club,
         });
+        setEditButtonOptions([strings.privacySettingText]);
         setShowEditModal(true);
         break;
 
       case strings.leagues:
         setEditModalInfo({
           section: sectionName,
-          buttonText: '',
-          showPrivacy: true,
           privacyKey: privacyKey.leagues,
         });
+        setEditButtonOptions([strings.privacySettingText]);
         setShowEditModal(true);
         break;
 
       case strings.homeFacility:
         setEditModalInfo({
           section: sectionName,
-          buttonText: strings.editHomePlaceText,
-          showPrivacy: false,
-          // privacyKey: privacyKey.homeFacility,
           privacyKey: '',
         });
+        setEditButtonOptions([strings.editHomePlaceText]);
         setShowEditModal(true);
         break;
 
       case strings.ntrpTitle:
         setEditModalInfo({
           section: sectionName,
-          buttonText: strings.editNTRPText,
-          showPrivacy: true,
           privacyKey: privacyKey.ntrp,
         });
+        setEditButtonOptions([
+          strings.editNTRPText,
+          strings.privacySettingText,
+        ]);
         setShowEditModal(true);
         break;
 
       case strings.matchVenues:
         setEditModalInfo({
           section: sectionName,
-          buttonText: strings.challengeSettingText,
-          showPrivacy: false,
           privacyKey: '',
         });
+        setEditButtonOptions([strings.challengeSettingText]);
         setShowEditModal(true);
         break;
 
@@ -291,20 +276,18 @@ const InfoContentScreen = ({
       case strings.certiTitle:
         setEditModalInfo({
           section: sectionName,
-          buttonText: strings.editCertificateText,
-          showPrivacy: false,
           privacyKey: '',
         });
+        setEditButtonOptions([strings.editCertificateText]);
         setShowEditModal(true);
         break;
 
       case strings.servicableAreas:
         setEditModalInfo({
           section: sectionName,
-          buttonText: strings.editServicableAreasText,
-          showPrivacy: false,
           privacyKey: '',
         });
+        setEditButtonOptions([strings.editServicableAreasText]);
         setShowEditModal(true);
         break;
 
@@ -384,50 +367,31 @@ const InfoContentScreen = ({
         </View>
       </CustomModalWrapper>
 
-      <Modal visible={showEditModal} transparent animationType="slide">
-        <View style={styles.modalParent}>
-          <View style={styles.card}>
-            {editModalInfo.buttonText ? (
-              <>
-                <Pressable
-                  style={styles.modalButtonContainer}
-                  onPress={() => {
-                    handleEditOption(
-                      editModalInfo.section,
-                      editModalInfo.buttonText,
-                    );
-                    setShowEditModal(false);
-                  }}>
-                  <Text style={styles.modalButtonText}>
-                    {editModalInfo.buttonText}
-                  </Text>
-                </Pressable>
-                <View style={styles.modalLineSeparator} />
-              </>
-            ) : null}
-            {editModalInfo.showPrivacy ? (
-              <Pressable
-                style={styles.modalButtonContainer}
-                onPress={() => {
-                  openPrivacySettings(
-                    editModalInfo.section,
-                    editModalInfo.privacyKey,
-                  );
-                  setShowEditModal(false);
-                }}>
-                <Text style={styles.modalButtonText}>
-                  {strings.privacySettingText}
-                </Text>
-              </Pressable>
-            ) : null}
-          </View>
-          <Pressable
-            style={styles.modalCancelButton}
-            onPress={() => setShowEditModal(false)}>
-            <Text style={styles.modalButtonText}>{strings.cancel}</Text>
-          </Pressable>
-        </View>
-      </Modal>
+      <BottomSheet
+        isVisible={showEditModal}
+        closeModal={() => setShowEditModal(false)}
+        optionList={editButtonOptions}
+        onSelect={(option, index) => {
+          if (editButtonOptions.length > 1) {
+            if (index === 0) {
+              handleEditOption(editModalInfo.section, option);
+            } else if (index === 1) {
+              openPrivacySettings(
+                editModalInfo.section,
+                editModalInfo.privacyKey,
+              );
+            }
+          } else if (editModalInfo.privacyKey) {
+            openPrivacySettings(
+              editModalInfo.section,
+              editModalInfo.privacyKey,
+            );
+          } else {
+            handleEditOption(editModalInfo.section, option);
+          }
+          setShowEditModal(false);
+        }}
+      />
     </>
   );
 };

@@ -169,5 +169,6 @@ const colors = {
   buttonClickBgEffect: '#f2f2f2',
   ActivityLoaderColor: 'rgba(0,0,0,0.6)',
   modalTransparentBG: 'rgba(255,255,255,0.1)',
+  iosActionSheetBgColor: '#DFDFDF',
 };
 export default colors;
