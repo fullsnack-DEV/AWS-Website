@@ -168,7 +168,19 @@ const GroupHomeButton = ({
       loggedInEntity.role === Verbs.entityTypePlayer ||
       loggedInEntity.role === Verbs.entityTypeUser
     ) {
-      if (groupData?.follow_request) {
+      if (
+        groupData.who_can_invite_member ===
+          teamInvitePrivacy.teamAndMemberPrivacy &&
+        groupData.is_joined
+      ) {
+        obj.btn2 = strings.inviteMemberText;
+      } else if (
+        groupData.who_can_invite_member ===
+          teamInvitePrivacy.teamOnlyPrivacyOption &&
+        groupData.is_joined
+      ) {
+        obj.btn2 = Verbs.HIDE_BUTTON;
+      } else if (groupData?.follow_request) {
         obj.btn2 = strings.followReqSentText;
       } else if (groupData.is_following) {
         obj.btn2 = strings.following;
@@ -242,7 +254,6 @@ const GroupHomeButton = ({
   }, [isFocused, getButtonTitle]);
 
   const handleButtonPress = (option) => {
-    console.log(option, 'from option');
     switch (option) {
       case strings.member:
         setShowOptions(true);
@@ -323,7 +334,7 @@ const GroupHomeButton = ({
         </TouchableOpacity>
       ) : null}
 
-      {buttons.btn2 !== Verbs.HIDE_BUTTON ? (
+      {buttons.btn2 !== Verbs.HIDE_BUTTON && buttons.btn2 ? (
         <TouchableOpacity
           style={[
             styles.buttonContainer,

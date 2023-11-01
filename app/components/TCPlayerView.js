@@ -97,6 +97,9 @@ function TCPlayerView({
   } else if (subTab === strings.refereesTitle) {
     data.referee_data.map((value) => sports.push(value));
     filterSport();
+    if (sportFilter.sport_type === Verbs.sportTypeSingle) {
+      isBookButtonShow = true;
+    }
     if (
       sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeUser &&
@@ -124,6 +127,11 @@ function TCPlayerView({
   } else if (subTab === strings.scorekeeperTitle) {
     data.scorekeeper_data.map((value) => sports.push(value));
     filterSport();
+
+    if (sportFilter.sport_type === Verbs.sportTypeSingle) {
+      isBookButtonShow = true;
+    }
+
     if (
       sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeUser &&

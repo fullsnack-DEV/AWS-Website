@@ -55,18 +55,22 @@ const LocalHomeMenuItems = memo(
     const authContext = useContext(AuthContext);
 
     const navigateAndSetDataForSportActivityView = (uid, role, sportsList) => {
-      if (sportsList.length > 1) {
+      if (sportsList.length > 1 && selectedSport === strings.all) {
         openPlayerDetailsModal({
           user_id: uid,
           entity_type: role,
           sports: sportsList,
         });
       } else {
+        // get the sport if the length is grater than one
+
+        const foundObj = sportsList.find((obj) => obj.sport === selectedSport);
+
         navigation.navigate('HomeStack', {
           screen: 'SportActivityHome',
           params: {
-            sport: sportsList[0]?.sport,
-            sportType: sportsList[0]?.sport_type,
+            sport: foundObj?.sport,
+            sportType: foundObj?.sport_type,
             uid,
             entityType: role,
             showPreview: true,

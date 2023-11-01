@@ -826,7 +826,10 @@ const GroupHomeScreen = ({
             setLoading(false);
             Alert.alert('', response.payload.user_message, [
               {text: strings.cancel},
-              {text: strings.join, onPress: () => userJoinGroup(true)},
+              {
+                text: strings.join,
+                onPress: () => userJoinGroup('message', true),
+              },
             ]);
           } else {
             setLoading(false);
@@ -955,6 +958,8 @@ const GroupHomeScreen = ({
     acceptRequest(params, requestId, authContext)
       .then((response) => {
         setRefreshMemberModal(true);
+
+        setIsInvited(false);
 
         setShowMembershipInviteModal(false);
         if (

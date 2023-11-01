@@ -60,7 +60,6 @@ import errorCode from '../../Constants/errorCode';
 import SendRequestModal from '../../components/SendRequestModal/SendRequestModal';
 import ScreenHeader from '../../components/ScreenHeader';
 import JoinButtonModal from '../home/JoinButtomModal';
-import Verbs from '../../Constants/Verbs';
 import JoinRequestModal from '../../components/notificationComponent/JoinRequestModal';
 import useSwitchAccount from '../../hooks/useSwitchAccount';
 import {getUserDetails} from '../../api/Users';
@@ -622,7 +621,8 @@ function NotificationsListScreen({navigation}) {
     verb.includes(NotificationType.inviteToEvent) ||
     verb.includes(NotificationType.sendBasicInfoToMember) ||
     verb.includes(NotificationType.userRequestedJoingroup) ||
-    verb.includes(NotificationType.followRequest);
+    verb.includes(NotificationType.followRequest) ||
+    verb.includes(NotificationType.teamRequestedToJoinGroup);
 
   const openHomePage = (item) => {
     if (activeScreen) {
@@ -730,7 +730,6 @@ function NotificationsListScreen({navigation}) {
       if (
         item.activities[0].verb.includes(NotificationType.inviteToDoubleTeam) ||
         item.activities[0].verb.includes(NotificationType.inviteToEvent) ||
-        item.activities[0].verb.includes(NotificationType.inviteToJoinClub) ||
         item.activities[0].verb.includes(
           NotificationType.userRequestedJoingroup,
         )
@@ -785,12 +784,7 @@ function NotificationsListScreen({navigation}) {
           item={item}
           selectedEntity={selectedEntity}
           onAccept={() => {
-            if (
-              authContext.entity.role === Verbs.entityTypeClub ||
-              authContext.entity.role === Verbs.entityTypeTeam
-            ) {
-              onAccept(item);
-            } else if (item.verb.includes(NotificationType.followRequest)) {
+            if (item.verb.includes(NotificationType.followRequest)) {
               onAccept(item);
             } else {
               setCurrentNotificationData(item);
@@ -806,7 +800,11 @@ function NotificationsListScreen({navigation}) {
             ) ||
             item.activities[0].verb.includes(
               NotificationType.invitePlayerToJoinTeam,
-            )
+            ) ||
+            item.activities[0].verb.includes(
+              NotificationType.teamRequestedToJoinGroup,
+            ) ||
+            item.activities[0].verb.includes(NotificationType.inviteToJoinClub)
           }
         />
       );

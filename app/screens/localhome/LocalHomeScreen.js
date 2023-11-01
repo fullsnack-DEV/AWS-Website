@@ -111,6 +111,7 @@ function LocalHomeScreen({navigation, route}) {
   );
   const [sportsData, setSportsData] = useState([]);
   const [navigationOptions, setNavigationOptions] = useState({});
+  const [teamsAvailble, setTeamsAvailable] = useState([]);
   const [visibleSportsModalForClub, setVisibleSportsModalForClub] =
     useState(false);
   const [visibleSportsModalForTeam, setVisibleSportsModalForTeam] =
@@ -182,6 +183,7 @@ function LocalHomeScreen({navigation, route}) {
       setReferees,
       setScorekeepers,
       setCardLoader,
+      setTeamsAvailable,
     );
 
     const getEventdata = async () => {
@@ -332,7 +334,7 @@ function LocalHomeScreen({navigation, route}) {
     },
     {
       key: strings.teamAvailableforChallenge,
-      data: challengeeMatch,
+      data: teamsAvailble,
       index: 4,
     },
     {
@@ -458,6 +460,7 @@ function LocalHomeScreen({navigation, route}) {
           setReferees,
           setScorekeepers,
           setCardLoader,
+          setTeamsAvailable,
         );
       }
     }
@@ -473,8 +476,8 @@ function LocalHomeScreen({navigation, route}) {
     setLookingTeam,
     setReferees,
     setScorekeepers,
+    setTeamsAvailable,
     memoizedLocalHomeQuery,
-    authContext,
   ]);
 
   // Call the scrollToFirstItem function when data changes

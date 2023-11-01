@@ -3173,7 +3173,7 @@ export default {
   userAccountdeactivated: 'en_This user has deactivated their account.',
   userDeactivatedSport:
     'en_This Sport Activity has been deactivated. Do you want to Activate it again?',
-  followReqSentText: 'en_Follow Request Sent',
+  followReqSentText: 'en_Request Sent',
   cancelFollowReqText: 'en_Cancel Follow Request',
   youHaveLeftTheteam: 'en_You have left the {0}',
   followReqCanceled: 'en_Follow request is cancelled',

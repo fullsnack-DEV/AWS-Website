@@ -78,7 +78,6 @@ export default function GroupInfo({
   onJoinPress = () => {},
   onAcceptPress = () => {},
   isInvited = false,
-  isAccept = false,
   hideMessageBox = false,
   forUserRespond = false,
   onDecline = () => {},
@@ -560,29 +559,12 @@ export default function GroupInfo({
     />
   );
 
-  const renderFooterComponent = () => (
-    <View>
-      {groupDetails.who_can_join_for_member !== JoinPrivacy.everyone &&
-        !hideMessageBox && (
-          <>
-            <Text style={[styles.headingLabel, {marginHorizontal: 15}]}>
-              {format(strings.messageToJoinTeam, groupDetails.group_name)}
-            </Text>
-            {MeesageFiled()}
-            <TCThinDivider
-              height={7}
-              marginTop={20}
-              marginBottom={25}
-              width={'100%'}
-            />
-          </>
-        )}
-
-      {groupDetails.who_can_join_for_member === JoinPrivacy.everyone ||
-      isInvited ? (
+  const RenderJoinRequestButton = () => {
+    if (isInvited) {
+      return (
         <>
           <TouchableOpacity
-            onPress={isAccept ? onAcceptPress : onJoinPress}
+            onPress={() => onAcceptPress()}
             style={{
               marginHorizontal: 15,
               backgroundColor: colors.reservationAmountColor,
@@ -599,7 +581,7 @@ export default function GroupInfo({
                 color: colors.whiteColor,
                 textTransform: 'uppercase',
               }}>
-              {isAccept ? strings.acceptTitle : strings.join}
+              {strings.acceptTitle}
             </Text>
           </TouchableOpacity>
           {forUserRespond && (
@@ -619,20 +601,46 @@ export default function GroupInfo({
             </TouchableOpacity>
           )}
         </>
-      ) : (
+      );
+    }
+
+    // if team is looking to Club profile only check  groupDetails.who_can_join_for_team condition
+
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam &&
+      groupDetails.entity_type === Verbs.entityTypeClub &&
+      groupDetails.who_can_join_for_team === JoinPrivacy.acceptedByMe
+    ) {
+      <TouchableOpacity
+        onPress={() => onJoinPress(message)}
+        style={{
+          marginHorizontal: 15,
+          backgroundColor: colors.reservationAmountColor,
+          borderRadius: 30,
+          marginBottom: 25,
+        }}>
+        <Text
+          style={{
+            textAlign: 'center',
+            fontFamily: fonts.RBold,
+            fontSize: 16,
+            lineHeight: 24,
+            paddingVertical: 8,
+            color: colors.whiteColor,
+            textTransform: 'uppercase',
+          }}>
+          {strings.sendJoinRequestText}
+        </Text>
+      </TouchableOpacity>;
+    } else if (groupDetails.who_can_join_for_member === JoinPrivacy.everyone) {
+      return (
         <TouchableOpacity
-          onPress={
-            isAccept
-              ? onAcceptPress
-              : () => {
-                  onJoinPress(message);
-                }
-          }
+          onPress={() => onJoinPress()}
           style={{
             marginHorizontal: 15,
             backgroundColor: colors.reservationAmountColor,
             borderRadius: 30,
-            marginBottom: 100,
+            marginBottom: 25,
           }}>
           <Text
             style={{
@@ -641,13 +649,102 @@ export default function GroupInfo({
               fontSize: 16,
               lineHeight: 24,
               paddingVertical: 8,
-              textTransform: 'uppercase',
               color: colors.whiteColor,
+              textTransform: 'uppercase',
             }}>
-            {isAccept ? strings.acceptTitle : strings.sendJoinRequestText}
+            {strings.join}
           </Text>
         </TouchableOpacity>
-      )}
+      );
+    } else if (
+      groupDetails.who_can_join_for_member === JoinPrivacy.acceptedByMe
+    ) {
+      return (
+        <TouchableOpacity
+          onPress={() => onJoinPress(message)}
+          style={{
+            marginHorizontal: 15,
+            backgroundColor: colors.reservationAmountColor,
+            borderRadius: 30,
+            marginBottom: 25,
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              lineHeight: 24,
+              paddingVertical: 8,
+              color: colors.whiteColor,
+              textTransform: 'uppercase',
+            }}>
+            {strings.sendJoinRequestText}
+          </Text>
+        </TouchableOpacity>
+      );
+    }
+
+    return null;
+  };
+
+  const RenderMessageBox = () => {
+    if (hideMessageBox || isInvited) {
+      return null;
+    }
+
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam &&
+      groupDetails.entity_type === Verbs.entityTypeClub &&
+      groupDetails.who_can_join_for_team === JoinPrivacy.acceptedByMe
+    ) {
+      return (
+        <>
+          <Text style={[styles.headingLabel, {marginHorizontal: 15}]}>
+            {format(strings.messageToJoinTeam, groupDetails.group_name)}
+          </Text>
+          {MeesageFiled()}
+          <TCThinDivider
+            height={7}
+            marginTop={20}
+            marginBottom={25}
+            width={'100%'}
+          />
+        </>
+      );
+    }
+
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam &&
+      groupDetails.entity_type === Verbs.entityTypeClub &&
+      groupDetails.who_can_join_for_team === JoinPrivacy.everyone
+    ) {
+      return null;
+    }
+
+    if (groupDetails.who_can_join_for_member !== JoinPrivacy.everyone) {
+      return (
+        <>
+          <Text style={[styles.headingLabel, {marginHorizontal: 15}]}>
+            {format(strings.messageToJoinTeam, groupDetails.group_name)}
+          </Text>
+          {MeesageFiled()}
+          <TCThinDivider
+            height={7}
+            marginTop={20}
+            marginBottom={25}
+            width={'100%'}
+          />
+        </>
+      );
+    }
+    return null;
+  };
+
+  const renderFooterComponent = () => (
+    <View>
+      {RenderMessageBox()}
+
+      {RenderJoinRequestButton()}
     </View>
   );
 

@@ -7,6 +7,7 @@ const NotificationType = {
   invitePlayerToJoingame: 'inviteUserToJoingame',
   inviteToDoubleTeam: 'inviteToDoubleTeam',
   inviteToEvent: 'inviteToEvent',
+  teamRequestedToJoinGroup: 'teamRequestedJoingroup',
   // Challenge notificaton
   challengeOffered: 'challengeOffered',
   challengeAltered: 'challengeAltered',

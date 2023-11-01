@@ -250,9 +250,9 @@ export default function ScorekeeperListScreen({navigation, route}) {
                   sport: sportsObj[0].sport,
                   sportType: sportsObj[0]?.sport_type,
                   uid: item?.user_id,
-                  entityType: item?.entity_type,
+                  entityType: sportsObj[0]?.type,
                   showPreview: true,
-                  parentStack: 'LocalHomeStack',
+                  parentStack: 'App',
                   backScreen: 'ScorekeeperListScreen',
                 },
               });

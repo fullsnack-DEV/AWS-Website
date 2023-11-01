@@ -52,7 +52,11 @@ const getDataForNextScreen = (
     }
 
     if (type === Verbs.TEAM_DATA) {
-      getSportName(authContext.entity.obj, authContext);
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        getSportName(authContext.entity.obj, authContext);
+      } else {
+        getSportName(filters, authContext);
+      }
     }
   };
 
@@ -143,6 +147,7 @@ const LocalHomeQuery = async (
   setReferees,
   setScorekeepers,
   setCardLoader,
+  setTeamsAvailable,
 ) => {
   setCardLoader(true);
 
@@ -558,17 +563,11 @@ const LocalHomeQuery = async (
 
       setCardLoader(false);
 
-      if (
-        authContext.entity.role === Verbs.entityTypeClub ||
-        authContext.entity.role === Verbs.entityTypeTeam
-      ) {
-        setCardLoader(false);
-        setChallengeeMatch(teamData ?? []);
-      } else {
-        setCardLoader(false);
+      setTeamsAvailable(teamData ?? []);
 
-        setChallengeeMatch(playerData);
-      }
+      setCardLoader(false);
+
+      setChallengeeMatch(playerData);
 
       setCardLoader(false);
       setHiringPlayers(hiringPlayers ?? []);
