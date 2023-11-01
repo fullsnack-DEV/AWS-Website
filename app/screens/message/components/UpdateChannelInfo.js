@@ -150,7 +150,7 @@ const UpdateChannelInfo = ({
       modalType={ModalTypes.style1}
       headerRightButtonText={strings.save}
       title={strings.editChatRoom}
-      containerStyle={{height: '90%'}}
+      containerStyle={{paddingHorizontal: 15}}
       onRightButtonPress={onSaveButtonClicked}
       headerLeftIconStyle={{width: 50}}>
       <ActivityLoader visible={loading} />
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     backgroundColor: colors.textFieldBackground,
-    padding: 10,
+    paddingHorizontal: 10,
     borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',

@@ -55,6 +55,7 @@ import CustomReplyInputPreview from './components/CustomReplyInputPreview';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import fonts from '../../Constants/Fonts';
 import CustomMediaView from './components/CustomMediaView';
+import MessageAvatar from './components/MessageAvatar';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
@@ -452,7 +453,7 @@ const MessageChatScreen = ({navigation, route}) => {
                   }}
                 />
               )}
-              MessageAvatar={() => null}
+              MessageAvatar={() => <MessageAvatar channel={channel} />}
               myMessageTheme={myMessageTheme}
               MessageHeader={({message}) => (
                 <CustomMessageHeader message={message} channel={channel} />
@@ -478,10 +479,10 @@ const MessageChatScreen = ({navigation, route}) => {
                   }}
                 />
               )}
+              Reply={CustomReplyComponent}
               ImageUploadPreview={CustomImageUploadPreview}
               ReactionList={() => null}
               InputReplyStateHeader={CustomReplyInputPreview}
-              Reply={CustomReplyComponent}
               DateHeader={() => null}
               InlineDateSeparator={(props) => (
                 <CustomDateSeparator date={props.date} />

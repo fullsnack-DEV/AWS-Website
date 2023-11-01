@@ -328,7 +328,8 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     backgroundColor: colors.textFieldBackground,
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',

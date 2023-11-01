@@ -678,7 +678,7 @@ export default function CreateEventScreen({navigation, route}) {
     setSearchLocation(_location.addressforMap);
   };
 
-  const handleBackPress = () => {
+  const handleBackPress = useCallback(() => {
     Alert.alert(
       strings.areYouWantToUnsavedChanges,
       '',
@@ -705,7 +705,7 @@ export default function CreateEventScreen({navigation, route}) {
       ],
       {cancelable: false},
     );
-  };
+  });
 
   useEffect(() => {
     const backAction = () => {

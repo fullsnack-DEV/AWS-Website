@@ -43,11 +43,10 @@ import {
   getDayFromDate,
   countNumberOfWeekFromDay,
   countNumberOfWeeks,
-  getRoundedDate
+  getRoundedDate,
 } from '../../../utils';
 
 export default function EditChallengeAvailability({navigation, route}) {
-
   const authContext = useContext(AuthContext);
   const [challengeAvailable, setChallengeAvailable] = useState([
     {
@@ -65,28 +64,28 @@ export default function EditChallengeAvailability({navigation, route}) {
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [slotType, setSlotType] = useState('available')
+  const [slotType, setSlotType] = useState('available');
 
   useEffect(() => {
-    if(route.params?.slots){
+    if (route.params?.slots) {
       const editableSlots = [];
-      route.params?.slots.forEach((item , index) => {
-          const temp = {
-            id : index,
-            isBlock : !item.blocked,
-            allDay: false,
-            start_datetime : getJSDate(item.start_datetime),
-            end_datetime : getJSDate(item.end_datetime),
-            is_recurring : false
-          }
-          editableSlots.push(temp);
+      route.params?.slots.forEach((item, index) => {
+        const temp = {
+          id: index,
+          isBlock: !item.blocked,
+          allDay: false,
+          start_datetime: getJSDate(item.start_datetime),
+          end_datetime: getJSDate(item.end_datetime),
+          is_recurring: false,
+        };
+        editableSlots.push(temp);
       });
-      setChallengeAvailable(editableSlots)
-      setSlotType(route.params?.slotType)
-    }else{
-      setSlotType(false)
+      setChallengeAvailable(editableSlots);
+      setSlotType(route.params?.slotType);
+    } else {
+      setSlotType(false);
     }
-  },[]);
+  }, []);
 
   const deleteItemById = (id) => {
     const filteredData = challengeAvailable.filter((item) => item.id !== id);
@@ -101,49 +100,39 @@ export default function EditChallengeAvailability({navigation, route}) {
 
   const onStartDateChange = (date, index) => {
     const tempChallenge = [...challengeAvailable];
-    const startDateTime = tempChallenge[index]
-    .allDay
-    ? new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        0,
-        0,
-        0,
-      )
-    : date;
-    tempChallenge[index].start_datetime = startDateTime
+    const startDateTime = tempChallenge[index].allDay
+      ? new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0)
+      : date;
+    tempChallenge[index].start_datetime = startDateTime;
     let endDateTime = tempChallenge[index].end_datetime;
     const unitDate = challengeAvailable[index].untilDate;
-    
-    if (endDateTime.getTime() <= startDateTime.getTime()){
-      endDateTime = tempChallenge[index]
-      .allDay
-      ? new Date(
-        startDateTime.getFullYear(),
-        startDateTime.getMonth(),
-        startDateTime.getDate(),
-          23,
-          59,
-          59,
-        )
-      :  moment(startDateTime).add(5, 'm').toDate();
+
+    if (endDateTime.getTime() <= startDateTime.getTime()) {
+      endDateTime = tempChallenge[index].allDay
+        ? new Date(
+            startDateTime.getFullYear(),
+            startDateTime.getMonth(),
+            startDateTime.getDate(),
+            23,
+            59,
+            59,
+          )
+        : moment(startDateTime).add(5, 'm').toDate();
     }
 
-    tempChallenge[index].end_datetime = endDateTime
+    tempChallenge[index].end_datetime = endDateTime;
 
-    if(!unitDate || endDateTime.getTime() > unitDate.getTime()){
+    if (!unitDate || endDateTime.getTime() > unitDate.getTime()) {
       tempChallenge[index].untilDate = moment(endDateTime).add(5, 'm').toDate();
     }
 
-    setChallengeAvailable(tempChallenge)
+    setChallengeAvailable(tempChallenge);
     setStartDateVisible(!startDateVisible);
-  }
+  };
 
   const onEndDateChange = (date, index) => {
     const tempChallenge = [...challengeAvailable];
-    tempChallenge[index].end_datetime = tempChallenge[index]
-      .allDay
+    tempChallenge[index].end_datetime = tempChallenge[index].allDay
       ? new Date(
           date.getFullYear(),
           date.getMonth(),
@@ -157,18 +146,17 @@ export default function EditChallengeAvailability({navigation, route}) {
     const endDateTime = challengeAvailable[index].end_datetime;
     const unitDate = challengeAvailable[index].untilDate;
 
-    if(!unitDate || endDateTime.getTime() > unitDate.getTime()){
+    if (!unitDate || endDateTime.getTime() > unitDate.getTime()) {
       tempChallenge[index].untilDate = moment(endDateTime).add(5, 'm').toDate();
     }
 
     setChallengeAvailable(tempChallenge);
     setEndDateVisible(!endDateVisible);
-  }
+  };
 
   const onUntilDateChange = (date, index) => {
     const tempChallenge = challengeAvailable;
-    tempChallenge[index].untilDate = tempChallenge[index]
-      .allDay
+    tempChallenge[index].untilDate = tempChallenge[index].allDay
       ? new Date(
           date.getFullYear(),
           date.getMonth(),
@@ -180,7 +168,7 @@ export default function EditChallengeAvailability({navigation, route}) {
       : date;
     setUntilDateVisible(!untilDateVisible);
     setChallengeAvailable([...tempChallenge]);
-  }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -229,7 +217,7 @@ export default function EditChallengeAvailability({navigation, route}) {
               const filterData = [];
               let obj = {};
               challengeAvailable.map((challenge_item) => {
-                const startDate = challenge_item.start_datetime
+                const startDate = challenge_item.start_datetime;
                 obj = {
                   blocked: challenge_item.isBlock,
                   allDay: challenge_item.allDay,
@@ -239,22 +227,32 @@ export default function EditChallengeAvailability({navigation, route}) {
                   repeat: challenge_item.repeat,
                 };
 
-                let rule
+                let rule;
                 if (challenge_item.repeat === Verbs.eventRecurringEnum.Daily) {
-                  rule =  'FREQ=DAILY'
-                } else if ( challenge_item.repeat === Verbs.eventRecurringEnum.Weekly) {
-                  rule =  'FREQ=WEEKLY'
-                } else if ( challenge_item.repeat === Verbs.eventRecurringEnum.WeekOfMonth) {
+                  rule = 'FREQ=DAILY';
+                } else if (
+                  challenge_item.repeat === Verbs.eventRecurringEnum.Weekly
+                ) {
+                  rule = 'FREQ=WEEKLY';
+                } else if (
+                  challenge_item.repeat === Verbs.eventRecurringEnum.WeekOfMonth
+                ) {
                   rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(startDate)
                     .substring(0, 2)
                     .toUpperCase()};BYSETPOS=${countNumberOfWeeks(startDate)}`;
-                } else if ( challenge_item.repeat === Verbs.eventRecurringEnum.DayOfMonth) {
-                    rule = `FREQ=MONTHLY;BYMONTHDAY=${startDate.getDate()}`;
-                } else if ( challenge_item.repeat === Verbs.eventRecurringEnum.WeekOfYear) {
+                } else if (
+                  challenge_item.repeat === Verbs.eventRecurringEnum.DayOfMonth
+                ) {
+                  rule = `FREQ=MONTHLY;BYMONTHDAY=${startDate.getDate()}`;
+                } else if (
+                  challenge_item.repeat === Verbs.eventRecurringEnum.WeekOfYear
+                ) {
                   rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(startDate)
                     .substring(0, 2)
                     .toUpperCase()};BYSETPOS=${countNumberOfWeeks(startDate)}`;
-                } else if ( challenge_item.repeat === Verbs.eventRecurringEnum.DayOfYear) {
+                } else if (
+                  challenge_item.repeat === Verbs.eventRecurringEnum.DayOfYear
+                ) {
                   rule = `FREQ=YEARLY;BYMONTHDAY=${startDate.getDate()};BYMONTH=${startDate.getMonth()}`;
                 }
 
@@ -284,7 +282,7 @@ export default function EditChallengeAvailability({navigation, route}) {
       />
       <View style={styles.sperateLine} />
       <View>
-        <ScrollView bounces={false} style={{height : '75%'}}>
+        <ScrollView bounces={false} style={{height: '75%'}}>
           <SafeAreaView>
             <EventItemRender title={strings.editChallengeTitle}>
               <FlatList
@@ -329,19 +327,23 @@ export default function EditChallengeAvailability({navigation, route}) {
                       date={
                         challengeAvailable[index].start_datetime
                           ? moment(
-                              new Date(challengeAvailable[index].start_datetime),
+                              new Date(
+                                challengeAvailable[index].start_datetime,
+                              ),
                             ).format('ll')
                           : moment(new Date()).format('ll')
                       }
                       time={
                         challengeAvailable[index].start_datetime
                           ? moment(
-                              new Date(challengeAvailable[index].start_datetime),
+                              new Date(
+                                challengeAvailable[index].start_datetime,
+                              ),
                             ).format('h:mm a')
                           : moment(new Date()).format('h:mm a')
                       }
                       onDatePress={() => {
-                        setCurrentIndex(index); 
+                        setCurrentIndex(index);
                         setStartDateVisible(!startDateVisible);
                       }}
                     />
@@ -365,51 +367,73 @@ export default function EditChallengeAvailability({navigation, route}) {
                       }
                       containerStyle={{marginBottom: 8}}
                       onDatePress={() => {
-                          setCurrentIndex(index); 
-                          setEndDateVisible(!endDateVisible);
-                        }
-                      }
+                        setCurrentIndex(index);
+                        setEndDateVisible(!endDateVisible);
+                      }}
                     />
 
                     <EventMonthlySelection
                       title={strings.repeat}
                       dataSource={[
-                        {label: strings.daily, value: Verbs.eventRecurringEnum.Daily},
-                        {label: strings.weeklyText, value: Verbs.eventRecurringEnum.Weekly},
+                        {
+                          label: strings.daily,
+                          value: Verbs.eventRecurringEnum.Daily,
+                        },
+                        {
+                          label: strings.weeklyText,
+                          value: Verbs.eventRecurringEnum.Weekly,
+                        },
                         {
                           label: format(
                             strings.monthlyOnText,
-                            `${countNumberOfWeekFromDay(challengeAvailable[index].start_datetime)} ${getDayFromDate(challengeAvailable[index].start_datetime)}`,
+                            `${countNumberOfWeekFromDay(
+                              challengeAvailable[index].start_datetime,
+                            )} ${getDayFromDate(
+                              challengeAvailable[index].start_datetime,
+                            )}`,
                           ),
-                          value: Verbs.eventRecurringEnum.WeekOfMonth
+                          value: Verbs.eventRecurringEnum.WeekOfMonth,
                         },
                         {
                           label: format(
                             strings.monthlyOnDayText,
-                            ordinal_suffix_of(challengeAvailable[index].start_datetime.getDate()),
+                            ordinal_suffix_of(
+                              challengeAvailable[
+                                index
+                              ].start_datetime.getDate(),
+                            ),
                           ),
                           value: Verbs.eventRecurringEnum.DayOfMonth,
                         },
                         {
                           label: format(
                             strings.yearlyOnText,
-                            `${countNumberOfWeekFromDay(challengeAvailable[index].start_datetime)} ${getDayFromDate(challengeAvailable[index].start_datetime)}`,
+                            `${countNumberOfWeekFromDay(
+                              challengeAvailable[index].start_datetime,
+                            )} ${getDayFromDate(
+                              challengeAvailable[index].start_datetime,
+                            )}`,
                           ),
-                          value: Verbs.eventRecurringEnum.WeekOfYear
+                          value: Verbs.eventRecurringEnum.WeekOfYear,
                         },
                         {
                           label: format(
                             strings.yearlyOnDayText,
-                            ordinal_suffix_of(challengeAvailable[index].start_datetime.getDate()),
+                            ordinal_suffix_of(
+                              challengeAvailable[
+                                index
+                              ].start_datetime.getDate(),
+                            ),
                           ),
                           value: Verbs.eventRecurringEnum.DayOfYear,
-                        }
+                        },
                       ]}
                       placeholder={strings.doesNotRepeat}
                       value={challengeAvailable[index].repeat}
                       onValueChange={(value) => {
                         const tempChallenge = [...challengeAvailable];
-                        tempChallenge[index].is_recurring = value !== Verbs.eventRecurringEnum.Never;
+                        tempChallenge[index].is_recurring =
+                          value !== Verbs.eventRecurringEnum.Never;
                         tempChallenge[index].repeat = value;
                         setChallengeAvailable(tempChallenge);
                       }}
@@ -420,26 +444,27 @@ export default function EditChallengeAvailability({navigation, route}) {
                         toggle={!challengeAvailable[index].allDay}
                         date={
                           challengeAvailable[index].untilDate
-                            ? moment(challengeAvailable[index].untilDate).format(
-                                'll',
-                              )
-                            : moment(challengeAvailable[index].end_datetime).add(1, 'Y').format('ll')
+                            ? moment(
+                                challengeAvailable[index].untilDate,
+                              ).format('ll')
+                            : moment(challengeAvailable[index].end_datetime)
+                                .add(1, 'Y')
+                                .format('ll')
                         }
                         time={
                           challengeAvailable[index].untilDate
-                            ? moment(challengeAvailable[index].untilDate).format(
-                                'h:mm a',
-                              )
-                            : moment(challengeAvailable[index].end_datetime).format(
-                              'h:mm a',
-                            )
+                            ? moment(
+                                challengeAvailable[index].untilDate,
+                              ).format('h:mm a')
+                            : moment(
+                                challengeAvailable[index].end_datetime,
+                              ).format('h:mm a')
                         }
                         containerStyle={{marginBottom: 12}}
                         onDatePress={() => {
-                          setCurrentIndex(index); 
+                          setCurrentIndex(index);
                           setUntilDateVisible(!untilDateVisible);
-                        }
-                      }
+                        }}
                       />
                     )}
 
@@ -451,13 +476,15 @@ export default function EditChallengeAvailability({navigation, route}) {
                       }
                       visible={startDateVisible}
                       onDone={(date) => {
-                        onStartDateChange(date, currentIndex)
+                        onStartDateChange(date, currentIndex);
                       }}
                       onCancel={handleCancelPress}
                       onHide={handleCancelPress}
                       minimumDate={getRoundedDate(5)}
                       mode={
-                        challengeAvailable[currentIndex].allDay ? 'date' : 'datetime'
+                        challengeAvailable[currentIndex].allDay
+                          ? 'date'
+                          : 'datetime'
                       }
                       date={challengeAvailable[currentIndex].start_datetime}
                       minutesGap={5}
@@ -470,30 +497,40 @@ export default function EditChallengeAvailability({navigation, route}) {
                       }
                       visible={endDateVisible}
                       onDone={(date) => {
-                        onEndDateChange(date,currentIndex)
+                        onEndDateChange(date, currentIndex);
                       }}
                       onCancel={handleCancelPress}
                       onHide={handleCancelPress}
-                      minimumDate={moment(challengeAvailable[currentIndex].start_datetime).add(5, 'm').toDate()}
-                      mode={challengeAvailable[currentIndex].allDay ? 'date' : 'datetime'}
+                      minimumDate={moment(
+                        challengeAvailable[currentIndex].start_datetime,
+                      )
+                        .add(5, 'm')
+                        .toDate()}
+                      mode={
+                        challengeAvailable[currentIndex].allDay
+                          ? 'date'
+                          : 'datetime'
+                      }
                       date={challengeAvailable[currentIndex].end_datetime}
                       minutesGap={5}
                     />
                     <DateTimePickerView
                       visible={untilDateVisible}
                       onDone={(date) => {
-                        onUntilDateChange(date, currentIndex)
+                        onUntilDateChange(date, currentIndex);
                       }}
                       onCancel={handleCancelPress}
                       onHide={handleCancelPress}
-                      minimumDate={
-                        moment(challengeAvailable[currentIndex].end_datetime)
-                            .add(5, 'm')
-                            .toDate()
-                      }
+                      minimumDate={moment(
+                        challengeAvailable[currentIndex].end_datetime,
+                      )
+                        .add(5, 'm')
+                        .toDate()}
                       minutesGap={5}
                       mode={
-                        challengeAvailable[currentIndex].allDay ? 'date' : 'datetime'
+                        challengeAvailable[currentIndex].allDay
+                          ? 'date'
+                          : 'datetime'
                       }
                       date={challengeAvailable[currentIndex].untilDate}
                     />
@@ -510,14 +547,18 @@ export default function EditChallengeAvailability({navigation, route}) {
                         allDay: false,
                         is_recurring: false,
                         start_datetime: getRoundedDate(5),
-                        end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
+                        end_datetime: moment(getRoundedDate(5))
+                          .add(5, 'm')
+                          .toDate(),
                       };
                       setChallengeAvailable([...challengeAvailable, obj]);
                     }}
                   />
                 )}
                 ListFooterComponentStyle={{marginTop: 20}}
-                ItemSeparatorComponent={() => <View style={{height: wp('3%')}} />}
+                ItemSeparatorComponent={() => (
+                  <View style={{height: wp('3%')}} />
+                )}
                 keyExtractor={(itemValue, index) => index.toString()}
               />
             </EventItemRender>
@@ -528,16 +569,22 @@ export default function EditChallengeAvailability({navigation, route}) {
           firstTabTitle={strings.block}
           secondTabTitle={strings.setAvailable}
           onFirstTabPress={() => {
-            const tempChallenge = [...challengeAvailable]
-            const result = tempChallenge.map((item) =>  ({ ...item, isBlock : true }));
+            const tempChallenge = [...challengeAvailable];
+            const result = tempChallenge.map((item) => ({
+              ...item,
+              isBlock: true,
+            }));
             setChallengeAvailable(result);
-            setSlotType(true)
+            setSlotType(true);
           }}
           onSecondTabPress={() => {
             const tempChallenge = [...challengeAvailable];
-            const result = tempChallenge.map((item) =>  ({ ...item, isBlock : false }));
+            const result = tempChallenge.map((item) => ({
+              ...item,
+              isBlock: false,
+            }));
             setChallengeAvailable(result);
-            setSlotType(false)
+            setSlotType(false);
           }}
           style={styles.blockStyle}
           activeEventPricacy={styles.activeEventPricacy}
@@ -575,7 +622,7 @@ const styles = StyleSheet.create({
     width: wp('92%'),
     marginVertical: 0,
     borderRadius: 8,
-    marginTop: 30
+    marginTop: 30,
   },
   activeEventPricacy: {
     paddingVertical: 8,

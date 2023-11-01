@@ -6,6 +6,7 @@ import {
   Image,
   Text,
   Alert,
+  Dimensions,
 } from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import moment from 'moment';
@@ -96,6 +97,7 @@ export default function ChallengeAvailability({
   const [oneTime, setOneTime] = useState(true);
   const [overlappedItems, setOverlappedItems] = useState([]);
   const [showAddTimeButton, setShowAddTimeButton] = useState(true);
+  const [snapPoints, setSnapPoints] = useState([]);
 
   useEffect(() => {
     if (isVisible) {
@@ -353,8 +355,18 @@ export default function ChallengeAvailability({
       title={strings.editChallengeAvailibility}
       headerRightButtonText={strings.save}
       onRightButtonPress={handleSave}
-      containerStyle={{paddingHorizontal: 15}}>
-      <View>
+      containerStyle={{paddingHorizontal: 15}}
+      externalSnapPoints={snapPoints}>
+      <View
+        onLayout={(event) => {
+          const contentHeight = event.nativeEvent.layout.height + 80;
+
+          setSnapPoints([
+            '50%',
+            contentHeight,
+            Dimensions.get('window').height - 40,
+          ]);
+        }}>
         <ActivityLoader visible={loading} />
         <FlatList
           data={challengeAvailable}

@@ -304,7 +304,7 @@ export default function DeactivatedSportsListScreen({navigation}) {
 }
 const styles = StyleSheet.create({
   listTitle: {
-    marginBottom: 10,
+    marginTop: 20,
     fontFamily: fonts.RBold,
     fontSize: 16,
     color: colors.lightBlackColor,
@@ -364,6 +364,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
   },
+
   viewContainer: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -1,22 +1,11 @@
 // @flow
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Text,
-  Dimensions,
-} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Image, Text} from 'react-native';
 import moment from 'moment';
-import {format} from 'react-string-format';
 import {useMessageContext} from 'stream-chat-react-native';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import {newReactionData} from '../constants';
-import {strings} from '../../../../Localization/translation';
-// import {checkIsMessageDeleted} from '../../../utils/streamChat';
-// import AuthContext from '../../../auth/context';
 
 const MAX_REACTION_COUNT = 99;
 
@@ -66,27 +55,10 @@ const Reactions = ({messageId, reactions = {}, onPress = () => {}}) => {
 };
 
 const CustomMessageFooter = ({onPress = () => {}}) => {
-  const {message, isMyMessage} = useMessageContext();
-  // const authContext = useContext(AuthContext);
-  // const groupStyle = message.groupStyles[0];
-  // const isDeletedMessage = checkIsMessageDeleted(
-  //   authContext.chatClient.userID,
-  //   message,
-  // );
+  const {message} = useMessageContext();
 
-  // if (
-  //   groupStyle === 'single' ||
-  //   groupStyle === 'bottom' ||
-  //   message.latest_reactions.length > 0 ||
-  //   message.own_reactions.length > 0 ||
-  //   isDeletedMessage
-  // ) {
   return (
-    <View
-      style={[
-        styles.reactionAndTimeContainer,
-        isMyMessage ? {marginRight: 15} : {marginLeft: 30},
-      ]}>
+    <View style={styles.reactionAndTimeContainer}>
       {message.latest_reactions?.length > 0 ||
       message.own_reactions?.length > 0 ? (
         <Reactions
@@ -96,13 +68,6 @@ const CustomMessageFooter = ({onPress = () => {}}) => {
         />
       ) : null}
 
-      {message.user.group_name ? (
-        <View style={{maxWidth: '80%'}}>
-          <Text style={[styles.time, {marginRight: 10}]} numberOfLines={1}>
-            {format(strings.byUser, message.user.name)}
-          </Text>
-        </View>
-      ) : null}
       <View>
         <Text style={styles.time}>
           {moment(message.updated_at).format('hh:mm A')}
@@ -110,8 +75,6 @@ const CustomMessageFooter = ({onPress = () => {}}) => {
       </View>
     </View>
   );
-  // }
-  // return null;
 };
 
 const styles = StyleSheet.create({
@@ -132,10 +95,9 @@ const styles = StyleSheet.create({
   reactionAndTimeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-end',
+    // alignSelf: 'flex-end',
     marginTop: 5,
-    maxWidth: Dimensions.get('window').width * 0.6,
-    marginBottom: 15,
+    marginLeft: 40,
   },
   countText: {
     fontSize: 12,

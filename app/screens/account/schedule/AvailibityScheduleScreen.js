@@ -539,33 +539,34 @@ export default function AvailibilityScheduleScreen({
   };
 
   return (
-    <ScrollView
-      bounces={false}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{paddingBottom: 12}}>
-      <ActivityLoader visible={loading} />
-      {listView ? (
-        <AvailabilityHeader
-          isListView={listView}
-          selectedDate={selectedDate}
-          onToggleView={() => setListView(!listView)}
-          containerStyle={{paddingHorizontal: 15, paddingTop: 22}}
-        />
-      ) : null}
+    <>
+      <ScrollView
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{paddingBottom: 12}}>
+        <ActivityLoader visible={loading} />
+        {listView ? (
+          <AvailabilityHeader
+            isListView={listView}
+            selectedDate={selectedDate}
+            onToggleView={() => setListView(!listView)}
+            containerStyle={{paddingHorizontal: 15, paddingTop: 22}}
+          />
+        ) : null}
 
-      {renderContent()}
+        {renderContent()}
 
-      {isAdmin && !listView ? (
-        <TouchableOpacity
-          onPress={() => {
-            setIsFromSlots(true);
-            setVisibleAvailabilityModal(true);
-          }}
-          style={{alignSelf: 'center', marginTop: 20}}>
-          <Text style={styles.buttonText}>{strings.editAvailability}</Text>
-        </TouchableOpacity>
-      ) : null}
-
+        {isAdmin && !listView ? (
+          <TouchableOpacity
+            onPress={() => {
+              setIsFromSlots(true);
+              setVisibleAvailabilityModal(true);
+            }}
+            style={{alignSelf: 'center', marginTop: 20}}>
+            <Text style={styles.buttonText}>{strings.editAvailability}</Text>
+          </TouchableOpacity>
+        ) : null}
+      </ScrollView>
       <ChallengeAvailability
         isVisible={visibleAvailabilityModal}
         closeModal={() => {
@@ -579,7 +580,7 @@ export default function AvailibilityScheduleScreen({
         deleteOrCreateSlotData={deleteOrCreateSlotData}
         isFromSlot={isFromSlots}
       />
-    </ScrollView>
+    </>
   );
 }
 

@@ -89,6 +89,7 @@ const WritePostScreen = ({navigation, route}) => {
     value: 0,
   });
 
+  const [snapPoints, setSnapPoints] = useState([]);
   const flatListRef = useRef();
 
   const handleRepost = () => {
@@ -1021,28 +1022,36 @@ const WritePostScreen = ({navigation, route}) => {
       <CustomModalWrapper
         isVisible={visibleWhoModal}
         closeModal={onCloseModal}
-        modalType={ModalTypes.style1}
+        modalType={ModalTypes.style2}
         title={strings.privacySettings}
-        containerStyle={{
-          paddingTop: 15,
-          paddingHorizontal: 30,
-        }}
         headerRightButtonText={strings.apply}
         onRightButtonPress={() => {
           setVisibleWhoModal(false);
           setPrivacySetting(privacySetting);
-        }}>
-        <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={
-            ['user', 'player'].includes(authContext.entity.role)
-              ? whoCanDataSourceUser
-              : whoCanDataSourceGroup
-          }
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderWhoCan}
-        />
+        }}
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}>
+          <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={
+              ['user', 'player'].includes(authContext.entity.role)
+                ? whoCanDataSourceUser
+                : whoCanDataSourceGroup
+            }
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderWhoCan}
+          />
+        </View>
       </CustomModalWrapper>
     </SafeAreaView>
   );

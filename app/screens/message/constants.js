@@ -52,12 +52,11 @@ export const themeStyle = {
       deletedContainerInner: {
         borderWidth: 0,
         backgroundColor: colors.whiteColor,
-        marginLeft: 30,
       },
       containerInner: {
         maxWidth: Dimensions.get('window').width * 0.7,
-        marginLeft: 30,
         borderWidth: 0,
+        marginLeft: 40,
       },
       container: {
         maxWidth: Dimensions.get('window').width * 0.8,
@@ -96,12 +95,10 @@ export const myMessageTheme = {
       containerInner: {
         borderWidth: 0,
         backgroundColor: colors.chatBubbleContainer,
-        marginRight: 15,
       },
       deletedContainerInner: {
         borderWidth: 0,
         backgroundColor: colors.chatBubbleContainer,
-        marginRight: 15,
       },
       container: {
         borderWidth: 0,
