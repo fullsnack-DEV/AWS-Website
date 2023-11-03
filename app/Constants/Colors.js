@@ -170,5 +170,6 @@ const colors = {
   ActivityLoaderColor: 'rgba(0,0,0,0.6)',
   modalTransparentBG: 'rgba(255,255,255,0.1)',
   iosActionSheetBgColor: '#DFDFDF',
+  leaveClubTextColor: '#FF0000',
 };
 export default colors;

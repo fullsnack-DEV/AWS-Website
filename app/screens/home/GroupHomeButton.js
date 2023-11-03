@@ -145,9 +145,9 @@ const GroupHomeButton = ({
         setOptions([strings.removeTeamFromClub]);
       } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
         obj.btn1 = strings.inviteSent;
-        setOptions([strings.cancelInvite]);
+        setOptions([strings.cancelMemberShipInvitationText]);
         setActionSheetTitle(
-          format(strings.actionsheetTitle8, loggedInEntity.obj.group_name),
+          format(strings.actionsheetTitle8, groupData.group_name),
         );
       } else if (groupData.invite_request?.action === Verbs.requestVerb) {
         obj.btn1 = strings.requestPendingText;
@@ -195,11 +195,13 @@ const GroupHomeButton = ({
       } else if (groupData.invite_request?.action === Verbs.requestVerb) {
         obj.btn1 = strings.requestSent;
         setOptions([strings.cancelRequestText, strings.cancel]);
+
         setActionSheetTitle(
           format(strings.actionsheetTitle3, groupData.group_name),
         );
       } else if (groupData.invite_request?.action === Verbs.inviteVerb) {
         obj.btn1 = strings.invitePending;
+
         setOptions([strings.acceptInvite, strings.declineInvite]);
       } else {
         obj.btn1 = strings.join;
@@ -406,6 +408,7 @@ const GroupHomeButton = ({
           handleButtonPress(option);
         }}
       />
+
       <BottomSheet
         isVisible={showOptions4}
         closeModal={() => setShowOptions4(false)}

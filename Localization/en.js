@@ -3196,4 +3196,17 @@ export default {
   teamOnlyPrivacyOption: 'en_Team Only',
   aboutRatingsText: 'en_About ratings',
   hideDeleteFromPosts: 'en_Hide/Delete from my posts',
+  clubInviteTeamText1:
+    'en_ Members in the team will be a member of both your club and the team.',
+  clubInviteTeamText2: 'en_Your club can remove the team at any time.',
+  clubInviteTeamText3:
+    'en_Your club admins will not be admins of the team unless the team adds them as their team admin.',
+  whenTeamJoinYourClub: 'en_When a team joins your club:',
+  inviteTeamToYourClubText: 'en_Invite Team to Your club',
+  memberShipInvitationTextSent: 'en_Membership Invitation Sent',
+  cancelMemberShipInvitationText: 'en_Cancel Membership Invitation',
+  memberShipInvitationCancelledTextSent: 'en_Membership Invitation Canceled.',
+  whenTeamleaveClubtext: 'en_When your team leave  a club:',
+  TeamLeaveModalText:
+    'en_Your team will not be an affiliated team of the club any more, but the members of your teamwill still remain as a member both in your team and the club.    ',
 };

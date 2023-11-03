@@ -604,35 +604,67 @@ export default function GroupInfo({
       );
     }
 
-    // if team is looking to Club profile only check  groupDetails.who_can_join_for_team condition
-
     if (
       authContext.entity.role === Verbs.entityTypeTeam &&
       groupDetails.entity_type === Verbs.entityTypeClub &&
       groupDetails.who_can_join_for_team === JoinPrivacy.acceptedByMe
     ) {
-      <TouchableOpacity
-        onPress={() => onJoinPress(message)}
-        style={{
-          marginHorizontal: 15,
-          backgroundColor: colors.reservationAmountColor,
-          borderRadius: 30,
-          marginBottom: 25,
-        }}>
-        <Text
+      return (
+        <TouchableOpacity
+          onPress={() => onJoinPress(message)}
           style={{
-            textAlign: 'center',
-            fontFamily: fonts.RBold,
-            fontSize: 16,
-            lineHeight: 24,
-            paddingVertical: 8,
-            color: colors.whiteColor,
-            textTransform: 'uppercase',
+            marginHorizontal: 15,
+            backgroundColor: colors.reservationAmountColor,
+            borderRadius: 30,
+            marginBottom: 25,
           }}>
-          {strings.sendJoinRequestText}
-        </Text>
-      </TouchableOpacity>;
-    } else if (groupDetails.who_can_join_for_member === JoinPrivacy.everyone) {
+          <Text
+            style={{
+              textAlign: 'center',
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              lineHeight: 24,
+              paddingVertical: 8,
+              color: colors.whiteColor,
+              textTransform: 'uppercase',
+            }}>
+            {strings.sendJoinRequestText}
+          </Text>
+        </TouchableOpacity>
+      );
+    }
+
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam &&
+      groupDetails.entity_type === Verbs.entityTypeClub &&
+      groupDetails.who_can_join_for_team === JoinPrivacy.everyone
+    ) {
+      return (
+        <TouchableOpacity
+          onPress={() => onJoinPress(message)}
+          style={{
+            marginHorizontal: 15,
+            backgroundColor: colors.reservationAmountColor,
+            borderRadius: 30,
+            marginBottom: 25,
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              fontFamily: fonts.RBold,
+              fontSize: 16,
+              lineHeight: 24,
+              paddingVertical: 8,
+              color: colors.whiteColor,
+              textTransform: 'uppercase',
+            }}>
+            {strings.join}
+          </Text>
+        </TouchableOpacity>
+      );
+    }
+
+    if (groupDetails.who_can_join_for_member === JoinPrivacy.everyone) {
       return (
         <TouchableOpacity
           onPress={() => onJoinPress()}
@@ -656,9 +688,8 @@ export default function GroupInfo({
           </Text>
         </TouchableOpacity>
       );
-    } else if (
-      groupDetails.who_can_join_for_member === JoinPrivacy.acceptedByMe
-    ) {
+    }
+    if (groupDetails.who_can_join_for_member === JoinPrivacy.acceptedByMe) {
       return (
         <TouchableOpacity
           onPress={() => onJoinPress(message)}

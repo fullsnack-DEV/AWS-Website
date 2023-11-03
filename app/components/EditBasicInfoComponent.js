@@ -356,6 +356,7 @@ const EditBasicInfoComponent = ({
           </Pressable>
         </View>
 
+        <Text style={styles.titleText}>{strings.phone.toUpperCase()}</Text>
         <FlatList
           data={phoneNumber}
           renderItem={renderPhoneNumbers}
@@ -370,6 +371,7 @@ const EditBasicInfoComponent = ({
             alignSelf: 'center',
             borderRadius: 5,
             marginBottom: 50,
+            marginTop: 8,
           }}
           onPress={() => {
             addPhoneNumber();

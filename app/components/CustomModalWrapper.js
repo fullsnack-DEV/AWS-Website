@@ -1,6 +1,13 @@
 // @flow
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {View, StyleSheet, Dimensions, Platform, StatusBar} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  Platform,
+  StatusBar,
+  BackHandler,
+} from 'react-native';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -40,6 +47,8 @@ const CustomModalWrapper = ({
   const navigation = useNavigation();
   const [topMargin, setTopMargin] = useState(50);
   const {bottom, top} = useSafeAreaInsets();
+  const backHandlerRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState();
 
   useEffect(() => {
     if (isVisible) {
@@ -158,6 +167,24 @@ const CustomModalWrapper = ({
     }
   };
 
+  // eslint-disable-next-line consistent-return
+  const onBackPress = () => {
+    if (backHandlerRef !== null) {
+      modalRef.current?.dismiss();
+      return true;
+    }
+  };
+
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    if (currentIndex !== -1) {
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }
+  }, [currentIndex, isVisible]);
+
   useEffect(() => {
     if (isVisible) {
       modalRef?.current?.present();
@@ -179,6 +206,9 @@ const CustomModalWrapper = ({
         snapPoints={
           externalSnapPoints.length > 0 ? externalSnapPoints : snapPoints
         }
+        onChange={(index) => {
+          setCurrentIndex(index);
+        }}
         enablePanDownToClose
         enableDismissOnClose
         backdropComponent={ModalBackDrop}

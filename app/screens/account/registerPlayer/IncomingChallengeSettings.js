@@ -110,6 +110,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           currency_type: gettingCurrency.currency,
           fee: 0,
         },
+        availibility: Verbs.on,
       });
     }
   }, [Focused]);
@@ -420,6 +421,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           return item;
         }
       });
+
       const body = {
         ...playerObject,
         registered_sports: registerdPlayerData,

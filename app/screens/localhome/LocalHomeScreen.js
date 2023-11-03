@@ -1246,7 +1246,7 @@ function LocalHomeScreen({navigation, route}) {
         <View
           style={{paddingTop: 0, paddingHorizontal: 0}}
           onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
+            const contentHeight = event.nativeEvent.layout.height + 40;
             const screenHeight = Dimensions.get('window').height - 40;
             if (contentHeight <= screenHeight) {
               setSnapPoints(['50%', contentHeight, screenHeight]);

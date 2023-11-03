@@ -528,17 +528,11 @@ const SportActivityHome = ({navigation, route}) => {
           sportType={sportObj?.sport_type}
         />
 
-        <InfoSection
-          description={sportObj?.descriptions}
-          onMore={() => handleSectionClick(strings.infoTitle)}
-          containerStyle={{paddingHorizontal: 15}}
-          loading={isFectchingUser}
-        />
-
         <ChallengeButton
           isAdmin={isAdmin}
           loggedInEntity={authContext.entity.obj}
           sportObj={sportObj}
+          sportType={sportType}
           isAvailable={getIsAvailable(sportObj, entityType)}
           inviteToChallenge={() => {
             navigation.navigate('InviteChallengeScreen', {
@@ -577,6 +571,13 @@ const SportActivityHome = ({navigation, route}) => {
               settingObj: sportObj?.setting ?? {},
             });
           }}
+        />
+
+        <InfoSection
+          description={sportObj?.descriptions}
+          onMore={() => handleSectionClick(strings.infoTitle)}
+          containerStyle={{paddingHorizontal: 15}}
+          loading={isFectchingUser}
         />
 
         <View style={{paddingHorizontal: 15}}>

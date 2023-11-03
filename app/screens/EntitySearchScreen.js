@@ -1885,9 +1885,9 @@ export default function EntitySearchScreen({navigation, route}) {
                   setCurrentUserData(dataObj);
                 }}
                 onPressJoinButton={() => {
-                  setGroupData(item);
-
                   setShowJoinModal(true);
+
+                  setGroupData(item);
                 }}
               />
             </View>
@@ -2577,7 +2577,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
       <JoinButtonModal
         isVisible={showJoinModal}
-        setShowJoinModal={() => setShowJoinModal(false)}
+        closeModal={() => setShowJoinModal(false)}
         currentUserData={groupData}
         onJoinPress={() => userJoinGroup(groupData.group_id)}
         onAcceptPress={() => userJoinGroup(groupData.group_id)}

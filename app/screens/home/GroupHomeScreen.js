@@ -59,6 +59,7 @@ import errorCode from '../../Constants/errorCode';
 import {JoinPrivacy} from '../../Constants/GeneralConstants';
 import {cancelFollowRequest} from '../../api/Users';
 import InviteMemberModal from '../../components/InviteMemberModal';
+import ClubInviteTeamModal from './ClubInviteTeamModal';
 
 // import BottomSheet from '../../components/modals/BottomSheet';
 
@@ -108,6 +109,8 @@ const GroupHomeScreen = ({
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showMembershipInviteModal, setShowMembershipInviteModal] =
     useState(false);
+  const [showClubInviteTeamModal, setShoeclubInviteTeamModal] = useState(false);
+  const [forTeamJoinClub, setForTeamJoinClub] = useState(false);
 
   const bottomSheetRef = useRef(null);
   const followModalRef = useRef(null);
@@ -681,6 +684,9 @@ const GroupHomeScreen = ({
         if (option === strings.cancelRequestText) {
           label = strings.alertTitle4;
         }
+        if (option === strings.cancelMemberShipInvitationText) {
+          label = strings.memberShipInvitationCancelledTextSent;
+        }
         setTimeout(() => {
           Alert.alert(label, '', [{text: strings.okTitleText}]);
         }, 10);
@@ -889,6 +895,7 @@ const GroupHomeScreen = ({
 
   const clubInviteTeam = async () => {
     setLoading(true);
+
     const params = [groupId];
     inviteTeam(params, authContext.entity.uid, authContext)
       .then((response) => {
@@ -915,11 +922,7 @@ const GroupHomeScreen = ({
           setCurrentUserData(obj);
           setLoading(false);
           setTimeout(() => {
-            Alert.alert(
-              '',
-              `“${currentUserData.group_name}“ ${strings.isinvitedsuccesfully}`,
-              [{text: strings.okTitleText}],
-            );
+            showAlert(strings.memberShipInvitationTextSent);
           }, 10);
         }
       })
@@ -1441,12 +1444,22 @@ const GroupHomeScreen = ({
       case strings.removeTeamFromClub:
       case strings.joining:
       case strings.leaveClub:
+        if (authContext.entity.role === Verbs.entityTypeTeam) {
+          setForTeamJoinClub(true);
+          setShoeclubInviteTeamModal(true);
+        } else {
+          userLeaveGroup();
+        }
+
+        break;
       case strings.leaveTeam:
         userLeaveGroup();
         break;
 
       case strings.invite:
-        clubInviteTeam();
+        //   Alert.alert('From club invite tream');
+        setShoeclubInviteTeamModal(true);
+        // clubInviteTeam();
         break;
 
       case strings.join:
@@ -1489,8 +1502,7 @@ const GroupHomeScreen = ({
       case strings.acceptRequet:
         setIsInvited(true);
         setShowMembershipInviteModal(true);
-        // JoinButtonModalRef.current.present();
-        // onAccept(currentUserData.invite_request.activity_id);
+
         break;
 
       case strings.declineInvite:
@@ -1507,6 +1519,7 @@ const GroupHomeScreen = ({
 
       case strings.cancelInvite:
       case strings.cancelRequestText:
+      case strings.cancelMemberShipInvitationText:
         cancelGroupInvitation(action);
         break;
       case strings.inviteMemberText:
@@ -1659,6 +1672,14 @@ const GroupHomeScreen = ({
       <EditGroupProfileModal
         visible={visibleEditProfileModal}
         closeModal={() => setVisibleEditProfileModal(false)}
+      />
+
+      <ClubInviteTeamModal
+        visible={showClubInviteTeamModal}
+        closeModal={() => setShoeclubInviteTeamModal()}
+        inviteTeamCall={() => clubInviteTeam()}
+        leaveClubCall={() => userLeaveGroup()}
+        forTeamJoinClub={forTeamJoinClub}
       />
 
       <BottomSheet

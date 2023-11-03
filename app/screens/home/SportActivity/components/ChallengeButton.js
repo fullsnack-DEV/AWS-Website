@@ -36,6 +36,7 @@ const ChallengeButton = ({
         item.sport === sportObj?.sport &&
         item.sport_type === sportObj?.sport_type,
     );
+
     setIsUserWithSameSport(playingSport.length > 0);
 
     if (
@@ -45,15 +46,18 @@ const ChallengeButton = ({
       const sportList = (loggedInEntity.scorekeeper_data ?? []).filter(
         (item) => item.sport === sportObj?.sport,
       );
+
       setIsScoreKeeper(sportList.length > 0);
 
       const sportList1 = (loggedInEntity.referee_data ?? []).filter(
         (item) => item.sport === sportObj?.sport,
       );
+
       setIsReferee(sportList1.length > 0);
     } else {
       setIsScoreKeeper(false);
       setIsReferee(false);
+      setIsUserWithSameSport(false);
     }
   }, [loggedInEntity, sportObj]);
 
@@ -106,10 +110,23 @@ const ChallengeButton = ({
   );
 
   const getButtonLabel = () => {
+    const playingSport = (loggedInEntity.registered_sports ?? []).filter(
+      (item) => {
+        if (
+          item.sport_type === Verbs.sportTypeSingle &&
+          item.sport === sportObj?.sport
+        ) {
+          return true;
+        }
+        return false;
+      },
+    );
+
     if (
       sportObj?.sport_type === Verbs.singleSport &&
       loggedInEntity.entity_type === Verbs.entityTypePlayer &&
-      isAvailable
+      isAvailable &&
+      isUserWithSameSport
     ) {
       return strings.challenge;
     }
@@ -122,6 +139,13 @@ const ChallengeButton = ({
         loggedInEntity.entity_type === Verbs.entityTypePlayer &&
         isUserWithSameSport &&
         isAvailable
+      ) {
+        return strings.book;
+      }
+      if (
+        loggedInEntity.entity_type === Verbs.entityTypePlayer &&
+        isAvailable &&
+        playingSport.length > 0
       ) {
         return strings.book;
       }

@@ -61,6 +61,35 @@ const LocalHomeMenuItems = memo(
           entity_type: role,
           sports: sportsList,
         });
+      } else if (role === Verbs.entityTypePlayer) {
+        if (selectedSport === strings.all) {
+          navigation.navigate('HomeStack', {
+            screen: 'SportActivityHome',
+            params: {
+              sport: sportsList[0]?.sport,
+              sportType: sportsList[0]?.sport_type,
+              uid,
+              entityType: role,
+              showPreview: true,
+              parentStack: 'App',
+              backScreen: 'LocalHome',
+            },
+          });
+        } else {
+          console.log(selectedSport, sportType);
+          navigation.navigate('HomeStack', {
+            screen: 'SportActivityHome',
+            params: {
+              sport: selectedSport,
+              sportType,
+              uid,
+              entityType: role,
+              showPreview: true,
+              parentStack: 'App',
+              backScreen: 'LocalHome',
+            },
+          });
+        }
       } else {
         // get the sport if the length is grater than one
 
@@ -136,7 +165,12 @@ const LocalHomeMenuItems = memo(
             break;
           case strings.playersAvailableforChallenge:
             sportsList = item.registered_sports ?? [];
-            navigateAndSetDataForSportActivityView(uid, role, sportsList);
+
+            navigateAndSetDataForSportActivityView(
+              uid,
+              Verbs.entityTypePlayer,
+              sportsList,
+            );
             break;
           case strings.lookingForTeamTitle:
             sportsList = item.registered_sports ?? [];
