@@ -35,6 +35,7 @@ const ScreenHeader = ({
   rightButtonTextStyle = {},
   leftIconStyle = {},
   rightButtonTextContainerStyle = {},
+  isRightButtonDisabled = false,
 }) => (
   <View style={[styles.headerRow, containerStyle]}>
     <View style={[{width: 80}, leftIconStyle]}>
@@ -70,11 +71,17 @@ const ScreenHeader = ({
         <View style={{alignItems: 'flex-end'}}>
           <TouchableOpacity
             onPress={onRightButtonPress}
-            style={rightButtonTextContainerStyle}>
+            style={rightButtonTextContainerStyle}
+            disabled={isRightButtonDisabled}>
             {loading ? (
               <ActivityIndicator size={'small'} />
             ) : (
-              <Text style={[styles.buttonText, rightButtonTextStyle]}>
+              <Text
+                style={[
+                  styles.buttonText,
+                  isRightButtonDisabled ? {color: colors.disableColor} : {},
+                  rightButtonTextStyle,
+                ]}>
                 {rightButtonText}
               </Text>
             )}

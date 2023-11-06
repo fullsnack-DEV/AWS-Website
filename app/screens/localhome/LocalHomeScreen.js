@@ -53,6 +53,7 @@ import {
   getEventsAndSlotsList,
   getNotificationCountHome,
   getSportsForHome,
+  getTeamSportOnlyList,
   LocalHomeQuery,
 } from './LocalHomeUtils';
 import LocalHomeMenuItems from './LocalHomeMenuItems';
@@ -64,6 +65,8 @@ import {ModalTypes} from '../../Constants/GeneralConstants';
 import InviteMemberModal from '../../components/InviteMemberModal';
 import {getGroupDetails} from '../../api/Groups';
 import SportView from './SportView';
+import {getUserIndex} from '../../api/elasticSearch';
+import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 
 const defaultPageSize = 10;
 
@@ -134,6 +137,58 @@ function LocalHomeScreen({navigation, route}) {
   const [playerDetailPopup, setPlayerDetailPopup] = useState();
   const [snapPoints, setSnapPoints] = useState([]);
   const [playerDetail, setPlayerDetail] = useState();
+  const [players, setPlayers] = useState([]);
+  const [teamSport, setTeamSport] = useState([]);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const generalsQuery = {
+        size: 100,
+        query: {bool: {must: [{bool: {should: []}}]}},
+      };
+
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const response = await getUserIndex(generalsQuery);
+
+      if (response.length > 0) {
+        const result = response.map((obj) => ({
+          ...obj,
+          isChecked: false,
+        }));
+
+        const filteredResult = result.filter(
+          (e) => e.user_id !== authContext.entity.auth.user.user_id,
+        );
+
+        setPlayers([...filteredResult]);
+      }
+    };
+
+    getUsers();
+  }, [authContext.entity.auth.user.user_id]);
+
+  useEffect(() => {
+    const TeamSportList = getTeamSportOnlyList(
+      authContext,
+      Verbs.entityTypeTeam,
+    );
+
+    const OnlyTeamSport = TeamSportList.filter(
+      (item) => item.sport === item.sport_type,
+    );
+
+    setTeamSport(
+      authContext.entity.role === Verbs.entityTypeClub
+        ? OnlyTeamSport
+        : TeamSportList,
+    );
+
+    return () => {
+      setTeamSport([]);
+    };
+  }, [authContext]);
 
   const renderTopSportBar = useCallback(async () => {
     try {
@@ -1190,6 +1245,36 @@ function LocalHomeScreen({navigation, route}) {
               ...sport,
               comeFrom: 'LocalHome',
             },
+          });
+        }}
+      />
+
+      <SportsListModal
+        isVisible={visibleSportsModalForTeam}
+        closeList={() => setTeamModal(false)}
+        title={strings.createTeamText}
+        sportsList={teamSport}
+        forTeam={true}
+        authContext={authContext}
+        playerList={players}
+      />
+
+      {/* club Modal */}
+
+      <SportListMultiModal
+        isVisible={visibleSportsModalForClub}
+        closeList={() => setClubModal(false)}
+        title={strings.createClubText}
+        onNext={(sportsList) => {
+          setClubModal(false);
+
+          const transformedSportArray = Object.keys(sportsList).map(
+            (key) => sports[key],
+          );
+
+          navigation.navigate('AccountStack', {
+            screen: 'CreateClubForm1',
+            params: transformedSportArray,
           });
         }}
       />

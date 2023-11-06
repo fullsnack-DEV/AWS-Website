@@ -31,6 +31,7 @@ import images from '../../../../Constants/ImagePath';
 import Verbs from '../../../../Constants/Verbs';
 import useSwitchAccount from '../../../../hooks/useSwitchAccount';
 import {getUnreadNotificationCount} from '../../../../utils/accountUtils';
+import ScreenHeader from '../../../../components/ScreenHeader';
 
 export default function RespondToInviteScreen({navigation, route}) {
   const [teamObject, SetteamObject] = useState(route.params.teamObject);
@@ -135,25 +136,34 @@ export default function RespondToInviteScreen({navigation, route}) {
   const placeHolder = images.teamPlaceholderSmall;
 
   const onReviewIncomingSetting = () => {
-    navigation.navigate('IncomingChallengeSettings', {
-      playerData: {},
-      sportName: getSportName(teamObject, authContext),
+    navigation.navigate('AccountStack', {
+      screen: 'IncomingChallengeSettings',
+      params: {
+        playerData: {},
+        sportName: getSportName(teamObject, authContext),
 
-      sportType: teamObject.sport_type,
-      sport: teamObject.sport,
-      settingObj: sportsetting,
+        sportType: teamObject.sport_type,
+        sport: teamObject.sport,
+        settingObj: sportsetting,
 
-      settingType: teamObject.setting.default_setting_key,
-      fromRespondToInvite: true,
-      teamgrpId: teamObject.group_id,
-      fromCreateTeam: true,
+        settingType: teamObject.setting.default_setting_key,
+        fromRespondToInvite: true,
+        teamgrpId: teamObject.group_id,
+        fromCreateTeam: true,
+      },
     });
   };
 
   return (
     <>
       {/* <TCFormProgress totalSteps={3} curruentStep={2} /> */}
-
+      <ScreenHeader
+        title={strings.respondToInviteCreateTeam}
+        leftIcon={images.backArrow}
+        leftIconPress={() => navigation.goBack()}
+        isFullTitle
+        leftIconStyle={{width: 50}}
+      />
       <ScrollView
         style={styles.mainContainer}
         showsVerticalScrollIndicator={false}>
@@ -161,7 +171,6 @@ export default function RespondToInviteScreen({navigation, route}) {
           style={{
             marginHorizontal: 15,
             marginTop: 20,
-
             marginBottom: 20,
           }}>
           {teamObject?.status !== TeamStatus.new ? (

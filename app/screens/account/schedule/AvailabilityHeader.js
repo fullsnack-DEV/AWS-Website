@@ -25,7 +25,6 @@ const AvailabilityHeader = ({
           onPress={() => onPrev(startDate)}>
           <Image source={images.leftArrow} style={styles.arrowIcon} />
         </TouchableOpacity>
-
         <View style={{marginHorizontal: 10}}>
           <Text style={styles.monthLabel}>
             {moment(startDate).utc().format('MMMM') ===

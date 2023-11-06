@@ -8,32 +8,24 @@ import {
   Image,
 } from 'react-native';
 import React, {useContext, useState, useEffect, useCallback} from 'react';
-import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import {strings} from '../../../Localization/translation';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 import Verbs from '../../Constants/Verbs';
-import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
-import SportsListModal from '../account/registerPlayer/modals/SportsListModal';
-import {getTeamSportOnlyList} from './LocalHomeUtils';
-import {getUserIndex} from '../../api/elasticSearch';
 import TCThinDivider from '../../components/TCThinDivider';
 import {UserActionTiles, tilesArray} from '../../utils/constant';
 
 function TopTileSection({
   handleTileClick,
   onRegisterAsTilePress,
-  visibleSportsModalForTeam,
-  visibleSportsModalForClub,
   setClubModalVisible,
   setJoinTeamModalvisible,
   setTeamModal,
   isdeactivated = false,
   setClubModal,
 }) {
-  const navigation = useNavigation();
   const authContext = useContext(AuthContext);
 
   const [screenWidth, setScreenWidth] = useState(
@@ -43,60 +35,12 @@ function TopTileSection({
     setScreenWidth(Dimensions.get('window').width);
   };
 
-  const [players, setPlayers] = useState([]);
-  const [teamSport, setTeamSport] = useState([]);
-
   useEffect(() => {
-    const getUsers = async () => {
-      const generalsQuery = {
-        size: 100,
-        query: {bool: {must: [{bool: {should: []}}]}},
-      };
-
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const response = await getUserIndex(generalsQuery);
-
-      if (response.length > 0) {
-        const result = response.map((obj) => ({
-          ...obj,
-          isChecked: false,
-        }));
-
-        const filteredResult = result.filter(
-          (e) => e.user_id !== authContext.entity.auth.user.user_id,
-        );
-
-        setPlayers([...filteredResult]);
-      }
-    };
-
-    getUsers();
-  }, [authContext.entity.auth.user.user_id]);
-
-  useEffect(() => {
-    const TeamSportList = getTeamSportOnlyList(
-      authContext,
-      Verbs.entityTypeTeam,
-    );
-
-    const OnlyTeamSport = TeamSportList.filter(
-      (item) => item.sport === item.sport_type,
-    );
-
-    setTeamSport(
-      authContext.entity.role === Verbs.entityTypeClub
-        ? OnlyTeamSport
-        : TeamSportList,
-    );
-
     const subscription = Dimensions.addEventListener('change', updateWidth);
     return () => {
       subscription.remove();
-      setTeamSport([]);
     };
-  }, [screenWidth, authContext]);
+  }, []);
 
   const onTilePress = (i) => {
     switch (i.action) {
@@ -286,36 +230,6 @@ function TopTileSection({
       <TCThinDivider
         marginTop={authContext.entity.role === Verbs.entityTypeClub ? -5 : 20}
         width={'100%'}
-      />
-
-      {/* club Modal */}
-
-      <SportListMultiModal
-        isVisible={visibleSportsModalForClub}
-        closeList={() => setClubModal(false)}
-        title={strings.createClubText}
-        onNext={(sports) => {
-          setClubModal(false);
-
-          const transformedSportArray = Object.keys(sports).map(
-            (key) => sports[key],
-          );
-
-          navigation.navigate('Account', {
-            screen: 'CreateClubForm1',
-            params: transformedSportArray,
-          });
-        }}
-      />
-
-      <SportsListModal
-        isVisible={visibleSportsModalForTeam}
-        closeList={() => setTeamModal(false)}
-        title={strings.createTeamText}
-        sportsList={teamSport}
-        forTeam={true}
-        authContext={authContext}
-        playerList={players}
       />
     </View>
   );

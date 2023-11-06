@@ -80,6 +80,7 @@ import ChallengePreviewScreen from '../screens/challenge/createChallenge/Challen
 import ChallengePaymentScreen from '../screens/challenge/createChallenge/ChallengePaymentScreen';
 import ChooseTimeSlotScreen from '../screens/challenge/createChallenge/ChooseTimeSlotScreen';
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
+import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 
 const Stack = createStackNavigator();
 
@@ -961,6 +962,11 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="SportHideUnhideScreen"
       component={SportHideUnhideScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="GroupMembersScreen"
+      component={GroupMembersScreen}
       options={{headerShown: false}}
     />
   </Stack.Navigator>

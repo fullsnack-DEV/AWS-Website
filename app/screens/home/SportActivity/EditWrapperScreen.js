@@ -36,7 +36,7 @@ const EditWrapperScreen = ({
   const [loading, setLoading] = useState(false);
   const [selectedCertificates, setSelectedCertificates] = useState([]);
   const [updatedSportObj, setUpdatedSportObj] = useState({});
-
+  const [isRightButtonDisabled, setIsRightButtonDisabled] = useState(false);
   // const {section, title, sportObj, sportIcon, entityType} = route.params;
   const authContext = useContext(AuthContext);
 
@@ -125,6 +125,7 @@ const EditWrapperScreen = ({
             setData={(list) => {
               setSelectedCertificates(list);
             }}
+            setLoading={setIsRightButtonDisabled}
           />
         );
 
@@ -201,8 +202,6 @@ const EditWrapperScreen = ({
   };
 
   const handleCertifcate = () => {
-    setLoading(true);
-
     const refereeData = userData.referee_data.map((item) => {
       if (sportObj?.sport === item.sport) {
         return {
@@ -216,6 +215,7 @@ const EditWrapperScreen = ({
     setUserData(updatedObj);
 
     if (checkValidation()) {
+      setLoading(true);
       updateUser(updatedObj);
     }
   };
@@ -268,11 +268,13 @@ const EditWrapperScreen = ({
             title={title}
             leftIcon={images.backArrow}
             leftIconPress={() => {
+              setSelectedCertificates(sportObj?.certificates ?? []);
               closeModal();
             }}
             isRightIconText
             rightButtonText={strings.save}
             onRightButtonPress={handleSave}
+            isRightButtonDisabled={isRightButtonDisabled}
           />
         )}>
         {Platform.OS === 'android' && (

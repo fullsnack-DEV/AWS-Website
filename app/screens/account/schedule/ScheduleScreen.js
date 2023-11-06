@@ -197,8 +197,14 @@ export default function ScheduleScreen({navigation, route}) {
   const [popupFilterHeight, setPopupFilterHeight] = useState(0);
   const [filterTags, setFilterTags] = useState([]);
   const [filterCancelled, setFilterCancelled] = useState(false);
-  const [isAdmin] = useState(route?.params?.isAdmin);
+  const [isAdmin, setIsAdmin] = useState(true);
   const [isFromHomeScreen] = useState(route?.params?.isFromHomeScreen);
+
+  useEffect(() => {
+    if (route?.params?.isAdmin !== undefined) {
+      setIsAdmin(route.params.isAdmin);
+    }
+  }, [route?.params?.isAdmin]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -1588,7 +1594,10 @@ export default function ScheduleScreen({navigation, route}) {
               )}
 
               {scheduleIndexCounter === 1 && (
-                <AvailibilityScheduleScreen allSlots={allSlots} isAdmin />
+                <AvailibilityScheduleScreen
+                  allSlots={allSlots}
+                  isAdmin={isAdmin}
+                />
               )}
             </>
           )}

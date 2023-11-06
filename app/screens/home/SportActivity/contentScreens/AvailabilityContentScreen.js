@@ -24,15 +24,11 @@ const AvailabilityContentScreen = ({userData}) => {
   };
 
   return (
-    <>
-      {data.length > 0 ? (
-        <AvailibilityScheduleScreen
-          allSlots={data}
-          onDayPress={onDayPress}
-          isAdmin={userData.user_id === authContext.entity.uid}
-        />
-      ) : null}
-    </>
+    <AvailibilityScheduleScreen
+      allSlots={data}
+      onDayPress={onDayPress}
+      isAdmin={userData.user_id === authContext.entity.uid}
+    />
   );
 };
 export default AvailabilityContentScreen;

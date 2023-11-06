@@ -26,7 +26,7 @@ const Options = [
   strings.scorekeepingTitleText,
 ];
 
-export default function SportActivityScreen({navigation}) {
+export default function SportActivityScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [userObject] = useState(authContext.entity.obj);
 
@@ -67,6 +67,7 @@ export default function SportActivityScreen({navigation}) {
             navigation.navigate('SportAccountSettingScreen', {
               type: entityType,
               sport: item,
+              isFromSettings: true,
             });
           }}>
           <View>
@@ -84,11 +85,19 @@ export default function SportActivityScreen({navigation}) {
       <ScreenHeader
         title={strings.sportActivity}
         leftIcon={images.backArrow}
-        leftIconPress={() => navigation.goBack()}
+        leftIconPress={() => {
+          if (route.params?.parentStack) {
+            navigation.navigate(route.params?.parentStack, {
+              screen: route.params.screen,
+            });
+          } else {
+            navigation.goBack();
+          }
+        }}
         containerStyle={styles.headerRow}
       />
 
-      <View style={{paddingTop: 25,flex:1}}>
+      <View style={{paddingTop: 25, flex: 1}}>
         <FlatList
           data={Options}
           keyExtractor={(item) => item}
@@ -112,7 +121,7 @@ export default function SportActivityScreen({navigation}) {
           }}
           ListFooterComponent={() => (
             <Pressable
-              style={[styles.listContainer,{marginBottom:20}]}
+              style={[styles.listContainer, {marginBottom: 20}]}
               onPress={() => {
                 navigation.navigate('DeactivatedSportsListScreen');
               }}>

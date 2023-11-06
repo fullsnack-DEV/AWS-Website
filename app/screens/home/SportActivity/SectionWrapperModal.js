@@ -1,5 +1,5 @@
 // @flow
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import InfoContentScreen from './contentScreens/InfoContentScreen';
@@ -14,6 +14,7 @@ import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import {ModalTypes} from '../../../Constants/GeneralConstants';
+import BottomSheet from '../../../components/modals/BottomSheet';
 
 const SectionWrapperModal = ({
   isVisible,
@@ -31,6 +32,7 @@ const SectionWrapperModal = ({
   sportIcon,
 }) => {
   const authContext = useContext(AuthContext);
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
 
   const renderContent = () => {
     if (!selectedOption) return null;
@@ -146,24 +148,42 @@ const SectionWrapperModal = ({
   };
 
   return (
-    <CustomModalWrapper
-      isVisible={isVisible}
-      closeModal={closeModal}
-      modalType={ModalTypes.style1}
-      backIcon={images.backArrow}
-      title={selectedOption}
-      showSportIcon
-      sportIcon={sportIcon}
-      headerBottomBorderColor={colors.tabFontColor}
-      containerStyle={{padding: 0, flex: 1}}
-      headerStyle={{
-        paddingTop: 3,
-        paddingBottom: 5,
-        borderBottomWidth: 3,
-        borderBottomColor: colors.tabFontColor,
-      }}>
-      <View style={styles.parent}>{renderContent()}</View>
-    </CustomModalWrapper>
+    <>
+      <CustomModalWrapper
+        isVisible={isVisible}
+        closeModal={closeModal}
+        modalType={ModalTypes.style1}
+        backIcon={images.backArrow}
+        title={selectedOption}
+        showSportIcon
+        sportIcon={sportIcon}
+        headerBottomBorderColor={colors.tabFontColor}
+        containerStyle={{padding: 0, flex: 1}}
+        headerStyle={{
+          paddingTop: 3,
+          paddingBottom: 5,
+          borderBottomWidth: 3,
+          borderBottomColor: colors.tabFontColor,
+        }}
+        isRightIconText={false}
+        rightIcon1={
+          selectedOption === strings.availability ? images.chat3Dot : null
+        }
+        rightIcon1Press={() => setShowBottomSheet(true)}>
+        <View style={styles.parent}>{renderContent()}</View>
+      </CustomModalWrapper>
+      <BottomSheet
+        optionList={[strings.editAvailability]}
+        isVisible={showBottomSheet}
+        closeModal={() => setShowBottomSheet(false)}
+        onSelect={(option) => {
+          if (option === strings.editAvailability) {
+            setShowBottomSheet(false);
+            // closeModal();
+          }
+        }}
+      />
+    </>
   );
 };
 

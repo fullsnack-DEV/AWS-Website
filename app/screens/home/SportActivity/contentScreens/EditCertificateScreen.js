@@ -22,10 +22,21 @@ import uploadImages from '../../../../utils/imageAction';
 
 const certificate = {title: '', url: '', thumbnail: '', isLoading: false};
 
-const EditCertificateScreen = ({list = [], setData = () => {}}) => {
+const EditCertificateScreen = ({
+  list = [],
+  setData = () => {},
+  setLoading = () => {},
+}) => {
   const [certificateList, setCertificateList] = useState([]);
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (certificateList.length > 0) {
+      const filterList = certificateList.filter((item) => item.isLoading);
+      setLoading(filterList.length > 0);
+    }
+  }, [certificateList, setLoading]);
 
   useEffect(() => {
     if (isFocused) {

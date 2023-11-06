@@ -117,7 +117,7 @@ export default function CreateMemberProfileForm1({navigation, route}) {
   const handleBackPress = useCallback(() => {
     if (route.params?.comeFrom === 'HomeScreen') {
       navigation.setOptions({});
-      navigation.navigate('Account', {
+      navigation.navigate('HomeStack', {
         screen: 'HomeScreen',
         params: {...route.params?.routeParams},
       });

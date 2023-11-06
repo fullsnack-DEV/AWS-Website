@@ -329,7 +329,7 @@ const GroupHomeScreen = ({
           });
         }}
         addMember={() => {
-          navigation.navigate('NewsFeed', {
+          navigation.navigate('MebmersStack', {
             screen: 'CreateMemberProfileForm1',
             params: {
               showBackArrow: true,

@@ -156,7 +156,17 @@ export default function SportAccountSettingScreen({navigation, route}) {
         title={`${getEntityTpeLabel(type)} • ${sportObj.sport_name}`}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          navigation.goBack();
+          if (route.params?.isFromSettings) {
+            navigation.navigate('HomeStack', {
+              screen: 'SportActivityScreen',
+              params: {
+                parentStack: 'AccountStack',
+                screen: 'UserSettingPrivacyScreen',
+              },
+            });
+          } else {
+            navigation.goBack();
+          }
         }}
       />
 

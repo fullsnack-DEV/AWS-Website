@@ -562,7 +562,10 @@ export default function AvailibilityScheduleScreen({
               setIsFromSlots(true);
               setVisibleAvailabilityModal(true);
             }}
-            style={{alignSelf: 'center', marginTop: 20}}>
+            style={{
+              alignSelf: 'center',
+              marginTop: 20,
+            }}>
             <Text style={styles.buttonText}>{strings.editAvailability}</Text>
           </TouchableOpacity>
         ) : null}

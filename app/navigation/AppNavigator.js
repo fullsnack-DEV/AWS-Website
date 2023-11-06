@@ -13,13 +13,13 @@ import colors from '../Constants/Colors';
 import images from '../Constants/ImagePath';
 import AuthContext from '../auth/context';
 import {getUnreadNotificationCount} from '../utils/accountUtils';
-import Verbs from '../Constants/Verbs';
 import MessageMainScreen from '../screens/message/MessageMainScreen';
 import ScheduleScreen from '../screens/account/schedule/ScheduleScreen';
 import FeedsScreen from '../screens/newsfeeds/FeedsScreen';
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 import LocalHomeScreen from '../screens/localhome/LocalHomeScreen';
 import AccountScreen from '../screens/account/AccountScreen';
+import Verbs from '../Constants/Verbs';
 
 const MAX_COUNT_FOR_BOTTOM_TAB = 8;
 const Tab = createBottomTabNavigator();
@@ -229,6 +229,7 @@ const AppNavigator = ({navigation}) => {
           },
         })}
       />
+
       {authContext.entity.role === Verbs.entityTypeTeam ||
       authContext.entity.role === Verbs.entityTypeClub ? (
         <Tab.Screen

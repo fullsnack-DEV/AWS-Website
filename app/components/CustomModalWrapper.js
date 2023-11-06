@@ -42,6 +42,7 @@ const CustomModalWrapper = ({
   iconContainerStyle = {},
   showSportIcon = false,
   sportIcon = null,
+  isRightIconText = true,
 }) => {
   const modalRef = useRef();
   const navigation = useNavigation();
@@ -103,7 +104,7 @@ const CustomModalWrapper = ({
               closeModal();
             }}
             title={title}
-            isRightIconText
+            isRightIconText={isRightIconText}
             rightButtonText={headerRightButtonText}
             onRightButtonPress={onRightButtonPress}
             loading={loading}
@@ -112,6 +113,8 @@ const CustomModalWrapper = ({
             containerStyle={headerStyle}
             showSportIcon={showSportIcon}
             sportIcon={sportIcon}
+            rightIcon1={rightIcon1}
+            rightIcon1Press={rightIcon1Press}
           />
         );
 
