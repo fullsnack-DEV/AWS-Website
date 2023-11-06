@@ -11,6 +11,7 @@ const MenuSectionRow = ({
   item = {},
   isSectionOpen = false,
   isAccountDeactivated = false,
+  isLastItem = false,
   onPress = () => {},
   onPressSetting = () => {},
   onPressSport = () => {},
@@ -43,7 +44,7 @@ const MenuSectionRow = ({
         style={[
           styles.row,
           {justifyContent: 'space-between', paddingHorizontal: 15},
-          isSectionOpen ? {} : {marginBottom: 15},
+          isSectionOpen || isLastItem ? {} : {marginBottom: 15},
           {
             backgroundColor: isPressed
               ? colors.buttonClickBgEffect
@@ -66,20 +67,21 @@ const MenuSectionRow = ({
           </View>
         </View>
         <View style={styles.arrowIcon}>
-          {item.member?.length > 0 ? (
-            <Image
-              source={images.nextArrow}
-              style={[
-                styles.icon,
-                {
-                  // tintColor: colors.veryLightBlack,
-                  transform: [{rotateZ: isSectionOpen ? '270deg' : '90deg'}],
-                },
-              ]}
-            />
-          ) : (
-            <Image source={images.nextArrow} style={styles.icon} />
-          )}
+          {
+            item.member?.length > 0 ? (
+              <Image
+                source={images.nextArrow}
+                style={[
+                  styles.icon,
+                  {
+                    // tintColor: colors.veryLightBlack,
+                    transform: [{rotateZ: isSectionOpen ? '270deg' : '90deg'}],
+                  },
+                ]}
+              />
+            ) : null
+            // <Image source={images.nextArrow} style={styles.icon} />
+          }
         </View>
       </TouchableOpacity>
       {isSectionOpen && item.member?.length > 0

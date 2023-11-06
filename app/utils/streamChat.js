@@ -69,6 +69,7 @@ export const createStreamChatChannel = async ({
       temp_channel_name: tempChannelName,
     },
   );
+  await channel.create();
   return channel;
 };
 

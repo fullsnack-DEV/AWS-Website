@@ -4,6 +4,7 @@ import {View, StyleSheet} from 'react-native';
 import AuthContext from '../../../auth/context';
 import GroupIcon from '../../../components/GroupIcon';
 import {getChannelAvatar, getChannelName} from '../../../utils/streamChat';
+import colors from '../../../Constants/Colors';
 
 const CustomAvatar = ({
   channel = {},
@@ -39,10 +40,16 @@ const CustomAvatar = ({
         {profileList.map((item, index) => (
           <View
             key={index}
-            style={{
-              marginLeft: index === 0 ? 0 : index + 1 * -35,
-              marginTop: index === 0 ? 0 : 10,
-            }}>
+            style={[
+              {
+                marginLeft: index === 0 ? 0 : index + 1 * -26,
+                marginTop: index === 0 ? 0 : 14,
+                borderRadius: 26,
+              },
+              index !== 0
+                ? {borderWidth: 2, borderColor: colors.whiteColor}
+                : {},
+            ]}>
             <GroupIcon
               imageUrl={item.imageUrl}
               entityType={item.entityType}
@@ -62,8 +69,8 @@ const CustomAvatar = ({
 
 const styles = StyleSheet.create({
   imageContainer: {
-    width: 45,
-    height: 45,
+    width: 35,
+    height: 35,
     borderWidth: 1,
   },
   container: {

@@ -133,7 +133,12 @@ const ChatGroupDetails = ({
     if (members.length === 2) {
       createNewChannel(memberList);
     } else {
-      addMembersToChannel({channel, newMembers: memberList})
+      addMembersToChannel({
+        channel,
+        newMembers: memberList,
+        ownerName:
+          authContext.entity.obj.group_name ?? authContext.entity.obj.full_name,
+      })
         .then(() => {
           const list = getChannelMembers(channel);
           setMembers(list);

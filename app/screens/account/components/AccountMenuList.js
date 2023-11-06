@@ -7,7 +7,7 @@ import {
   Text,
   Image,
   Alert,
-  FlatList,
+  SectionList,
 } from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
@@ -43,12 +43,23 @@ const AccountMenuList = ({
     );
   };
 
+  const isLastIndex = (index, section) => {
+    const obj = menuList.find((item) => item.title === section.title);
+
+    if (obj && obj.data?.length > 0) {
+      return index === obj.data.length - 1;
+    }
+    return false;
+  };
+
   return (
     <View style={styles.parent}>
-      <FlatList
-        data={menuList}
+      <SectionList
+        sections={menuList}
         keyExtractor={(item) => item.key}
-        renderItem={({item}) => {
+        renderSectionHeader={() => null}
+        showsVerticalScrollIndicator={false}
+        renderItem={({item, index, section}) => {
           const isExpanded = expandedSections.includes(item.key);
 
           return (
@@ -77,21 +88,24 @@ const AccountMenuList = ({
               onPressSetting={onPressSetting}
               onPressSport={onPressSport}
               onPressCancelRequest={onPressCancelRequest}
+              isLastItem={isLastIndex(index, section)}
             />
           );
         }}
-        ListFooterComponent={() => (
-          <>
+        SectionSeparatorComponent={(props) =>
+          props.leadingItem !== undefined ? (
             <View style={styles.dividor} />
-            <Pressable style={styles.row} onPress={handleLogOut}>
-              <View style={styles.iconContainer}>
-                <Image source={images.logoutIcon} style={styles.icon} />
-              </View>
-              <View>
-                <Text style={styles.label}>{strings.logOut}</Text>
-              </View>
-            </Pressable>
-          </>
+          ) : null
+        }
+        ListFooterComponent={() => (
+          <Pressable style={styles.row} onPress={handleLogOut}>
+            <View style={styles.iconContainer}>
+              <Image source={images.logoutIcon} style={styles.icon} />
+            </View>
+            <View>
+              <Text style={styles.label}>{strings.logOut}</Text>
+            </View>
+          </Pressable>
         )}
       />
     </View>
@@ -106,13 +120,14 @@ const styles = StyleSheet.create({
   dividor: {
     height: 7,
     backgroundColor: colors.grayBackgroundColor,
+    marginVertical: 8,
   },
   row: {
-    flex:1,
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 15,
-    paddingBottom: 15, 
+    paddingBottom: 15,
   },
   iconContainer: {
     width: 40,
@@ -131,8 +146,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RMedium,
-
-
   },
 });
 export default AccountMenuList;

@@ -488,7 +488,12 @@ const MessageChatScreen = ({navigation, route}) => {
                 <CustomDateSeparator date={props.date} />
               )}
               TypingIndicator={CustomTypingIndicator}
-              AutoCompleteSuggestionList={CustomAutoCompleteSuggestionsList}>
+              AutoCompleteSuggestionList={CustomAutoCompleteSuggestionsList}
+              MessageSystem={({message}) => (
+                <View style={styles.systemMessageContainer}>
+                  <Text style={styles.systemMessageText}>{message.text}</Text>
+                </View>
+              )}>
               <MessageList
                 noGroupByUser
                 additionalFlatListProps={{showsVerticalScrollIndicator: false}}
@@ -570,6 +575,19 @@ const styles = StyleSheet.create({
     top: 0,
     zIndex: 1,
     width: '100%',
+  },
+  systemMessageContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 5,
+    marginBottom: 15,
+  },
+  systemMessageText: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.userPostTimeColor,
+    fontFamily: fonts.RMedium,
+    textAlign: 'center',
   },
 });
 

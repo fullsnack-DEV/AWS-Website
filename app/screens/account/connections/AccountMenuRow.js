@@ -48,11 +48,11 @@ const AccountMenuRow = ({
   }, [item, authContext]);
 
   return !isAccountDeactivated && item.option ? (
-    <View style={{paddingHorizontal: 15}}>
+    <View style={{backgroundColor: colors.creamColor}}>
       <View
         style={[
           styles.row,
-          {paddingLeft: 30},
+          {paddingLeft: 50},
           item.option?.request_id ? {opacity: 0.3} : {},
         ]}
         pointerEvents={item.option?.request_id ? 'none' : 'auto'}>
@@ -83,7 +83,7 @@ const AccountMenuRow = ({
             textstyle={{fontSize: 10}}
           />
           <View style={styles.row}>
-            <View style={{maxWidth: '65%'}}>
+            <View style={groupSportName ? {maxWidth: '65%'} : {}}>
               <Text style={styles.listItems} numberOfLines={1}>
                 {item.option?.group_name ?? item.option}
               </Text>

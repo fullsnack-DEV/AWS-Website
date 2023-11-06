@@ -14,7 +14,7 @@ const AvailabilityListView = ({
 }) => (
   <View style={{marginBottom: 20}}>
     <View style={styles.header}>
-      <Text style={styles.label}>{item.title.toUpperCase()}</Text>
+      <Text style={styles.label}>{item.title}</Text>
       {isAdmin && (
         <TouchableOpacity style={styles.editContainer} onPress={onEdit}>
           <Image source={images.editProfilePencil} style={styles.icon} />
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 30,
     color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
+    fontFamily: fonts.RMedium,
   },
   editContainer: {
     width: 15,

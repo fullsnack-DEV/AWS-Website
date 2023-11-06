@@ -6,10 +6,6 @@ import {
   getSportDetails,
 } from '../../utils/sportsActivityUtils';
 import {getUserDetails} from '../../api/Users';
-// TODO: Move this file to right place. Improve this methods
-
-// TODO: call utility.getSportName() to fetch correct sports title
-// TODO: apply isAccountDeactivated logic to not display add sports button
 
 const prepareSportsSubMenuOfUser = (
   sports,
@@ -218,129 +214,169 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
 
     const userMenu = [
       {
-        key: strings.reservationsTitleText,
-        icon: images.accountMyReservations,
-        navigateTo: {
-          screenName: 'ReservationNavigator',
-          data: {
-            screen: 'ReservationScreen',
-          },
-        },
-      },
-      {
-        key: strings.playingTitleText,
-        icon: images.accountMySports,
-        member: [
-          ...playingMenu,
+        title: strings.reservationsTitleText,
+        data: [
           {
-            option: strings.addSportsTitle,
-            icon: images.addSport,
-            iconRight: images.nextArrow,
-            menuOptionType: Verbs.entityTypePlayer,
+            key: strings.reservationsTitleText,
+            icon: images.accountMyReservations,
             navigateTo: {
-              screenName: 'AccountStack',
+              screenName: 'ReservationNavigator',
               data: {
-                screen: 'RegisterPlayer',
+                screen: 'ReservationScreen',
               },
             },
           },
         ],
       },
       {
-        key: strings.refereeingTitleText,
-        icon: images.accountMyRefereeing,
-        member: [
-          ...refereeingMenu,
+        title: strings.registerAs,
+        data: [
           {
-            option: strings.addRefreeTitle,
-            icon: images.registerReferee,
-            iconRight: images.nextArrow,
-            menuOptionType: Verbs.entityTypeReferee,
+            key: strings.playingTitleText,
+            icon: images.accountMySports,
+            member: [
+              ...playingMenu,
+              {
+                option: strings.addSportsTitle,
+                icon: images.addSport,
+                iconRight: images.nextArrow,
+                menuOptionType: Verbs.entityTypePlayer,
+                navigateTo: {
+                  screenName: 'AccountStack',
+                  data: {
+                    screen: 'RegisterPlayer',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            key: strings.refereeingTitleText,
+            icon: images.accountMyRefereeing,
+            member: [
+              ...refereeingMenu,
+              {
+                option: strings.addRefreeTitle,
+                icon: images.registerReferee,
+                iconRight: images.nextArrow,
+                menuOptionType: Verbs.entityTypeReferee,
+                navigateTo: {
+                  screenName: 'AccountStack',
+                  data: {
+                    screen: 'RegisterReferee',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            key: strings.scorekeepingTitleText,
+            icon: images.accountMyScoreKeeping,
+            member: [
+              ...scorekeepingMenu,
+              {
+                option: strings.addScoreKeeperTitle,
+                icon: images.registerScorekeeper,
+                iconRight: images.nextArrow,
+                menuOptionType: Verbs.entityTypeScorekeeper,
+                navigateTo: {
+                  screenName: 'AccountStack',
+                  data: {
+                    screen: 'RegisterScorekeeper',
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        title: strings.group,
+        data: [
+          {
+            key: strings.teamstitle,
+            icon: images.accountMyTeams,
+            member: [
+              ...prepareGroupsSubMenu(teams),
+              {
+                option: strings.createTeamText,
+                icon: images.createTeam,
+                iconRight: images.nextArrow,
+                navigateTo: {
+                  screenName: 'AccountStack',
+                  data: {
+                    screen: 'CreateTeamForm1',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            key: strings.clubstitle,
+            icon: images.accountMyClubs,
+            member: [
+              ...prepareGroupsSubMenu(clubs),
+              {
+                option: strings.createClubText,
+                icon: images.createClub,
+                iconRight: images.nextArrow,
+                navigateTo: {
+                  screenName: 'AccountStack',
+                  data: {
+                    screen: 'CreateClubForm1',
+                  },
+                },
+              },
+            ],
+          },
+          {
+            key: strings.leagues,
+            icon: images.accountMyLeagues,
+            member: [],
+          },
+        ],
+      },
+      {
+        title: strings.payment,
+        data: [
+          ...invoicesMenuForUser(),
+          {
+            key: strings.transactions,
+            icon: images.transactionsIcon,
+            member: [],
+          },
+          ...paymentMethodMenu(),
+        ],
+      },
+      {
+        title: strings.log,
+        data: [
+          {
+            key: strings.accountLog,
+            icon: images.accountLogIcon,
             navigateTo: {
               screenName: 'AccountStack',
               data: {
-                screen: 'RegisterReferee',
+                screen: 'ActivityLogScreen',
               },
             },
           },
         ],
       },
       {
-        key: strings.scorekeepingTitleText,
-        icon: images.accountMyScoreKeeping,
-        member: [
-          ...scorekeepingMenu,
+        title: strings.settings,
+        data: [
           {
-            option: strings.addScoreKeeperTitle,
-            icon: images.registerScorekeeper,
-            iconRight: images.nextArrow,
-            menuOptionType: Verbs.entityTypeScorekeeper,
+            key: strings.settingsTitleText,
+            icon: images.accountSettingPrivacy,
             navigateTo: {
               screenName: 'AccountStack',
               data: {
-                screen: 'RegisterScorekeeper',
+                screen: 'UserSettingPrivacyScreen',
               },
             },
           },
         ],
-      },
-      {
-        key: strings.teamstitle,
-        icon: images.accountMyTeams,
-        member: [
-          ...prepareGroupsSubMenu(teams),
-          {
-            option: strings.createTeamText,
-            icon: images.createTeam,
-            iconRight: images.nextArrow,
-            navigateTo: {
-              screenName: 'AccountStack',
-              data: {
-                screen: 'CreateTeamForm1',
-              },
-            },
-          },
-        ],
-      },
-      {
-        key: strings.clubstitle,
-        icon: images.accountMyClubs,
-        member: [
-          ...prepareGroupsSubMenu(clubs),
-          {
-            option: strings.createClubText,
-            icon: images.createClub,
-            iconRight: images.nextArrow,
-            navigateTo: {
-              screenName: 'AccountStack',
-              data: {
-                screen: 'CreateClubForm1',
-              },
-            },
-          },
-        ],
-      },
-      {
-        key: strings.leagues,
-        icon: images.accountMyLeagues,
-        member: [],
-      },
-      ...invoicesMenuForUser(),
-      {
-        key: strings.transactions,
-        icon: images.transactionsIcon,
-        member: [],
-      },
-      ...paymentMethodMenu(),
-      {
-        key: strings.settingsTitleText,
-        icon: images.accountSettingPrivacy,
-        navigateTo: {
-          screenName: 'AccountStack',
-          data: {
-            screen: 'UserSettingPrivacyScreen',
-          },
-        },
       },
     ];
     return userMenu;
@@ -353,87 +389,162 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
 export const prepareTeamMenu = (authContext, clubs) => {
   const teamMenu = [
     {
-      key: strings.reservationsTitleText,
-      icon: images.accountMyReservations,
-      navigateTo: {
-        screenName: 'ReservationNavigator',
-        data: {
-          screen: 'ReservationScreen',
-        },
-      },
-    },
-    {
-      key: strings.incomingChallengeSettingsTitle,
-      icon: images.manageChallengeIcon,
-      navigateTo: {
-        screenName: 'AccountStack',
-        data: {
-          screen: 'ManageChallengeScreen',
-          params: {
-            groupObj: authContext.entity.obj,
-            sportName: authContext.entity?.obj?.sport,
-            sportType: authContext.entity?.obj?.sport_type,
+      title: strings.reservationsTitleText,
+      data: [
+        {
+          key: strings.reservationsTitleText,
+          icon: images.accountMyReservations,
+          navigateTo: {
+            screenName: 'ReservationNavigator',
+            data: {
+              screen: 'ReservationScreen',
+            },
           },
         },
-      },
+      ],
     },
     {
-      key: strings.clubstitle,
-      icon: images.accountMyClubs,
-      member: [...prepareGroupsSubMenu(clubs)],
-    },
-    {
-      key: strings.leagues,
-      icon: images.accountMyLeagues,
-      member: [],
-    },
-    ...invoicesMenuForGroup(),
-    {
-      key: strings.transactions,
-      icon: images.transactionsIcon,
-      member: [],
-    },
-    ...paymentMethodMenu(),
-    {
-      key: strings.settingsTitleText,
-      icon: images.accountSettingPrivacy,
-      navigateTo: {
-        screenName: 'AccountStack',
-        data: {
-          screen: 'GroupSettingPrivacyScreen',
+      title: strings.challenge,
+      data: [
+        {
+          key: strings.incomingChallengeSettingsTitle,
+          icon: images.manageChallengeIcon,
+          navigateTo: {
+            screenName: 'AccountStack',
+            data: {
+              screen: 'ManageChallengeScreen',
+              params: {
+                groupObj: authContext.entity.obj,
+                sportName: authContext.entity?.obj?.sport,
+                sportType: authContext.entity?.obj?.sport_type,
+              },
+            },
+          },
         },
-      },
+        {
+          key: strings.incomingMatchOfferSettings,
+          icon: images.incomingMatchOfferSettingsIcon,
+          member: [],
+        },
+      ],
+    },
+    {
+      title: strings.group,
+      data: [
+        {
+          key: strings.clubstitle,
+          icon: images.accountMyClubs,
+          member: [...prepareGroupsSubMenu(clubs)],
+        },
+        {
+          key: strings.leagues,
+          icon: images.accountMyLeagues,
+          member: [],
+        },
+      ],
+    },
+    {
+      title: strings.payment,
+      data: [
+        ...invoicesMenuForGroup(),
+        {
+          key: strings.transactions,
+          icon: images.transactionsIcon,
+          member: [],
+        },
+        ...paymentMethodMenu(),
+      ],
+    },
+    {
+      title: strings.log,
+      data: [
+        {
+          key: strings.accountLog,
+          icon: images.accountLogIcon,
+          navigateTo: {
+            screenName: 'AccountStack',
+            data: {
+              screen: 'ActivityLogScreen',
+            },
+          },
+        },
+      ],
+    },
+    {
+      title: strings.settings,
+      data: [
+        {
+          key: strings.settingsTitleText,
+          icon: images.accountSettingPrivacy,
+          navigateTo: {
+            screenName: 'AccountStack',
+            data: {
+              screen: 'GroupSettingPrivacyScreen',
+            },
+          },
+        },
+      ],
     },
   ];
   return teamMenu;
 };
 
-export const prepareClubMenu = (authContext, teams) => {
+export const prepareClubMenu = (teams) => {
   const clubMenu = [
     {
-      key: strings.teamstitle,
-      icon: images.accountMyTeams,
-      member: [
-        ...prepareGroupsSubMenu(teams),
-        {option: strings.createTeamText, icon: images.createTeam},
+      title: strings.group,
+      data: [
+        {
+          key: strings.teamstitle,
+          icon: images.accountMyTeams,
+          member: [
+            ...prepareGroupsSubMenu(teams),
+            {option: strings.createTeamText, icon: images.createTeam},
+          ],
+        },
       ],
     },
-    ...invoicesMenuForGroup(),
     {
-      key: strings.transactions,
-      icon: images.transactionsIcon,
-      member: [],
-    },
-    ...paymentMethodMenu(),
-    {
-      key: strings.settingsTitleText,
-      icon: images.accountSettingPrivacy,
-      navigateTo: {
-        screenName: 'AccountStack',
-        data: {
-          screen: 'GroupSettingPrivacyScreen',
+      title: strings.payment,
+      data: [
+        ...invoicesMenuForGroup(),
+        {
+          key: strings.transactions,
+          icon: images.transactionsIcon,
+          member: [],
         },
-      },
+        ...paymentMethodMenu(),
+      ],
+    },
+    {
+      title: strings.log,
+      data: [
+        {
+          key: strings.accountLog,
+          icon: images.accountLogIcon,
+          navigateTo: {
+            screenName: 'AccountStack',
+            data: {
+              screen: 'ActivityLogScreen',
+            },
+          },
+        },
+      ],
+    },
+    {
+      title: strings.settings,
+      data: [
+        {
+          key: strings.settingsTitleText,
+          icon: images.accountSettingPrivacy,
+          navigateTo: {
+            screenName: 'AccountStack',
+            data: {
+              screen: 'GroupSettingPrivacyScreen',
+            },
+          },
+        },
+      ],
     },
   ];
   return clubMenu;

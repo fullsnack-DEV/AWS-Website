@@ -205,6 +205,8 @@ const Verbs = {
   attendeeVerb: 'attendee',
   FOLLOW_REQ_SENT: 'followReqSent',
   HIDE_BUTTON: 'hideButton',
+  channelModerator: 'channel_moderator',
+  channelMember: 'channel_member',
 };
 
 export default Verbs;

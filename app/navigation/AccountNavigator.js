@@ -101,6 +101,7 @@ import GroupOwnPrivacySetting from '../screens/account/GroupSetting/GroupOwnPriv
 // Scorekeeper Review Screen
 
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
+import ActivityLogScreen from '../screens/account/ActivityLogScreen';
 
 const Stack = createStackNavigator();
 
@@ -1379,6 +1380,12 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="RespondToInviteScreen"
       component={RespondToInviteScreen}
+      options={{headerShown: false}}
+    />
+
+    <Stack.Screen
+      name="ActivityLogScreen"
+      component={ActivityLogScreen}
       options={{headerShown: false}}
     />
   </Stack.Navigator>

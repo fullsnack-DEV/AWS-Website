@@ -550,7 +550,10 @@ export default function AvailibilityScheduleScreen({
             isListView={listView}
             selectedDate={selectedDate}
             onToggleView={() => setListView(!listView)}
-            containerStyle={{paddingHorizontal: 15, paddingTop: 22}}
+            containerStyle={{
+              paddingHorizontal: 15,
+              paddingTop: 22,
+            }}
           />
         ) : null}
 

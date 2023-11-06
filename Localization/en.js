@@ -3196,6 +3196,8 @@ export default {
   teamOnlyPrivacyOption: 'en_Team Only',
   aboutRatingsText: 'en_About ratings',
   hideDeleteFromPosts: 'en_Hide/Delete from my posts',
+  activityLog: 'en_Activity Log',
+  accountLog: 'en_Account Log',
   clubInviteTeamText1:
     'en_ Members in the team will be a member of both your club and the team.',
   clubInviteTeamText2: 'en_Your club can remove the team at any time.',
@@ -3209,4 +3211,5 @@ export default {
   whenTeamleaveClubtext: 'en_When your team leave  a club:',
   TeamLeaveModalText:
     'en_Your team will not be an affiliated team of the club any more, but the members of your teamwill still remain as a member both in your team and the club.    ',
+  nCreatedThisGroup: `en_{0} created this group.`,
 };

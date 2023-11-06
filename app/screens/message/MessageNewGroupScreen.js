@@ -110,8 +110,6 @@ const MessageNewGroupScreen = ({route, navigation}) => {
         if (channel !== null) {
           navigation.push('MessageChatScreen', {
             channel,
-            comeFrom: 'MessageMainScreen',
-            routeParams: {},
           });
         }
       })

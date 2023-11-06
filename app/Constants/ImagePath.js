@@ -567,6 +567,9 @@ const images = {
   backIconBigger: require('../assets/images/originalBackIcon.png'),
   allOrangeIcon: require('../assets/images/allOrange.png'),
   allSportOrangeIcon: require('../assets/images/allSportIconOrange.png'),
+  accountLogIcon: require('../assets/images/accountLogIcon.png'),
+  incomingMatchOfferSettingsIcon: require('../assets/images/incomingMatchOfferSettingsIcon.png'),
+  // incomingMatchOfferSettingsIcon.png
 };
 
 export default images;

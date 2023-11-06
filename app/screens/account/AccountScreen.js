@@ -120,7 +120,7 @@ const AccountScreen = ({navigation, route}) => {
     (teams = [], clubs = [], imgBaseUrl = '') => {
       switch (authContext.entity.role) {
         case Verbs.entityTypeClub:
-          return prepareClubMenu(authContext, teams);
+          return prepareClubMenu(teams);
 
         case Verbs.entityTypeTeam:
           return prepareTeamMenu(authContext, clubs);
@@ -373,7 +373,7 @@ const AccountScreen = ({navigation, route}) => {
               backScreen: 'Account',
             },
           });
-        } else {
+        } else if (rowObj.navigateTo?.screenName) {
           navigation.navigate(
             rowObj.navigateTo.screenName,
             rowObj.navigateTo.data,
