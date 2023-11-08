@@ -66,7 +66,7 @@ const MessageInviteScreen = ({navigation, route}) => {
           id: item.group_id ?? item.user_id,
           name: item.group_name ?? item.full_name,
           image: item.full_image ?? item.thumbnail,
-          entityType: item.entity_type,
+          entityType: item.entity_type ?? Verbs.entityTypePlayer,
           city: item.city,
         }));
 
@@ -236,13 +236,13 @@ const MessageInviteScreen = ({navigation, route}) => {
           placeholder={strings.searchText}
         />
         {searchText.length > 0 && (
-        <Pressable
-          onPress={() => {
-            clearTimeout(searchRef.current);
-            setSearchText('');
-          }}>
-          <Image source={images.closeRound} style={styles.closeIcon} />
-        </Pressable>
+          <Pressable
+            onPress={() => {
+              clearTimeout(searchRef.current);
+              setSearchText('');
+            }}>
+            <Image source={images.closeRound} style={styles.closeIcon} />
+          </Pressable>
         )}
       </Pressable>
 

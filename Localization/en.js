@@ -3212,4 +3212,5 @@ export default {
   TeamLeaveModalText:
     'en_Your team will not be an affiliated team of the club any more, but the members of your teamwill still remain as a member both in your team and the club.    ',
   nCreatedThisGroup: `en_{0} created this group.`,
+  noActivityLog: 'en_No Activity Log',
 };

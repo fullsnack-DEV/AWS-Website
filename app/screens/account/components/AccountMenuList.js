@@ -22,6 +22,7 @@ const AccountMenuList = ({
   onPressSport = () => {},
   onPressCancelRequest = () => {},
   onLogout = () => {},
+  showLogBadge = false,
 }) => {
   const [expandedSections, setExpandedSections] = useState([]);
 
@@ -89,6 +90,7 @@ const AccountMenuList = ({
               onPressSport={onPressSport}
               onPressCancelRequest={onPressCancelRequest}
               isLastItem={isLastIndex(index, section)}
+              showLogBadge={showLogBadge}
             />
           );
         }}

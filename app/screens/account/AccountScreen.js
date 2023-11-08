@@ -52,6 +52,8 @@ import {getUnreadCount} from '../../api/Notificaitons';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {onResendRequest} from '../../utils/accountUtils';
 import SportsListModal from './registerPlayer/modals/SportsListModal';
+import {getUserSettings} from '../../api/Users';
+import {getActivityLogCount} from '../../api/ActivityLog';
 
 const AccountScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -85,6 +87,34 @@ const AccountScreen = ({navigation, route}) => {
   const [players, setPlayers] = useState([]);
   const [onLoad, setOnLoad] = useState(false);
   const [snapPoints, setSnapPoints] = useState([]);
+  const [showRedDotForLog, setShowRedDotForLog] = useState(false);
+
+  useEffect(() => {
+    if (isFocused) {
+      getUserSettings(authContext)
+        .then((response) => {
+          const lastActivityTimeStamp =
+            response.payload.user?.last_activity_log_timestamp[
+              authContext.entity.uid
+            ];
+
+          if (lastActivityTimeStamp) {
+            getActivityLogCount(lastActivityTimeStamp, authContext)
+              .then((res) => {
+                setShowRedDotForLog(res?.payload > 0);
+              })
+              .catch((err) => {
+                console.log({err});
+              });
+          } else {
+            setShowRedDotForLog(false);
+          }
+        })
+        .catch((err) => {
+          console.log('err-->', err);
+        });
+    }
+  }, [isFocused, authContext]);
 
   const getUsers = useCallback(() => {
     const generalsQuery = {
@@ -578,6 +608,7 @@ const AccountScreen = ({navigation, route}) => {
               onCancelRequest(rowItem);
             }}
             onLogout={handleLogout}
+            showLogBadge={showRedDotForLog}
           />
         </>
       )}

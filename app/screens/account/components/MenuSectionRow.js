@@ -16,6 +16,7 @@ const MenuSectionRow = ({
   onPressSetting = () => {},
   onPressSport = () => {},
   onPressCancelRequest = () => {},
+  showLogBadge = false,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -60,10 +61,13 @@ const MenuSectionRow = ({
           <View style={styles.iconContainer}>
             <Image source={item.icon} style={styles.icon} />
           </View>
-          <View>
+          <View style={styles.row}>
             <Text textBreakStrategy="simple" style={styles.label}>
               {item.key}
             </Text>
+            {showLogBadge && item.key === strings.accountLog && (
+              <View style={styles.badge} />
+            )}
           </View>
         </View>
         <View style={styles.arrowIcon}>
@@ -132,6 +136,13 @@ const styles = StyleSheet.create({
     height: 15,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  badge: {
+    width: 7,
+    height: 7,
+    marginLeft: 5,
+    borderRadius: 4,
+    backgroundColor: colors.redColorCard,
   },
 });
 export default MenuSectionRow;

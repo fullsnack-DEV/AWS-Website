@@ -207,6 +207,8 @@ const Verbs = {
   HIDE_BUTTON: 'hideButton',
   channelModerator: 'channel_moderator',
   channelMember: 'channel_member',
+  member: 'member',
+  admin: 'admin',
 };
 
 export default Verbs;
