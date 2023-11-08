@@ -110,7 +110,7 @@ export default function ChangePasswordScreen({navigation}) {
                 strings.youWillLogout,
                 [
                   {
-                    text: 'OK',
+                    text: strings.OkText,
                     onPress: () => handleLogout(),
                   },
                 ],

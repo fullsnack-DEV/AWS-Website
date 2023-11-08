@@ -16,6 +16,7 @@ import {
   BackHandler,
 } from 'react-native';
 import {format} from 'react-string-format';
+
 import {useIsFocused} from '@react-navigation/native';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
@@ -184,6 +185,8 @@ const HomeScreen = ({navigation, route}) => {
       setCongratulationsModal(true);
       setCurrentUserData(route.params.entityObj);
       setSettingObject(route.params.entityObj);
+
+      navigation.setParams({isEntityCreated: false});
     }
 
     if (route.params?.userJoinTeam) {
@@ -418,7 +421,8 @@ const HomeScreen = ({navigation, route}) => {
   const handleBackPress = useCallback(() => {
     if (
       route.params?.comeFrom === 'IncomingChallengeSettings' ||
-      route.params?.comeFrom === 'IncomingChallengeScreen'
+      route.params?.comeFrom === 'IncomingChallengeScreen' ||
+      route.params?.comeFrom === 'GroupMemberScreen'
     ) {
       navigation.navigate('App', {screen: 'Account'});
     } else if (route.params?.comeFrom === 'EntitySearchScreen') {

@@ -383,13 +383,13 @@ const FeedsScreen = ({navigation, route}) => {
       <ActivityLoader visible={loading} />
       <View
         style={{opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}>
+        pointerEvents={authContext.isAccountDeactivated ? 'none' : pointEvent}>
         <RenderTopHeader />
       </View>
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       <View
         style={{flex: 1, opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
-        pointerEvents={pointEvent}>
+        pointerEvents={authContext.isAccountDeactivated ? 'none' : pointEvent}>
         {firstTimeLoading ? <FeedsShimmer /> : renderNewsFeedList()}
         {renderImageProgress}
       </View>

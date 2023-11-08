@@ -1000,7 +1000,7 @@ export default {
   whoCanSeeFollwerText: 'en_Who Can Follow',
   configureYourRefereeSetting:
     'en_You can’t send offer, please configure your referee setting first.',
-  emailPasswordWrong: 'en_The email and password you entered dont match.',
+  emailPasswordWrong: 'en_The password you entered dont match.',
   passwordWrong: 'en_Your password is wrong.',
   // Referee & Scorekeeper
   hirer: 'en_hirer',
@@ -3196,8 +3196,10 @@ export default {
   teamOnlyPrivacyOption: 'en_Team Only',
   aboutRatingsText: 'en_About ratings',
   hideDeleteFromPosts: 'en_Hide/Delete from my posts',
+
   activityLog: 'en_Activity Log',
   accountLog: 'en_Account Log',
+
   clubInviteTeamText1:
     'en_ Members in the team will be a member of both your club and the team.',
   clubInviteTeamText2: 'en_Your club can remove the team at any time.',
@@ -3211,6 +3213,13 @@ export default {
   whenTeamleaveClubtext: 'en_When your team leave  a club:',
   TeamLeaveModalText:
     'en_Your team will not be an affiliated team of the club any more, but the members of your teamwill still remain as a member both in your team and the club.    ',
+
+  AllLevelesText: 'en_All levels',
+
   nCreatedThisGroup: `en_{0} created this group.`,
+
+
+
   noActivityLog: 'en_No Activity Log',
+
 };

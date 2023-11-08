@@ -821,7 +821,11 @@ export default function GroupMembersScreen({navigation, route}) {
       navigation.setOptions({});
       navigation.navigate('HomeStack', {
         screen: 'HomeScreen',
-        params: {...route.params?.routeParams},
+        params: {
+          ...route.params?.routeParams,
+
+          comeFrom: 'GroupMemberScreen',
+        },
       });
     } else {
       navigation.goBack();

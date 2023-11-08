@@ -472,11 +472,13 @@ function LocalHomeScreen({navigation, route}) {
 
   const setSportHandler = (data) => {
     // remove duplicate Items
-    const filteredData = data.filter(
-      (item) => item.sport !== undefined && item.sport_type !== undefined,
+
+    const uniqueArray = data.filter(
+      (value, index, self) =>
+        self.findIndex((item) => item.sport === value.sport) === index,
     );
 
-    setSports(filteredData);
+    setSports(uniqueArray);
   };
 
   useEffect(() => {
@@ -484,6 +486,7 @@ function LocalHomeScreen({navigation, route}) {
     sportArr.sort((a, b) =>
       a.sport_name.normalize().localeCompare(b.sport_name.normalize()),
     );
+
     setSportsData([...sportArr]);
   }, [authContext, selectedMenuOptionType, visibleSportsModal]);
 
@@ -564,7 +567,7 @@ function LocalHomeScreen({navigation, route}) {
       } else {
         sportName = editSportName(Utility.getSportName(item, authContext));
       }
-      return sportName;
+      return sportName ?? item.sport_name;
     },
     [authContext],
   );
@@ -857,7 +860,7 @@ function LocalHomeScreen({navigation, route}) {
     <>
       <FlatList
         ref={refContainer}
-        extraData={settingPopup}
+        extraData={sports}
         style={{
           height: 70,
           backgroundColor: colors.whiteColor,
@@ -971,10 +974,9 @@ function LocalHomeScreen({navigation, route}) {
         <View style={styles.separateLine} />
       </View>
       {/* sport list  */}
-      <View>{RenderSportsListView()}</View>
 
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
-
+      <View>{RenderSportsListView()}</View>
       {loading ? (
         <LocalHomeScreenShimmer />
       ) : (

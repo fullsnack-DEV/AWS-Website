@@ -74,11 +74,29 @@ export default function EditFilterModal({
     const handleSportData = (userSport) => {
       const registeredSports =
         userSport.payload?.registered_sports?.map((item) => item) || [];
+
+      const registerButDeactivated = (
+        userSport.payload?.registered_sports || []
+      ).filter((item) => item.is_active === false);
+
       const scorekeeperSports =
         userSport.payload?.scorekeeper_data?.map((item) => item) || [];
+
       const likedsports = userSport.payload?.sports?.map((item) => item) || [];
       const refereeSports =
         userSport.payload?.referee_data?.map((item) => item) || [];
+
+      const refreeRegisterButDeactivated = (
+        userSport.payload?.referee_data || []
+      )
+        .filter((item) => item.is_active === false)
+        .map((item) => item.sport_name);
+
+      const scoreKeeperRegisterButDeactivated = (
+        userSport.payload?.scorekeeper_data || []
+      )
+        .filter((item) => item.is_active === false)
+        .map((item) => item.sport_name);
 
       const clubFavSport =
         authContext.entity.role === Verbs.entityTypeClub
@@ -101,6 +119,7 @@ export default function EditFilterModal({
         sport_type: obj.sport_type,
         sport_name: obj.sport_name ?? obj.sport,
       }));
+
       const result = res.reduce((unique, o) => {
         if (
           !unique.some(
@@ -114,9 +133,19 @@ export default function EditFilterModal({
       }, []);
 
       const registerSportNames = result.map((item) => item.sport_name);
+      // const removedDeactivatedSport =
+      const removedDeactivatedSport = registerSportNames.filter(
+        (sportName) =>
+          !registerButDeactivated.some(
+            (item) =>
+              item?.sport === sportName || item?.sport_name === sportName,
+          ) &&
+          !refreeRegisterButDeactivated.includes(sportName) &&
+          !scoreKeeperRegisterButDeactivated.includes(sportName),
+      );
 
       const commonObjects = favsport.filter(
-        (item) => !registerSportNames.includes(item.sport_name),
+        (item) => !removedDeactivatedSport.includes(item.sport_name),
       );
 
       if (authContext.entity.role !== Verbs.entityTypeClub) {
@@ -220,7 +249,7 @@ export default function EditFilterModal({
 
       return isSportAdded;
     },
-    [addedSport, registerSports, notRegisterSport],
+    [favsport, notRegisterSport],
   );
 
   const CheckisRegister = (item) => {
@@ -299,6 +328,7 @@ export default function EditFilterModal({
       const entity = authContext.entity;
 
       entity.auth.user.favouriteSport = sports;
+
       const body = {
         favouriteSport: sports,
       };
@@ -433,71 +463,72 @@ export default function EditFilterModal({
             </View>
           </View>
         </GestureHandlerRootView>
-      </Modal>
-      <CustomModalWrapper
-        isVisible={visibleAddModal}
-        title={strings.addorDeleteFavSportTitle}
-        closeModal={() => {
-          setVisibleAddModal(false);
-          setAddedsport([...sportList]);
-          if (authContext.entity.role !== Verbs.entityTypeClub) {
-            setAddedsport([...notRegisterSport, ...registerSports]);
-          } else {
+
+        <CustomModalWrapper
+          isVisible={visibleAddModal}
+          title={strings.addorDeleteFavSportTitle}
+          closeModal={() => {
+            setVisibleAddModal(false);
             setAddedsport([...sportList]);
-          }
-        }}
-        modalType={ModalTypes.style6}
-        headerRightButtonText={strings.save}
-        onRightButtonPress={() => {
-          setisSaved(true);
+            if (authContext.entity.role !== Verbs.entityTypeClub) {
+              setAddedsport([...notRegisterSport, ...registerSports]);
+            } else {
+              setAddedsport([...sportList]);
+            }
+          }}
+          modalType={ModalTypes.style6}
+          headerRightButtonText={strings.save}
+          onRightButtonPress={() => {
+            setisSaved(true);
 
-          setsports([...addedSport]);
+            setsports([...addedSport]);
 
-          setVisibleAddModal(false);
-        }}>
-        <FlatList
-          data={allSports}
-          style={{marginTop: -20}}
-          keyExtractor={(item, index) => `${item?.sport_type}/${index}`}
-          showsVerticalScrollIndicator={false}
-          renderItem={({item}) => (
-            <>
-              <Pressable
-                style={styles.listItem}
-                onPress={() => {
-                  if (CheckisRegister(item)) {
-                    toggleSport(item);
-                    return;
-                  }
-
-                  if (!FavSportCheck(item)) {
-                    toggleSport(item);
-                  }
-                }}>
-                <Text style={styles.listLabel}>{item.sport_name}</Text>
-                <View
-                  style={[
-                    styles.listIconContainer,
-                    {
-                      opacity: FavSportImageCheck(item) ? 0.6 : 1,
-                    },
-                  ]}>
-                  <Image
-                    source={
-                      checkSportAdded(item)
-                        ? images.orangeCheckBox
-                        : images.uncheckBox
+            setVisibleAddModal(false);
+          }}>
+          <FlatList
+            data={allSports}
+            style={{marginTop: -20}}
+            keyExtractor={(item, index) => `${item?.sport_type}/${index}`}
+            showsVerticalScrollIndicator={false}
+            renderItem={({item}) => (
+              <>
+                <Pressable
+                  style={styles.listItem}
+                  onPress={() => {
+                    if (CheckisRegister(item)) {
+                      toggleSport(item);
+                      return;
                     }
-                    style={styles.image}
-                  />
-                </View>
-              </Pressable>
-              <View style={styles.lineSeparator} />
-            </>
-          )}
-          ListFooterComponent={() => <View style={{marginBottom: 50}} />}
-        />
-      </CustomModalWrapper>
+
+                    if (!FavSportCheck(item)) {
+                      toggleSport(item);
+                    }
+                  }}>
+                  <Text style={styles.listLabel}>{item.sport_name}</Text>
+                  <View
+                    style={[
+                      styles.listIconContainer,
+                      {
+                        opacity: FavSportImageCheck(item) ? 0.6 : 1,
+                      },
+                    ]}>
+                    <Image
+                      source={
+                        checkSportAdded(item)
+                          ? images.orangeCheckBox
+                          : images.uncheckBox
+                      }
+                      style={styles.image}
+                    />
+                  </View>
+                </Pressable>
+                <View style={styles.lineSeparator} />
+              </>
+            )}
+            ListFooterComponent={() => <View style={{marginBottom: 50}} />}
+          />
+        </CustomModalWrapper>
+      </Modal>
     </>
   );
 }

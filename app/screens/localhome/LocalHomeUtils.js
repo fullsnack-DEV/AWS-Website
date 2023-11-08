@@ -76,10 +76,10 @@ const getDataForNextScreen = (
       searchCityLoc: location,
     };
 
-    return data;
+    return data ?? {};
   }
 
-  if (type === 'teamData' && authContext.entity.role === Verbs.entityTypeTeam) {
+  if (type === 'teamData') {
     const filterObject = {
       sport: filters.sport,
       sport_type: filters.sport_type,
@@ -87,24 +87,29 @@ const getDataForNextScreen = (
       locationOption: getLocation(),
       searchCityLoc: location,
     };
+
     const data = {
       teamSportData: {
         sport:
-          filters.sport === strings.all
+          filters.sport === strings.all &&
+          authContext.entity.role === Verbs.entityTypeTeam
             ? authContext.entity.obj.sport
             : filters.sport,
         sport_type:
-          filters.sport_type === strings.all
+          filters.sport === strings.all &&
+          authContext.entity.role === Verbs.entityTypeTeam
             ? authContext.entity.obj.sport_type
             : filters.sport_type,
         sport_name:
-          filters.sport_type === strings.all
+          filters.sport === strings.all &&
+          authContext.entity.role === Verbs.entityTypeTeam
             ? setSportName()
-            : filters.sport_name,
+            : filters.sport_name ?? strings.all,
       },
       filters: filterObject,
     };
-    return data;
+
+    return data ?? {};
   }
 
   return null;
@@ -576,6 +581,7 @@ const LocalHomeQuery = async (
       setLookingTeam(lookingTeam ?? []);
 
       setCardLoader(false);
+
       setReferees([...referees] ?? []);
 
       setCardLoader(false);
@@ -666,7 +672,7 @@ const getSportsForHome = (
 
     const res = uniqueSports.map((obj) => ({
       sport: obj.sport,
-      sport_type: obj.sport_type,
+      sport_type: obj.sport_type ?? obj.type,
       sport_name: obj.sport_name ?? obj.sport,
     }));
 
@@ -681,6 +687,7 @@ const getSportsForHome = (
 
       return unique;
     }, []);
+
     setSportIconLoader(false);
     setSportHandler(result);
 

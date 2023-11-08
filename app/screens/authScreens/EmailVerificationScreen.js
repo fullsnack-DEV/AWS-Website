@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Dimensions,
 } from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 
 import firebase from '@react-native-firebase/app';
 import FastImage from 'react-native-fast-image';
@@ -27,9 +28,19 @@ export default function EmailVerificationScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const dummyAuthContext = {...authContext};
-
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(60);
+  const [addedEmail, setAddedemail] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!addedEmail) {
+        setEmail(route?.params?.signupInfo?.emailAddress);
+        setAddedemail(true);
+      }
+    }, [route]),
+  );
 
   useEffect(() => {
     const timerController =
@@ -52,7 +63,7 @@ export default function EmailVerificationScreen({navigation, route}) {
           navigation.navigate('AddNameScreen', {
             signupInfo: {
               ...route.params?.signupInfo,
-              emailAddress: route.params?.signupInfo?.emailAddress,
+              emailAddress: email,
               password: route.params?.signupInfo?.password,
             },
           });
@@ -66,10 +77,7 @@ export default function EmailVerificationScreen({navigation, route}) {
     setLoading(true);
     firebase
       .auth()
-      .signInWithEmailAndPassword(
-        route?.params?.signupInfo?.emailAddress,
-        route?.params?.signupInfo?.password,
-      )
+      .signInWithEmailAndPassword(email, route?.params?.signupInfo?.password)
       .then((res) => {
         setLoading(false);
         if (res.user.emailVerified) {
@@ -101,7 +109,7 @@ export default function EmailVerificationScreen({navigation, route}) {
 
   const resend = async () => {
     setLoading(true);
-    const user = await firebase.auth().currentUser;
+    const user = firebase.auth().currentUser;
     user
       .sendEmailVerification()
       .then(() => {
@@ -160,7 +168,7 @@ export default function EmailVerificationScreen({navigation, route}) {
 
   const getVerificationEmailText = format(
     strings.emailVerificationDescription,
-    route?.params?.signupInfo?.emailAddress ?? '',
+    email ?? '',
   );
 
   return (
@@ -178,7 +186,7 @@ export default function EmailVerificationScreen({navigation, route}) {
         </Text>
       </View>
       <TouchableOpacity
-        onPress={resend}
+        onPress={() => resend()}
         disabled={timer !== 0}
         style={{alignItems: 'center'}}>
         <Text style={styles.sendTextagain}>
@@ -195,7 +203,7 @@ export default function EmailVerificationScreen({navigation, route}) {
 
       <TouchableOpacity
         testID="verify-email-button"
-        onPress={verifyUserEmail}
+        onPress={() => verifyUserEmail()}
         style={styles.ihaveVerfiedButton}>
         <View style={styles.ihaveverfied}>
           <Text style={styles.ihaveverfiedText}>

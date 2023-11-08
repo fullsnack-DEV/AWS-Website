@@ -65,7 +65,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [filters, setFilters] = useState(route?.params?.filters);
   const [settingPopup, setSettingPopup] = useState(false);
-
+  const [forTeams] = useState(route?.params?.forTeams);
   const [sports, setSports] = useState([]);
   const [availableChallenge, setAvailableChallenge] = useState([]);
   const [pageSize] = useState(10);
@@ -86,7 +86,8 @@ export default function LookingForChallengeScreen({navigation, route}) {
   const [selectedChallengeOption, setSelectedChallengeOption] = useState();
   const [mySettingObject] = useState(authContext.entity.obj.setting);
   const [myGroupDetail] = useState(
-    authContext.entity.role === Verbs.entityTypeTeam && authContext.entity.obj,
+    authContext.entity.role === Verbs.entityTypeTeam ||
+      (forTeams && authContext.entity.obj),
   );
   const [playerDetailPopup, setPlayerDetailPopup] = useState();
   const [playerDetail, setPlayerDetail] = useState();
@@ -100,7 +101,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
       setImageBaseUrl(setting.base_url_sporticon);
     });
 
-    if (authContext.entity.role === Verbs.entityTypeUser) {
+    if (!forTeams) {
       const singleSports = getSingleSportList(
         getSportList(authContext.sports, Verbs.entityTypePlayer),
       );
@@ -115,10 +116,10 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
       setSports([...filteredArray]);
     }
-  }, [authContext]);
+  }, [authContext, forTeams]);
 
   useEffect(() => {
-    if (authContext.entity.role === Verbs.entityTypeUser) {
+    if (!forTeams) {
       getPlayerAvailableForChallenge(filters);
     } else {
       getTeamAvailableForChallenge(filters);
@@ -597,7 +598,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
   const renderAvailableChallengeListView = useCallback(
     ({item}) => (
       <View style={{flex: 1}}>
-        {item.entity_type === Verbs.entityTypePlayer && (
+        {!forTeams && (
           <TCPlayerView
             data={item}
             fType={filterType.PLAYERAVAILABLECHALLENGE}
@@ -640,7 +641,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
             }}
           />
         )}
-        {item.entity_type === Verbs.entityTypeTeam && (
+        {(item.entity_type === Verbs.entityTypeTeam || forTeams) && (
           <TCTeamSearchView
             data={item}
             authContext={authContext}
@@ -671,7 +672,14 @@ export default function LookingForChallengeScreen({navigation, route}) {
         )}
       </View>
     ),
-    [authContext, filters, navigation, groupInviteUser, userJoinGroup],
+    [
+      forTeams,
+      authContext,
+      filters,
+      navigation,
+      groupInviteUser,
+      userJoinGroup,
+    ],
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
@@ -684,7 +692,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
     setLoadMore(true);
     if (!stopFetchMore) {
       // getAvailableForChallenge(filters);
-      if (authContext.entity.role === Verbs.entityTypeUser) {
+      if (!forTeams) {
         getPlayerAvailableForChallenge(filters);
       } else {
         getTeamAvailableForChallenge(filters);
@@ -759,7 +767,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
 
   const applyFilter = useCallback((fil) => {
     // getAvailableForChallenge(fil);
-    if (authContext.entity.role === Verbs.entityTypeUser) {
+    if (!forTeams) {
       getPlayerAvailableForChallenge(fil);
     } else {
       getTeamAvailableForChallenge(fil);
@@ -826,7 +834,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
         title={
-          authContext.entity.role === Verbs.entityTypeUser
+          !forTeams
             ? strings.playersAvailableforChallenge
             : strings.teamAvailableforChallenge
         }
@@ -1204,11 +1212,11 @@ export default function LookingForChallengeScreen({navigation, route}) {
       </Modal>
       <SearchModal
         fType={
-          authContext.entity.role === Verbs.entityTypeTeam
+          forTeams
             ? filterType.TEAMAVAILABLECHALLENGE
             : filterType.PLAYERAVAILABLECHALLENGE
         }
-        showSportOption={authContext.entity.role === Verbs.entityTypeUser}
+        showSportOption={!forTeams}
         favoriteSportsList={route.params.registerFavSports}
         sports={sports}
         filterObject={filters}

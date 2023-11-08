@@ -14,6 +14,7 @@ import {
   Alert,
   Text,
   BackHandler,
+  TouchableOpacity,
 } from 'react-native';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -1689,6 +1690,43 @@ const GroupHomeScreen = ({
         optionList={options}
         onSelect={handleOptions}
       />
+
+      {/* if sport is same Dispplay the Botton challege buton */}
+
+      {authContext.entity.role === Verbs.entityTypeTeam &&
+        currentUserData.entity_type === Verbs.entityTypeTeam &&
+        currentUserData.sport === authContext.entity.obj.sport &&
+        !isAdmin && (
+          <View style={styles.bottomButtonContainer}>
+            <View
+              style={{
+                marginTop: 15,
+              }}>
+              <Text style={{marginBottom: 5}}>
+                <Text
+                  style={{
+                    fontFamily: fonts.RBold,
+                    fontSize: 16,
+                  }}>
+                  {currentUserData.setting.game_fee.fee}
+                </Text>{' '}
+                <Text style={{fontSize: 16, fontFamily: fonts.RMedium}}>
+                  {`${currentUserData.setting.game_fee.currency_type}`}/
+                  {strings.match}
+                </Text>
+              </Text>
+              <Text> {strings.AllLevelesText}</Text>
+            </View>
+            <View
+              style={{
+                marginTop: 15,
+              }}>
+              <TouchableOpacity style={styles.challengeButtonContainer}>
+                <Text style={styles.challengeText}>{strings.challenge}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
     </>
   );
 };
@@ -1698,6 +1736,30 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
     marginBottom: 25,
+  },
+  bottomButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderTopColor: colors.borderlinecolor,
+    borderTopWidth: 1,
+    paddingHorizontal: 15,
+    borderWidth: '100%',
+    marginBottom: 12,
+  },
+  challengeButtonContainer: {
+    height: 40,
+    backgroundColor: colors.themeColor,
+    justifyContent: 'center',
+
+    alignItems: 'center',
+    paddingHorizontal: 23,
+    borderRadius: 8,
+  },
+  challengeText: {
+    fontFamily: fonts.RBold,
+    lineHeight: 24,
+    fontSize: 14,
+    color: colors.whiteColor,
   },
 });
 export default GroupHomeScreen;

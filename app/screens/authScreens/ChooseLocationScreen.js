@@ -140,7 +140,9 @@ export default function ChooseLocationScreen({navigation, route}) {
     getGeocoordinatesWithPlaceName(Platform.OS)
       .then((location) => {
         setLocationFetch(true);
+        setLoading(false);
         if (location.position) {
+          setLoading(false);
           setCurrentLocation(location);
           getNearbyCityData(
             location.position.coords.latitude,
@@ -159,6 +161,7 @@ export default function ChooseLocationScreen({navigation, route}) {
           setCurrentLocation(null);
           setUserDeniedLocPerm(true);
         } else {
+          setLoading(false);
           setTimeout(() => {
             Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);

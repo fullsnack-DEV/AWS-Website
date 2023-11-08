@@ -209,7 +209,17 @@ function TopTileSection({
 
   return (
     <View>
-      <TouchableOpacity style={styles.tilesContainer} disabled={isdeactivated}>
+      <TouchableOpacity
+        style={[
+          styles.tilesContainer,
+          {
+            width:
+              authContext.entity.role === Verbs.entityTypeClub
+                ? Dimensions.get('window').width - 60 / 3
+                : Dimensions.get('window').width - 50 / 3,
+          },
+        ]}
+        disabled={isdeactivated}>
         {authContext.entity.role === Verbs.entityTypeClub ? (
           <>
             {tilesArray.clubSection.map((item, index) => (
@@ -243,14 +253,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     alignSelf: 'center',
-    width: Dimensions.get('window').width - 60 / 3,
     marginBottom: 20,
   },
   tileView: {
     height: 75,
     width: 75,
     backgroundColor: '#FFF7EE',
-    marginHorizontal: 5,
+    marginHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
