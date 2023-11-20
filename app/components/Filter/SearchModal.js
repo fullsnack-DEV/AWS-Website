@@ -378,7 +378,7 @@ const SearchModal = ({
   }, [favoriteSportsList, sports]);
 
   return (
-    <View>
+    <>
       <CustomModalWrapper
         isVisible={isVisible}
         closeModal={() => {
@@ -1243,7 +1243,7 @@ const SearchModal = ({
           />
         </CustomModalWrapper>
       )}
-    </View>
+    </>
   );
 };
 

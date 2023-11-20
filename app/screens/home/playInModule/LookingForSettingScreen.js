@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
   Image,
+  BackHandler,
 } from 'react-native';
 
 import {format} from 'react-string-format';
@@ -130,21 +131,37 @@ export default function LookingForSettingScreen({navigation, route}) {
     );
   }, [authContext, sportObj, entityType]);
 
+  const handleBackPress = useCallback(() => {
+    if (comeFrom) {
+      navigation.navigate('AccountStack', {
+        screen: comeFrom,
+        params: {...routeParams},
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, comeFrom, routeParams]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
         title={getHeaderTitle()}
         leftIcon={images.backArrow}
-        leftIconPress={() => {
-          if (comeFrom) {
-            navigation.navigate('HomeStack', {
-              screen: comeFrom,
-              params: {...routeParams},
-            });
-          } else {
-            navigation.goBack();
-          }
-        }}
+        leftIconPress={handleBackPress}
         isRightIconText
         rightButtonText={strings.save}
         onRightButtonPress={updateProfile}

@@ -170,11 +170,8 @@ const EntityInfoScreen = ({navigation, route}) => {
                   groupID: currentUserData.group_id,
                   fromProfile: true,
                   showBackArrow: true,
-                  comeFrom: 'HomeScreen',
-                  routeParams: {
-                    uid: currentUserData.group_id,
-                    role: currentUserData.entity_type,
-                  },
+                  comeFrom: 'EntityInfoScreen',
+                  routeParams: {...route.params},
                 });
                 break;
 

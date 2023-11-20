@@ -1,4 +1,4 @@
-import React, {useContext, useLayoutEffect, useState} from 'react';
+import React, {useContext, useEffect, useLayoutEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,6 +7,7 @@ import {
   FlatList,
   SafeAreaView,
   Pressable,
+  BackHandler,
 } from 'react-native';
 import AuthContext from '../../../auth/context';
 import colors from '../../../Constants/Colors';
@@ -104,6 +105,20 @@ export default function UserSettingPrivacyScreen({navigation}) {
         break;
     }
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   return (
     <SafeAreaView style={{flex: 1}}>

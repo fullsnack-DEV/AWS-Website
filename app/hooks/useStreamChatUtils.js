@@ -34,8 +34,8 @@ const useStreamChatUtils = () => {
               user_id: entity_id,
               channel_role:
                 entityId === entity_id || isGeneralChat
-                  ? 'channel_moderator'
-                  : 'channel_member',
+                  ? Verbs.channelModerator
+                  : Verbs.channelMember,
               entityName,
             },
           ]
@@ -44,8 +44,8 @@ const useStreamChatUtils = () => {
               user_id: entity_id,
               channel_role:
                 entityId === entity_id || isGeneralChat
-                  ? 'channel_moderator'
-                  : 'channel_member',
+                  ? Verbs.channelModerator
+                  : Verbs.channelMember,
             },
           ];
     } else {
@@ -151,22 +151,6 @@ const useStreamChatUtils = () => {
       inviteesList,
       groupType === Verbs.channelTypeGeneral,
     );
-    // const memberList = [...entityList, ...members];
-    let tempChannelName = '';
-    if (!groupName && groupType === Verbs.channelTypeGeneral) {
-      let name = '';
-      inviteesList.forEach((item, index) => {
-        name +=
-          name.length === 0
-            ? item.name
-            : `${
-                index === inviteesList.length - 1
-                  ? ` & ${item.name}`
-                  : `, ${item.name}`
-              }`;
-      });
-      tempChannelName = name;
-    }
 
     const channel = await createStreamChatChannel({
       authContext,
@@ -175,21 +159,14 @@ const useStreamChatUtils = () => {
       members: entityList,
       channelAvatar: inviteesList.length > 1 ? groupProfile : '',
       groupType,
-      tempChannelName,
-      isGeneralChat: groupType === Verbs.channelTypeGeneral,
     });
 
-    if (groupType === Verbs.channelTypeGeneral) {
-      const idList = members.map((item) => item.user_id);
-      await channel.addModerators([...idList]);
-    } else {
-      await channel.addMembers([...members], {
-        text: format(
-          strings.nCreatedThisGroup,
-          entity.full_name ?? entity.group_name,
-        ),
-      });
-    }
+    await channel.addMembers([...members], {
+      text: format(
+        strings.nCreatedThisGroup,
+        entity.full_name ?? entity.group_name,
+      ),
+    });
 
     setLoading(false);
     return channel;

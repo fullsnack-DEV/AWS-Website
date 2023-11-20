@@ -56,7 +56,6 @@ export const createStreamChatChannel = async ({
   channelName = '',
   groupType = '',
   channelAvatar = '',
-  tempChannelName = '',
 }) => {
   const channel = authContext.chatClient.channel(
     Verbs.channelTypeMessaging,
@@ -66,7 +65,6 @@ export const createStreamChatChannel = async ({
       members,
       image: channelAvatar,
       group_type: groupType,
-      temp_channel_name: tempChannelName,
     },
   );
   await channel.create();
@@ -152,10 +150,6 @@ export const getChannelName = (channel = {}, streamUserId = '') => {
       channelName +=
         channelName.length === 0 ? member.memberName : `, ${member.memberName}`;
     });
-  }
-
-  if (!channelName && data?.group_type === Verbs.channelTypeGeneral) {
-    channelName = data?.temp_channel_name ?? '';
   }
 
   return channelName;

@@ -1,4 +1,10 @@
-import React, {useContext, useState, useLayoutEffect} from 'react';
+import React, {
+  useContext,
+  useState,
+  useLayoutEffect,
+  useEffect,
+  useCallback,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -7,6 +13,7 @@ import {
   Image,
   SafeAreaView,
   Pressable,
+  BackHandler,
 } from 'react-native';
 import AuthContext from '../../auth/context';
 import colors from '../../Constants/Colors';
@@ -64,10 +71,13 @@ export default function SportActivityScreen({navigation, route}) {
         <Pressable
           style={styles.listContainer}
           onPress={() => {
-            navigation.navigate('SportAccountSettingScreen', {
-              type: entityType,
-              sport: item,
-              isFromSettings: true,
+            navigation.navigate('AccountStack', {
+              screen: 'SportAccountSettingScreen',
+              params: {
+                type: entityType,
+                sport: item,
+                isFromSettings: true,
+              },
             });
           }}>
           <View>
@@ -80,20 +90,36 @@ export default function SportActivityScreen({navigation, route}) {
     );
   };
 
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params?.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
         title={strings.sportActivity}
         leftIcon={images.backArrow}
-        leftIconPress={() => {
-          if (route.params?.parentStack) {
-            navigation.navigate(route.params?.parentStack, {
-              screen: route.params.screen,
-            });
-          } else {
-            navigation.goBack();
-          }
-        }}
+        leftIconPress={handleBackPress}
         containerStyle={styles.headerRow}
       />
 

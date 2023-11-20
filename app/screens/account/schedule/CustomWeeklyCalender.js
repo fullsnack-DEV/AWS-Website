@@ -138,11 +138,11 @@ const CustomWeeklyCalender = ({
     return color;
   };
 
-  const LeftArrow = () => (
-    <View style={styles.arrowContainer}>
-      <Image source={images.leftArrow} style={styles.arrowIcon} />
-    </View>
-  );
+  // const LeftArrow = () => (
+  //   <View style={styles.arrowContainer}>
+  //     <Image source={images.leftArrow} style={styles.arrowIcon} />
+  //   </View>
+  // );
 
   const RightArrow = () => (
     <View style={styles.arrowContainer}>
@@ -150,9 +150,10 @@ const CustomWeeklyCalender = ({
     </View>
   );
 
-  const datesBlacklistFunc = (startDate, endDate) => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+  const datesBlacklistFunc = () => {
+    const date = new Date();
+    const start = new Date(date.getFullYear(), date.getMonth(), 1);
+    const end = date.setDate(date.getDate() - 1);
     const dates = [];
 
     while (start <= end) {
@@ -228,7 +229,7 @@ const CustomWeeklyCalender = ({
             }}
             monthTitleStyle={styles.yearLabel}
             yearTitleStyle={styles.yearLabel}
-            previousComponent={<LeftArrow />}
+            previousComponent={() => <View />}
             nextComponent={<RightArrow />}
             dayShape="square"
             dayLabelsWrapper={styles.dayLabelsWrapper}
@@ -236,10 +237,7 @@ const CustomWeeklyCalender = ({
               setSelectedDate(date);
               onDayPress(date);
             }}
-            disabledDates={datesBlacklistFunc(
-              new Date().setFullYear(new Date().getFullYear() - 25),
-              new Date().setDate(new Date().getDate() - 1),
-            )}
+            disabledDates={datesBlacklistFunc()}
             selectedDayStyle={styles.selectedDayStyle}
             initialDate={new Date(selectedDate)}
             customDatesStyles={customDatesStyles}

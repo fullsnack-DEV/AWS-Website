@@ -13,6 +13,7 @@ import {
   FlatList,
   SafeAreaView,
   Pressable,
+  BackHandler,
 } from 'react-native';
 
 import {format} from 'react-string-format';
@@ -108,7 +109,7 @@ export default function SportAccountSettingScreen({navigation, route}) {
         entityType: type,
         sport,
         comeFrom: 'SportAccountSettingScreen',
-        routeParams: {type, sport},
+        routeParams: {...route.params},
       });
     } else if (options === strings.deactivateActivityText) {
       navigation.navigate('DeactivateSportScreen', {
@@ -150,24 +151,40 @@ export default function SportAccountSettingScreen({navigation, route}) {
     </>
   );
 
+  const handleBackPress = useCallback(() => {
+    if (route.params?.isFromSettings) {
+      navigation.navigate('HomeStack', {
+        screen: 'SportActivityScreen',
+        params: {
+          parentStack: 'AccountStack',
+          screen: 'UserSettingPrivacyScreen',
+        },
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [route.params?.isFromSettings, navigation]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
         title={`${getEntityTpeLabel(type)} • ${sportObj.sport_name}`}
         leftIcon={images.backArrow}
-        leftIconPress={() => {
-          if (route.params?.isFromSettings) {
-            navigation.navigate('HomeStack', {
-              screen: 'SportActivityScreen',
-              params: {
-                parentStack: 'AccountStack',
-                screen: 'UserSettingPrivacyScreen',
-              },
-            });
-          } else {
-            navigation.goBack();
-          }
-        }}
+        leftIconPress={handleBackPress}
       />
 
       <FlatList

@@ -1686,9 +1686,7 @@ export default function EntitySearchScreen({navigation, route}) {
         {currentSubTab !== strings.generalText && (
           <TouchableWithoutFeedback
             onPress={() => {
-              setTimeout(() => {
-                setSettingPopup(true);
-              }, 100);
+              setSettingPopup(true);
             }}>
             <Image source={images.filterIcon} style={styles.settingImage} />
           </TouchableWithoutFeedback>

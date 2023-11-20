@@ -827,6 +827,11 @@ export default function GroupMembersScreen({navigation, route}) {
           comeFrom: 'GroupMemberScreen',
         },
       });
+    } else if (route.params?.comeFrom) {
+      navigation.setOptions({});
+      navigation.navigate(route.params?.comeFrom, {
+        ...route.params?.routeParams,
+      });
     } else {
       navigation.goBack();
     }
