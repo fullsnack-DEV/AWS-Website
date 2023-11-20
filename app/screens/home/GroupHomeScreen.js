@@ -1540,6 +1540,18 @@ const GroupHomeScreen = ({
     }
   };
 
+  const onChallengePress = () => {
+    navigation.navigate('HomeStack', {
+      screen: 'ChallengeScreen',
+      params: {
+        setting: currentUserData.setting,
+        sportName: currentUserData?.sport,
+        sportType: currentUserData?.sport_type,
+        groupObj: currentUserData,
+      },
+    });
+  };
+
   return (
     <>
       <View
@@ -1721,7 +1733,9 @@ const GroupHomeScreen = ({
               style={{
                 marginTop: 15,
               }}>
-              <TouchableOpacity style={styles.challengeButtonContainer}>
+              <TouchableOpacity
+                onPress={() => onChallengePress()}
+                style={styles.challengeButtonContainer}>
                 <Text style={styles.challengeText}>{strings.challenge}</Text>
               </TouchableOpacity>
             </View>
@@ -1743,7 +1757,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.borderlinecolor,
     borderTopWidth: 1,
     paddingHorizontal: 15,
-    borderWidth: '100%',
+
     marginBottom: 12,
   },
   challengeButtonContainer: {
