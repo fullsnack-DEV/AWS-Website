@@ -64,7 +64,11 @@ const ChannelView = ({channel, latestMessagePreview}) => {
       style={styles.parent}>
       <>
         <View style={styles.userDetails}>
-          <CustomAvatar channel={channel} />
+          <CustomAvatar
+            channel={channel}
+            imageStyle={{backgroundColor: colors.whiteColor}}
+            iconTextStyle={{fontSize: 12}}
+          />
           <View style={{flex: 1}}>
             <View style={styles.channelNameContainer}>
               <View style={{maxWidth: '80%'}}>

@@ -91,11 +91,11 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
+    marginBottom: 15,
   },
   reactionAndTimeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    // alignSelf: 'flex-end',
     marginTop: 5,
     marginLeft: 40,
   },

@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: 35,
     height: 35,
-    borderWidth: 1,
+    borderWidth: 0.5,
   },
   container: {
     flexDirection: 'row',

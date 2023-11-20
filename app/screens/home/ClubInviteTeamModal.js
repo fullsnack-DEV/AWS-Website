@@ -33,7 +33,7 @@ export default function ClubInviteTeamModal({
           const contentHeight = event.nativeEvent.layout.height + 80;
 
           setSnapPoints([
-            '30%',
+            '50%',
             contentHeight,
             Dimensions.get('window').height - 40,
           ]);

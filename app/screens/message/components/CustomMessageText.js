@@ -121,8 +121,8 @@ const CustomMessageText = ({onTagPress = () => {}, onViewAll = () => {}}) => {
 
 const styles = StyleSheet.create({
   parent: {
-    paddingHorizontal: 4,
-    paddingVertical: 8,
+    // paddingHorizontal: 4,
+    // paddingVertical: 8,
   },
   messageText: {
     fontSize: 16,

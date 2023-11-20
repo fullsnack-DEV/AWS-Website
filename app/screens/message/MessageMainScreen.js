@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.grayBackgroundColor,
     paddingHorizontal: 15,
     paddingVertical: 10,
+    backgroundColor: colors.offwhite,
   },
   headerTitle: {
     fontSize: 20,
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
   icon: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'contain ',
   },
   centerMsgContainer: {
     flex: 1,

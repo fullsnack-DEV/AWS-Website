@@ -78,6 +78,7 @@
     "react-native-color-picker": "^0.6.0",
     "react-native-common-date-picker": "^2.3.7",
     "react-native-config": "^1.4.5",
+    "react-native-currency-input": "^1.1.1",
     "react-native-dash": "0.0.11",
     "react-native-date-picker": "^4.2.1",
     "react-native-device-info": "^8.7.1",

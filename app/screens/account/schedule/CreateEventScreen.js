@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-undef */
 import React, {
   useEffect,
   useState,
@@ -31,6 +33,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {format} from 'react-string-format';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {getCountry} from 'country-currency-map';
+import CurrencyInput from 'react-native-currency-input';
 import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
@@ -58,8 +61,6 @@ import {
   countNumberOfWeekFromDay,
   countNumberOfWeeks,
   getRoundedDate,
-  formatCurrency,
-  getNumberFromCurrency,
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
@@ -183,7 +184,6 @@ export default function CreateEventScreen({navigation, route}) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.entity.obj.country]);
-
   const handleStartDatePress = (date) => {
     const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date;
     setEventStartdateTime(startDateTime);
@@ -578,9 +578,10 @@ export default function CreateEventScreen({navigation, route}) {
           },
           event_posted_at: eventPosted,
           event_fee: {
-            value: getNumberFromCurrency(eventFee),
+            value: eventFee,
             currency_type: currency,
           },
+
           refund_policy: refundPolicy,
           min_attendees: Number(minAttendees),
           max_attendees: Number(maxAttendees),
@@ -1213,15 +1214,16 @@ export default function CreateEventScreen({navigation, route}) {
                 {strings.eventFeeTitle}
               </Text>
               <View style={[styles.feeContainer, {marginTop: 10}]}>
-                <TextInput
+                <CurrencyInput
                   style={styles.eventFeeStyle}
-                  // placeholder={'0'}
-                  keyboardType={'decimal-pad'}
-                  onChangeText={(value) => {
-                    const formattedNumber = formatCurrency(value, currency);
-                    setEventFee(formattedNumber);
+                  value={eventFee}
+                  onChangeValue={(val) => {
+                    setEventFee(val);
                   }}
-                  value={`${eventFee}`}
+                  delimiter="."
+                  separator=","
+                  precision={2}
+                  keyboardType="decimal-pad"
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                 />

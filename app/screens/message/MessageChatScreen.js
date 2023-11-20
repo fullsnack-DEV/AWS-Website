@@ -547,9 +547,9 @@ const MessageChatScreen = ({navigation, route}) => {
 const styles = StyleSheet.create({
   chatSeparateLine: {
     borderColor: colors.writePostSepratorColor,
-    marginTop: 5,
+    // marginTop: 15,
     borderWidth: 0.5,
-    width: wp(95),
+    width: wp(15),
   },
   inputContainer: {
     flexDirection: 'row',

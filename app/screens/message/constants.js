@@ -39,7 +39,7 @@ export const themeStyle = {
     content: {
       textContainer: {
         borderWidth: 0,
-        Bottom: 10,
+        paddingVertical: 10,
       },
       markdown: {
         text: {
