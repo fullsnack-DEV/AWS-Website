@@ -127,10 +127,14 @@ function NavigationMainContainer() {
   }, [authContext]);
 
   useEffect(() => {
-    if (authContext.entity?.uid && authContext.chatClient?.key) {
+    if (
+      authContext.entity?.uid &&
+      authContext.chatClient &&
+      !authContext.chatClient?.userID
+    ) {
       connectUserToStreamChat(authContext);
     }
-  }, [authContext.entity?.uid, authContext.chatClient?.key]);
+  }, [authContext.entity?.uid, authContext.chatClient]);
 
   useEffect(() => {
     if (!loading) {

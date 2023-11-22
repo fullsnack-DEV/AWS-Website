@@ -31,11 +31,11 @@ function App() {
   const [totalNotificationCount, setTotalNotificationCount] = useState(0);
   const [isAccountDeactivated, setIsAccountDeactivated] = useState(false);
   const [streamChatToken, setStreamChatToken] = useState(null);
-  const [chatClient, setChatClient] = useState({});
+  const [chatClient, setChatClient] = useState(null);
   const [baseUrlEventImages, setBaseUrlEventImages] = useState('');
 
   useEffect(() => {
-    if (!chatClient.userID) {
+    if (!chatClient?.userID) {
       getAppSettingsWithoutAuth()
         .then((res) => {
           setBaseUrlEventImages(res.payload.app.base_url_eventimages);
@@ -50,7 +50,7 @@ function App() {
           console.log({err});
         });
     }
-  }, [chatClient.userID]);
+  }, [chatClient?.userID]);
 
   const setTokenData = useCallback(async (token) => {
     setToken(token);

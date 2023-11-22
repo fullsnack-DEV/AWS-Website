@@ -22,10 +22,14 @@ const getRefereshToken = () =>
   new Promise((resolve, reject) => {
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       unsubscribe();
-      const refreshedToken = await user
-        .getIdTokenResult(true)
-        .catch((err) => console.error(err));
-      resolve(refreshedToken);
+      if (user) {
+        const refreshedToken = await user
+          .getIdTokenResult(true)
+          .catch((err) => console.error(err));
+        resolve(refreshedToken);
+      } else {
+        resolve(true);
+      }
     }, reject);
   });
 const makeAPIWithoutAuthRequest = async ({

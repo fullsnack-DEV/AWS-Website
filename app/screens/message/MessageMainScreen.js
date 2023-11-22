@@ -12,34 +12,32 @@ import {
   OverlayProvider as ChatOverlayProvider,
   ChannelList,
 } from 'stream-chat-react-native';
-import {useIsFocused} from '@react-navigation/native';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
 import {strings} from '../../../Localization/translation';
-import {getStreamChatIdBasedOnRole} from '../../utils/streamChat';
 import ChannelView from './components/ChannelView';
 import Verbs from '../../Constants/Verbs';
 import ChatShimmer from '../../components/shimmer/Chat/ChatShimmer';
+import {connectUserToStreamChat} from '../../utils/streamChat';
 
 const MessageMainScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
-  const [streamChatId, setStreamChatId] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const getUserChannel = useCallback(() => {
-    getStreamChatIdBasedOnRole(authContext).then((chatId) => {
-      setStreamChatId(chatId);
-    });
+  const handleUserConnection = useCallback(async () => {
+    setLoading(true);
+    await connectUserToStreamChat(authContext);
+    setLoading(false);
   }, [authContext]);
 
   useEffect(() => {
-    if (isFocused) {
-      getUserChannel();
+    if (authContext.chatClient && !authContext.chatClient?.userID) {
+      handleUserConnection();
     }
-  }, [isFocused, getUserChannel]);
+  }, [authContext.chatClient, handleUserConnection]);
 
   const ListEmptyComponent = () => (
     <View style={styles.centerMsgContainer}>
@@ -96,12 +94,13 @@ const MessageMainScreen = ({navigation}) => {
       </View>
 
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
-      {streamChatId && authContext.chatClient ? (
+      {loading && <ChatShimmer />}
+      {authContext.chatClient?.userID && !loading ? (
         <View style={{flex: 1}}>
           <ChatOverlayProvider>
             <Chat client={authContext.chatClient}>
               <ChannelList
-                filters={{members: {$in: [streamChatId]}}}
+                filters={{members: {$in: [authContext.chatClient.userID]}}}
                 channelRenderFilterFn={customChannelFilterFunction}
                 sort={[{last_message_at: -1}]}
                 Preview={ChannelView}
