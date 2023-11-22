@@ -340,6 +340,7 @@ function LocationModal({
                     ? placeholder
                     : strings.locationPlaceholderText
                 }
+                autoFocus={true}
                 clearButtonMode="always"
                 placeholderTextColor={colors.userPostTimeColor}
                 onChangeText={(text) => setSearchText(text)}

@@ -183,7 +183,7 @@ const VenueModal = ({venues = [], onChange = () => {}}) => {
         setVisibleAddressModalhandler={() => setShowLocationModal(false)}
         onAddressSelect={(location) => {
           const list = [...venues];
-          console.log(location, 'From change Coordinates');
+
           list[selectedVenueIndex] = {
             ...list[selectedVenueIndex],
             ...location,

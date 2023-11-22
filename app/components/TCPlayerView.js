@@ -81,7 +81,8 @@ function TCPlayerView({
       sports.length === 1 &&
       sports[0].sport_type === Verbs.singleSport &&
       sports[0].setting?.availibility === Verbs.on &&
-      authContext.entity.role === Verbs.entityTypeUser &&
+      (authContext.entity.role === Verbs.entityTypeUser ||
+        authContext.entity.role === Verbs.entityTypeUser) &&
       authContext.entity.role !== Verbs.entityTypeTeam &&
       authContext.entity.role !== Verbs.entityTypeClub &&
       authContext.entity.uid !== data.user_id
@@ -97,9 +98,15 @@ function TCPlayerView({
   } else if (subTab === strings.refereesTitle) {
     data.referee_data.map((value) => sports.push(value));
     filterSport();
-    if (sportFilter.sport_type === Verbs.sportTypeSingle) {
+
+    const playingSport = (
+      authContext.entity.obj.registered_sports ?? []
+    ).filter((item) => item.sport === sportFilter?.sport);
+
+    if (playingSport.length > 0) {
       isBookButtonShow = true;
     }
+
     if (
       sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeUser &&
@@ -128,10 +135,13 @@ function TCPlayerView({
     data.scorekeeper_data.map((value) => sports.push(value));
     filterSport();
 
-    if (sportFilter.sport_type === Verbs.sportTypeSingle) {
+    const playingSport = (
+      authContext.entity.obj.registered_sports ?? []
+    ).filter((item) => item.sport === sportFilter?.sport);
+
+    if (playingSport.length > 0) {
       isBookButtonShow = true;
     }
-
     if (
       sportFilter.sport !== strings.allSport &&
       authContext.entity.role === Verbs.entityTypeUser &&

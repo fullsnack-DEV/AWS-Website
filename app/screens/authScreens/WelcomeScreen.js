@@ -667,7 +667,7 @@ export default function WelcomeScreen({navigation}) {
         />
       </View>
 
-      <View style={{marginTop: Dimensions.get('screen').height * 0.08}}>
+      <View style={{marginTop: Dimensions.get('screen').height * 0.04}}>
         <AppleButton
           onPress={() => {
             if (authContext.networkConnected) onAppleButtonPress();

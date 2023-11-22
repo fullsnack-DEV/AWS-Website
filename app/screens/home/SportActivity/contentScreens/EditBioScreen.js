@@ -10,8 +10,9 @@ const EditBioScreen = ({bio = '', setData = () => {}}) => (
       <TextInput
         value={bio}
         onChangeText={(text) => setData(text)}
-        multiline
         style={styles.label}
+        numberOfLines={4}
+        blurOnSubmit={false}
       />
     </Pressable>
   </View>
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   container: {
-    // minHeight: 193,
+    //  minHeight: 193,
     backgroundColor: colors.textFieldBackground,
     paddingTop: 9,
     paddingBottom: 15,
@@ -35,6 +36,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
+    height: 'auto',
   },
 });
-export default EditBioScreen;
+export default React.memo(EditBioScreen);

@@ -87,35 +87,8 @@ const MembershipFeeScreen = ({navigation, route}) => {
         rightButtonText={strings.save}
         onRightButtonPress={updateGroup}
       />
-      <View style={{paddingTop: 20, paddingHorizontal: 15}}>
-        <View style={{marginBottom: 35}}>
-          <Text style={[styles.label, {marginBottom: 10}]}>
-            {strings.membershipregfee.toUpperCase()}
-          </Text>
-          <Pressable
-            style={[
-              styles.inputContainer,
-              {
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingVertical: 6,
-              },
-            ]}>
-            <View style={{flex: 1, marginRight: 5}}>
-              <TextInput
-                style={styles.input}
-                value={registerationFee}
-                onChangeText={(value) => setRegisterationFee(value)}
-              />
-            </View>
-            <View>
-              <Text style={[styles.label, {fontFamily: fonts.RRegular}]}>
-                {currencyType}
-              </Text>
-            </View>
-          </Pressable>
-        </View>
 
+      <View style={{paddingTop: 20, paddingHorizontal: 15}}>
         <View style={{marginBottom: 35}}>
           <Text style={[styles.label, {marginBottom: 10}]}>
             {strings.membershipFee.toUpperCase()}
@@ -170,6 +143,34 @@ const MembershipFeeScreen = ({navigation, route}) => {
               </Text>
             </Pressable>
           </View>
+        </View>
+
+        <View style={{marginBottom: 35}}>
+          <Text style={[styles.label, {marginBottom: 10}]}>
+            {strings.membershipregfee.toUpperCase()}
+          </Text>
+          <Pressable
+            style={[
+              styles.inputContainer,
+              {
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingVertical: 6,
+              },
+            ]}>
+            <View style={{flex: 1, marginRight: 5}}>
+              <TextInput
+                style={styles.input}
+                value={registerationFee}
+                onChangeText={(value) => setRegisterationFee(value)}
+              />
+            </View>
+            <View>
+              <Text style={[styles.label, {fontFamily: fonts.RRegular}]}>
+                {currencyType}
+              </Text>
+            </View>
+          </Pressable>
         </View>
 
         <View style={{marginBottom: 35}}>

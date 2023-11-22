@@ -473,10 +473,11 @@ export default function GroupMembersScreen({navigation, route}) {
           groupID,
           members,
           routeParams: {...route.params},
+          group_sport_type: groupObjNew.sport_type,
         },
       });
     },
-    [navigation, groupID, members, route.params],
+    [navigation, groupID, members, route.params, groupObjNew.sport_type],
   );
 
   const callFollowUser = useCallback(
@@ -989,6 +990,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     justifyContent: 'center',
     marginBottom: 20,
+    zIndex: -1,
   },
 
   profileImage: {

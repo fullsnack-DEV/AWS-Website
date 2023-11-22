@@ -8,6 +8,7 @@ import {
   Text,
   Alert,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {strings} from '../../../Localization/translation';
@@ -47,8 +48,9 @@ const SwitchAccountModal = ({
   const [showBottomSheet, setBottomSheet] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isFetchingList, setIsFetchingList] = useState(false);
-
+  const [isPressed, setIsPressed] = useState(false);
   const {onSwitchProfile} = useSwitchAccount();
+  const [checkIndex, setcheckIndex] = useState(-1);
 
   useEffect(() => {
     if (isVisible) {
@@ -192,7 +194,14 @@ const SwitchAccountModal = ({
         authContext.entity.role === Verbs.entityTypeClub) && (
         <>
           <Pressable
-            style={[styles.row, {justifyContent: 'flex-start'}]}
+            style={[
+              styles.row,
+              {
+                justifyContent: 'flex-start',
+                paddingVertical: 15,
+                paddingHorizontal: 20,
+              },
+            ]}
             onPress={() => {
               setBottomSheet(true);
             }}>
@@ -212,6 +221,26 @@ const SwitchAccountModal = ({
     </>
   );
 
+  const handlePressIn = () => {
+    setIsPressed(true);
+  };
+
+  const handlePressOut = () => {
+    setIsPressed(false);
+  };
+
+  useEffect(() => {
+    if (isVisible) {
+      const index = accountList.findIndex(
+        (item) =>
+          item.group_id === authContext.entity.uid ||
+          item.user_id === authContext.entity.uid,
+      );
+
+      setcheckIndex(index);
+    }
+  }, [isVisible, accountList]);
+
   return (
     <CustomModalWrapper
       modalType={ModalTypes.default}
@@ -226,29 +255,55 @@ const SwitchAccountModal = ({
           data={accountList}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{padding: 20}}
-          renderItem={({item}) => (
+          renderItem={({item, index}) => (
             <>
-              <Pressable
-                style={styles.row}
+              <TouchableOpacity
+                style={[
+                  styles.row,
+                  {
+                    backgroundColor:
+                      isPressed && index === checkIndex
+                        ? 'rgba(255, 138, 1, 0.2)'
+                        : 'transparent',
+                    paddingHorizontal: 20,
+                    paddingVertical: 15,
+                  },
+                ]}
                 onPress={() => {
+                  setIsPressed(true);
+                  setcheckIndex(index);
                   if (
                     authContext.entity.uid === item.user_id ||
                     authContext.entity.uid === item.group_id
                   ) {
                     return;
                   }
-                  handleSwitchAccount(item);
+
+                  setTimeout(() => {
+                    handleSwitchAccount(item);
+                    setIsPressed(false);
+                  }, 100);
                 }}>
                 <AccountCard
+                  pressIn={() => handlePressIn()}
+                  pressOut={() => {
+                    setTimeout(() => {
+                      setcheckIndex(index);
+                      handlePressOut();
+                    }, 100);
+                  }}
                   entityData={item}
                   sportList={authContext.sports}
-                  containerStyle={{paddingHorizontal: 5, flex: 1}}
+                  containerStyle={{
+                    paddingHorizontal: 5,
+                    flex: 1,
+                  }}
                   notificationCount={getNotificationCount(
                     item.user_id ?? item.group_id,
                     authContext,
                   )}
                   onPress={() => {
+                    setcheckIndex(index);
                     if (
                       authContext.entity.uid === item.user_id ||
                       authContext.entity.uid === item.group_id
@@ -256,7 +311,9 @@ const SwitchAccountModal = ({
                       return;
                     }
 
-                    handleSwitchAccount(item);
+                    setTimeout(() => {
+                      handleSwitchAccount(item);
+                    }, 100);
                   }}
                   onPressCancelRequest={() => {
                     handleCancelRequest(item);
@@ -266,15 +323,14 @@ const SwitchAccountModal = ({
                 <View style={styles.radioIcon}>
                   <Image
                     source={
-                      authContext.entity.uid === item.user_id ||
-                      authContext.entity.uid === item.group_id
+                      index === checkIndex
                         ? images.radioSelectYellow
                         : images.radioUnselect
                     }
                     style={styles.image}
                   />
                 </View>
-              </Pressable>
+              </TouchableOpacity>
               <View style={styles.dividor} />
             </>
           )}
@@ -335,7 +391,7 @@ const styles = StyleSheet.create({
   },
   dividor: {
     height: 1,
-    marginVertical: 15,
+
     backgroundColor: colors.grayBackgroundColor,
   },
   iconContainer: {

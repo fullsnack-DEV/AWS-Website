@@ -1,6 +1,11 @@
-import React, {useContext, useEffect, useLayoutEffect, useState} from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useRef,
+} from 'react';
 import {Alert, SafeAreaView} from 'react-native';
-import {useIsFocused} from '@react-navigation/native';
 import GroupInfo from '../../components/Home/GroupInfo';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
@@ -8,6 +13,7 @@ import {
   getGroupDetails,
   getGroupMembers,
   getTeamsOfClub,
+  patchGroup,
 } from '../../api/Groups';
 import ScreenHeader from '../../components/ScreenHeader';
 import images from '../../Constants/ImagePath';
@@ -15,42 +21,48 @@ import Verbs from '../../Constants/Verbs';
 import EntityInfoShimmer from '../../components/shimmer/account/EntityInfoShimmer';
 
 import WrapperModal from '../../components/IncomingChallengeSettingsModals/WrapperModal';
+import GroupInfoClubModal from './GroupInfoClubModal';
+import GroupMembersModal from './GroupMembersModal';
 
 const EntityInfoScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
+
   const {uid} = route.params;
   const [loading, setLoading] = useState(false);
   const [currentUserData, setCurrentUserData] = useState();
   const [selectedVenue, setSelectedVenue] = useState([]);
   const [visibleVenueModal, setVisibleVenuModal] = useState(false);
+  const [visibleClubListModal, setClubListModal] = useState(false);
+  const [clubsOfTeam, setclubsOfTeam] = useState([]);
+  const [entityType, setentityType] = useState();
+  const [refreshInfo, setRefreshInfo] = useState(false);
+
+  const bottomSheetRef = useRef(null);
 
   useEffect(() => {
-    if (isFocused) {
-      setLoading(true);
-      Promise.all([
-        getGroupDetails(uid, authContext),
-        getGroupMembers(uid, authContext),
-        getTeamsOfClub(uid, authContext),
-      ])
-        .then(([groupResonse, memberResponse, teamsResponse]) => {
-          const obj = {
-            ...groupResonse.payload,
-            joined_members: memberResponse.payload ?? [],
-            joined_teams: teamsResponse.payload ?? [],
-            joined_clubs: groupResonse.payload?.parent_groups ?? [],
-          };
-          setCurrentUserData(obj);
-          setLoading(false);
-        })
-        .catch((e) => {
-          setLoading(false);
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
-    }
-  }, [authContext, isFocused, uid]);
+    setLoading(true);
+    Promise.all([
+      getGroupDetails(uid, authContext),
+      getGroupMembers(uid, authContext),
+      getTeamsOfClub(uid, authContext),
+    ])
+      .then(([groupResonse, memberResponse, teamsResponse]) => {
+        const obj = {
+          ...groupResonse.payload,
+          joined_members: memberResponse.payload ?? [],
+          joined_teams: teamsResponse.payload ?? [],
+          joined_clubs: groupResonse.payload?.parent_groups ?? [],
+        };
+        setCurrentUserData(obj);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setLoading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  }, [authContext, uid, refreshInfo]);
 
   useEffect(() => {
     const obj = [];
@@ -84,7 +96,9 @@ const EntityInfoScreen = ({navigation, route}) => {
         break;
 
       case strings.matchVenues:
-        setVisibleVenuModal(true);
+        setTimeout(() => {
+          setVisibleVenuModal(true);
+        }, 500);
 
         break;
 
@@ -146,6 +160,33 @@ const EntityInfoScreen = ({navigation, route}) => {
     }
   };
 
+  const patchVenueDetails = (venueDeatils) => {
+    setLoading(true);
+    const bodyParams = {
+      ...currentUserData,
+      setting: {
+        ...currentUserData.setting,
+        venue: venueDeatils.venue,
+      },
+    };
+
+    patchGroup(currentUserData.group_id, bodyParams, authContext)
+      .then(() => {
+        setLoading(false);
+        setVisibleVenuModal(false);
+        setCurrentUserData({
+          ...currentUserData,
+          setting: {
+            ...currentUserData.setting,
+            venue: venueDeatils.venue,
+          },
+        });
+      })
+      .catch((e) => {
+        console.log(e.message);
+      });
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -165,28 +206,24 @@ const EntityInfoScreen = ({navigation, route}) => {
           onSeeAll={(option = '', clubsofteam = []) => {
             switch (option) {
               case strings.membersTitle:
-                navigation.navigate('GroupMembersScreen', {
-                  groupObj: currentUserData,
-                  groupID: currentUserData.group_id,
-                  fromProfile: true,
-                  showBackArrow: true,
-                  comeFrom: 'EntityInfoScreen',
-                  routeParams: {...route.params},
-                });
+
+                bottomSheetRef.current?.present();
+
+
                 break;
 
               case strings.clubsTitleText:
-                navigation.push('GroupListScreen', {
-                  groups: clubsofteam,
-                  entity_type: Verbs.entityTypeClub,
-                });
+                setclubsOfTeam(clubsofteam);
+                setClubListModal(true);
+                setentityType(Verbs.entityTypeClub);
+
                 break;
 
-              case strings.teams:
-                navigation.push('GroupListScreen', {
-                  groups: currentUserData.joined_teams,
-                  entity_type: Verbs.entityTypeTeam,
-                });
+              case strings.teamsTiteInfo:
+                setclubsOfTeam(currentUserData.joined_teams);
+                setentityType(Verbs.entityTypeTeam);
+                setClubListModal(true);
+
                 break;
 
               default:
@@ -216,11 +253,25 @@ const EntityInfoScreen = ({navigation, route}) => {
         isVisible={visibleVenueModal}
         closeModal={() => setVisibleVenuModal(false)}
         title={strings.venue}
+        settingsObj={currentUserData?.setting}
         onSave={(settings) => {
-          setVisibleVenuModal(false);
+          patchVenueDetails(settings);
 
           setSelectedVenue({...settings});
         }}
+      />
+      <GroupInfoClubModal
+        isVisible={visibleClubListModal}
+        oncloseModal={() => setClubListModal(false)}
+        groups={clubsOfTeam}
+        entity_type={entityType}
+        refreshInfo={() => setRefreshInfo(true)}
+      />
+
+      <GroupMembersModal
+        bottomSheetRef={bottomSheetRef}
+        groupID={uid}
+        showMember={currentUserData?.show_members}
       />
     </SafeAreaView>
   );

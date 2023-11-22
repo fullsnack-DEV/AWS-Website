@@ -5,16 +5,23 @@ import colors from '../../Constants/Colors';
 import {getSportDetails} from '../../utils/sportsActivityUtils';
 import AuthContext from '../../auth/context';
 import fonts from '../../Constants/Fonts';
+import Verbs from '../../Constants/Verbs';
 
 const SportView = ({item = {}, imageBaseUrl = '', onPress = () => {}}) => {
+  const entityColor = () => {
+    if (item.setting?.entity_type === Verbs.entityTypeReferee) {
+      return colors.darkThemeColor;
+    }
+    if (item.setting?.entity_type === Verbs.entityTypeScorekeeper) {
+      return colors.blueColorCard;
+    }
+    return colors.orangeColorCard;
+  };
+
   const authContext = useContext(AuthContext);
   return (
     <Pressable
-      style={[
-        styles.sportView,
-        styles.row,
-        {borderLeftColor: colors.redColorCard},
-      ]}
+      style={[styles.sportView, styles.row, {borderLeftColor: entityColor()}]}
       onPress={onPress}
       disabled={item.is_hide}>
       <View style={styles.innerViewContainer}>

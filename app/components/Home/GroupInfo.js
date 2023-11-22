@@ -58,7 +58,7 @@ const clubOptions = [
   strings.bio,
   strings.basicInfoText,
   strings.membersTitle,
-  strings.teams,
+  strings.teamsTiteInfo,
   strings.membershipFee,
   strings.bylaw,
   strings.history,
@@ -365,7 +365,7 @@ export default function GroupInfo({
       case strings.membershipFeesTitle:
         return renderMatchFeeSection();
 
-      case strings.teams:
+      case strings.teamsTiteInfo:
         return (
           <View>
             {teamList.length > 0 ? (
@@ -927,7 +927,8 @@ export default function GroupInfo({
                 </View>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   {item === strings.membersTitle ||
-                  item === strings.clubsTitleText ? (
+                  item === strings.clubsTitleText ||
+                  item === strings.teamsTiteInfo ? (
                     <TouchableOpacity
                       style={{marginRight: 10}}
                       onPress={() => onSeeAll(item, clubTeams)}>

@@ -63,6 +63,7 @@ import JoinButtonModal from '../home/JoinButtomModal';
 import JoinRequestModal from '../../components/notificationComponent/JoinRequestModal';
 import useSwitchAccount from '../../hooks/useSwitchAccount';
 import {getUserDetails} from '../../api/Users';
+import Verbs from '../../Constants/Verbs';
 
 function NotificationsListScreen({navigation}) {
   const actionSheet = useRef();
@@ -79,7 +80,6 @@ function NotificationsListScreen({navigation}) {
   const currentDate = new Date();
   const [selectedEntity, setSelectedEntity] = useState();
   const [activeScreen, setActiveScreen] = useState(groupList?.length === 0);
-
   const [isRulesModalVisible, setIsRulesModalVisible] = useState(false);
   const [groupData, setGroupData] = useState();
   const isFocused = useIsFocused();
@@ -519,12 +519,36 @@ function NotificationsListScreen({navigation}) {
     }
   };
 
+  const getInfoForSportAcitivity = async (grpid) => {
+    setloading(true);
+    try {
+      const {payload} = await getGroupDetails(grpid, authContext);
+      setloading(false);
+
+      navigation.navigate('HomeStack', {
+        screen: 'SportActivityHome',
+        params: {
+          sport: payload.sport,
+          sportType: payload.sport_type,
+          uid: authContext.entity.uid,
+          entityType: Verbs.entityTypePlayer,
+          selectedTab: strings.infoTitle,
+          parentStack: 'NotificationNavigator',
+          backScreen: 'NotificationListScreen',
+        },
+      });
+    } catch (error) {
+      setloading(false);
+    }
+  };
+
   const getGroupInfo = async (grpid) => {
     setloading(true);
     try {
       const {payload} = await getGroupDetails(grpid, authContext);
       setloading(false);
       setGrpInfo(payload);
+
       setIsAccept(true);
       setShowJoinModal(true);
     } catch (error) {
@@ -848,6 +872,10 @@ function NotificationsListScreen({navigation}) {
     </AppleStyleSwipeableRow>
   );
 
+  const onSportActivityPress = (id) => {
+    getInfoForSportAcitivity(id);
+  };
+
   const renderNotificationComponent = ({item}) => {
     if (item.activities[0].is_request) {
       return (
@@ -869,6 +897,7 @@ function NotificationsListScreen({navigation}) {
           onPressFirstEntity={openHomePage}
           onPressSecondEntity={openHomePage}
           onPressCard={() => onNotificationClick(item)}
+          onButtonPress={(id) => onSportActivityPress(id)}
         />
       </AppleStyleSwipeableRow>
     );
@@ -1301,11 +1330,14 @@ const styles = StyleSheet.create({
   listItemSeparatorStyle: {
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
+    width: '90%',
+    alignSelf: 'center',
   },
   thinDivider: {
     width: '100%',
     height: 7,
     alignSelf: 'center',
+
     backgroundColor: colors.grayBackgroundColor,
   },
   nextArrow: {

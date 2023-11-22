@@ -275,6 +275,7 @@ const LocalHomeMenuItems = memo(
                 filters: teamData.filters,
                 teamSportData: teamData.teamSportData,
                 registerFavSports: sports,
+                forTeams: true,
               },
             });
           }

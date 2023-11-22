@@ -6,7 +6,7 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
-import {StyleSheet, View, Alert, Animated} from 'react-native';
+import {StyleSheet, View, Alert, Animated, BackHandler} from 'react-native';
 import {format} from 'react-string-format';
 import colors from '../../Constants/Colors';
 
@@ -37,6 +37,7 @@ import images from '../../Constants/ImagePath';
 import useSwitchAccount from '../../hooks/useSwitchAccount';
 import {showAlert} from '../../utils';
 import JoinRequestModal from '../../components/notificationComponent/JoinRequestModal';
+import SportActivitiesModal from './components/SportActivitiesModal';
 
 const UserHomeScreen = ({
   navigation,
@@ -63,6 +64,7 @@ const UserHomeScreen = ({
   const [showSwitchScreen, setShowSwitchScreen] = useState(false);
   const [followRequestSent, setFollowRequestSent] = useState(false);
   const [addSportActivityModal, setAddSportActivityModal] = useState(false);
+  const [visibleSportActivities, setVisibleSportactivities] = useState(false);
 
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
   const [refreshModal, setRefreshModal] = useState(false);
@@ -71,6 +73,18 @@ const UserHomeScreen = ({
   const ModalRef = useRef();
 
   const {onSwitchProfile} = useSwitchAccount();
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      navigation.goBack(),
+    );
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', () =>
+        navigation.goBack(),
+      );
+    };
+  }, [navigation]);
 
   useEffect(() => {
     if (userData?.user_id) {
@@ -632,10 +646,7 @@ const UserHomeScreen = ({
     if (type === EntityStatus.addNew) {
       setAddSportActivityModal(true);
     } else if (type === EntityStatus.moreActivity) {
-      navigation.navigate('SportActivitiesScreen', {
-        isAdmin,
-        uid: route.params?.uid ?? authContext.uid,
-      });
+      setVisibleSportactivities(true);
     } else {
       const sportDetails = getEntitySport({
         user: currentUserData,
@@ -814,6 +825,13 @@ const UserHomeScreen = ({
           onDecline(currentUserData.invite_request.activity_id)
         }
         messageText={messageText}
+      />
+
+      <SportActivitiesModal
+        isVisible={visibleSportActivities}
+        onCloseModal={() => setVisibleSportactivities(false)}
+        isAdmin={isAdmin}
+        uid={route.params.uid ?? authContext.entity.uid}
       />
     </>
   );

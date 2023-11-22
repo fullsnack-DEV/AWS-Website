@@ -204,7 +204,10 @@ export default function EmailVerificationScreen({navigation, route}) {
       <TouchableOpacity
         testID="verify-email-button"
         onPress={() => verifyUserEmail()}
-        style={styles.ihaveVerfiedButton}>
+        style={[
+          styles.ihaveVerfiedButton,
+          {marginTop: Dimensions.get('screen').height * 0.22},
+        ]}>
         <View style={styles.ihaveverfied}>
           <Text style={styles.ihaveverfiedText}>
             {' '}
@@ -240,7 +243,7 @@ const styles = StyleSheet.create({
   },
   ihaveVerfiedButton: {
     borderRadius: 50,
-    marginTop: 180,
+    marginTop: 120,
     height: 45,
     marginLeft: 25,
     marginRight: 25,
@@ -272,6 +275,6 @@ const styles = StyleSheet.create({
     height: 65.33,
     width: 101,
     alignSelf: 'center',
-    marginTop: 113,
+    marginTop: 100,
   },
 });

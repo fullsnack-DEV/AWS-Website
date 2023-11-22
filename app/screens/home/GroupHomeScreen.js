@@ -1436,6 +1436,7 @@ const GroupHomeScreen = ({
   };
 
   const handleGroupActions = (action) => {
+  
     switch (action) {
       case strings.editprofiletitle:
         setVisibleEditProfileModal(true);
@@ -1458,9 +1459,8 @@ const GroupHomeScreen = ({
         break;
 
       case strings.invite:
-        //   Alert.alert('From club invite tream');
         setShoeclubInviteTeamModal(true);
-        // clubInviteTeam();
+
         break;
 
       case strings.join:

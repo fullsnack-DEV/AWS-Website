@@ -12,6 +12,7 @@ const GroupListItemView = ({
   loggedInEntityType = Verbs.entityTypePlayer,
   loggedInEntityId = '',
   handleFollowUnfollow = () => {},
+  onRemovePress = () => {},
 }) => {
   const showFollowBtn =
     loggedInEntityId !== groupData.group_id &&
@@ -52,7 +53,16 @@ const GroupListItemView = ({
               {groupData.is_following ? strings.following : strings.follow}
             </Text>
           </TouchableOpacity>
-        ) : null}
+        ) : (
+          <TouchableOpacity
+            style={[
+              styles.buttonContainer,
+              groupData.is_following ? {} : {paddingHorizontal: 20},
+            ]}
+            onPress={() => onRemovePress()}>
+            <Text style={styles.buttonText}>{strings.remove}</Text>
+          </TouchableOpacity>
+        )}
       </View>
       <View style={styles.divider} />
     </>

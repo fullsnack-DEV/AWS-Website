@@ -133,15 +133,30 @@ export default function EditFilterModal({
       }, []);
 
       const registerSportNames = result.map((item) => item.sport_name);
-      // const removedDeactivatedSport =
+
+      const PlayingsportNames = (userSport.payload?.registered_sports || [])
+        .filter((item) => item.is_active === true)
+        .map((item) => item.sport_name ?? item.sport);
+
+      const refreSportNames = (userSport.payload?.referee_data || [])
+        .filter((item) => item.is_active === true)
+        .map((item) => item.sport_name);
+
+      const scoreKeeperSportNames = (userSport.payload?.scorekeeper_data || [])
+        .filter((item) => item.is_active === true)
+        .map((item) => item.sport_name);
+
       const removedDeactivatedSport = registerSportNames.filter(
         (sportName) =>
-          !registerButDeactivated.some(
+          (!registerButDeactivated.some(
             (item) =>
               item?.sport === sportName || item?.sport_name === sportName,
           ) &&
-          !refreeRegisterButDeactivated.includes(sportName) &&
-          !scoreKeeperRegisterButDeactivated.includes(sportName),
+            !refreeRegisterButDeactivated.includes(sportName) &&
+            !scoreKeeperRegisterButDeactivated.includes(sportName)) ||
+          (PlayingsportNames.includes(sportName) &&
+            refreSportNames.includes(sportName) &&
+            scoreKeeperSportNames.includes(sportName)),
       );
 
       const commonObjects = favsport.filter(
@@ -154,7 +169,6 @@ export default function EditFilterModal({
         setAddedsport([...result, ...commonObjects]);
       }
 
-      // Now batch the state updates into a single call
       setLoading(false);
       setFavSport(sportList);
       setsports(sportList);

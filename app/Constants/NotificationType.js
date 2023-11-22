@@ -81,6 +81,9 @@ const NotificationType = {
 
   // follow Request
   followRequest: 'followRequest',
+  // member profile change
+  memberProfileChanged: 'memberProfileChanged',
+  userAddedProfile: 'userAddedSportProfile',
 };
 
 export default NotificationType;

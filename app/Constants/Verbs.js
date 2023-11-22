@@ -209,6 +209,7 @@ const Verbs = {
   channelMember: 'channel_member',
   member: 'member',
   admin: 'admin',
+  is_active: 'is_active',
 };
 
 export default Verbs;

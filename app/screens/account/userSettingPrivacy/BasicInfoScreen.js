@@ -108,10 +108,10 @@ export default function BasicInfoScreen({navigation}) {
       const bodyParams = {...userInfo};
 
       updateUserProfile(bodyParams, authContext)
-        .then(async (response) => {
+        .then((response) => {
           navigation.goBack();
 
-          await Utility.setAuthContextData(response.payload, authContext);
+          Utility.setAuthContextData(response.payload, authContext);
           setloading(false);
         })
         .catch((e) => {

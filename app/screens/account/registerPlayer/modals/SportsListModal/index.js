@@ -327,11 +327,11 @@ const SportsListModal = ({
           />
         </TCKeyboardView>
       </CustomModalWrapper>
+
       <MemberListModal
         isVisible={memberListModal}
         title={strings.createTeamText}
         closeList={() => {
-          closeList();
           setMemberListModal(false);
         }}
         doubleSport={doubleSport}

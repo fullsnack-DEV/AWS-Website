@@ -46,6 +46,7 @@ import ActivityLoader from '../../components/loader/ActivityLoader';
 import InviteMemberModal from '../../components/InviteMemberModal';
 import {getDataForNextScreen} from '../localhome/LocalHomeUtils';
 import {locationType} from '../../utils/constant';
+import SportActivitiesModal from './components/SportActivitiesModal';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -64,6 +65,7 @@ const HomeScreen = ({navigation, route}) => {
   const [settingObject, setSettingObject] = useState();
   const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
   const [loggedInGroupMembers, setLoggedInGroupMembers] = useState([]);
+  const [visibleSportActivities, setVisibleSportAcitivities] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -209,28 +211,19 @@ const HomeScreen = ({navigation, route}) => {
 
     switch (option) {
       case strings.sportActivity:
-        navigation.navigate('SportActivitiesScreen', {
-          isAdmin,
-          uid: route.params?.uid ?? authContext.uid,
-        });
+        setVisibleSportAcitivities(true);
+
         break;
 
       case strings.recruitingMembers:
-        navigation.navigate('App', {
-          screen: 'Members',
+        navigation.navigate('AccountStack', {
+          screen: 'RecruitingMemberScreen',
           params: {
-            groupID: route.params.uid,
-            groupObj: currentUserData,
-            showBackArrow: true,
-          },
-        });
-        navigation.navigate('RecruitingMemberScreen', {
-          comeFrom: 'HomeScreen',
-          routeParams: {
             uid: authContext.entity.uid,
             role: authContext.entity.role,
           },
         });
+
         break;
 
       case strings.blockThisAccount:
@@ -628,6 +621,13 @@ const HomeScreen = ({navigation, route}) => {
         onCreate={(option) => {
           console.log({option});
         }}
+      />
+
+      <SportActivitiesModal
+        isVisible={visibleSportActivities}
+        onCloseModal={() => setVisibleSportAcitivities(false)}
+        isAdmin={isAdmin}
+        uid={route.params?.uid ?? authContext.uid}
       />
     </SafeAreaView>
   );

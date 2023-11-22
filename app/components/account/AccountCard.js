@@ -23,6 +23,8 @@ const AccountCard = ({
   notificationCount = 0,
   onPressCancelRequest = () => {},
   loading = false,
+  pressIn = () => {},
+  pressOut = () => {},
 }) => {
   const [sportsName, setSportsName] = useState('');
 
@@ -50,7 +52,11 @@ const AccountCard = ({
   };
 
   return (
-    <Pressable style={[styles.parent, containerStyle]} onPress={onPress}>
+    <Pressable
+      style={[styles.parent, containerStyle]}
+      onPressIn={pressIn}
+      onPressOut={pressOut}
+      onPress={onPress}>
       <GroupIcon
         entityType={entityData.entity_type}
         groupName={entityData.group_name}

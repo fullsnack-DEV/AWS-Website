@@ -92,6 +92,7 @@ export default function MembersProfileScreen({navigation, route}) {
   const [memberID] = useState(route?.params?.memberID);
   const [whoSeeID] = useState(route?.params?.whoSeeID);
   const [members, setMembers] = useState(route.params?.members);
+  const [teamSportType] = useState(route?.params?.group_sport_type);
   const [visibleRefranceModal, setVisibleRefranceModal] = useState(false);
   const [visibleNotesModal, setVisibleNotesModal] = useState(false);
   const [memberInfo, setMemberInfo] = useState({});
@@ -757,7 +758,7 @@ export default function MembersProfileScreen({navigation, route}) {
             <View
               pointerEvents={
                 memberDetail.connected
-                  ? hideAdminPrev
+                  ? hideAdminPrev || teamSportType === Verbs.sportTypeDouble
                     ? 'none'
                     : 'auto'
                   : 'none'
@@ -766,8 +767,9 @@ export default function MembersProfileScreen({navigation, route}) {
                 styles.checkBoxContainer,
                 {
                   marginBottom: 35,
+
                   opacity: memberDetail.connected
-                    ? hideAdminPrev
+                    ? hideAdminPrev || teamSportType === Verbs.sportTypeDouble
                       ? 0.3
                       : 1
                     : 0.3,
@@ -794,10 +796,17 @@ export default function MembersProfileScreen({navigation, route}) {
             </View>
             <View>
               <Text style={styles.checkBoxTitle}>{strings.roles}</Text>
-              <View style={styles.checkBoxContainer}>
+              <View
+                style={[
+                  styles.checkBoxContainer,
+                  {
+                    opacity: teamSportType === Verbs.sportTypeDouble ? 0.3 : 1,
+                  },
+                ]}>
                 <Text style={styles.checkBoxItemText}>{strings.player}</Text>
 
                 <TouchableOpacity
+                  disabled={teamSportType === Verbs.sportTypeDouble}
                   onPress={() => {
                     setGroupMemberDetail({
                       ...groupMemberDetail,

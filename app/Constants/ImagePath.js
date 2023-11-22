@@ -570,6 +570,7 @@ const images = {
   accountLogIcon: require('../assets/images/accountLogIcon.png'),
   incomingMatchOfferSettingsIcon: require('../assets/images/incomingMatchOfferSettingsIcon.png'),
   // incomingMatchOfferSettingsIcon.png
+  accountScreenLogo: require('../assets/images/accountarrow.png'),
 };
 
 export default images;

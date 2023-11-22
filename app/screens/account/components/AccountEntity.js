@@ -59,9 +59,10 @@ const AccountEntity = ({
             </Text>
             <View style={styles.arrowIcon}>
               <Image
-                source={images.nextArrow}
+                source={images.accountScreenLogo}
                 style={[
                   styles.image,
+                  {resizeMode: 'cover', height: 25, width: 25, marginTop: -3},
                   isBgImage ? {tintColor: colors.whiteColor} : {},
                 ]}
               />
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
   parent: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.blocklightgraycolor,
-    backgroundColor: colors.lightGrayBackground,
+    backgroundColor: colors.offwhite,
   },
   innerView: {
     paddingLeft: 20,
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     alignItems: 'center',
-    marginLeft: 5,
+    marginLeft: 6,
   },
   image: {
     width: '100%',

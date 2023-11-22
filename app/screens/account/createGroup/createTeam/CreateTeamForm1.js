@@ -48,7 +48,7 @@ export default function CreateTeamForm1({navigation, route}) {
 
   const [teamName, setTeamName] = useState('');
   const [homeCity, setHomeCity] = useState('');
-  const [city, setCity] = useState('jjl');
+  const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
   const [visibleLocationModal, setVisibleLocationModal] = useState();
@@ -706,7 +706,10 @@ export default function CreateTeamForm1({navigation, route}) {
                     items={minAgeValue}
                     onValueChange={(value) => {
                       setMinAge(value);
-                      setMaxAge(0);
+
+                      if (value > maxAge) {
+                        setMaxAge(0);
+                      }
                     }}
                     useNativeAndroidPickerStyle={false}
                     style={{
@@ -740,6 +743,7 @@ export default function CreateTeamForm1({navigation, route}) {
                       },
                     }}
                     value={minAge}
+                    fixAndroidTouchableBug={true}
                     Icon={() => (
                       <Image
                         source={images.dropDownArrow}
@@ -759,6 +763,7 @@ export default function CreateTeamForm1({navigation, route}) {
                 <Pressable
                   style={{
                     width: '45%',
+
                     justifyContent: 'flex-start',
                   }}>
                   <RNPickerSelect
@@ -767,6 +772,7 @@ export default function CreateTeamForm1({navigation, route}) {
                       label: strings.maxPlaceholder,
                       value: 0,
                     }}
+                    fixAndroidTouchableBug={true}
                     items={maxAgeValue}
                     onValueChange={(value) => {
                       setMaxAge(value);

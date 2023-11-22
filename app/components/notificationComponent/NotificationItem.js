@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
+
 import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 import {strings} from '../../../Localization/translation';
@@ -20,10 +21,10 @@ function NotificationItem({
   onPressCard,
   isTrash = false,
   entityType = 'user',
+  onButtonPress = () => {},
 }) {
   const [dataDictionary, setDataDictionary] = useState();
   // console.log('DATA-->>', dataDictionary)
-
 
   useEffect(() => {
     parseNotification(data).then((response) => {
@@ -107,6 +108,20 @@ function NotificationItem({
                   </Text>
                 </Text>
               )}
+              {(data.activities[0].verb.includes(
+                NotificationType.memberProfileChanged,
+              ) ||
+                data.activities[0].verb.includes(
+                  NotificationType.userAddedProfile,
+                )) && (
+                <TouchableOpacity
+                  onPress={() => onButtonPress(data.activities[0].foreign_id)}
+                  style={styles.buttonStyles}>
+                  <Text style={styles.textStyle}>
+                    {strings.goToSportActivityText}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </TouchableOpacity>
@@ -145,6 +160,22 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     fontSize: 12,
     color: colors.userPostTimeColor,
+  },
+  buttonStyles: {
+    alignSelf: 'center',
+    backgroundColor: colors.lightGrey,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+    marginTop: 10,
+    borderRadius: 5,
+  },
+  textStyle: {
+    fontSize: 12,
+    fontFamily: fonts.RBold,
+    textTransform: 'uppercase',
+    lineHeight: 14,
   },
 });
 

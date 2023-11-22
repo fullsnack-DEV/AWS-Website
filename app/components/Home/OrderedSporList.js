@@ -4,11 +4,11 @@ import {
   View,
   StyleSheet,
   Text,
-  FlatList,
   Pressable,
   Image,
   TouchableOpacity,
 } from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import ToggleSwitch from 'toggle-switch-react-native';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';

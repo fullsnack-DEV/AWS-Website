@@ -325,21 +325,6 @@ export default function LookingForChallengeScreen({navigation, route}) {
         },
       };
 
-      availableForchallengeQuery.query.bool.must.push({
-        term: {
-          'sport.keyword': {
-            value: `${route.params.teamSportData.sport.toLowerCase()}`,
-          },
-        },
-      });
-      availableForchallengeQuery.query.bool.must.push({
-        term: {
-          'sport_type.keyword': {
-            value: `${route.params.teamSportData.sport.toLowerCase()}`,
-          },
-        },
-      });
-
       if (filerdata.location !== strings.worldTitleText) {
         availableForchallengeQuery.query.bool.must.push({
           multi_match: {
@@ -649,15 +634,18 @@ export default function LookingForChallengeScreen({navigation, route}) {
             showStar={item.entity_type === Verbs.entityTypeTeam}
             sportFilter={filters}
             onPress={() => {
-              navigation.navigate('HomeScreen', {
-                uid: ['user', 'player']?.includes(item?.entity_type)
-                  ? item?.user_id
-                  : item?.group_id,
-                role: ['user', 'player']?.includes(item?.entity_type)
-                  ? 'user'
-                  : item.entity_type,
-                backButtonVisible: true,
-                menuBtnVisible: false,
+              navigation.push('HomeStack', {
+                screen: 'HomeScreen',
+                params: {
+                  uid: ['user', 'player']?.includes(item?.entity_type)
+                    ? item?.user_id
+                    : item?.group_id,
+                  role: ['user', 'player']?.includes(item?.entity_type)
+                    ? 'user'
+                    : item.entity_type,
+                  backButtonVisible: true,
+                  menuBtnVisible: false,
+                },
               });
             }}
             onPressChallengeButton={(dataObj) => {

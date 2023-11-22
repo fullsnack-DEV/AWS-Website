@@ -3216,6 +3216,10 @@ export default {
   AllLevelesText: 'en_All levels',
 
   nCreatedThisGroup: `en_{0} created this group.`,
+  teamsTiteInfo: 'en_Teams',
+
+  noActivityLog: 'en_No Activity Log',
+  goToSportActivityText: 'en_Go to Sport Activity Page',
 
   noActivityLog: 'en_No Activity Log',
 };

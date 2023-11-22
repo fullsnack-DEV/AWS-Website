@@ -31,14 +31,6 @@ const ChallengeButton = ({
   }, [sportObj]);
 
   useEffect(() => {
-    const playingSport = (loggedInEntity.registered_sports ?? []).filter(
-      (item) =>
-        item.sport === sportObj?.sport &&
-        item.sport_type === sportObj?.sport_type,
-    );
-
-    setIsUserWithSameSport(playingSport.length > 0);
-
     if (
       sportObj.sport_type === Verbs.singleSport &&
       loggedInEntity.entity_type === Verbs.entityTypePlayer
@@ -59,6 +51,12 @@ const ChallengeButton = ({
       setIsReferee(false);
       setIsUserWithSameSport(false);
     }
+
+    const playingSport = (loggedInEntity.registered_sports ?? []).filter(
+      (item) => item.sport === sportObj?.sport,
+    );
+
+    setIsUserWithSameSport(playingSport.length > 0);
   }, [loggedInEntity, sportObj]);
 
   const getModalOptions = () => (
@@ -136,7 +134,8 @@ const ChallengeButton = ({
       sportObj?.type === Verbs.entityTypeScorekeeper
     ) {
       if (
-        loggedInEntity.entity_type === Verbs.entityTypePlayer &&
+        (loggedInEntity.entity_type === Verbs.entityTypePlayer ||
+          loggedInEntity.entity_type === Verbs.entityTypeUser) &&
         isUserWithSameSport &&
         isAvailable
       ) {
