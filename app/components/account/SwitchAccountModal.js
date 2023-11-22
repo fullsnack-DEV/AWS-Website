@@ -79,6 +79,7 @@ const SwitchAccountModal = ({
 
   const handleSwitchAccount = async (entity) => {
     if (entity.request_id) {
+      setIsPressed(false);
       Alert.alert(
         Platform.OS === 'android' ? '' : strings.requestSwitchModalAlertMessage,
         Platform.OS === 'android' ? strings.requestSwitchModalAlertMessage : '',
@@ -90,6 +91,7 @@ const SwitchAccountModal = ({
       );
     } else {
       setShowLoader(true);
+      setIsPressed(false);
       setSelectedAccount(entity);
       await onSwitchProfile(entity);
     }
@@ -221,14 +223,6 @@ const SwitchAccountModal = ({
     </>
   );
 
-  const handlePressIn = () => {
-    setIsPressed(true);
-  };
-
-  const handlePressOut = () => {
-    setIsPressed(false);
-  };
-
   useEffect(() => {
     if (isVisible) {
       const index = accountList.findIndex(
@@ -270,28 +264,20 @@ const SwitchAccountModal = ({
                   },
                 ]}
                 onPress={() => {
-                  setIsPressed(true);
                   setcheckIndex(index);
                   if (
                     authContext.entity.uid === item.user_id ||
                     authContext.entity.uid === item.group_id
                   ) {
+                    setIsPressed(false);
                     return;
                   }
 
                   setTimeout(() => {
                     handleSwitchAccount(item);
-                    setIsPressed(false);
                   }, 100);
                 }}>
                 <AccountCard
-                  pressIn={() => handlePressIn()}
-                  pressOut={() => {
-                    setTimeout(() => {
-                      setcheckIndex(index);
-                      handlePressOut();
-                    }, 100);
-                  }}
                   entityData={item}
                   sportList={authContext.sports}
                   containerStyle={{
@@ -303,11 +289,13 @@ const SwitchAccountModal = ({
                     authContext,
                   )}
                   onPress={() => {
+                    setIsPressed(true);
                     setcheckIndex(index);
                     if (
                       authContext.entity.uid === item.user_id ||
                       authContext.entity.uid === item.group_id
                     ) {
+                      setIsPressed(false);
                       return;
                     }
 
@@ -320,7 +308,23 @@ const SwitchAccountModal = ({
                   }}
                   loading={loading}
                 />
-                <View style={styles.radioIcon}>
+                <Pressable
+                  style={styles.radioIcon}
+                  onPress={() => {
+                    setIsPressed(true);
+                    setcheckIndex(index);
+                    if (
+                      authContext.entity.uid === item.user_id ||
+                      authContext.entity.uid === item.group_id
+                    ) {
+                      setIsPressed(false);
+                      return;
+                    }
+
+                    setTimeout(() => {
+                      handleSwitchAccount(item);
+                    }, 100);
+                  }}>
                   <Image
                     source={
                       index === checkIndex
@@ -329,7 +333,7 @@ const SwitchAccountModal = ({
                     }
                     style={styles.image}
                   />
-                </View>
+                </Pressable>
               </TouchableOpacity>
               <View style={styles.dividor} />
             </>
