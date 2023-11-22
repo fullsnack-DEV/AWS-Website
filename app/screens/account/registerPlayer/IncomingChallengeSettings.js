@@ -87,6 +87,8 @@ export default function IncomingChallengeSettings({navigation, route}) {
     {key: settingType === 'Set' ? strings.setGamesDuration : ''},
     {key: strings.venue},
     {key: strings.gameRulesTitle},
+    // {key: strings.Referee},
+    // {key: strings.scorekeeperText},
   ];
 
   useEffect(() => {
@@ -430,12 +432,13 @@ export default function IncomingChallengeSettings({navigation, route}) {
       patchPlayer(body, authContext)
         .then(async (response) => {
           if (response.status === true) {
-            await Utility.setAuthContextData(response.payload, authContext);
             setCongratulationsModal(true);
+            await Utility.setAuthContextData(response.payload, authContext);
+            setloading(false);
           } else {
             Alert.alert(strings.appName, response.messages);
+            setloading(false);
           }
-          setloading(false);
         })
         .catch((e) => {
           setloading(false);
@@ -652,7 +655,7 @@ export default function IncomingChallengeSettings({navigation, route}) {
           navigation.navigate('CreateTeamForm1');
         }}
         goToSportActivityHome={({sport, sportType}) => {
-          setCongratulationsModal(false);
+          // setCongratulationsModal(false);
 
           navigation.navigate('HomeStack', {
             screen: 'SportActivityHome',

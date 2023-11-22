@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import fonts from '../Constants/Fonts';
 import Verbs from '../Constants/Verbs';
 import {strings} from '../../Localization/translation';
 import GroupIcon from './GroupIcon';
+import {JoinPrivacy} from '../Constants/GeneralConstants';
 
 function TCTeamSearchView({
   onPress,
@@ -24,45 +25,98 @@ function TCTeamSearchView({
   onPressChallengeButton,
   onPressJoinButton,
   sportFilter,
+  joinedGroups = {teams: [], clubs: []},
 }) {
-  let isChallengeButtonShow = false;
-  let isJoinButton = false;
-  let sports = [];
+  const [sportsList, setSportsList] = useState([]);
 
-  const filterSport = () => {
-    // Case - With Filter
-    if (sportFilter.sport !== strings.allSport) {
-      sports = sports.filter((value) => {
-        if (value.sport_name === sportFilter.sport_name) {
-          return value;
-        }
-        return false;
-      });
+  useEffect(() => {
+    if (data.entity_type === Verbs.entityTypeClub) {
+      let list = [];
+      if (sportFilter.sport !== strings.allSport) {
+        list = data.sports.filter(
+          (value) => value.sport_name === sportFilter.sport_name,
+        );
+      } else {
+        list = [...data.sports];
+      }
+      setSportsList(list);
     }
-  };
-  if (data.entity_type === Verbs.entityTypeTeam) {
+  }, [data, sportFilter.sport_name, sportFilter.sport]);
+
+  const getButtonTitle = () => {
+    const loggedInEntity = authContext.entity;
+
     if (
-      authContext.entity.role === Verbs.entityTypeUser &&
-      authContext.user?.teamIds?.includes(data.group_id) === false
+      data.entity_type === Verbs.entityTypeTeam &&
+      data.who_can_join_for_member !== JoinPrivacy.inviteOnly
     ) {
-      isJoinButton = true;
+      if (
+        loggedInEntity.uid !== data.group_id &&
+        data.setting?.availibility === Verbs.on &&
+        data.sport === loggedInEntity.obj.sport &&
+        loggedInEntity.role === Verbs.entityTypeTeam
+      ) {
+        return strings.challenge;
+      }
+      if (
+        ![Verbs.entityTypeClub, Verbs.entityTypeTeam].includes(
+          loggedInEntity.role,
+        ) &&
+        !joinedGroups.teams.includes(data.group_id)
+      ) {
+        return strings.join;
+      }
     } else if (
-      authContext.entity.role === Verbs.entityTypeTeam &&
-      data.setting?.availibility === Verbs.on &&
-      authContext.entity.obj.sport === data.sport &&
-      authContext.entity.uid !== data.group_id
+      data.entity_type === Verbs.entityTypeClub &&
+      data.who_can_join_for_member !== JoinPrivacy.inviteOnly
     ) {
-      isChallengeButtonShow = true;
+      if (
+        loggedInEntity.role === Verbs.entityTypeTeam &&
+        !joinedGroups.clubs.includes(data.group_id)
+      ) {
+        return strings.join;
+      }
+      if (
+        loggedInEntity.role !== Verbs.entityTypeClub &&
+        !joinedGroups.clubs.includes(data.group_id)
+      ) {
+        return strings.join;
+      }
     }
-  } else if (data.entity_type === Verbs.entityTypeClub) {
-    data.sports.map((value) => sports.push(value));
-    filterSport();
-    if (authContext.entity.role === Verbs.entityTypeUser) {
-      isJoinButton = true;
-    } else if (authContext.entity.role === Verbs.entityTypeTeam) {
-      isJoinButton = true;
+    return '';
+  };
+
+  const renderJoinOrChallengeButton = () => {
+    const buttonTitle = getButtonTitle();
+
+    if (buttonTitle === strings.join) {
+      return (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            onPressJoinButton(data.group_id);
+          }}>
+          <View style={styles.joinBtnContainer}>
+            <Text style={styles.joinBtn}>{strings.join}</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      );
     }
-  }
+
+    if (buttonTitle === strings.challenge) {
+      return (
+        <TouchableWithoutFeedback
+          onPress={() => {
+            onPressChallengeButton(data);
+          }}>
+          <View style={styles.challengeBtnContainer}>
+            <Text style={styles.challengeBtn}>{strings.challenge}</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <TouchableOpacity onPress={onPress}>
@@ -88,10 +142,9 @@ function TCTeamSearchView({
           {isClub ? (
             <Text style={styles.locationText} numberOfLines={1}>
               {data.city} ·{' '}
-              {sports.length === 1 &&
-                sports[0].sport_name?.charAt(0).toUpperCase() +
-                  sports[0].sport_name?.slice(1)}
-              {sports.length > 1 && format(strings.sportsText, sports.length)}
+              {sportsList.length === 1 && sportsList[0].sport_name}
+              {sportsList.length > 1 &&
+                format(strings.sportsText, sportsList.length)}
             </Text>
           ) : (
             <View style={{flexDirection: 'row'}}>
@@ -105,10 +158,7 @@ function TCTeamSearchView({
                 style={styles.locationText}
                 numberOfLines={1}
                 ellipsizeMode={'tail'}>
-                {' · ' +
-                  ` ${data.sport_name
-                    ?.charAt(0)
-                    .toUpperCase()}${data.sport_name?.slice(1)}`}
+                {` · ${data.sport_name}`}
               </Text>
             </View>
           )}
@@ -126,44 +176,7 @@ function TCTeamSearchView({
             </Text>
           )}
         </View>
-        {isJoinButton && (
-          <TouchableWithoutFeedback
-            onPress={() => {
-              onPressJoinButton(data.group_id);
-            }}>
-            <View
-              style={{
-                backgroundColor: colors.lightGrey,
-                width: 75,
-                height: 25,
-                borderRadius: 5,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginTop: 5,
-              }}>
-              <Text style={styles.joinBtn}>{strings.join}</Text>
-            </View>
-          </TouchableWithoutFeedback>
-        )}
-        {isChallengeButtonShow && (
-          <TouchableWithoutFeedback
-            onPress={() => {
-              onPressChallengeButton(data);
-            }}>
-            <View
-              style={{
-                backgroundColor: colors.darkYellowColor,
-                width: 75,
-                height: 25,
-                borderRadius: 5,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginTop: 5,
-              }}>
-              <Text style={styles.challengeBtn}>{strings.challenge}</Text>
-            </View>
-          </TouchableWithoutFeedback>
-        )}
+        {renderJoinOrChallengeButton()}
       </View>
     </TouchableOpacity>
   );
@@ -221,6 +234,25 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.themeColor,
     alignSelf: 'center',
+  },
+  joinBtnContainer: {
+    backgroundColor: colors.lightGrey,
+    width: 75,
+    height: 25,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 5,
+  },
+  challengeBtnContainer: {
+    backgroundColor: colors.darkYellowColor,
+    // width: 75,
+    height: 25,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 5,
+    paddingHorizontal: 10,
   },
 });
 

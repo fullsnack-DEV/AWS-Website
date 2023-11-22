@@ -67,7 +67,8 @@ const ChannelView = ({channel, latestMessagePreview}) => {
           <CustomAvatar
             channel={channel}
             imageStyle={{backgroundColor: colors.whiteColor}}
-            iconTextStyle={{fontSize: 12}}
+            iconTextStyle={{fontSize: 12, marginTop: 0.8}}
+            placeHolderStyle={{right: -6, bottom: -1}}
           />
           <View style={{flex: 1}}>
             <View style={styles.channelNameContainer}>

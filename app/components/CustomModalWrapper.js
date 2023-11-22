@@ -26,6 +26,7 @@ const CustomModalWrapper = ({
   title = '',
   containerStyle = {},
   closeModal = () => {},
+  leftIconPress = () => {},
   onRightButtonPress = () => {},
   headerRightButtonText = '',
   modalType = ModalTypes.default,
@@ -43,6 +44,7 @@ const CustomModalWrapper = ({
   showSportIcon = false,
   sportIcon = null,
   isRightIconText = true,
+  isRightButtonDisabled = false,
 }) => {
   const modalRef = useRef();
   const navigation = useNavigation();
@@ -55,15 +57,15 @@ const CustomModalWrapper = ({
     if (isVisible) {
       const type = navigation.getState().type;
 
-      let modalHeight =
-        Platform.OS === 'android'
-          ? layout.height * 0.049
-          : layout.height * 0.05;
+      let top_margin = 50;
 
       if (type === 'tab') {
-        modalHeight = modalHeight + bottom + top;
+        top_margin = top_margin + bottom + top;
+        if (Platform.OS === 'android') {
+          top_margin += 50;
+        }
       }
-      setTopMargin(modalHeight);
+      setTopMargin(top_margin);
     }
   }, [isVisible, navigation, bottom, top]);
 
@@ -102,6 +104,7 @@ const CustomModalWrapper = ({
             leftIconPress={() => {
               modalRef?.current?.dismiss();
               closeModal();
+              leftIconPress();
             }}
             title={title}
             isRightIconText={isRightIconText}
@@ -115,6 +118,7 @@ const CustomModalWrapper = ({
             sportIcon={sportIcon}
             rightIcon1={rightIcon1}
             rightIcon1Press={rightIcon1Press}
+            isRightButtonDisabled={isRightButtonDisabled}
           />
         );
 

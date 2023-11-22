@@ -73,7 +73,7 @@ const SettingsMenuItem = ({
           return (
             <Text style={styles.normalStyle}>
               {format(
-                // strings.nReferees,
+                strings.nReferees,
                 settingObject.responsible_for_referee?.who_secure
                   ? settingObject?.responsible_for_referee?.who_secure?.length
                   : strings.no,
@@ -85,7 +85,7 @@ const SettingsMenuItem = ({
           return (
             <Text style={styles.normalStyle}>
               {format(
-                // strings.nScorekeeper,
+                strings.nScorekeeperText,
                 settingObject.responsible_for_scorekeeper?.who_secure
                   ? settingObject.responsible_for_scorekeeper.who_secure?.length
                   : strings.no,

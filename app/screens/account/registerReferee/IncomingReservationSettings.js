@@ -273,7 +273,7 @@ const IncomingReservationSettings = ({navigation, route}) => {
         entityType={entityType}
         sport={settingObj.sport}
         goToSportActivityHome={() => {
-          setShowCongratulationsModal(false);
+          // setShowCongratulationsModal(false);
           navigation.navigate('HomeStack', {
             screen: 'SportActivityHome',
             params: {

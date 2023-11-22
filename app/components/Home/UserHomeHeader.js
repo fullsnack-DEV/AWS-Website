@@ -70,7 +70,7 @@ const UserHomeHeader = ({
 
       setButtonTitle(name);
     },
-    [isAdmin, currentUserData, loggedInEntity, currentUserData.follow_request],
+    [isAdmin, currentUserData, loggedInEntity],
   );
 
   useEffect(() => {
@@ -118,7 +118,14 @@ const UserHomeHeader = ({
         break;
 
       case strings.followReqSentText:
-        setOptions([strings.cancelFollowReqText]);
+        if (
+          loggedInEntity.role === Verbs.entityTypePlayer ||
+          loggedInEntity.role === Verbs.entityTypeUser
+        ) {
+          setOptions([strings.cancelFollowReqText]);
+        } else {
+          setOptions([strings.cancelRequestText]);
+        }
         setShowModal(true);
         break;
 
@@ -204,7 +211,6 @@ const UserHomeHeader = ({
               buttonTitle === strings.invite
                 ? {color: colors.darkYellowColor}
                 : {},
-
             ]}>
             {buttonTitle}
           </Text>

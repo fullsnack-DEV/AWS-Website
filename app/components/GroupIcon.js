@@ -1,7 +1,6 @@
 // @flow
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import FastImage from 'react-native-fast-image';
+import {View, StyleSheet, Text, Image} from 'react-native';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
@@ -41,14 +40,14 @@ const GroupIcon = ({
 
   return imageUrl ? (
     <View style={[styles.parent, containerStyle]}>
-      <FastImage
+      <Image
         source={typeof imageUrl === 'string' ? {uri: imageUrl} : imageUrl}
         style={styles.image}
         resizeMode="contain"
       />
       {getPlaceholder().placeHolder ? (
         <View style={[styles.placeHolder, placeHolderStyle]}>
-          <FastImage
+          <Image
             source={getPlaceholder().placeHolder}
             style={styles.image}
             resizeMode="contain"
@@ -69,7 +68,7 @@ const GroupIcon = ({
         },
         containerStyle,
       ]}>
-      <FastImage
+      <Image
         source={getPlaceholder().background}
         style={[
           styles.image,
@@ -91,7 +90,7 @@ const GroupIcon = ({
       ) : null}
       {getPlaceholder().placeHolder ? (
         <View style={[styles.placeHolder, placeHolderStyle]}>
-          <FastImage
+          <Image
             source={getPlaceholder().placeHolder}
             style={styles.image}
             resizeMode="contain"

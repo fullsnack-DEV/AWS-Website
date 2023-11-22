@@ -2654,7 +2654,6 @@ export default {
   sendRequesttxt3:
     'en_ You and your partner will be the initial admins of the team, but you can add more admins of  the team later.',
   sendRequestBtnTxt: 'en_SEND REQUEST',
-  requestSent: 'en_Request Sent',
   sendrequestToCreateTeam: 'en_Send Request to Create Team',
   responseToRequesttxt1:
     'en_{0} sent you an request to create a team together. When you accept this request the team will be created ',
@@ -3218,8 +3217,5 @@ export default {
 
   nCreatedThisGroup: `en_{0} created this group.`,
 
-
-
   noActivityLog: 'en_No Activity Log',
-
 };

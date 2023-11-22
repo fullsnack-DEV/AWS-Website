@@ -341,7 +341,7 @@ const RegisterPlayer = ({navigation, route}) => {
         isVisible={showCongratulationsModal}
         settingsObj={selectedSport?.default_setting}
         closeModal={() => {
-          setShowCongratulationsModal(true);
+          setShowCongratulationsModal(false);
           if (route.params?.comeFrom) {
             navigation.navigate(route.params.comeFrom, {
               ...route.params.routeParams,
@@ -418,10 +418,13 @@ const RegisterPlayer = ({navigation, route}) => {
           });
         }}
         searchTeam={(filters) => {
-          navigation.navigate('RecruitingPlayerScreen', {
-            filters: {
-              ...filters,
-              groupTeam: strings.teamstitle,
+          navigation.navigate('LocalHomeStack', {
+            screen: 'RecruitingPlayerScreen',
+            params: {
+              filters: {
+                ...filters,
+                groupTeam: strings.teamstitle,
+              },
             },
           });
         }}
@@ -431,10 +434,22 @@ const RegisterPlayer = ({navigation, route}) => {
           // });
         }}
         createTeam={() => {
-          navigation.navigate('CreateTeamForm1');
+          navigation.navigate('AccountStack', {
+            screen: 'CreateTeamForm1',
+            params: {
+              sportData: {...selectedSport},
+              roleValues: {
+                is_player: false,
+                is_coach: false,
+                is_parent: false,
+                is_other: false,
+                other_role: false,
+              },
+            },
+          });
         }}
         goToSportActivityHome={({sport, sportType}) => {
-          setShowCongratulationsModal(false);
+          // setShowCongratulationsModal(false);
           navigation.navigate('HomeStack', {
             screen: 'SportActivityHome',
             params: {

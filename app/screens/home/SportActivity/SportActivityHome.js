@@ -74,8 +74,8 @@ const SportActivityHome = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const [showSectionModal, setShowSetionModal] = useState(false);
+  const [showWrapperModal, setShowWrapperModal] = useState(false);
   const lookingForModalRef = useRef();
-  const settingWrraperModalRef = useRef();
   const privacySettingModalRef = useRef();
 
   const getUserData = useCallback(
@@ -200,7 +200,8 @@ const SportActivityHome = ({navigation, route}) => {
       });
     } else {
       setSettingModalObj({option: sectionName, title});
-      settingWrraperModalRef.current?.present();
+
+      setShowWrapperModal(true);
       // navigation.navigate('HomeStack', {
       //   screen: 'EditWrapperScreen',
       //   params: {
@@ -667,10 +668,9 @@ const SportActivityHome = ({navigation, route}) => {
       />
 
       <EditWrapperScreen
-        modalRef={settingWrraperModalRef}
+        isVisible={showWrapperModal}
         closeModal={() => {
-          settingWrraperModalRef.current.dismiss();
-          // setShowSetionModal(false);
+          setShowWrapperModal(false);
         }}
         entityType={entityType}
         section={settingModalObj.option}

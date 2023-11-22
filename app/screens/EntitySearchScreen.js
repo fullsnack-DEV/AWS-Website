@@ -28,6 +28,7 @@ import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
+import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import AuthContext from '../auth/context';
 import {getStorage} from '../utils';
@@ -46,7 +47,7 @@ import TCTeamSearchView from '../components/TCTeamSearchView';
 import TCRecentMatchCard from '../components/TCRecentMatchCard';
 import TCTagsFilter from '../components/TCTagsFilter';
 import ActivityLoader from '../components/loader/ActivityLoader';
-import {joinTeam} from '../api/Groups';
+import {getGroupDetails, getGroups, joinTeam} from '../api/Groups';
 import {inviteUser} from '../api/Users';
 import {acceptRequest, declineRequest} from '../api/Notificaitons';
 import {getGeocoordinatesWithPlaceName} from '../utils/location';
@@ -205,6 +206,36 @@ export default function EntitySearchScreen({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [smallLoader, setSmallLoader] = useState(false);
   const [snapPoints, setSnapPoints] = useState([]);
+  const isFocused = useIsFocused();
+  const [joinedGroups, setJoinedGroups] = useState({teams: [], clubs: []});
+
+  useEffect(() => {
+    if (isFocused && authContext.entity.role === Verbs.entityTypeTeam) {
+      getGroupDetails(authContext.entity.uid, authContext).then((response) => {
+        const list = response.payload.parent_groups ?? [];
+        setJoinedGroups({teams: [], clubs: [...list]});
+      });
+    }
+  }, [isFocused, authContext]);
+
+  useEffect(() => {
+    if (
+      isFocused &&
+      (authContext.entity.role !== Verbs.entityTypeTeam ||
+        authContext.entity.role !== Verbs.entityTypeClub)
+    ) {
+      getGroups(authContext)
+        .then((res) => {
+          const response = res.payload ?? {};
+          const joinedTeams = response.teams.map((item) => item.group_id);
+          const joinedClubs = response.clubs.map((item) => item.group_id);
+          setJoinedGroups({teams: joinedTeams, clubs: joinedClubs});
+        })
+        .catch((err) => {
+          console.log('err ==>', err);
+        });
+    }
+  }, [isFocused, authContext]);
 
   const handleBackPress = useCallback(() => {
     if (route.params?.parentStack) {
@@ -1449,6 +1480,22 @@ export default function EntitySearchScreen({navigation, route}) {
     ],
   );
 
+  const updateJoinedGroupDetails = (groupId) => {
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam &&
+      currentSubTab === strings.clubsTitleText
+    ) {
+      setJoinedGroups({
+        teams: [],
+        clubs: [...joinedGroups.clubs, groupId],
+      });
+    } else if (currentSubTab === strings.teamsTitleText) {
+      setJoinedGroups({teams: [...joinedGroups.teams, groupId]});
+    } else if (currentSubTab === strings.clubsTitleText) {
+      setJoinedGroups({clubs: [...joinedGroups.clubs, groupId]});
+    }
+  };
+
   const userJoinGroup = (groupId) => {
     setloading(true);
     const params = {};
@@ -1467,7 +1514,9 @@ export default function EntitySearchScreen({navigation, route}) {
                 text: strings.join,
                 onPress: () => {
                   joinTeam({...params, is_confirm: true}, groupId, authContext)
-                    .then(() => {})
+                    .then(() => {
+                      updateJoinedGroupDetails(groupId);
+                    })
                     .catch((error) => {
                       setTimeout(() => {
                         Alert.alert(strings.alertmessagetitle, error.message);
@@ -1529,6 +1578,8 @@ export default function EntitySearchScreen({navigation, route}) {
             {text: strings.okTitleText},
           ]);
         } else {
+          updateJoinedGroupDetails(groupId);
+
           Alert.alert(strings.alertmessagetitle, strings.acceptRequestMessage, [
             {text: strings.okTitleText},
           ]);
@@ -1887,6 +1938,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
                   setGroupData(item);
                 }}
+                joinedGroups={joinedGroups}
               />
             </View>
           </View>

@@ -1,13 +1,11 @@
 // @flow
-import React, {useContext, useEffect, useMemo, useState} from 'react';
-import {Alert, Dimensions, Platform, StatusBar} from 'react-native';
-import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import React, {useContext, useEffect, useState} from 'react';
+import {Alert} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import {patchPlayer} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import {setAuthContextData} from '../../../utils';
-import ScreenHeader from '../../../components/ScreenHeader';
 import EditBasicInfoScreen from './contentScreens/EditBasicInfoScreen';
 import EditBioScreen from './contentScreens/EditBioScreen';
 import EditHomeFacilityScreen from './contentScreens/EditHomeFacilityScreen';
@@ -15,16 +13,13 @@ import EditNTRPScreen from './contentScreens/EditNTRPScreen';
 import EditCertificateScreen from './contentScreens/EditCertificateScreen';
 import {getEntitySportList} from '../../../utils/sportsActivityUtils';
 import Verbs from '../../../Constants/Verbs';
-import {DEFAULT_NTRP} from '../../../Constants/GeneralConstants';
+import {DEFAULT_NTRP, ModalTypes} from '../../../Constants/GeneralConstants';
 import AvailableServiceAreas from './contentScreens/AvailableServiceAreas';
-import ModalBackDrop from '../../../components/ModalBackDrop';
-import colors from '../../../Constants/Colors';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
-
-const layout = Dimensions.get('window');
+import CustomModalWrapper from '../../../components/CustomModalWrapper';
 
 const EditWrapperScreen = ({
-  modalRef,
+  isVisible,
   closeModal = () => {},
   section,
   title,
@@ -243,50 +238,26 @@ const EditWrapperScreen = ({
     }
   };
 
-  const snapPoints = useMemo(
-    () => [layout.height - 40, layout.height - 40],
-    [],
-  );
-
   return (
-    <BottomSheetModalProvider>
-      <BottomSheetModal
-        onDismiss={closeModal}
-        ref={modalRef}
-        backgroundStyle={{
-          borderRadius: 10,
-          paddingTop: 0,
-        }}
-        index={1}
-        snapPoints={snapPoints}
-        enablePanDownToClose
-        enableDismissOnClose
-        backdropComponent={ModalBackDrop}
-        handleComponent={() => (
-          <ScreenHeader
-            sportIcon={sportIcon}
-            title={title}
-            leftIcon={images.backArrow}
-            leftIconPress={() => {
-              setSelectedCertificates(sportObj?.certificates ?? []);
-              closeModal();
-            }}
-            isRightIconText
-            rightButtonText={strings.save}
-            onRightButtonPress={handleSave}
-            isRightButtonDisabled={isRightButtonDisabled}
-          />
-        )}>
-        {Platform.OS === 'android' && (
-          <StatusBar
-            backgroundColor={colors.modalBackgroundColor}
-            barStyle="light-content"
-          />
-        )}
-        <ActivityLoader visible={loading} />
-        {renderView()}
-      </BottomSheetModal>
-    </BottomSheetModalProvider>
+    <CustomModalWrapper
+      isVisible={isVisible}
+      closeModal={closeModal}
+      containerStyle={{padding: 0}}
+      modalType={ModalTypes.style1}
+      sportIcon={sportIcon}
+      title={title}
+      backIcon={images.backArrow}
+      leftIconPress={() => {
+        setSelectedCertificates(sportObj?.certificates ?? []);
+        closeModal();
+      }}
+      isRightIconText
+      rightButtonText={strings.save}
+      onRightButtonPress={handleSave}
+      isRightButtonDisabled={isRightButtonDisabled}>
+      <ActivityLoader visible={loading} />
+      {renderView()}
+    </CustomModalWrapper>
   );
 };
 

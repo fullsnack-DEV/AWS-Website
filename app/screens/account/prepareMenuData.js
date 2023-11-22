@@ -256,7 +256,7 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
             member: [
               ...refereeingMenu,
               {
-                option: strings.addRefreeTitle,
+                option: strings.addSportsTitle,
                 icon: images.registerReferee,
                 iconRight: images.nextArrow,
                 menuOptionType: Verbs.entityTypeReferee,
@@ -275,7 +275,7 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
             member: [
               ...scorekeepingMenu,
               {
-                option: strings.addScoreKeeperTitle,
+                option: strings.addSportsTitle,
                 icon: images.registerScorekeeper,
                 iconRight: images.nextArrow,
                 menuOptionType: Verbs.entityTypeScorekeeper,

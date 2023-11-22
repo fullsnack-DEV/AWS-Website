@@ -37,7 +37,7 @@ const CongratulationsModal = ({
   onUserClick = () => {},
   joinTeam = () => {},
   searchTeam = () => {},
-  // createTeam = () => {},
+  createTeam = () => {},
   goToSportActivityHome = () => {},
   onInviteClick = () => {},
   listloading = false,
@@ -261,7 +261,7 @@ const CongratulationsModal = ({
           }}
           searchPlayer={() => {
             if (sportType === Verbs.sportTypeSingle) {
-              closeModal();
+              // closeModal();
               searchPlayer({
                 sport,
                 sport_type: sportType,
@@ -276,7 +276,7 @@ const CongratulationsModal = ({
             }
           }}
           onUserClick={(item) => {
-            closeModal();
+            // closeModal();
             onUserClick(item);
           }}
           onChoose={onChoose}
@@ -301,10 +301,10 @@ const CongratulationsModal = ({
           closeModal();
           joinTeam();
         }}
-        // createTeam={() => {
-        //   closeModal();
-        //   createTeam();
-        // }}
+        createTeam={() => {
+          closeModal();
+          createTeam();
+        }}
         onUserClick={(item) => {
           closeModal();
           onUserClick(item);
