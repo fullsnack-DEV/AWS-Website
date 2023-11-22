@@ -58,6 +58,7 @@ const SearchModal = ({
   const [filterOptions, setFilterOptions] = useState([]);
   const [datePickerShow, setDatePickerShow] = useState(false);
   const [tag, setTag] = useState();
+  const [startDates, setStartDate] = useState(new Date());
   // const [groups, setGroups] = useState(groupsType);
   const [groups, setGroups] = useState(groupsType);
   const [showTimeComponent, setShowTimeComponent] = useState(false);
@@ -186,6 +187,8 @@ const SearchModal = ({
   );
   const handleDatePress = (date) => {
     if (tag === 1) {
+      setStartDate(new Date(date));
+      console.log('kjkj');
       const dateObject = new Date(
         date.getFullYear(),
         date.getMonth(),
@@ -1173,7 +1176,7 @@ const SearchModal = ({
             onCancel={handleCancelPress}
             onHide={handleCancelPress}
             mode={'date'}
-            minimumDate={new Date()}
+            minimumDate={startDates}
           />
         )}
       </CustomModalWrapper>

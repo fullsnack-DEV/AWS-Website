@@ -98,6 +98,7 @@ function LocalHomeScreen({navigation, route}) {
   const [lookingTeam, setLookingTeam] = useState([]);
   const [referees, setReferees] = useState([]);
   const [scorekeepers, setScorekeepers] = useState([]);
+  const [contentHeight, setContentHeight] = useState('40%');
 
   const [image_base_url, setImageBaseUrl] = useState('');
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
@@ -1058,16 +1059,15 @@ function LocalHomeScreen({navigation, route}) {
         closeModal={() => {
           setLocationPopup(false);
         }}
-        externalSnapPoints={snapPoints}>
+        externalSnapPoints={[
+          '50%',
+          contentHeight,
+          Dimensions.get('window').height - 40,
+        ]}>
         <View
           onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
-
-            setSnapPoints([
-              '50%',
-              contentHeight,
-              Dimensions.get('window').height - 40,
-            ]);
+            const contentHeights = event.nativeEvent.layout.height + 80;
+            setContentHeight(contentHeights);
           }}>
           <TouchableWithoutFeedback
             onPress={() => {
@@ -1076,7 +1076,7 @@ function LocalHomeScreen({navigation, route}) {
               getLocation();
               setTimeout(() => {
                 setLocationPopup(false);
-              }, 500);
+              }, 300);
             }}>
             {selectedLocationOption === 0 ? (
               <View style={styles.backgroundViewSelected}>
@@ -1097,10 +1097,13 @@ function LocalHomeScreen({navigation, route}) {
             )}
           </TouchableWithoutFeedback>
 
-          <TouchableWithoutFeedback
+          <Pressable
             onPress={() => {
-              setSelectedLocationOption(1);
+              setTimeout(() => {
+                setLocationPopup(false);
+              }, 200);
 
+              setSelectedLocationOption(1);
               setLocation(
                 authContext.entity.obj.city?.charAt(0).toUpperCase() +
                   authContext.entity.obj.city?.slice(1),
@@ -1112,9 +1115,6 @@ function LocalHomeScreen({navigation, route}) {
                   authContext.entity.obj.city?.slice(1),
               });
               navigation.setParams({locationText: null});
-              setTimeout(() => {
-                setLocationPopup(false);
-              }, 300);
             }}>
             {selectedLocationOption === 1 ? (
               <View style={styles.backgroundViewSelected}>
@@ -1129,7 +1129,7 @@ function LocalHomeScreen({navigation, route}) {
                 </Text>
               </View>
             )}
-          </TouchableWithoutFeedback>
+          </Pressable>
           <TouchableWithoutFeedback
             onPress={() => {
               setSelectedLocationOption(2);
@@ -1333,10 +1333,10 @@ function LocalHomeScreen({navigation, route}) {
         <View
           style={{paddingTop: 0, paddingHorizontal: 0}}
           onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 40;
+            const contentHeights = event.nativeEvent.layout.height + 40;
             const screenHeight = Dimensions.get('window').height - 40;
-            if (contentHeight <= screenHeight) {
-              setSnapPoints(['50%', contentHeight, screenHeight]);
+            if (contentHeights <= screenHeight) {
+              setSnapPoints(['50%', contentHeights, screenHeight]);
             }
           }}>
           <FlatList

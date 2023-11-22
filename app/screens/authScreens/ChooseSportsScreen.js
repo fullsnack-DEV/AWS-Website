@@ -95,6 +95,7 @@ export default function ChooseSportsScreen({navigation, route}) {
   };
 
   const navigateToFollowScreen = async (response) => {
+    setloading(true);
     if (response.length > 0) {
       if (!authContext.streamChatToken) {
         await generateUserStreamToken(authContext);

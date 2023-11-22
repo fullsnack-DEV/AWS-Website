@@ -21,9 +21,11 @@ function FilterTimeSelectItem({
       <Text style={[styles.headerTextStyle, headerTextStyle]}>{title}</Text>
       <Text style={styles.dateTextStyle}>{date}</Text>
       <Text style={[styles.dateTextStyle, {marginLeft: 12}]}>{time}</Text>
-      <TouchableOpacity onPress={onXCirclePress}>
-        <Image source={images.xCircleImg} style={styles.imageStyle} />
-      </TouchableOpacity>
+      {date && (
+        <TouchableOpacity onPress={onXCirclePress}>
+          <Image source={images.xCircleImg} style={styles.imageStyle} />
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
 }
