@@ -2088,7 +2088,7 @@ export default {
   classifyByCategories: 'en_Classify by categories',
   levelsCount: 'en_LV 13',
 
-  andMore: 'en_{0} and {1} more`',
+  andMore: 'en_{0} and {1} more',
   andN: 'en_{0} and',
   NandN: 'en_{0} and {1}',
   noScorekeeperFound: 'en_No Scorekeeper Found',
@@ -3212,14 +3212,11 @@ export default {
   whenTeamleaveClubtext: 'en_When your team leave  a club:',
   TeamLeaveModalText:
     'en_Your team will not be an affiliated team of the club any more, but the members of your teamwill still remain as a member both in your team and the club.    ',
-
   AllLevelesText: 'en_All levels',
-
   nCreatedThisGroup: `en_{0} created this group.`,
   teamsTiteInfo: 'en_Teams',
-
   noActivityLog: 'en_No Activity Log',
   goToSportActivityText: 'en_Go to Sport Activity Page',
-
   noActivityLog: 'en_No Activity Log',
+  pausedText: 'en_Paused',
 };

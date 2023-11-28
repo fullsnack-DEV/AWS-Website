@@ -54,7 +54,7 @@ import CustomReplyInputPreview from './components/CustomReplyInputPreview';
 // import CustomAvatar from './components/CustomAvatar';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import fonts from '../../Constants/Fonts';
-import CustomMediaView from './components/CustomMediaView';
+// import CustomMediaView from './components/CustomMediaView';
 import MessageAvatar from './components/MessageAvatar';
 
 const MessageChatScreen = ({navigation, route}) => {
@@ -380,10 +380,10 @@ const MessageChatScreen = ({navigation, route}) => {
           channelInfoModalRef.current?.present();
         }}
         loading={false}
-        rightIcon1={showSearchInput ? images.searchLocation : images.chatSearch}
-        rightIcon1Press={() => {
-          setShowSearchInput(!showSearchInput);
-        }}
+        // rightIcon1={showSearchInput ? images.searchLocation : images.chatSearch}
+        // rightIcon1Press={() => {
+        //   setShowSearchInput(!showSearchInput);
+        // }}
         iconContainerStyle={{marginRight: 10}}
       />
       <View style={{flex: 1}}>
@@ -467,18 +467,18 @@ const MessageChatScreen = ({navigation, route}) => {
                   }}
                 />
               )}
-              Gallery={() => (
-                <CustomMediaView
-                  onPress={(data = {}) => {
-                    navigation.navigate('MessageMediaFullScreen', {
-                      ...data,
-                    });
-                  }}
-                  onLongPress={() => {
-                    console.log('long pressed');
-                  }}
-                />
-              )}
+              // Gallery={() => (
+              //   <CustomMediaView
+              //     onPress={(data = {}) => {
+              //       navigation.navigate('MessageMediaFullScreen', {
+              //         ...data,
+              //       });
+              //     }}
+              //     onLongPress={() => {
+              //       console.log('long pressed');
+              //     }}
+              //   />
+              // )}
               Reply={CustomReplyComponent}
               ImageUploadPreview={CustomImageUploadPreview}
               ReactionList={() => null}
@@ -493,7 +493,19 @@ const MessageChatScreen = ({navigation, route}) => {
                 <View style={styles.systemMessageContainer}>
                   <Text style={styles.systemMessageText}>{message.text}</Text>
                 </View>
-              )}>
+              )}
+              onPressMessage={({emitter, message}) => {
+                if (emitter === 'gallery') {
+                  const data = {
+                    attachments: message.attachments,
+                    entityName: message.user.name,
+                    msgId: message.id,
+                  };
+                  navigation.navigate('MessageMediaFullScreen', {
+                    ...data,
+                  });
+                }
+              }}>
               <MessageList
                 noGroupByUser
                 additionalFlatListProps={{showsVerticalScrollIndicator: false}}

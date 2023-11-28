@@ -166,14 +166,14 @@ const RegisterPlayer = ({navigation, route}) => {
         patchPlayer(body, authContext)
           .then(async (response) => {
             if (response.status === true) {
-              setLoading(false);
-              await setAuthContextData(response.payload, authContext);
               setShowCongratulationsModal(true);
+              await setAuthContextData(response.payload, authContext);
+              setLoading(false);
             } else {
               setLoading(false);
               Alert.alert(strings.appName, response.messages);
             }
-            setLoading(false);
+            // setLoading(false);
           })
           .catch(() => setLoading(false));
       }

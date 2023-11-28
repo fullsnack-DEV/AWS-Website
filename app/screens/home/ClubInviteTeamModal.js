@@ -2,7 +2,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
+  // Dimensions,
   TouchableOpacity,
   Platform,
 } from 'react-native';
@@ -33,9 +33,10 @@ export default function ClubInviteTeamModal({
           const contentHeight = event.nativeEvent.layout.height + 80;
 
           setSnapPoints([
-            '50%',
+            // '50%',
             contentHeight,
-            Dimensions.get('window').height - 40,
+            contentHeight,
+            // Dimensions.get('window').height - 40,
           ]);
         }}>
         <Text style={styles.modalTitle}>
@@ -59,7 +60,7 @@ export default function ClubInviteTeamModal({
                 <Text
                   style={{
                     fontSize: Platform.OS === 'android' ? 12 : 8,
-                    marginTop: Platform.OS === 'android' ? 4 : 8,
+                    marginTop: Platform.OS === 'android' ? 5 : 8,
                     marginRight: 3,
                   }}>
                   ●
@@ -72,7 +73,7 @@ export default function ClubInviteTeamModal({
                 <Text
                   style={{
                     fontSize: Platform.OS === 'android' ? 12 : 8,
-                    marginTop: Platform.OS === 'android' ? 4 : 8,
+                    marginTop: Platform.OS === 'android' ? 5 : 8,
                     marginRight: 3,
                   }}>
                   ●
@@ -86,7 +87,7 @@ export default function ClubInviteTeamModal({
                 <Text
                   style={{
                     fontSize: Platform.OS === 'android' ? 12 : 8,
-                    marginTop: Platform.OS === 'android' ? 4 : 8,
+                    marginTop: Platform.OS === 'android' ? 5 : 8,
                     marginRight: 3,
                   }}>
                   ●
@@ -155,7 +156,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RBold,
     lineHeight: 24,
-
     textTransform: 'uppercase',
   },
   buttonContainer: {

@@ -1064,6 +1064,8 @@ export default function EventScreen({navigation, route}) {
             {/* <View marginBottom={70} /> */}
           </>
         ) : null}
+
+        {activeTab === strings.postTitle ? <></> : null}
       </ScrollView>
       <BottomSheet
         type={Platform.OS}
@@ -1105,16 +1107,6 @@ export default function EventScreen({navigation, route}) {
         </View>
       </Modal>
 
-      <SendNewInvoiceModal
-        isVisible={sendNewInvoice}
-        invoiceType={InvoiceType.Event}
-        eventID={eventData.cal_id}
-        member={going}
-        onClose={() => {
-          setShowActionSheet(false);
-          setSendNewInvoice(false);
-        }}
-      />
       <CustomModalWrapper
         isVisible={infoModal}
         modalType={ModalTypes.style2}
@@ -1127,9 +1119,10 @@ export default function EventScreen({navigation, route}) {
             const contentHeight = event.nativeEvent.layout.height + 80;
 
             setSnapPoints([
-              '50%',
+              // '50%',
               contentHeight,
-              Dimensions.get('window').height - 40,
+              contentHeight,
+              // Dimensions.get('window').height - 40,
             ]);
           }}>
           {infoType === Verbs.attendeeVerb ? (
@@ -1145,6 +1138,7 @@ export default function EventScreen({navigation, route}) {
           )}
         </View>
       </CustomModalWrapper>
+
       <GoingUsersModal
         modalRef={goingModalRef}
         goingList={going}
@@ -1189,6 +1183,16 @@ export default function EventScreen({navigation, route}) {
         }}
         onPressInvoice={() => {
           setSendNewInvoice(true);
+        }}
+      />
+      <SendNewInvoiceModal
+        isVisible={sendNewInvoice}
+        invoiceType={InvoiceType.Event}
+        eventID={eventData.cal_id}
+        member={going}
+        onClose={() => {
+          setShowActionSheet(false);
+          setSendNewInvoice(false);
         }}
       />
     </SafeAreaView>

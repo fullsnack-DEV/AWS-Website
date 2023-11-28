@@ -19,7 +19,7 @@ import {
   Platform,
   Pressable,
   BackHandler,
-  Dimensions,
+  // Dimensions,
 } from 'react-native';
 import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import moment from 'moment';
@@ -308,6 +308,7 @@ export default function CreateEventScreen({navigation, route}) {
         } else {
           setEventPosted(item);
         }
+        console.log('====>', whoOption === join);
         setVisibleWhoModal(false);
       }}>
       <View
@@ -581,7 +582,6 @@ export default function CreateEventScreen({navigation, route}) {
             value: eventFee,
             currency_type: currency,
           },
-
           refund_policy: refundPolicy,
           min_attendees: Number(minAttendees),
           max_attendees: Number(maxAttendees),
@@ -763,7 +763,7 @@ export default function CreateEventScreen({navigation, route}) {
           },
           {
             text: strings.inviteOnly,
-            value: 1,
+            value: 4,
           },
           {
             text: strings.onlymeTitleText,
@@ -1220,9 +1220,10 @@ export default function CreateEventScreen({navigation, route}) {
                   onChangeValue={(val) => {
                     setEventFee(val);
                   }}
-                  delimiter="."
                   separator=","
-                  precision={2}
+                  delimiter="."
+                  // minValue={0}
+                  precision={1}
                   keyboardType="decimal-pad"
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
@@ -1502,7 +1503,7 @@ export default function CreateEventScreen({navigation, route}) {
             setSnapPoints([
               '50%',
               contentHeight,
-              Dimensions.get('window').height - 40,
+              // Dimensions.get('window').height - 40,
             ]);
           }}>
           <FlatList

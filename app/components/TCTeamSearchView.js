@@ -15,18 +15,19 @@ import {strings} from '../../Localization/translation';
 import GroupIcon from './GroupIcon';
 import {JoinPrivacy} from '../Constants/GeneralConstants';
 
-function TCTeamSearchView({
-  onPress,
-  showStar = false,
-  showLevelOnly = false,
+const TCTeamSearchView = ({
   data = {},
   isClub = false,
-  authContext,
-  onPressChallengeButton,
-  onPressJoinButton,
-  sportFilter,
+  authContext = {},
+  sportFilter = {},
+  showStar = false,
+  showLevelOnly = false,
   joinedGroups = {teams: [], clubs: []},
-}) {
+  onPress = () => {},
+  onPressJoinButton = () => {},
+  onPressChallengeButton = () => {},
+  onPressMemberButton = () => {},
+}) => {
   const [sportsList, setSportsList] = useState([]);
 
   useEffect(() => {
@@ -43,6 +44,62 @@ function TCTeamSearchView({
     }
   }, [data, sportFilter.sport_name, sportFilter.sport]);
 
+  const handleButtonPress = (btnTitle = '') => {
+    switch (btnTitle) {
+      case strings.pausedText:
+        break;
+
+      case strings.challenge:
+        onPressChallengeButton(data);
+        break;
+
+      case strings.join:
+        onPressJoinButton(data.group_id);
+        break;
+
+      case strings.joining:
+        onPressMemberButton(data.group_id);
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const getBtnColors = (btnTitle = '') => {
+    switch (btnTitle) {
+      case strings.pausedText:
+        return {
+          bgColor: colors.userPostTimeColor,
+          labelColor: colors.whiteColor,
+        };
+
+      case strings.challenge:
+        return {
+          bgColor: colors.darkYellowColor,
+          labelColor: colors.whiteColor,
+        };
+
+      case strings.join:
+        return {
+          bgColor: colors.lightGrey,
+          labelColor: colors.themeColor,
+        };
+
+      case strings.joining:
+        return {
+          bgColor: colors.lightGrey,
+          labelColor: colors.lightBlackColor,
+        };
+
+      default:
+        return {
+          bgColor: colors.lightBlackColor,
+          labelColor: colors.lightBlackColor,
+        };
+    }
+  };
+
   const getButtonTitle = () => {
     const loggedInEntity = authContext.entity;
 
@@ -56,14 +113,19 @@ function TCTeamSearchView({
         data.sport === loggedInEntity.obj.sport &&
         loggedInEntity.role === Verbs.entityTypeTeam
       ) {
+        if (data.is_pause) {
+          return strings.pausedText;
+        }
         return strings.challenge;
       }
       if (
         ![Verbs.entityTypeClub, Verbs.entityTypeTeam].includes(
           loggedInEntity.role,
-        ) &&
-        !joinedGroups.teams.includes(data.group_id)
+        )
       ) {
+        if (joinedGroups.teams.includes(data.group_id)) {
+          return strings.joining;
+        }
         return strings.join;
       }
     } else if (
@@ -88,34 +150,18 @@ function TCTeamSearchView({
 
   const renderJoinOrChallengeButton = () => {
     const buttonTitle = getButtonTitle();
+    const btnObj = getBtnColors(buttonTitle);
 
-    if (buttonTitle === strings.join) {
-      return (
-        <TouchableWithoutFeedback
-          onPress={() => {
-            onPressJoinButton(data.group_id);
-          }}>
-          <View style={styles.joinBtnContainer}>
-            <Text style={styles.joinBtn}>{strings.join}</Text>
-          </View>
-        </TouchableWithoutFeedback>
-      );
-    }
-
-    if (buttonTitle === strings.challenge) {
-      return (
-        <TouchableWithoutFeedback
-          onPress={() => {
-            onPressChallengeButton(data);
-          }}>
-          <View style={styles.challengeBtnContainer}>
-            <Text style={styles.challengeBtn}>{strings.challenge}</Text>
-          </View>
-        </TouchableWithoutFeedback>
-      );
-    }
-
-    return null;
+    return buttonTitle ? (
+      <TouchableWithoutFeedback onPress={() => handleButtonPress(buttonTitle)}>
+        <View
+          style={[styles.buttonContainer, {backgroundColor: btnObj.bgColor}]}>
+          <Text style={[styles.buttonLabel, {color: btnObj.labelColor}]}>
+            {buttonTitle}
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
+    ) : null;
   };
 
   return (
@@ -144,7 +190,11 @@ function TCTeamSearchView({
               {data.city} ·{' '}
               {sportsList.length === 1 && sportsList[0].sport_name}
               {sportsList.length > 1 &&
-                format(strings.sportsText, sportsList.length)}
+                format(
+                  strings.andMore,
+                  sportsList[0].sport_name,
+                  sportsList.length - 1,
+                )}
             </Text>
           ) : (
             <View style={{flexDirection: 'row'}}>
@@ -180,7 +230,7 @@ function TCTeamSearchView({
       </View>
     </TouchableOpacity>
   );
-}
+};
 
 const styles = StyleSheet.create({
   viewContainer: {
@@ -223,36 +273,20 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: colors.greyBorderColor,
   },
-  challengeBtn: {
+  buttonLabel: {
     fontSize: 12,
     fontFamily: fonts.RBold,
-    color: colors.whiteColor,
-    alignSelf: 'center',
+    color: colors.lightBlackColor,
+    textAlign: 'center',
   },
-  joinBtn: {
-    fontSize: 12,
-    fontFamily: fonts.RBold,
-    color: colors.themeColor,
-    alignSelf: 'center',
-  },
-  joinBtnContainer: {
-    backgroundColor: colors.lightGrey,
-    width: 75,
+  buttonContainer: {
     height: 25,
+    // minWidth: 75,
+    marginTop: 5,
     borderRadius: 5,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 5,
-  },
-  challengeBtnContainer: {
-    backgroundColor: colors.darkYellowColor,
-    // width: 75,
-    height: 25,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 5,
     paddingHorizontal: 10,
+    justifyContent: 'center',
   },
 });
 

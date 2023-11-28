@@ -1,5 +1,3 @@
-/* eslint-disable no-confusing-arrow */
-/* eslint-disable array-callback-return */
 import React, {
   useState,
   useEffect,
@@ -24,7 +22,6 @@ import {
   Dimensions,
 } from 'react-native';
 import {FlatList, ScrollView} from 'react-native-gesture-handler';
-import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
 import {useIsFocused} from '@react-navigation/native';
@@ -46,7 +43,7 @@ import TCTeamSearchView from '../components/TCTeamSearchView';
 import TCRecentMatchCard from '../components/TCRecentMatchCard';
 import TCTagsFilter from '../components/TCTagsFilter';
 import ActivityLoader from '../components/loader/ActivityLoader';
-import {getGroupDetails, getGroups, joinTeam} from '../api/Groups';
+import {getGroupDetails, getGroups, joinTeam, leaveTeam} from '../api/Groups';
 import {inviteUser} from '../api/Users';
 import {acceptRequest, declineRequest} from '../api/Notificaitons';
 import {getGeocoordinatesWithPlaceName} from '../utils/location';
@@ -1659,6 +1656,31 @@ export default function EntitySearchScreen({navigation, route}) {
         }, 10);
       });
   };
+
+  const userLeaveGroup = (groupId) => {
+    setloading(true);
+
+    leaveTeam({}, groupId, authContext)
+      .then(() => {
+        const newList = joinedGroups.teams.filter((item) => item !== groupId);
+
+        setloading(false);
+        setJoinedGroups({...joinedGroups, teams: [...newList]});
+        Alert.alert(
+          '',
+          format(strings.youHaveLeftTheteam, groupData.entity_type),
+          [{text: strings.okTitleText}],
+          {cancelable: false},
+        );
+      })
+      .catch((error) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, error.message);
+        }, 10);
+      });
+  };
+
   const renderTabContain = useMemo(
     () => (
       <View
@@ -1821,6 +1843,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       sports: sportsObj,
                       uid: item?.user_id,
                       entityType: item?.entity_type,
+                      userObj: {...item},
                     };
                     setPlayerDetail(data);
                     setPlayerDetailPopup(true);
@@ -1939,6 +1962,7 @@ export default function EntitySearchScreen({navigation, route}) {
                   setGroupData(item);
                 }}
                 joinedGroups={joinedGroups}
+                onPressMemberButton={userLeaveGroup}
               />
             </View>
           </View>
@@ -1994,6 +2018,25 @@ export default function EntitySearchScreen({navigation, route}) {
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
+
+  const checkChallengeBtnVisibility = (item = {}) => {
+    if (
+      item.sport_type === Verbs.singleSport &&
+      item.setting?.availibility === Verbs.on &&
+      authContext.entity.role !== Verbs.entityTypeTeam &&
+      authContext.entity.role !== Verbs.entityTypeClub &&
+      authContext.entity.uid !== playerDetail.uid
+    ) {
+      const matchingSport = authContext.entity.obj.registered_sports?.find(
+        (ele) => ele.sport === item.sport,
+      );
+      if (matchingSport) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  };
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -2291,27 +2334,24 @@ export default function EntitySearchScreen({navigation, route}) {
         onPressCancel={() => {
           setSettingPopup(false);
         }}></SearchModal>
-      <Modal
-        onBackdropPress={() => setChallengePopup(false)}
-        backdropOpacity={1}
-        animationType="slide"
-        hasBackdrop
-        style={{
-          margin: 0,
-          backgroundColor: colors.blackOpacityColor,
-        }}
-        visible={challengePopup}>
-        <View style={styles.bottomPopupContainer}>
-          <View style={styles.viewsContainer}>
-            <Text
-              onPress={() => setChallengePopup(false)}
-              style={styles.cancelText}>
-              {strings.cancel}
-            </Text>
-            <Text style={styles.challengeText}>{strings.challenge}</Text>
-            <Text style={styles.challengeText}> </Text>
-          </View>
-          <TCThinDivider width={'100%'} />
+
+      <CustomModalWrapper
+        isVisible={challengePopup}
+        closeModal={() => setChallengePopup(false)}
+        title={strings.challenge}
+        containerStyle={{paddingHorizontal: 0}}
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              '50%',
+              contentHeight,
+              Dimensions.get('window').height - 40,
+            ]);
+          }}
+          style={{paddingBottom: 40}}>
           <TouchableWithoutFeedback
             onPress={() => {
               setSelectedChallengeOption(0);
@@ -2551,7 +2591,8 @@ export default function EntitySearchScreen({navigation, route}) {
             )}
           </TouchableWithoutFeedback>
         </View>
-      </Modal>
+      </CustomModalWrapper>
+
       <CustomModalWrapper
         isVisible={playerDetailPopup}
         closeModal={() => {
@@ -2590,6 +2631,13 @@ export default function EntitySearchScreen({navigation, route}) {
                     },
                   });
                 }}
+                showChallengeButton={checkChallengeBtnVisibility(item)}
+                onPressChallenge={() => {
+                  setPlayerDetailPopup(false);
+                  setSettingObject(item.setting);
+                  setCurrentUserData(playerDetail?.userObj);
+                  setChallengePopup(true);
+                }}
               />
             )}
             showsVerticalScrollIndicator={false}
@@ -2627,38 +2675,6 @@ const styles = StyleSheet.create({
     borderRightWidth: 0,
     borderColor: colors.whiteColor,
   },
-  bottomPopupContainer: {
-    flex: 1,
-    paddingBottom: Platform.OS === 'ios' ? 34 : 0,
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.googleColor,
-        shadowOffset: {width: 0, height: 3},
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 15,
-      },
-    }),
-  },
-
-  viewsContainer: {
-    height: 60,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 20,
-    marginRight: 20,
-  },
-
   backgroundView: {
     alignSelf: 'center',
     backgroundColor: colors.whiteColor,
@@ -2675,12 +2691,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 15,
   },
-
-  cancelText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.veryLightGray,
-  },
   curruentLocationText: {
     fontSize: 16,
     fontFamily: fonts.RMedium,
@@ -2691,12 +2701,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
   },
-  challengeText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-
   loaderStyle: {
     height: 25,
     width: 25,

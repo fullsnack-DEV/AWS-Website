@@ -81,7 +81,7 @@ function TCPlayerView({
       sports.length === 1 &&
       sports[0].sport_type === Verbs.singleSport &&
       sports[0].setting?.availibility === Verbs.on &&
-      (authContext.entity.role === Verbs.entityTypeUser ||
+      (authContext.entity.role === Verbs.entityTypePlayer ||
         authContext.entity.role === Verbs.entityTypeUser) &&
       authContext.entity.role !== Verbs.entityTypeTeam &&
       authContext.entity.role !== Verbs.entityTypeClub &&

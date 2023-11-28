@@ -6,8 +6,15 @@ import {getSportDetails} from '../../utils/sportsActivityUtils';
 import AuthContext from '../../auth/context';
 import fonts from '../../Constants/Fonts';
 import Verbs from '../../Constants/Verbs';
+import {strings} from '../../../Localization/translation';
 
-const SportView = ({item = {}, imageBaseUrl = '', onPress = () => {}}) => {
+const SportView = ({
+  item = {},
+  imageBaseUrl = '',
+  onPress = () => {},
+  showChallengeButton = false,
+  onPressChallenge = () => {},
+}) => {
   const entityColor = () => {
     if (item.setting?.entity_type === Verbs.entityTypeReferee) {
       return colors.darkThemeColor;
@@ -47,6 +54,12 @@ const SportView = ({item = {}, imageBaseUrl = '', onPress = () => {}}) => {
           </View>
         </View>
       </View>
+
+      {showChallengeButton ? (
+        <Pressable style={styles.buttonContainer} onPress={onPressChallenge}>
+          <Text style={styles.buttonText}>{strings.challenge}</Text>
+        </Pressable>
+      ) : null}
     </Pressable>
   );
 };
@@ -67,6 +80,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderLeftWidth: 8,
     paddingVertical: 5,
+    flexDirection: 'row',
   },
   row: {
     flexDirection: 'row',
@@ -102,6 +116,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 5,
+  },
+  buttonContainer: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: colors.themeColor,
+    borderRadius: 5,
+  },
+  buttonText: {
+    fontSize: 12,
+    lineHeight: 15,
+    color: colors.whiteColor,
+    fontFamily: fonts.RBold,
   },
 });
 export default SportView;

@@ -780,7 +780,7 @@ export default function EditEventScreen({navigation, route}) {
           },
           {
             text: strings.inviteOnly,
-            value: 1,
+            value: 4,
           },
           {
             text: strings.onlymeTitleText,
@@ -1584,7 +1584,7 @@ export default function EditEventScreen({navigation, route}) {
             setSnapPoints([
               '50%',
               contentHeight,
-              Dimensions.get('window').height - 40,
+              // Dimensions.get('window').height - 40,
             ]);
           }}>
           <FlatList

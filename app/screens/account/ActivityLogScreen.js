@@ -97,9 +97,8 @@ const ActivityLogScreen = ({navigation}) => {
   const getLogText = (item = {}) => {
     const entityName = item.group_name ?? item.user_name ?? item.following_name;
     const entityNameWordArray = entityName.split(' ');
-    const senderNameWordArray = item.sender_name
-      ? item.sender_name.split(' ')
-      : [];
+    const name = item.sender_name ?? item.user_name;
+    const senderNameWordArray = name ? name.split(' ') : [];
 
     const textArray = item.text.split('.');
 
@@ -126,7 +125,7 @@ const ActivityLogScreen = ({navigation}) => {
           senderNameWordArray.includes(word)
         ) {
           obj.routeData = {
-            uid: item.sender_id,
+            uid: item.sender_id ?? item.user_id,
             role: Verbs.entityTypePlayer,
           };
         } else if (entityNameWordArray.includes(word)) {
@@ -198,7 +197,9 @@ const ActivityLogScreen = ({navigation}) => {
             <>
               <Text style={styles.textStyle}>
                 {getLogText(item)}.{' '}
-                {item?.invite_by === Verbs.admin ? (
+                {item?.invite_by === Verbs.admin ||
+                (item?.activity_type === 'removeUserByGroup' &&
+                  item?.sender_name) ? (
                   <Text style={styles.adminText}>
                     {format(
                       strings.byUser,

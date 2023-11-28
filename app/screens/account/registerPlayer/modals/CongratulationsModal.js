@@ -290,7 +290,7 @@ const CongratulationsModal = ({
         fromCreateTeam={fromCreateTeam}
         fromCreateClub={fromCreateClub}
         searchTeam={() => {
-          closeModal();
+          // closeModal();
           searchTeam({
             sport,
             sport_type: sportType,
@@ -298,15 +298,15 @@ const CongratulationsModal = ({
           });
         }}
         joinTeam={() => {
-          closeModal();
+          // closeModal();
           joinTeam();
         }}
         createTeam={() => {
-          closeModal();
+          // closeModal();
           createTeam();
         }}
         onUserClick={(item) => {
-          closeModal();
+          // closeModal();
           onUserClick(item);
         }}
         onChanllenge={(user) => {
