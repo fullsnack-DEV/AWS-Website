@@ -419,9 +419,12 @@ const HomeScreen = ({navigation, route}) => {
     ) {
       navigation.navigate('App', {screen: 'Account'});
     } else if (route.params?.comeFrom === 'EntitySearchScreen') {
-      navigation.navigate('EntitySearchScreen', {
-        parentStack: route.params?.parentStack,
-        screen: route.params.screen,
+      navigation.navigate('UniversalSearchStack', {
+        screen: route.params.backScreen,
+        params: {
+          parentStack: route.params?.parentStack,
+          screen: route.params.screen,
+        },
       });
     } else if (route.params?.comeFrom === 'MessageChatScreen') {
       navigation.navigate('MessageStack', {

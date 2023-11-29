@@ -64,11 +64,14 @@ export default function LocalHomeHeader({
           <View style={styles.rightHeaderView}>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('EntitySearchScreen', {
-                  sportsList: customSports,
-                  sportsArray: customSports,
-                  parentStack: 'App',
-                  screen: 'LocalHome',
+                navigation.navigate('UniversalSearchStack', {
+                  screen: 'SearchScreen',
+                  params: {
+                    sportsList: customSports,
+                    sportsArray: customSports,
+                    parentStack: 'App',
+                    screen: 'LocalHome',
+                  },
                 });
               }}>
               <Image source={images.home_search} style={styles.townsCupIcon} />

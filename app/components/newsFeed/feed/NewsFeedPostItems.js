@@ -169,7 +169,7 @@ const NewsFeedPostItems = memo(
     return (
       <View
         style={{
-          paddingHorizontal: 15,
+          // paddingHorizontal: 15,
           paddingTop: 17,
           paddingBottom: 20,
         }}>
@@ -232,22 +232,22 @@ const NewsFeedPostItems = memo(
             showMoreOptions
           />
         )}
-
-        <FeedFooter
-          like={like}
-          likeCount={likeCount}
-          repostCount={repostCount}
-          commentCount={commentCount}
-          setShowLikeModal={() => {
-            openLikeModal(item);
-          }}
-          setShowShareOptionsModal={() => {
-            setShowShareOptionsModal(true);
-          }}
-          onWriteCommentPress={onWriteCommentPress}
-          onNewsFeedLikePress={onNewsFeedLikePress}
-        />
-
+        <View style={{paddingHorizontal: 15}}>
+          <FeedFooter
+            like={like}
+            likeCount={likeCount}
+            repostCount={repostCount}
+            commentCount={commentCount}
+            setShowLikeModal={() => {
+              openLikeModal(item);
+            }}
+            setShowShareOptionsModal={() => {
+              setShowShareOptionsModal(true);
+            }}
+            onWriteCommentPress={onWriteCommentPress}
+            onNewsFeedLikePress={onNewsFeedLikePress}
+          />
+        </View>
         <BottomSheet
           type="ios"
           isVisible={showMoreOptions}

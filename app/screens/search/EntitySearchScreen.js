@@ -26,38 +26,47 @@ import ActionSheet from 'react-native-actionsheet';
 import LinearGradient from 'react-native-linear-gradient';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
-import AuthContext from '../auth/context';
-import {getStorage} from '../utils';
+import AuthContext from '../../auth/context';
+import {getStorage} from '../../utils';
 
-import colors from '../Constants/Colors';
-import Verbs from '../Constants/Verbs';
-import fonts from '../Constants/Fonts';
-import {getGroupIndex, getUserIndex, getGameIndex} from '../api/elasticSearch';
-import images from '../Constants/ImagePath';
-import {strings} from '../../Localization/translation';
-import * as Utility from '../utils';
-import TCUpcomingMatchCard from '../components/TCUpcomingMatchCard';
-import TCPlayerView from '../components/TCPlayerView';
-import TCThinDivider from '../components/TCThinDivider';
-import TCTeamSearchView from '../components/TCTeamSearchView';
-import TCRecentMatchCard from '../components/TCRecentMatchCard';
-import TCTagsFilter from '../components/TCTagsFilter';
-import ActivityLoader from '../components/loader/ActivityLoader';
-import {getGroupDetails, getGroups, joinTeam, leaveTeam} from '../api/Groups';
-import {inviteUser} from '../api/Users';
-import {acceptRequest, declineRequest} from '../api/Notificaitons';
-import {getGeocoordinatesWithPlaceName} from '../utils/location';
-import {ErrorCodes, filterType, locationType} from '../utils/constant';
-import {getSportList} from '../utils/sportsActivityUtils';
-import SearchModal from '../components/Filter/SearchModal';
-import {ModalTypes} from '../Constants/GeneralConstants';
-import CustomModalWrapper from '../components/CustomModalWrapper';
+import colors from '../../Constants/Colors';
+import Verbs from '../../Constants/Verbs';
+import fonts from '../../Constants/Fonts';
+import {
+  getGroupIndex,
+  getUserIndex,
+  getGameIndex,
+} from '../../api/elasticSearch';
+import images from '../../Constants/ImagePath';
+import {strings} from '../../../Localization/translation';
+import * as Utility from '../../utils';
+import TCUpcomingMatchCard from '../../components/TCUpcomingMatchCard';
+import TCPlayerView from '../../components/TCPlayerView';
+import TCThinDivider from '../../components/TCThinDivider';
+import TCTeamSearchView from '../../components/TCTeamSearchView';
+import TCRecentMatchCard from '../../components/TCRecentMatchCard';
+import TCTagsFilter from '../../components/TCTagsFilter';
+import ActivityLoader from '../../components/loader/ActivityLoader';
+import {
+  getGroupDetails,
+  getGroups,
+  joinTeam,
+  leaveTeam,
+} from '../../api/Groups';
+import {inviteUser} from '../../api/Users';
+import {acceptRequest, declineRequest} from '../../api/Notificaitons';
+import {getGeocoordinatesWithPlaceName} from '../../utils/location';
+import {ErrorCodes, filterType, locationType} from '../../utils/constant';
+import {getSportList} from '../../utils/sportsActivityUtils';
+import SearchModal from '../../components/Filter/SearchModal';
+import {ModalTypes} from '../../Constants/GeneralConstants';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
 
-import CustomScrollTabs from '../components/CustomScrollTabs';
+import CustomScrollTabs from '../../components/CustomScrollTabs';
 
-import ScreenHeader from '../components/ScreenHeader';
-import JoinButtonModal from './home/JoinButtomModal';
-import SportView from './localhome/SportView';
+import ScreenHeader from '../../components/ScreenHeader';
+import JoinButtonModal from '../home/JoinButtomModal';
+import SportView from '../localhome/SportView';
 
 let stopFetchMore = true;
 let timeout;
@@ -66,6 +75,7 @@ const TAB_ITEMS = [
   strings.peopleTitleText,
   strings.groupsTitleText,
   strings.matchesTitleText,
+  strings.eventsTitle,
 ];
 const PEOPLE_SUB_TAB_ITEMS = [
   strings.generalText,
@@ -79,6 +89,11 @@ const GROUP_SUB_TAB_ITEMS = [
   strings.leaguesTitleText,
 ];
 const GAMES_SUB_TAB_ITEMS = [
+  strings.completedTitleText,
+  strings.upcomingTitleText,
+];
+
+const EVENTS_SUB_TAB_ITEMS = [
   strings.completedTitleText,
   strings.upcomingTitleText,
 ];
@@ -205,6 +220,8 @@ export default function EntitySearchScreen({navigation, route}) {
   const [snapPoints, setSnapPoints] = useState([]);
   const isFocused = useIsFocused();
   const [joinedGroups, setJoinedGroups] = useState({teams: [], clubs: []});
+  const [completedEvents, setCompletedEvents] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
 
   useEffect(() => {
     if (isFocused && authContext.entity.role === Verbs.entityTypeTeam) {
@@ -240,7 +257,9 @@ export default function EntitySearchScreen({navigation, route}) {
         screen: route.params.screen,
       });
     } else {
-      navigation.goBack();
+      navigation.navigate('App', {
+        screen: 'LocalHome',
+      });
     }
   }, [navigation, route.params?.parentStack, route.params?.screen]);
 
@@ -268,31 +287,42 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [route.params?.locationText]);
 
   useEffect(() => {
-    if (route.params?.activeTab) {
+    if (route.params?.activeTab === 0 || route.params?.activeTab) {
       setCurrentTab(route.params.activeTab);
       let subTab = '';
-      switch (route.params?.activeTab) {
-        case 0:
-          subTab = PEOPLE_SUB_TAB_ITEMS[0];
-          break;
+      if (route.params?.activeSubTab) {
+        subTab = route.params.activeSubTab;
+      } else {
+        switch (route.params?.activeTab) {
+          case 0:
+            subTab = PEOPLE_SUB_TAB_ITEMS[0];
+            break;
 
-        case 1:
-          subTab = GROUP_SUB_TAB_ITEMS[0];
-          break;
+          case 1:
+            subTab = GROUP_SUB_TAB_ITEMS[0];
+            break;
 
-        case 2:
-          subTab = GAMES_SUB_TAB_ITEMS[0];
-          break;
+          case 2:
+            subTab = GAMES_SUB_TAB_ITEMS[0];
+            break;
 
-        default:
-          break;
+          case 3:
+            subTab = EVENTS_SUB_TAB_ITEMS[0];
+            break;
+
+          default:
+            break;
+        }
       }
+
       setCurrentSubTab(subTab);
     }
-  }, [route.params?.activeTab]);
+  }, [route.params?.activeTab, route.params?.activeSubTab]);
+
   useEffect(() => {
     getGeneralList();
   }, [generalFilter]);
+
   useEffect(() => {
     getPlayersList();
   }, [playerFilter]);
@@ -1396,6 +1426,12 @@ export default function EntitySearchScreen({navigation, route}) {
             searchText,
           });
           break;
+        case 3:
+          setCurrentSubTab(strings.completedTitleText);
+          setCompletedEvents([]);
+          setUpcomingEvents([]);
+          break;
+
         default:
           break;
       }
@@ -1767,6 +1803,25 @@ export default function EntitySearchScreen({navigation, route}) {
                 </Text>
               </TouchableOpacity>
             ))}
+          {currentTab === 3 &&
+            GAMES_SUB_TAB_ITEMS.map((item, index) => (
+              <TouchableOpacity
+                key={item}
+                style={{padding: 10}}
+                onPress={() => onPressSubTabs(item, index)}>
+                <Text
+                  style={{
+                    color:
+                      item === currentSubTab
+                        ? colors.themeColor
+                        : colors.lightBlackColor,
+                    fontFamily:
+                      item === currentSubTab ? fonts.RBold : fonts.RRegular,
+                  }}>
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            ))}
         </ScrollView>
         {currentSubTab !== strings.generalText && (
           <TouchableWithoutFeedback
@@ -1827,6 +1882,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     scoreKeeperFilters)
                 }
                 onPress={(sportsObj) => {
+                  handleEntityPress(item);
                   if (currentSubTab === strings.generalText) {
                     navigation.navigate('HomeStack', {
                       screen: 'HomeScreen',
@@ -1846,6 +1902,7 @@ export default function EntitySearchScreen({navigation, route}) {
                         backButtonVisible: true,
                         menuBtnVisible: false,
                         comeFrom: 'EntitySearchScreen',
+                        backScreen: 'EntitySearchScreen',
                         parentStack: route.params?.parentStack,
                         screen: route.params.screen,
                       },
@@ -1869,7 +1926,10 @@ export default function EntitySearchScreen({navigation, route}) {
                         uid: item?.user_id,
                         entityType: sportsObj[0]?.type,
                         showPreview: true,
-                        backScreen: 'EntitySearchScreen',
+                        backScreen: 'UniversalSearchStack',
+                        backScreenParams: {
+                          screen: 'EntitySearchScreen',
+                        },
                       },
                     });
                   }
@@ -1940,6 +2000,7 @@ export default function EntitySearchScreen({navigation, route}) {
                   (currentSubTab === strings.clubsTitleText && clubFilters)
                 }
                 onPress={() => {
+                  handleEntityPress(item);
                   navigation.navigate('HomeStack', {
                     screen: 'HomeScreen',
                     params: {
@@ -1958,6 +2019,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       backButtonVisible: true,
                       menuBtnVisible: false,
                       comeFrom: 'EntitySearchScreen',
+                      backScreen: 'EntitySearchScreen',
                       parentStack: route.params?.parentStack,
                       screen: route.params?.screen,
                     },
@@ -2048,6 +2110,19 @@ export default function EntitySearchScreen({navigation, route}) {
       return false;
     }
     return false;
+  };
+
+  useEffect(() => {
+    if (route.params?.searchData) {
+      setSearchText(route.params.searchData);
+      searchFilterFunction(route.params.searchData);
+    }
+  }, [route.params?.searchData]);
+
+  const handleEntityPress = async (obj = {}) => {
+    const recentSearchData = await Utility.getLocalSearchData();
+    const data = [...recentSearchData, obj];
+    Utility.setSearchDataToLocal(data);
   };
 
   return (
@@ -2142,8 +2217,18 @@ export default function EntitySearchScreen({navigation, route}) {
           (currentSubTab === strings.scorekeeperTitle && scorekeepers) ||
           (currentSubTab === strings.teamsTitleText && teams) ||
           (currentSubTab === strings.clubsTitleText && clubs) ||
-          (currentSubTab === strings.completedTitleText && completedGame) ||
-          (currentSubTab === strings.upcomingTitleText && upcomingGame)
+          (currentTab === 2 &&
+            currentSubTab === strings.completedTitleText &&
+            completedGame) ||
+          (currentTab === 2 &&
+            currentSubTab === strings.upcomingTitleText &&
+            upcomingGame) ||
+          (currentTab === 3 &&
+            currentSubTab === strings.completedTitleText &&
+            completedEvents) ||
+          (currentTab === 3 &&
+            currentSubTab === strings.upcomingTitleText &&
+            upcomingEvents)
         }
         ItemSeparatorComponent={renderSeparator}
         keyExtractor={keyExtractor}
@@ -2641,7 +2726,10 @@ export default function EntitySearchScreen({navigation, route}) {
                       uid: playerDetail.uid,
                       entityType: item.setting.entity_type,
                       showPreview: true,
-                      backScreen: 'EntitySearchScreen',
+                      backScreen: 'UniversalSearchStack',
+                      backScreenParams: {
+                        screen: 'EntitySearchScreen',
+                      },
                     },
                   });
                 }}

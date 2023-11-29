@@ -3241,4 +3241,8 @@ export default {
   inviteYourFriends: 'en_Invite your friends',
   teamRerutingMembersText: 'en_Team Recruiting Members',
   pausedText: 'en_Paused',
+  tournamentsTitle: 'en_Tournaments',
+  levelCount: 'en_Lv. {0}',
+  recentText: 'en_Recent',
+  noResultFoundFor: 'en_No results found for “{0}”.',
 };

@@ -4,7 +4,7 @@ import FastImage from 'react-native-fast-image';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import images from '../../Constants/ImagePath';
+// import images from '../../Constants/ImagePath';
 
 function PostImageSet({
   data,
@@ -37,7 +37,7 @@ function PostImageSet({
 
   return (
     <View style={styles.mainContainer}>
-      <View
+      {/* <View
         style={[
           styles.uploadedImage,
           {borderWidth: 1, borderColor: colors.lightgrayColor},
@@ -48,7 +48,7 @@ function PostImageSet({
           resizeMode={FastImage.resizeMode.contain}
         />
         <Text style={styles.loadingTextStyle}>Loading...</Text>
-      </View>
+      </View> */}
       <TouchableWithoutFeedback onPress={toggleModal}>
         <FastImage
           style={[styles.uploadedImage, {position: 'absolute'}]}
@@ -68,10 +68,10 @@ function PostImageSet({
 }
 
 const styles = StyleSheet.create({
-  imageStyle: {
-    height: 50,
-    width: 50,
-  },
+  // imageStyle: {
+  //   height: 50,
+  //   width: 50,
+  // },
   lengthTextStyle: {
     color: '#fff',
     fontFamily: fonts.RRegular,
@@ -89,12 +89,12 @@ const styles = StyleSheet.create({
     right: 10,
     top: 18,
   },
-  loadingTextStyle: {
-    color: colors.googleColor,
-    fontFamily: fonts.RBold,
-    fontSize: 14,
-    marginTop: 25,
-  },
+  // loadingTextStyle: {
+  //   color: colors.googleColor,
+  //   fontFamily: fonts.RBold,
+  //   fontSize: 14,
+  //   marginTop: 25,
+  // },
   mainContainer: {
     backgroundColor: colors.whiteColor,
     borderRadius: wp('4%'),
@@ -104,16 +104,16 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     elevation: 2,
     height: wp('91%'),
-    width: wp('91%'),
+    width: wp('100%'),
     marginVertical: '1%',
   },
   uploadedImage: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 8,
+    // borderRadius: 8,
     justifyContent: 'center',
     height: wp('91%'),
-    width: wp('91%'),
+    width: wp('100%'),
   },
 });
 

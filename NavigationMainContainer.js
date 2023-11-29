@@ -28,12 +28,12 @@ import ScheduleNavigator from './app/navigation/ScheduleNavigator';
 import NewsFeedNavigator from './app/navigation/NewsFeedNavigator';
 import MembersNavigator from './app/navigation/MembersNavigator';
 import LocalHomeNavigator from './app/navigation/LocalHomeNavigator';
-import EntitySearchScreen from './app/screens/EntitySearchScreen';
 import AccountNavigator from './app/navigation/AccountNavigator';
 import HomeNavigator from './app/navigation/HomeNavigator';
 import NotificationNavigator from './app/navigation/NotificationNavigator';
 import ReservationNavigator from './app/navigation/ReservationNavigator';
 import SingleNotificationScreen from './app/screens/notificationsScreen/SingleNotificationScreen';
+import SearchNavigator from './app/navigation/SearchNavigator';
 
 // import {getUnreadNotificationCount} from './app/utils/accountUtils';
 
@@ -179,8 +179,8 @@ function NavigationMainContainer() {
                   options={{headerShown: false}}
                 />
                 <Stack.Screen
-                  name="EntitySearchScreen"
-                  component={EntitySearchScreen}
+                  name="UniversalSearchStack"
+                  component={SearchNavigator}
                   options={{headerShown: false}}
                 />
                 <Stack.Screen

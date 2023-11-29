@@ -82,7 +82,7 @@ function MultiPostVideo({
 
   return (
     <View style={styles.mainContainer}>
-      <View
+      {/* <View
         style={[
           styles.singleImageDisplayStyle,
           {borderWidth: 1, borderColor: colors.lightgrayColor},
@@ -93,7 +93,7 @@ function MultiPostVideo({
           resizeMode={FastImage.resizeMode.contain}
         />
         <Text style={styles.loadingTextStyle}>Loading...</Text>
-      </View>
+      </View> */}
       <TouchableWithoutFeedback
         onPress={() => {
           toggleModal();
@@ -171,16 +171,16 @@ const styles = StyleSheet.create({
     right: 10,
     top: 18,
   },
-  loadimageStyle: {
-    height: 50,
-    width: 50,
-  },
-  loadingTextStyle: {
-    color: colors.googleColor,
-    fontFamily: fonts.RBold,
-    fontSize: 14,
-    marginTop: 25,
-  },
+  // loadimageStyle: {
+  //   height: 50,
+  //   width: 50,
+  // },
+  // loadingTextStyle: {
+  //   color: colors.googleColor,
+  //   fontFamily: fonts.RBold,
+  //   fontSize: 14,
+  //   marginTop: 25,
+  // },
   pauseMuteStyle: {
     alignItems: 'center',
     alignSelf: 'flex-end',
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: wp('91%'),
     justifyContent: 'center',
-    width: wp('91%'),
+    width: wp('100%'),
   },
   singleImageDisplayStyle: {
     alignItems: 'center',
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: wp('91%'),
     justifyContent: 'center',
-    width: wp('91%'),
+    width: wp('100%'),
   },
 });
 

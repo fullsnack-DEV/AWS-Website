@@ -65,7 +65,6 @@ import fonts from '../Constants/Fonts';
 import LookingForSettingScreen from '../screens/home/playInModule/LookingForSettingScreen';
 import SportActivityTagScreen from '../screens/home/SportActivityTagScreen';
 import DeactivateSportScreen from '../components/Home/DeactivateSportScreen';
-import SearchScreen from '../screens/search/SearchScreen';
 
 import RespondForInviteScreen from '../screens/notificationsScreen/RespondForInviteScreen';
 import SportSettingScreen from '../screens/localhome/SportSettingScreen';
@@ -959,23 +958,6 @@ const AccountNavigator = () => (
       name="TerminateAccountScreen"
       component={TerminateAccountScreen}
       options={{headerShown: false}}
-    />
-    <Stack.Screen
-      name="SearchScreen"
-      component={SearchScreen}
-      options={{
-        title: 'Search',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
     />
     <Stack.Screen
       name="RespondForInviteScreen"

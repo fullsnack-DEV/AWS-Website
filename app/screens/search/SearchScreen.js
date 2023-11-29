@@ -1,113 +1,326 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable array-callback-return */
-import React, {useState, useContext, useEffect} from 'react';
-import {View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
-import TCSearchBox from '../../components/TCSearchBox';
-import AllInOneGallery from '../home/AllInOneGallery';
-import AuthContext from '../../auth/context';
-import {getSportsList} from '../../api/Games';
+// @flow
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  Image,
+  View,
+  SafeAreaView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  BackHandler,
+  FlatList,
+} from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
+import ScreenHeader from '../../components/ScreenHeader';
+import {strings} from '../../../Localization/translation';
+import images from '../../Constants/ImagePath';
+import ActivityLoader from '../../components/loader/ActivityLoader';
+import colors from '../../Constants/Colors';
+import SearchTagList from './components/SearchTagList';
+import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
+import PeopleSection from './components/PeopleSection';
+import SectionHeader from './components/SectionHeader';
+import GroupsSection from './components/GroupsSection';
+import Verbs from '../../Constants/Verbs';
+import {getLocalSearchData, setSearchDataToLocal} from '../../utils';
+import RecentSearchItem from './components/RecentSearchItem';
 
 const SearchScreen = ({navigation, route}) => {
-  console.log('route value --->');
-  console.log(route.params);
-  const authContext = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [peoples, setPeoples] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [showRecentResults, setShowRecentResults] = useState(false);
+  const [recentSearchResults, setRecentSearchResults] = useState([]);
+  const [filterResult, setFilterResult] = useState([]);
 
-  const [isAdmin] = useState(route?.params?.isAdmin);
-  const [galleryRef] = useState(route?.params?.galleryRef);
-  const [entityType] = useState(route?.params?.entityType);
-  const [entityID] = useState(route?.params?.entityID);
+  const isFocused = useIsFocused();
+  const inputRef = useRef();
+  let timeoutRef = useRef();
 
-  const [sports, setSports] = useState([]);
+  const getLocalData = useCallback(async () => {
+    const localSearchData = await getLocalSearchData();
+
+    setRecentSearchResults(localSearchData);
+    setFilterResult(localSearchData);
+  }, []);
 
   useEffect(() => {
-    getSportsList(authContext).then((res) => {
-      const sport = [];
-      res.payload.map((item) =>
-        sport.push({
-          label: item?.sport_name,
-          value: item?.sport_name.toLowerCase(),
-        }),
-      );
-      setSports([...sport]);
-    });
+    if (isFocused) {
+      getLocalData();
+    }
+  }, [isFocused, getLocalData]);
 
-    // if (isFocused) {
-    //   setloading(true);
-    //   getSportsList(authContext)
-    //     .then((res) => {
-    //       setloading(false);
-    //       if (res.payload) {
-    //         const arr = [
-    //           {
-    //             isChecked: true,
-    //             sport_name: 'All',
-    //           },
-    //         ];
-    //         for (const tempData of res.payload) {
-    //           tempData.isChecked = false;
-    //           arr.push(tempData);
-    //         }
-    //         setSports(arr);
-    //         setTimeout(() => setloading(false), 1000);
-    //       }
-    //     })
-    //     .catch((e) => {
-    //       console.log('catch -> sports list api');
-    //       setloading(false);
-    //       setTimeout(() => {
-    //         Alert.alert(strings.alertmessagetitle, e.message);
-    //       }, 10);
-    //     });
-    // }
-  }, [authContext]);
+  const getLists = useCallback(() => {
+    const proimseArr = [getUserIndex({}), getGroupIndex({})];
+    setLoading(true);
+    Promise.all(proimseArr)
+      .then(([peopleList, groupList]) => {
+        setPeoples(peopleList.splice(0, 3));
+        setGroups(groupList.splice(0, 3));
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log({err});
+        setLoading(false);
+      });
+  }, []);
 
-  const onPressSearchScreen = () => {
+  useEffect(() => {
+    if (isFocused) {
+      getLists();
+    }
+  }, [isFocused, getLists]);
+
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.navigate('App', {
+        screen: 'LocalHome',
+      });
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
+  const handleTagPress = (selectedTag = {}) => {
+    if (selectedTag.parentTag === null) return;
     navigation.navigate('EntitySearchScreen', {
-      sportsList: sports,
+      activeTab: selectedTag.parentTag,
+      activeSubTab: selectedTag.value,
     });
   };
 
+  const removeFromLocal = (data = null) => {
+    if (typeof data === 'string') {
+      const list = recentSearchResults.filter((item) => item !== data);
+
+      setFilterResult(list);
+      setSearchDataToLocal(list);
+      setRecentSearchResults(list);
+    }
+  };
+
   return (
-    // <View>
-    //   <TouchableOpacity onPress={onPressSearchScreen}>
-    //     <View>
-    //       <TCSearchBox
-    //         alignSelf={'center'}
-    //         marginTop={13}
-    //         marginBottom={15}
-    //         editable={false}
-    //       />
-    //     </View>
-    //   </TouchableOpacity>
-    <ScrollView style={styles.mainContainer}>
-      <TouchableOpacity onPress={onPressSearchScreen}>
-        <View>
-          <TCSearchBox
-            alignSelf={'center'}
-            marginTop={13}
-            marginBottom={15}
-            editable={false}
-          />
-        </View>
-      </TouchableOpacity>
-      <AllInOneGallery
-        isAdmin={isAdmin}
-        ref={galleryRef}
-        entity_type={
-          ['user', 'player'].includes(entityType) ? 'player' : entityType
-        }
-        entity_id={entityID}
-        showSubTabs={false}
-        navigation={navigation}
+    <SafeAreaView style={styles.parent}>
+      <ScreenHeader
+        title={strings.searchText}
+        leftIcon={images.backArrow}
+        leftIconPress={handleBackPress}
       />
-    </ScrollView>
-    // </View>
+      <ActivityLoader visible={loading} />
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          ref={inputRef}
+          value={searchText}
+          style={styles.input}
+          placeholder={strings.searchText}
+          placeholderTextColor={colors.userPostTimeColor}
+          onChangeText={(value) => {
+            setSearchText(value);
+            clearTimeout(timeoutRef.current);
+            timeoutRef = setTimeout(() => {
+              const res = recentSearchResults.filter((ele) =>
+                (
+                  ele.group_name?.toLowerCase() ??
+                  ele.full_name?.toLowerCase() ??
+                  ele?.toLowerCase()
+                ).includes(value.toLowerCase()),
+              );
+              setFilterResult(res);
+            }, 300);
+          }}
+          onFocus={() => {
+            setShowRecentResults(true);
+          }}
+          onBlur={() => {
+            setShowRecentResults(false);
+          }}
+          onEndEditing={() => {
+            if (searchText) {
+              const data = [...recentSearchResults, searchText];
+
+              setSearchDataToLocal(data);
+              navigation.navigate('EntitySearchScreen', {
+                activeTab: 0,
+                searchData: searchText,
+              });
+            }
+          }}
+        />
+
+        <TouchableOpacity
+          onPress={() => {
+            setSearchText('');
+            inputRef.current.blur();
+          }}>
+          <Image source={images.closeRound} style={{height: 15, width: 15}} />
+        </TouchableOpacity>
+      </View>
+      {!showRecentResults && (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <SearchTagList onPress={handleTagPress} />
+          <View style={[styles.separator, {marginTop: 10}]} />
+
+          {peoples.length > 0 || groups.length > 0 ? (
+            <>
+              <PeopleSection
+                list={peoples}
+                onPressSection={() => {
+                  navigation.navigate('EntitySearchScreen', {
+                    activeTab: 0,
+                  });
+                }}
+                onPress={(data) => {
+                  navigation.navigate('HomeStack', {
+                    screen: 'HomeScreen',
+                    params: {
+                      uid: data.user_id,
+                      role: data.entity_type ?? Verbs.entityTypePlayer,
+                      comeFrom: 'EntitySearchScreen',
+                      backScreen: 'SearchScreen',
+                      parentStack: route.params?.parentStack,
+                      screen: route.params.screen,
+                    },
+                  });
+                }}
+              />
+              <View style={styles.separator} />
+
+              <GroupsSection
+                list={groups}
+                onPressSection={() => {
+                  navigation.navigate('EntitySearchScreen', {
+                    activeTab: 1,
+                  });
+                }}
+                onPress={(data) => {
+                  navigation.navigate('HomeStack', {
+                    screen: 'HomeScreen',
+                    params: {
+                      uid: data.group_id,
+                      role: data.entity_type,
+                      comeFrom: 'EntitySearchScreen',
+                      backScreen: 'SearchScreen',
+                      parentStack: route.params?.parentStack,
+                      screen: route.params.screen,
+                    },
+                  });
+                }}
+              />
+              <View style={styles.separator} />
+
+              <View style={{paddingHorizontal: 15}}>
+                <SectionHeader
+                  title={strings.matchesTitleText}
+                  onPressSection={() => {
+                    navigation.navigate('EntitySearchScreen', {
+                      activeTab: 2,
+                    });
+                  }}
+                />
+              </View>
+              <View style={styles.separator} />
+
+              <View style={{paddingHorizontal: 15}}>
+                <SectionHeader
+                  title={strings.eventsTitle}
+                  onPressSection={() => {
+                    navigation.navigate('EntitySearchScreen', {
+                      activeTab: 3,
+                    });
+                  }}
+                />
+              </View>
+              <View style={styles.separator} />
+            </>
+          ) : null}
+        </ScrollView>
+      )}
+      {showRecentResults && filterResult.length > 0 && (
+        <View style={{paddingHorizontal: 15}}>
+          <SectionHeader title={strings.recentText} />
+          <View style={{marginTop: 24}}>
+            <FlatList
+              data={filterResult}
+              keyExtractor={(item, index) => index.toString()}
+              showsVerticalScrollIndicator={false}
+              renderItem={({item}) => (
+                <RecentSearchItem
+                  data={item}
+                  onRemove={removeFromLocal}
+                  onPress={(data) => {
+                    if (typeof data === 'string') {
+                      navigation.navigate('EntitySearchScreen', {
+                        activeTab: 0,
+                        searchData: data,
+                      });
+                    } else if (data.group_id || data.user_id) {
+                      navigation.navigate('HomeStack', {
+                        screen: 'HomeScreen',
+                        params: {
+                          uid: data.group_id ?? data.user_id,
+                          role: data.entity_type ?? Verbs.entityTypePlayer,
+                          comeFrom: 'EntitySearchScreen',
+                          backScreen: 'SearchScreen',
+                          parentStack: route.params?.parentStack,
+                          screen: route.params.screen,
+                        },
+                      });
+                    }
+                  }}
+                />
+              )}
+            />
+          </View>
+        </View>
+      )}
+    </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
-  mainContainer: {
+  parent: {
     flex: 1,
-    flexDirection: 'column',
+  },
+  inputContainer: {
+    height: 40,
+    marginTop: 20,
+    borderRadius: 20,
+    marginHorizontal: 15,
+    marginBottom: 15,
+    backgroundColor: colors.textFieldBackground,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 15,
+  },
+  input: {
+    flex: 1,
+    padding: 0,
+    borderRadius: 20,
+    paddingHorizontal: 15,
+  },
+  separator: {
+    height: 7,
+    backgroundColor: colors.grayBackgroundColor,
+    marginVertical: 25,
   },
 });
 export default SearchScreen;

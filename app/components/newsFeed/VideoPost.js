@@ -41,7 +41,7 @@ const VideoPost = memo(
     const imageRatio = data.media_height / data.media_width;
     const defaultLandscapRatio = 0.71;
     const defaultPortraitRatio = 1.29;
-    const defaultScreenWidth = Dimensions.get('window').width - 30;
+    const defaultScreenWidth = Dimensions.get('window').width;
     const defaultLandscapHeight = 250;
     const defaultPortraitHeight = 450;
     // eslint-disable-next-line consistent-return
@@ -127,7 +127,7 @@ const VideoPost = memo(
     return (
       <View
         style={{...styles.mainContainer, height: getImageDimention().height}}>
-        <View
+        {/* <View
           style={{
             ...styles.singleImageDisplayStyle,
             borderWidth: 1,
@@ -140,7 +140,7 @@ const VideoPost = memo(
             resizeMode={FastImage.resizeMode.contain}
           />
           <Text style={styles.loadingTextStyle}>Loading...</Text>
-        </View>
+        </View> */}
 
         <TouchableWithoutFeedback onPress={toggleModal}>
           <Video
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     height: wp('96%'),
     justifyContent: 'center',
     marginVertical: wp('1%'),
-    width: wp('96%'),
+    width: wp('100%'),
   },
   singleImageDisplayStyle: {
     alignItems: 'center',
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: wp('96%'),
     justifyContent: 'center',
-    width: wp('96%'),
+    width: wp('100%'),
   },
   currentTime: {
     fontSize: 15,

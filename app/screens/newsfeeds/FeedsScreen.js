@@ -289,11 +289,14 @@ const FeedsScreen = ({navigation, route}) => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('EntitySearchScreen', {
-              sportsList: sports,
-              sportsArray: sportArr,
-              parentStack: 'App',
-              screen: 'NewsFeed',
+            navigation.navigate('UniversalSearchStack', {
+              screen: 'EntitySearchScreen',
+              params: {
+                sportsList: sports,
+                sportsArray: sportArr,
+                parentStack: 'App',
+                screen: 'NewsFeed',
+              },
             });
           }}
           style={[styles.headerIconContainer, {marginLeft: 7}]}>

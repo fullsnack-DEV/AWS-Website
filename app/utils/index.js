@@ -2712,3 +2712,15 @@ export const formatCurrency = (value, currency) => {
 
   return formattedNumber;
 };
+
+export const setSearchDataToLocal = async (data = []) => {
+  await AsyncStorage.setItem('LocalSearchData', JSON.stringify(data));
+};
+
+export const getLocalSearchData = async () => {
+  const data = await AsyncStorage.getItem('LocalSearchData');
+  if (data) {
+    return JSON.parse(data);
+  }
+  return [];
+};

@@ -3,15 +3,15 @@ import React, {memo, useCallback} from 'react';
 import {
   StyleSheet,
   View,
-  Text,
+  // Text,
   TouchableWithoutFeedback,
   Dimensions,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import colors from '../../Constants/Colors';
-import fonts from '../../Constants/Fonts';
-import images from '../../Constants/ImagePath';
+// import fonts from '../../Constants/Fonts';
+// import images from '../../Constants/ImagePath';
 
 function SingleImage({
   data,
@@ -23,7 +23,7 @@ function SingleImage({
   const imageRatio = data.media_height / data.media_width;
   const defaultLandscapRatio = 0.71;
   const defaultPortraitRatio = 1.29;
-  const defaultScreenWidth = Dimensions.get('window').width - 30;
+  const defaultScreenWidth = Dimensions.get('window').width;
   const defaultLandscapHeight = 250;
   const defaultPortraitHeight = 450;
   const itemData = JSON.parse(item.object);
@@ -81,7 +81,7 @@ function SingleImage({
               : getImageDimention().height,
         },
       ]}>
-      <View
+      {/* <View
         style={[
           styles.uploadedImage,
           {
@@ -99,7 +99,7 @@ function SingleImage({
           resizeMode={FastImage.resizeMode.contain}
         />
         <Text style={styles.loadingTextStyle}>Loading...</Text>
-      </View>
+      </View> */}
       <TouchableWithoutFeedback
         onPress={() => {
           if (uploadImageURL) {
@@ -113,7 +113,7 @@ function SingleImage({
               itemData?.post_type === 'repost'
                 ? getImageDimention().height - 30
                 : getImageDimention().height,
-            width: itemData?.post_type === 'repost' ? wp('88%') : wp('90%'),
+            width: itemData?.post_type === 'repost' ? wp('88%') : wp('100%'),
             position: 'absolute',
           }}
           source={{uri: uploadImageURL}}
@@ -125,16 +125,16 @@ function SingleImage({
 }
 
 const styles = StyleSheet.create({
-  imageStyle: {
-    height: 50,
-    width: 50,
-  },
-  loadingTextStyle: {
-    color: colors.googleColor,
-    fontFamily: fonts.RBold,
-    fontSize: 14,
-    marginTop: 25,
-  },
+  // imageStyle: {
+  //   height: 50,
+  //   width: 50,
+  // },
+  // loadingTextStyle: {
+  //   color: colors.googleColor,
+  //   fontFamily: fonts.RBold,
+  //   fontSize: 14,
+  //   marginTop: 25,
+  // },
   mainContainer: {
     backgroundColor: colors.whiteColor,
     borderRadius: 0,
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    // borderRadius: 8,
     height: wp('96%'),
   },
 });

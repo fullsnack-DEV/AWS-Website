@@ -124,8 +124,8 @@ const FeedMedia = ({
           }
           inactiveSlideScale={1}
           inactiveSlideOpacity={1}
-          sliderWidth={Dimensions.get('window').width - 30}
-          itemWidth={Dimensions.get('window').width - 20}
+          sliderWidth={Dimensions.get('window').width}
+          itemWidth={Dimensions.get('window').width}
         />
       </View>
     );

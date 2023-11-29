@@ -41,14 +41,16 @@ const Post = ({
 
   return (
     <View>
-      <FeedProfile
-        time={item.time}
-        data={item.actor.data}
-        onImageProfilePress={onImageProfilePress}
-        isRepost={false}
-        onThreeDotPress={onThreeDotPress}
-        showMoreOptions={showMoreOptions}
-      />
+      <View style={{paddingHorizontal: 15}}>
+        <FeedProfile
+          time={item.time}
+          data={item.actor.data}
+          onImageProfilePress={onImageProfilePress}
+          isRepost={false}
+          onThreeDotPress={onThreeDotPress}
+          showMoreOptions={showMoreOptions}
+        />
+      </View>
       {isRepost && (
         <>
           <View style={{marginBottom: 15}}>
@@ -78,13 +80,15 @@ const Post = ({
       )}
       <View style={isRepost ? styles.repostContainer : {flex: 1}}>
         {isRepost ? (
-          <FeedProfile
-            time={repostActivity.time}
-            data={repostActivity.actor.data}
-            onImageProfilePress={onImageProfilePress}
-            isRepost
-            onThreeDotPress={onThreeDotPress}
-          />
+          <View style={{paddingHorizontal: 15}}>
+            <FeedProfile
+              time={repostActivity.time}
+              data={repostActivity.actor.data}
+              onImageProfilePress={onImageProfilePress}
+              isRepost
+              onThreeDotPress={onThreeDotPress}
+            />
+          </View>
         ) : (
           <FeedMedia
             data={postData}
@@ -100,19 +104,22 @@ const Post = ({
             setChildIndex={setChildIndex}
           />
         )}
+        <View style={{paddingHorizontal: 15}}>
+          <NewsFeedDescription
+            descriptions={data.text}
+            numberOfLineDisplay={data.attachments?.length > 0 ? 3 : 14}
+            tagData={data.format_tagged_data ?? []}
+            navigation={navigation}
+            isNewsFeedScreen={isNewsFeedScreen}
+            openProfilId={openProfilId}
+            descText={isRepost ? styles.repostText : {}}
+            descriptionTxt={isRepost ? styles.repostText : {}}
+          />
+        </View>
 
-        <NewsFeedDescription
-          descriptions={data.text}
-          numberOfLineDisplay={data.attachments?.length > 0 ? 3 : 14}
-          tagData={data.format_tagged_data ?? []}
-          navigation={navigation}
-          isNewsFeedScreen={isNewsFeedScreen}
-          openProfilId={openProfilId}
-          descText={isRepost ? styles.repostText : {}}
-          descriptionTxt={isRepost ? styles.repostText : {}}
-        />
-
-        {!isRepost && renderURLPreview()}
+        {!isRepost ? (
+          <View style={{paddingHorizontal: 15}}>{renderURLPreview()}</View>
+        ) : null}
       </View>
     </View>
   );
