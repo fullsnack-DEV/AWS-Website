@@ -25,10 +25,10 @@ import {connectUserToStreamChat} from '../../utils/streamChat';
 
 const MessageMainScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleUserConnection = useCallback(async () => {
-    setLoading(true);
+    // setLoading(true);
     await connectUserToStreamChat(authContext);
     setLoading(false);
   }, [authContext]);
@@ -36,6 +36,8 @@ const MessageMainScreen = ({navigation}) => {
   useEffect(() => {
     if (authContext.chatClient && !authContext.chatClient?.userID) {
       handleUserConnection();
+    } else {
+      setLoading(false);
     }
   }, [authContext.chatClient, handleUserConnection]);
 

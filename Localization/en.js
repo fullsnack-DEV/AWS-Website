@@ -1379,16 +1379,23 @@ export default {
   deleteThisEventText: 'en_Do you want to delete this event ?',
   changeEventColor: 'en_Change Event Color',
   hide: 'en_Hide',
+  changelistforgarnizers: 'Change List of Orgarnizers',
+  changelistofsports: 'Change List of Sports',
+  sportsdisplayedinfilterbar: 'en_Sports Displayed in Filter Bar',
+  addUpTo10Sport: 'en_Upto 10 sports will be displayed in the filter bar',
   addUpTo10Organizers: 'en_You can add up to 10 organizers to the filter bar.',
   organizerDisplayInFilterBartext: 'en_Organizers displayed in filter bar',
   upTo10OrganizerText:
     'en_Upto 10 organizers can be displayed in the filter bar.',
-
+  noSports: 'en_No Sports',
+  Neweventswillappearhere: ' New events will appear here.',
   noOrganizers: 'en_No Organizers',
+  otherSports: 'en_Other sports',
   otherOrganizers: 'en_Other Organizers',
   someOrganizerJoinEventText:
     'en_ Some organizers of events you are going to join or joined are not visible here.',
-
+  someOrganizerJoinSportText:
+    'en_Some sports of events you are going to join or joined are not visible here.',
   scheduleOnlyText: 'en_Schedule only',
   scheduleAndPostText: 'en_Schedule & posts',
   daily: 'en_Daily',

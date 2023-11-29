@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect, useRef} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -74,7 +74,7 @@ export default function EventScreen({navigation, route}) {
   const FUTUREEVENT = 1;
   const ALLEVENT = 2;
 
-  const goingModalRef = useRef();
+  const [showGoingModal, setShowGoingModal] = useState(false);
   const [snapPoints, setSnapPoints] = useState([]);
 
   const recurringEditList = [
@@ -477,7 +477,7 @@ export default function EventScreen({navigation, route}) {
     removeAttendeeFromEvent(eventData.cal_id, [userData.user_id], authContext)
       .then(() => {
         setloading(false);
-        goingModalRef.current.dismiss();
+        setShowGoingModal(false);
         navigation.navigate('App', {
           screen: 'Schedule',
         });
@@ -503,6 +503,19 @@ export default function EventScreen({navigation, route}) {
     );
     return () => backHandler.remove();
   }, [navigation]);
+
+  const getOrganizerProfile = (data = {}) => {
+    if (data?.thumbnail) {
+      return {uri: data.thumbnail};
+    }
+    if (data.entity_type === Verbs.entityTypeTeam) {
+      return images.teamPH;
+    }
+    if (data.entity_type === Verbs.entityTypeClub) {
+      return images.newClubLogo;
+    }
+    return images.profilePlaceHolder;
+  };
 
   return (
     <SafeAreaView style={styles.mainContainerStyle}>
@@ -664,17 +677,19 @@ export default function EventScreen({navigation, route}) {
             <TouchableOpacity
               style={[
                 styles.tabItem,
-                activeTab === strings.postTitle ? styles.activeTabItem : {},
+                activeTab === strings.postsTitleText
+                  ? styles.activeTabItem
+                  : {},
               ]}
-              onPress={() => setActiveTab(strings.postTitle)}>
+              onPress={() => setActiveTab(strings.postsTitleText)}>
               <Text
                 style={[
                   styles.tabItemText,
-                  activeTab === strings.postTitle
+                  activeTab === strings.postsTitleText
                     ? styles.activeTabItemText
                     : {},
                 ]}>
-                {strings.postTitle}
+                {strings.postsTitleText}
               </Text>
             </TouchableOpacity>
           </View>
@@ -708,11 +723,7 @@ export default function EventScreen({navigation, route}) {
                     location={`${organizer.city}, ${
                       organizer.state_abbr ? organizer.state_abbr : ''
                     }${organizer.state_abbr ? ',' : ''} ${organizer.country}`}
-                    image={
-                      organizer.thumbnail
-                        ? {uri: organizer.thumbnail}
-                        : images.teamPH
-                    }
+                    image={getOrganizerProfile(organizer)}
                     alignSelf={'flex-start'}
                     marginTop={10}
                     profileImageStyle={{width: 40, height: 40}}
@@ -749,7 +760,7 @@ export default function EventScreen({navigation, route}) {
                         //   going_ids: eventData.going ?? [],
                         //   eventData,
                         // });
-                        goingModalRef.current?.present();
+                        setShowGoingModal(true);
                       }}
                       style={styles.seeAllText}>
                       {`${strings.seeAllText}`}
@@ -1065,7 +1076,7 @@ export default function EventScreen({navigation, route}) {
           </>
         ) : null}
 
-        {activeTab === strings.postTitle ? <></> : null}
+        {activeTab === strings.postsTitleText ? <></> : null}
       </ScrollView>
       <BottomSheet
         type={Platform.OS}
@@ -1140,9 +1151,10 @@ export default function EventScreen({navigation, route}) {
       </CustomModalWrapper>
 
       <GoingUsersModal
-        modalRef={goingModalRef}
+        isVisible={showGoingModal}
+        closeModal={() => setShowGoingModal(false)}
         goingList={going}
-        isOwner={eventData.owner_id === authContext.entity.uid}
+        ownerId={eventData.owner_id}
         onProfilePress={(obj) => {
           navigation.push('HomeStack', {
             screen: 'HomeScreen',

@@ -18,7 +18,6 @@ import {
 
 import DraggableFlatList from 'react-native-drag-flatlist';
 import ActionSheet from 'react-native-actionsheet';
-import FastImage from 'react-native-fast-image';
 import * as Utility from '../../../utils';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import AuthContext from '../../../auth/context';
@@ -28,8 +27,8 @@ import images from '../../../Constants/ImagePath';
 import {getUserSettings} from '../../../api/Users';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
-import Header from '../../../components/Home/Header';
 import TCThinDivider from '../../../components/TCThinDivider';
+import ScreenHeader from '../../../components/ScreenHeader';
 
 let image_url = '';
 
@@ -127,7 +126,12 @@ export default function ChangeSportsOrderScreen({
   const renderRemoveSportsActivity = useCallback(
     ({item, drag}) => (
       <View style={styles.sportsBackgroundView}>
-        <View style={{flexDirection: 'row'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
           <TouchableOpacity
             onPress={() => {
               const findIndex = addedSport.findIndex(
@@ -147,13 +151,12 @@ export default function ChangeSportsOrderScreen({
               style={styles.addIconStyle}
             />
           </TouchableOpacity>
-          <FastImage
+          <Image
             source={{
-              uri: `${image_url}${Utility.getSportImage(
-                item.sport,
-                item.type,
-                authContext,
-              )}`,
+              uri: `${image_url}${
+                Utility.getSportImage(item.sport, item.type, authContext)
+                  .player_image_white
+              }`,
             }}
             style={styles.sportsIcon}
             resizeMode={'contain'}
@@ -161,7 +164,6 @@ export default function ChangeSportsOrderScreen({
 
           <Text style={styles.sportNameTitle}>
             {item?.sport?.[0].toUpperCase() + item?.sport?.slice(1)}{' '}
-            {console.log('Item', item)}
           </Text>
         </View>
         <TouchableOpacity onLongPress={drag} style={{alignSelf: 'center'}}>
@@ -196,16 +198,15 @@ export default function ChangeSportsOrderScreen({
             style={{alignSelf: 'center'}}>
             <Image source={images.addSportList} style={styles.addIconStyle} />
           </TouchableOpacity>
-          <FastImage
+          <Image
             source={{
-              uri: `${image_url}${Utility.getSportImage(
-                item.sport,
-                item.type,
-                authContext,
-              )}`,
+              uri: `${image_url}${
+                Utility.getSportImage(item.sport, item.type, authContext)
+                  .player_image_white
+              }`,
             }}
             style={styles.sportsIcon}
-            resizeMode={'contain'}
+            // resizeMode={'contain'}
           />
           <Text style={styles.sportNameTitle}>
             {item?.sport?.[0].toUpperCase() + item?.sport?.slice(1)}
@@ -219,36 +220,24 @@ export default function ChangeSportsOrderScreen({
   return (
     <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
-      <Header
-        safeAreaStyle={{
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
+      <ScreenHeader
+        isFullTitle
+        title={strings.changelistofsports}
+        leftIcon={images.crossImage}
+        leftIconStyle={{width: 50}}
+        leftIconPress={() => {
+          closeBtn(false);
         }}
-        leftComponent={
-          <TouchableOpacity
-            onPress={() => {
-              closeBtn(false);
-            }}>
-            <Image source={images.crossImage} style={styles.backImageStyle} />
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text style={styles.eventTextStyle}>
-            {strings.editChallengeAvailibility}
-          </Text>
-        }
-        rightComponent={
-          <TouchableOpacity style={{padding: 2}} onPress={() => onSavePress()}>
-            <Text style={styles.saveText}>{strings.save}</Text>
-          </TouchableOpacity>
-        }
+        isRightIconText
+        rightButtonText={strings.apply}
+        onRightButtonPress={onSavePress}
       />
       <TCThinDivider width={'100%'} />
       <View style={{flex: 1, paddingBottom: 20}}>
-        <Text style={styles.mainTextStyle}>Sports displayed in filter bar</Text>
-        <Text style={styles.subTitle}>
-          Upto 10 sports will be displayed in the filter bar.
+        <Text style={styles.mainTextStyle}>
+          {strings.sportsdisplayedinfilterbar}
         </Text>
+        <Text style={styles.subTitle}>{strings.addUpTo10Sport}</Text>
 
         {addedSport.length > 0 ? (
           <DraggableFlatList
@@ -258,9 +247,9 @@ export default function ChangeSportsOrderScreen({
             renderItem={renderRemoveSportsActivity}
             ListEmptyComponent={
               <View style={{marginTop: 15}}>
-                <Text style={styles.noEventText}>No Sports</Text>
+                <Text style={styles.noEventText}> {strings.noSports}</Text>
                 <Text style={styles.dataNotFoundText}>
-                  New events will appear here.
+                  {strings.Neweventswillappearhere}
                 </Text>
               </View>
             }
@@ -283,10 +272,10 @@ export default function ChangeSportsOrderScreen({
           />
         ) : (
           <View style={{marginTop: 15}}>
-            <Text style={styles.noEventText}>No Sports</Text>
+            <Text style={styles.noEventText}>{strings.noSports}</Text>
           </View>
         )}
-        <Text style={styles.otherTitle}>Other sports</Text>
+        <Text style={styles.otherTitle}>{strings.otherSports}</Text>
         {removedSport.length > 0 ? (
           <DraggableFlatList
             showsHorizontalScrollIndicator={false}
@@ -303,12 +292,11 @@ export default function ChangeSportsOrderScreen({
           />
         ) : (
           <View style={{marginTop: 15}}>
-            <Text style={styles.noEventText}>No Sports</Text>
+            <Text style={styles.noEventText}>{strings.noSports}</Text>
           </View>
         )}
         <Text style={styles.headerTextStyle}>
-          Some sports of events you are going to join or joined are not visible
-          here.
+          {strings.someOrganizerJoinSportText}
         </Text>
         <ActionSheet
           ref={actionSheet}
@@ -359,13 +347,6 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 
-  backImageStyle: {
-    height: 20,
-    width: 20,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
-    // marginLeft: 15,
-  },
   subTitle: {
     fontFamily: fonts.RRegular,
     fontSize: 14,
@@ -415,15 +396,10 @@ const styles = StyleSheet.create({
     color: colors.veryLightBlack,
     alignSelf: 'center',
   },
-  saveText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-  eventTextStyle: {
-    fontFamily: fonts.RBold,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    marginLeft: 27,
+  sportsIcon: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
+    borderRadius: 50,
   },
 });

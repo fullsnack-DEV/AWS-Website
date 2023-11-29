@@ -60,7 +60,6 @@ import {
   countNumberOfWeeks,
   getTCDate,
   ordinal_suffix_of,
-  formatCurrency,
   getNumberFromCurrency,
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
@@ -157,9 +156,7 @@ export default function EditEventScreen({navigation, route}) {
         setEventPosted({...data.event_posted_at});
         setMinAttendees(data.min_attendees ?? '');
         setMaxAttendees(data.max_attendees ?? '');
-        setEventFee(
-          data.event_fee.value ? formatCurrency(data.event_fee.value) : '',
-        );
+        setEventFee(data.event_fee.value ?? '');
         setRefundPolicy(data.refund_policy ?? '');
         setEventStartdateTime(getJSDate(data.start_datetime));
         setEventEnddateTime(getJSDate(data.end_datetime));
@@ -1271,11 +1268,7 @@ export default function EditEventScreen({navigation, route}) {
                 <TextInput
                   style={styles.eventFeeStyle}
                   onChangeText={(value) => {
-                    const formattedNumber = formatCurrency(
-                      value,
-                      selectedCurrency,
-                    );
-                    setEventFee(formattedNumber);
+                    setEventFee(value);
                   }}
                   value={`${eventFee}`}
                   textAlignVertical={'center'}

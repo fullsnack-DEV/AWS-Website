@@ -370,8 +370,8 @@ const styles = StyleSheet.create({
   bottomPopupContainer: {
     paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
     position: 'absolute',
     bottom: 0,
     width: '100%',

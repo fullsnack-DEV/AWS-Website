@@ -2346,9 +2346,10 @@ export default function EntitySearchScreen({navigation, route}) {
             const contentHeight = event.nativeEvent.layout.height + 80;
 
             setSnapPoints([
-              '50%',
+              // '50%',
               contentHeight,
-              Dimensions.get('window').height - 40,
+              contentHeight,
+              // Dimensions.get('window').height - 40,
             ]);
           }}
           style={{paddingBottom: 40}}>

@@ -127,11 +127,7 @@ function NavigationMainContainer() {
   }, [authContext]);
 
   useEffect(() => {
-    if (
-      authContext.entity?.uid &&
-      authContext.chatClient &&
-      !authContext.chatClient?.userID
-    ) {
+    if (authContext.entity?.uid && authContext.chatClient) {
       connectUserToStreamChat(authContext);
     }
   }, [authContext.entity?.uid, authContext.chatClient]);

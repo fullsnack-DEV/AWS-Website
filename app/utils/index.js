@@ -2180,7 +2180,7 @@ export const getSportIconUrl = async (sport, entityType, authContext) => {
   return '';
 };
 
-export const getSportImage = (sportName, type, authContext) => {
+export const getSportImage = (sportName, type = 'player', authContext) => {
   console.log('TYPET', type);
   if (type === 'player') {
     const tempObj = authContext.sports.filter(

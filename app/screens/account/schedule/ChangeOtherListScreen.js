@@ -1,10 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from 'react';
+import React, {useContext, useEffect, useState, useCallback} from 'react';
 import {
   View,
   StyleSheet,
@@ -12,8 +7,7 @@ import {
   Alert,
   TouchableOpacity,
   Image,
-  Dimensions,
-  Platform
+  SafeAreaView,
 } from 'react-native';
 import DraggableFlatList from 'react-native-drag-flatlist';
 import * as Utility from '../../../utils/index';
@@ -26,27 +20,30 @@ import images from '../../../Constants/ImagePath';
 import {getGroups, getTeamsOfClub} from '../../../api/Groups';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
-import Header from '../../../components/Home/Header';
 import TCThinDivider from '../../../components/TCThinDivider';
+import ScreenHeader from '../../../components/ScreenHeader';
 
-export default function ChangeOtherListScreen({navigation, closeBtn, userSetting, setUserSetting}) {
+export default function ChangeOtherListScreen({
+  navigation,
+  closeBtn,
+  userSetting,
+  setUserSetting,
+}) {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [addedGroups, setAddedGroups] = useState([]);
   const [removedGroups, setremovedGroups] = useState([]);
 
-  
-
-  const onDonePress = useCallback(async() => {
+  const onDonePress = useCallback(async () => {
     setLoading(true);
     if (addedGroups.length > 0) {
       let params;
-      if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+      if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
         params = {
           ...userSetting,
           club_schedule_group_filter: addedGroups,
         };
-      }else{
+      } else {
         params = {
           ...userSetting,
           schedule_group_filter: addedGroups,
@@ -55,83 +52,85 @@ export default function ChangeOtherListScreen({navigation, closeBtn, userSetting
       setUserSetting(params);
       closeBtn(false);
       setLoading(false);
-      
     } else {
       setLoading(false);
       Alert.alert('Please select any of the group.');
     }
   }, [addedGroups, authContext, navigation]);
 
-
   useEffect(() => {
     setLoading(true);
-    if([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+    if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
       getTeamsOfClub(authContext.entity.uid, authContext)
-      .then((response) => {
-        getUserSettings(authContext).then((setting) => {
-          setUserSetting(setting.payload.user);
-          if (
-            setting.payload.user?.club_schedule_group_filter &&
-            setting.payload.user?.club_schedule_group_filter.length > 0
-          ) {
-            setAddedGroups([...setting.payload?.user?.club_schedule_group_filter]);
-            setremovedGroups([
-              ...[...response.payload].filter(
-                (e) =>
-                  !setting.payload.user?.club_schedule_group_filter.some(
-                    (item) => item.group_id === e.group_id,
-                  ),
-              ),
-            ]);
-          } else {
-            const groups = [...response.payload].map((obj) => ({
-              ...obj,
-              isSelected: false,
-            }));
-            setAddedGroups([...groups.filter((obj) => obj.isSelected)]);
-            setremovedGroups([...groups.filter((obj) => !obj.isSelected)]);
-          }
+        .then((response) => {
+          getUserSettings(authContext).then((setting) => {
+            setUserSetting(setting.payload.user);
+            if (
+              setting.payload.user?.club_schedule_group_filter &&
+              setting.payload.user?.club_schedule_group_filter.length > 0
+            ) {
+              setAddedGroups([
+                ...setting.payload?.user?.club_schedule_group_filter,
+              ]);
+              setremovedGroups([
+                ...[...response.payload].filter(
+                  (e) =>
+                    !setting.payload.user?.club_schedule_group_filter.some(
+                      (item) => item.group_id === e.group_id,
+                    ),
+                ),
+              ]);
+            } else {
+              const groups = [...response.payload].map((obj) => ({
+                ...obj,
+                isSelected: false,
+              }));
+              setAddedGroups([...groups.filter((obj) => obj.isSelected)]);
+              setremovedGroups([...groups.filter((obj) => !obj.isSelected)]);
+            }
+            setLoading(false);
+          });
+        })
+        .catch((e) => {
           setLoading(false);
+          Alert.alert('', e.messages);
         });
-      })
-      .catch((e) => {
-        setLoading(false);
-        Alert.alert('', e.messages);
-      });
-    }else{
+    } else {
       getGroups(authContext)
-      .then((response) => {
-        const {teams, clubs} = response.payload;
-        getUserSettings(authContext).then((setting) => {
-          setUserSetting(setting.payload.user);
-          if (
-            setting?.payload?.user?.schedule_group_filter &&
-            setting?.payload?.user?.schedule_group_filter?.length > 0
-          ) {
-            setAddedGroups([...setting?.payload?.user?.schedule_group_filter]);
-            setremovedGroups([
-              ...[...teams, ...clubs].filter(
-                (e) =>
-                  !setting?.payload?.user?.schedule_group_filter.some(
-                    (item) => item.group_id === e.group_id,
-                  ),
-              ),
-            ]);
-          } else {
-            const groups = [...teams, ...clubs].map((obj) => ({
-              ...obj,
-              isSelected: false,
-            }));
-            setAddedGroups([...groups.filter((obj) => obj.isSelected)]);
-            setremovedGroups([...groups.filter((obj) => !obj.isSelected)]);
-          }
+        .then((response) => {
+          const {teams, clubs} = response.payload;
+          getUserSettings(authContext).then((setting) => {
+            setUserSetting(setting.payload.user);
+            if (
+              setting?.payload?.user?.schedule_group_filter &&
+              setting?.payload?.user?.schedule_group_filter?.length > 0
+            ) {
+              setAddedGroups([
+                ...setting?.payload?.user?.schedule_group_filter,
+              ]);
+              setremovedGroups([
+                ...[...teams, ...clubs].filter(
+                  (e) =>
+                    !setting?.payload?.user?.schedule_group_filter.some(
+                      (item) => item.group_id === e.group_id,
+                    ),
+                ),
+              ]);
+            } else {
+              const groups = [...teams, ...clubs].map((obj) => ({
+                ...obj,
+                isSelected: false,
+              }));
+              setAddedGroups([...groups.filter((obj) => obj.isSelected)]);
+              setremovedGroups([...groups.filter((obj) => !obj.isSelected)]);
+            }
+            setLoading(false);
+          });
+        })
+        .catch((e) => {
           setLoading(false);
+          Alert.alert('', e.messages);
         });
-      })
-      .catch((e) => {
-        setLoading(false);
-        Alert.alert('', e.messages);
-      });
     }
   }, [authContext]);
 
@@ -139,7 +138,12 @@ export default function ChangeOtherListScreen({navigation, closeBtn, userSetting
     ({item, drag}) =>
       item.sport !== Verbs.allStatus && (
         <View style={styles.sportsBackgroundView}>
-          <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <TouchableOpacity
               onPress={() => {
                 const findIndex = addedGroups.findIndex(
@@ -160,15 +164,36 @@ export default function ChangeOtherListScreen({navigation, closeBtn, userSetting
                 style={styles.addIconStyle}
               />
             </TouchableOpacity>
-            {
-            item.thumbnail ? (
-            <Image source={{uri: item.thumbnail}} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
-            ): (
-              item.entity_type === 'team' ? (
-                <Image source={images.teamPatch} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
-              ) : (
-                <Image source={images.clubPatch} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
-              )
+            {item.thumbnail ? (
+              <Image
+                source={{uri: item.thumbnail}}
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginRight: 10,
+                  borderRadius: 50,
+                }}
+              />
+            ) : item.entity_type === 'team' ? (
+              <Image
+                source={images.teamPatch}
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginRight: 10,
+                  borderRadius: 50,
+                }}
+              />
+            ) : (
+              <Image
+                source={images.clubPatch}
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginRight: 10,
+                  borderRadius: 50,
+                }}
+              />
             )}
             <Text style={styles.sportNameTitle}>{item.group_name}</Text>
           </View>
@@ -184,7 +209,12 @@ export default function ChangeOtherListScreen({navigation, closeBtn, userSetting
     ({item}) =>
       item.sport !== Verbs.allStatus && (
         <View style={styles.sportsBackgroundView}>
-          <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <TouchableOpacity
               onPress={() => {
                 if (addedGroups.length < 10) {
@@ -206,15 +236,36 @@ export default function ChangeOtherListScreen({navigation, closeBtn, userSetting
               style={{alignSelf: 'center'}}>
               <Image source={images.addSportList} style={styles.addIconStyle} />
             </TouchableOpacity>
-            {
-            item.thumbnail ? (
-            <Image source={{uri: item.thumbnail}} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
-            ): (
-              item.entity_type === 'team' ? (
-                <Image source={images.teamPatch} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
-              ) : (
-                <Image source={images.clubPatch} style={{width: 20, height: 20, marginRight: 10, borderRadius: 50}}/>
-              )
+            {item.thumbnail ? (
+              <Image
+                source={{uri: item.thumbnail}}
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginRight: 10,
+                  borderRadius: 50,
+                }}
+              />
+            ) : item.entity_type === 'team' ? (
+              <Image
+                source={images.teamPatch}
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginRight: 10,
+                  borderRadius: 50,
+                }}
+              />
+            ) : (
+              <Image
+                source={images.clubPatch}
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginRight: 10,
+                  borderRadius: 50,
+                }}
+              />
             )}
             <Text style={styles.sportNameTitle}>{item.group_name}</Text>
           </View>
@@ -224,42 +275,26 @@ export default function ChangeOtherListScreen({navigation, closeBtn, userSetting
   );
 
   return (
-    <View style={styles.modalView}>
+    <SafeAreaView style={{flex: 1}}>
       <ActivityLoader visible={loading} />
-      <Header
-        safeAreaStyle={{
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+
+      <ScreenHeader
+        isFullTitle
+        title={strings.changelistforgarnizers}
+        leftIcon={images.crossImage}
+        leftIconStyle={{width: 50}}
+        leftIconPress={() => {
+          closeBtn(false);
         }}
-        leftComponent={
-          <TouchableOpacity
-            onPress={() => {
-            closeBtn(false)
-              
-            }}>
-            <Image source={images.crossImage} style={styles.backImageStyle} />
-          </TouchableOpacity>
-        }
-        centerComponent={
-          <Text style={[styles.mainTextStyle, {marginLeft:27}]}>
-            {strings.editChallengeAvailibility} 
-          </Text>
-        }
-        rightComponent={
-          <TouchableOpacity
-            style={{padding: 2}}
-            onPress={() => {
-              
-            }}>
-            <Text style={styles.saveText} onPress={() => onDonePress()}>{strings.save}</Text>
-          </TouchableOpacity>
-        }
+        isRightIconText
+        rightButtonText={strings.apply}
+        onRightButtonPress={onDonePress}
       />
       <View style={styles.sperateLine} />
       <TCThinDivider marginBottom={15} width={'100%'} />
       <View style={{flex: 1, paddingBottom: 20}}>
         <Text style={styles.mainTextStyle}>
-          {strings.organizerDisplayInFilterBartext} 
+          {strings.organizerDisplayInFilterBartext}
         </Text>
         <Text style={styles.subTitle}>{strings.upTo10OrganizerText}</Text>
         {addedGroups.length > 0 ? (
@@ -316,7 +351,7 @@ export default function ChangeOtherListScreen({navigation, closeBtn, userSetting
           {strings.someOrganizerJoinEventText}
         </Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -341,14 +376,6 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginLeft: 15,
     // marginTop: 15,
-  },
-
-  backImageStyle: {
-    height: 20,
-    width: 20,
-    tintColor: colors.lightBlackColor,
-    resizeMode: 'contain',
-    // marginLeft: 10,
   },
   subTitle: {
     fontFamily: fonts.RRegular,
@@ -391,7 +418,7 @@ const styles = StyleSheet.create({
     width: Utility.widthPercentageToDP('92%'),
     justifyContent: 'space-between',
     marginBottom: 15,
-    marginLeft: 15
+    marginLeft: 15,
   },
   noEventText: {
     fontSize: 20,
@@ -399,17 +426,4 @@ const styles = StyleSheet.create({
     color: colors.veryLightBlack,
     alignSelf: 'center',
   },
-  modalView: {
-    flex: 1,
-    backgroundColor: colors.whiteColor,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
-    height: Dimensions.get('window').height - 50
-  },
-  saveText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  }
 });

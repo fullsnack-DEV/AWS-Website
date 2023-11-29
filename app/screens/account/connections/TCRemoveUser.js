@@ -1,10 +1,11 @@
 import React from 'react';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {displayLocation} from '../../../utils';
 import {strings} from '../../../../Localization/translation';
 import GroupIcon from '../../../components/GroupIcon';
+import images from '../../../Constants/ImagePath';
 
 const TCRemoveUser = ({
   item = {},
@@ -21,6 +22,19 @@ const TCRemoveUser = ({
           showPlaceholder={false}
           containerStyle={styles.profileImage}
         />
+        {isOwner && (
+          <Image
+            source={images.starProfile}
+            style={{
+              width: 15,
+              height: 15,
+              position: 'absolute',
+              left: 22,
+              bottom: 0,
+            }}
+          />
+        )}
+
         <View>
           <Text style={styles.entityName}>
             {item.full_name ?? item.group_name}

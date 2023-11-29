@@ -1501,7 +1501,8 @@ export default function CreateEventScreen({navigation, route}) {
             const contentHeight = event.nativeEvent.layout.height + 80;
 
             setSnapPoints([
-              '50%',
+              // '50%',
+              contentHeight,
               contentHeight,
               // Dimensions.get('window').height - 40,
             ]);
