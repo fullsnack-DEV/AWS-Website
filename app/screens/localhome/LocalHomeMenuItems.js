@@ -495,77 +495,77 @@ const LocalHomeMenuItems = memo(
         case strings.eventHometitle:
           return (
             <>
-              {authContext.entity.role === Verbs.entityTypeUser ||
-                (authContext.entity.role === Verbs.entityTypePlayer && (
-                  <>
-                    <TCTitleWithArrow
-                      title={strings.eventHometitle}
-                      showArrow={true}
-                      viewStyle={{marginTop: 20, marginBottom: 10}}
-                      isDisabled={!(items?.data?.length > 0) || isdeactivated}
-                      onPress={() =>
-                        navigation.navigate('App', {
-                          screen: 'Schedule',
-                        })
-                      }
-                    />
-                    <FlatList
-                      data={items.data}
-                      horizontal={true}
-                      scrollEnabled={items.data?.length > 0}
-                      contentContainerStyle={{paddingVertical: 6}}
-                      showsHorizontalScrollIndicator={false}
-                      renderToHardwareTextureAndroid
-                      removeClippedSubviews={true}
-                      initialNumToRender={10}
-                      maxToRenderPerBatch={10}
-                      getItemLayout={getItemLayout}
-                      renderItem={({item}) => (
-                        <EventsCard
-                          data={item}
-                          owners={owners}
-                          allUserData={allUserData}
-                          onItemPress={() => {
-                            if (item?.game_id) {
-                              if (item?.game?.sport) {
-                                const gameHome = getGameHomeScreen(
-                                  item.game.sport.replace(' ', '_'),
-                                );
+              {(authContext.entity.role === Verbs.entityTypeUser ||
+                authContext.entity.role === Verbs.entityTypePlayer) && (
+                <>
+                  <TCTitleWithArrow
+                    title={strings.eventHometitle}
+                    showArrow={true}
+                    viewStyle={{marginTop: 20, marginBottom: 10}}
+                    isDisabled={!(items?.data?.length > 0) || isdeactivated}
+                    onPress={() =>
+                      navigation.navigate('App', {
+                        screen: 'Schedule',
+                      })
+                    }
+                  />
+                  <FlatList
+                    data={items.data}
+                    horizontal={true}
+                    scrollEnabled={items.data?.length > 0}
+                    contentContainerStyle={{paddingVertical: 6}}
+                    showsHorizontalScrollIndicator={false}
+                    renderToHardwareTextureAndroid
+                    removeClippedSubviews={true}
+                    initialNumToRender={10}
+                    maxToRenderPerBatch={10}
+                    getItemLayout={getItemLayout}
+                    renderItem={({item}) => (
+                      <EventsCard
+                        data={item}
+                        owners={owners}
+                        allUserData={allUserData}
+                        onItemPress={() => {
+                          if (item?.game_id) {
+                            if (item?.game?.sport) {
+                              const gameHome = getGameHomeScreen(
+                                item.game.sport.replace(' ', '_'),
+                              );
 
-                                navigation.navigate(gameHome, {
-                                  gameId: item?.game_id,
-                                });
-                              }
-                            } else {
-                              navigation.navigate('ScheduleStack', {
-                                screen: 'EventScreen',
-                                params: {
-                                  data: item,
-                                  gameData: item,
-                                },
+                              navigation.navigate(gameHome, {
+                                gameId: item?.game_id,
                               });
                             }
-                          }}
-                          isdeactivated={isdeactivated}
-                        />
-                      )}
-                      ListFooterComponent={() => <View style={{width: 15}} />}
-                      ListEmptyComponent={() => (
-                        <PlayersCardPlaceHolder
-                          forevent={true}
-                          data={dummyEventdata}
-                          placeholdertext={'No Events'}
-                        />
-                      )}
-                    />
-                    <TCThinDivider
-                      height={7}
-                      backgroundColor={colors.grayBackgroundColor}
-                      width={'100%'}
-                      marginTop={25}
-                    />
-                  </>
-                ))}
+                          } else {
+                            navigation.navigate('ScheduleStack', {
+                              screen: 'EventScreen',
+                              params: {
+                                data: item,
+                                gameData: item,
+                              },
+                            });
+                          }
+                        }}
+                        isdeactivated={isdeactivated}
+                      />
+                    )}
+                    ListFooterComponent={() => <View style={{width: 15}} />}
+                    ListEmptyComponent={() => (
+                      <PlayersCardPlaceHolder
+                        forevent={true}
+                        data={dummyEventdata}
+                        placeholdertext={'No Events'}
+                      />
+                    )}
+                  />
+                  <TCThinDivider
+                    height={7}
+                    backgroundColor={colors.grayBackgroundColor}
+                    width={'100%'}
+                    marginTop={25}
+                  />
+                </>
+              )}
             </>
           );
 

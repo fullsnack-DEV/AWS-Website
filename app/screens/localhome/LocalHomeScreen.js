@@ -21,6 +21,8 @@ import {
   RefreshControl,
   TouchableOpacity,
   Dimensions,
+  Share,
+  ImageBackground,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
@@ -40,6 +42,7 @@ import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import LocationModal from '../../components/LocationModal/LocationModal';
 import {
   getExcludedSportsList,
+  getSingleSportList,
   getSportDetails,
   getTitleForRegister,
 } from '../../utils/sportsActivityUtils';
@@ -80,7 +83,9 @@ function LocalHomeScreen({navigation, route}) {
   const [sports, setSports] = useState([]);
   const [customSports, setCustomSports] = useState([]);
   const [locationPopup, setLocationPopup] = useState(false);
-
+  const [newInTown, setNewInTown] = useState(false);
+  const [moreThanHalfIsNonEmpty, setMoreThanHalfIsNonEmpty] = useState(true);
+  const [nothingEmpty, setNothingEmpty] = useState(false);
   const [selectedLocationOption, setSelectedLocationOption] = useState(1);
   const [location, setLocation] = useState(
     authContext?.entity?.obj?.city?.charAt(0).toUpperCase() +
@@ -89,6 +94,10 @@ function LocalHomeScreen({navigation, route}) {
   const [selectedSport, setSelectedSport] = useState(
     authContext.entity.obj.sport,
   );
+  const [actionSheetForTeams, setActionSheetforTeams] = useState(false);
+  const [actionSheetForClubs, setActionSheetforClubs] = useState(false);
+  const [actionSheetForPlayers, setActionSheetforPlayers] = useState(false);
+
   const [sportType, setSportType] = useState();
   const [settingPopup, setSettingPopup] = useState(false);
   const [recentMatch, setRecentMatch] = useState([]);
@@ -132,7 +141,7 @@ function LocalHomeScreen({navigation, route}) {
   const [allUserData, setAllUserData] = useState([]);
   const [owners, setOwners] = useState([]);
   const [sportIconLoader, setSportIconLoader] = useState(true);
-  const [cardLoader, setCardLoader] = useState(false);
+  const [cardLoader, setCardLoader] = useState(true);
   const [showInviteMember, setShowInviteMember] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [playerDetailPopup, setPlayerDetailPopup] = useState();
@@ -140,6 +149,7 @@ function LocalHomeScreen({navigation, route}) {
   const [playerDetail, setPlayerDetail] = useState();
   const [players, setPlayers] = useState([]);
   const [teamSport, setTeamSport] = useState([]);
+  const [filterLocalHomeMenuItems, setFilterLocalHomeMenuItems] = useState([]);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -367,58 +377,71 @@ function LocalHomeScreen({navigation, route}) {
 
   const ITEM_HEIGHT = Verbs.ITEM_HEIGHT;
 
-  const localHomeMenu = [
-    {
-      key: strings.rankingInWorld,
-      data: [],
-      index: 0,
-    },
-    {
-      key: strings.completedMatches,
-      data: recentMatch,
-      index: 1,
-    },
-    {
-      key: strings.upcomingMatchesTitle,
-      data: upcomingMatch,
-      index: 2,
-    },
-    {
-      key: strings.eventHometitle,
-      data: filterData,
-      index: 3,
-    },
-    {
-      key: strings.teamAvailableforChallenge,
-      data: teamsAvailble,
-      index: 4,
-    },
-    {
-      key: strings.playersAvailableforChallenge,
-      data: challengeeMatch,
-      index: 5,
-    },
-    {
-      key: strings.refreesAvailable,
-      data: referees,
-      index: 6,
-    },
-    {
-      key: strings.scorekeepersAvailable,
-      data: scorekeepers,
-      index: 7,
-    },
-    {
-      key: strings.hiringPlayerTitle,
-      data: hiringPlayers,
-      index: 8,
-    },
-    {
-      key: strings.lookingForTeamTitle,
-      data: lookingTeam,
-      index: 9,
-    },
-  ];
+  const localHomeMenu = useMemo(
+    () => [
+      {
+        key: strings.rankingInWorld,
+        data: [],
+        index: 0,
+      },
+      {
+        key: strings.completedMatches,
+        data: recentMatch,
+        index: 1,
+      },
+      {
+        key: strings.upcomingMatchesTitle,
+        data: upcomingMatch,
+        index: 2,
+      },
+      {
+        key: strings.eventHometitle,
+        data: filterData,
+        index: 3,
+      },
+      {
+        key: strings.teamAvailableforChallenge,
+        data: teamsAvailble,
+        index: 4,
+      },
+      {
+        key: strings.playersAvailableforChallenge,
+        data: challengeeMatch,
+        index: 5,
+      },
+      {
+        key: strings.refreesAvailable,
+        data: referees,
+        index: 6,
+      },
+      {
+        key: strings.scorekeepersAvailable,
+        data: scorekeepers,
+        index: 7,
+      },
+      {
+        key: strings.hiringPlayerTitle,
+        data: hiringPlayers,
+        index: 8,
+      },
+      {
+        key: strings.lookingForTeamTitle,
+        data: lookingTeam,
+        index: 9,
+      },
+    ],
+    [
+      recentMatch,
+      upcomingMatch,
+      filterData,
+      teamsAvailble,
+      challengeeMatch,
+      referees,
+      scorekeepers,
+      hiringPlayers,
+      lookingTeam,
+    ],
+  );
 
   useEffect(() => {
     renderTopSportBar();
@@ -498,6 +521,36 @@ function LocalHomeScreen({navigation, route}) {
   };
 
   useEffect(() => {
+    if (!cardLoader) {
+      const isEveryDataEmptyArray = localHomeMenu.every(
+        (item) => Array.isArray(item.data) && item.data.length === 0,
+      );
+
+      setNewInTown(isEveryDataEmptyArray);
+
+      const nonEmptyDataCount = localHomeMenu.reduce((count, item) => {
+        if (Array.isArray(item.data) && item.data.length > 0) {
+          return count + 1;
+        }
+        return count;
+      }, 0);
+
+      const isMoreThanHalfNonEmpty =
+        nonEmptyDataCount > localHomeMenu.length / 2;
+      const allData = nonEmptyDataCount === localHomeMenu.length;
+      setMoreThanHalfIsNonEmpty(isMoreThanHalfNonEmpty);
+      setNothingEmpty(allData);
+
+      if (!moreThanHalfIsNonEmpty) {
+        const filteredLocalHomeMenu = localHomeMenu.filter(
+          (item) => item.data.length > 0,
+        );
+        setFilterLocalHomeMenuItems(filteredLocalHomeMenu);
+      }
+    }
+  }, [localHomeMenu, moreThanHalfIsNonEmpty, cardLoader]);
+
+  useEffect(() => {
     if (isFocused) {
       if (
         selectedSport !== undefined &&
@@ -524,7 +577,6 @@ function LocalHomeScreen({navigation, route}) {
       }
     }
   }, [
-    isFocused,
     selectedSport,
     location,
     sportType,
@@ -967,6 +1019,187 @@ function LocalHomeScreen({navigation, route}) {
     [customSports, location, notificationCount],
   );
 
+  const onInviteFriendPress = async () => {
+    try {
+      const result = await Share.share({
+        message: 'Hey Join TownCup!',
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+  };
+
+  // eslint-disable-next-line consistent-return
+  const renderLocalHomeMenuItems = (item, index) => (
+    <LocalHomeMenuItems
+      key={index}
+      item={item}
+      sports={sports}
+      location={location}
+      filter={filters}
+      isdeactivated={authContext.isAccountDeactivated}
+      selectedLocationOption={selectedLocationOption}
+      navigateToRefreeScreen={navigateToRefreeScreen}
+      navigateToScoreKeeper={navigateToScoreKeeper}
+      selectedSport={selectedSport}
+      sportType={sportType}
+      owners={owners}
+      allUserData={allUserData}
+      cardLoader={cardLoader}
+      openPlayerDetailsModal={(obj) => {
+        setPlayerDetail(obj);
+        setPlayerDetailPopup(true);
+      }}
+    />
+  );
+
+  const RenderFotterButtons = ({title, onPress = () => {}}) => (
+    <TouchableOpacity
+      onPress={() => onPress()}
+      style={styles.fotterButtonContainer}>
+      <Text style={styles.footerButtonText}>{title}</Text>
+    </TouchableOpacity>
+  );
+
+  const onUpcomingAndCompletMatchPress = (title) => {
+    const data = getDataForNextScreen(
+      Verbs.SPORT_DATA,
+      filters,
+      location,
+      selectedLocationOption,
+      authContext,
+    );
+
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      const teamData = getDataForNextScreen(
+        Verbs.TEAM_DATA,
+        filters,
+        location,
+        selectedLocationOption,
+        authContext,
+      );
+      navigation.navigate('LocalHomeStack', {
+        screen:
+          title === strings.completedMatches
+            ? 'RecentMatchScreen'
+            : 'UpcomingMatchScreen',
+        params: {
+          filters: teamData.filters,
+          teamSportData: teamData.teamSportData,
+        },
+      });
+    } else {
+      navigation.navigate('LocalHomeStack', {
+        screen:
+          title === strings.completedMatches
+            ? 'RecentMatchScreen'
+            : 'UpcomingMatchScreen',
+        params: {
+          filters: data,
+        },
+      });
+    }
+  };
+
+  const FooterComponent = useCallback(
+    () => (
+      <View style={{flex: 1, marginBottom: 10}}>
+        <ImageBackground
+          source={images.localHomeFooterImage}
+          style={styles.bgImgeStyle}
+          imageStyle={styles.imageBgstyle}>
+          <View
+            style={{
+              flex: 1,
+              flexShrink: 1,
+              marginHorizontal: 15,
+              zIndex: 100,
+            }}>
+            <Text style={styles.footerText1}>
+              {strings.hereinString}
+              <Text style={{fontFamily: fonts.RBold}}>
+                {' '}
+                {strings.townsCupApp}{' '}
+              </Text>
+              ,{strings.youCanView}
+            </Text>
+          </View>
+
+          <View style={styles.containerStyles}>
+            {/* 1 st row */}
+            <View style={styles.rowStyles}>
+              <RenderFotterButtons
+                onPress={() =>
+                  onUpcomingAndCompletMatchPress(strings.upcomingMatchTitle)
+                }
+                title={strings.upcomingMatchesTitle}
+              />
+              <RenderFotterButtons
+                onPress={() =>
+                  onUpcomingAndCompletMatchPress(strings.completedMatches)
+                }
+                title={strings.completedMatches}
+              />
+            </View>
+            {/* 2nd row */}
+            <View style={styles.rowStyles}>
+              <RenderFotterButtons title={strings.tournaments} />
+              <RenderFotterButtons
+                onPress={() =>
+                  navigation.navigate('App', {
+                    screen: 'Schedule',
+                  })
+                }
+                title={strings.events}
+              />
+              <RenderFotterButtons
+                onPress={() => setActionSheetforTeams(true)}
+                title={strings.teams}
+              />
+            </View>
+            {/* 3rd Row */}
+            <View style={styles.rowStyles}>
+              <RenderFotterButtons
+                onPress={() => setActionSheetforClubs(true)}
+                title={strings.clubsTitleText}
+              />
+              <RenderFotterButtons title={strings.leaguesText} />
+              <RenderFotterButtons
+                onPress={() => setActionSheetforPlayers(true)}
+                title={strings.playersText}
+              />
+            </View>
+            {/* 4th Row */}
+            <View style={styles.rowStyles}>
+              <RenderFotterButtons
+                onPress={() => navigateToRefreeScreen()}
+                title={strings.refreesText}
+              />
+              <RenderFotterButtons
+                onPress={() => navigateToScoreKeeper()}
+                title={strings.scorekeepersText}
+              />
+              <RenderFotterButtons title={strings.rankingsText} />
+            </View>
+            <View style={[styles.rowStyles, {paddingBottom: 10}]}>
+              <RenderFotterButtons title={strings.venuesText} />
+            </View>
+          </View>
+        </ImageBackground>
+      </View>
+    ),
+    [localHomeMenu],
+  );
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View>
@@ -987,8 +1220,11 @@ function LocalHomeScreen({navigation, route}) {
             opacity: authContext.isAccountDeactivated ? 0.5 : 1,
           }}>
           {/* Flatlist  */}
+
           <FlatList
-            data={localHomeMenu}
+            data={
+              !moreThanHalfIsNonEmpty ? filterLocalHomeMenuItems : localHomeMenu
+            }
             ref={listRef}
             keyExtractor={(_, index) => index.toString()}
             showsVerticalScrollIndicator={false}
@@ -998,10 +1234,10 @@ function LocalHomeScreen({navigation, route}) {
             initialNumToRender={10}
             maxToRenderPerBatch={10}
             windowSize={21}
-            ListHeaderComponent={React.memo(
-              (
-                {index}, // Memoize TopTileSection
-              ) => (
+            ListHeaderComponent={(
+              {index}, // Memoize TopTileSection
+            ) => (
+              <>
                 <TopTileSection
                   key={index}
                   handleTileClick={(item) => handleTileClick(item)}
@@ -1018,30 +1254,32 @@ function LocalHomeScreen({navigation, route}) {
                   setClubModal={setClubModal}
                   setNavigationOptions={(obj) => setNavigationOptions(obj)}
                 />
-              ),
+                {(newInTown || !moreThanHalfIsNonEmpty) && (
+                  <View style={styles.newinTownContainerStyle}>
+                    <Text style={styles.inTownText1}>
+                      <Text style={{color: colors.orangeColorCard}}>
+                        {strings.weAreNewText}
+                      </Text>
+                      <Text> {strings.inYourTown}</Text>
+                    </Text>
+                    <Text style={styles.helpUsFooterTxt}>
+                      {strings.helpUsFooterTest}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => onInviteFriendPress()}
+                      style={styles.inviteFriensContainer}>
+                      <Text style={styles.inviteFrindTextButton}>
+                        {strings.inviteYourFriends}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </>
             )}
-            renderItem={({item, index}) => (
-              <LocalHomeMenuItems
-                key={index}
-                item={item}
-                sports={sports}
-                location={location}
-                filter={filters}
-                isdeactivated={authContext.isAccountDeactivated}
-                selectedLocationOption={selectedLocationOption}
-                navigateToRefreeScreen={navigateToRefreeScreen}
-                navigateToScoreKeeper={navigateToScoreKeeper}
-                selectedSport={selectedSport}
-                sportType={sportType}
-                owners={owners}
-                allUserData={allUserData}
-                cardLoader={cardLoader}
-                openPlayerDetailsModal={(obj) => {
-                  setPlayerDetail(obj);
-                  setPlayerDetailPopup(true);
-                }}
-              />
-            )}
+            renderItem={({item, index}) =>
+              renderLocalHomeMenuItems(item, index)
+            }
+            ListFooterComponent={nothingEmpty ? null : <FooterComponent />}
             getItemLayout={getItemLayout}
             refreshControl={
               <RefreshControl
@@ -1266,7 +1504,7 @@ function LocalHomeScreen({navigation, route}) {
       <SportListMultiModal
         isVisible={visibleSportsModalForClub}
         closeList={() => setClubModal(false)}
-        title={strings.createClubText}
+        title={strings.createClubNotes}
         onNext={(sportsList) => {
           setClubModal(false);
 
@@ -1311,7 +1549,7 @@ function LocalHomeScreen({navigation, route}) {
       />
 
       <BottomSheet
-        optionList={[strings.createTeamText, strings.inviteTeam]}
+        optionList={[strings.createTeamText, strings.inviteText]}
         isVisible={showBottomSheet}
         closeModal={() => setBottomSheet(false)}
         onSelect={(option) => {
@@ -1321,6 +1559,127 @@ function LocalHomeScreen({navigation, route}) {
           }
         }}
         title={strings.create}
+      />
+      <BottomSheet
+        optionList={[
+          strings.teamAvailableforChallenge,
+          strings.teamRerutingMembersText,
+          Platform.OS === 'android' ? strings.cancel : '',
+        ]}
+        isVisible={actionSheetForTeams}
+        closeModal={() => setActionSheetforTeams(false)}
+        onSelect={(option) => {
+          if (option === strings.teamAvailableforChallenge) {
+            const teamData = getDataForNextScreen(
+              Verbs.TEAM_DATA,
+              filters,
+              location,
+              selectedLocationOption,
+              authContext,
+            );
+            navigation.navigate('LocalHomeStack', {
+              screen: 'LookingForChallengeScreen',
+              params: {
+                filters: teamData.filters,
+                teamSportData: teamData.teamSportData,
+                registerFavSports: sports,
+                forTeams: true,
+              },
+            });
+          } else if (option === strings.teamRerutingMembersText) {
+            const data = getDataForNextScreen(
+              Verbs.SPORT_DATA,
+              filters,
+              location,
+              selectedLocationOption,
+              authContext,
+            );
+            navigation.navigate('LocalHomeStack', {
+              screen: 'RecruitingPlayerScreen',
+              params: {
+                filters: data,
+              },
+            });
+          }
+          setActionSheetforTeams(false);
+        }}
+      />
+      <BottomSheet
+        optionList={[strings.recruitingMembers]}
+        isVisible={actionSheetForClubs}
+        closeModal={() => setActionSheetforClubs(false)}
+        onSelect={(option) => {
+          setActionSheetforPlayers(false);
+          if (option === strings.recruitingMembers) {
+            const data = getDataForNextScreen(
+              Verbs.SPORT_DATA,
+              filters,
+              location,
+              selectedLocationOption,
+              authContext,
+            );
+            navigation.navigate('LocalHomeStack', {
+              screen: 'RecruitingPlayerScreen',
+              params: {
+                filters: data,
+              },
+            });
+          }
+        }}
+      />
+
+      <BottomSheet
+        optionList={[
+          strings.playersAvailableforChallenge,
+          strings.lookingForTeam,
+        ]}
+        isVisible={actionSheetForPlayers}
+        closeModal={() => setActionSheetforPlayers(false)}
+        onSelect={(option) => {
+          setActionSheetforPlayers(false);
+          const data = getDataForNextScreen(
+            Verbs.SPORT_DATA,
+            filters,
+            location,
+            selectedLocationOption,
+            authContext,
+          );
+
+          if (option === strings.playersAvailableforChallenge) {
+            navigation.navigate('LocalHomeStack', {
+              screen: 'LookingForChallengeScreen',
+              params: {
+                filters: data,
+                registerFavSports: getSingleSportList(sports),
+              },
+            });
+          }
+          if (option === strings.lookingForTeam) {
+            if (authContext.entity.role === Verbs.entityTypeTeam) {
+              const teamData = getDataForNextScreen(
+                Verbs.TEAM_DATA,
+                filters,
+                location,
+                selectedLocationOption,
+                authContext,
+              );
+              navigation.navigate('LocalHomeStack', {
+                screen: 'LookingTeamScreen',
+                params: {
+                  filters: teamData.filters,
+                  teamSportData: teamData.teamSportData,
+                },
+              });
+            } else {
+              navigation.navigate('LocalHomeStack', {
+                screen: 'LookingTeamScreen',
+                params: {
+                  filters: data,
+                },
+              });
+            }
+          }
+        }}
       />
 
       <CustomModalWrapper
@@ -1466,5 +1825,80 @@ const styles = StyleSheet.create({
   sportIconStyle: {
     height: 40,
     width: 40,
+  },
+  imageBgstyle: {
+    opacity: 0.3,
+  },
+  bgImgeStyle: {
+    height: '100%',
+    width: '100%',
+  },
+  footerText1: {
+    fontSize: 16,
+    lineHeight: 24,
+
+    marginTop: 25,
+  },
+  containerStyles: {
+    paddingVertical: 10,
+    flexShrink: 1,
+    width: Dimensions.get('screen').width,
+  },
+  rowStyles: {
+    flexDirection: 'row',
+    flex: 1,
+    flexWrap: 'wrap',
+  },
+  newinTownContainerStyle: {
+    flex: 1,
+    marginTop: 30,
+    marginBottom: 10,
+  },
+  inTownText1: {
+    fontSize: 25,
+    fontFamily: fonts.RBold,
+    lineHeight: 30,
+    marginLeft: 10,
+  },
+  helpUsFooterTxt: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginHorizontal: 10,
+    marginTop: 5,
+  },
+  inviteFriensContainer: {
+    backgroundColor: colors.lightGrey,
+    alignItems: 'center',
+    marginHorizontal: 15,
+    borderRadius: 5,
+    marginTop: 30,
+    marginBottom: 30,
+  },
+  inviteFrindTextButton: {
+    textTransform: 'uppercase',
+    fontSize: 16,
+    fontFamily: fonts.RBold,
+    color: colors.orangeColorCard,
+    paddingVertical: 9,
+
+    paddingHorizontal: 5,
+  },
+  fotterButtonContainer: {
+    paddingHorizontal: 11,
+    backgroundColor: colors.whiteColor,
+    marginHorizontal: 8,
+    marginVertical: 10,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerButtonText: {
+    fontFamily: fonts.RBold,
+    fontSize: 14,
+    lineHeight: 21,
+    marginVertical: 4,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    flexShrink: 1,
   },
 });

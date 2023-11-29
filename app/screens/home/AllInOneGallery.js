@@ -45,6 +45,8 @@ const AllInOneGallery = ({
   const [galleryType, setGalleryType] = useState(GALLERY_TYPE.FROMME);
   const [galleryData, setGalleryData] = useState([]);
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
+  const [taggedNumber, setTaggedNumber] = useState();
+  const [uplodedNumber, setUploadedNumber] = useState();
 
   useImperativeHandle(galleryRef, () => ({
     refreshGallery() {
@@ -63,6 +65,9 @@ const AllInOneGallery = ({
           setIsNextDataLoading(false);
         }
         setGalleryData([...res.payload?.results]);
+
+        setTaggedNumber(res.payload?.results[0].tagged.length);
+        setUploadedNumber(res.payload?.results[0].target_feeds.length);
       })
       .catch(() => {
         setIsNextDataLoading(false);
@@ -163,7 +168,6 @@ const AllInOneGallery = ({
           });
         }}
         rightButtonTextStyle={{marginLeft: 15}}
-        rightIcon2={images.chat3Dot}
       />
       <View
         style={{
@@ -192,7 +196,8 @@ const AllInOneGallery = ({
                   lineHeight: 24,
                   fontSize: 16,
                 }}>
-                {_.startCase(item)}
+                {_.startCase(item)} (
+                {item === GALLERY_TYPE.FROMME ? uplodedNumber : taggedNumber})
               </Text>
             </TouchableOpacity>
           ))}

@@ -566,26 +566,18 @@ const LocalHomeQuery = async (
       //   setUpcomingMatch([]);
       // }
 
-      setCardLoader(false);
-
       setTeamsAvailable(teamData ?? []);
-
-      setCardLoader(false);
 
       setChallengeeMatch(playerData);
 
-      setCardLoader(false);
       setHiringPlayers(hiringPlayers ?? []);
 
-      setCardLoader(false);
       setLookingTeam(lookingTeam ?? []);
-
-      setCardLoader(false);
 
       setReferees([...referees] ?? []);
 
-      setCardLoader(false);
       setScorekeepers([...scorekeepers] ?? []);
+      setCardLoader(false);
     })
     .catch((e) => {
       setCardLoader(false);

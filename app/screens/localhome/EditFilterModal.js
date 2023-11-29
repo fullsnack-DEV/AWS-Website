@@ -82,7 +82,7 @@ export default function EditFilterModal({
       const scorekeeperSports =
         userSport.payload?.scorekeeper_data?.map((item) => item) || [];
 
-      const likedsports = userSport.payload?.sports?.map((item) => item) || [];
+      // const likedsports = userSport.payload?.sports?.map((item) => item) || [];
       const refereeSports =
         userSport.payload?.referee_data?.map((item) => item) || [];
 
@@ -106,12 +106,7 @@ export default function EditFilterModal({
       const uniqueSports = [
         ...(authContext.entity.role === Verbs.entityTypeClub
           ? clubFavSport
-          : [
-              ...registeredSports,
-              ...scorekeeperSports,
-              ...likedsports,
-              ...refereeSports,
-            ]),
+          : [...registeredSports, ...scorekeeperSports, ...refereeSports]),
       ];
 
       const res = uniqueSports.map((obj) => ({
@@ -152,11 +147,11 @@ export default function EditFilterModal({
             (item) =>
               item?.sport === sportName || item?.sport_name === sportName,
           ) &&
-            !refreeRegisterButDeactivated.includes(sportName) &&
-            !scoreKeeperRegisterButDeactivated.includes(sportName)) ||
-          (PlayingsportNames.includes(sportName) &&
-            refreSportNames.includes(sportName) &&
-            scoreKeeperSportNames.includes(sportName)),
+            !refreeRegisterButDeactivated.includes(sportName)) ||
+          !scoreKeeperRegisterButDeactivated.includes(sportName) ||
+          PlayingsportNames.includes(sportName) ||
+          refreSportNames.includes(sportName) ||
+          scoreKeeperSportNames.includes(sportName),
       );
 
       const commonObjects = favsport.filter(

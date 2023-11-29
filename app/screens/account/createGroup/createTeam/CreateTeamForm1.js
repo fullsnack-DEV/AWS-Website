@@ -45,7 +45,7 @@ export default function CreateTeamForm1({navigation, route}) {
   const isFocused = useIsFocused();
   const authContext = useContext(AuthContext);
   const [sportsSelection, setSportsSelection] = useState();
-
+  const Pickerref = useRef(null);
   const [teamName, setTeamName] = useState('');
   const [homeCity, setHomeCity] = useState('');
   const [city, setCity] = useState('');
@@ -717,7 +717,7 @@ export default function CreateTeamForm1({navigation, route}) {
                         color: colors.blackColor,
                       },
                       iconContainer: {
-                        top: 0,
+                        top: 5,
                         right: 0,
                       },
 
@@ -732,7 +732,8 @@ export default function CreateTeamForm1({navigation, route}) {
                         backgroundColor: colors.lightGrey,
                       },
                       inputAndroid: {
-                        height: 40,
+                        height: 50,
+
                         justifyContent: 'flex-start',
                         fontSize: 16,
                         textAlign: 'center',
@@ -745,10 +746,13 @@ export default function CreateTeamForm1({navigation, route}) {
                     value={minAge}
                     fixAndroidTouchableBug={true}
                     Icon={() => (
-                      <Image
-                        source={images.dropDownArrow}
-                        style={styles.miniDownArrow}
-                      />
+                      <TouchableOpacity
+                        onPress={() => Pickerref.current.togglePicker()}>
+                        <Image
+                          source={images.dropDownArrow}
+                          style={styles.miniDownArrow}
+                        />
+                      </TouchableOpacity>
                     )}
                   />
                 </Pressable>
@@ -761,12 +765,13 @@ export default function CreateTeamForm1({navigation, route}) {
                   -
                 </Text>
                 <Pressable
+                  onPress={() => Pickerref.current.togglePicker()}
                   style={{
                     width: '45%',
-
                     justifyContent: 'flex-start',
                   }}>
                   <RNPickerSelect
+                    ref={Pickerref}
                     testID="max-age-picker"
                     placeholder={{
                       label: strings.maxPlaceholder,
@@ -782,6 +787,10 @@ export default function CreateTeamForm1({navigation, route}) {
                       placeholder: {
                         color: colors.blackColor,
                       },
+                      iconContainer: {
+                        top: 5,
+                        right: 0,
+                      },
                       inputIOS: {
                         height: 40,
                         justifyContent: 'flex-start',
@@ -793,7 +802,7 @@ export default function CreateTeamForm1({navigation, route}) {
                         borderRadius: 5,
                       },
                       inputAndroid: {
-                        height: 40,
+                        height: 50,
                         justifyContent: 'flex-start',
                         fontSize: 16,
                         textAlign: 'center',
@@ -805,10 +814,13 @@ export default function CreateTeamForm1({navigation, route}) {
                     }}
                     value={maxAge}
                     Icon={() => (
-                      <Image
-                        source={images.dropDownArrow}
-                        style={styles.miniDownArrow}
-                      />
+                      <TouchableOpacity
+                        onPress={() => Pickerref.current.togglePicker()}>
+                        <Image
+                          source={images.dropDownArrow}
+                          style={styles.miniDownArrow}
+                        />
+                      </TouchableOpacity>
                     )}
                   />
                 </Pressable>

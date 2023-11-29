@@ -383,10 +383,14 @@ function PendingRequestScreen({navigation}) {
         NotificationType.sendBasicInfoToMember,
       )
     ) {
-      navigation.navigate('RequestBasicInfoScreen', {
-        groupID: groupId,
-        memberID: authContext.entity.uid,
-        requestID: groupObj.activities[0].id,
+      navigation.navigate('MebmersStack', {
+        screen: 'RequestBasicInfoScreen',
+        params: {
+          groupID: groupId,
+          memberID: authContext.entity.uid,
+          requestID: groupObj.activities[0].id,
+          groupObj: JSON.parse(groupObj.activities[0].object).groupData,
+        },
       });
     } else {
       setloading(true);

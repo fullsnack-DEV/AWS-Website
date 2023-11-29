@@ -99,7 +99,9 @@ export default function ChooseSportsScreen({navigation, route}) {
     if (response.length > 0) {
       if (!authContext.streamChatToken) {
         await generateUserStreamToken(authContext);
+        setloading(false);
       }
+
       navigation.navigate('FollowTeams', {
         sportInfo: {
           ...route?.params?.locationInfo,
@@ -108,6 +110,7 @@ export default function ChooseSportsScreen({navigation, route}) {
         },
       });
     } else {
+      setloading(false);
       finalStepSignUp();
     }
   };

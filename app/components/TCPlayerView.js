@@ -73,6 +73,24 @@ function TCPlayerView({
       });
     }
   };
+
+  // create the Utils
+  const getSportTypeFronName = (sportName = ' ') => {
+    const allSports = authContext.sports;
+    // Find the sport object with the matching name
+    const foundSport = allSports.find(
+      (sport) => sport.sport_name === sportName,
+    );
+
+    if (foundSport) {
+      // Return the type of the found sport
+      console.log(foundSport?.format[0]?.sport_type, 'From sport typw');
+
+      return foundSport?.format[0]?.sport_type;
+    }
+    return null;
+  };
+
   if (subTab === strings.playerTitle) {
     data.registered_sports.map((value) => sports.push(value));
     filterSport();
@@ -103,20 +121,20 @@ function TCPlayerView({
       authContext.entity.obj.registered_sports ?? []
     ).filter((item) => item.sport === sportFilter?.sport);
 
-    if (playingSport.length > 0) {
-      isBookButtonShow = true;
-    }
+    const sportTypeofSport = getSportTypeFronName(sportFilter.sport_name);
 
     if (
       sportFilter.sport !== strings.allSport &&
-      authContext.entity.role === Verbs.entityTypeUser &&
+      (authContext.entity.role === Verbs.entityTypeUser ||
+        authContext.entity.role === Verbs.entityTypePlayer) &&
       sports.length === 1 &&
       sports[0].setting?.referee_availibility === Verbs.on &&
       authContext.entity.uid !== data.user_id &&
       // authContext.entity.obj.registered_sports?.some(
       //   (sport) => sport.sport === sports[0].sport,
       // ) &&
-      sports[0].sport_type === Verbs.singleSport
+      sportTypeofSport === Verbs.singleSport &&
+      playingSport.length > 0
     ) {
       isBookButtonShow = true;
     } else if (
@@ -133,6 +151,7 @@ function TCPlayerView({
     }
   } else if (subTab === strings.scorekeeperTitle) {
     data.scorekeeper_data.map((value) => sports.push(value));
+
     filterSport();
 
     const playingSport = (
@@ -167,6 +186,7 @@ function TCPlayerView({
       isBookButtonShow = false;
     }
   }
+
   return (
     <TouchableOpacity
       onPress={() => {

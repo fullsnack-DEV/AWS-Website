@@ -584,7 +584,18 @@ export default function EntitySearchScreen({navigation, route}) {
                 path: 'scorekeeper_data',
                 query: {
                   bool: {
-                    must: [{term: {'scorekeeper_data.is_published': true}}],
+                    must: [
+                      {
+                        term: {
+                          'scorekeeper_data.is_published': true,
+                        },
+                      },
+                      {
+                        term: {
+                          'scorekeeper_data.is_active': true,
+                        },
+                      },
+                    ],
                   },
                 },
               },
@@ -628,6 +639,7 @@ export default function EntitySearchScreen({navigation, route}) {
         if (res.length > 0) {
           const modifiedResult = modifiedScoreKeeperElasticSearchResult(res);
           const fetchedData = [...scorekeepers, ...modifiedResult];
+          console.log(JSON.stringify(fetchedData), 'From fetch data');
           setScorekeepers(fetchedData);
           setScorekeeperPageFrom(scorekeeperPageFrom + pageSize);
           stopFetchMore = true;
@@ -2279,6 +2291,7 @@ export default function EntitySearchScreen({navigation, route}) {
               break;
             }
             case strings.refereesTitle: {
+              console.log(tempFilter, 'From temp Filter');
               setReferees([]);
               setRefereesPageFrom(0);
               setrRefereeFilters({
