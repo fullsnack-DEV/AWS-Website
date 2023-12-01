@@ -45,8 +45,8 @@ const AllInOneGallery = ({
   const [galleryType, setGalleryType] = useState(GALLERY_TYPE.FROMME);
   const [galleryData, setGalleryData] = useState([]);
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
-  const [taggedNumber, setTaggedNumber] = useState();
-  const [uplodedNumber, setUploadedNumber] = useState();
+  const [taggedNumber, setTaggedNumber] = useState(0);
+  const [uplodedNumber, setUploadedNumber] = useState(0);
 
   useImperativeHandle(galleryRef, () => ({
     refreshGallery() {
@@ -57,6 +57,30 @@ const AllInOneGallery = ({
     },
   }));
 
+  const setUploadNumbers = () => {
+    getWholeGallery(GALLERY_TYPE.FROMME, entity_type, entity_id, authContext)
+      .then((res) => {
+        setUploadedNumber(res.payload?.results.length);
+      })
+      .catch(() => {
+        // setIsNextDataLoading(false);
+      });
+  };
+  const setTaggedNumbers = () => {
+    getWholeGallery(GALLERY_TYPE.TAGGED, entity_type, entity_id, authContext)
+      .then((res) => {
+        setTaggedNumber(res.payload?.results.length);
+      })
+      .catch(() => {
+        // setIsNextDataLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    setUploadNumbers();
+    setTaggedNumbers();
+  }, []);
+
   const onLoadGallery = useCallback(() => {
     setIsNextDataLoading(true);
     getWholeGallery(galleryType, entity_type, entity_id, authContext)
@@ -65,9 +89,6 @@ const AllInOneGallery = ({
           setIsNextDataLoading(false);
         }
         setGalleryData([...res.payload?.results]);
-
-        setTaggedNumber(res.payload?.results[0].tagged.length);
-        setUploadedNumber(res.payload?.results[0].target_feeds.length);
       })
       .catch(() => {
         setIsNextDataLoading(false);

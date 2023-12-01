@@ -630,9 +630,18 @@ const EditPostScreen = ({navigation, route}) => {
     updatePost(dataParams, authContext)
       .then(() => {
         setloading(false);
-        navigation.navigate('App', {
-          screen: 'NewsFeed',
-        });
+        if (route.params.fromEvent) {
+          navigation.navigate('ScheduleStack', {
+            screen: 'EventScreen',
+            params: {
+              ...route.params.routeParams,
+            },
+          });
+        } else {
+          navigation.navigate('App', {
+            screen: 'NewsFeed',
+          });
+        }
       })
       .catch((e) => {
         Alert.alert('', e.messages);
@@ -758,9 +767,18 @@ const EditPostScreen = ({navigation, route}) => {
         title={strings.editPost}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          navigation.navigate('App', {
-            screen: 'NewsFeed',
-          });
+          if (route.params.fromEvent) {
+            navigation.navigate('ScheduleStack', {
+              screen: 'EventScreen',
+              params: {
+                ...route.params.routeParams,
+              },
+            });
+          } else {
+            navigation.navigate('App', {
+              screen: 'NewsFeed',
+            });
+          }
         }}
         isRightIconText
         rightButtonText={strings.done}

@@ -2697,9 +2697,13 @@ export const calculateRatio = (sportsLength) => {
 };
 
 export const getNumberFromCurrency = (value) => {
-  const temp = value.replace(/[^0-9.-]+/g, '');
+  if (typeof value !== 'string') {
+    return 0;
+  }
+
+  const temp = value?.replace(/[^0-9.-]+/g, '');
   const fee = parseFloat(temp);
-  return fee ?? 0;
+  return Number.isNaN(fee) ? 0 : fee;
 };
 
 export const formatCurrency = (value, currency) => {

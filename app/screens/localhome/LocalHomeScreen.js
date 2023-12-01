@@ -1038,6 +1038,30 @@ function LocalHomeScreen({navigation, route}) {
     }
   };
 
+  const onTagPress = (label) => {
+    if (label === strings.upcomingMatchesTitle) {
+      onUpcomingAndCompletMatchPress(strings.upcomingMatchesTitle);
+    } else if (label === strings.completedMatches) {
+      onUpcomingAndCompletMatchPress(strings.upcomingMatchesTitle);
+    } else if (label === strings.tournaments) {
+      Alert.alert('This Feature is in Development');
+    } else if (label === strings.teams) {
+      setActionSheetforTeams(true);
+    } else if (label === strings.clubsTitleText) {
+      setActionSheetforClubs(true);
+    } else if (label === strings.playersText) {
+      setActionSheetforPlayers(true);
+    } else if (label === strings.refreesText) {
+      navigateToRefreeScreen();
+    } else if (label === strings.scorekeepersText) {
+      navigateToScoreKeeper();
+    } else if (label === strings.rankingsText) {
+      Alert.alert('This Feature is in Development');
+    } else if (label === strings.venuesText) {
+      Alert.alert('This Feature is in Development');
+    }
+  };
+
   // eslint-disable-next-line consistent-return
   const renderLocalHomeMenuItems = (item, index) => (
     <LocalHomeMenuItems
@@ -1110,6 +1134,52 @@ function LocalHomeScreen({navigation, route}) {
     }
   };
 
+  const footerArray = [
+    {
+      label: strings.upcomingMatchesTitle,
+      index: 0,
+    },
+    {
+      label: strings.completedMatches,
+      index: 1,
+    },
+    {
+      label: strings.tournaments,
+      index: 2,
+    },
+    {
+      label: strings.teams,
+      index: 3,
+    },
+
+    {
+      label: strings.clubsTitleText,
+      index: 4,
+    },
+
+    {
+      label: strings.playersText,
+      index: 5,
+    },
+
+    {
+      label: strings.refreesText,
+      index: 6,
+    },
+    {
+      label: strings.scorekeepersText,
+      index: 7,
+    },
+    {
+      label: strings.rankingsText,
+      index: 8,
+    },
+    {
+      label: strings.venuesText,
+      index: 9,
+    },
+  ];
+
   const FooterComponent = useCallback(
     () => (
       <View style={{flex: 1, marginBottom: 10}}>
@@ -1135,64 +1205,13 @@ function LocalHomeScreen({navigation, route}) {
           </View>
 
           <View style={styles.containerStyles}>
-            {/* 1 st row */}
-            <View style={styles.rowStyles}>
+            {footerArray.map((item) => (
               <RenderFotterButtons
-                onPress={() =>
-                  onUpcomingAndCompletMatchPress(strings.upcomingMatchTitle)
-                }
-                title={strings.upcomingMatchesTitle}
+                key={item.index}
+                title={item.label}
+                onPress={() => onTagPress(item.label)}
               />
-              <RenderFotterButtons
-                onPress={() =>
-                  onUpcomingAndCompletMatchPress(strings.completedMatches)
-                }
-                title={strings.completedMatches}
-              />
-            </View>
-            {/* 2nd row */}
-            <View style={styles.rowStyles}>
-              <RenderFotterButtons title={strings.tournaments} />
-              <RenderFotterButtons
-                onPress={() =>
-                  navigation.navigate('App', {
-                    screen: 'Schedule',
-                  })
-                }
-                title={strings.events}
-              />
-              <RenderFotterButtons
-                onPress={() => setActionSheetforTeams(true)}
-                title={strings.teams}
-              />
-            </View>
-            {/* 3rd Row */}
-            <View style={styles.rowStyles}>
-              <RenderFotterButtons
-                onPress={() => setActionSheetforClubs(true)}
-                title={strings.clubsTitleText}
-              />
-              <RenderFotterButtons title={strings.leaguesText} />
-              <RenderFotterButtons
-                onPress={() => setActionSheetforPlayers(true)}
-                title={strings.playersText}
-              />
-            </View>
-            {/* 4th Row */}
-            <View style={styles.rowStyles}>
-              <RenderFotterButtons
-                onPress={() => navigateToRefreeScreen()}
-                title={strings.refreesText}
-              />
-              <RenderFotterButtons
-                onPress={() => navigateToScoreKeeper()}
-                title={strings.scorekeepersText}
-              />
-              <RenderFotterButtons title={strings.rankingsText} />
-            </View>
-            <View style={[styles.rowStyles, {paddingBottom: 10}]}>
-              <RenderFotterButtons title={strings.venuesText} />
-            </View>
+            ))}
           </View>
         </ImageBackground>
       </View>
@@ -1631,12 +1650,13 @@ function LocalHomeScreen({navigation, route}) {
       <BottomSheet
         optionList={[
           strings.playersAvailableforChallenge,
-          strings.lookingForTeam,
+          strings.playersLookingForGroupText,
         ]}
         isVisible={actionSheetForPlayers}
         closeModal={() => setActionSheetforPlayers(false)}
         onSelect={(option) => {
-          setActionSheetforPlayers(false);
+          console.log(option);
+          // setActionSheetforPlayers(false);
           const data = getDataForNextScreen(
             Verbs.SPORT_DATA,
             filters,
@@ -1654,7 +1674,7 @@ function LocalHomeScreen({navigation, route}) {
               },
             });
           }
-          if (option === strings.lookingForTeam) {
+          if (option === strings.playersLookingForGroupText) {
             if (authContext.entity.role === Verbs.entityTypeTeam) {
               const teamData = getDataForNextScreen(
                 Verbs.TEAM_DATA,
@@ -1841,14 +1861,11 @@ const styles = StyleSheet.create({
   },
   containerStyles: {
     paddingVertical: 10,
-    flexShrink: 1,
     width: Dimensions.get('screen').width,
-  },
-  rowStyles: {
     flexDirection: 'row',
-    flex: 1,
     flexWrap: 'wrap',
   },
+
   newinTownContainerStyle: {
     flex: 1,
     marginTop: 30,

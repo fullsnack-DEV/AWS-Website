@@ -42,6 +42,8 @@ const NewsFeedList = ({
   openLikeModal = () => {},
   openCommentModal = () => {},
   dummyCall = () => {},
+  fromEvent = false,
+  routeData = {},
 }) => {
   const [userID, setUserID] = useState('');
 
@@ -94,6 +96,8 @@ const NewsFeedList = ({
           entityDetails={entityDetails}
           openLikeModal={openLikeModal}
           openCommentModal={openCommentModal}
+          fromEvent={fromEvent}
+          routeData={routeData}
         />
         <View
           style={{backgroundColor: colors.grayBackgroundColor, height: 7}}

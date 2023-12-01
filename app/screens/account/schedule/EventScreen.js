@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect, useCallback} from 'react';
 import {
   View,
   StyleSheet,
@@ -18,7 +18,7 @@ import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import Modal from 'react-native-modal';
 import ReadMore from '@fawazahmed/react-native-read-more';
-
+import _ from 'lodash';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
@@ -34,6 +34,7 @@ import {
   deleteEvent,
   removeAttendeeFromEvent,
 } from '../../../api/Schedule';
+
 import TCProfileButton from '../../../components/TCProfileButton';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCProfileView from '../../../components/TCProfileView';
@@ -44,7 +45,11 @@ import {
   getDayFromDate,
   countNumberOfWeekFromDay,
 } from '../../../utils';
-import {getUserFollowerFollowing} from '../../../api/Users';
+import {
+  followUser,
+  getUserFollowerFollowing,
+  unfollowUser,
+} from '../../../api/Users';
 import {getGroupMembers} from '../../../api/Groups';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
@@ -52,6 +57,18 @@ import {InvoiceType, ModalTypes} from '../../../Constants/GeneralConstants';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import GoingUsersModal from './GoingUsersModal';
+import WritePost from '../../../components/newsFeed/WritePost';
+import {ImageUploadContext} from '../../../context/ImageUploadContext';
+import {
+  createPost,
+  createReaction,
+  deletePost,
+  getTimeline,
+} from '../../../api/NewsFeeds';
+import NewsFeedList from '../../newsfeeds/NewsFeedList';
+import LikersModal from '../../../components/modals/LikersModal';
+import CommentModal from '../../../components/newsFeed/CommentModal';
+import FeedsShimmer from '../../../components/shimmer/newsFeed/FeedsShimmer';
 
 export default function EventScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -69,13 +86,60 @@ export default function EventScreen({navigation, route}) {
   const [infoType, setInfoType] = useState('');
   const [recurringEditModal, setRecurringEditModal] = useState(false);
   const [moreOptions, setMoreOptions] = useState([]);
+  const [postData, setPostData] = useState([]);
   const [showActionSheet, setShowActionSheet] = useState(false);
+  const [pullRefresh, setPullRefresh] = useState(false);
+  const [isNextDataLoading, setIsNextDataLoading] = useState(true);
+  const [footerLoading, setFooterLoading] = useState(false);
+  const [feedCalled, setFeedCalled] = useState(false);
   const THISEVENT = 0;
   const FUTUREEVENT = 1;
   const ALLEVENT = 2;
-
+  const [firstTimeLoading, setFirstTimeLoading] = useState(false);
+  const imageUploadContext = useContext(ImageUploadContext);
   const [showGoingModal, setShowGoingModal] = useState(false);
   const [snapPoints, setSnapPoints] = useState([]);
+  const [selectedPost, setSelectedPost] = useState({});
+  const [showLikeModal, setShowLikeModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+
+  console.log(route.params, 'Fromparamrtr');
+  useEffect(() => {
+    if (route.params?.isCreatePost) {
+      const {dataParams, imageArray} = route.params;
+      if (imageArray.length > 0) {
+        imageUploadContext.uploadData(
+          authContext,
+          dataParams,
+          imageArray,
+          createPostAfterUpload,
+        );
+      } else {
+        navigation.setParams({isCreatePost: undefined});
+        createPostAfterUpload(dataParams);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.params?.isCreatePost]);
+
+  const getFeeds = useCallback(() => {
+    getTimeline(organizer.entity_type, eventData.cal_id, '', authContext)
+      .then((response) => {
+        setFeedCalled(true);
+        setFirstTimeLoading(false);
+        setPostData([...response.payload.results]);
+      })
+      .catch((e) => {
+        setFirstTimeLoading(false);
+        setTimeout(() => Alert.alert('', e.message), 100);
+      });
+  }, [authContext, eventData.cal_id, organizer.entity_type]);
+
+  useEffect(() => {
+    if (isFocused) {
+      getFeeds();
+    }
+  }, [getFeeds, isFocused, route.params?.isCreatePost]);
 
   const recurringEditList = [
     {
@@ -174,6 +238,35 @@ export default function EventScreen({navigation, route}) {
       gameDataLongi = route.params.gameData.game.venue.long;
     }
   }
+
+  const createPostAfterUpload = (dataParams) => {
+    let body = dataParams;
+    body.cal_id = eventData.cal_id;
+
+    setloading(true);
+
+    if (
+      authContext.entity.role === Verbs.entityTypeClub ||
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
+      body = {
+        ...dataParams,
+        group_id: authContext.entity.uid,
+        showPreviewForUrl: true,
+        cal_id: eventData.cal_id,
+      };
+    }
+
+    createPost(body, authContext)
+      .then(() => {
+        setloading(false);
+        getFeeds();
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages);
+        setloading(false);
+      });
+  };
 
   useEffect(() => {
     if (isFocused && route.params?.event) {
@@ -490,6 +583,150 @@ export default function EventScreen({navigation, route}) {
       });
   };
 
+  // feed fucntions
+
+  const handleFollowUnfollow = (
+    userId,
+    isFollowing = false,
+    entityType = Verbs.entityTypePlayer,
+  ) => {
+    const params = {
+      entity_type: entityType,
+    };
+    if (!isFollowing) {
+      followUser(params, userId, authContext)
+        .then(() => {
+          getFeeds(false);
+        })
+        .catch((error) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    } else {
+      unfollowUser(params, userId, authContext)
+        .then(() => {
+          getFeeds(false);
+        })
+        .catch((error) => {
+          setTimeout(() => {
+            Alert.alert(strings.alertmessagetitle, error.message);
+          }, 10);
+        });
+    }
+  };
+
+  const updateCommentCount = useCallback(
+    (updatedComment) => {
+      const pData = _.cloneDeep(postData);
+      const pIndex = pData?.findIndex(
+        (item) => item?.id === updatedComment?.id,
+      );
+      if (pIndex !== -1) {
+        pData[pIndex].reaction_counts = {...pData?.[pIndex]?.reaction_counts};
+        pData[pIndex].reaction_counts.comment = updatedComment?.count;
+        setPostData([...pData]);
+      }
+    },
+    [postData],
+  );
+
+  const onDeletePost = useCallback(
+    (item) => {
+      setloading(true);
+      const params = {
+        activity_id: item.id,
+      };
+      if (
+        ['team', 'club', 'league'].includes(
+          authContext?.entity?.obj?.entity_type,
+        )
+      ) {
+        params.entity_type = authContext?.entity?.obj?.entity_type;
+        params.entity_id = authContext?.entity?.uid;
+      }
+      deletePost(params, authContext)
+        .then((response) => {
+          if (response.status) {
+            const pData = postData.filter(
+              (postItem) => postItem?.id !== params?.activity_id,
+            );
+            setPostData([...pData]);
+          }
+          setloading(false);
+        })
+        .catch(() => {
+          setloading(false);
+        });
+    },
+    [authContext, postData],
+  );
+
+  const onRefreshPress = useCallback(() => {
+    setIsNextDataLoading(true);
+    setFooterLoading(false);
+    setPullRefresh(true);
+    getTimeline(organizer.entity_type, eventData.cal_id, '', authContext)
+      .then((response) => {
+        setPostData([...response.payload.results]);
+        setPullRefresh(false);
+      })
+      .catch((e) => {
+        Alert.alert('', e.messages);
+        setPullRefresh(false);
+      });
+  }, [authContext, eventData.cal_id, organizer.entity_type]);
+
+  const onLikePress = useCallback(
+    (item) => {
+      const bodyParams = {
+        reaction_type: Verbs.clap,
+        activity_id: item.id,
+      };
+      createReaction(bodyParams, authContext)
+        .then((res) => {
+          const pData = _.cloneDeep(postData);
+          const pIndex = pData.findIndex((pItem) => pItem?.id === item?.id);
+          const likeIndex =
+            pData[pIndex].own_reactions?.clap?.findIndex(
+              (likeItem) => likeItem?.user_id === authContext?.entity?.uid,
+            ) ?? -1;
+          if (likeIndex === -1) {
+            pData[pIndex].own_reactions = {...pData?.[pIndex]?.own_reactions};
+            pData[pIndex].own_reactions.clap = [
+              ...pData?.[pIndex]?.own_reactions?.clap,
+            ];
+            pData[pIndex].own_reactions.clap.push(res?.payload);
+            pData[pIndex].reaction_counts = {
+              ...pData?.[pIndex]?.reaction_counts,
+            };
+            pData[pIndex].reaction_counts.clap =
+              pData?.[pIndex]?.reaction_counts?.clap + 1 ?? 0;
+          } else {
+            pData[pIndex].own_reactions = {...pData?.[pIndex]?.own_reactions};
+            pData[pIndex].own_reactions.clap = [
+              ...pData?.[pIndex]?.own_reactions?.clap,
+            ];
+            pData[pIndex].own_reactions.clap = pData?.[
+              pIndex
+            ]?.own_reactions?.clap?.filter(
+              (likeItem) => likeItem?.user_id !== authContext?.entity?.uid,
+            );
+            pData[pIndex].reaction_counts = {
+              ...pData?.[pIndex]?.reaction_counts,
+            };
+            pData[pIndex].reaction_counts.clap =
+              pData?.[pIndex]?.reaction_counts?.clap - 1 ?? 0;
+          }
+          setPostData([...pData]);
+        })
+        .catch((e) => {
+          console.log('Townsucp', e.message);
+        });
+    },
+    [authContext, postData],
+  );
+
   useEffect(() => {
     const backAction = () => {
       navigation.navigate('App', {
@@ -515,6 +752,22 @@ export default function EventScreen({navigation, route}) {
       return images.newClubLogo;
     }
     return images.profilePlaceHolder;
+  };
+
+  const isWritePostVisible = (who_can_post) => {
+    if (who_can_post?.text === strings.everyoneRadio) {
+      return true;
+    }
+    if (who_can_post?.text === strings.attendeeRadioText) {
+      const userExists = going.some(
+        (item) => item.user_id === authContext.entity.uid,
+      );
+      return userExists;
+    }
+    if (who_can_post?.text === strings.oraganizerOnly) {
+      return eventData.created_by.uid === authContext.entity.uid;
+    }
+    return false;
   };
 
   return (
@@ -1074,9 +1327,62 @@ export default function EventScreen({navigation, route}) {
 
             {/* <View marginBottom={70} /> */}
           </>
-        ) : null}
-
-        {activeTab === strings.postsTitleText ? <></> : null}
+        ) : (
+          <View style={{marginTop: -20}}>
+            {isWritePostVisible(eventData.who_can_post) && (
+              <WritePost
+                navigation={navigation}
+                postDataItem={authContext.entity.obj}
+                onWritePostPress={() => {
+                  navigation.navigate('NewsFeedStack', {
+                    screen: 'WritePostScreen',
+                    params: {
+                      postData: authContext.entity.obj,
+                      selectedImageList: [],
+                      comeFrom: 'EventScreen',
+                      routeParams: {
+                        uid: authContext.entity.uid,
+                        role: authContext.entity.obj.entity_type,
+                        eventID: eventData.cal_id,
+                        ...route.params,
+                      },
+                    },
+                  });
+                }}
+              />
+            )}
+            {firstTimeLoading ? (
+              <FeedsShimmer />
+            ) : (
+              <NewsFeedList
+                navigation={navigation}
+                updateCommentCount={updateCommentCount}
+                pullRefresh={pullRefresh}
+                onDeletePost={onDeletePost}
+                postData={postData}
+                onRefreshPress={onRefreshPress}
+                footerLoading={footerLoading && isNextDataLoading}
+                onLikePress={onLikePress}
+                onEndReached={() => {}}
+                feedAPI={feedCalled}
+                isNewsFeedScreen={true}
+                entityDetails={authContext.entity.obj}
+                openLikeModal={(postItem = {}) => {
+                  setSelectedPost(postItem);
+                  setShowCommentModal(false);
+                  setShowLikeModal(true);
+                }}
+                openCommentModal={(postItem = {}) => {
+                  setSelectedPost(postItem);
+                  setShowLikeModal(false);
+                  setShowCommentModal(true);
+                }}
+                fromEvent={true}
+                routeData={route.params}
+              />
+            )}
+          </View>
+        )}
       </ScrollView>
       <BottomSheet
         type={Platform.OS}
@@ -1206,6 +1512,43 @@ export default function EventScreen({navigation, route}) {
           setShowActionSheet(false);
           setSendNewInvoice(false);
         }}
+      />
+
+      <LikersModal
+        data={selectedPost}
+        showLikeModal={showLikeModal}
+        closeModal={() => setShowLikeModal(false)}
+        onClickProfile={(obj = {}) => {
+          navigation.push('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid: obj?.user_id,
+              role: obj.user.data.entity_type,
+            },
+          });
+        }}
+        handleFollowUnfollow={handleFollowUnfollow}
+      />
+
+      <CommentModal
+        postId={selectedPost.id}
+        showCommentModal={showCommentModal}
+        updateCommentCount={(updatedCommentData) => {
+          updateCommentCount(updatedCommentData);
+          // setCommentCount(updatedCommentData?.count);
+        }}
+        closeModal={() => setShowCommentModal(false)}
+        onProfilePress={(data = {}) => {
+          setShowCommentModal(false);
+          navigation.navigate('HomeStack', {
+            screen: 'HomeScreen',
+            params: {
+              uid: data.userId,
+              role: data.entityType,
+            },
+          });
+        }}
+        postOwnerId={selectedPost.actor?.id}
       />
     </SafeAreaView>
   );

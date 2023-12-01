@@ -3245,4 +3245,7 @@ export default {
   levelCount: 'en_Lv. {0}',
   recentText: 'en_Recent',
   noResultFoundFor: 'en_No results found for “{0}”.',
+  playersLookingForGroupText: 'en_Player Looking For Group',
+  whoCanWritePostoneventHome: 'en_Who can Write a Post in Event Home',
+  oraganizerOnly: 'en_Organizer only',
 };

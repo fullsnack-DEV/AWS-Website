@@ -28,6 +28,8 @@ const NewsFeedPostItems = memo(
     entityDetails = {},
     openLikeModal = () => {},
     openCommentModal = () => {},
+    fromEvent = false,
+    routeData = {},
   }) => {
     const authContext = useContext(AuthContext);
     const [childIndex, setChildIndex] = useState(0);
@@ -87,6 +89,8 @@ const NewsFeedPostItems = memo(
             screen: 'EditPostScreen',
             params: {
               postData: item,
+              fromEvent,
+              routeParams: routeData,
             },
           });
           setShowMoreOptions(false);

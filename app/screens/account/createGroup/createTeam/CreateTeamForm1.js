@@ -461,6 +461,14 @@ export default function CreateTeamForm1({navigation, route}) {
     });
   };
 
+  const openPicker = () => {
+    if (Platform.OS === 'android') {
+      Pickerref?.current?.togglePicker(true);
+    } else {
+      Pickerref.current.togglePicker(true);
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -693,6 +701,7 @@ export default function CreateTeamForm1({navigation, route}) {
                   justifyContent: 'space-between',
                 }}>
                 <Pressable
+                  onPress={() => openPicker()}
                   style={{
                     width: '45%',
                     justifyContent: 'flex-start',
@@ -703,6 +712,7 @@ export default function CreateTeamForm1({navigation, route}) {
                       label: strings.minPlaceholder,
                       value: 0,
                     }}
+                    ref={Platform.OS === 'ios' ? Pickerref : null}
                     items={minAgeValue}
                     onValueChange={(value) => {
                       setMinAge(value);
@@ -711,29 +721,21 @@ export default function CreateTeamForm1({navigation, route}) {
                         setMaxAge(0);
                       }
                     }}
-                    useNativeAndroidPickerStyle={false}
+                    useNativeAndroidPickerStyle={true}
                     style={{
                       placeholder: {
                         color: colors.blackColor,
                       },
-                      iconContainer: {
-                        top: 5,
-                        right: 0,
-                      },
 
-                      inputIOS: {
-                        borderRadius: 5,
-                        height: 40,
-                        justifyContent: 'flex-start',
-                        fontSize: 16,
-                        textAlign: 'center',
-                        paddingVertical: 12,
-                        color: colors.blackColor,
+                      viewContainer: {
+                        flex: 1,
+                        paddingLeft: Platform.OS === 'ios' ? 0 : 60,
                         backgroundColor: colors.lightGrey,
+                        justifyContent: 'center',
+                        borderRadius: 5,
                       },
-                      inputAndroid: {
-                        height: 50,
-
+                      inputIOS: {
+                        height: 40,
                         justifyContent: 'flex-start',
                         fontSize: 16,
                         textAlign: 'center',
@@ -745,15 +747,19 @@ export default function CreateTeamForm1({navigation, route}) {
                     }}
                     value={minAge}
                     fixAndroidTouchableBug={true}
-                    Icon={() => (
-                      <TouchableOpacity
-                        onPress={() => Pickerref.current.togglePicker()}>
-                        <Image
-                          source={images.dropDownArrow}
-                          style={styles.miniDownArrow}
-                        />
-                      </TouchableOpacity>
-                    )}
+                    Icon={() => {
+                      if (Platform.OS === 'ios') {
+                        return (
+                          <TouchableOpacity onPress={() => openPicker()}>
+                            <Image
+                              source={images.dropDownArrow}
+                              style={styles.miniDownArrow}
+                            />
+                          </TouchableOpacity>
+                        );
+                      }
+                      return null;
+                    }}
                   />
                 </Pressable>
 
@@ -765,13 +771,13 @@ export default function CreateTeamForm1({navigation, route}) {
                   -
                 </Text>
                 <Pressable
-                  onPress={() => Pickerref.current.togglePicker()}
+                  onPress={() => openPicker()}
                   style={{
                     width: '45%',
                     justifyContent: 'flex-start',
                   }}>
                   <RNPickerSelect
-                    ref={Pickerref}
+                    ref={Platform.OS === 'ios' ? Pickerref : null}
                     testID="max-age-picker"
                     placeholder={{
                       label: strings.maxPlaceholder,
@@ -782,14 +788,17 @@ export default function CreateTeamForm1({navigation, route}) {
                     onValueChange={(value) => {
                       setMaxAge(value);
                     }}
-                    useNativeAndroidPickerStyle={false}
+                    useNativeAndroidPickerStyle={true}
                     style={{
                       placeholder: {
                         color: colors.blackColor,
                       },
-                      iconContainer: {
-                        top: 5,
-                        right: 0,
+                      viewContainer: {
+                        flex: 1,
+                        paddingLeft: Platform.OS === 'ios' ? 0 : 60,
+                        backgroundColor: colors.lightGrey,
+                        justifyContent: 'center',
+                        borderRadius: 5,
                       },
                       inputIOS: {
                         height: 40,
@@ -801,27 +810,21 @@ export default function CreateTeamForm1({navigation, route}) {
                         backgroundColor: colors.lightGrey,
                         borderRadius: 5,
                       },
-                      inputAndroid: {
-                        height: 50,
-                        justifyContent: 'flex-start',
-                        fontSize: 16,
-                        textAlign: 'center',
-                        paddingVertical: 12,
-                        color: colors.blackColor,
-                        backgroundColor: colors.lightGrey,
-                        borderRadius: 5,
-                      },
                     }}
                     value={maxAge}
-                    Icon={() => (
-                      <TouchableOpacity
-                        onPress={() => Pickerref.current.togglePicker()}>
-                        <Image
-                          source={images.dropDownArrow}
-                          style={styles.miniDownArrow}
-                        />
-                      </TouchableOpacity>
-                    )}
+                    Icon={() => {
+                      if (Platform.OS === 'ios') {
+                        return (
+                          <TouchableOpacity onPress={() => openPicker()}>
+                            <Image
+                              source={images.dropDownArrow}
+                              style={styles.miniDownArrow}
+                            />
+                          </TouchableOpacity>
+                        );
+                      }
+                      return null;
+                    }}
                   />
                 </Pressable>
               </View>

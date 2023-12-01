@@ -42,6 +42,7 @@ const HomeFeed = ({
   currentTab,
   pulltoRefresh,
   routeParams = {},
+  forEvent = false,
 }) => {
   const authContext = useContext(AuthContext);
   const [fullScreenLoading, setFullScreenLoading] = useState(false);
@@ -234,7 +235,8 @@ const HomeFeed = ({
         {homeFeedHeaderComponent()}
         {isAdmin ||
         currentUserData?.entity_type !== Verbs.entityTypeUser ||
-        currentUserData?.entity_type !== Verbs.entityTypePlayer
+        currentUserData?.entity_type !== Verbs.entityTypePlayer ||
+        forEvent
           ? StickyHeaderComponent
           : null}
       </>
@@ -244,6 +246,7 @@ const HomeFeed = ({
       currentUserData?.entity_type,
       homeFeedHeaderComponent,
       isAdmin,
+      forEvent,
     ],
   );
 

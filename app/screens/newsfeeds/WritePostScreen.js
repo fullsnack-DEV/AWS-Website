@@ -200,6 +200,17 @@ const WritePostScreen = ({navigation, route}) => {
             ...route.params.routeParams,
           },
         });
+      } else if (route.params?.comeFrom === 'EventScreen') {
+        setSearchText('');
+        navigation.navigate('ScheduleStack', {
+          screen: 'EventScreen',
+          params: {
+            ...route.params.routeParams,
+            dataParams,
+            imageArray,
+            isCreatePost: true,
+          },
+        });
       } else if (route.params?.comeFrom) {
         navigation.navigate(route.params?.comeFrom, {
           isCreatePost: true,
@@ -822,6 +833,15 @@ const WritePostScreen = ({navigation, route}) => {
         screen: 'UserGalleryScreen',
         params: {
           ...route.params.routeParams,
+        },
+      });
+    } else if (route.params?.comeFrom === 'EventScreen') {
+      setSearchText('');
+      navigation.navigate('ScheduleStack', {
+        screen: 'EventScreen',
+        params: {
+          ...route.params.routeParams,
+          isCreatePost: false,
         },
       });
     } else {

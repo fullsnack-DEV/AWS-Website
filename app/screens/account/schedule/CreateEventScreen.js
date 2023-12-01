@@ -86,6 +86,7 @@ export default function CreateEventScreen({navigation, route}) {
   const actionSheet = useRef();
   const actionSheetWithDelete = useRef();
   const isFocused = useIsFocused();
+  const whoCanseePost = useRef();
 
   const authContext = useContext(AuthContext);
   const [eventTitle, setEventTitle] = useState('');
@@ -118,6 +119,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [loading, setloading] = useState(false);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
+  const [visibleWhoCanPostModal, setVisibleWhoCanPostModal] = useState(false);
   const [selectedSport, setSelectedSport] = useState({});
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
   const [snapPoints, setSnapPoints] = useState([]);
@@ -126,6 +128,7 @@ export default function CreateEventScreen({navigation, route}) {
   const join = 'join';
   const posted = 'posted';
   const invite = 'invite';
+  const post = 'post';
 
   const indexOne = 0;
   const indexTwo = 1;
@@ -144,6 +147,11 @@ export default function CreateEventScreen({navigation, route}) {
 
   const [whoCanInviteOption, setWhoCanInviteOption] = useState({
     text: strings.attendeeRadioText,
+    value: 0,
+  });
+
+  const [whoCanPost, setWhoCanPost] = useState({
+    text: strings.everyoneRadio,
     value: 0,
   });
 
@@ -305,11 +313,14 @@ export default function CreateEventScreen({navigation, route}) {
           setWhoCanJoinOption(item);
         } else if (whoOption === invite) {
           setWhoCanInviteOption(item);
+        } else if (whoOption === post) {
+          setWhoCanPost(item);
         } else {
           setEventPosted(item);
         }
-        console.log('====>', whoOption === join);
+
         setVisibleWhoModal(false);
+        setVisibleWhoCanPostModal(false);
       }}>
       <View
         style={{
@@ -323,7 +334,8 @@ export default function CreateEventScreen({navigation, route}) {
           {(whoOption === see && whoCanSeeOption.value === item?.value) ||
           (whoOption === join && whoCanJoinOption.value === item?.value) ||
           (whoOption === posted && eventPosted.value === item?.value) ||
-          (whoOption === invite && whoCanInviteOption.value === item?.value) ? (
+          (whoOption === invite && whoCanInviteOption.value === item?.value) ||
+          (whoOption === post && whoCanPost.value === item?.value) ? (
             <Image
               source={images.radioCheckYellow}
               style={styles.checkboxImg}
@@ -577,6 +589,9 @@ export default function CreateEventScreen({navigation, route}) {
           who_can_join: {
             ...whoCanJoinOption,
           },
+          who_can_post: {
+            ...whoCanPost,
+          },
           event_posted_at: eventPosted,
           event_fee: {
             value: eventFee,
@@ -786,6 +801,22 @@ export default function CreateEventScreen({navigation, route}) {
           {
             text: strings.onlymeTitleText,
             value: 1,
+          },
+        ];
+      }
+      if (whoOption === post) {
+        return [
+          {
+            text: strings.everyoneRadio,
+            value: 0,
+          },
+          {
+            text: strings.attendeeRadioText,
+            value: 1,
+          },
+          {
+            text: strings.oraganizerOnly,
+            value: 2,
           },
         ];
       }
@@ -1405,6 +1436,48 @@ export default function CreateEventScreen({navigation, route}) {
                 />
               ) : null}
             </View>
+            {/* who Can write post on Event Home */}
+
+            <View style={styles.containerStyle}>
+              <Text style={styles.headerTextStyle}>
+                {strings.whoCanWritePostoneventHome}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setWhoOption(post);
+                  setVisibleWhoCanPostModal(true);
+                }}>
+                <View style={styles.dropContainer}>
+                  <Text style={styles.textInputDropStyle}>
+                    {whoCanPost.text}
+                  </Text>
+                  <Image
+                    source={images.dropDownArrow}
+                    style={styles.downArrowWhoCan}
+                  />
+                </View>
+              </TouchableOpacity>
+
+              {/* {whoCanInviteOption.value === 2 &&
+              authContext.entity.role === Verbs.entityTypeUser ? (
+                <GroupList
+                  list={groupsSeeList}
+                  onCheck={(index) => {
+                    groupsSeeList[index].isSelected =
+                      !groupsSeeList[index].isSelected;
+                    setGroupsSeeList([...groupsSeeList]);
+                  }}
+                  onAllPress={(isAllSelected) => {
+                    const newList = groupsSeeList.map((item) => ({
+                      ...item,
+                      isSelected: !isAllSelected,
+                    }));
+                    setGroupsSeeList([...newList]);
+                  }}
+                  containerStyle={{marginTop: 20}}
+                />
+              ) : null} */}
+            </View>
 
             <View style={styles.containerStyle}>
               <View style={{flexDirection: 'row'}}>
@@ -1515,6 +1588,35 @@ export default function CreateEventScreen({navigation, route}) {
           />
         </View>
       </CustomModalWrapper>
+      <CustomModalWrapper
+        isVisible={visibleWhoCanPostModal}
+        closeModal={() => setVisibleWhoCanPostModal(false)}
+        modalType={ModalTypes.style2}
+        title={whoOption === join ? strings.whoCanJoin : strings.whoCanSee}
+        containerStyle={{
+          padding: 15,
+          marginBottom: Platform.OS === 'ios' ? 35 : 0,
+        }}
+        externalSnapPoints={snapPoints}>
+        <View
+          onLayout={(event) => {
+            const contentHeight = event.nativeEvent.layout.height + 80;
+
+            setSnapPoints([
+              // '50%',
+              contentHeight,
+              contentHeight,
+              // Dimensions.get('window').height - 40,
+            ]);
+          }}>
+          <FlatList
+            data={getOptions()}
+            renderItem={renderWhoCan}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
+      </CustomModalWrapper>
 
       <ActionSheet
         ref={actionSheet}
@@ -1529,6 +1631,25 @@ export default function CreateEventScreen({navigation, route}) {
           }
         }}
       />
+
+      <ActionSheet
+        ref={whoCanseePost}
+        // title={'NewsFeed Post'}
+        options={[
+          strings.everyoneText,
+          strings.attendyText,
+          strings.onlyOrganizer,
+        ]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === indexOne) {
+            openCamera();
+          } else if (index === 1) {
+            openImagePicker(750, 348);
+          }
+        }}
+      />
+
       <ActionSheet
         ref={actionSheetWithDelete}
         // title={'NewsFeed Post'}
