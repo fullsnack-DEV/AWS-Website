@@ -155,7 +155,7 @@ export default function ChangeSportsOrderScreen({
             source={{
               uri: `${image_url}${
                 Utility.getSportImage(item.sport, item.type, authContext)
-                  .player_image_white
+                  .player_image
               }`,
             }}
             style={styles.sportsIcon}
@@ -202,7 +202,7 @@ export default function ChangeSportsOrderScreen({
             source={{
               uri: `${image_url}${
                 Utility.getSportImage(item.sport, item.type, authContext)
-                  .player_image_white
+                  .player_image
               }`,
             }}
             style={styles.sportsIcon}

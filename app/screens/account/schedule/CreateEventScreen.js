@@ -21,7 +21,7 @@ import {
   BackHandler,
   // Dimensions,
 } from 'react-native';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 import moment from 'moment';
 import {
   widthPercentageToDP as wp,
@@ -33,7 +33,6 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {format} from 'react-string-format';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {getCountry} from 'country-currency-map';
-import CurrencyInput from 'react-native-currency-input';
 import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
@@ -305,7 +304,12 @@ export default function CreateEventScreen({navigation, route}) {
 
   const renderWhoCan = ({item}) => (
     <TouchableOpacity
-      style={styles.listItem}
+      style={{
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 15,
+      }}
       onPress={() => {
         if (whoOption === see) {
           setWhoCanSeeOption(item);
@@ -322,14 +326,7 @@ export default function CreateEventScreen({navigation, route}) {
         setVisibleWhoModal(false);
         setVisibleWhoCanPostModal(false);
       }}>
-      <View
-        style={{
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginBottom: 15,
-        }}>
-        <Text style={styles.languageList}>{item.text}</Text>
+      <View style={{flex: 1}}>
         <View style={styles.checkbox}>
           {(whoOption === see && whoCanSeeOption.value === item?.value) ||
           (whoOption === join && whoCanJoinOption.value === item?.value) ||
@@ -594,7 +591,7 @@ export default function CreateEventScreen({navigation, route}) {
           },
           event_posted_at: eventPosted,
           event_fee: {
-            value: eventFee,
+            value: `${parseFloat(eventFee).toFixed(2)}`,
             currency_type: currency,
           },
           refund_policy: refundPolicy,
@@ -721,7 +718,7 @@ export default function CreateEventScreen({navigation, route}) {
       ],
       {cancelable: false},
     );
-  });
+  }, [navigation, route.params?.comeName]);
 
   useEffect(() => {
     const backAction = () => {
@@ -1245,19 +1242,13 @@ export default function CreateEventScreen({navigation, route}) {
                 {strings.eventFeeTitle}
               </Text>
               <View style={[styles.feeContainer, {marginTop: 10}]}>
-                <CurrencyInput
-                  style={styles.eventFeeStyle}
+                <TextInput
                   value={eventFee}
-                  onChangeValue={(val) => {
-                    setEventFee(val);
-                  }}
-                  separator=","
-                  delimiter="."
-                  // minValue={0}
-                  precision={1}
+                  style={styles.eventFeeStyle}
                   keyboardType="decimal-pad"
-                  textAlignVertical={'center'}
-                  placeholderTextColor={colors.userPostTimeColor}
+                  onChangeText={(value) => {
+                    setEventFee(value);
+                  }}
                 />
                 <Text style={styles.currencyStyle}>
                   {currency ?? strings.defaultCurrency}
@@ -1573,19 +1564,9 @@ export default function CreateEventScreen({navigation, route}) {
           onLayout={(event) => {
             const contentHeight = event.nativeEvent.layout.height + 80;
 
-            setSnapPoints([
-              // '50%',
-              contentHeight,
-              contentHeight,
-              // Dimensions.get('window').height - 40,
-            ]);
+            setSnapPoints([contentHeight, contentHeight]);
           }}>
-          <FlatList
-            data={getOptions()}
-            renderItem={renderWhoCan}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-          />
+          {getOptions().map((item, index) => renderWhoCan({item, index}))}
         </View>
       </CustomModalWrapper>
       <CustomModalWrapper
@@ -1710,14 +1691,14 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   checkboxImg: {
-    width: wp('5.5%'),
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
-    alignSelf: 'center',
+    // alignSelf: 'center',
   },
   checkbox: {
-    alignSelf: 'center',
-    position: 'absolute',
-    right: wp(0),
+    width: 20,
+    height: 20,
   },
   textInputStyle: {
     backgroundColor: colors.textFieldBackground,
@@ -1792,7 +1773,7 @@ const styles = StyleSheet.create({
     right: 15,
   },
   eventFeeStyle: {
-    width: '82%',
+    flex: 1,
     fontSize: 16,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,

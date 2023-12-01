@@ -392,6 +392,92 @@ const getGroupSportName = (groupData = {}, sportList = [], maxSports = 0) => {
   return getSportName(groupData.sport, groupData.sport_type, sportList);
 };
 
+const getSportTypeFromName = (sportName = '', sportList = []) => {
+  const foundSport = sportList.find((sport) => sport.sport === sportName);
+
+  if (foundSport) {
+    // Return the type of the found sport
+    return foundSport?.format[0]?.sport_type;
+  }
+  return null;
+};
+
+const getButtonStateForPeople = ({
+  entityId = '',
+  entityType = Verbs.entityTypePlayer,
+  sportObj = {},
+  authContext = {},
+}) => {
+  const buttonState = {
+    book: false,
+    challenge: false,
+    unavailable: false,
+  };
+
+  const loggedInEntity = authContext.entity ?? {};
+  if (entityId === loggedInEntity.uid) {
+    return buttonState;
+  }
+
+  if (entityType === Verbs.entityTypePlayer) {
+    if (sportObj.sport_type === Verbs.singleSport) {
+      if (sportObj.setting?.availibility === Verbs.on) {
+        if (
+          loggedInEntity.role !== Verbs.entityTypeTeam &&
+          loggedInEntity.role !== Verbs.entityTypeClub &&
+          loggedInEntity.uid !== entityId
+        ) {
+          const matchingSport = loggedInEntity.obj.registered_sports?.find(
+            (ele) => ele.sport === sportObj.sport,
+          );
+          if (matchingSport) {
+            buttonState.challenge = true;
+            buttonState.unavailable = false;
+          }
+        }
+      } else {
+        buttonState.challenge = false;
+        buttonState.unavailable = true;
+      }
+    }
+  } else if (
+    entityType === Verbs.entityTypeReferee ||
+    entityType === Verbs.entityTypeScorekeeper
+  ) {
+    let availibility = Verbs.off;
+    if (entityType === Verbs.entityTypeReferee) {
+      availibility = sportObj.setting?.referee_availibility;
+    } else if (entityType === Verbs.entityTypeScorekeeper) {
+      availibility = sportObj.setting?.scorekeeper_availibility;
+    }
+
+    if (availibility === Verbs.on) {
+      if (authContext.entity.role !== Verbs.entityTypeClub) {
+        const sportType = getSportTypeFromName(
+          sportObj.sport,
+          authContext.sports,
+        );
+        if (
+          sportType === Verbs.singleSport &&
+          authContext.entity.role !== Verbs.entityTypeTeam
+        ) {
+          const matchingSport = loggedInEntity.obj.registered_sports?.find(
+            (ele) => ele.sport === sportObj.sport,
+          );
+          if (matchingSport) {
+            buttonState.book = true;
+          }
+        } else if (loggedInEntity.obj.sport === sportObj.sport) {
+          buttonState.book = true;
+        }
+      }
+    } else {
+      buttonState.book = false;
+    }
+  }
+  return buttonState;
+};
+
 export {
   getProgressBarColor,
   getIsAvailable,
@@ -409,4 +495,5 @@ export {
   getEntityTpeLabel,
   getSingleSportList,
   getGroupSportName,
+  getButtonStateForPeople,
 };

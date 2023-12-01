@@ -1,12 +1,6 @@
-import React, {memo} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  StyleSheet,
-  Image,
-} from 'react-native';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {memo, useCallback, useEffect, useState} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 
 import images from '../Constants/ImagePath';
 import colors from '../Constants/Colors';
@@ -14,6 +8,7 @@ import fonts from '../Constants/Fonts';
 import {strings} from '../../Localization/translation';
 import Verbs from '../Constants/Verbs';
 import {filterType} from '../utils/constant';
+import {getButtonStateForPeople} from '../utils/sportsActivityUtils';
 
 function TCPlayerView({
   onPress,
@@ -30,14 +25,18 @@ function TCPlayerView({
   onPressBookButton,
   onPressInviteButton,
 }) {
-  let sports = [];
-  let isChallengeButtonShow = false;
-  let isBookButtonShow = false;
-  let isInviteButtonShow = false;
-  const filterSport = () => {
-    // Case - With Filter
+  const [sports, setSports] = useState([]);
+  const [buttonState, setButtonState] = useState({
+    book: false,
+    challenge: false,
+    unavailable: false,
+  });
+  const [isInviteButtonShow, setIsInviteButtonShow] = useState(false);
+
+  const filterSport = useCallback(() => {
+    let sportList = [];
     if (sportFilter.sport !== strings.allSport) {
-      sports = sports.filter((value) => {
+      sportList = sports.filter((value) => {
         if (subTab === strings.playerTitle) {
           if (value.sport === sportFilter.sport && value.is_active === true) {
             return value;
@@ -56,8 +55,7 @@ function TCPlayerView({
         return false;
       });
     } else {
-      // Case without filter
-      sports = sports.filter((value) => {
+      sportList = sports.filter((value) => {
         // Available challenge case
         if (fType === filterType.PLAYERAVAILABLECHALLENGE) {
           if (
@@ -72,120 +70,48 @@ function TCPlayerView({
         return false;
       });
     }
-  };
+    setSports(sportList);
+  }, [sportFilter.sport, subTab]);
 
-  // create the Utils
-  const getSportTypeFronName = (sportName = ' ') => {
-    const allSports = authContext.sports;
-    // Find the sport object with the matching name
-    const foundSport = allSports.find(
-      (sport) => sport.sport_name === sportName,
-    );
-
-    if (foundSport) {
-      // Return the type of the found sport
-      console.log(foundSport?.format[0]?.sport_type, 'From sport typw');
-
-      return foundSport?.format[0]?.sport_type;
-    }
-    return null;
-  };
-
-  if (subTab === strings.playerTitle) {
-    data.registered_sports.map((value) => sports.push(value));
-    filterSport();
+  useEffect(() => {
     if (
-      sportFilter.sport !== strings.allSport &&
-      sports.length === 1 &&
-      sports[0].sport_type === Verbs.singleSport &&
-      sports[0].setting?.availibility === Verbs.on &&
-      (authContext.entity.role === Verbs.entityTypePlayer ||
-        authContext.entity.role === Verbs.entityTypeUser) &&
-      authContext.entity.role !== Verbs.entityTypeTeam &&
-      authContext.entity.role !== Verbs.entityTypeClub &&
-      authContext.entity.uid !== data.user_id
-    ) {
-      isChallengeButtonShow = true;
-    } else if (
       isUniversalSearch === false &&
       (authContext.entity.role === Verbs.entityTypeTeam ||
         authContext.entity.role === Verbs.entityTypeClub)
     ) {
-      isInviteButtonShow = true;
+      setIsInviteButtonShow(true);
     }
-  } else if (subTab === strings.refereesTitle) {
-    data.referee_data.map((value) => sports.push(value));
-    filterSport();
+  }, [isUniversalSearch, authContext.entity]);
 
-    const playingSport = (
-      authContext.entity.obj.registered_sports ?? []
-    ).filter((item) => item.sport === sportFilter?.sport);
-
-    const sportTypeofSport = getSportTypeFronName(sportFilter.sport_name);
-
-    if (
-      sportFilter.sport !== strings.allSport &&
-      (authContext.entity.role === Verbs.entityTypeUser ||
-        authContext.entity.role === Verbs.entityTypePlayer) &&
-      sports.length === 1 &&
-      sports[0].setting?.referee_availibility === Verbs.on &&
-      authContext.entity.uid !== data.user_id &&
-      // authContext.entity.obj.registered_sports?.some(
-      //   (sport) => sport.sport === sports[0].sport,
-      // ) &&
-      sportTypeofSport === Verbs.singleSport &&
-      playingSport.length > 0
-    ) {
-      isBookButtonShow = true;
-    } else if (
-      sportFilter.sport !== strings.allSport &&
-      authContext.entity.role === Verbs.entityTypeTeam &&
-      sports.length === 1 &&
-      sports[0].setting?.referee_availibility === Verbs.on &&
-      authContext.entity.uid !== data.user_id &&
-      authContext.entity?.obj.sport === sports[0].sport
-    ) {
-      isBookButtonShow = true;
-    } else if (authContext.entity.role === Verbs.entityTypeClub) {
-      isBookButtonShow = false;
+  useEffect(() => {
+    if (sportFilter.sport) {
+      filterSport();
     }
-  } else if (subTab === strings.scorekeeperTitle) {
-    data.scorekeeper_data.map((value) => sports.push(value));
+  }, [sportFilter.sport]);
 
-    filterSport();
-
-    const playingSport = (
-      authContext.entity.obj.registered_sports ?? []
-    ).filter((item) => item.sport === sportFilter?.sport);
-
-    if (playingSport.length > 0) {
-      isBookButtonShow = true;
+  useEffect(() => {
+    if (sportFilter.sport !== strings.allSport && sports.length === 1) {
+      const btnState = getButtonStateForPeople({
+        entityId: data.user_id,
+        entityType: Verbs.entityTypePlayer,
+        sportObj: sports[0],
+        authContext,
+      });
+      setButtonState(btnState);
     }
-    if (
-      sportFilter.sport !== strings.allSport &&
-      authContext.entity.role === Verbs.entityTypeUser &&
-      sports.length === 1 &&
-      sports[0].setting?.scorekeeper_availibility === Verbs.on &&
-      authContext.entity.uid !== data.user_id &&
-      // authContext.entity.obj.registered_sports?.some(
-      //   (sport) => sport.sport === sports[0].sport,
-      // ) &&
-      sports[0].sport_type === Verbs.singleSport
-    ) {
-      isBookButtonShow = true;
-    } else if (
-      sportFilter.sport !== strings.allSport &&
-      authContext.entity.role === Verbs.entityTypeTeam &&
-      sports.length === 1 &&
-      sports[0].setting?.scorekeeper_availibility === Verbs.on &&
-      authContext.entity.uid !== data.user_id &&
-      authContext.entity?.obj.sport === sports[0].sport
-    ) {
-      isBookButtonShow = true;
-    } else if (authContext.entity.role === Verbs.entityTypeClub) {
-      isBookButtonShow = false;
+  }, [sports, sportFilter.sport, data.user_id]);
+
+  useEffect(() => {
+    if (subTab) {
+      if (subTab === strings.playerTitle) {
+        setSports([...data.registered_sports]);
+      } else if (subTab === strings.refereesTitle) {
+        setSports([...data.referee_data]);
+      } else if (subTab === strings.scorekeeperTitle) {
+        setSports([...data.scorekeeper_data]);
+      }
     }
-  }
+  }, [subTab, data]);
 
   return (
     <TouchableOpacity
@@ -250,55 +176,44 @@ function TCPlayerView({
           )}
         </View>
 
-        {isChallengeButtonShow && (
-          <TouchableWithoutFeedback
+        {buttonState.challenge && (
+          <TouchableOpacity
+            style={styles.buttonContainer}
             onPress={() => {
               onPressChallengButton(data, sports[0]);
             }}>
-            <View
-              style={{
-                backgroundColor: colors.darkYellowColor,
-                width: 75,
-                height: 25,
-                borderRadius: 5,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Text style={styles.challengeBtn}>{strings.challenge}</Text>
-            </View>
-          </TouchableWithoutFeedback>
+            <Text style={styles.buttonText}>{strings.challenge}</Text>
+          </TouchableOpacity>
         )}
-        {isBookButtonShow && (
-          <TouchableWithoutFeedback
+        {buttonState.book && (
+          <TouchableOpacity
+            style={styles.buttonContainer}
             onPress={() => onPressBookButton(data, sports[0])}>
-            <View
-              style={{
-                backgroundColor: colors.darkYellowColor,
-                width: 75,
-                height: 25,
-                borderRadius: 5,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Text style={styles.challengeBtn}>{strings.book}</Text>
-            </View>
-          </TouchableWithoutFeedback>
+            <Text style={styles.buttonText}>{strings.book}</Text>
+          </TouchableOpacity>
         )}
         {isInviteButtonShow && (
-          <TouchableWithoutFeedback onPress={() => onPressInviteButton(data)}>
-            <View
-              style={{
-                backgroundColor: colors.lightGrey,
-                width: 75,
-                height: 25,
-                borderRadius: 5,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Text style={styles.inviteBtn}>{strings.invite}</Text>
-            </View>
-          </TouchableWithoutFeedback>
+          <TouchableOpacity
+            style={[
+              styles.buttonContainer,
+              {backgroundColor: colors.lightGrey},
+            ]}
+            onPress={() => onPressInviteButton(data)}>
+            <Text style={[styles.buttonText, {color: colors.themeColor}]}>
+              {strings.invite}
+            </Text>
+          </TouchableOpacity>
         )}
+
+        {isUniversalSearch && buttonState.unavailable ? (
+          <View
+            style={[
+              styles.buttonContainer,
+              {backgroundColor: colors.userPostTimeColor},
+            ]}>
+            <Text style={styles.buttonText}>{strings.unavailableText}</Text>
+          </View>
+        ) : null}
       </View>
     </TouchableOpacity>
   );
@@ -327,24 +242,24 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginTop: 1.5,
   },
-
   starPoints: {
     fontSize: 14,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
     marginTop: 1.5,
   },
-  challengeBtn: {
-    fontSize: 12,
-    fontFamily: fonts.RBold,
-    color: colors.whiteColor,
-    alignSelf: 'center',
+  buttonContainer: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: colors.themeColor,
+    borderRadius: 5,
+    marginRight: 10,
   },
-  inviteBtn: {
+  buttonText: {
     fontSize: 12,
+    lineHeight: 15,
+    color: colors.whiteColor,
     fontFamily: fonts.RBold,
-    color: colors.themeColor,
-    alignSelf: 'center',
   },
 });
 

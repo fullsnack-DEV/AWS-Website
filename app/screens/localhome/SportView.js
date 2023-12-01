@@ -12,8 +12,13 @@ const SportView = ({
   item = {},
   imageBaseUrl = '',
   onPress = () => {},
-  showChallengeButton = false,
+  onPressBook = () => {},
   onPressChallenge = () => {},
+  buttonState = {
+    book: false,
+    challenge: false,
+    unavailable: false,
+  },
 }) => {
   const entityColor = () => {
     if (item.setting?.entity_type === Verbs.entityTypeReferee) {
@@ -55,10 +60,26 @@ const SportView = ({
         </View>
       </View>
 
-      {showChallengeButton ? (
+      {buttonState.challenge ? (
         <Pressable style={styles.buttonContainer} onPress={onPressChallenge}>
           <Text style={styles.buttonText}>{strings.challenge}</Text>
         </Pressable>
+      ) : null}
+
+      {buttonState.book ? (
+        <Pressable style={styles.buttonContainer} onPress={onPressBook}>
+          <Text style={styles.buttonText}>{strings.book}</Text>
+        </Pressable>
+      ) : null}
+
+      {buttonState.unavailable ? (
+        <View
+          style={[
+            styles.buttonContainer,
+            {backgroundColor: colors.userPostTimeColor},
+          ]}>
+          <Text style={styles.buttonText}>{strings.unavailableText}</Text>
+        </View>
       ) : null}
     </Pressable>
   );
@@ -122,6 +143,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: colors.themeColor,
     borderRadius: 5,
+    marginRight: 10,
   },
   buttonText: {
     fontSize: 12,

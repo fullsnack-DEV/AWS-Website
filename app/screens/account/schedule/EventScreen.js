@@ -44,6 +44,7 @@ import {
   ordinal_suffix_of,
   getDayFromDate,
   countNumberOfWeekFromDay,
+  formatCurrency,
 } from '../../../utils';
 import {
   followUser,
@@ -776,9 +777,15 @@ export default function EventScreen({navigation, route}) {
         title={strings.event}
         leftIcon={images.backArrow}
         leftIconPress={() => {
-          navigation.navigate('App', {
-            screen: 'Schedule',
-          });
+          if (route.params?.comeFrom) {
+            navigation.navigate(route.params.comeFrom, {
+              ...route.params,
+            });
+          } else {
+            navigation.navigate('App', {
+              screen: 'Schedule',
+            });
+          }
         }}
         rightIcon1={images.unlikeImage}
         rightIcon2={images.vertical3Dot}
@@ -1252,9 +1259,10 @@ export default function EventScreen({navigation, route}) {
               type={'fee'}>
               <Text
                 style={[styles.textValueStyle, {fontFamily: fonts.RRegular}]}>
-                {`${parseFloat(eventData.event_fee?.value).toFixed(2)} ${
-                  eventData.event_fee?.currency_type
-                }`}
+                {`${formatCurrency(
+                  parseFloat(eventData.event_fee?.value).toFixed(2),
+                  eventData.event_fee?.currency_type,
+                )} ${eventData.event_fee?.currency_type}`}
               </Text>
             </EventItemRender>
 

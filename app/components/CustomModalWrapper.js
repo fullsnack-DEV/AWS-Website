@@ -70,9 +70,15 @@ const CustomModalWrapper = ({
   }, [isVisible, navigation, bottom, top]);
 
   const snapPoints = useMemo(() => {
+    if (externalSnapPoints.length > 0) {
+      return externalSnapPoints;
+    }
     switch (modalType) {
       case ModalTypes.style5:
         return [layout.height - topMargin, layout.height * 0.66];
+
+      case ModalTypes.style2:
+        return [layout.height - topMargin, layout.height * 0.3];
 
       case ModalTypes.style6:
       case ModalTypes.style7:
@@ -91,7 +97,7 @@ const CustomModalWrapper = ({
       default:
         return [layout.height - topMargin, layout.height - topMargin];
     }
-  }, [modalType, topMargin]);
+  }, [modalType, topMargin, externalSnapPoints]);
 
   const getModalHeader = () => {
     switch (modalType) {
@@ -210,9 +216,7 @@ const CustomModalWrapper = ({
         ref={modalRef}
         backgroundStyle={styles.bottomSheetStyle}
         index={1}
-        snapPoints={
-          externalSnapPoints.length > 0 ? externalSnapPoints : snapPoints
-        }
+        snapPoints={snapPoints}
         onChange={(index) => {
           setCurrentIndex(index);
         }}

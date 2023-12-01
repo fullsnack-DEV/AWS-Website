@@ -23,7 +23,6 @@ import {
 } from 'react-native';
 import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import ActionSheet from 'react-native-actionsheet';
-import LinearGradient from 'react-native-linear-gradient';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import AuthContext from '../../auth/context';
@@ -36,6 +35,7 @@ import {
   getGroupIndex,
   getUserIndex,
   getGameIndex,
+  getCalendarIndex,
 } from '../../api/elasticSearch';
 import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
@@ -57,7 +57,10 @@ import {inviteUser} from '../../api/Users';
 import {acceptRequest, declineRequest} from '../../api/Notificaitons';
 import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import {ErrorCodes, filterType, locationType} from '../../utils/constant';
-import {getSportList} from '../../utils/sportsActivityUtils';
+import {
+  getButtonStateForPeople,
+  getSportList,
+} from '../../utils/sportsActivityUtils';
 import SearchModal from '../../components/Filter/SearchModal';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
@@ -67,6 +70,7 @@ import CustomScrollTabs from '../../components/CustomScrollTabs';
 import ScreenHeader from '../../components/ScreenHeader';
 import JoinButtonModal from '../home/JoinButtomModal';
 import SportView from '../localhome/SportView';
+import EventList from './components/EventList';
 
 let stopFetchMore = true;
 let timeout;
@@ -133,6 +137,8 @@ export default function EntitySearchScreen({navigation, route}) {
   const [clubsPageFrom, setClubsPageFrom] = useState(0);
   const [completedGamePageFrom, setCompletedGamePageFrom] = useState(0);
   const [upcomingGamePageFrom, setUpcomingGamePageFrom] = useState(0);
+  const [completedEventPageFrom, setCompletedEventPageFrom] = useState(0);
+  const [upcomingEventPageFrom, setUpcomingEventPageFrom] = useState(0);
   const [groupData, setGroupData] = useState({});
   const [isInvited] = useState(false);
   // const [location, setLocation] = useState(strings.worldTitleText);
@@ -222,6 +228,8 @@ export default function EntitySearchScreen({navigation, route}) {
   const [joinedGroups, setJoinedGroups] = useState({teams: [], clubs: []});
   const [completedEvents, setCompletedEvents] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [isRefreshingEvents, setIsRefreshingEvents] = useState(false);
+  const [fetchEvents, setFetchEvents] = useState(true);
 
   useEffect(() => {
     if (isFocused && authContext.entity.role === Verbs.entityTypeTeam) {
@@ -318,6 +326,109 @@ export default function EntitySearchScreen({navigation, route}) {
       setCurrentSubTab(subTab);
     }
   }, [route.params?.activeTab, route.params?.activeSubTab]);
+
+  const getUpcomingEventList = useCallback(() => {
+    if (!fetchEvents) {
+      setIsRefreshingEvents(false);
+      return;
+    }
+    setSmallLoader(true);
+    const upcomingEventsQuery = {
+      size: pageSize,
+      from: upcomingEventPageFrom,
+      query: {
+        bool: {
+          must: [
+            {
+              range: {
+                start_datetime: {
+                  gt: Number(
+                    parseFloat(new Date().getTime() / 1000).toFixed(0),
+                  ),
+                },
+              },
+            },
+          ],
+        },
+      },
+      sort: [{start_datetime: 'asc'}],
+    };
+    getCalendarIndex(upcomingEventsQuery)
+      .then((events) => {
+        setSmallLoader(false);
+        setIsRefreshingEvents(false);
+        if (events.length > 0) {
+          if (events.length < pageSize) {
+            setFetchEvents(false);
+          }
+          setUpcomingEvents([...upcomingEvents, ...events]);
+          setUpcomingEventPageFrom(upcomingEventPageFrom + pageSize);
+        } else {
+          setFetchEvents(false);
+        }
+      })
+      .catch((err) => {
+        console.log({err});
+        setSmallLoader(false);
+        setIsRefreshingEvents(false);
+      });
+  }, []);
+
+  const getCompletedEventList = useCallback(() => {
+    if (!fetchEvents) {
+      setIsRefreshingEvents(false);
+      return;
+    }
+    setSmallLoader(true);
+    const completedEventsQuery = {
+      size: pageSize,
+      from: completedEventPageFrom,
+      query: {
+        bool: {
+          must: [
+            {
+              range: {
+                actual_enddatetime: {
+                  lt: Number(
+                    parseFloat(new Date().getTime() / 1000).toFixed(0),
+                  ),
+                },
+              },
+            },
+          ],
+        },
+      },
+      sort: [{actual_enddatetime: 'desc'}],
+    };
+
+    getCalendarIndex(completedEventsQuery)
+      .then((events) => {
+        setSmallLoader(false);
+        setIsRefreshingEvents(false);
+        if (events.length > 0) {
+          if (events.length < pageSize) {
+            setFetchEvents(false);
+          }
+          setCompletedEvents([...completedEvents, ...events]);
+          setCompletedEventPageFrom(completedEventPageFrom + pageSize);
+        } else {
+          setFetchEvents(false);
+        }
+      })
+      .catch((err) => {
+        console.log({err});
+        setSmallLoader(false);
+        setIsRefreshingEvents(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    getUpcomingEventList();
+  }, [getUpcomingEventList]);
+
+  useEffect(() => {
+    getCompletedEventList();
+  }, [getCompletedEventList]);
 
   useEffect(() => {
     getGeneralList();
@@ -669,7 +780,7 @@ export default function EntitySearchScreen({navigation, route}) {
         if (res.length > 0) {
           const modifiedResult = modifiedScoreKeeperElasticSearchResult(res);
           const fetchedData = [...scorekeepers, ...modifiedResult];
-          console.log(JSON.stringify(fetchedData), 'From fetch data');
+
           setScorekeepers(fetchedData);
           setScorekeeperPageFrom(scorekeeperPageFrom + pageSize);
           stopFetchMore = true;
@@ -1307,6 +1418,21 @@ export default function EntitySearchScreen({navigation, route}) {
           }
         }
         break;
+
+      case 3:
+        if (currentSubTab === strings.completedTitleText) {
+          if (!stopFetchMore) {
+            getCompletedEventList();
+            stopFetchMore = true;
+          }
+        } else if (currentSubTab === strings.upcomingTitleText) {
+          if (!stopFetchMore) {
+            getUpcomingEventList();
+            stopFetchMore = true;
+          }
+        }
+        break;
+
       default:
         break;
     }
@@ -1428,8 +1554,8 @@ export default function EntitySearchScreen({navigation, route}) {
           break;
         case 3:
           setCurrentSubTab(strings.completedTitleText);
-          setCompletedEvents([]);
-          setUpcomingEvents([]);
+          setCompletedEventPageFrom(0);
+          setUpcomingEventPageFrom(0);
           break;
 
         default:
@@ -2093,25 +2219,6 @@ export default function EntitySearchScreen({navigation, route}) {
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
 
-  const checkChallengeBtnVisibility = (item = {}) => {
-    if (
-      item.sport_type === Verbs.singleSport &&
-      item.setting?.availibility === Verbs.on &&
-      authContext.entity.role !== Verbs.entityTypeTeam &&
-      authContext.entity.role !== Verbs.entityTypeClub &&
-      authContext.entity.uid !== playerDetail.uid
-    ) {
-      const matchingSport = authContext.entity.obj.registered_sports?.find(
-        (ele) => ele.sport === item.sport,
-      );
-      if (matchingSport) {
-        return true;
-      }
-      return false;
-    }
-    return false;
-  };
-
   useEffect(() => {
     if (route.params?.searchData) {
       setSearchText(route.params.searchData);
@@ -2123,6 +2230,31 @@ export default function EntitySearchScreen({navigation, route}) {
     const recentSearchData = await Utility.getLocalSearchData();
     const data = [...recentSearchData, obj];
     Utility.setSearchDataToLocal(data);
+  };
+
+  const getEntityType = () => {
+    if (currentSubTab === strings.playerTitle) {
+      return Verbs.entityTypePlayer;
+    }
+
+    if (currentSubTab === strings.refereesTitle) {
+      return Verbs.entityTypeReferee;
+    }
+
+    if (currentSubTab === strings.scorekeeperTitle) {
+      return Verbs.entityTypeScorekeeper;
+    }
+    return Verbs.entityTypePlayer;
+  };
+
+  const getEventList = () => {
+    if (currentSubTab === strings.completedTitleText) {
+      return completedEvents;
+    }
+    if (currentSubTab === strings.upcomingTitleText) {
+      return upcomingEvents;
+    }
+    return [];
   };
 
   return (
@@ -2208,62 +2340,97 @@ export default function EntitySearchScreen({navigation, route}) {
           authContext={authContext}
         />
       </View>
-      <FlatList
-        showsHorizontalScrollIndicator={false}
-        data={
-          (currentSubTab === strings.generalText && generalList) ||
-          (currentSubTab === strings.playerTitle && playerList) ||
-          (currentSubTab === strings.refereesTitle && referees) ||
-          (currentSubTab === strings.scorekeeperTitle && scorekeepers) ||
-          (currentSubTab === strings.teamsTitleText && teams) ||
-          (currentSubTab === strings.clubsTitleText && clubs) ||
-          (currentTab === 2 &&
-            currentSubTab === strings.completedTitleText &&
-            completedGame) ||
-          (currentTab === 2 &&
-            currentSubTab === strings.upcomingTitleText &&
-            upcomingGame) ||
-          (currentTab === 3 &&
-            currentSubTab === strings.completedTitleText &&
-            completedEvents) ||
-          (currentTab === 3 &&
-            currentSubTab === strings.upcomingTitleText &&
-            upcomingEvents)
-        }
-        ItemSeparatorComponent={renderSeparator}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        style={{
-          backgroundColor: colors.whiteColor,
-          flex: 1,
-          paddingHorizontal: 15,
-          paddingBottom: 15,
-          marginTop: 0,
-        }}
-        onEndReachedThreshold={0.01}
-        onScrollEndDrag={onScrollHandler}
-        onScrollBeginDrag={() => {
-          stopFetchMore = false;
-        }}
-        ListEmptyComponent={listEmptyComponent}
-        // ListFooterComponent={() => <View style={{height: 15}} />}
-        ListFooterComponent={() => (
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            {!stopFetchMore && (
-              <ActivityIndicator
-                style={styles.loaderStyle}
-                size="small"
-                color={colors.blackColor}
-              />
-            )}
-          </View>
-        )}
-      />
+
+      {currentTab === 3 ? (
+        <View style={{flex: 1}}>
+          <EventList
+            list={getEventList()}
+            isUpcoming={currentSubTab === strings.upcomingTitleText}
+            onItemPress={(item) => {
+              navigation.navigate('ScheduleStack', {
+                screen: 'EventScreen',
+                params: {
+                  data: item,
+                  gameData: item,
+                  comeFrom: 'UniversalSearchStack',
+                  screen: 'EntitySearchScreen',
+                },
+              });
+            }}
+            refreshData={() => {
+              setIsRefreshingEvents(true);
+              if (currentSubTab === strings.upcomingTitleText) {
+                setUpcomingEventPageFrom(0);
+                getUpcomingEventList();
+              } else {
+                setCompletedEventPageFrom(0);
+                getCompletedEventList();
+              }
+            }}
+            fetchData={() => {
+              setFetchEvents(true);
+              if (currentSubTab === strings.upcomingTitleText) {
+                getUpcomingEventList();
+              } else {
+                getCompletedEventList();
+              }
+            }}
+            loading={isRefreshingEvents}
+          />
+        </View>
+      ) : (
+        <FlatList
+          showsHorizontalScrollIndicator={false}
+          data={
+            (currentSubTab === strings.generalText && generalList) ||
+            (currentSubTab === strings.playerTitle && playerList) ||
+            (currentSubTab === strings.refereesTitle && referees) ||
+            (currentSubTab === strings.scorekeeperTitle && scorekeepers) ||
+            (currentSubTab === strings.teamsTitleText && teams) ||
+            (currentSubTab === strings.clubsTitleText && clubs) ||
+            (currentTab === 2 &&
+              currentSubTab === strings.completedTitleText &&
+              completedGame) ||
+            (currentTab === 2 &&
+              currentSubTab === strings.upcomingTitleText &&
+              upcomingGame)
+          }
+          ItemSeparatorComponent={renderSeparator}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          style={{
+            backgroundColor: colors.whiteColor,
+            flex: 1,
+            paddingHorizontal: 15,
+            paddingBottom: 15,
+            marginTop: 0,
+          }}
+          onEndReachedThreshold={0.01}
+          onScrollEndDrag={onScrollHandler}
+          onScrollBeginDrag={() => {
+            stopFetchMore = false;
+          }}
+          ListEmptyComponent={listEmptyComponent}
+          // ListFooterComponent={() => <View style={{height: 15}} />}
+          ListFooterComponent={() => (
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              {!stopFetchMore && (
+                <ActivityIndicator
+                  style={styles.loaderStyle}
+                  size="small"
+                  color={colors.blackColor}
+                />
+              )}
+            </View>
+          )}
+        />
+      )}
+
       <ActionSheet
         ref={actionSheet}
         title={message}
@@ -2376,7 +2543,6 @@ export default function EntitySearchScreen({navigation, route}) {
               break;
             }
             case strings.refereesTitle: {
-              console.log(tempFilter, 'From temp Filter');
               setReferees([]);
               setRefereesPageFrom(0);
               setrRefereeFilters({
@@ -2436,22 +2602,23 @@ export default function EntitySearchScreen({navigation, route}) {
       <CustomModalWrapper
         isVisible={challengePopup}
         closeModal={() => setChallengePopup(false)}
-        title={strings.challenge}
-        containerStyle={{paddingHorizontal: 0}}
-        externalSnapPoints={snapPoints}>
+        containerStyle={{paddingHorizontal: 15}}
+        externalSnapPoints={snapPoints}
+        modalType={ModalTypes.style2}>
         <View
           onLayout={(event) => {
             const contentHeight = event.nativeEvent.layout.height + 80;
 
-            setSnapPoints([
-              // '50%',
-              contentHeight,
-              contentHeight,
-              // Dimensions.get('window').height - 40,
-            ]);
-          }}
-          style={{paddingBottom: 40}}>
-          <TouchableWithoutFeedback
+            setSnapPoints([contentHeight, contentHeight]);
+          }}>
+          <TouchableOpacity
+            style={[
+              styles.backgroundView,
+              {marginBottom: 15},
+              selectedChallengeOption === 0
+                ? {backgroundColor: colors.themeColor}
+                : {},
+            ]}
             onPress={() => {
               setSelectedChallengeOption(0);
               const obj = settingObject;
@@ -2492,69 +2659,60 @@ export default function EntitySearchScreen({navigation, route}) {
                   } else {
                     Alert.alert(strings.teamHaveNoCompletedSetting);
                   }
-                } else {
-                  console.log('in else continue :', currentUserData);
-                  if (currentUserData.sport_type === Verbs.doubleSport) {
-                    if (
-                      'player_deactivated' in currentUserData &&
-                      currentUserData?.player_deactivated
-                    ) {
-                      Alert.alert(strings.playerDeactivatedSport);
-                    } else if (
-                      'player_leaved' in currentUserData &&
-                      currentUserData?.player_leaved
-                    ) {
-                      Alert.alert(
-                        format(
-                          strings.groupHaveNo2Player,
-                          currentUserData?.group_name,
-                        ),
-                      );
-                    } else if (
-                      'player_leaved' in myGroupDetail &&
-                      myGroupDetail?.player_leaved
-                    ) {
-                      Alert.alert(strings.youHaveNo2Player);
-                    }
-                  } else {
-                    setChallengePopup(false);
-
-                    navigation.navigate('HomeStack', {
-                      screen: 'ChallengeScreen',
-                      params: {
-                        setting: obj,
-                        sportName: obj?.sport,
-                        sportType: obj?.sport_type,
-                        groupObj: currentUserData,
-                      },
-                    });
+                } else if (currentUserData.sport_type === Verbs.doubleSport) {
+                  if (
+                    'player_deactivated' in currentUserData &&
+                    currentUserData?.player_deactivated
+                  ) {
+                    Alert.alert(strings.playerDeactivatedSport);
+                  } else if (
+                    'player_leaved' in currentUserData &&
+                    currentUserData?.player_leaved
+                  ) {
+                    Alert.alert(
+                      format(
+                        strings.groupHaveNo2Player,
+                        currentUserData?.group_name,
+                      ),
+                    );
+                  } else if (
+                    'player_leaved' in myGroupDetail &&
+                    myGroupDetail?.player_leaved
+                  ) {
+                    Alert.alert(strings.youHaveNo2Player);
                   }
+                } else {
+                  setChallengePopup(false);
+
+                  navigation.navigate('HomeStack', {
+                    screen: 'ChallengeScreen',
+                    params: {
+                      setting: obj,
+                      sportName: obj?.sport,
+                      sportType: obj?.sport_type,
+                      groupObj: currentUserData,
+                    },
+                  });
                 }
               } else {
                 Alert.alert(strings.oppTeamNotForChallenge);
               }
             }}>
-            {selectedChallengeOption === 0 ? (
-              <LinearGradient
-                colors={[colors.yellowColor, colors.orangeGradientColor]}
-                style={styles.backgroundView}>
-                <Text
-                  style={[
-                    styles.curruentLocationText,
-                    {color: colors.whiteColor},
-                  ]}>
-                  {strings.continueToChallenge}
-                </Text>
-              </LinearGradient>
-            ) : (
-              <View style={styles.backgroundView}>
-                <Text style={styles.curruentLocationText}>
-                  {strings.continueToChallenge}
-                </Text>
-              </View>
-            )}
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
+            <Text
+              style={[
+                styles.curruentLocationText,
+                selectedChallengeOption === 0 ? {color: colors.whiteColor} : {},
+              ]}>
+              {strings.continueToChallenge.toUpperCase()}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.backgroundView,
+              selectedChallengeOption === 0
+                ? {backgroundColor: colors.themeColor}
+                : {},
+            ]}
             onPress={() => {
               setSelectedChallengeOption(1);
 
@@ -2673,22 +2831,14 @@ export default function EntitySearchScreen({navigation, route}) {
                 Alert.alert(strings.availibilityOff);
               }
             }}>
-            {selectedChallengeOption === 1 ? (
-              <LinearGradient
-                colors={[colors.yellowColor, colors.orangeGradientColor]}
-                style={styles.backgroundView}>
-                <Text style={[styles.myCityText, {color: colors.whiteColor}]}>
-                  {strings.inviteToChallenge}
-                </Text>
-              </LinearGradient>
-            ) : (
-              <View style={styles.backgroundView}>
-                <Text style={styles.myCityText}>
-                  {strings.inviteToChallenge}
-                </Text>
-              </View>
-            )}
-          </TouchableWithoutFeedback>
+            <Text
+              style={[
+                styles.curruentLocationText,
+                selectedChallengeOption === 0 ? {color: colors.whiteColor} : {},
+              ]}>
+              {strings.inviteToChallenge.toUpperCase()}
+            </Text>
+          </TouchableOpacity>
         </View>
       </CustomModalWrapper>
 
@@ -2702,11 +2852,15 @@ export default function EntitySearchScreen({navigation, route}) {
         externalSnapPoints={snapPoints}>
         <View
           onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
+            let contentHeight = event.nativeEvent.layout.height + 80;
+            if (contentHeight > Dimensions.get('window').height) {
+              contentHeight = Dimensions.get('window').height - 50;
+            }
             setSnapPoints([
-              '50%',
+              // '50%',
               contentHeight,
-              Dimensions.get('window').height - 40,
+              contentHeight,
+              Dimensions.get('window').height - 80,
             ]);
           }}>
           <FlatList
@@ -2733,13 +2887,60 @@ export default function EntitySearchScreen({navigation, route}) {
                     },
                   });
                 }}
-                showChallengeButton={checkChallengeBtnVisibility(item)}
+                // showChallengeButton={checkChallengeBtnVisibility(item)}
                 onPressChallenge={() => {
                   setPlayerDetailPopup(false);
                   setSettingObject(item.setting);
                   setCurrentUserData(playerDetail?.userObj);
                   setChallengePopup(true);
                 }}
+                // showBookButton={checkBookBtnVisibility(item)}
+                onPressBook={() => {
+                  if (currentSubTab === strings.refereesTitle) {
+                    if (
+                      item.setting?.referee_availibility &&
+                      item.setting?.game_fee &&
+                      item.setting?.refund_policy &&
+                      item.setting?.available_area
+                    ) {
+                      const isReferee = true;
+                      getGamesForBookARefereeOrScoreKeeper(
+                        playerDetail?.userObj,
+                        item,
+                        isReferee,
+                      );
+                    } else {
+                      Alert.alert(strings.refereeSettingNotConfigureValidation);
+                    }
+                  } else if (currentSubTab === strings.scorekeeperTitle) {
+                    if (
+                      item.setting?.scorekeeper_availibility &&
+                      item.setting?.game_fee &&
+                      item.setting?.refund_policy &&
+                      item.setting?.available_area
+                    ) {
+                      const isReferee = false;
+                      getGamesForBookARefereeOrScoreKeeper(
+                        playerDetail?.userObj,
+                        item,
+                        isReferee,
+                      );
+                    } else {
+                      Alert.alert(strings.scorekeeperSetiingNotValidation);
+                    }
+                  }
+                }}
+                showUnavailable={
+                  currentSubTab === strings.playerTitle &&
+                  item.sport_type === Verbs.singleSport &&
+                  item.setting?.availibility === Verbs.off
+                }
+                buttonState={getButtonStateForPeople({
+                  entityId: playerDetail.uid,
+                  entityType: getEntityType(),
+                  sportObj: item,
+                  authContext,
+                })}
               />
             )}
             showsVerticalScrollIndicator={false}
@@ -2778,29 +2979,16 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteColor,
   },
   backgroundView: {
-    alignSelf: 'center',
-    backgroundColor: colors.whiteColor,
-    borderRadius: 8,
-    elevation: 5,
-    flexDirection: 'row',
-    height: 50,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 5},
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    width: '86%',
+    borderRadius: 5,
+    paddingVertical: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 15,
+    backgroundColor: colors.textFieldBackground,
   },
   curruentLocationText: {
     fontSize: 16,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-  myCityText: {
-    fontSize: 16,
-    fontFamily: fonts.RMedium,
+    lineHeight: 24,
+    fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
   },
   loaderStyle: {

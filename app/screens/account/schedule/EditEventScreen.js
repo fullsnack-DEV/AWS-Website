@@ -60,7 +60,6 @@ import {
   countNumberOfWeeks,
   getTCDate,
   ordinal_suffix_of,
-  getNumberFromCurrency,
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
@@ -167,7 +166,7 @@ export default function EditEventScreen({navigation, route}) {
         setSearchLocation(data.location.location_name);
         setLocationDetail({...data.location});
         setIsBlocked(data.blocked);
-        setIsOffline(data.is_offline);
+        setIsOffline(data.is_Offline);
         setOnlineUrl(data?.online_url);
         setSelectedSport(data?.selected_sport);
         setWhoCanJoinOption({...data?.who_can_join});
@@ -187,7 +186,9 @@ export default function EditEventScreen({navigation, route}) {
           setCanOrganizerEdit(false);
         }
         setTimeout(() => {
-          Alert.alert('', strings.moreThanOneOrganizerJoinText);
+          Alert.alert('', strings.moreThanOneOrganizerJoinText, [
+            {text: strings.OkText},
+          ]);
         }, 1000);
       }
     }
@@ -622,8 +623,8 @@ export default function EditEventScreen({navigation, route}) {
         },
         event_posted_at: eventPosted,
         event_fee: {
-          value: getNumberFromCurrency(eventFee),
-          currency_type: Verbs.usd,
+          value: eventFee,
+          currency_type: selectedCurrency,
         },
         refund_policy: refundPolicy,
         min_attendees: Number(minAttendees),
@@ -1298,7 +1299,7 @@ export default function EditEventScreen({navigation, route}) {
                   onChangeText={(value) => {
                     setEventFee(value);
                   }}
-                  value={`${eventFee}`}
+                  value={eventFee}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
                   editable={canOrganizerEdit}
@@ -1322,15 +1323,6 @@ export default function EditEventScreen({navigation, route}) {
                   {strings.changeCurrency}
                 </Text>
               </TouchableOpacity>
-              <CurrencyModal
-                isVisible={showCurrencyModal}
-                closeList={() => setShowCurrencyModal(false)}
-                currency={selectedCurrency}
-                onNext={(item) => {
-                  setSelectedCurrency(item);
-                  setShowCurrencyModal(false);
-                }}
-              />
             </View>
 
             <View style={styles.containerStyle}>
@@ -1659,6 +1651,16 @@ export default function EditEventScreen({navigation, route}) {
         </View>
       </CustomModalWrapper>
 
+      <CurrencyModal
+        isVisible={showCurrencyModal}
+        closeList={() => setShowCurrencyModal(false)}
+        currency={selectedCurrency}
+        onNext={(item) => {
+          setSelectedCurrency(item);
+          setShowCurrencyModal(false);
+        }}
+      />
+
       <CustomModalWrapper
         isVisible={visibleWhoCanPostModal}
         closeModal={() => setVisibleWhoCanPostModal(false)}
@@ -1688,6 +1690,7 @@ export default function EditEventScreen({navigation, route}) {
           />
         </View>
       </CustomModalWrapper>
+
       <ActionSheet
         ref={actionSheet}
         // title={'NewsFeed Post'}

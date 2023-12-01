@@ -422,7 +422,7 @@ export default function ChallengeScreen({navigation, route}) {
         <TCThickDivider marginTop={25} />
       </View>
       <View>
-        {sportName.toLowerCase() === 'tennis' ? (
+        {sportName?.toLowerCase() === 'tennis' ? (
           <View>
             <TCGameDetailRules
               gameRules={settingObject?.score_rules}

@@ -17,7 +17,7 @@ const TagOptions = [
     parentTag: 2,
   },
   {label: strings.tournamentsTitle, value: null, parentTag: null},
-  {label: strings.eventsTitle, value: strings.eventsTitle, parentTag: 3},
+  {label: strings.eventsTitle, value: strings.completedTitleText, parentTag: 3},
   {label: strings.teamsTitleText, value: strings.teamsTitleText, parentTag: 1},
   {label: strings.clubsTitleText, value: strings.clubsTitleText, parentTag: 1},
   {label: strings.leaguesTitle, value: strings.leaguesTitle, parentTag: 1},

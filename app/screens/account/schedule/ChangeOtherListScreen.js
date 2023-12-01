@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import React, {useContext, useEffect, useState, useCallback} from 'react';
 import {
   View,
@@ -22,6 +21,7 @@ import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
 import TCThinDivider from '../../../components/TCThinDivider';
 import ScreenHeader from '../../../components/ScreenHeader';
+import GroupIcon from '../../../components/GroupIcon';
 
 export default function ChangeOtherListScreen({
   navigation,
@@ -134,67 +134,66 @@ export default function ChangeOtherListScreen({
     }
   }, [authContext]);
 
+  const handleRemoveGroups = useCallback(
+    (item = {}) => {
+      const findIndex = addedGroups.findIndex(
+        (a) => a.group_id === item.group_id,
+      );
+      if (findIndex !== -1) {
+        addedGroups.splice(findIndex, 1);
+      }
+      const temp = {...item, isSelected: !item.isSelected};
+
+      setAddedGroups([...addedGroups]);
+      removedGroups.push(temp);
+      setremovedGroups([...removedGroups]);
+    },
+    [addedGroups, removedGroups],
+  );
+
+  const handleAddGroups = useCallback(
+    (item = {}) => {
+      if (addedGroups.length < 10) {
+        const findIndex = removedGroups.findIndex(
+          (a) => a.group_id === item.group_id,
+        );
+        const temp = {...item, isSelected: !item.isSelected};
+
+        if (findIndex !== -1) {
+          removedGroups.splice(findIndex, 1);
+        }
+        setremovedGroups([...removedGroups]);
+        addedGroups.push(temp);
+        setAddedGroups([...addedGroups]);
+      } else {
+        Alert.alert(strings.addUpTo10Organizers);
+      }
+    },
+    [addedGroups, removedGroups],
+  );
+
   const renderCheckedOrganizers = useCallback(
     ({item, drag}) =>
       item.sport !== Verbs.allStatus && (
         <View style={styles.sportsBackgroundView}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+          <View style={styles.row}>
             <TouchableOpacity
-              onPress={() => {
-                const findIndex = addedGroups.findIndex(
-                  (a) => a.group_id === item.group_id,
-                );
-                if (findIndex !== -1) {
-                  addedGroups.splice(findIndex, 1);
-                }
-                const temp = {...item, isSelected: !item.isSelected};
-
-                setAddedGroups([...addedGroups]);
-                removedGroups.push(temp);
-                setremovedGroups([...removedGroups]);
-              }}
+              onPress={() => handleRemoveGroups(item)}
               style={{alignSelf: 'center'}}>
               <Image
                 source={images.removeSportList}
                 style={styles.addIconStyle}
               />
             </TouchableOpacity>
-            {item.thumbnail ? (
-              <Image
-                source={{uri: item.thumbnail}}
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginRight: 10,
-                  borderRadius: 50,
-                }}
-              />
-            ) : item.entity_type === 'team' ? (
-              <Image
-                source={images.teamPatch}
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginRight: 10,
-                  borderRadius: 50,
-                }}
-              />
-            ) : (
-              <Image
-                source={images.clubPatch}
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginRight: 10,
-                  borderRadius: 50,
-                }}
-              />
-            )}
+            <GroupIcon
+              imageUrl={item.thumbnail}
+              groupName={item.group_name}
+              entityType={item.entity_type}
+              containerStyle={styles.iconContainer}
+              placeHolderStyle={styles.iconPlaceholder}
+              textstyle={styles.iconText}
+            />
+
             <Text style={styles.sportNameTitle}>{item.group_name}</Text>
           </View>
           <TouchableOpacity onLongPress={drag} style={{alignSelf: 'center'}}>
@@ -202,76 +201,33 @@ export default function ChangeOtherListScreen({
           </TouchableOpacity>
         </View>
       ),
-    [addedGroups, removedGroups],
+    [handleRemoveGroups],
   );
 
   const renderUnCheckedOrganizers = useCallback(
     ({item}) =>
       item.sport !== Verbs.allStatus && (
         <View style={styles.sportsBackgroundView}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+          <View style={styles.row}>
             <TouchableOpacity
-              onPress={() => {
-                if (addedGroups.length < 10) {
-                  const findIndex = removedGroups.findIndex(
-                    (a) => a.group_id === item.group_id,
-                  );
-                  const temp = {...item, isSelected: !item.isSelected};
-
-                  if (findIndex !== -1) {
-                    removedGroups.splice(findIndex, 1);
-                  }
-                  setremovedGroups([...removedGroups]);
-                  addedGroups.push(temp);
-                  setAddedGroups([...addedGroups]);
-                } else {
-                  Alert.alert(strings.addUpTo10Organizers);
-                }
-              }}
+              onPress={() => handleAddGroups(item)}
               style={{alignSelf: 'center'}}>
               <Image source={images.addSportList} style={styles.addIconStyle} />
             </TouchableOpacity>
-            {item.thumbnail ? (
-              <Image
-                source={{uri: item.thumbnail}}
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginRight: 10,
-                  borderRadius: 50,
-                }}
-              />
-            ) : item.entity_type === 'team' ? (
-              <Image
-                source={images.teamPatch}
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginRight: 10,
-                  borderRadius: 50,
-                }}
-              />
-            ) : (
-              <Image
-                source={images.clubPatch}
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginRight: 10,
-                  borderRadius: 50,
-                }}
-              />
-            )}
+            <GroupIcon
+              imageUrl={item.thumbnail}
+              groupName={item.group_name}
+              entityType={item.entity_type}
+              containerStyle={styles.iconContainer}
+              placeHolderStyle={styles.iconPlaceholder}
+              textstyle={styles.iconText}
+            />
+
             <Text style={styles.sportNameTitle}>{item.group_name}</Text>
           </View>
         </View>
       ),
-    [addedGroups, removedGroups],
+    [handleAddGroups],
   );
 
   return (
@@ -425,5 +381,26 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.veryLightBlack,
     alignSelf: 'center',
+  },
+  iconContainer: {
+    width: 25,
+    height: 25,
+    marginRight: 10,
+    paddingTop: 2,
+  },
+  iconPlaceholder: {
+    width: 10,
+    height: 10,
+    bottom: 0,
+    right: -2,
+  },
+  iconText: {
+    fontSize: 10,
+    marginTop: 0,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

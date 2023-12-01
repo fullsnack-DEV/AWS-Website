@@ -4,7 +4,7 @@ import {
   View,
   Text,
   TouchableWithoutFeedback,
-  ImageBackground
+  ImageBackground,
 } from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import moment from 'moment';
@@ -21,7 +21,6 @@ export default function TCEventView({
   eventBetweenSection,
   // entity,
 }) {
-
   const authContext = useContext(AuthContext);
 
   const isGame = !!(data?.game_id && data?.game);
@@ -92,44 +91,38 @@ export default function TCEventView({
     <TouchableWithoutFeedback onPress={onPress}>
       <View style={styles.backgroundView} onPress={onPress}>
         <View>
-          <ImageBackground 
-          source={images.challengeDefault} 
-          resizeMode="cover" 
-          imageStyle={styles.imageBorder}
-          style={styles.eventImage}>
-              <View style={{height: 100}}/>
-              <View style={styles.eventTitlewithDot}>
-                <Text
-                  style={[
-                    styles.eventTitle,
-                    {color: colors.whiteColor},
-                  ]}
-                  numberOfLines={1}>
-                  {title ? title.toUpperCase() : null}
-                </Text>
-              </View>
+          <ImageBackground
+            source={{uri: data.background_thumbnail}}
+            resizeMode="cover"
+            imageStyle={styles.imageBorder}
+            style={styles.eventImage}>
+            <View style={{height: 100}} />
+            <View style={styles.eventTitlewithDot}>
+              <Text
+                style={[styles.eventTitle, {color: colors.whiteColor}]}
+                numberOfLines={1}>
+                {title ? title.toUpperCase() : null}
+              </Text>
+            </View>
           </ImageBackground>
         </View>
         <View style={styles.eventText}>
-          
           {description && (
-          <Text style={styles.eventDescription} numberOfLines={2}>
-            {description} 
-          </Text>
+            <Text style={styles.eventDescription} numberOfLines={2}>
+              {description}
+            </Text>
           )}
           <View style={styles.bottomView}>
             <Text style={styles.eventTime}>{`${moment(startDate).format(
               'ddd, MMM DD',
             )} - `}</Text>
             <Text style={styles.eventTime}>{`${moment(startDate).format(
-              'h:mma'
+              'h:mma',
             )}`}</Text>
             {/* <Text style={styles.eventTime}>
               {moment(endDate).format('h:mma')}
             </Text> */}
-            {location !== '' && (
-              <Text style={styles.eventTime}> | </Text>
-            )}
+            {location !== '' && <Text style={styles.eventTime}> | </Text>}
             <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
               {location !== '' && location}
             </Text>
@@ -157,13 +150,13 @@ export default function TCEventView({
 }
 
 const styles = StyleSheet.create({
-  eventImage:{
+  eventImage: {
     flex: 1,
-    borderRadius: 10
+    borderRadius: 10,
   },
-  imageBorder: { 
-    borderTopLeftRadius: 10, 
-    borderTopRightRadius: 10
+  imageBorder: {
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   backgroundView: {
     alignSelf: 'center',
@@ -208,14 +201,14 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 1)',
     textShadowOffset: {width: -1, height: 1},
     textShadowRadius: 7,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   eventTitlewithDot: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 10,
   },
-  challengeContainer:{
+  challengeContainer: {
     padding: 10,
-  }
+  },
 });
