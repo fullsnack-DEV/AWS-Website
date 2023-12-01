@@ -21,7 +21,7 @@ import {
   BackHandler,
   // Dimensions,
 } from 'react-native';
-import {ScrollView} from 'react-native-gesture-handler';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import moment from 'moment';
 import {
   widthPercentageToDP as wp,
@@ -1759,12 +1759,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     marginVertical: 3,
   },
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: wp('4%'),
-  },
-
   downArrowWhoCan: {
     height: 15,
     resizeMode: 'contain',
