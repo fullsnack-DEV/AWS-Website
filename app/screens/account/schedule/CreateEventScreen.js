@@ -326,7 +326,14 @@ export default function CreateEventScreen({navigation, route}) {
         setVisibleWhoModal(false);
         setVisibleWhoCanPostModal(false);
       }}>
-      <View style={{flex: 1}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginBottom: 15,
+          flex: 1,
+        }}>
+        <Text style={styles.languageList}>{item.text}</Text>
         <View style={styles.checkbox}>
           {(whoOption === see && whoCanSeeOption.value === item?.value) ||
           (whoOption === join && whoCanJoinOption.value === item?.value) ||
@@ -745,15 +752,12 @@ export default function CreateEventScreen({navigation, route}) {
             value: 0,
           },
           {
-            text: strings.followingAndFollowers,
+            text: strings.followerTitleText,
             value: 2,
           },
+
           {
-            text: strings.following,
-            value: 3,
-          },
-          {
-            text: strings.onlymeTitleText,
+            text: strings.oraganizerOnly,
             value: 1,
           },
         ];
@@ -770,15 +774,15 @@ export default function CreateEventScreen({navigation, route}) {
             value: 2,
           },
           {
-            text: strings.following,
+            text: strings.followersRadio,
             value: 3,
           },
           {
-            text: strings.inviteOnly,
+            text: strings.invited,
             value: 4,
           },
           {
-            text: strings.onlymeTitleText,
+            text: strings.oraganizerOnly,
             value: 1,
           },
           // strings.everyoneTitleText,
@@ -796,7 +800,7 @@ export default function CreateEventScreen({navigation, route}) {
             value: 0,
           },
           {
-            text: strings.onlymeTitleText,
+            text: strings.oraganizerOnly,
             value: 1,
           },
         ];
@@ -827,10 +831,7 @@ export default function CreateEventScreen({navigation, route}) {
           {text: strings.everyoneTitleText, value: 0},
           {text: strings.followerTitleText, value: 3},
           {text: strings.membersTitle, value: 2},
-          {
-            text: format(strings.onlyAccount, authContext.entity.role),
-            value: 1,
-          },
+          {text: strings.oraganizerOnly, value: 1},
         ];
       }
 
@@ -839,17 +840,15 @@ export default function CreateEventScreen({navigation, route}) {
           {text: strings.everyoneTitleText, value: 0},
           {text: strings.followerTitleText, value: 3},
           {text: strings.membersTitle, value: 2},
-          {
-            text: format(strings.onlyOrganizer, authContext.entity.role),
-            value: 1,
-          },
+          {text: strings.invited, value: 4},
+          {text: strings.oraganizerOnly, value: 1},
         ];
       }
 
       if (whoOption === invite) {
         return [
           {text: strings.attendeeRadioText, value: 0},
-          {text: format(strings.onlyOption, authContext.entity.role), value: 1},
+          {text: strings.oraganizerOnly, value: 1},
         ];
       }
     }
@@ -1430,7 +1429,8 @@ export default function CreateEventScreen({navigation, route}) {
             {/* who Can write post on Event Home */}
 
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>
+              <Text
+                style={[styles.headerTextStyle, {textTransform: 'uppercase'}]}>
                 {strings.whoCanWritePostoneventHome}
               </Text>
               <TouchableOpacity
@@ -1793,6 +1793,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  languageList: {
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    fontSize: 16,
+    marginRight: 10,
   },
   subTitleText: {
     fontFamily: fonts.RRegular,

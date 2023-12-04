@@ -760,15 +760,11 @@ export default function EditEventScreen({navigation, route}) {
             value: 0,
           },
           {
-            text: strings.followingAndFollowers,
+            text: strings.followerTitleText,
             value: 2,
           },
           {
-            text: strings.following,
-            value: 3,
-          },
-          {
-            text: strings.onlymeTitleText,
+            text: strings.oraganizerOnly,
             value: 1,
           },
         ];
@@ -785,11 +781,11 @@ export default function EditEventScreen({navigation, route}) {
             value: 2,
           },
           {
-            text: strings.following,
+            text: strings.followersRadio,
             value: 3,
           },
           {
-            text: strings.inviteOnly,
+            text: strings.invited,
             value: 4,
           },
           {
@@ -841,26 +837,27 @@ export default function EditEventScreen({navigation, route}) {
     ) {
       if (whoOption === see) {
         return [
-          strings.everyoneTitleText,
-          strings.followerTitleText,
-          strings.membersTitle,
-          format(strings.onlyAccount, authContext.entity.role),
+          {text: strings.everyoneTitleText, value: 0},
+          {text: strings.followerTitleText, value: 3},
+          {text: strings.membersTitle, value: 2},
+          {text: strings.oraganizerOnly, value: 1},
         ];
       }
 
       if (whoOption === join) {
         return [
-          strings.everyoneTitleText,
-          strings.followerTitleText,
-          strings.membersTitle,
-          format(strings.onlyOrganizer, authContext.entity.role),
+          {text: strings.everyoneTitleText, value: 0},
+          {text: strings.followerTitleText, value: 3},
+          {text: strings.membersTitle, value: 2},
+          {text: strings.invited, value: 4},
+          {text: strings.oraganizerOnly, value: 1},
         ];
       }
 
       if (whoOption === invite) {
         return [
-          strings.attendeeRadioText,
-          format(strings.onlyOption, authContext.entity.role),
+          {text: strings.attendeeRadioText, value: 0},
+          {text: strings.oraganizerOnly, value: 1},
         ];
       }
     }
@@ -1499,7 +1496,8 @@ export default function EditEventScreen({navigation, route}) {
             </View>
 
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>
+              <Text
+                style={[styles.headerTextStyle, {textTransform: 'uppercase'}]}>
                 {strings.whoCanWritePostoneventHome}
               </Text>
               <TouchableOpacity
@@ -1625,7 +1623,7 @@ export default function EditEventScreen({navigation, route}) {
       <CustomModalWrapper
         isVisible={visibleWhoModal}
         closeModal={() => setVisibleWhoModal(false)}
-        modalType={ModalTypes.style3}
+        modalType={ModalTypes.style2}
         title={whoOption === 'join' ? strings.whoCanJoin : strings.whoCanSee}
         containerStyle={{
           padding: 15,
@@ -1636,11 +1634,7 @@ export default function EditEventScreen({navigation, route}) {
           onLayout={(event) => {
             const contentHeight = event.nativeEvent.layout.height + 80;
 
-            setSnapPoints([
-              '50%',
-              contentHeight,
-              // Dimensions.get('window').height - 40,
-            ]);
+            setSnapPoints([contentHeight, contentHeight]);
           }}>
           <FlatList
             data={getOptions()}
