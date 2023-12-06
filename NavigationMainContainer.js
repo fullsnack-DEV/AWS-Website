@@ -6,6 +6,7 @@ import React, {
   Fragment,
 } from 'react';
 import {View, Image} from 'react-native';
+import * as RNLocalize from 'react-native-localize';
 import {NavigationContainer} from '@react-navigation/native';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import SplashScreen from 'react-native-splash-screen';
@@ -23,6 +24,8 @@ import {getSportsList} from './app/api/Games';
 import {connectUserToStreamChat} from './app/utils/streamChat';
 import images from './app/Constants/ImagePath';
 import colors from './app/Constants/Colors';
+import {strings} from './Localization/translation';
+
 import MessageNavigator from './app/navigation/MessageNavigator';
 import ScheduleNavigator from './app/navigation/ScheduleNavigator';
 import NewsFeedNavigator from './app/navigation/NewsFeedNavigator';
@@ -55,6 +58,17 @@ function NavigationMainContainer() {
       fetchSportList();
     }
   }, [authContext, fetchSportList]);
+
+  useEffect(() => {
+    if (authContext?.user?.language_setting) {
+      strings.setLanguage(authContext?.user?.language_setting?.code);
+    } else {
+      strings.setLanguage(RNLocalize.getLocales()[0].languageCode);
+    }
+  }, [
+    authContext?.user?.language_setting,
+    authContext?.user?.language_setting?.code,
+  ]);
 
   const getRefereshToken = () =>
     new Promise((resolve, reject) => {

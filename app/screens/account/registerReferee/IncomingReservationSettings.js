@@ -250,7 +250,8 @@ const IncomingReservationSettings = ({navigation, route}) => {
       <RefereeCongratulationsModal
         isVisible={showCongratulationsModal}
         closeModal={() => {
-          setShowCongratulationsModal(false);
+          setShowCongratulationsModal(false); 
+          setLoading(true)
           if (route.params?.comeFrom === 'SportActivitiesScreen') {
             navigation.navigate('HomeStack', {
               screen: 'SportActivitiesScreen',

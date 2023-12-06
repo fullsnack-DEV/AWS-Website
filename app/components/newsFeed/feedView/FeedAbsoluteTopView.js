@@ -7,8 +7,8 @@ import {
   SafeAreaView,
   Platform,
 } from 'react-native';
-import Orientation from 'react-native-orientation';
 import FastImage from 'react-native-fast-image';
+import Orientation from 'react-native-orientation';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import {getScreenWidth} from '../../../utils';
@@ -109,7 +109,6 @@ const FeedAbsoluteTopView = memo(
               </View>
             </View>
           </View>
-
           <View style={styles.row}>
             {feedSubItem?.attachments?.length > 1 && (
               <View style={styles.lengthViewStyle}>

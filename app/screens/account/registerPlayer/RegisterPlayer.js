@@ -359,11 +359,14 @@ const RegisterPlayer = ({navigation, route}) => {
         isVisible={showCongratulationsModal}
         settingsObj={selectedSport?.default_setting}
         closeModal={() => {
+          setLoading(true);
           setShowCongratulationsModal(false);
+
           if (route.params?.comeFrom) {
             navigation.navigate(route.params.comeFrom, {
               ...route.params.routeParams,
             });
+            setLoading(false);
           } else {
             navigation.navigate('App', {
               screen: 'Account',
@@ -372,6 +375,7 @@ const RegisterPlayer = ({navigation, route}) => {
                 sportType: selectedSport?.sport_type,
               },
             });
+            setLoading(false);
           }
         }}
         sportName={selectedSport?.sport_name}

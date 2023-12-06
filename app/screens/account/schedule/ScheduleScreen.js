@@ -1263,7 +1263,9 @@ export default function ScheduleScreen({navigation, route}) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View
-        style={{opacity: authContext.isAccountDeactivated ? 0.5 : 1}}
+        style={{
+          opacity: authContext.isAccountDeactivated ? 0.5 : 1,
+        }}
         pointerEvents={authContext.isAccountDeactivated ? 'none' : 'auto'}>
         {isFromHomeScreen ? (
           <ScreenHeader
@@ -1278,9 +1280,23 @@ export default function ScheduleScreen({navigation, route}) {
                 },
               });
             }}
-            title={strings.events}
-            rightIcon1={isAdmin ? images.addEvent : null}
-            rightIcon2={images.vertical3Dot}
+            title={
+              authContext.entity.role === Verbs.entityTypeTeam
+                ? strings.schedule
+                : strings.events
+            }
+            rightIcon1={
+              authContext.entity.role === Verbs.entityTypeTeam
+                ? null
+                : isAdmin
+                ? images.addEvent
+                : null
+            }
+            rightIcon2={
+              authContext.entity.role === Verbs.entityTypeTeam
+                ? null
+                : images.vertical3Dot
+            }
             rightIcon1Press={() =>
               navigation.navigate('ScheduleStack', {
                 screen: 'CreateEventScreen',

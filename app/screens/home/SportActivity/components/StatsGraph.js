@@ -112,7 +112,9 @@ const StatsGraph = ({
 
         {Object.keys(percentageObject).map((item, index) => (
           <View style={styles.row} key={`${index}${item}`}>
-            <Text style={[styles.totalText, {textAlign: 'left'}]}>
+            <Text
+              numberOfLines={1}
+              style={[styles.totalText, {flex: 1, marginLeft: -1}]}>
               {Labels[item]}
             </Text>
 
@@ -197,7 +199,7 @@ const styles = StyleSheet.create({
     height: 8,
     flex: 1,
     borderRadius: 6,
-    backgroundColor: colors.grayBackgroundColor,
+    backgroundColor: colors.redDelColor,
     marginHorizontal: 16,
   },
 });

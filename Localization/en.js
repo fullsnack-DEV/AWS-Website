@@ -775,6 +775,7 @@ export default {
   hiringPlayerTitle: 'en_Recruiting Members',
   lookingForTeamTitle: 'en_Looking For Group',
   lookingForClubTitle: 'en_Looking For Club',
+  lookingforTeamText: 'en_Looking For Team',
 
   refereesTitle: 'en_Referees',
   chooseSetting: 'en_Choose Setting',

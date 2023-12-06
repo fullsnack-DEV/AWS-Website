@@ -147,7 +147,7 @@ const LocalHomeMenuItems = memo(
           case strings.refreesAvailable:
             sportsList = item.referee_data ?? [];
             navigateAndSetDataForSportActivityView(
-              uid,
+              item.user_id,
               Verbs.entityTypeReferee,
               sportsList,
             );
@@ -156,7 +156,7 @@ const LocalHomeMenuItems = memo(
           case strings.scorekeepersAvailable:
             sportsList = item.scorekeeper_data ?? [];
             navigateAndSetDataForSportActivityView(
-              uid,
+              item.user_id,
               Verbs.entityTypeScorekeeper,
               sportsList,
             );
@@ -165,14 +165,19 @@ const LocalHomeMenuItems = memo(
             sportsList = item.registered_sports ?? [];
 
             navigateAndSetDataForSportActivityView(
-              uid,
+              item.user_id,
               Verbs.entityTypePlayer,
               sportsList,
             );
             break;
           case strings.lookingForTeamTitle:
             sportsList = item.registered_sports ?? [];
-            navigateAndSetDataForSportActivityView(uid, role, sportsList);
+            navigateAndSetDataForSportActivityView(
+              item.user_id,
+              Verbs.entityTypePlayer,
+              sportsList,
+            );
+
             break;
           case strings.hiringPlayerTitle:
             navigateToHomeScreen(uid, role);
@@ -627,8 +632,9 @@ const LocalHomeMenuItems = memo(
 
           return (
             <>
-              {((authContext.entity.role === Verbs.entityTypeUser &&
-                selectedSport === strings.all) ||
+              {(authContext.entity.role === Verbs.entityTypeClub ||
+                (authContext.entity.role === Verbs.entityTypeUser &&
+                  selectedSport === strings.all) ||
                 (authContext.entity.role === Verbs.entityTypeUser &&
                   sportType === Verbs.singleSport)) && (
                 <>
@@ -817,7 +823,7 @@ const LocalHomeMenuItems = memo(
         case strings.hiringPlayerTitle:
           return (
             <>
-              {authContext.entity.role === Verbs.entityTypeUser && (
+              {
                 <>
                   <TCTitleWithArrow
                     title={strings.hiringPlayerTitle}
@@ -866,7 +872,7 @@ const LocalHomeMenuItems = memo(
                     marginTop={25}
                   />
                 </>
-              )}
+              }
             </>
           );
         case strings.lookingForTeamTitle:
@@ -876,8 +882,8 @@ const LocalHomeMenuItems = memo(
                 <>
                   <TCTitleWithArrow
                     title={
-                      sportType === Verbs.sportTypeSingle
-                        ? strings.lookingForClubTitle
+                      authContext.entity.role === Verbs.entityTypeTeam
+                        ? strings.lookingforTeamText
                         : strings.lookingForTeamTitle
                     }
                     showArrow={true}
@@ -887,7 +893,10 @@ const LocalHomeMenuItems = memo(
                       isdeactivateForLookingForTeamsAndClubs
                     }
                     onPress={() => onTitlePress(item)}
-                    viewStyle={{marginTop: 20, marginBottom: 15}}
+                    viewStyle={{
+                      marginTop: 20,
+                      marginBottom: 15,
+                    }}
                   />
 
                   <FlatList

@@ -105,7 +105,9 @@ const AvailabilitySection = ({
               const slots = getList(item);
               return (
                 <View style={[styles.row, styles.barContainer]} key={index}>
-                  <Text style={styles.label}>{moment(item).format('M/D')}</Text>
+                  <Text numberOfLines={1} style={[styles.label, {width: 35}]}>
+                    {moment(item).format('M/D')}
+                  </Text>
                   <AvailabilityBar list={slots} />
                 </View>
               );
@@ -116,7 +118,9 @@ const AvailabilitySection = ({
               const slots = getList(item);
               return (
                 <View style={[styles.row, styles.barContainer]} key={index}>
-                  <Text style={styles.label}>{moment(item).format('M/D')}</Text>
+                  <Text numberOfLines={1} style={[styles.label, {width: 50}]}>
+                    {moment(item).format('M/D')}
+                  </Text>
                   <AvailabilityBar list={slots} />
                 </View>
               );

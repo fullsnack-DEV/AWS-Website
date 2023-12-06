@@ -31,7 +31,9 @@ export default function LanguageSettingScreen({navigation}) {
   const [visibleLanguageModal, setVisibleLanguageModal] = useState(false);
 
   const [languagesData] = useState(localize_language);
-  const [languageSelection, setLanguageSelection] = useState({});
+  const [languageSelection, setLanguageSelection] = useState(
+    authContext.entity.obj.language_setting ?? localize_language[0],
+  );
   const [confirmLanguage, setConfirmLanguage] = useState(
     authContext.entity.obj.language_setting ?? localize_language[0],
   );
@@ -56,7 +58,9 @@ export default function LanguageSettingScreen({navigation}) {
       .then(async (response) => {
         if (response.status === true) {
           setloading(false);
+
           await setAuthContextData(response.payload, authContext);
+
           if (isEnabled) {
             strings.setLanguage(RNLocalize.getLocales()[0].languageCode);
           } else {

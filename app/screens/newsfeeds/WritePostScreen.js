@@ -786,6 +786,37 @@ const WritePostScreen = ({navigation, route}) => {
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
+  const onDiscardPress = () => {
+    if (route.params?.comeFrom === 'HomeScreen') {
+      navigation.navigate('HomeStack', {
+        screen: 'HomeScreen',
+        params: {
+          ...route.params.routeParams,
+        },
+      });
+    } else if (route.params?.comeFrom === 'UserGalleryScreen') {
+      navigation.navigate('HomeStack', {
+        screen: 'UserGalleryScreen',
+        params: {
+          ...route.params.routeParams,
+        },
+      });
+    } else if (route.params?.comeFrom === 'EventScreen') {
+      setSearchText('');
+      navigation.navigate('ScheduleStack', {
+        screen: 'EventScreen',
+        params: {
+          ...route.params.routeParams,
+          isCreatePost: false,
+        },
+      });
+    } else {
+      navigation.navigate('App', {
+        screen: 'NewsFeed',
+      });
+    }
+  };
+
   const handleBackPress = useCallback(() => {
     if (route.params.isRepost) {
       Alert.alert('', strings.discardRepostText, [
@@ -815,10 +846,7 @@ const WritePostScreen = ({navigation, route}) => {
         {
           text: strings.discardText,
           style: 'destructive',
-          onPress: () =>
-            navigation.navigate('App', {
-              screen: 'NewsFeed',
-            }),
+          onPress: () => onDiscardPress(),
         },
       ]);
     }

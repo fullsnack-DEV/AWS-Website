@@ -43,19 +43,26 @@ function TeamCard({
     return images.teamdefaultbg;
   }, [item.entity_type]);
 
+  const imageSource = useCallback(() => {
+    if (item?.background_full_image) {
+      return {uri: item?.background_full_image};
+    }
+    return getBgImage;
+  }, [getBgImage, item?.background_full_image]);
+
   const renderImageBgandName = useMemo(
     () => (
       <FastImage
         borderTopLeftRadius={5}
         borderTopRightRadius={5}
         style={styles.imgStyles}
-        source={item?.full_image ? item?.full_image : getBgImage}>
+        source={imageSource()}>
         <View style={styles.sportNameContainer}>
           <Text style={styles.sportName}>{getSportName()}</Text>
         </View>
       </FastImage>
     ),
-    [getBgImage, getSportName, item?.full_image],
+    [getSportName, imageSource],
   );
 
   const placeHolderImage = useCallback(

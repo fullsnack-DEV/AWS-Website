@@ -290,6 +290,7 @@ const HomeFeed = ({
     createPost(body, authContext)
       .then(() => {
         getTimeLine();
+        navigation.setParams({isCreatePost: undefined});
         setFullScreenLoading(false);
       })
       .catch((e) => {

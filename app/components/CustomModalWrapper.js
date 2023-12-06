@@ -218,6 +218,10 @@ const CustomModalWrapper = ({
         index={1}
         snapPoints={snapPoints}
         onChange={(index) => {
+          if (index === !isVisible) {
+            closeModal();
+          }
+
           setCurrentIndex(index);
         }}
         enablePanDownToClose
