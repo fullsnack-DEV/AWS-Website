@@ -1,121 +1,117 @@
 // @flow
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Alert,
-  SectionList,
-  Dimensions,
-} from 'react-native';
-import {RRule} from 'rrule';
+import {View, StyleSheet, Text, SectionList, Dimensions} from 'react-native';
 import moment from 'moment';
 import _ from 'lodash';
-import Verbs from '../../../Constants/Verbs';
 import AuthContext from '../../../auth/context';
-import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import {strings} from '../../../../Localization/translation';
-import {getJSDate, getTCDate} from '../../../utils';
+import {
+  filterEventForPrivacy,
+  getEventOccuranceFromRule,
+  getJSDate,
+} from '../../../utils';
 import TCEventCard from '../../../components/Schedule/TCEventCard';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 
 const EventList = ({
   list = [],
-  loading = false,
   isUpcoming = false,
-  fetchData = () => {},
+  onScrollHandler = () => {},
+  onScrollBeginDrag = () => {},
   onItemPress = () => {},
-  refreshData = () => {},
+  filters = {},
+  eventType = '',
 }) => {
   const [events, setEvents] = useState([]);
   const [owners, setOwners] = useState([]);
   const authContext = useContext(AuthContext);
 
-  const getEventOccuranceFromRule = (event) => {
-    const ruleObj = RRule.parseString(event.rrule);
-    ruleObj.dtstart = getJSDate(event.start_datetime);
-    ruleObj.until = getJSDate(event.untilDate);
-    const rule = new RRule(ruleObj);
-    const duration = event.end_datetime - event.start_datetime;
-    let occr = rule.all();
-    if (event.exclusion_dates) {
-      // _.remove(occr, function (date) {
-      //   return event.exclusion_dates.includes(Utility.getTCDate(date))
-      // })
-      occr = occr.filter(
-        (date) => !event.exclusion_dates.includes(getTCDate(date)),
-      );
-    }
-    occr = occr.map((RRItem) => {
-      // console.log('Item', Math.round(new Date(RRItem) / 1000))
-      const newEvent = {...event};
-      newEvent.start_datetime = getTCDate(RRItem);
-      newEvent.end_datetime = newEvent.start_datetime + duration;
-      //   RRItem = newEvent;
-      return newEvent;
-    });
-    return occr;
-  };
+  const getFilteredList = useCallback(
+    async (eventList = []) => {
+      let updatedList = [...eventList];
+
+      if (eventList.length > 0) {
+        if (eventType === strings.upcomingTitleText) {
+          updatedList = updatedList.filter(
+            (item) =>
+              item.start_datetime >=
+              Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+          );
+        } else if (eventType === strings.completedTitleText) {
+          updatedList = updatedList.filter(
+            (item) =>
+              item.end_datetime <=
+              Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+          );
+        }
+
+        if (filters.location !== strings.worldTitleText) {
+          updatedList = updatedList.filter((item) =>
+            item.location.location_name.includes(
+              filters.location.toLowerCase(),
+            ),
+          );
+        }
+
+        if (filters.sport !== strings.allSport) {
+          updatedList = updatedList.filter(
+            (item) =>
+              item.selected_sport.sport === filters.sport.toLowerCase() &&
+              item.selected_sport.sport_type ===
+                filters.sport_type.toLowerCase(),
+          );
+        }
+
+        if (filters?.searchText) {
+          updatedList = updatedList.filter((item) =>
+            item.title.includes(filters.searchText.toLowerCase()),
+          );
+        }
+
+        if (filters.fromDateTime && filters.toDateTime) {
+          updatedList = updatedList.filter(
+            (item) =>
+              item.start_datetime >= filters.fromDateTime &&
+              item.start_datetime <= filters.toDateTime,
+          );
+        } else if (filters.fromDateTime && !filters?.toDateTime) {
+          updatedList = updatedList.filter(
+            (item) => item.start_datetime >= filters.fromDateTime,
+          );
+        } else if (!filters?.fromDateTime && filters.toDateTime) {
+          updatedList = updatedList.filter(
+            (item) => item.start_datetime <= filters.toDateTime,
+          );
+        }
+      }
+      return updatedList;
+    },
+    [
+      filters?.fromDateTime,
+      filters?.toDateTime,
+      filters.location,
+      filters.sport,
+      filters.sport_type,
+      filters?.searchText,
+      eventType,
+    ],
+  );
 
   const getEvents = useCallback(
-    (eventList = []) => {
-      const filteredList = eventList.filter(
-        (item) => item.cal_type === Verbs.eventVerb,
-      );
-      const validEventList = [];
-      const groupIds = [];
-      const userIds = [];
-
-      filteredList.forEach((event) => {
-        if (
-          event.who_can_see?.value === 0 ||
-          event.owner_id === authContext.entity.uid
-        ) {
-          validEventList.push(event);
-          if (
-            event.created_by.group_id &&
-            !groupIds.includes(event.created_by.group_id)
-          ) {
-            groupIds.push(event.created_by.group_id);
-          } else if (!userIds.includes(event.created_by.uid)) {
-            userIds.push(event.created_by.uid);
-          }
-        }
+    async (eventList = []) => {
+      const response = await filterEventForPrivacy({
+        list: eventList,
+        loggedInEntityId: authContext.entity.uid,
       });
-      const getUserDetailQuery = {
-        size: 1000,
-        from: 0,
-        query: {
-          terms: {
-            'user_id.keyword': [...userIds],
-          },
-        },
-      };
-      const getGroupDetailQuery = {
-        size: 1000,
-        from: 0,
-        query: {
-          terms: {
-            'group_id.keyword': [...groupIds],
-          },
-        },
-      };
+      if (response.owners.length > 0) {
+        setOwners(response.owners);
+      }
 
-      const promiseArr = [
-        getUserIndex(getUserDetailQuery),
-        getGroupIndex(getGroupDetailQuery),
-      ];
-      Promise.all(promiseArr)
-        .then((res) => {
-          const result = [...res[0], ...res[1]];
-          setOwners(result);
-        })
-        .catch((e) => {
-          setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
-          }, 10);
-        });
+      let validEventList = [];
+      if (response.validEventList.length > 0) {
+        validEventList = response.validEventList;
+      }
 
       let finalList = [];
       validEventList.forEach((item) => {
@@ -123,11 +119,13 @@ const EventList = ({
           const rEvents = getEventOccuranceFromRule(item);
           finalList = [...finalList, ...rEvents];
         } else {
-          filteredList.push(item);
+          finalList.push(item);
         }
       });
 
-      const result = _(finalList)
+      const filteredList = await getFilteredList(finalList);
+
+      const result = _(filteredList)
         .groupBy((event) =>
           moment(getJSDate(event.start_datetime)).format('MMM DD, YYYY'),
         )
@@ -140,7 +138,7 @@ const EventList = ({
       }));
       setEvents(finalEventList);
     },
-    [authContext.entity.uid],
+    [authContext.entity.uid, getFilteredList],
   );
 
   useEffect(() => {
@@ -204,10 +202,10 @@ const EventList = ({
         renderItem={renderItem}
         renderSectionHeader={renderSectionHeader}
         ListEmptyComponent={renderListEmptyComponent}
-        refreshing={loading}
-        onRefresh={refreshData}
+        onEndReached={onScrollHandler}
         onEndReachedThreshold={0.01}
-        onEndReached={fetchData}
+        onScrollBeginDrag={onScrollBeginDrag}
+        renderSectionFooter={() => <View style={{height: 20}} />}
       />
     </View>
   );
@@ -222,7 +220,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     paddingLeft: 15,
     marginBottom: 10,
-    marginTop: 20,
+    backgroundColor: colors.whiteColor,
   },
   sectionHeaderText: {
     fontSize: 20,

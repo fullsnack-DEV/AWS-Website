@@ -33,7 +33,10 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {format} from 'react-string-format';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {getCountry} from 'country-currency-map';
-import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
+import {
+  checkPermAndGetGeoCoordinates,
+  getGeocoordinatesWithPlaceName,
+} from '../../../utils/location';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
@@ -175,14 +178,37 @@ export default function CreateEventScreen({navigation, route}) {
     longitudeDelta: LONGITUDE_DELTA,
   });
   const [mapcoordinate, setMapCoordinate] = useState({
-    latitude: DEFAULT_LATITUDE,
-    longitude: DEFAULT_LONGITUDE,
+    latitude: 0,
+    longitude: 0,
     latitudeDelta: LATITUDE_DELTA,
     longitudeDelta: LONGITUDE_DELTA,
   });
 
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
   const [currency, setSelectedCurrency] = useState('');
+
+  const getDefaultCoordinates = useCallback(async () => {
+    const result = await checkPermAndGetGeoCoordinates(Platform.OS);
+
+    if (result.message) {
+      // this is error case
+      if (result.code === 2 && result.PERMISSION_DENIED === 1) {
+        Alert.alert('', Verbs.gpsErrorDeined);
+      }
+    } else {
+      const obj = {
+        latitude: result.coords.latitude,
+        longitude: result.coords.longitude,
+      };
+      setMapCoordinate((prevProps) => ({...prevProps, ...obj}));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isFocused && !mapcoordinate?.latitude) {
+      getDefaultCoordinates();
+    }
+  }, [isFocused, mapcoordinate?.latitude, getDefaultCoordinates]);
 
   useEffect(() => {
     const currencyObj = getCountry(authContext.entity.obj.country);
@@ -1151,6 +1177,10 @@ export default function CreateEventScreen({navigation, route}) {
               <EventMonthlySelection
                 title={strings.repeat}
                 dataSource={[
+                  {
+                    label: strings.never,
+                    value: Verbs.eventRecurringEnum.Never,
+                  },
                   {label: strings.daily, value: Verbs.eventRecurringEnum.Daily},
                   {
                     label: strings.weeklyText,
@@ -1192,6 +1222,9 @@ export default function CreateEventScreen({navigation, route}) {
                 placeholder={strings.never}
                 value={selectWeekMonth}
                 onValueChange={(value) => {
+                  if (value === strings.never) {
+                    setEventUntildateTime(eventEndDateTime);
+                  }
                   setSelectWeekMonth(value);
                 }}
                 titleStyle={{color: colors.userPostTimeColor}}
@@ -1246,7 +1279,9 @@ export default function CreateEventScreen({navigation, route}) {
                   style={styles.eventFeeStyle}
                   keyboardType="decimal-pad"
                   onChangeText={(value) => {
-                    setEventFee(value);
+                    if (value >= 0 || value < 0) {
+                      setEventFee(value);
+                    }
                   }}
                 />
                 <Text style={styles.currencyStyle}>

@@ -821,6 +821,11 @@ const WritePostScreen = ({navigation, route}) => {
             }),
         },
       ]);
+    }
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params?.parentStack, {
+        screen: route.params.screen,
+      });
     } else if (route.params?.comeFrom === 'HomeScreen') {
       navigation.navigate('HomeStack', {
         screen: 'HomeScreen',

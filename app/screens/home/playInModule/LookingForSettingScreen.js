@@ -132,15 +132,14 @@ export default function LookingForSettingScreen({navigation, route}) {
   }, [authContext, sportObj, entityType]);
 
   const handleBackPress = useCallback(() => {
-    if (comeFrom) {
-      navigation.navigate('AccountStack', {
-        screen: comeFrom,
-        params: {...routeParams},
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params?.parentStack, {
+        screen: route.params.screen,
       });
     } else {
       navigation.goBack();
     }
-  }, [navigation, comeFrom, routeParams]);
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
 
   useEffect(() => {
     const backAction = () => {
@@ -152,10 +151,8 @@ export default function LookingForSettingScreen({navigation, route}) {
       'hardwareBackPress',
       backAction,
     );
-
     return () => backHandler.remove();
   }, [handleBackPress]);
-
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader

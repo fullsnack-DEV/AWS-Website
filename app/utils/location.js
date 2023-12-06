@@ -13,7 +13,7 @@ import {
 import {strings} from '../../Localization/translation';
 import Verbs from '../Constants/Verbs';
 
-const checkPermAndGetGeoCoordinates = async (platform) => {
+export const checkPermAndGetGeoCoordinates = async (platform) => {
   let permKeys = []; // Define permission array in preference order only
 
   if (platform === 'android') {

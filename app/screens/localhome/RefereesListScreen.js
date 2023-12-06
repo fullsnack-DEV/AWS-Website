@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Dimensions,
+  BackHandler,
 } from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import AuthContext from '../../auth/context';
@@ -563,6 +564,30 @@ export default function RefereesListScreen({navigation, route}) {
       </View>
     </Pressable>
   );
+
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.navigate('App', {
+        screen: 'LocalHome',
+      });
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   return (
     <SafeAreaView style={{flex: 1}}>

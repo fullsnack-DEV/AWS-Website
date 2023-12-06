@@ -1,6 +1,6 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect, useCallback} from 'react';
 
-import {Alert, StyleSheet, View} from 'react-native';
+import {Alert, BackHandler, StyleSheet, View} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 
 import AllInOneGallery from '../AllInOneGallery';
@@ -63,6 +63,28 @@ export default function UserGalleryScreen({navigation, route}) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route.params?.isCreatePost]);
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params?.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   return (
     <View style={styles.mainContainer}>

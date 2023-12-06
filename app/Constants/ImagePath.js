@@ -572,6 +572,7 @@ const images = {
   // incomingMatchOfferSettingsIcon.png
   accountScreenLogo: require('../assets/images/accountarrow.png'),
   localHomeFooterImage: require('../assets/images/localHomefooterImage.png'),
+  calendarIcon: require('../assets/images/calendarIcon.png'),
 };
 
 export default images;

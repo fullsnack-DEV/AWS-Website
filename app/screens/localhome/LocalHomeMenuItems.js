@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import {View, Alert, Text, ScrollView, StyleSheet} from 'react-native';
+import {View, Text, ScrollView, StyleSheet} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 
 import React, {useContext, memo} from 'react';
@@ -26,10 +26,10 @@ import {getGameHomeScreen} from '../../utils/gameUtils';
 import PlayersCardPlaceHolder from './PlayersCardPlaceHolder';
 import TCThinDivider from '../../components/TCThinDivider';
 import colors from '../../Constants/Colors';
-import EventsCard from './EventsCard';
 import fonts from '../../Constants/Fonts';
 
 import PlayerShimmerCard from './PlayerShimmerCard';
+import TCEventCard from '../../components/Schedule/TCEventCard';
 
 const LocalHomeMenuItems = memo(
   ({
@@ -43,7 +43,6 @@ const LocalHomeMenuItems = memo(
     navigateToRefreeScreen,
     navigateToScoreKeeper,
     owners,
-    allUserData,
     isdeactivated = false,
     isdeactivatedForRefree = false,
     isdeactivatedForScorekeeper = false,
@@ -76,7 +75,6 @@ const LocalHomeMenuItems = memo(
             },
           });
         } else {
-          console.log(selectedSport, sportType);
           navigation.navigate('HomeStack', {
             screen: 'SportActivityHome',
             params: {
@@ -182,8 +180,21 @@ const LocalHomeMenuItems = memo(
           case strings.teamAvailableforChallenge:
             navigateToHomeScreen(uid, role);
             break;
+
+          case strings.eventHometitle:
+            navigation.navigate('ScheduleStack', {
+              screen: 'EventScreen',
+              params: {
+                data: item,
+                gameData: item,
+                comeFrom: 'App',
+                screen: 'LocalHome',
+              },
+            });
+            break;
+
           default:
-            console.log('Pressed');
+            break;
         }
       }
     };
@@ -308,11 +319,13 @@ const LocalHomeMenuItems = memo(
           break;
 
         case strings.eventHometitle:
-          Alert.alert('Pressed');
+          navigation.navigate('LocalHomeStack', {
+            screen: 'LocalHomEventScreen',
+          });
           break;
 
         default:
-          console.log('Pressed');
+          break;
       }
     };
 
@@ -503,11 +516,7 @@ const LocalHomeMenuItems = memo(
                     showArrow={true}
                     viewStyle={{marginTop: 20, marginBottom: 10}}
                     isDisabled={!(items?.data?.length > 0) || isdeactivated}
-                    onPress={() =>
-                      navigation.navigate('App', {
-                        screen: 'Schedule',
-                      })
-                    }
+                    onPress={() => onTitlePress(item)}
                   />
                   <FlatList
                     data={items.data}
@@ -521,33 +530,24 @@ const LocalHomeMenuItems = memo(
                     maxToRenderPerBatch={10}
                     getItemLayout={getItemLayout}
                     renderItem={({item}) => (
-                      <EventsCard
-                        data={item}
-                        owners={owners}
-                        allUserData={allUserData}
-                        onItemPress={() => {
-                          if (item?.game_id) {
-                            if (item?.game?.sport) {
-                              const gameHome = getGameHomeScreen(
-                                item.game.sport.replace(' ', '_'),
-                              );
-
-                              navigation.navigate(gameHome, {
-                                gameId: item?.game_id,
-                              });
-                            }
-                          } else {
-                            navigation.navigate('ScheduleStack', {
-                              screen: 'EventScreen',
-                              params: {
-                                data: item,
-                                gameData: item,
-                              },
-                            });
+                      <View style={{marginLeft: 15}}>
+                        <TCEventCard
+                          onPress={() => onCardPress(items, item)}
+                          data={item}
+                          profileID={authContext.entity.uid}
+                          //   onThreeDotPress={() => onThreeDotPress(item)}
+                          eventBetweenSection={item.game}
+                          eventOfSection={
+                            item.game &&
+                            item.game.referees &&
+                            item.game.referees.length > 0
                           }
-                        }}
-                        isdeactivated={isdeactivated}
-                      />
+                          entity={authContext.entity}
+                          owners={owners}
+                          allUserData={owners}
+                          containerStyle={{marginBottom: 0, width: 305}}
+                        />
+                      </View>
                     )}
                     ListFooterComponent={() => <View style={{width: 15}} />}
                     ListEmptyComponent={() => (

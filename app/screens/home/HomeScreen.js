@@ -435,10 +435,6 @@ const HomeScreen = ({navigation, route}) => {
       navigation.navigate('App', {screen: 'Account'});
     } else if (route.params?.comeFrom === 'ScheduleScreen') {
       navigation.navigate('App', {screen: 'Account'});
-    } else if (route.params?.comeFrom) {
-      navigation.navigate(route.params.comeFrom, {
-        ...route.params.routeParams,
-      });
     } else if (route.params?.isEntityCreated) {
       navigation.navigate('App', {
         screen: 'Account',
@@ -446,6 +442,10 @@ const HomeScreen = ({navigation, route}) => {
     } else if (route.params?.comeFrom === 'LocalHomeScreen') {
       navigation.navigate('LocalHomeStack', {
         screen: 'JoinTeamScreen',
+      });
+    } else if (route.params?.comeFrom) {
+      navigation.navigate(route.params.comeFrom, {
+        ...route.params.routeParams,
       });
     } else {
       navigation.goBack();
@@ -468,7 +468,9 @@ const HomeScreen = ({navigation, route}) => {
     <SafeAreaView style={styles.mainContainer}>
       <View style={[styles.headerRow, {width: '100%'}]}>
         <View style={[styles.row, {flex: 1}]}>
-          <Pressable style={styles.imageContainer} onPress={handleBackPress}>
+          <Pressable
+            style={styles.imageContainer}
+            onPress={() => handleBackPress()}>
             <Image
               source={images.backIconBigger}
               style={{width: '100%', height: '100%', resizeMode: 'contain'}}

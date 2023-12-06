@@ -62,7 +62,9 @@ const MatchFeeModal = ({
             {marginRight: 15, flex: 1, textAlign: 'right', padding: 0},
           ]}
           onChangeText={(text) => {
-            onChange(text);
+            if (text >= 0 || text < 0) {
+              onChange(text);
+            }
           }}
           keyboardType="decimal-pad"
         />

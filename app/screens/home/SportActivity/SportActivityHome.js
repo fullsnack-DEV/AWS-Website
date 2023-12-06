@@ -6,7 +6,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {StyleSheet, SafeAreaView, ScrollView, View} from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  View,
+  BackHandler,
+} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {strings} from '../../../../Localization/translation';
 import {getGroupIndex} from '../../../api/elasticSearch';
@@ -457,6 +463,29 @@ const SportActivityHome = ({navigation, route}) => {
 
     return activityName ?? '';
   };
+
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params?.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   const getTitleForActivity = () => {
     if (sportObj) {

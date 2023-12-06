@@ -104,7 +104,6 @@ export default function EventScreen({navigation, route}) {
   const [showLikeModal, setShowLikeModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
 
-  console.log(route.params, 'Fromparamrtr');
   useEffect(() => {
     if (route.params?.isCreatePost) {
       const {dataParams, imageArray} = route.params;

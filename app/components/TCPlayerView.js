@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {memo, useCallback, useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 
@@ -32,28 +31,15 @@ function TCPlayerView({
     unavailable: false,
   });
   const [isInviteButtonShow, setIsInviteButtonShow] = useState(false);
+  const [filteredSportData, setFilteredSportData] = useState([]);
 
   const filterSport = useCallback(() => {
     let sportList = [];
     if (sportFilter.sport !== strings.allSport) {
-      sportList = sports.filter((value) => {
-        if (subTab === strings.playerTitle) {
-          if (value.sport === sportFilter.sport && value.is_active === true) {
-            return value;
-          }
-          return false;
-        }
-        if (
-          subTab === strings.refereesTitle ||
-          subTab === strings.scorekeeperTitle
-        ) {
-          if (value.sport === sportFilter.sport && value.is_active === true) {
-            return value;
-          }
-          return false;
-        }
-        return false;
-      });
+      sportList = sports.filter(
+        (value) =>
+          value.sport === sportFilter.sport && value.is_active === true,
+      );
     } else {
       sportList = sports.filter((value) => {
         // Available challenge case
@@ -70,8 +56,8 @@ function TCPlayerView({
         return false;
       });
     }
-    setSports(sportList);
-  }, [sportFilter.sport, subTab]);
+    setFilteredSportData(sportList);
+  }, [sportFilter.sport, fType, sports]);
 
   useEffect(() => {
     if (
@@ -86,8 +72,10 @@ function TCPlayerView({
   useEffect(() => {
     if (sportFilter.sport) {
       filterSport();
+    } else {
+      setFilteredSportData([]);
     }
-  }, [sportFilter.sport]);
+  }, [sportFilter.sport, filterSport]);
 
   useEffect(() => {
     if (sportFilter.sport !== strings.allSport && sports.length === 1) {
@@ -99,6 +87,7 @@ function TCPlayerView({
       });
       setButtonState(btnState);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sports, sportFilter.sport, data.user_id]);
 
   useEffect(() => {
@@ -113,10 +102,31 @@ function TCPlayerView({
     }
   }, [subTab, data]);
 
+  const getSportName = (list = []) => {
+    if (list.length === 1) {
+      return (
+        list[0].sport_name?.charAt(0).toUpperCase() +
+        list[0].sport_name?.slice(1)
+      );
+    }
+
+    if (list.length > 1) {
+      return `${
+        list[0].sport_name?.charAt(0).toUpperCase() +
+        list[0].sport_name?.slice(1)
+      } & ${list.length - 1} ${strings.moreText}`;
+    }
+    return '';
+  };
+
   return (
     <TouchableOpacity
       onPress={() => {
-        onPress(sports);
+        if (sportFilter?.sport) {
+          onPress(filteredSportData);
+        } else {
+          onPress(sports);
+        }
       }}>
       <View style={styles.viewContainer}>
         <Image
@@ -136,14 +146,7 @@ function TCPlayerView({
               numberOfLines={2}
               ellipsizeMode={'tail'}>
               {data.city} ·{' '}
-              {sports.length === 1 &&
-                sports[0].sport_name?.charAt(0).toUpperCase() +
-                  sports[0].sport_name?.slice(1)}
-              {sports.length > 1 &&
-                `${
-                  sports[0].sport_name?.charAt(0).toUpperCase() +
-                  sports[0].sport_name?.slice(1)
-                } & ${sports.length - 1} ${strings.moreText}`}
+              {getSportName(sportFilter?.sport ? filteredSportData : sports)}
             </Text>
           ) : (
             <Text style={styles.locationText} numberOfLines={2}>

@@ -478,17 +478,22 @@ export default function ScheduleScreen({navigation, route}) {
               {sport: strings.othersText},
             ]);
           } else {
-            const sportsList = [
-              ...(authContext?.entity?.obj?.registered_sports?.filter(
-                (obj) => obj.is_active,
-              ) || []),
-              ...(authContext?.entity?.obj?.referee_data?.filter(
-                (obj) => obj.is_active,
-              ) || []),
-              ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
-                (obj) => obj.is_active,
-              ) || []),
-            ];
+            let sportsList = [];
+            if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+              sportsList = [...(authContext.entity.obj.sports ?? [])];
+            } else {
+              sportsList = [
+                ...(authContext?.entity?.obj?.registered_sports?.filter(
+                  (obj) => obj.is_active,
+                ) || []),
+                ...(authContext?.entity?.obj?.referee_data?.filter(
+                  (obj) => obj.is_active,
+                ) || []),
+                ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
+                  (obj) => obj.is_active,
+                ) || []),
+              ];
+            }
 
             const res = sportsList.map((obj) => ({
               sport: obj.sport,
@@ -1885,33 +1890,74 @@ export default function ScheduleScreen({navigation, route}) {
                     </>
                   )}
 
-                  <DateTimePickerView
-                    title={strings.chooseDateTimeText}
-                    visible={startDateVisible}
-                    onDone={(date) => {
-                      setStartDateTime(date);
-                      setStartDateVisible(false);
-                    }}
-                    onCancel={handleCancelPress}
-                    onHide={handleCancelPress}
-                    mode={'datetime'}
-                    date={startDateTime ?? new Date()}
-                    minutesGap={5}
-                  />
+                  {timeFilterData[timeFilterOpetion] ===
+                  strings.eventFilterTimeFuture ? (
+                    <>
+                      <DateTimePickerView
+                        title={strings.chooseDateTimeText}
+                        visible={startDateVisible}
+                        onDone={(date) => {
+                          setStartDateTime(date);
+                          setEndDateTime(moment(date).add(5, 'm').toDate());
+                          setStartDateVisible(false);
+                        }}
+                        onCancel={handleCancelPress}
+                        onHide={handleCancelPress}
+                        mode={'datetime'}
+                        date={startDateTime ?? new Date()}
+                        minutesGap={5}
+                        minimumDate={new Date()}
+                      />
 
-                  <DateTimePickerView
-                    title={strings.chooseDateTimeText}
-                    visible={endDateVisible}
-                    onDone={(date) => {
-                      setEndDateTime(date);
-                      setEndDateVisible(false);
-                    }}
-                    onCancel={handleCancelPress}
-                    onHide={handleCancelPress}
-                    mode={'datetime'}
-                    date={endDateTime ?? new Date()}
-                    minutesGap={5}
-                  />
+                      <DateTimePickerView
+                        title={strings.chooseDateTimeText}
+                        visible={endDateVisible}
+                        onDone={(date) => {
+                          setEndDateTime(date);
+                          setEndDateVisible(false);
+                        }}
+                        onCancel={handleCancelPress}
+                        onHide={handleCancelPress}
+                        mode={'datetime'}
+                        date={endDateTime ?? new Date()}
+                        minutesGap={5}
+                        minimumDate={endDateTime ?? new Date()}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <DateTimePickerView
+                        title={strings.chooseDateTimeText}
+                        visible={startDateVisible}
+                        onDone={(date) => {
+                          setStartDateTime(date);
+                          setEndDateTime(moment(date).add(5, 'm').toDate());
+                          setStartDateVisible(false);
+                        }}
+                        onCancel={handleCancelPress}
+                        onHide={handleCancelPress}
+                        mode={'datetime'}
+                        date={startDateTime ?? new Date()}
+                        minutesGap={5}
+                        maximumDate={new Date()}
+                      />
+
+                      <DateTimePickerView
+                        title={strings.chooseDateTimeText}
+                        visible={endDateVisible}
+                        onDone={(date) => {
+                          setEndDateTime(date);
+                          setEndDateVisible(false);
+                        }}
+                        onCancel={handleCancelPress}
+                        onHide={handleCancelPress}
+                        mode={'datetime'}
+                        date={endDateTime ?? new Date()}
+                        minutesGap={5}
+                        minimumDate={endDateTime ?? new Date()}
+                      />
+                    </>
+                  )}
 
                   <TouchableOpacity
                     onPress={() => {

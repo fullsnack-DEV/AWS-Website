@@ -1,6 +1,13 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   Alert,
+  BackHandler,
   Image,
   Platform,
   ScrollView,
@@ -226,6 +233,29 @@ const RegisterScorekeeper = ({navigation, route}) => {
         });
     }
   };
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params?.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   return (
     <TCKeyboardView style={{flex: 1}}>
@@ -234,19 +264,7 @@ const RegisterScorekeeper = ({navigation, route}) => {
         title={strings.registerScorekeeperTitle}
         leftIcon={images.backArrow}
         leftIconStyle={{width: 40}}
-        leftIconPress={() => {
-          if (route.params?.comeFrom === 'LocalHome') {
-            navigation.navigate('App', {
-              screen: 'LocalHome',
-            });
-          } else if (route.params?.comeFrom) {
-            navigation.navigate(route.params.comeFrom, {
-              ...route.params.routeParams,
-            });
-          } else {
-            navigation.navigate('App', {screen: 'Account'});
-          }
-        }}
+        leftIconPress={() => handleBackPress}
         containerStyle={{paddingBottom: 14}}
         isRightIconText
         rightButtonText={strings.next}

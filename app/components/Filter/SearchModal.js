@@ -50,6 +50,7 @@ const SearchModal = ({
   showSportOption,
   onPressCancel = () => {},
   onPressApply = () => {},
+  isEventFilter = false,
 }) => {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [filters, setFilters] = useState(filterObject);
@@ -64,9 +65,11 @@ const SearchModal = ({
   const [showTimeComponent, setShowTimeComponent] = useState(false);
   const [showFeeComponent, setShowFeeComponent] = useState(false);
   const [showSportComponent, setShowSportComponent] = useState(false);
+  const [showPastDates, setShowPastDates] = useState(false);
 
   useEffect(() => {
     if (fType === filterType.RECENTMATCHS) {
+      setShowPastDates(true);
       setFilterOptions([
         strings.filterAntTime,
         strings.filterToday,
@@ -290,6 +293,7 @@ const SearchModal = ({
       fromDateTime: '',
       toDateTime: '',
       sortOption: sortOptionType.RANDOM,
+      eventType: strings.upcomingTitleText,
     });
     setTag(0);
   }, []);
@@ -727,6 +731,82 @@ const SearchModal = ({
                         {strings.availableTime}
                       </Text>
                     </View>
+                    {isEventFilter && (
+                      <View style={{marginTop: 15}}>
+                        <TouchableOpacity
+                          style={{
+                            flexDirection: 'row',
+                            marginBottom: 15,
+                            justifyContent: 'space-between',
+                          }}
+                          onPress={() => {
+                            setShowPastDates(false);
+                            setFilterOptions([
+                              strings.filterAntTime,
+                              strings.filterToday,
+                              strings.filterTomorrow,
+                              strings.filterNext7Day,
+                              strings.filterThisMonth,
+                              strings.filterNextMonth,
+                              strings.filterPickaDate,
+                            ]);
+                            setFilters({
+                              ...filters,
+                              eventType: strings.upcomingTitleText,
+                            });
+                          }}>
+                          <Text style={styles.filterTitle}>
+                            {strings.upcomingTitleText}
+                          </Text>
+
+                          <Image
+                            source={
+                              filters.eventType === strings.upcomingTitleText
+                                ? images.checkRoundOrange
+                                : images.radioUnselect
+                            }
+                            style={styles.radioButtonStyle}
+                          />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={{
+                            flexDirection: 'row',
+                            marginBottom: 15,
+                            justifyContent: 'space-between',
+                          }}
+                          onPress={() => {
+                            setShowPastDates(true);
+                            setFilterOptions([
+                              strings.filterAntTime,
+                              strings.filterToday,
+                              strings.filterYesterday,
+                              strings.filterLast7Day,
+                              strings.filterThisMonth,
+                              strings.filterLastMonth,
+                              strings.filterPickaDate,
+                            ]);
+                            setFilters({
+                              ...filters,
+                              eventType: strings.completedTitleText,
+                            });
+                          }}>
+                          <Text style={styles.filterTitle}>
+                            {strings.completedTitleText}
+                          </Text>
+
+                          <Image
+                            source={
+                              filters.eventType === strings.completedTitleText
+                                ? images.checkRoundOrange
+                                : images.radioUnselect
+                            }
+                            style={styles.radioButtonStyle}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    )}
+
                     <View style={{marginTop: 10}}>
                       <View
                         style={[
@@ -1160,7 +1240,7 @@ const SearchModal = ({
             setShowTimeActionSheet(false);
           }}
         />
-        {fType === filterType.RECENTMATCHS ? (
+        {showPastDates ? (
           <DateTimePickerView
             visible={datePickerShow}
             onDone={handleDatePress}

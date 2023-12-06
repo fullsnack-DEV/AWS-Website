@@ -17,7 +17,12 @@ import {strings} from '../../../Localization/translation';
 import GroupIcon from '../GroupIcon';
 import Verbs from '../../Constants/Verbs';
 
-export default function TCEventCard({onPress, data, owners = []}) {
+export default function TCEventCard({
+  onPress = () => {},
+  data = {},
+  owners = [],
+  containerStyle = {},
+}) {
   const authContext = useContext(AuthContext);
   const isGame = !!(data?.game_id && data?.game);
   const startDate = getJSDate(data.start_datetime);
@@ -40,7 +45,7 @@ export default function TCEventCard({onPress, data, owners = []}) {
   }, [data.owner_id, owners]);
 
   return (
-    <Pressable onPress={onPress} style={styles.parent}>
+    <Pressable onPress={onPress} style={[styles.parent, containerStyle]}>
       <ImageBackground
         imageStyle={styles.eventBackgroundImage}
         source={{uri: data?.background_thumbnail}}
@@ -55,27 +60,24 @@ export default function TCEventCard({onPress, data, owners = []}) {
         </View>
       </ImageBackground>
 
-      <View style={{paddingHorizontal: 15, paddingVertical: 10}}>
-        <View style={[styles.row, {marginBottom: 5}]}>
-          <Text style={styles.eventTime}>{`${moment(startDate).format(
-            'ddd, MMM DD',
-          )} - `}</Text>
-          <Text style={styles.eventTime}>{`${moment(startDate).format(
-            'h:mma',
-          )}`}</Text>
-
+      <View style={{paddingHorizontal: 15, paddingVertical: 10, flex: 1}}>
+        <View style={[styles.row, {marginBottom: 5, flex: 1}]}>
+          <View>
+            <Text style={styles.eventTime}>
+              {`${moment(startDate).format('ddd, MMM DD - h:mma')}`}{' '}
+            </Text>
+          </View>
           <Text style={[styles.eventTime, {marginHorizontal: 10}]}>|</Text>
 
-          {data?.is_Offline ? (
-            <Text numberOfLines={1} style={{...styles.eventTime, flex: 1}}>
-              {location}
+          <View style={{flex: 1}}>
+            <Text
+              style={data?.is_Offline ? styles.eventTime : styles.onlineText}
+              numberOfLines={1}>
+              {data?.is_Offline ? location : strings.onlineText}
             </Text>
-          ) : (
-            <Text style={{...styles.onlineText, flex: 1}}>
-              {strings.onlineText}
-            </Text>
-          )}
+          </View>
         </View>
+
         <View style={styles.row}>
           <GroupIcon
             imageUrl={ownerDetails?.thumbnail}

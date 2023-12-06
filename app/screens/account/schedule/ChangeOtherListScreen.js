@@ -189,7 +189,10 @@ export default function ChangeOtherListScreen({
               imageUrl={item.thumbnail}
               groupName={item.group_name}
               entityType={item.entity_type}
-              containerStyle={styles.iconContainer}
+              containerStyle={[
+                styles.iconContainer,
+                item.thumbnail ? {} : {paddingTop: 2},
+              ]}
               placeHolderStyle={styles.iconPlaceholder}
               textstyle={styles.iconText}
             />
@@ -218,7 +221,10 @@ export default function ChangeOtherListScreen({
               imageUrl={item.thumbnail}
               groupName={item.group_name}
               entityType={item.entity_type}
-              containerStyle={styles.iconContainer}
+              containerStyle={[
+                styles.iconContainer,
+                item.thumbnail ? {} : {paddingTop: 2},
+              ]}
               placeHolderStyle={styles.iconPlaceholder}
               textstyle={styles.iconText}
             />
@@ -386,7 +392,6 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     marginRight: 10,
-    paddingTop: 2,
   },
   iconPlaceholder: {
     width: 10,

@@ -49,17 +49,22 @@ export default function ChangeSportsOrderScreen({
   });
 
   useEffect(() => {
-    const sportsList = [
-      ...(authContext?.entity?.obj?.registered_sports?.filter(
-        (obj) => obj.is_active,
-      ) || []),
-      ...(authContext?.entity?.obj?.referee_data?.filter(
-        (obj) => obj.is_active,
-      ) || []),
-      ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
-        (obj) => obj.is_active,
-      ) || []),
-    ];
+    let sportsList = [];
+    if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+      sportsList = [...(authContext.entity.obj.sports ?? [])];
+    } else {
+      sportsList = [
+        ...(authContext?.entity?.obj?.registered_sports?.filter(
+          (obj) => obj.is_active,
+        ) || []),
+        ...(authContext?.entity?.obj?.referee_data?.filter(
+          (obj) => obj.is_active,
+        ) || []),
+        ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
+          (obj) => obj.is_active,
+        ) || []),
+      ];
+    }
 
     const res = sportsList.map((obj) => ({
       sport: obj.sport,

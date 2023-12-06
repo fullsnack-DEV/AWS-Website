@@ -5,28 +5,67 @@ import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import GroupIcon from '../../../components/GroupIcon';
+import Verbs from '../../../Constants/Verbs';
+import SearchEventCard from './SearchEventCard';
 
 const RecentSearchItem = ({
   data = {},
+  eventOwnersList = [],
   onRemove = () => {},
   onPress = () => {},
-}) => (
-  <>
-    <TouchableOpacity style={styles.parent} onPress={() => onPress(data)}>
-      {typeof data === 'string' ? (
-        <View style={styles.imageContainer}>
-          <Image source={images.home_search} style={styles.image} />
-        </View>
-      ) : (
+}) => {
+  const renderView = () => {
+    if (typeof data === 'string') {
+      return (
+        <TouchableOpacity style={styles.parent} onPress={() => onPress(data)}>
+          <View style={styles.imageContainer}>
+            <Image source={images.home_search} style={styles.image} />
+          </View>
+          <View style={styles.innerContainer}>
+            <View style={{flex: 1}}>
+              <Text style={styles.label} numberOfLines={1}>
+                {data}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={{width: 16, height: 16}}
+              onPress={() => onRemove(data)}>
+              <Image
+                source={images.closeRound}
+                style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+              />
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      );
+    }
+    if (data?.cal_type === Verbs.eventVerb) {
+      const owner = eventOwnersList.find(
+        (item) =>
+          data.owner_id === item.group_id || data.owner_id === item.user_id,
+      );
+      return (
+        <SearchEventCard
+          event={data}
+          onPressEvent={() => {
+            onPress(data);
+          }}
+          showCloseButton
+          eventOwner={owner ?? {}}
+        />
+      );
+    }
+
+    return (
+      <TouchableOpacity
+        style={styles.innerContainer}
+        onPress={() => onPress(data)}>
         <GroupIcon
           imageUrl={data.thumbnail}
-          entityType={data.entity_type}
+          entityType={data.entity_type ?? Verbs.entityTypePlayer}
           groupName={data.group_name}
           containerStyle={{width: 40, height: 40, marginRight: 10}}
         />
-      )}
-
-      <View style={styles.innerContainer}>
         <View style={{flex: 1}}>
           <Text style={styles.label} numberOfLines={1}>
             {typeof data === 'string'
@@ -42,18 +81,17 @@ const RecentSearchItem = ({
             style={{width: '100%', height: '100%', resizeMode: 'contain'}}
           />
         </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-    <View
-      style={{
-        height: 1,
-        backgroundColor: colors.grayBackgroundColor,
-        marginVertical: 15,
-        marginLeft: 50,
-      }}
-    />
-  </>
-);
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <>
+      {renderView()}
+      <View style={styles.separator} />
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
   parent: {
@@ -88,6 +126,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.grayBackgroundColor,
+    marginVertical: 15,
+    marginLeft: 50,
   },
 });
 export default RecentSearchItem;

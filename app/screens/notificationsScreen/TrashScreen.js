@@ -6,6 +6,7 @@ import {
   Alert,
   SafeAreaView,
   FlatList,
+  BackHandler,
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -661,6 +662,37 @@ function TrashScreen({navigation, route}) {
       }
     }
   };
+
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params.parentStack, {
+        screen: route.params.screen,
+      });
+    } else if (route.params?.comeFrom) {
+      navigation.navigate('App', {
+        screen: 'NotificationsListScreen',
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [
+    navigation,
+    route.params?.comeFrom,
+    route.params.parentStack,
+    route.params.screen,
+  ]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   return (
     <View style={styles.rowViewStyle}>

@@ -1,5 +1,11 @@
 // @flow
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -10,6 +16,7 @@ import {
   Keyboard,
   Alert,
   Platform,
+  BackHandler,
 } from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import {groupValidate} from '../../../api/Groups';
@@ -224,6 +231,29 @@ const RegisterPlayer = ({navigation, route}) => {
         setLoading(false);
       });
   };
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params?.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   return (
     <SafeAreaView style={styles.parent}>
@@ -231,19 +261,7 @@ const RegisterPlayer = ({navigation, route}) => {
       <ScreenHeader
         title={strings.registerAsPlayerTitle}
         leftIcon={images.backArrow}
-        leftIconPress={() => {
-          if (route.params?.comeFrom === 'LocalHome') {
-            navigation.navigate('App', {
-              screen: 'LocalHome',
-            });
-          } else if (route.params?.comeFrom) {
-            navigation.navigate(route.params.comeFrom, {
-              ...route.params.routeParams,
-            });
-          } else {
-            navigation.navigate('App', {screen: 'Account'});
-          }
-        }}
+        leftIconPress={() => handleBackPress}
         isRightIconText
         rightButtonText={
           selectedSport?.sport_type === Verbs.singleSport

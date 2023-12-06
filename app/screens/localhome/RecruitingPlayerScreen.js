@@ -20,6 +20,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   TouchableOpacity,
+  BackHandler,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
@@ -512,6 +513,29 @@ export default function RecruitingPlayerScreen({navigation, route}) {
       });
   };
 
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.navigate('App', {
+        screen: 'LocalHome',
+      });
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader

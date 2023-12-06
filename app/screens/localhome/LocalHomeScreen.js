@@ -53,7 +53,6 @@ import LocalHomeHeader from './LocalHomeHeader';
 import TopTileSection from './TopTileSection';
 import {
   getDataForNextScreen,
-  getEventsAndSlotsList,
   getNotificationCountHome,
   getSportsForHome,
   getTeamSportOnlyList,
@@ -68,7 +67,7 @@ import {ModalTypes} from '../../Constants/GeneralConstants';
 import InviteMemberModal from '../../components/InviteMemberModal';
 import {getGroupDetails} from '../../api/Groups';
 import SportView from './SportView';
-import {getUserIndex} from '../../api/elasticSearch';
+import {getCalendarIndex, getUserIndex} from '../../api/elasticSearch';
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 
 const defaultPageSize = 10;
@@ -129,16 +128,7 @@ function LocalHomeScreen({navigation, route}) {
     useState(false);
   const [visibleSportsModalForTeam, setVisibleSportsModalForTeam] =
     useState(false);
-  const [filterData, setFilterData] = useState([]);
-  const [filterSetting] = useState({
-    sort: 1,
-    time: 0,
-  });
-  const [selectedOptions] = useState({
-    option: 0,
-    title: strings.all,
-  });
-  const [allUserData, setAllUserData] = useState([]);
+  const [eventList, setEventList] = useState([]);
   const [owners, setOwners] = useState([]);
   const [sportIconLoader, setSportIconLoader] = useState(true);
   const [cardLoader, setCardLoader] = useState(true);
@@ -252,17 +242,6 @@ function LocalHomeScreen({navigation, route}) {
       setTeamsAvailable,
     );
 
-    const getEventdata = async () => {
-      await getEventsAndSlotsList(
-        authContext,
-        setAllUserData,
-        setOwners,
-        filterSetting,
-        selectedOptions,
-        setFilterData,
-        allUserData,
-      );
-    };
     getEventdata();
     setSportIconLoader(true);
 
@@ -348,32 +327,68 @@ function LocalHomeScreen({navigation, route}) {
     }, [location, locationContext]),
   );
 
-  const getEventdata = useMemo(
-    () => async () => {
-      await getEventsAndSlotsList(
-        authContext,
-        setAllUserData,
-        setOwners,
-        filterSetting,
-        selectedOptions,
-        setFilterData,
-        allUserData,
-      );
-    },
-    [
-      authContext,
-      setAllUserData,
-      setOwners,
-      filterSetting,
-      selectedOptions,
-      setFilterData,
-      allUserData,
-    ],
-  );
+  const getEventdata = useCallback(() => {
+    const upcomingEventsQuery = {
+      size: 1000,
+      query: {
+        bool: {
+          must: [
+            {
+              range: {
+                actual_enddatetime: {
+                  gt: Number(
+                    parseFloat(new Date().getTime() / 1000).toFixed(0),
+                  ),
+                },
+              },
+            },
+          ],
+        },
+      },
+      sort: [{start_datetime: 'asc'}],
+    };
+    getCalendarIndex(upcomingEventsQuery)
+      .then(async (response) => {
+        const event_list = await Utility.filterEventForPrivacy({
+          list: response,
+          loggedInEntityId: authContext.entity.uid,
+        });
+
+        if (event_list.owners.length > 0) {
+          setOwners(event_list.owners);
+        }
+
+        let validEventList = [];
+        if (event_list.validEventList.length > 0) {
+          validEventList = event_list.validEventList;
+        }
+
+        let finalList = [];
+        validEventList.forEach((item) => {
+          if (item?.rrule) {
+            const rEvents = Utility.getEventOccuranceFromRule(item);
+            finalList = [...finalList, ...rEvents];
+          } else {
+            finalList.push(item);
+          }
+        });
+        const result = finalList.filter(
+          (item) =>
+            item.start_datetime >=
+            Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),
+        );
+        setEventList(result.splice(0, 5));
+      })
+      .catch((err) => {
+        console.log('fetch event data error ==>', err);
+      });
+  }, [authContext.entity.uid]);
 
   useEffect(() => {
-    getEventdata();
-  }, [isFocused]);
+    if (isFocused) {
+      getEventdata();
+    }
+  }, [isFocused, getEventdata]);
 
   const ITEM_HEIGHT = Verbs.ITEM_HEIGHT;
 
@@ -396,7 +411,7 @@ function LocalHomeScreen({navigation, route}) {
       },
       {
         key: strings.eventHometitle,
-        data: filterData,
+        data: eventList,
         index: 3,
       },
       {
@@ -433,7 +448,7 @@ function LocalHomeScreen({navigation, route}) {
     [
       recentMatch,
       upcomingMatch,
-      filterData,
+      eventList,
       teamsAvailble,
       challengeeMatch,
       referees,
@@ -1077,7 +1092,6 @@ function LocalHomeScreen({navigation, route}) {
       selectedSport={selectedSport}
       sportType={sportType}
       owners={owners}
-      allUserData={allUserData}
       cardLoader={cardLoader}
       openPlayerDetailsModal={(obj) => {
         setPlayerDetail(obj);

@@ -16,6 +16,7 @@ import {
   PixelRatio,
   LayoutAnimation,
 } from 'react-native';
+import {RRule} from 'rrule';
 import firebase from '@react-native-firebase/app';
 import _ from 'lodash';
 import moment from 'moment';
@@ -2717,7 +2718,7 @@ export const formatCurrency = (value, currency) => {
   return formattedNumber;
 };
 
-export const setSearchDataToLocal = async (data = []) => {
+export const setSearchDataToLocal = async (data = {}) => {
   await AsyncStorage.setItem('LocalSearchData', JSON.stringify(data));
 };
 
@@ -2727,4 +2728,95 @@ export const getLocalSearchData = async () => {
     return JSON.parse(data);
   }
   return [];
+};
+
+export const getEventOccuranceFromRule = (event) => {
+  const ruleObj = RRule.parseString(event.rrule);
+  ruleObj.dtstart = getJSDate(event.start_datetime);
+  ruleObj.until = getJSDate(event.untilDate);
+  const rule = new RRule(ruleObj);
+  const duration = event.end_datetime - event.start_datetime;
+  let occr = rule.all();
+  if (event.exclusion_dates) {
+    // _.remove(occr, function (date) {
+    //   return event.exclusion_dates.includes(Utility.getTCDate(date))
+    // })
+    occr = occr.filter(
+      (date) => !event.exclusion_dates.includes(getTCDate(date)),
+    );
+  }
+  occr = occr.map((RRItem) => {
+    // console.log('Item', Math.round(new Date(RRItem) / 1000))
+    const newEvent = {...event};
+    newEvent.start_datetime = getTCDate(RRItem);
+    newEvent.end_datetime = newEvent.start_datetime + duration;
+    //   RRItem = newEvent;
+    return newEvent;
+  });
+  return occr;
+};
+
+export const filterEventForPrivacy = async ({
+  list = [],
+  loggedInEntityId = '',
+}) => {
+  const filteredList = list.filter((item) => item.cal_type === Verbs.eventVerb);
+
+  const validEventList = [];
+  const groupIds = [];
+  const userIds = [];
+
+  filteredList.forEach((event) => {
+    if (event.who_can_see?.value === 0 || event.owner_id === loggedInEntityId) {
+      validEventList.push(event);
+      if (
+        event.created_by.group_id &&
+        !groupIds.includes(event.created_by.group_id)
+      ) {
+        groupIds.push(event.created_by.group_id);
+      } else if (!userIds.includes(event.created_by.uid)) {
+        userIds.push(event.created_by.uid);
+      }
+    } else if (event.who_can_see?.value === 2) {
+      if (event.who_can_see?.group_ids?.includes(loggedInEntityId)) {
+        validEventList.push(event);
+        if (
+          event.created_by.group_id &&
+          !groupIds.includes(event.created_by.group_id)
+        ) {
+          groupIds.push(event.created_by.group_id);
+        } else if (!userIds.includes(event.created_by.uid)) {
+          userIds.push(event.created_by.uid);
+        }
+      }
+    }
+  });
+
+  const getUserDetailQuery = {
+    size: 1000,
+    from: 0,
+    query: {
+      terms: {
+        'user_id.keyword': [...userIds],
+      },
+    },
+  };
+  const getGroupDetailQuery = {
+    size: 1000,
+    from: 0,
+    query: {
+      terms: {
+        'group_id.keyword': [...groupIds],
+      },
+    },
+  };
+
+  const promiseArr = [
+    getUserIndex(getUserDetailQuery),
+    getGroupIndex(getGroupDetailQuery),
+  ];
+  const res = await Promise.all(promiseArr);
+  const owners = [...res[0], ...res[1]];
+
+  return {validEventList, owners};
 };

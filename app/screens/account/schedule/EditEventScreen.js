@@ -1196,6 +1196,10 @@ export default function EditEventScreen({navigation, route}) {
               <EventMonthlySelection
                 title={strings.repeat}
                 dataSource={[
+                  {
+                    label: format(strings.never),
+                    value: Verbs.eventRecurringEnum.Never,
+                  },
                   {label: strings.daily, value: Verbs.eventRecurringEnum.Daily},
                   {
                     label: strings.weeklyText,
@@ -1294,7 +1298,9 @@ export default function EditEventScreen({navigation, route}) {
                 <TextInput
                   style={styles.eventFeeStyle}
                   onChangeText={(value) => {
-                    setEventFee(value);
+                    if (value >= 0 || value < 0) {
+                      setEventFee(value);
+                    }
                   }}
                   value={eventFee}
                   textAlignVertical={'center'}

@@ -372,6 +372,7 @@ export default function EventScheduleScreen({
             keyExtractor={(item, index) => index.toString()}
             refreshing={loading}
             onRefresh={refreshData}
+            renderSectionFooter={() => <View style={{height: 20}} />}
           />
         )}
       </View>
@@ -382,11 +383,12 @@ export default function EventScheduleScreen({
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    paddingTop: 20,
   },
   sectionHeader: {
     paddingLeft: 15,
     marginBottom: 10,
-    marginTop: 20,
+    backgroundColor: colors.whiteColor,
   },
   sectionHeaderText: {
     fontSize: 20,

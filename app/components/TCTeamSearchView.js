@@ -109,14 +109,15 @@ const TCTeamSearchView = ({
     ) {
       if (
         loggedInEntity.uid !== data.group_id &&
-        data.setting?.availibility === Verbs.on &&
         data.sport === loggedInEntity.obj.sport &&
         loggedInEntity.role === Verbs.entityTypeTeam
       ) {
         if (data.is_pause) {
           return strings.pausedText;
         }
-        return strings.challenge;
+        if (data.setting?.availibility === Verbs.on) {
+          return strings.challenge;
+        }
       }
       if (
         ![Verbs.entityTypeClub, Verbs.entityTypeTeam].includes(

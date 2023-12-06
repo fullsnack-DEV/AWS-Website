@@ -16,6 +16,7 @@ import ChooseAddressScreen from '../screens/challenge/createChallenge/ChooseAddr
 import fonts from '../Constants/Fonts';
 import JoinTeamScreen from '../screens/localhome/JoinTeamScreen';
 import JoinClubScreen from '../screens/localhome/JoinClubScreen';
+import LocalHomEventScreen from '../screens/localhome/LocalHomEventScreen';
 
 const Stack = createStackNavigator();
 
@@ -242,6 +243,12 @@ const LocalHomeNavigator = () => (
           borderBottomWidth: 0.3,
         },
       }}
+    />
+
+    <Stack.Screen
+      name="LocalHomEventScreen"
+      component={LocalHomEventScreen}
+      options={{headerShown: false}}
     />
   </Stack.Navigator>
 );

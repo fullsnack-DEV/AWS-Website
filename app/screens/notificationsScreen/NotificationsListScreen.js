@@ -18,6 +18,7 @@ import {
   Alert,
   SafeAreaView,
   TouchableOpacity,
+  BackHandler,
 } from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import Moment from 'moment';
@@ -65,7 +66,7 @@ import useSwitchAccount from '../../hooks/useSwitchAccount';
 import {getUserDetails} from '../../api/Users';
 import Verbs from '../../Constants/Verbs';
 
-function NotificationsListScreen({navigation}) {
+function NotificationsListScreen({navigation, route}) {
   const actionSheet = useRef();
 
   const JoinRequestModalRef = useRef(null);
@@ -1155,13 +1156,37 @@ function NotificationsListScreen({navigation}) {
     }
   }, [mainNotificationsList]);
 
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.navigate('App', {
+        screen: 'LocalHome',
+      });
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
         title={strings.notifications}
         leftIcon={images.backArrow}
         rightIcon1={images.chat3Dot}
-        leftIconPress={() => navigation.goBack()}
+        leftIconPress={handleBackPress}
         rightIcon1Press={() => {
           actionSheet.current.show();
         }}
