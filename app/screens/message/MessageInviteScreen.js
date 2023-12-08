@@ -45,6 +45,13 @@ const MessageInviteScreen = ({navigation, route}) => {
   const inputRef = useRef();
   const searchRef = useRef();
 
+  const TAB_ITEMS = [
+    strings.allType,
+    strings.peopleTitleText,
+    strings.teamsTitleText,
+    strings.clubsTitleText,
+  ];
+
   const getInviteesData = useCallback(() => {
     setLoading(true);
     const groupQuery = {
@@ -245,7 +252,6 @@ const MessageInviteScreen = ({navigation, route}) => {
           </Pressable>
         )}
       </Pressable>
-
       {/* Selected invitees list */}
       {selectedInvitees.length > 0 ? (
         <View style={{marginBottom: 15, paddingHorizontal: 15}}>
@@ -270,6 +276,7 @@ const MessageInviteScreen = ({navigation, route}) => {
           setCurrentTab(selectedTab);
           setSearchText('');
         }}
+        TAB_ITEMS={TAB_ITEMS}
       />
       <View style={{flex: 1}}>
         {loading ? (

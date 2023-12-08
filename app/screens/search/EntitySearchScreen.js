@@ -76,32 +76,32 @@ const pageSize = 10;
 let stopFetchMore = true;
 let timeout;
 
-const TAB_ITEMS = [
-  strings.peopleTitleText,
-  strings.groupsTitleText,
-  strings.matchesTitleText,
-  strings.eventsTitle,
-];
-const PEOPLE_SUB_TAB_ITEMS = [
-  strings.generalText,
-  strings.playerTitle,
-  strings.refereesTitle,
-  strings.scorekeeperTitle,
-];
-const GROUP_SUB_TAB_ITEMS = [
-  strings.teamsTitleText,
-  strings.clubsTitleText,
-  strings.leaguesTitleText,
-];
-const GAMES_SUB_TAB_ITEMS = [
-  strings.completedTitleText,
-  strings.upcomingTitleText,
-];
+// const TAB_ITEMS = [
+//   strings.peopleTitleText,
+//   strings.groupsTitleText,
+//   strings.matchesTitleText,
+//   strings.eventsTitle,
+// ];
+// const PEOPLE_SUB_TAB_ITEMS = [
+//   strings.generalText,
+//   strings.playerTitle,
+//   strings.refereesTitle,
+//   strings.scorekeeperTitle,
+// ];
+// const GROUP_SUB_TAB_ITEMS = [
+//   strings.teamsTitleText,
+//   strings.clubsTitleText,
+//   strings.leaguesTitleText,
+// ];
+// const GAMES_SUB_TAB_ITEMS = [
+//   strings.completedTitleText,
+//   strings.upcomingTitleText,
+// ];
 
-const EVENTS_SUB_TAB_ITEMS = [
-  strings.completedTitleText,
-  strings.upcomingTitleText,
-];
+// const EVENTS_SUB_TAB_ITEMS = [
+//   strings.completedTitleText,
+//   strings.upcomingTitleText,
+// ];
 
 export default function EntitySearchScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -127,6 +127,34 @@ export default function EntitySearchScreen({navigation, route}) {
   const [clubs, setClubs] = useState([]);
   const [completedGame, setCompletedGame] = useState([]);
   const [upcomingGame, setUpcomingGame] = useState([]);
+  const [TAB_ITEMS] = useState([
+    strings.peopleTitleText,
+    strings.groupsTitleText,
+    strings.matchesTitleText,
+    strings.eventsTitle,
+  ]);
+  const [PEOPLE_SUB_TAB_ITEMS] = useState([
+    strings.generalText,
+    strings.playerTitle,
+    strings.refereesTitle,
+    strings.scorekeeperTitle,
+  ]);
+
+  const [GROUP_SUB_TAB_ITEMS] = useState([
+    strings.teamsTitleText,
+    strings.clubsTitleText,
+    strings.leaguesTitleText,
+  ]);
+  const [GAMES_SUB_TAB_ITEMS] = useState([
+    strings.completedTitleText,
+    strings.upcomingTitleText,
+  ]);
+
+  const EVENTS_SUB_TAB_ITEMS = useState([
+    strings.completedTitleText,
+    strings.upcomingTitleText,
+  ]);
+
   const [settingPopup, setSettingPopup] = useState(false);
   // Pagination
   const [generalPageFrom, setGeneralPageFrom] = useState(0);

@@ -3222,7 +3222,7 @@ export default {
     'en_Your team will not be an affiliated team of the club any more, but the members of your teamwill still remain as a member both in your team and the club.    ',
   AllLevelesText: 'en_All levels',
   nCreatedThisGroup: `en_{0} created this group.`,
-  teamsTiteInfo: 'en_Teams',
+
   noActivityLog: 'en_No Activity Log',
   goToSportActivityText: 'en_Go to Sport Activity Page',
   noActivityLog: 'en_No Activity Log',
@@ -3254,4 +3254,6 @@ export default {
   playersLookingForGroupText: 'en_Player Looking For Group',
   whoCanWritePostoneventHome: 'en_Who can Write a Post in Event Home',
   oraganizerOnly: 'en_Organizer only',
+  teamsTiteInfo: 'en_Teams',
+  challengeSubtext: '(en_You will be the match host.)',
 };

@@ -15,7 +15,6 @@ import fonts from '../../Constants/Fonts';
 import AuthContext from '../../auth/context';
 import Verbs from '../../Constants/Verbs';
 import TCThinDivider from '../../components/TCThinDivider';
-import {UserActionTiles, tilesArray} from '../../utils/constant';
 
 function TopTileSection({
   handleTileClick,
@@ -41,6 +40,121 @@ function TopTileSection({
       subscription.remove();
     };
   }, []);
+
+  const tilesArray = {
+    PersonalTeamSection: [
+      {
+        title: strings.challengeHometile,
+        icon: images.challengeIcon,
+      },
+      {
+        title: strings.bookRefreesHomeTile,
+        icon: images.bookRefreeIcon,
+      },
+      {
+        title: strings.bookSckorekeeperHomeTile,
+        icon: images.bookScoreKeeper,
+      },
+      {
+        title: strings.createEventhomeTitle,
+
+        icon: images.eventIcon,
+      },
+    ],
+    clubSection: [
+      {
+        title: strings.addTeamClub,
+        icon: images.createTemIconHome,
+      },
+      {
+        title: strings.createevents,
+        icon: images.eventIcon,
+      },
+      {
+        title: strings.inviteMemberClub,
+        icon: images.inviteMemberIcon,
+      },
+    ],
+  };
+
+  const UserActionTiles = [
+    {
+      title: strings.registerAs,
+      index: 0,
+
+      createData: [
+        {
+          name: strings.playerText,
+          icon: images.registerAsPlayerIcon,
+          enityType: Verbs.entityTypePlayer,
+          screenName: 'RegisterPlayer',
+          index: 0,
+        },
+        {
+          name: strings.refreeText,
+          icon: images.registerAsRefreeIcon,
+          enityType: Verbs.entityTypeReferee,
+          screenName: 'RegisterReferee',
+          index: 1,
+        },
+        {
+          name: strings.scorekeeperText,
+          icon: images.registerAsScoreKeeperIcon,
+          enityType: Verbs.entityTypeScorekeeper,
+          screenName: 'RegisterScorekeeper',
+          index: 2,
+        },
+      ],
+    },
+    {
+      title: strings.createText,
+      index: 1,
+      createData: [
+        {
+          name: strings.teamText,
+          icon: images.createTeamIcon,
+          action: Verbs.CREATE_TEAM,
+          index: 0,
+        },
+        {
+          name: strings.clubText,
+          icon: images.createClubIcon,
+          action: Verbs.CREATE_CLUB,
+          index: 1,
+        },
+        {
+          name: strings.leagueText,
+          icon: images.createLeagueIcon,
+          action: Verbs.CREATE_LEAGUE,
+          index: 2,
+        },
+      ],
+    },
+    {
+      title: strings.joinText,
+      index: 2,
+      createData: [
+        {
+          name: strings.teamText,
+          icon: images.joinTeamIcon,
+          action: Verbs.JOIN_TEAM,
+          index: 0,
+        },
+        {
+          name: strings.clubText,
+          icon: images.joinClubIcon,
+          action: Verbs.JOIN_CLUB,
+          index: 1,
+        },
+        {
+          name: strings.leagueText,
+          icon: images.joinLeagueIcon,
+          action: Verbs.JOIN_LEAGUE,
+          index: 2,
+        },
+      ],
+    },
+  ];
 
   const onTilePress = (i) => {
     switch (i.action) {

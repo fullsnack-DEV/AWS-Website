@@ -739,14 +739,12 @@ const UserHomeScreen = ({
               currentUserData,
             });
           } else if (option === strings.event) {
-            navigation.navigate('App', {
-              screen: 'Schedule',
-              params: {
-                isAdmin,
-                isFromHomeScreen: true,
-                role: route.params?.role ?? authContext.entity.role,
-                uid: route.params?.uid ?? authContext.entity.uid,
-              },
+            navigation.navigate('HomeScheduleScreen', {
+              isAdmin,
+              isFromHomeScreen: true,
+              role: route.params?.role ?? authContext.entity.role,
+              uid: route.params?.uid ?? authContext.entity.uid,
+              forUserHomeEvent: true,
             });
           }
         }}

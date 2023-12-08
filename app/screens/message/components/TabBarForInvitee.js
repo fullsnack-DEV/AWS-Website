@@ -5,16 +5,10 @@ import {strings} from '../../../../Localization/translation';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 
-const TAB_ITEMS = [
-  strings.allType,
-  strings.peopleTitleText,
-  strings.teamsTitleText,
-  strings.clubsTitleText,
-];
-
 const TabBarForInvitee = ({
   activeTab = strings.allType,
   onChange = () => {},
+  TAB_ITEMS = [],
 }) => (
   <View style={styles.row}>
     {TAB_ITEMS.map((item, index) => (

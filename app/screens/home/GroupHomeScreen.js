@@ -15,6 +15,7 @@ import {
   Text,
   BackHandler,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -61,6 +62,7 @@ import {JoinPrivacy} from '../../Constants/GeneralConstants';
 import {cancelFollowRequest} from '../../api/Users';
 import InviteMemberModal from '../../components/InviteMemberModal';
 import ClubInviteTeamModal from './ClubInviteTeamModal';
+import images from '../../Constants/ImagePath';
 
 // import BottomSheet from '../../components/modals/BottomSheet';
 
@@ -112,7 +114,7 @@ const GroupHomeScreen = ({
     useState(false);
   const [showClubInviteTeamModal, setShoeclubInviteTeamModal] = useState(false);
   const [forTeamJoinClub, setForTeamJoinClub] = useState(false);
-
+  const [visibleChallengesheet, setvisibleChallengeSheet] = useState(false);
   const bottomSheetRef = useRef(null);
   const followModalRef = useRef(null);
 
@@ -212,14 +214,11 @@ const GroupHomeScreen = ({
         });
         break;
       case strings.scheduleTitle:
-        navigation.navigate('App', {
-          screen: 'Schedule',
-          params: {
-            uid: groupId,
-            isAdmin,
-            isFromHomeScreen: true,
-            role: route.params?.role ?? authContext.entity.role,
-          },
+        navigation.navigate('HomeScheduleScreen', {
+          uid: groupId,
+          isAdmin,
+          isFromHomeScreen: true,
+          role: route.params?.role ?? authContext.entity.role,
         });
         break;
       case strings.scoreboard:
@@ -1436,7 +1435,6 @@ const GroupHomeScreen = ({
   };
 
   const handleGroupActions = (action) => {
-  
     switch (action) {
       case strings.editprofiletitle:
         setVisibleEditProfileModal(true);
@@ -1702,10 +1700,31 @@ const GroupHomeScreen = ({
         optionList={options}
         onSelect={handleOptions}
       />
+      <BottomSheet
+        isVisible={visibleChallengesheet}
+        type="ios"
+        optionList={[strings.inviteToChallenge, strings.cancel]}
+        optionSubTextsList={[strings.challengeSubtext]}
+        textStyle={{
+          textAlign: 'center',
+          color: colors.blueTextcolor,
+          fontSize: 20,
+        }}
+        subTextStyle={{
+          textAlign: 'center',
+          color: colors.blueTextcolor,
+          fontSize: 12,
+        }}
+        closeModal={() => setvisibleChallengeSheet(false)}
+        onSelect={() => {
+          setvisibleChallengeSheet(false);
+        }}
+      />
 
       {/* if sport is same Dispplay the Botton challege buton */}
 
       {authContext.entity.role === Verbs.entityTypeTeam &&
+        currentUserData.am_i_admin !== true &&
         currentUserData.entity_type === Verbs.entityTypeTeam &&
         currentUserData.sport === authContext.entity.obj.sport &&
         !isAdmin && (
@@ -1732,11 +1751,31 @@ const GroupHomeScreen = ({
             <View
               style={{
                 marginTop: 15,
+                flexDirection: 'row',
               }}>
               <TouchableOpacity
                 onPress={() => onChallengePress()}
                 style={styles.challengeButtonContainer}>
                 <Text style={styles.challengeText}>{strings.challenge}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setvisibleChallengeSheet(true)}
+                style={{
+                  height: 40,
+                  width: 40,
+                  borderRadius: 5,
+                  backgroundColor: colors.grayBackgroundColor,
+                  marginLeft: 12,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Image
+                  style={{
+                    height: 20,
+                    width: 20,
+                  }}
+                  source={images.horizontaldots}
+                />
               </TouchableOpacity>
             </View>
           </View>

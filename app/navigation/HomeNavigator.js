@@ -4,7 +4,6 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import HomeScreen from '../screens/home/HomeScreen';
 import GroupListScreen from '../screens/home/GroupListScreen';
-
 import colors from '../Constants/Colors';
 import {strings} from '../../Localization/translation';
 import UserAboutScreen from '../screens/home/user/UserAboutScreen';
@@ -81,6 +80,7 @@ import ChallengePaymentScreen from '../screens/challenge/createChallenge/Challen
 import ChooseTimeSlotScreen from '../screens/challenge/createChallenge/ChooseTimeSlotScreen';
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
+import HomeScheduleScreen from '../screens/home/HomeScheduleScreen';
 
 const Stack = createStackNavigator();
 
@@ -110,6 +110,7 @@ const HomeNavigator = () => (
         },
       }}
     />
+
     <Stack.Screen
       name="SportActivityHome"
       component={SportActivityHome}
@@ -387,6 +388,13 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="EditChallengeAvailability"
       component={EditChallengeAvailability}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="HomeScheduleScreen"
+      component={HomeScheduleScreen}
       options={{
         headerShown: false,
       }}

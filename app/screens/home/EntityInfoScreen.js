@@ -23,6 +23,7 @@ import EntityInfoShimmer from '../../components/shimmer/account/EntityInfoShimme
 import WrapperModal from '../../components/IncomingChallengeSettingsModals/WrapperModal';
 import GroupInfoClubModal from './GroupInfoClubModal';
 import GroupMembersModal from './GroupMembersModal';
+import EditInfoModalGroup from './EditInfoModalGroup';
 
 const EntityInfoScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -35,6 +36,7 @@ const EntityInfoScreen = ({navigation, route}) => {
   const [visibleClubListModal, setClubListModal] = useState(false);
   const [clubsOfTeam, setclubsOfTeam] = useState([]);
   const [entityType, setentityType] = useState();
+  const [visibleEditInfo, setVisibleEditInfo] = useState(false);
   const [refreshInfo, setRefreshInfo] = useState(false);
 
   const bottomSheetRef = useRef(null);
@@ -89,10 +91,11 @@ const EntityInfoScreen = ({navigation, route}) => {
         break;
 
       case strings.basicInfoText:
-        navigation.navigate('EditGroupBasicInfoScreen', {
-          groupDetails: currentUserData,
-          isEditable: true,
-        });
+        setVisibleEditInfo(true);
+        // navigation.navigate('EditGroupBasicInfoScreen', {
+        //   groupDetails: currentUserData,
+        //   isEditable: true,
+        // });
         break;
 
       case strings.matchVenues:
@@ -206,9 +209,7 @@ const EntityInfoScreen = ({navigation, route}) => {
           onSeeAll={(option = '', clubsofteam = []) => {
             switch (option) {
               case strings.membersTitle:
-
                 bottomSheetRef.current?.present();
-
 
                 break;
 
@@ -272,6 +273,14 @@ const EntityInfoScreen = ({navigation, route}) => {
         bottomSheetRef={bottomSheetRef}
         groupID={uid}
         showMember={currentUserData?.show_members}
+      />
+
+      <EditInfoModalGroup
+        visible={visibleEditInfo}
+        onClose={() => setVisibleEditInfo(false)}
+        groupDetails={currentUserData}
+        isEditable={true}
+        authContext={authContext}
       />
     </SafeAreaView>
   );

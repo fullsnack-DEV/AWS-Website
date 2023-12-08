@@ -774,6 +774,7 @@ const WritePostScreen = ({navigation, route}) => {
         ]}
         onPress={() => {
           setPrivacySetting(item);
+          setVisibleWhoModal(false);
         }}>
         <View style={[styles.icon, {marginRight: 10}]}>
           <Image source={item.icon} style={styles.image} />
@@ -849,8 +850,7 @@ const WritePostScreen = ({navigation, route}) => {
           onPress: () => onDiscardPress(),
         },
       ]);
-    }
-    if (route.params?.parentStack) {
+    } else if (route.params?.parentStack) {
       navigation.navigate(route.params?.parentStack, {
         screen: route.params.screen,
       });
@@ -1072,10 +1072,11 @@ const WritePostScreen = ({navigation, route}) => {
           </View>
         </View>
       </KeyboardAvoidingView>
+
       <CustomModalWrapper
         isVisible={visibleWhoModal}
         closeModal={onCloseModal}
-        modalType={ModalTypes.style2}
+        modalType={ModalTypes.style5}
         title={strings.privacySettings}
         headerRightButtonText={strings.apply}
         onRightButtonPress={() => {

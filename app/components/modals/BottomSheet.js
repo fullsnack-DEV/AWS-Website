@@ -29,6 +29,7 @@ const BottomSheet = ({
   textStyle = {},
   cancelButtonContainerStyle = {},
   cancelButtonTextStyle = {},
+  subTextStyle = {},
 }) => {
   const [optionsWithSubText, setOptionsWithSubText] = useState([]);
 
@@ -39,6 +40,7 @@ const BottomSheet = ({
           label: item,
           subText: optionSubTextsList[index],
         };
+
         return obj;
       });
       setOptionsWithSubText(updatedList);
@@ -134,10 +136,14 @@ const BottomSheet = ({
               key={index}
               onPress={() => onSelect(item, index)}>
               <Text style={[styles.androidButtonText, textStyle]}>
-                {optionsWithSubText.length > 0 ? item.label : item}
+                {optionsWithSubText.length > 0
+                  ? optionsWithSubText[index].label
+                  : item}
               </Text>
               {optionsWithSubText.length > 0 && (
-                <Text style={styles.subTitle}>{item.subText}</Text>
+                <Text style={[styles.subTitle, subTextStyle]}>
+                  {optionsWithSubText[index].subText}
+                </Text>
               )}
             </TouchableOpacity>
           ))}

@@ -88,6 +88,7 @@ const AllInOneGallery = ({
         if (res?.payload?.next === '') {
           setIsNextDataLoading(false);
         }
+
         setGalleryData([...res.payload?.results]);
       })
       .catch(() => {

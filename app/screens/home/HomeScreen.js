@@ -47,6 +47,7 @@ import InviteMemberModal from '../../components/InviteMemberModal';
 import {getDataForNextScreen} from '../localhome/LocalHomeUtils';
 import {locationType} from '../../utils/constant';
 import SportActivitiesModal from './components/SportActivitiesModal';
+import RecruitingMemberModal from './RecruitingMemberModal';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -66,7 +67,7 @@ const HomeScreen = ({navigation, route}) => {
   const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
   const [loggedInGroupMembers, setLoggedInGroupMembers] = useState([]);
   const [visibleSportActivities, setVisibleSportAcitivities] = useState(false);
-
+  const [visibleRecrutingModal, setVisibleRecrutingModal] = useState(false);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -216,13 +217,15 @@ const HomeScreen = ({navigation, route}) => {
         break;
 
       case strings.recruitingMembers:
-        navigation.navigate('AccountStack', {
-          screen: 'RecruitingMemberScreen',
-          params: {
-            uid: authContext.entity.uid,
-            role: authContext.entity.role,
-          },
-        });
+        // navigation.navigate('AccountStack', {
+        //   screen: 'RecruitingMemberScreen',
+        //   params: {
+        //     uid: authContext.entity.uid,
+        //     role: authContext.entity.role,
+        //   },
+        // });
+
+        setVisibleRecrutingModal(true);
 
         break;
 
@@ -633,6 +636,10 @@ const HomeScreen = ({navigation, route}) => {
         onCloseModal={() => setVisibleSportAcitivities(false)}
         isAdmin={isAdmin}
         uid={route.params?.uid ?? authContext.uid}
+      />
+      <RecruitingMemberModal
+        visible={visibleRecrutingModal}
+        onClose={() => setVisibleRecrutingModal(false)}
       />
     </SafeAreaView>
   );

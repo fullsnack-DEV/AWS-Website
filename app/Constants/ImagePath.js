@@ -573,6 +573,7 @@ const images = {
   accountScreenLogo: require('../assets/images/accountarrow.png'),
   localHomeFooterImage: require('../assets/images/localHomefooterImage.png'),
   calendarIcon: require('../assets/images/calendarIcon.png'),
+  horizontaldots: require('../assets/images/horizontalDots.png'),
 };
 
 export default images;

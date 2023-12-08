@@ -3222,7 +3222,7 @@ export default {
     'ko_Your team will not be an affiliated team of the club any more, but the members of your teamwill still remain as a member both in your team and the club.    ',
   AllLevelesText: 'ko_All levels',
   nCreatedThisGroup: `ko_{0} created this group.`,
-  teamsTiteInfo: 'ko_Teams',
+
   noActivityLog: 'ko_No Activity Log',
   goToSportActivityText: 'ko_Go to Sport Activity Page',
   noActivityLog: 'ko_No Activity Log',
@@ -3254,4 +3254,5 @@ export default {
   playersLookingForGroupText: 'ko_Player Looking For Group',
   whoCanWritePostoneventHome: 'ko_Who can Write a Post in Event Home',
   oraganizerOnly: 'ko_Organizer only',
+  teamsTiteInfo: 'ko_Teams',
 };
