@@ -1,6 +1,13 @@
 // @flow
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {View, StyleSheet, Text, SectionList, Dimensions} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  SectionList,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native';
 import moment from 'moment';
 import _ from 'lodash';
 import AuthContext from '../../../auth/context';
@@ -22,6 +29,7 @@ const EventList = ({
   onItemPress = () => {},
   filters = {},
   eventType = '',
+  loading = false,
 }) => {
   const [events, setEvents] = useState([]);
   const [owners, setOwners] = useState([]);
@@ -147,25 +155,35 @@ const EventList = ({
     }
   }, [list, getEvents]);
 
-  const renderListEmptyComponent = () => (
-    <View
-      style={{
-        minHeight: Dimensions.get('window').height * 0.4,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-      <Text style={styles.noEventText}>
-        {isUpcoming
-          ? strings.noUpcomingEventToShow
-          : strings.noCompletedEventToShow}
-      </Text>
-      <Text style={styles.dataNotFoundText}>
-        {isUpcoming
-          ? strings.newEventWillAppearHereText
-          : strings.newCompletedEventOccurHere}
-      </Text>
-    </View>
-  );
+  const renderListEmptyComponent = () =>
+    loading ? (
+      <View
+        style={{
+          minHeight: Dimensions.get('window').height * 0.4,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <ActivityIndicator size={'small'} />
+      </View>
+    ) : (
+      <View
+        style={{
+          minHeight: Dimensions.get('window').height * 0.4,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text style={styles.noEventText}>
+          {isUpcoming
+            ? strings.noUpcomingEventToShow
+            : strings.noCompletedEventToShow}
+        </Text>
+        <Text style={styles.dataNotFoundText}>
+          {isUpcoming
+            ? strings.newEventWillAppearHereText
+            : strings.newCompletedEventOccurHere}
+        </Text>
+      </View>
+    );
 
   const renderSectionHeader = ({section: {title}}) => (
     <View style={styles.sectionHeader}>

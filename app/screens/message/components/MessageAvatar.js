@@ -16,18 +16,18 @@ const MessageAvatar = ({channel = {}}) => {
 
     const member = channel.state.members[messageUserId];
     if (
-      member.user.entityType === Verbs.entityTypeTeam ||
-      member.user.entityType === Verbs.entityTypeClub
+      member.user?.entityType === Verbs.entityTypeTeam ||
+      member.user?.entityType === Verbs.entityTypeClub
     ) {
       if (member.role === 'moderator' || member.role === 'owner') {
         obj.imageUrl = channel.data?.image;
-        obj.entityType = member.user.entityType;
+        obj.entityType = member.user?.entityType;
       } else {
         obj.imageUrl = channel.data?.image ?? '';
         obj.entityType = member.user.entityType;
       }
     } else {
-      obj.imageUrl = member.user.group_image ?? '';
+      obj.imageUrl = member.user.group_image ?? member.user.image ?? '';
       obj.entityType = member.user.entityType;
     }
 

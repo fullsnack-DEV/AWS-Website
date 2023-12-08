@@ -158,7 +158,7 @@ const UpdateChannelInfo = ({
         <TouchableOpacity
           style={styles.imageContainer}
           onPress={() => {
-            if (groupProfile.thumbnail) {
+            if (groupProfile?.thumbnail) {
               setBottomSheetOptions([
                 strings.camera,
                 strings.album,

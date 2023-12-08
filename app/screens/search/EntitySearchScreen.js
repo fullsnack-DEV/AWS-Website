@@ -2575,6 +2575,39 @@ export default function EntitySearchScreen({navigation, route}) {
     }
   };
 
+  const getList = () => {
+    if (currentTab === 3) return [];
+
+    switch (currentSubTab) {
+      case strings.generalText:
+        return generalList;
+
+      case strings.playerTitle:
+        return playerList;
+
+      case strings.refereesTitle:
+        return referees;
+
+      case strings.scorekeeperTitle:
+        return scorekeepers;
+
+      case strings.teamsTitleText:
+        return teams;
+
+      case strings.clubsTitleText:
+        return clubs;
+
+      case strings.completedTitleText:
+        return completedGame;
+
+      case strings.upcomingTitleText:
+        return upcomingGame;
+
+      default:
+        return [];
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -2658,25 +2691,13 @@ export default function EntitySearchScreen({navigation, route}) {
                 ? upcomingEventFilters
                 : completedEventFilters
             }
+            loading={smallLoader}
           />
         </View>
       ) : (
         <FlatList
           showsHorizontalScrollIndicator={false}
-          data={
-            (currentSubTab === strings.generalText && generalList) ||
-            (currentSubTab === strings.playerTitle && playerList) ||
-            (currentSubTab === strings.refereesTitle && referees) ||
-            (currentSubTab === strings.scorekeeperTitle && scorekeepers) ||
-            (currentSubTab === strings.teamsTitleText && teams) ||
-            (currentSubTab === strings.clubsTitleText && clubs) ||
-            (currentTab === 2 &&
-              currentSubTab === strings.completedTitleText &&
-              completedGame) ||
-            (currentTab === 2 &&
-              currentSubTab === strings.upcomingTitleText &&
-              upcomingGame)
-          }
+          data={getList()}
           ItemSeparatorComponent={renderSeparator}
           keyExtractor={keyExtractor}
           renderItem={renderItem}

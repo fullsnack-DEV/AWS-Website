@@ -340,8 +340,6 @@ export default function InviteChallengeScreen({navigation, route}) {
     });
   };
 
-  console.log('teams ===>', teams);
-
   return (
     <ScrollView testID="invite-challenge-scroll">
       <ActivityLoader visible={loading} />

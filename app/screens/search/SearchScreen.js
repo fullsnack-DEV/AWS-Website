@@ -16,7 +16,10 @@ import {
   ScrollView,
   BackHandler,
   FlatList,
+  ActivityIndicator,
+  Text,
 } from 'react-native';
+import {format} from 'react-string-format';
 import {useIsFocused} from '@react-navigation/native';
 import ScreenHeader from '../../components/ScreenHeader';
 import {strings} from '../../../Localization/translation';
@@ -42,6 +45,7 @@ import {
 import RecentSearchItem from './components/RecentSearchItem';
 import AuthContext from '../../auth/context';
 import SearchEventCard from './components/SearchEventCard';
+import fonts from '../../Constants/Fonts';
 
 const SearchScreen = ({navigation, route}) => {
   const [loading, setLoading] = useState(false);
@@ -54,11 +58,12 @@ const SearchScreen = ({navigation, route}) => {
   const [recentSearchResults, setRecentSearchResults] = useState({});
   const [filterResult, setFilterResult] = useState([]);
   const [searchResult, setSearchResult] = useState([]);
+  const [fetchingRecords, setFetchingRecords] = useState(false);
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const inputRef = useRef();
-  let timeoutRef = useRef();
+  const timeoutRef = useRef();
 
   const getLocalData = useCallback(async () => {
     const localSearchData = await getLocalSearchData();
@@ -128,6 +133,7 @@ const SearchScreen = ({navigation, route}) => {
             title: `*${searchData.toLowerCase()}*`,
           },
         });
+        setFetchingRecords(true);
       }
 
       const proimseArr = [
@@ -135,7 +141,9 @@ const SearchScreen = ({navigation, route}) => {
         getGroupIndex(groupQuery),
         getCalendarIndex(upcomingEventsQuery),
       ];
-      setLoading(true);
+      if (!searchData) {
+        setLoading(true);
+      }
       Promise.all(proimseArr)
         .then(async ([peopleList, groupList, eventList]) => {
           const event_list = await filterEventForPrivacy({
@@ -170,10 +178,12 @@ const SearchScreen = ({navigation, route}) => {
             setEvents(finalList.splice(0, 3));
           }
           setLoading(false);
+          setFetchingRecords(false);
         })
         .catch((err) => {
           console.log({err});
           setLoading(false);
+          setFetchingRecords(false);
         });
     },
     [authContext.entity.uid],
@@ -247,11 +257,11 @@ const SearchScreen = ({navigation, route}) => {
     getLists(value);
     const res = (recentSearchResults[authContext.entity.uid] ?? []).filter(
       (ele) =>
-        (
-          ele.group_name?.toLowerCase() ??
-          ele.full_name?.toLowerCase() ??
-          ele?.toLowerCase()
-        ).includes(value.toLowerCase()),
+        typeof ele === 'string'
+          ? ele.toLowerCase().includes(value.toLowerCase())
+          : (ele.group_name ?? ele.full_name ?? '')
+              .toLowerCase()
+              .includes(value.toLowerCase()),
     );
 
     setFilterResult(res);
@@ -296,6 +306,58 @@ const SearchScreen = ({navigation, route}) => {
     }
   };
 
+  const renderSearchedRecords = () => {
+    if (showRecentResults) {
+      if (fetchingRecords) {
+        return (
+          <View
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <ActivityIndicator size={'large'} />
+          </View>
+        );
+      }
+      if (filterResult.length > 0 || searchResult.length > 0) {
+        return (
+          <View style={{paddingHorizontal: 15, flex: 1}}>
+            {filterResult.length > 0 && !searchText && (
+              <SectionHeader title={strings.recentText} />
+            )}
+
+            <View style={{marginTop: 24, flex: 1}}>
+              <FlatList
+                data={searchText ? [...searchResult] : [...filterResult]}
+                keyExtractor={(item, index) => index.toString()}
+                showsVerticalScrollIndicator={false}
+                renderItem={({item}) => (
+                  <RecentSearchItem
+                    data={item}
+                    onRemove={removeFromLocal}
+                    onPress={handleListItemPress}
+                    eventOwnersList={eventOwners}
+                  />
+                )}
+              />
+            </View>
+          </View>
+        );
+      }
+      return (
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <Text
+            style={{
+              fontFamily: fonts.RRegular,
+              color: colors.googleColor,
+              fontSize: 16,
+              lineHeight: 24,
+            }}>
+            {format(strings.noResultFoundFor, searchText)}
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
   return (
     <SafeAreaView style={styles.parent}>
       <ScreenHeader
@@ -315,7 +377,7 @@ const SearchScreen = ({navigation, route}) => {
           onChangeText={(value) => {
             setSearchText(value);
             clearTimeout(timeoutRef.current);
-            timeoutRef = setTimeout(() => {
+            timeoutRef.current = setTimeout(() => {
               handleSearch(value);
             }, 300);
           }}
@@ -327,9 +389,9 @@ const SearchScreen = ({navigation, route}) => {
           }}
           onSubmitEditing={() => {
             if (searchText) {
-              const obj = {...recentSearchResults};
+              const obj = {...(recentSearchResults ?? {})};
               obj[authContext.entity.uid] = [
-                ...obj[authContext.entity.uid],
+                ...(obj[authContext.entity.uid] ?? []),
                 searchText,
               ];
               setSearchDataToLocal(obj);
@@ -350,6 +412,7 @@ const SearchScreen = ({navigation, route}) => {
             setSearchText('');
             setSearchResult([]);
             inputRef.current.blur();
+            setShowRecentResults(false);
             setFilterResult(recentSearchResults[authContext.entity.uid] ?? []);
           }}>
           <Image source={images.closeRound} style={{height: 15, width: 15}} />
@@ -466,30 +529,7 @@ const SearchScreen = ({navigation, route}) => {
           ) : null}
         </ScrollView>
       )}
-      {showRecentResults &&
-        (filterResult.length > 0 || searchResult.length > 0) && (
-          <View style={{paddingHorizontal: 15, flex: 1}}>
-            {filterResult.length > 0 && !searchText && (
-              <SectionHeader title={strings.recentText} />
-            )}
-
-            <View style={{marginTop: 24, flex: 1}}>
-              <FlatList
-                data={searchText ? [...searchResult] : [...filterResult]}
-                keyExtractor={(item, index) => index.toString()}
-                showsVerticalScrollIndicator={false}
-                renderItem={({item}) => (
-                  <RecentSearchItem
-                    data={item}
-                    onRemove={removeFromLocal}
-                    onPress={handleListItemPress}
-                    eventOwnersList={eventOwners}
-                  />
-                )}
-              />
-            </View>
-          </View>
-        )}
+      {renderSearchedRecords()}
     </SafeAreaView>
   );
 };

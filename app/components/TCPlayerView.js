@@ -78,17 +78,20 @@ function TCPlayerView({
   }, [sportFilter.sport, filterSport]);
 
   useEffect(() => {
-    if (sportFilter.sport !== strings.allSport && sports.length === 1) {
+    console.log('dsf');
+    if (
+      sportFilter.sport !== strings.allSport &&
+      filteredSportData.length === 1
+    ) {
       const btnState = getButtonStateForPeople({
         entityId: data.user_id,
         entityType: Verbs.entityTypePlayer,
-        sportObj: sports[0],
+        sportObj: filteredSportData[0],
         authContext,
       });
       setButtonState(btnState);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sports, sportFilter.sport, data.user_id]);
+  }, [data.user_id, sportFilter.sport, filteredSportData, authContext]);
 
   useEffect(() => {
     if (subTab) {
@@ -179,7 +182,7 @@ function TCPlayerView({
           )}
         </View>
 
-        {buttonState.challenge && (
+        {buttonState.challenge && filteredSportData.length > 0 && (
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={() => {

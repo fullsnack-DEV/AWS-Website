@@ -1,10 +1,11 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useCallback} from 'react';
 import {
   View,
   StyleSheet,
   Alert,
   SafeAreaView,
   ActivityIndicator,
+  BackHandler,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import AuthContext from '../../auth/context';
@@ -95,6 +96,28 @@ const SportActivitiesScreen = ({navigation, route}) => {
       });
     }
   };
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params?.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   return (
     <SafeAreaView style={styles.parent}>
@@ -102,7 +125,7 @@ const SportActivitiesScreen = ({navigation, route}) => {
         <ScreenHeader
           title={strings.sportActivity}
           leftIcon={images.backArrow}
-          leftIconPress={() => navigation.goBack()}
+          leftIconPress={() => handleBackPress}
           rightIcon2={images.chat3Dot}
           rightIcon2Press={() => setShowMoreOptions(true)}
           containerStyle={styles.headerRow}
@@ -111,7 +134,7 @@ const SportActivitiesScreen = ({navigation, route}) => {
         <ScreenHeader
           title={strings.sportActivity}
           leftIcon={images.backArrow}
-          leftIconPress={() => navigation.goBack()}
+          leftIconPress={() => handleBackPress}
           containerStyle={styles.headerRow}
         />
       )}
