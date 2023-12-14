@@ -572,18 +572,27 @@ function NotificationsListScreen({navigation, route}) {
       const {payload} = await getGroupDetails(grpid, authContext);
       setloading(false);
 
-      navigation.navigate('HomeStack', {
-        screen: 'SportActivityHome',
-        params: {
-          sport: payload.sport,
-          sportType: payload.sport_type,
-          uid: authContext.entity.uid,
-          entityType: Verbs.entityTypePlayer,
-          selectedTab: strings.infoTitle,
-          parentStack: 'NotificationNavigator',
-          backScreen: 'NotificationListScreen',
+      getUserDetails(authContext.entity.uid, authContext).then(
+        async (response) => {
+          if (response.status === true) {
+            await Utility.setAuthContextData(response.payload, authContext);
+            navigation.navigate('HomeStack', {
+              screen: 'SportActivityHome',
+              params: {
+                sport: payload.sport,
+                sportType: payload.sport_type,
+                uid: authContext.entity.uid,
+                entityType: Verbs.entityTypePlayer,
+                selectedTab: strings.infoTitle,
+                parentStack: 'NotificationNavigator',
+                backScreen: 'NotificationListScreen',
+              },
+            });
+
+            setloading(false);
+          }
         },
-      });
+      );
     } catch (error) {
       setloading(false);
     }
@@ -956,7 +965,31 @@ function NotificationsListScreen({navigation, route}) {
           onPressFirstEntity={openHomePage}
           onPressSecondEntity={openHomePage}
           onPressCard={() => onNotificationClick(item)}
-          onButtonPress={(id) => onSportActivityPress(id)}
+          onButtonPress={(id) => {
+            onSportActivityPress(id);
+            const filterList = (mainList) => {
+              const filteredList = [];
+              for (const obj of mainList) {
+                const filteredData = obj.data.filter(
+                  (i) =>
+                    i.activities[0].foreign_id !==
+                    item.activities[0].foreign_id,
+                );
+                if (filteredData.length) {
+                  filteredList.push({
+                    data: filteredData,
+                    section: obj.section || '',
+                    type: obj.type || '',
+                  });
+                }
+              }
+              return filteredList;
+            };
+
+            const filteredList = filterList(mainNotificationsList);
+
+            setMainNotificationsList(filteredList);
+          }}
         />
       </AppleStyleSwipeableRow>
     );

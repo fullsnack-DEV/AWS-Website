@@ -442,6 +442,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
             postData,
             selectedTagList: seletedEntity,
             selectedMatchTags: selectedMatch,
+            toEvent: route.params.navigateToEvent,
           })
         }
       />

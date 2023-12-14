@@ -419,6 +419,8 @@ const getButtonStateForPeople = ({
     return buttonState;
   }
 
+  // check sport single or not
+
   if (entityType === Verbs.entityTypePlayer) {
     if (sportObj.sport_type === Verbs.singleSport) {
       if (sportObj.setting?.availibility === Verbs.on) {
@@ -427,13 +429,8 @@ const getButtonStateForPeople = ({
           loggedInEntity.role !== Verbs.entityTypeClub &&
           loggedInEntity.uid !== entityId
         ) {
-          const matchingSport = loggedInEntity.obj.registered_sports?.find(
-            (ele) => ele.sport === sportObj.sport,
-          );
-          if (matchingSport) {
-            buttonState.challenge = true;
-            buttonState.unavailable = false;
-          }
+          buttonState.challenge = true;
+          buttonState.unavailable = false;
         }
       } else {
         buttonState.challenge = false;
@@ -457,16 +454,12 @@ const getButtonStateForPeople = ({
           sportObj.sport,
           authContext.sports,
         );
+
         if (
           sportType === Verbs.singleSport &&
           authContext.entity.role !== Verbs.entityTypeTeam
         ) {
-          const matchingSport = loggedInEntity.obj.registered_sports?.find(
-            (ele) => ele.sport === sportObj.sport,
-          );
-          if (matchingSport) {
-            buttonState.book = true;
-          }
+          buttonState.book = true;
         } else if (loggedInEntity.obj.sport === sportObj.sport) {
           buttonState.book = true;
         }
@@ -475,6 +468,7 @@ const getButtonStateForPeople = ({
       buttonState.book = false;
     }
   }
+  console.log(buttonState, 'from state');
   return buttonState;
 };
 

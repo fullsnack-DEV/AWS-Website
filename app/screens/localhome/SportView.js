@@ -72,15 +72,20 @@ const SportView = ({
         </Pressable>
       ) : null}
 
-      {buttonState.unavailable ? (
-        <View
-          style={[
-            styles.buttonContainer,
-            {backgroundColor: colors.userPostTimeColor},
-          ]}>
-          <Text style={styles.buttonText}>{strings.unavailableText}</Text>
-        </View>
-      ) : null}
+      {authContext.entity.role !== Verbs.entityTypeClub &&
+        authContext.entity.role !== Verbs.entityTypeTeam && (
+          <>
+            {buttonState.unavailable ? (
+              <View
+                style={[
+                  styles.buttonContainer,
+                  {backgroundColor: colors.userPostTimeColor},
+                ]}>
+                <Text style={styles.buttonText}>{strings.unavailableText}</Text>
+              </View>
+            ) : null}
+          </>
+        )}
     </Pressable>
   );
 };

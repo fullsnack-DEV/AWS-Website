@@ -1329,6 +1329,15 @@ export default function EventScreen({navigation, route}) {
                   </Text>
                 </EventItemRender>
                 <View style={styles.sepratorViewStyle} />
+                <EventItemRender title={strings.whoCanWritePostoneventHome}>
+                  <Text
+                    style={[
+                      styles.textValueStyle,
+                      {fontFamily: fonts.RRegular},
+                    ]}>
+                    {eventData?.who_can_post?.text}
+                  </Text>
+                </EventItemRender>
               </>
             )}
 

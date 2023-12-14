@@ -56,6 +56,7 @@ import FeedProfile from '../../components/newsFeed/feed/FeedProfile';
 import NewsFeedDescription from '../../components/newsFeed/NewsFeedDescription';
 import CustomURLPreview from '../../components/account/CustomURLPreview';
 import MatchCard from './MatchCard';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 const WritePostScreen = ({navigation, route}) => {
   const textInputRef = useRef();
@@ -91,11 +92,13 @@ const WritePostScreen = ({navigation, route}) => {
 
   const [snapPoints, setSnapPoints] = useState([]);
   const flatListRef = useRef();
+  const [loading, setLoading] = useState(false);
 
   const handleRepost = () => {
     const item = {...route.params.repostData};
 
     if (typeof item.object === 'string') {
+      setLoading(true);
       const body = {
         activity_id: item.id,
         post_type: Verbs.repostVerb,
@@ -104,6 +107,7 @@ const WritePostScreen = ({navigation, route}) => {
 
       createRePost(body, authContext)
         .then(() => {
+          setLoading(false);
           navigation.goBack();
         })
         .catch((e) => {
@@ -180,6 +184,8 @@ const WritePostScreen = ({navigation, route}) => {
         format_tagged_data,
       };
 
+      console.log(route.params, 'From params');
+
       if (route.params?.comeFrom === 'HomeScreen') {
         navigation.navigate('HomeStack', {
           screen: 'HomeScreen',
@@ -200,7 +206,10 @@ const WritePostScreen = ({navigation, route}) => {
             ...route.params.routeParams,
           },
         });
-      } else if (route.params?.comeFrom === 'EventScreen') {
+      } else if (
+        route.params?.comeFrom === 'EventScreen' ||
+        route.params?.toEvent
+      ) {
         setSearchText('');
         navigation.navigate('ScheduleStack', {
           screen: 'EventScreen',
@@ -949,7 +958,7 @@ const WritePostScreen = ({navigation, route}) => {
           route.params.isRepost ? handleRepost() : handleDone()
         }
       />
-
+      <ActivityLoader visible={loading} />
       {renderImageProgress}
 
       <KeyboardAvoidingView
@@ -1059,6 +1068,7 @@ const WritePostScreen = ({navigation, route}) => {
                   gameTags: tagsOfGame,
                   tagsOfEntity,
                   comeFrom: 'WritePostScreen',
+                  navigateToEvent: route.params.comeFrom === 'EventScreen',
                 });
               }}>
               <Image source={images.tagImage} style={styles.image} />
@@ -1115,6 +1125,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
+    backgroundColor: 'red',
   },
   userDetailView: {
     flexDirection: 'row',

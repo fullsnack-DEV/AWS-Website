@@ -122,8 +122,7 @@ const ChallengeButton = ({
     if (
       sportObj?.sport_type === Verbs.singleSport &&
       loggedInEntity.entity_type === Verbs.entityTypePlayer &&
-      isAvailable &&
-      isUserWithSameSport
+      isAvailable
     ) {
       return strings.challenge;
     }

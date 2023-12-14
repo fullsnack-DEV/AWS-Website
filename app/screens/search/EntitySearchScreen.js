@@ -2172,6 +2172,7 @@ export default function EntitySearchScreen({navigation, route}) {
                     scoreKeeperFilters.sport !== strings.allSport &&
                     true)
                 }
+                currentsubTabEntity={getEntityType()}
                 showLevel={
                   currentSubTab === strings.playerTitle &&
                   playerFilter.sport !== strings.allSport &&
@@ -2291,6 +2292,7 @@ export default function EntitySearchScreen({navigation, route}) {
           <View
             style={[
               styles.topViewContainer,
+
               {height: currentSubTab === strings.teamsTitleText ? 96 : 75},
             ]}>
             <View style={[styles.separator, {flex: 1}]}>

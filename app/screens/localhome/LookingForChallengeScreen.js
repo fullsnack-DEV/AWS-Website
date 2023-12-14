@@ -590,6 +590,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
             fType={filterType.PLAYERAVAILABLECHALLENGE}
             authContext={authContext}
             showSport={true}
+            currentsubTabEntity={Verbs.entityTypePlayer}
             showLevel={filters.sport !== strings.allSport}
             subTab={strings.playerTitle}
             sportFilter={filters}

@@ -3256,4 +3256,6 @@ export default {
   oraganizerOnly: 'en_Organizer only',
   teamsTiteInfo: 'en_Teams',
   challengeSubtext: '(en_You will be the match host.)',
+  uplaodButtonText: 'en_Upload',
+  jerseyText: 'en_Jersey',
 };

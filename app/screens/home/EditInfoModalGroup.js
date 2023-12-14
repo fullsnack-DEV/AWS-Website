@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import {
   View,
   Text,
@@ -6,11 +7,13 @@ import {
   StyleSheet,
   Image,
   Pressable,
+  TouchableOpacity,
 } from 'react-native';
-import React, {useState, useEffect, useCallback, useContext} from 'react';
 
+import React, {useState, useEffect, useCallback, useContext} from 'react';
 import {FlatList} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
+import ImagePicker from 'react-native-image-crop-picker';
 import {useIsFocused} from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
@@ -31,6 +34,7 @@ import LanguagesListModal from '../account/registerPlayer/modals/LanguagesListMo
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 import AddressLocationModal from '../../components/AddressLocationModal/AddressLocationModal';
 import {getGroupSportName} from '../../utils/sportsActivityUtils';
+import uploadImages from '../../utils/imageAction';
 
 export default function EditInfoModalGroup({
   visible,
@@ -56,6 +60,11 @@ export default function EditInfoModalGroup({
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
+  const [imagesPick, setImagesPick] = useState(false);
+
+  const [jerseyImages, setJerseyImages] = useState(
+    groupData?.jersey_images ?? [],
+  );
 
   const updateLanguageList = useCallback(() => {
     const arr = Utility.languageList.map((item) => {
@@ -152,6 +161,37 @@ export default function EditInfoModalGroup({
       const groupProfile = {...groupData};
       groupProfile.language = selectedLanguages;
 
+      if (imagesPick) {
+        const imageArray = [];
+
+        imageArray.push({path: jerseyImages});
+
+        uploadImages(imageArray, authContext)
+          .then((responses) => {
+            const attachments = responses.map((item) => ({
+              type: 'image',
+              url: item.fullImage,
+              thumbnail: item.thumbnail,
+            }));
+
+            setGroupData({
+              ...groupData,
+              jersey_images: [...groupData.jersey_images, attachments[0].url],
+            });
+
+            groupProfile.jersey_images = [
+              ...groupProfile.jersey_images,
+              attachments[0].url,
+            ];
+          })
+          .catch((e) => {
+            setTimeout(() => {
+              Alert.alert(strings.appName, e.messages);
+            }, 0.1);
+            setloading(false);
+          });
+      }
+
       patchGroup(groupData.group_id, groupProfile, authContext)
         .then(async (response) => {
           setloading(false);
@@ -205,6 +245,32 @@ export default function EditInfoModalGroup({
   const setCityandPostal = (street, code) => {
     const address = `${street} ${city} ${state} ${country} ${code}`;
     setGroupData({...groupData, mail_street_address: address});
+  };
+
+  const removeImages = (item) => {
+    const originalArray = groupData.jersey_images;
+
+    const modifedArray = originalArray.filter((i) => i !== item);
+    setGroupData({
+      ...groupData,
+      jersey_images: modifedArray,
+    });
+  };
+
+  const openImagePicker = (width = 400, height = 400) => {
+    ImagePicker.openPicker({
+      width,
+      height,
+      cropping: true,
+    }).then((data) => {
+      // 1 means profile, 0 - means background
+      setJerseyImages(data.path);
+      setImagesPick(true);
+      setGroupData({
+        ...groupData,
+        jersey_images: [...groupData.jersey_images, data.path],
+      });
+    });
   };
 
   return (
@@ -398,6 +464,104 @@ export default function EditInfoModalGroup({
                   {languageName}
                 </Text>
               </Pressable>
+            </View>
+
+            <View style={{marginBottom: 35}}>
+              <Text style={styles.labelText}>
+                {strings.jerseyText.toUpperCase()}
+              </Text>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  flexWrap: 'wrap',
+                }}>
+                {groupData?.jersey_images?.map((item, index) => (
+                  <>
+                    <View
+                      key={index}
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <TouchableOpacity
+                        onPress={() => removeImages(item)}
+                        hitSlop={Utility.getHitSlop(5)}
+                        style={{
+                          height: 16,
+                          width: 16,
+                          borderRadius: 100,
+                          backgroundColor: colors.veryLightGray,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          position: 'absolute',
+                          top: 5,
+                          zIndex: 100,
+                          right: 20,
+                        }}>
+                        <Image
+                          tintColor={colors.whiteColor}
+                          source={images.crossImage}
+                          style={{
+                            height: 12,
+                            width: 12,
+                          }}
+                        />
+                      </TouchableOpacity>
+
+                      <Image
+                        source={{uri: item}}
+                        style={{
+                          height: 100,
+                          width: 100,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          borderRadius: 5,
+                          marginRight: 15,
+                        }}
+                      />
+                    </View>
+                  </>
+                ))}
+
+                <TouchableOpacity
+                  onPress={() => openImagePicker()}
+                  style={{
+                    height: 100,
+                    width: 100,
+                    marginVertical: 10,
+                    backgroundColor: colors.lightGrey,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 5,
+                  }}>
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Image
+                      source={images.plus}
+                      style={{
+                        resizeMode: 'contain',
+                        height: 24,
+                        width: 24,
+                        marginBottom: 10,
+                      }}
+                    />
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontFamily: fonts.RBold,
+                        lineHeight: 24,
+                      }}>
+                      {strings.uplaodButtonText}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
 
             {groupData.entity_type === Verbs.entityTypeClub ? (

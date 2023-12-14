@@ -196,14 +196,15 @@ const uploadImages = async (
   authContext,
   setUploadedCount = () => {},
   cancelRequest = () => {},
+  singleUrl = false,
 ) =>
   new Promise((resolve, reject) => {
     const responses = [];
-    console.log('ccccimages', images);
+
     const source = axios.CancelToken.source();
     cancelRequest(source);
     getImagePreSignedURL(
-      {count: images?.length * 2},
+      {count: singleUrl ? images?.length : images?.length * 2},
       authContext,
       source.token,
     ).then(async (responsePresignedURLS) => {

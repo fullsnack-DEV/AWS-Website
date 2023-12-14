@@ -23,6 +23,7 @@ function TCPlayerView({
   onPressChallengButton,
   onPressBookButton,
   onPressInviteButton,
+  currentsubTabEntity,
 }) {
   const [sports, setSports] = useState([]);
   const [buttonState, setButtonState] = useState({
@@ -78,20 +79,20 @@ function TCPlayerView({
   }, [sportFilter.sport, filterSport]);
 
   useEffect(() => {
-    console.log('dsf');
     if (
       sportFilter.sport !== strings.allSport &&
       filteredSportData.length === 1
     ) {
       const btnState = getButtonStateForPeople({
         entityId: data.user_id,
-        entityType: Verbs.entityTypePlayer,
+        entityType: currentsubTabEntity,
         sportObj: filteredSportData[0],
         authContext,
       });
+
       setButtonState(btnState);
     }
-  }, [data.user_id, sportFilter.sport, filteredSportData, authContext]);
+  }, [data.user_id, sportFilter.sport, filteredSportData, authContext, subTab]);
 
   useEffect(() => {
     if (subTab) {
