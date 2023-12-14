@@ -30,7 +30,7 @@ function TCTextField({
         style={[styles.textInput, textStyle, {height}]}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
-        autoCapitalize={'none'}
+        autoCapitalize="words"
         autoCorrect={false}
         editable={editable}
         autoFocus={focus}

@@ -148,8 +148,8 @@ const AllInOneGallery = ({
       if (myItem?.attachments?.length > 0) {
         if (myItem?.attachments?.[0]?.type === 'image') {
           if (myItem?.attachments?.length === 1)
-            return <SingleImageRender data={myItem} />;
-          return <MultipleImageRender data={myItem} />;
+            return <SingleImageRender data={myItem} extraData={item} />;
+          return <MultipleImageRender data={myItem} extraData={item} />;
         }
         if (myItem?.attachments?.[0]?.type === 'video') {
           if (myItem?.attachments?.length === 1)

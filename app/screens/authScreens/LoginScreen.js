@@ -352,7 +352,6 @@ const LoginScreen = ({navigation}) => {
         style={styles.textFieldStyle}
         placeholder={strings.emailPlaceHolder}
         placeholderTextColor={colors.darkYellowColor}
-        autoCapitalize="none"
         keyboardType="email-address"
         onChangeText={(text) => setEmail(text)}
         value={email}

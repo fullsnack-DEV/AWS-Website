@@ -745,6 +745,7 @@ const UserHomeScreen = ({
               role: route.params?.role ?? authContext.entity.role,
               uid: route.params?.uid ?? authContext.entity.uid,
               forUserHomeEvent: true,
+              currentUserData,
             });
           }
         }}

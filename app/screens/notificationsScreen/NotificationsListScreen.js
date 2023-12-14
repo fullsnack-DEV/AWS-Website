@@ -470,12 +470,36 @@ function NotificationsListScreen({navigation, route}) {
           item.verb.includes(NotificationType.invitePlayerToJoinTeam)
         ) {
           Utility.showAlert(format(strings.alertTitle1, grpInfo.group_name));
+
+          // we get the id her eRefresh that notification from the list page then
         }
         if (item.verb.includes(NotificationType.userRequestedJoingroup)) {
           Utility.showAlert(strings.joinReqAccepted);
         } else if (item.verb.includes(NotificationType.followRequest)) {
           Utility.showAlert(strings.followReqAccepted);
         }
+
+        const filterList = (mainList) => {
+          const filteredList = [];
+          for (const obj of mainList) {
+            const filteredData = obj.data.filter(
+              (i) =>
+                i.activities[0].foreign_id !== item.activities[0].foreign_id,
+            );
+            if (filteredData.length) {
+              filteredList.push({
+                data: filteredData,
+                section: obj.section || '',
+                type: obj.type || '',
+              });
+            }
+          }
+          return filteredList;
+        };
+
+        const filteredList = filterList(mainNotificationsList);
+
+        setMainNotificationsList(filteredList);
       })
       .catch((error) => {
         setloading(false);
@@ -504,6 +528,28 @@ function NotificationsListScreen({navigation, route}) {
           ) {
             Utility.showAlert(strings.invitationDeclinedText);
           }
+
+          const filterList = (mainList) => {
+            const filteredList = [];
+            for (const obj of mainList) {
+              const filteredData = obj.data.filter(
+                (i) =>
+                  i.activities[0].foreign_id !== item.activities[0].foreign_id,
+              );
+              if (filteredData.length) {
+                filteredList.push({
+                  data: filteredData,
+                  section: obj.section || '',
+                  type: obj.type || '',
+                });
+              }
+            }
+            return filteredList;
+          };
+
+          const filteredList = filterList(mainNotificationsList);
+
+          setMainNotificationsList(filteredList);
 
           callNotificationList()
             .then(() => setloading(false))
@@ -816,6 +862,15 @@ function NotificationsListScreen({navigation, route}) {
               onAccept(item);
             } else {
               setCurrentNotificationData(item);
+
+              if (item.verb.includes(NotificationType.invitePlayerToJoinTeam)) {
+                const parsedObject = JSON.parse(item.activities[0].object);
+
+                const groupId = parsedObject.groupId;
+
+                getGroupInfo(groupId ?? item.activities[0]?.foreign_id);
+                return;
+              }
               getGroupInfo(item.activities[0]?.foreign_id);
             }
           }}
@@ -1027,6 +1082,7 @@ function NotificationsListScreen({navigation, route}) {
           setMainNotificationsList([
             ...array.filter((item) => item.data.length !== 0),
           ]);
+
           resolve(true);
         })
         .catch((e) => {

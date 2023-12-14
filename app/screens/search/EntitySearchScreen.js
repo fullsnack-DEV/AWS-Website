@@ -369,6 +369,12 @@ export default function EntitySearchScreen({navigation, route}) {
     }
   }, [route.params?.activeTab, route.params?.activeSubTab]);
 
+  useEffect(() => {
+    if (route.params?.localItems) {
+      handleTagPress(route.params?.localItems);
+    }
+  }, [route.params?.localItems]);
+
   const getUpcomingEventList = useCallback(() => {
     setSmallLoader(true);
     const upcomingEventsQuery = {
@@ -1259,187 +1265,200 @@ export default function EntitySearchScreen({navigation, route}) {
     </View>
   );
 
-  const handleTagPress = ({item}) => {
-    switch (currentSubTab) {
-      case strings.generalText:
-        break;
-      case strings.playerTitle: {
-        const tempFilter = playerFilter;
-        Object.keys(tempFilter).forEach((key) => {
-          if (key === Object.keys(item)[0]) {
-            if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = strings.allSport;
-              tempFilter.sport_type = strings.allSport;
-              tempFilter.sport_name = strings.allSport;
-            }
-            if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = strings.worldTitleText;
-              tempFilter.locationOption = locationType.WORLD;
-              tempFilter.isSearchPlaceholder = true;
-            }
-          }
-        });
+  const handleTagPress = useCallback(
+    ({item}) => {
+      console.log(item, 'fromactual log');
+      // switch (currentSubTab) {
+      //   case strings.generalText:
+      //     break;
+      //   case strings.playerTitle: {
+      //     const tempFilter = playerFilter;
+      //     Object.keys(tempFilter).forEach((key) => {
+      //       if (key === Object.keys(item)[0]) {
+      //         if (Object.keys(item)[0] === 'sport') {
+      //           tempFilter.sport = strings.allSport;
+      //           tempFilter.sport_type = strings.allSport;
+      //           tempFilter.sport_name = strings.allSport;
+      //         }
+      //         if (Object.keys(item)[0] === 'location') {
+      //           tempFilter.location = strings.worldTitleText;
+      //           tempFilter.locationOption = locationType.WORLD;
+      //           tempFilter.isSearchPlaceholder = true;
+      //         }
+      //       }
+      //     });
 
-        // applyFilter();
-        setTimeout(() => {
-          setPageFrom(0);
-          setplayerList([]);
-          setPlayerFilter({...tempFilter});
-        }, 10);
+      //     // applyFilter();
+      //     setTimeout(() => {
+      //       setPageFrom(0);
+      //       setplayerList([]);
+      //       setPlayerFilter({...tempFilter});
+      //     }, 10);
 
-        break;
-      }
-      case strings.refereesTitle: {
-        const tempFilter = refereeFilters;
-        Object.keys(tempFilter).forEach((key) => {
-          if (key === Object.keys(item)[0]) {
-            if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = strings.allSport;
-              tempFilter.sport_type = strings.allSport;
-              tempFilter.sport_name = strings.allSport;
-            }
-            if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = strings.worldTitleText;
-              tempFilter.locationOption = locationType.WORLD;
-              tempFilter.isSearchPlaceholder = true;
-            }
-          }
-        });
-        setTimeout(() => {
-          setRefereesPageFrom(0);
-          setReferees([]);
-          setrRefereeFilters({...tempFilter});
-        }, 10);
-        break;
-      }
-      case strings.scorekeeperTitle: {
-        const tempFilter = scoreKeeperFilters;
-        Object.keys(tempFilter).forEach((key) => {
-          if (key === Object.keys(item)[0]) {
-            if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = strings.allSport;
-              tempFilter.sport_type = strings.allSport;
-              tempFilter.sport_name = strings.allSport;
-            }
-            if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = strings.worldTitleText;
-              tempFilter.locationOption = locationType.WORLD;
-              tempFilter.isSearchPlaceholder = true;
-            }
-          }
-        });
+      //     break;
+      //   }
+      //   case strings.refereesTitle: {
+      //     const tempFilter = refereeFilters;
+      //     Object.keys(tempFilter).forEach((key) => {
+      //       if (key === Object.keys(item)[0]) {
+      //         if (Object.keys(item)[0] === 'sport') {
+      //           tempFilter.sport = strings.allSport;
+      //           tempFilter.sport_type = strings.allSport;
+      //           tempFilter.sport_name = strings.allSport;
+      //         }
+      //         if (Object.keys(item)[0] === 'location') {
+      //           tempFilter.location = strings.worldTitleText;
+      //           tempFilter.locationOption = locationType.WORLD;
+      //           tempFilter.isSearchPlaceholder = true;
+      //         }
+      //       }
+      //     });
+      //     setTimeout(() => {
+      //       setRefereesPageFrom(0);
+      //       setReferees([]);
+      //       setrRefereeFilters({...tempFilter});
+      //     }, 10);
+      //     break;
+      //   }
+      //   case strings.scorekeeperTitle: {
+      //     const tempFilter = scoreKeeperFilters;
+      //     Object.keys(tempFilter).forEach((key) => {
+      //       if (key === Object.keys(item)[0]) {
+      //         if (Object.keys(item)[0] === 'sport') {
+      //           tempFilter.sport = strings.allSport;
+      //           tempFilter.sport_type = strings.allSport;
+      //           tempFilter.sport_name = strings.allSport;
+      //         }
+      //         if (Object.keys(item)[0] === 'location') {
+      //           tempFilter.location = strings.worldTitleText;
+      //           tempFilter.locationOption = locationType.WORLD;
+      //           tempFilter.isSearchPlaceholder = true;
+      //         }
+      //       }
+      //     });
 
-        setTimeout(() => {
-          setScorekeeperPageFrom(0);
-          setScorekeepers([]);
-          setScoreKeeperFilters({...tempFilter});
-        }, 10);
+      //     setTimeout(() => {
+      //       setScorekeeperPageFrom(0);
+      //       setScorekeepers([]);
+      //       setScoreKeeperFilters({...tempFilter});
+      //     }, 10);
 
-        break;
-      }
-      case strings.teamsTitleText: {
-        const tempFilter = teamFilters;
-        Object.keys(tempFilter).forEach((key) => {
-          if (key === Object.keys(item)[0]) {
-            if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = strings.allSport;
-              tempFilter.sport_type = strings.allSport;
-              tempFilter.sport_name = strings.allSport;
-            }
-            if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = strings.worldTitleText;
-              tempFilter.locationOption = locationType.WORLD;
-              tempFilter.isSearchPlaceholder = true;
-            }
-          }
-        });
+      //     break;
+      //   }
+      //   case strings.teamsTitleText: {
+      //     const tempFilter = teamFilters;
+      //     Object.keys(tempFilter).forEach((key) => {
+      //       if (key === Object.keys(item)[0]) {
+      //         if (Object.keys(item)[0] === 'sport') {
+      //           tempFilter.sport = strings.allSport;
+      //           tempFilter.sport_type = strings.allSport;
+      //           tempFilter.sport_name = strings.allSport;
+      //         }
+      //         if (Object.keys(item)[0] === 'location') {
+      //           tempFilter.location = strings.worldTitleText;
+      //           tempFilter.locationOption = locationType.WORLD;
+      //           tempFilter.isSearchPlaceholder = true;
+      //         }
+      //       }
+      //     });
 
-        // applyFilter();
-        setTimeout(() => {
-          setTeamsPageFrom(0);
-          setTeams([]);
-          setTeamFilters({...tempFilter});
-        }, 10);
+      //     // applyFilter();
+      //     setTimeout(() => {
+      //       setTeamsPageFrom(0);
+      //       setTeams([]);
+      //       setTeamFilters({...tempFilter});
+      //     }, 10);
 
-        break;
-      }
-      case strings.clubsTitleText: {
-        const tempFilter = clubFilters;
-        Object.keys(tempFilter).forEach((key) => {
-          if (key === Object.keys(item)[0]) {
-            if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = strings.allSport;
-              tempFilter.sport_type = strings.allSport;
-              tempFilter.sport_name = strings.allSport;
-            }
-            if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = strings.worldTitleText;
-              tempFilter.locationOption = locationType.WORLD;
-              tempFilter.isSearchPlaceholder = true;
-            }
-          }
-        });
+      //     break;
+      //   }
+      //   case strings.clubsTitleText: {
+      //     const tempFilter = clubFilters;
+      //     Object.keys(tempFilter).forEach((key) => {
+      //       if (key === Object.keys(item)[0]) {
+      //         if (Object.keys(item)[0] === 'sport') {
+      //           tempFilter.sport = strings.allSport;
+      //           tempFilter.sport_type = strings.allSport;
+      //           tempFilter.sport_name = strings.allSport;
+      //         }
+      //         if (Object.keys(item)[0] === 'location') {
+      //           tempFilter.location = strings.worldTitleText;
+      //           tempFilter.locationOption = locationType.WORLD;
+      //           tempFilter.isSearchPlaceholder = true;
+      //         }
+      //       }
+      //     });
 
-        // applyFilter();
-        setTimeout(() => {
-          setClubsPageFrom(0);
-          setClubs([]);
-          setClubFilters({...tempFilter});
-        }, 10);
+      //     // applyFilter();
+      //     setTimeout(() => {
+      //       setClubsPageFrom(0);
+      //       setClubs([]);
+      //       setClubFilters({...tempFilter});
+      //     }, 10);
 
-        break;
-      }
-      case strings.completedTitleText: {
-        const tempFilter = completedGameFilters;
-        Object.keys(tempFilter).forEach((key) => {
-          if (key === Object.keys(item)[0]) {
-            if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = strings.allSport;
-              tempFilter.sport_type = strings.allSport;
-              tempFilter.sport_name = strings.allSport;
-            }
-            if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = strings.worldTitleText;
-              tempFilter.locationOption = locationType.WORLD;
-              tempFilter.isSearchPlaceholder = true;
-            }
-          }
-        });
-        // applyFilter();
-        setTimeout(() => {
-          setCompletedGamePageFrom(0);
-          setCompletedGame([]);
-          setCompletedGameFilters({...tempFilter});
-        }, 10);
-        break;
-      }
-      case strings.upcomingTitleText: {
-        const tempFilter = upcomingGameFilters;
-        Object.keys(tempFilter).forEach((key) => {
-          if (key === Object.keys(item)[0]) {
-            if (Object.keys(item)[0] === 'sport') {
-              tempFilter.sport = strings.allSport;
-              tempFilter.sport_type = strings.allSport;
-              tempFilter.sport_name = strings.allSport;
-            }
-            if (Object.keys(item)[0] === 'location') {
-              tempFilter.location = strings.worldTitleText;
-              tempFilter.locationOption = locationType.WORLD;
-              tempFilter.isSearchPlaceholder = true;
-            }
-          }
-        });
-        setTimeout(() => {
-          setUpcomingGamePageFrom(0);
-          setUpcomingGame([]);
-          setUpcomingGameFilters({...tempFilter});
-        }, 10);
-        break;
-      }
-      default:
-        break;
-    }
-  };
+      //     break;
+      //   }
+      //   case strings.completedTitleText: {
+      //     const tempFilter = completedGameFilters;
+      //     Object.keys(tempFilter).forEach((key) => {
+      //       if (key === Object.keys(item)[0]) {
+      //         if (Object.keys(item)[0] === 'sport') {
+      //           tempFilter.sport = strings.allSport;
+      //           tempFilter.sport_type = strings.allSport;
+      //           tempFilter.sport_name = strings.allSport;
+      //         }
+      //         if (Object.keys(item)[0] === 'location') {
+      //           tempFilter.location = strings.worldTitleText;
+      //           tempFilter.locationOption = locationType.WORLD;
+      //           tempFilter.isSearchPlaceholder = true;
+      //         }
+      //       }
+      //     });
+      //     // applyFilter();
+      //     setTimeout(() => {
+      //       setCompletedGamePageFrom(0);
+      //       setCompletedGame([]);
+      //       setCompletedGameFilters({...tempFilter});
+      //     }, 10);
+      //     break;
+      //   }
+      //   case strings.upcomingTitleText: {
+      //     const tempFilter = upcomingGameFilters;
+      //     Object.keys(tempFilter).forEach((key) => {
+      //       if (key === Object.keys(item)[0]) {
+      //         if (Object.keys(item)[0] === 'sport') {
+      //           tempFilter.sport = strings.allSport;
+      //           tempFilter.sport_type = strings.allSport;
+      //           tempFilter.sport_name = strings.allSport;
+      //         }
+      //         if (Object.keys(item)[0] === 'location') {
+      //           tempFilter.location = strings.worldTitleText;
+      //           tempFilter.locationOption = locationType.WORLD;
+      //           tempFilter.isSearchPlaceholder = true;
+      //         }
+      //       }
+      //     });
+      //     setTimeout(() => {
+      //       setUpcomingGamePageFrom(0);
+      //       setUpcomingGame([]);
+      //       setUpcomingGameFilters({...tempFilter});
+      //     }, 10);
+      //     break;
+      //   }
+      //   default:
+      //     break;
+      // }
+    },
+    [
+      clubFilters,
+      completedGameFilters,
+      currentSubTab,
+      playerFilter,
+      refereeFilters,
+      scoreKeeperFilters,
+      teamFilters,
+      upcomingGameFilters,
+    ],
+  );
   const getLocation = async () => {
     try {
       setloading(true);

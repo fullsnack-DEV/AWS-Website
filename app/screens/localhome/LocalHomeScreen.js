@@ -1053,30 +1053,6 @@ function LocalHomeScreen({navigation, route}) {
     }
   };
 
-  const onTagPress = (label) => {
-    if (label === strings.upcomingMatchesTitle) {
-      onUpcomingAndCompletMatchPress(strings.upcomingMatchesTitle);
-    } else if (label === strings.completedMatches) {
-      onUpcomingAndCompletMatchPress(strings.upcomingMatchesTitle);
-    } else if (label === strings.tournaments) {
-      Alert.alert('This Feature is in Development');
-    } else if (label === strings.teams) {
-      setActionSheetforTeams(true);
-    } else if (label === strings.clubsTitleText) {
-      setActionSheetforClubs(true);
-    } else if (label === strings.playersText) {
-      setActionSheetforPlayers(true);
-    } else if (label === strings.refreesText) {
-      navigateToRefreeScreen();
-    } else if (label === strings.scorekeepersText) {
-      navigateToScoreKeeper();
-    } else if (label === strings.rankingsText) {
-      Alert.alert('This Feature is in Development');
-    } else if (label === strings.venuesText) {
-      Alert.alert('This Feature is in Development');
-    }
-  };
-
   // eslint-disable-next-line consistent-return
   const renderLocalHomeMenuItems = (item, index) => (
     <LocalHomeMenuItems
@@ -1108,80 +1084,57 @@ function LocalHomeScreen({navigation, route}) {
     </TouchableOpacity>
   );
 
-  const onUpcomingAndCompletMatchPress = (title) => {
-    const data = getDataForNextScreen(
-      Verbs.SPORT_DATA,
-      filters,
-      location,
-      selectedLocationOption,
-      authContext,
-    );
-
-    if (authContext.entity.role === Verbs.entityTypeTeam) {
-      const teamData = getDataForNextScreen(
-        Verbs.TEAM_DATA,
-        filters,
-        location,
-        selectedLocationOption,
-        authContext,
-      );
-      navigation.navigate('LocalHomeStack', {
-        screen:
-          title === strings.completedMatches
-            ? 'RecentMatchScreen'
-            : 'UpcomingMatchScreen',
-        params: {
-          filters: teamData.filters,
-          teamSportData: teamData.teamSportData,
-        },
-      });
-    } else {
-      navigation.navigate('LocalHomeStack', {
-        screen:
-          title === strings.completedMatches
-            ? 'RecentMatchScreen'
-            : 'UpcomingMatchScreen',
-        params: {
-          filters: data,
-        },
-      });
-    }
-  };
-
   const footerArray = [
     {
       label: strings.upcomingMatchesTitle,
+
+      value: strings.upcomingTitleText,
+      parentTag: 2,
       index: 0,
     },
     {
       label: strings.completedMatches,
+      value: strings.completedTitleText,
+      parentTag: 2,
       index: 1,
     },
     {
       label: strings.tournaments,
+      value: null,
+      parentTag: null,
       index: 2,
     },
     {
       label: strings.teams,
+      value: strings.teamsTitleText,
+      parentTag: 1,
       index: 3,
     },
 
     {
       label: strings.clubsTitleText,
+      value: strings.clubsTitleText,
+      parentTag: 1,
       index: 4,
     },
 
     {
       label: strings.playersText,
+      value: strings.playerTitle,
+      parentTag: 0,
       index: 5,
     },
 
     {
       label: strings.refreesText,
+      value: strings.refereesTitle,
+      parentTag: 0,
       index: 6,
     },
     {
       label: strings.scorekeepersText,
+      value: strings.scorekeeperTitle,
+      parentTag: 0,
       index: 7,
     },
     {
@@ -1194,6 +1147,18 @@ function LocalHomeScreen({navigation, route}) {
     },
   ];
 
+  const handleTagPress = (selectedTag = {}) => {
+    console.log(selectedTag, 'from selected Tag');
+    if (selectedTag.parentTag === null) return;
+
+    navigation.navigate('UniversalSearchStack', {
+      screen: 'EntitySearchScreen',
+      params: {
+        activeTab: selectedTag.parentTag,
+        activeSubTab: selectedTag.value,
+      },
+    });
+  };
   const FooterComponent = useCallback(
     () => (
       <View style={{flex: 1, marginBottom: 10}}>
@@ -1223,7 +1188,7 @@ function LocalHomeScreen({navigation, route}) {
               <RenderFotterButtons
                 key={item.index}
                 title={item.label}
-                onPress={() => onTagPress(item.label)}
+                onPress={() => handleTagPress(item)}
               />
             ))}
           </View>
@@ -1542,9 +1507,8 @@ function LocalHomeScreen({navigation, route}) {
           setClubModal(false);
 
           const transformedSportArray = Object.keys(sportsList).map(
-            (key) => sports[key],
+            (key) => sportsList[key],
           );
-
           navigation.navigate('AccountStack', {
             screen: 'CreateClubForm1',
             params: transformedSportArray,

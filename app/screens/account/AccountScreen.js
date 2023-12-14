@@ -549,6 +549,10 @@ const AccountScreen = ({navigation, route}) => {
         onPressNotification={() =>
           navigation.navigate('NotificationNavigator', {
             screen: 'NotificationsListScreen',
+            params: {
+              parentStack: 'Account',
+              screen: 'AccountScreen',
+            },
           })
         }
       />

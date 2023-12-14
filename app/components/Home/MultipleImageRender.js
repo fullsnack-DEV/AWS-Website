@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, View, TouchableWithoutFeedback, Image} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
@@ -7,11 +8,19 @@ import colors from '../../Constants/Colors';
 import images from '../../Constants/ImagePath';
 import MultipleImageModal from '../newsFeed/MultipleImageModal';
 
-function MultipleImageRender({data}) {
+function MultipleImageRender({data, extraData}) {
   const [isModalVisible, setModalVisible] = useState(false);
-
+  const navigation = useNavigation();
   const toggleModal = () => {
-    setModalVisible(!isModalVisible);
+    navigation.navigate('NewsFeedStack', {
+      screen: 'FeedViewScreen',
+      params: {
+        feedItem: extraData,
+        currentPage: 0,
+        updateCommentCount: 9,
+        onLikePress: () => {},
+      },
+    });
   };
 
   return (

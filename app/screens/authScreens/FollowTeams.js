@@ -91,7 +91,7 @@ export default function FollowTeams({route, navigation}) {
               {teams[index].group_name ?? teams[index].full_name}
             </Text>
             <Text style={styles.cityText} numberOfLines={2}>
-              {teams[index].city}, {teams[index].state_abbr},
+              {teams[index].city}, {teams[index].state_abbr},{' '}
               {teams[index].country}
             </Text>
           </View>

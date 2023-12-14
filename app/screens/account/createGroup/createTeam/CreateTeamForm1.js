@@ -634,7 +634,7 @@ export default function CreateTeamForm1({navigation, route}) {
               testID="team-name-input"
               placeholder={strings.teamName}
               style={styles.matchFeeTxt}
-              maxLength={20}
+              maxLength={75}
               onChangeText={(text) => setTeamName(text)}
               value={teamName}
               placeholderTextColor={colors.userPostTimeColor}

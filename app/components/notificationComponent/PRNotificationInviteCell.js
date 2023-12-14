@@ -22,7 +22,24 @@ function PRNotificationInviteCell({
   const [dataDictionary, setDataDictionary] = useState();
 
   useEffect(() => {
+    const parsedObject = JSON.parse(item.activities[0].object);
+
+    const invitedByMember = parsedObject.invitedByMember;
+
     parseInviteRequest(item, selectedEntity).then((data) => {
+      if (invitedByMember) {
+        const parsedObjectForGroupName = JSON.parse(item.activities[0].object);
+
+        const grpName = parsedObjectForGroupName.groupName;
+
+        const newObj = {
+          ...data,
+          text: `${data.text} ${grpName}`,
+        };
+        setDataDictionary(newObj);
+        return;
+      }
+
       setDataDictionary(data);
     });
   }, []);
@@ -100,7 +117,7 @@ function PRNotificationInviteCell({
           <>
             {isRespond ? (
               <TouchableOpacity
-                style={styles.buttonContainer}
+                style={[styles.buttonContainer, {opacity: disabled ? 0.5 : 1}]}
                 onPress={onAccept}
                 disabled={disabled}>
                 <Text style={[styles.buttonText, {textTransform: 'uppercase'}]}>

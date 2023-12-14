@@ -320,7 +320,7 @@ export default function SignupScreen({navigation, route}) {
             placeholder={strings.fnameText}
             value={fName}
             onChangeText={(text) => setFName(text)}
-            autoCapitalize="none"
+            autoCapitalize={'words'}
           />
 
           <TCTextField

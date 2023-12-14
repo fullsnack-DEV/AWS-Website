@@ -346,6 +346,44 @@ const HomeScreen = ({navigation, route}) => {
             Alert.alert(strings.alertmessagetitle, err.message);
           });
       }
+    } else if (
+      entityData.entity_type === Verbs.entityTypePlayer ||
+      entityData.entity_type === Verbs.entityTypeUser
+    ) {
+      const invitee = [
+        {
+          id: entityData.group_id ?? entityData.user_id,
+          name: entityData.group_name ?? entityData.full_name,
+          image: entityData.full_image ?? entityData.thumbnail,
+          entityType: entityData.entity_type,
+          city: entityData.city,
+        },
+      ];
+
+      if (invitee[0]?.id) {
+        createChannel(invitee)
+          .then(async (channel) => {
+            if (channel) {
+              await channel.watch();
+              const routeParams = {...route.params};
+              if (route.params?.comeFrom === 'EntitySearchScreen') {
+                routeParams.comeFrom = 'EntitySearchScreen';
+              }
+
+              navigation.navigate('MessageStack', {
+                screen: 'MessageChatScreen',
+                params: {
+                  channel,
+                  comeFrom: 'HomeScreen',
+                  routeParams,
+                },
+              });
+            }
+          })
+          .catch((err) => {
+            Alert.alert(strings.alertmessagetitle, err.message);
+          });
+      }
     } else {
       Alert.alert('', strings.alretMessageForEmptyTeam);
     }

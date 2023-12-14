@@ -542,6 +542,18 @@ function TrashScreen({navigation, route}) {
           onPressFirstEntity={openHomePage}
           onAccept={() => onAccept(item.activities[0].id)}
           onDecline={() => onDecline(item.activities[0].id)}
+          isRespond={
+            item.activities[0].verb.includes(
+              NotificationType.invitePlayerToJoinClub,
+            ) ||
+            item.activities[0].verb.includes(
+              NotificationType.invitePlayerToJoinTeam,
+            ) ||
+            item.activities[0].verb.includes(
+              NotificationType.teamRequestedToJoinGroup,
+            ) ||
+            item.activities[0].verb.includes(NotificationType.inviteToJoinClub)
+          }
         />
       );
     }

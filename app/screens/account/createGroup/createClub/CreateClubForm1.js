@@ -182,7 +182,6 @@ export default function CreateClubForm1({navigation, route}) {
           }
 
           createGroup(bodyParams, authContext)
-
             .then(async (response) => {
               getUnreadNotificationCount(authContext);
               await onSwitchProfile(response.payload);
@@ -461,7 +460,7 @@ export default function CreateClubForm1({navigation, route}) {
                 <TextInput
                   placeholder={strings.clubNamePlaceholder}
                   style={styles.inputTextField}
-                  maxLength={20}
+                  maxLength={75}
                   onChangeText={(text) => setClubName(text)}
                   value={clubName}
                   placeholderTextColor={colors.userPostTimeColor}

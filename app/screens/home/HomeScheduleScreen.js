@@ -63,8 +63,8 @@ import {
   getUserIndex,
 } from '../../api/elasticSearch';
 import TCAccountDeactivate from '../../components/TCAccountDeactivate';
-import {getUserSettings} from '../../api/Users';
-import {getGroups, getTeamsOfClub} from '../../api/Groups';
+import {getUserDetails, getUserSettings} from '../../api/Users';
+import {getGroupDetails, getGroups, getTeamsOfClub} from '../../api/Groups';
 import TCThinDivider from '../../components/TCThinDivider';
 import {reservationOpetions} from '../../utils/constant';
 import Verbs from '../../Constants/Verbs';
@@ -659,11 +659,9 @@ export default function HomeScheduleScreen({navigation, route}) {
   useEffect(() => {
     if (isFocused) {
       if (route?.params?.event) {
-        console.log('in this Call');
         getEventsAndSlotsList(route?.params?.event);
         delete route?.params?.event;
       } else {
-        console.log('in this Call 4');
         getEventsAndSlotsList();
       }
 
@@ -677,17 +675,30 @@ export default function HomeScheduleScreen({navigation, route}) {
     await getEventsAndSlotsList();
   };
 
-  const getQueryParticipants = async () => {
+  const getInfoOfUser = async (uid) => {
+    if (
+      route.params?.role === Verbs.entityTypePlayer ||
+      route.params?.role === Verbs.entityTypeUser
+    ) {
+      const userDetails = await getUserDetails(uid, authContext);
+      return userDetails.payload;
+    }
+    const teamDetails = await getGroupDetails(uid, authContext);
+
+    return teamDetails.payload;
+  };
+
+  const getQueryParticipants = async (uid, currentUserData) => {
     let participants = [];
 
-    if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-      await getTeamsOfClub(authContext.entity.uid, authContext)
+    if ([Verbs.entityTypeClub].includes(route?.params?.role)) {
+      await getTeamsOfClub(route?.params?.uid, authContext)
         .then((response) => {
           const teams = [];
           const group_data = [
             {
-              id: authContext.entity?.obj?.group_id,
-              name: authContext.entity?.obj?.group_name,
+              id: currentUserData?.group_id,
+              name: currentUserDataj?.group_name,
             },
           ];
           if (response?.payload && response?.payload?.length > 0) {
@@ -699,19 +710,21 @@ export default function HomeScheduleScreen({navigation, route}) {
               group_data.push(temp);
             });
           }
-          participants = [authContext?.entity?.uid, ...teams];
+          participants = [uid, ...teams];
           setAllUserData(group_data);
         })
         .catch((e) => {
           Alert.alert(strings.townsCupTitle, e.message);
         });
+    } else if ([Verbs.entityTypeTeam].includes(route?.params?.role)) {
+      participants = [uid];
     } else {
       await getGroups(authContext)
         .then((response) => {
           const group_data = [
             {
-              id: authContext?.user?.user_id,
-              name: authContext?.user?.full_name,
+              id: currentUserData?.user_id,
+              name: currentUserData?.full_name,
             },
           ];
           if (response?.payload && response?.payload?.clubs?.length > 0) {
@@ -735,13 +748,10 @@ export default function HomeScheduleScreen({navigation, route}) {
         .catch((e) => {
           Alert.alert(strings.townsCupTitle, e.message);
         });
-      const clubs = authContext?.entity?.obj?.clubIds
-        ? authContext?.entity?.obj?.clubIds
-        : [];
-      const teams = authContext?.entity?.obj?.teamIds
-        ? authContext?.entity?.obj?.teamIds
-        : [];
-      participants = [authContext?.entity?.uid, ...clubs, ...teams];
+
+      const clubs = currentUserData.clubIds ? currentUserData.clubIds : [];
+      const teams = currentUserData.teamIds ? currentUserData.teamIds : [];
+      participants = [uid, ...clubs, ...teams];
     }
 
     return participants;
@@ -750,13 +760,19 @@ export default function HomeScheduleScreen({navigation, route}) {
   const getEventsAndSlotsList = async (data = {}) => {
     setIndigator(true);
     const eventTimeTableData = [];
-    const participants = await getQueryParticipants();
-    console.log(participants, 'event lody all');
 
-    Utility.getEventsSlots([route?.params?.uid])
+    const currentUserData = await getInfoOfUser(route.params.uid);
+
+    const participants = await getQueryParticipants(
+      route.params.uid,
+      currentUserData,
+    );
+
+    Utility.getEventsSlots(participants)
       .then((response) => {
         const allUserIds = [];
         const groupIds = [];
+
         response.forEach((item) => {
           if (item.cal_type === Verbs.eventVerb) {
             if (
@@ -1302,11 +1318,13 @@ export default function HomeScheduleScreen({navigation, route}) {
                 : null
             }
             rightIcon2={
-              scheduleIndexCounter === 0
-                ? isAdmin
-                  ? images.vertical3Dot
+              authContext.entity.role === Verbs.entityTypeTeam
+                ? scheduleIndexCounter === 0
+                  ? isAdmin
+                    ? images.vertical3Dot
+                    : null
                   : null
-                : null
+                : images.vertical3Dot
             }
             rightIcon1Press={() =>
               navigation.navigate('ScheduleStack', {
