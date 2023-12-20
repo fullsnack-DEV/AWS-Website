@@ -171,7 +171,7 @@ const invoicesMenuForGroup = () => [
         navigateTo: {
           screenName: 'AccountStack',
           data: {
-            screenName: 'InvoiceSentScreen',
+            screen: 'InvoiceSentScreen',
             params: {
               comeFrom: 'AccountScreen',
             },

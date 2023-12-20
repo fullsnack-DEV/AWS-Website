@@ -215,7 +215,7 @@ const LocalHomEventScreen = ({navigation}) => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
-        title={strings.upcomingMatchesTitle}
+        title={strings.eventsTitle}
         leftIcon={images.backArrow}
         leftIconPress={() => navigation.goBack()}
       />

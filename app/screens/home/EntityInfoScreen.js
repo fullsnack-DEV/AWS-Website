@@ -24,6 +24,8 @@ import WrapperModal from '../../components/IncomingChallengeSettingsModals/Wrapp
 import GroupInfoClubModal from './GroupInfoClubModal';
 import GroupMembersModal from './GroupMembersModal';
 import EditInfoModalGroup from './EditInfoModalGroup';
+import EditBioModal from './EditBioModal';
+import MemberShipFeesModal from './MemberShipFeesModal';
 
 const EntityInfoScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -38,11 +40,62 @@ const EntityInfoScreen = ({navigation, route}) => {
   const [entityType, setentityType] = useState();
   const [visibleEditInfo, setVisibleEditInfo] = useState(false);
   const [refreshInfo, setRefreshInfo] = useState(false);
+  const [visibleEditBio, setVisibleEditBio] = useState(false);
+  const [byLawModal, setByLawModal] = useState(false);
+  const [visibleFeesModal, setVisibleFeesModal] = useState(false);
+  const [teamOptions, setTeamOptions] = useState([]);
+  const [teamOptiosnForJoin, setTeamOptiosnForJoin] = useState([]);
+  const [clubOptiosnForJoin, setClubOptiosnForJoin] = useState([]);
+  const [clubOptions, setClubOptions] = useState([]);
 
   const bottomSheetRef = useRef(null);
 
   useEffect(() => {
+    setTeamOptions([
+      strings.bio,
+      strings.basicinfotitle,
+      // strings.homeFacility,
+      strings.membersTitle,
+      strings.tcLevelPointsText,
+      strings.tcranking,
+      strings.matchVenues,
+      strings.clubsTitleText,
+      strings.membershipFee,
+      strings.bylaw,
+    ]);
+
+    setTeamOptiosnForJoin([
+      strings.bio,
+      strings.basicInfoText,
+      // strings.homeFacility,
+      strings.matchVenues,
+      strings.membershipFeesTitle,
+      strings.bylaw,
+    ]);
+
+    setClubOptiosnForJoin([
+      strings.bio,
+      strings.basicInfoText,
+      // strings.homeFacility,
+      strings.matchVenues,
+      strings.membershipFeesTitle,
+      strings.bylaw,
+    ]);
+
+    setClubOptions([
+      strings.bio,
+      strings.basicInfoText,
+      strings.membersTitle,
+      strings.teamsTiteInfo,
+      strings.membershipFee,
+      strings.bylaw,
+      strings.history,
+    ]);
+  }, []);
+
+  useEffect(() => {
     setLoading(true);
+
     Promise.all([
       getGroupDetails(uid, authContext),
       getGroupMembers(uid, authContext),
@@ -85,9 +138,10 @@ const EntityInfoScreen = ({navigation, route}) => {
   const handleEditOptions = (option) => {
     switch (option) {
       case strings.bio:
-        navigation.navigate('GroupLongTextScreen', {
-          groupDetails: currentUserData,
-        });
+        setVisibleEditBio(true);
+        // navigation.navigate('GroupLongTextScreen', {
+        //   groupDetails: currentUserData,
+        // });
         break;
 
       case strings.basicInfoText:
@@ -106,16 +160,15 @@ const EntityInfoScreen = ({navigation, route}) => {
         break;
 
       case strings.membershipFee:
-        navigation.navigate('MembershipFeeScreen', {
-          groupDetails: currentUserData,
-        });
+        setVisibleFeesModal(true);
+        // navigation.navigate('MembershipFeeScreen', {
+        //   groupDetails: currentUserData,
+        // });
         break;
 
       case strings.bylaw:
-        navigation.navigate('GroupLongTextScreen', {
-          groupDetails: currentUserData,
-          isBylaw: true,
-        });
+        setVisibleEditBio(true);
+        setByLawModal(true);
         break;
 
       case strings.history:
@@ -204,6 +257,10 @@ const EntityInfoScreen = ({navigation, route}) => {
         <GroupInfo
           navigation={navigation}
           groupDetails={currentUserData}
+          teamOptions={teamOptions}
+          clubOptions={clubOptions}
+          teamOptiosnForJoin={teamOptiosnForJoin}
+          clubOptiosnForJoin={clubOptiosnForJoin}
           isAdmin={currentUserData?.am_i_admin}
           authContext={authContext}
           onSeeAll={(option = '', clubsofteam = []) => {
@@ -281,6 +338,19 @@ const EntityInfoScreen = ({navigation, route}) => {
         groupDetails={currentUserData}
         isEditable={true}
         authContext={authContext}
+      />
+
+      <EditBioModal
+        visible={visibleEditBio}
+        onClose={() => setVisibleEditBio(false)}
+        groupDetails={currentUserData}
+        isBylaw={byLawModal}
+      />
+
+      <MemberShipFeesModal
+        visible={visibleFeesModal}
+        onClose={() => setVisibleFeesModal(false)}
+        groupDetails={currentUserData}
       />
     </SafeAreaView>
   );

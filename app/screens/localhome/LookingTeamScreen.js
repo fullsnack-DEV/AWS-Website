@@ -76,7 +76,7 @@ export default function LookingTeamScreen({navigation, route}) {
   );
   const [imageBaseUrl, setImageBaseUrl] = useState('');
   const [playerDetailPopup, setPlayerDetailPopup] = useState();
-  const [playerDetail, setPlayerDetail] = useState();
+  const [playerDetail] = useState();
   const [smallLoader, setSmallLoader] = useState(false);
   const [snapPoints, setSnapPoints] = useState([]);
 
@@ -297,29 +297,20 @@ export default function LookingTeamScreen({navigation, route}) {
             filters
           }
           onPress={(sportsObj) => {
-            if (sportsObj.length > 1) {
-              const data = {
-                sports: sportsObj,
+            navigation.navigate('HomeStack', {
+              screen: 'SportActivityHome',
+              params: {
+                sport: sportsObj[0].sport,
+                sportType: sportsObj[0]?.sport_type,
                 uid: item?.user_id,
                 entityType: item?.entity_type,
-              };
-              setPlayerDetail(data);
-              setPlayerDetailPopup(true);
-            } else {
-              navigation.navigate('HomeStack', {
-                screen: 'SportActivityHome',
-                params: {
-                  sport: sportsObj[0].sport,
-                  sportType: sportsObj[0]?.sport_type,
-                  uid: item?.user_id,
-                  entityType: item?.entity_type,
-                  showPreview: true,
-                  parentStack: 'LocalHomeStack',
-                  backScreen: 'LookingTeamScreen',
-                },
-              });
-            }
+                showPreview: true,
+                parentStack: 'LocalHomeStack',
+                backScreen: 'LookingTeamScreen',
+              },
+            });
           }}
+          showChallenge={false}
           onPressChallengButton={(dataObj, sportsObj) => {
             setChallengePopup(true);
             setSettingObject(sportsObj.setting);

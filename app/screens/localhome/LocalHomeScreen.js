@@ -69,6 +69,7 @@ import {getGroupDetails} from '../../api/Groups';
 import SportView from './SportView';
 import {getCalendarIndex, getUserIndex} from '../../api/elasticSearch';
 import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
+import {useTabBar} from '../../context/TabbarContext';
 
 const defaultPageSize = 10;
 
@@ -140,6 +141,17 @@ function LocalHomeScreen({navigation, route}) {
   const [players, setPlayers] = useState([]);
   const [teamSport, setTeamSport] = useState([]);
   const [filterLocalHomeMenuItems, setFilterLocalHomeMenuItems] = useState([]);
+  const {toggleTabBar} = useTabBar();
+
+  useEffect(() => {
+    // Set TabBar visibility to true when this screen mounts
+    toggleTabBar(true);
+
+    return () => {
+      // Set TabBar visibility to false when this screen unmounts
+      toggleTabBar(false);
+    };
+  }, [isFocused, toggleTabBar]);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -475,7 +487,8 @@ function LocalHomeScreen({navigation, route}) {
         })
         .catch((e) => {
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
+            console.log(e.message);
+            // Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         });
     }
@@ -901,7 +914,8 @@ function LocalHomeScreen({navigation, route}) {
         setloading(false);
         if (e.message !== strings.userdeniedgps) {
           setTimeout(() => {
-            Alert.alert(strings.alertmessagetitle, e.message);
+            console.log(e.message);
+            // Alert.alert(strings.alertmessagetitle, e.message);
           }, 10);
         }
       });
@@ -1161,7 +1175,7 @@ function LocalHomeScreen({navigation, route}) {
   };
   const FooterComponent = useCallback(
     () => (
-      <View style={{flex: 1, marginBottom: 10}}>
+      <View style={{flex: 1}}>
         <ImageBackground
           source={images.localHomeFooterImage}
           style={styles.bgImgeStyle}
@@ -1228,6 +1242,7 @@ function LocalHomeScreen({navigation, route}) {
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled
             removeClippedSubviews={true}
+            bounces={false}
             renderToHardwareTextureAndroid
             initialNumToRender={10}
             maxToRenderPerBatch={10}

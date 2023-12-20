@@ -23,47 +23,6 @@ import TCThinDivider from '../TCThinDivider';
 import TCTextField from '../TCTextField';
 import {JoinPrivacy} from '../../Constants/GeneralConstants';
 
-const teamOptions = [
-  strings.bio,
-  strings.basicInfoText,
-  // strings.homeFacility,
-  strings.membersTitle,
-  strings.tcLevelPointsText,
-  strings.tcranking,
-  strings.matchVenues,
-  strings.clubsTitleText,
-  strings.membershipFee,
-  strings.bylaw,
-];
-
-const teamOptiosnForJoin = [
-  strings.bio,
-  strings.basicInfoText,
-  // strings.homeFacility,
-  strings.matchVenues,
-  strings.membershipFeesTitle,
-  strings.bylaw,
-];
-
-const clubOptiosnForJoin = [
-  strings.bio,
-  strings.basicInfoText,
-  // strings.homeFacility,
-  strings.matchVenues,
-  strings.membershipFeesTitle,
-  strings.bylaw,
-];
-
-const clubOptions = [
-  strings.bio,
-  strings.basicInfoText,
-  strings.membersTitle,
-  strings.teamsTiteInfo,
-  strings.membershipFee,
-  strings.bylaw,
-  strings.history,
-];
-
 export default function GroupInfo({
   groupDetails = {},
   isAdmin = false,
@@ -81,6 +40,10 @@ export default function GroupInfo({
   hideMessageBox = false,
   forUserRespond = false,
   onDecline = () => {},
+  teamOptions = [],
+  clubOptions = [],
+  teamOptiosnForJoin = [],
+  clubOptiosnForJoin = [],
 }) {
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState('');

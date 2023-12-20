@@ -83,7 +83,7 @@ const MessageChatScreen = ({navigation, route}) => {
   const handleBackPress = useCallback(() => {
     navigation.setOptions({});
     if (route.params?.comeFrom === 'MembersProfileScreen') {
-      navigation.navigate('NewsFeed', {
+      navigation.navigate('Members', {
         screen: 'MembersProfileScreen',
         params: {...route.params.routeParams, from: 'chatscreen'},
       });

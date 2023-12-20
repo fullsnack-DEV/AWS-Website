@@ -76,6 +76,7 @@ import DateTimePickerView from '../../../components/Schedule/DateTimePickerModal
 import EventListShimmer from '../../../components/shimmer/schedule/EventListShimmer';
 import ScreenHeader from '../../../components/ScreenHeader';
 import AvailabilityShimmer from '../../../components/shimmer/schedule/AvailibilityShimmer';
+import {useTabBar} from '../../../context/TabbarContext';
 
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
@@ -199,6 +200,18 @@ export default function ScheduleScreen({navigation, route}) {
   const [filterCancelled, setFilterCancelled] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
   const [isFromHomeScreen] = useState(route?.params?.isFromHomeScreen);
+
+  const {toggleTabBar} = useTabBar();
+
+  useEffect(() => {
+    // Set TabBar visibility to true when this screen mounts
+    toggleTabBar(true);
+
+    return () => {
+      // Set TabBar visibility to false when this screen unmounts
+      toggleTabBar(false);
+    };
+  }, [isFocused, toggleTabBar]);
 
   useEffect(() => {
     if (route?.params?.isAdmin !== undefined) {

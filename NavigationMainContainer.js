@@ -37,6 +37,7 @@ import NotificationNavigator from './app/navigation/NotificationNavigator';
 import ReservationNavigator from './app/navigation/ReservationNavigator';
 import SingleNotificationScreen from './app/screens/notificationsScreen/SingleNotificationScreen';
 import SearchNavigator from './app/navigation/SearchNavigator';
+import InterNetStatus from './app/components/InterNetStatus';
 
 // import {getUnreadNotificationCount} from './app/utils/accountUtils';
 
@@ -165,6 +166,11 @@ function NavigationMainContainer() {
                 <Stack.Screen
                   name="App"
                   component={AppNavigator}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="InternetStausScreen"
+                  component={InterNetStatus}
                   options={{headerShown: false}}
                 />
                 <Stack.Screen

@@ -133,7 +133,7 @@ function JoinClubScreen({route}) {
       .catch((e) => {
         setSmallLoader(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          console.log(e.message);
         }, 10);
       });
   }, [

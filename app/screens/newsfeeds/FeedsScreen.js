@@ -33,6 +33,7 @@ import FeedsShimmer from '../../components/shimmer/newsFeed/FeedsShimmer';
 import LikersModal from '../../components/modals/LikersModal';
 import {followUser, unfollowUser} from '../../api/Users';
 import CommentModal from '../../components/newsFeed/CommentModal';
+import {useTabBar} from '../../context/TabbarContext';
 
 const FeedsScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -56,6 +57,18 @@ const FeedsScreen = ({navigation, route}) => {
   const [showLikeModal, setShowLikeModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
 
+  const {toggleTabBar} = useTabBar();
+
+  useEffect(() => {
+    // Set TabBar visibility to true when this screen mounts
+    toggleTabBar(true);
+
+    return () => {
+      // Set TabBar visibility to false when this screen unmounts
+      toggleTabBar(false);
+    };
+  }, [isFocused, toggleTabBar]);
+
   useEffect(() => {
     setVisited(true);
   }, []);
@@ -74,7 +87,7 @@ const FeedsScreen = ({navigation, route}) => {
       })
       .catch((e) => {
         setFirstTimeLoading(false);
-        setTimeout(() => Alert.alert('', e.message), 100);
+        setTimeout(() => console.log(e.message), 100);
       });
   }, [authContext, visited]);
 
@@ -146,7 +159,7 @@ const FeedsScreen = ({navigation, route}) => {
         setPullRefresh(false);
       })
       .catch((e) => {
-        Alert.alert('', e.messages);
+        console.log(e.message);
         setPullRefresh(false);
       });
   }, [authContext]);
@@ -328,7 +341,8 @@ const FeedsScreen = ({navigation, route}) => {
         setloading(false);
       })
       .catch((e) => {
-        Alert.alert('', e.messages);
+        console.log(e.message);
+
         setloading(false);
       });
   };

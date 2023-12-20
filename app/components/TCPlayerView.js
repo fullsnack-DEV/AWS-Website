@@ -24,6 +24,7 @@ function TCPlayerView({
   onPressBookButton,
   onPressInviteButton,
   currentsubTabEntity,
+  showChallenge = true,
 }) {
   const [sports, setSports] = useState([]);
   const [buttonState, setButtonState] = useState({
@@ -79,6 +80,8 @@ function TCPlayerView({
   }, [sportFilter.sport, filterSport]);
 
   useEffect(() => {
+    console.log(sportFilter.sport !== strings.allSport);
+
     if (
       sportFilter.sport !== strings.allSport &&
       filteredSportData.length === 1
@@ -183,15 +186,17 @@ function TCPlayerView({
           )}
         </View>
 
-        {buttonState.challenge && filteredSportData.length > 0 && (
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={() => {
-              onPressChallengButton(data, sports[0]);
-            }}>
-            <Text style={styles.buttonText}>{strings.challenge}</Text>
-          </TouchableOpacity>
-        )}
+        {buttonState.challenge &&
+          filteredSportData.length > 0 &&
+          showChallenge && (
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => {
+                onPressChallengButton(data, sports[0]);
+              }}>
+              <Text style={styles.buttonText}>{strings.challenge}</Text>
+            </TouchableOpacity>
+          )}
         {buttonState.book && (
           <TouchableOpacity
             style={styles.buttonContainer}

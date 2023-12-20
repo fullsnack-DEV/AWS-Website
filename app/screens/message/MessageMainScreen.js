@@ -22,10 +22,23 @@ import ChannelView from './components/ChannelView';
 import Verbs from '../../Constants/Verbs';
 import ChatShimmer from '../../components/shimmer/Chat/ChatShimmer';
 import {connectUserToStreamChat} from '../../utils/streamChat';
+import {useTabBar} from '../../context/TabbarContext';
 
 const MessageMainScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
+
+  const {toggleTabBar} = useTabBar();
+
+  useEffect(() => {
+    // Set TabBar visibility to true when this screen mounts
+    toggleTabBar(true);
+
+    return () => {
+      // Set TabBar visibility to false when this screen unmounts
+      toggleTabBar(false);
+    };
+  }, [toggleTabBar]);
 
   const handleUserConnection = useCallback(async () => {
     // setLoading(true);

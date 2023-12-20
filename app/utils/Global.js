@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable import/no-cycle */
 import axios from 'axios';
@@ -5,7 +6,6 @@ import NetInfo from '@react-native-community/netinfo';
 import firebase from '@react-native-firebase/app';
 import jwtDecode from 'jwt-decode';
 import * as Utility from '.';
-import {strings} from '../../Localization/translation';
 
 const prepareHeader = (headers, authToken, caller_id, caller) => {
   let apiHeaders = {
@@ -54,61 +54,64 @@ const makeAPIRequest = async ({
   // eslint-disable-next-line consistent-return
   NetInfo.fetch().then(async (netStat) => {
     if (!netStat || !netStat.isConnected) {
-      Utility.showAlert(strings.networkConnectivityErrorMessage);
-    } else {
-      let withRenewToken = false;
-      const tokenData = authContext?.tokenData;
-      let authToken = tokenData.token;
-      const {exp} = await jwtDecode(authToken);
-      const expiryDate = new Date(exp * 1000);
-      const currentDate = new Date();
-      if (expiryDate.getTime() > currentDate.getTime()) {
-        return globalApiCall({
-          method,
-          url,
-          data,
-          headers,
-          params,
-          responseType,
-          authContext,
-          withRenewToken,
-          authToken,
-          cancelToken,
-        });
-      }
-      withRenewToken = true;
-      console.log('Token Expired');
-      return new Promise((resolve, reject) =>
-        getRefereshToken()
-          .then(async (refereshToken) => {
-            authToken = refereshToken.token;
-            const token = {
-              token: refereshToken.token,
-              expirationTime: refereshToken.expirationTime,
-            };
-            await authContext.setTokenData(token);
-            resolve(
-              globalApiCall({
-                method,
-                url,
-                data,
-                headers,
-                params,
-                responseType,
-                authContext,
-                withRenewToken,
-                authToken,
-                cancelToken,
-              }),
-            );
-          })
-          .catch((error) => {
-            console.log('Token Related: ', error);
-            resetApp(authContext);
-            reject(error);
-          }),
-      );
+      // Utility.showAlert(strings.networkConnectivityErrorMessage);
+      return {
+        payload: [],
+        status: false,
+      };
     }
+    let withRenewToken = false;
+    const tokenData = authContext?.tokenData;
+    let authToken = tokenData.token;
+    const {exp} = await jwtDecode(authToken);
+    const expiryDate = new Date(exp * 1000);
+    const currentDate = new Date();
+    if (expiryDate.getTime() > currentDate.getTime()) {
+      return globalApiCall({
+        method,
+        url,
+        data,
+        headers,
+        params,
+        responseType,
+        authContext,
+        withRenewToken,
+        authToken,
+        cancelToken,
+      });
+    }
+    withRenewToken = true;
+    console.log('Token Expired');
+    return new Promise((resolve, reject) =>
+      getRefereshToken()
+        .then(async (refereshToken) => {
+          authToken = refereshToken.token;
+          const token = {
+            token: refereshToken.token,
+            expirationTime: refereshToken.expirationTime,
+          };
+          await authContext.setTokenData(token);
+          resolve(
+            globalApiCall({
+              method,
+              url,
+              data,
+              headers,
+              params,
+              responseType,
+              authContext,
+              withRenewToken,
+              authToken,
+              cancelToken,
+            }),
+          );
+        })
+        .catch((error) => {
+          console.log('Token Related: ', error);
+          resetApp(authContext);
+          reject(error);
+        }),
+    );
   });
 
 const globalApiCall = async ({
@@ -158,7 +161,7 @@ const globalApiCall = async ({
       error: e,
     };
     console.log('SERVER ERROR ::--->', error);
-    throw new Error(e);
+    // throw new Error(e);
   }
 };
 

@@ -54,6 +54,7 @@ import {onResendRequest} from '../../utils/accountUtils';
 import SportsListModal from './registerPlayer/modals/SportsListModal';
 import {getUserSettings} from '../../api/Users';
 import {getActivityLogCount} from '../../api/ActivityLog';
+import {useTabBar} from '../../context/TabbarContext';
 
 const AccountScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -88,6 +89,18 @@ const AccountScreen = ({navigation, route}) => {
   const [onLoad, setOnLoad] = useState(false);
   const [snapPoints, setSnapPoints] = useState([]);
   const [showRedDotForLog, setShowRedDotForLog] = useState(false);
+
+  const {toggleTabBar} = useTabBar();
+
+  useEffect(() => {
+    // Set TabBar visibility to true when this screen mounts
+    toggleTabBar(true);
+
+    return () => {
+      // Set TabBar visibility to false when this screen unmounts
+      toggleTabBar(false);
+    };
+  }, [isFocused, toggleTabBar]);
 
   useEffect(() => {
     if (isFocused) {
@@ -135,14 +148,19 @@ const AccountScreen = ({navigation, route}) => {
           });
 
           const filteredResult = result.filter(
-            (e) => e.user_id !== authContext.entity.auth.user.user_id,
+            (e) =>
+              e.user_id !== authContext.entity.auth.user.user_id &&
+              e.who_can_invite_for_doubles_team !==
+                Verbs.DOUBLE_TEAM_INVITE_NONE,
           );
+
           setPlayers([...filteredResult]);
         }
       })
       .catch((error) => {
         setLoading(false);
-        Alert.alert(error.message);
+        console.log(error.message);
+        // Alert.alert(error.message);
       });
   }, [authContext]);
 
@@ -255,7 +273,8 @@ const AccountScreen = ({navigation, route}) => {
       .catch((e) => {
         setLoading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          console.log(e.message);
+          // Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [authContext, getAccountMenu, imageBaseUrl]);
@@ -288,7 +307,8 @@ const AccountScreen = ({navigation, route}) => {
       .catch((e) => {
         setLoading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          console.log(e.message);
+          // Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   }, [authContext]);
@@ -474,7 +494,8 @@ const AccountScreen = ({navigation, route}) => {
       .catch((e) => {
         setLoading(false);
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          console.log(e.message);
+          // Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
   };

@@ -362,7 +362,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
                 handleSelection(item);
               }}
               onClickProfile={() => {
-                navigation.navigate('Account', {
+                navigation.navigate('HomeStack', {
                   screen: 'HomeScreen',
                   params: {
                     uid: item.user_id ?? item.group_id,

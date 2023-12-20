@@ -930,7 +930,6 @@ export default function EditEventScreen({navigation, route}) {
         onRightButtonPress={() => {
           onDonePress();
         }}
-        loading={loading}
       />
 
       <ActivityLoader visible={loading} />

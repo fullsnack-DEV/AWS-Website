@@ -46,6 +46,7 @@ const FeedViewScreen = ({navigation, route}) => {
   const [videoMetaData, setVideoMetaData] = useState(null);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [showLikeModal, setShowLikeModal] = useState(false);
+  const [commentModalOpen, setCommentModalOpen] = useState(false);
 
   const onFullScreen = useCallback(
     () => setIsFullScreen((val) => setIsFullScreen(!val)),
@@ -189,6 +190,7 @@ const FeedViewScreen = ({navigation, route}) => {
         feedSubItem={feedSubItem}
         currentViewIndex={currentViewIndex}
         onThreeDotPress={onThreeDotPress}
+        commentModalOpen={commentModalOpen}
       />
 
       <FeedPostView
@@ -235,6 +237,7 @@ const FeedViewScreen = ({navigation, route}) => {
         setReadMore={setReadMore}
         openCommentModal={() => {
           setShowCommentModal(true);
+          setCommentModalOpen(true);
         }}
         openLikeModal={() => {
           setShowLikeModal(true);
@@ -264,9 +267,13 @@ const FeedViewScreen = ({navigation, route}) => {
         postId={feedItem.id}
         showCommentModal={showCommentModal}
         updateCommentCount={onUpdateComment}
-        closeModal={() => setShowCommentModal(false)}
+        closeModal={() => {
+          setShowCommentModal(false);
+          setCommentModalOpen(false);
+        }}
         onProfilePress={(data = {}) => {
           setShowCommentModal(false);
+          setCommentModalOpen(false);
           navigation.navigate('Account', {
             screen: 'HomeScreen',
             params: {

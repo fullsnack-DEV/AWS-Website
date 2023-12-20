@@ -210,6 +210,7 @@ const Verbs = {
   member: 'member',
   admin: 'admin',
   is_active: 'is_active',
+  DOUBLE_TEAM_INVITE_NONE: 0,
 };
 
 export default Verbs;

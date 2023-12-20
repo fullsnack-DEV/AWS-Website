@@ -168,12 +168,12 @@ packagingOptions {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.52" 
+        versionName "1.0.54" 
         multiDexEnabled true
         flavorDimensions "default"
         vectorDrawables.useSupportLibrary = true
 		
-    }
+    }                 
     splits {
         abi {
             reset()

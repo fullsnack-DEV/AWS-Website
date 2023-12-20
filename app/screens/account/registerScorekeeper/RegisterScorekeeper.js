@@ -59,7 +59,7 @@ const RegisterScorekeeper = ({navigation, route}) => {
   }, [authContext]);
 
   useEffect(() => {
-    if (route.params.sport_name) {
+    if (route?.params?.sport_name) {
       setSelectedSport({...route.params});
     }
   }, [route.params]);

@@ -126,7 +126,7 @@ function JoinTeamScreen({route}) {
         setSmallLoader(false);
 
         setTimeout(() => {
-          Alert.alert(strings.alertmessagetitle, e.message);
+          console.log(e.message);
         }, 10);
       });
   }, [sport, locations, searchQuery, modifiedTeamElasticSearchResult]);

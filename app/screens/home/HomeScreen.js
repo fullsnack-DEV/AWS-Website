@@ -23,6 +23,7 @@ import fonts from '../../Constants/Fonts';
 import colors from '../../Constants/Colors';
 
 import AuthContext from '../../auth/context';
+
 import {getUserDetails, sendInvitationInGroup} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
 import {getGroupIndex} from '../../api/elasticSearch';
@@ -48,6 +49,7 @@ import {getDataForNextScreen} from '../localhome/LocalHomeUtils';
 import {locationType} from '../../utils/constant';
 import SportActivitiesModal from './components/SportActivitiesModal';
 import RecruitingMemberModal from './RecruitingMemberModal';
+import {useTabBar} from '../../context/TabbarContext';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -68,6 +70,18 @@ const HomeScreen = ({navigation, route}) => {
   const [loggedInGroupMembers, setLoggedInGroupMembers] = useState([]);
   const [visibleSportActivities, setVisibleSportAcitivities] = useState(false);
   const [visibleRecrutingModal, setVisibleRecrutingModal] = useState(false);
+
+  const {toggleTabBar} = useTabBar();
+  useEffect(() => {
+    // Set TabBar visibility to true when this screen mounts
+    toggleTabBar(false);
+
+    return () => {
+      // Set TabBar visibility to false when this screen unmounts
+      toggleTabBar(true);
+    };
+  }, [isFocused, toggleTabBar]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -180,7 +194,6 @@ const HomeScreen = ({navigation, route}) => {
     route.params?.role,
     route.params.uid,
     route.params?.comeFrom,
-    isFocused,
   ]);
 
   useEffect(() => {
@@ -217,14 +230,6 @@ const HomeScreen = ({navigation, route}) => {
         break;
 
       case strings.recruitingMembers:
-        // navigation.navigate('AccountStack', {
-        //   screen: 'RecruitingMemberScreen',
-        //   params: {
-        //     uid: authContext.entity.uid,
-        //     role: authContext.entity.role,
-        //   },
-        // });
-
         setVisibleRecrutingModal(true);
 
         break;
@@ -485,6 +490,14 @@ const HomeScreen = ({navigation, route}) => {
         screen: 'JoinTeamScreen',
       });
     } else if (route.params?.comeFrom) {
+      if (route.params?.comeFrom === 'UserTagSelectionListScreen') {
+        navigation.navigate('NewsFeedStack', {
+          screen: 'UserTagSelectionListScreen',
+          params: {
+            ...route.params.routeParams,
+          },
+        });
+      }
       navigation.navigate(route.params.comeFrom, {
         ...route.params.routeParams,
       });

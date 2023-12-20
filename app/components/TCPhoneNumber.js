@@ -15,7 +15,6 @@ import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
 import countryCodeList from '../utils/countryCode.json';
 import AuthContext from '../auth/context';
-import TCCountryCodeModal from './TCCountryCodeModal';
 
 const TCPhoneNumber = ({
   // eslint-disable-next-line no-unused-vars
@@ -25,9 +24,10 @@ const TCPhoneNumber = ({
   onValueChange,
   onChangeText,
   from = false,
+  onCountryCodePress = () => {},
 }) => {
   const authContext = useContext(AuthContext);
-  const [countryCodeVisible, setCountryCodeVisible] = useState(false);
+
   const [countrycode, setCountryCode] = useState({
     country: 'India',
     code: '91',
@@ -61,7 +61,9 @@ const TCPhoneNumber = ({
     <View style={styles.mainContainer}>
       <Pressable
         style={[styles.inputField, styles.row, {flex: 1, marginRight: 7}]}
-        onPress={() => setCountryCodeVisible(true)}>
+        onPress={() => {
+          onCountryCodePress(true);
+        }}>
         <View style={{flex: 1, alignItems: 'center'}}>
           <Text
             numberOfLines={1}
@@ -128,7 +130,7 @@ const TCPhoneNumber = ({
         />
       </View>
 
-      <TCCountryCodeModal
+      {/* <TCCountryCodeModal
         countryCodeVisible={countryCodeVisible}
         onCloseModal={() => {
           setCountryCodeVisible(false);
@@ -138,7 +140,7 @@ const TCPhoneNumber = ({
           setCountryCode(obj);
           setCountryCodeVisible(false);
         }}
-      />
+      /> */}
     </View>
   );
 };

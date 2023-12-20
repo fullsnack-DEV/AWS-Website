@@ -113,7 +113,7 @@ function SingleImage({
               itemData?.post_type === 'repost'
                 ? getImageDimention().height - 30
                 : getImageDimention().height,
-            width: itemData?.post_type === 'repost' ? wp('88%') : wp('100%'),
+            width: itemData?.post_type === 'repost' ? wp('100%') : wp('100%'),
             position: 'absolute',
           }}
           source={{uri: uploadImageURL}}

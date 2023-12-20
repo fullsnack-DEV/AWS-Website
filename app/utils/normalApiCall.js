@@ -1,9 +1,6 @@
 import axios from 'axios';
 import NetInfo from '@react-native-community/netinfo';
 
-import {strings} from '../../Localization/translation';
-import {showAlert} from '.';
-
 const normalApiCall = async ({
   method,
   url,
@@ -14,7 +11,7 @@ const normalApiCall = async ({
 }) =>
   NetInfo.fetch().then(async (netStat) => {
     if (!netStat || !netStat.isConnected) {
-      showAlert(strings.networkConnectivityErrorMessage);
+      // showAlert(strings.networkConnectivityErrorMessage);
     }
     const options = {
       method,

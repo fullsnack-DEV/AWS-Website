@@ -53,7 +53,7 @@ const Post = ({
       </View>
       {isRepost && (
         <>
-          <View style={{marginBottom: 15}}>
+          <View style={{marginBottom: 15, paddingHorizontal: 15}}>
             <NewsFeedDescription
               descriptions={postData.text}
               numberOfLineDisplay={postData.attachments?.length > 0 ? 3 : 14}

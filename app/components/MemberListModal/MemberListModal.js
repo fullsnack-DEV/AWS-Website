@@ -56,7 +56,11 @@ const MemberListModal = ({
   useEffect(() => {
     setFollowersSelection('');
     if (sportsList.length > 0) {
-      Setplayers(sportsList);
+      const doubleTeamPlayers = sportsList.filter(
+        (item) => item.who_can_invite_for_doubles_team !== 0,
+      );
+
+      Setplayers(doubleTeamPlayers);
     }
   }, [isFocused, sportsList, isVisible]);
 

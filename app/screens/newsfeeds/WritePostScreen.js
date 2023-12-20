@@ -366,6 +366,8 @@ const WritePostScreen = ({navigation, route}) => {
     if (searchText.length > 0) {
       if (searchText[currentTextInputIndex - 1] === '@') {
         setLetModalVisible(true);
+      } else {
+        setLetModalVisible(false);
       }
 
       const lastString = searchText.substr(0, currentTextInputIndex);
@@ -1044,7 +1046,10 @@ const WritePostScreen = ({navigation, route}) => {
         <View style={styles.bottomSafeAreaStyle}>
           <TouchableOpacity
             style={styles.onlyMeViewStyle}
-            onPress={() => setVisibleWhoModal(true)}>
+            onPress={() => {
+              setVisibleWhoModal(true);
+              Keyboard.dismiss();
+            }}>
             <View style={styles.icon}>
               <Image source={images.lock} style={styles.image} />
             </View>
@@ -1055,7 +1060,7 @@ const WritePostScreen = ({navigation, route}) => {
             style={[styles.onlyMeViewStyle, {justifyContent: 'space-between'}]}>
             {route.params.isRepost ? null : (
               <TouchableOpacity style={styles.icon}>
-                <Image source={images.pollIcon} style={styles.image} />
+                {/* <Image source={images.pollIcon} style={styles.image} /> */}
               </TouchableOpacity>
             )}
 
@@ -1125,7 +1130,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
-    backgroundColor: 'red',
   },
   userDetailView: {
     flexDirection: 'row',

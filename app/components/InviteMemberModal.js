@@ -135,7 +135,7 @@ function InviteMemberModal({
   };
 
   const RenderSportDetail = (item) => {
-    const sportname = item.registered_sports?.[0].sport;
+    const sportname = item.registered_sports?.[0]?.sport;
     const numOfSports = item.registered_sports?.length - 1;
     const emptyString = '';
 

@@ -11,7 +11,6 @@ import {
   Alert,
   TextInput,
   SafeAreaView,
-  Pressable,
   ActivityIndicator,
   TouchableOpacity,
   Dimensions,
@@ -32,12 +31,16 @@ import {getGeocoordinatesWithPlaceName} from '../../utils/location';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {locationType, filterType} from '../../utils/constant';
 import TCPlayerView from '../../components/TCPlayerView';
-import {getSportList} from '../../utils/sportsActivityUtils';
+import {
+  getButtonStateForPeople,
+  getSportList,
+} from '../../utils/sportsActivityUtils';
 import Verbs from '../../Constants/Verbs';
 import SearchModal from '../../components/Filter/SearchModal';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import ScreenHeader from '../../components/ScreenHeader';
+import SportView from './SportView';
 
 let stopFetchMore = true;
 let timeout;
@@ -217,6 +220,8 @@ export default function ScorekeeperListScreen({navigation, route}) {
           data={item}
           authContext={authContext}
           subTab={strings.scorekeeperTitle}
+          isUniversalSearch={true}
+          currentsubTabEntity={Verbs.entityTypeScorekeeper}
           showStar={
             (authContext.entity.role === Verbs.entityTypeUser &&
               filters.sport !== strings.allSport) ||
@@ -435,45 +440,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
       )}
     </View>
   );
-  const sportsView = (item) => (
-    <Pressable
-      style={[
-        styles.sportView,
-        styles.row,
-        {borderLeftColor: colors.redColorCard},
-      ]}
-      onPress={() => {
-        setPlayerDetailPopup(false);
-        navigation.navigate('HomeStack', {
-          screen: 'SportActivityHome',
-          params: {
-            sport: item.sport,
-            sportType: item?.sport_type,
-            uid: playerDetail.uid,
-            entityType: playerDetail.entity_type,
-            showPreview: true,
-            parentStack: 'LocalHomeStack',
-            backScreen: 'ScorekeeperListScreen',
-          },
-        });
-      }}
-      disabled={item.is_hide}>
-      <View style={styles.innerViewContainer}>
-        <View style={styles.row}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={{uri: `${imageBaseUrl}${item.player_image}`}}
-              style={styles.sportIcon}
-            />
-          </View>
-          <View>
-            <Text style={styles.sportName}>{item.sport_name}</Text>
-            <Text style={styles.matchCount}>0 match</Text>
-          </View>
-        </View>
-      </View>
-    </Pressable>
-  );
+
   const handleBackPress = useCallback(() => {
     if (route.params?.parentStack) {
       navigation.navigate(route.params.parentStack, {
@@ -659,21 +626,52 @@ export default function ScorekeeperListScreen({navigation, route}) {
         }}
         modalType={ModalTypes.style2}
         externalSnapPoints={snapPoints}
-        containerStyle={{paddingTop: 0, paddingHorizontal: 0}}>
+        containerStyle={{paddingBottom: 0, paddingHorizontal: 15}}>
         <View
           onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
-
+            let contentHeight = event.nativeEvent.layout.height + 80;
+            if (contentHeight > Dimensions.get('window').height) {
+              contentHeight = Dimensions.get('window').height - 50;
+            }
             setSnapPoints([
-              '50%',
+              // '50%',
               contentHeight,
-              Dimensions.get('window').height - 40,
+              contentHeight,
+              Dimensions.get('window').height - 80,
             ]);
           }}>
           <FlatList
             data={playerDetail?.sports}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({item, index}) => sportsView(item, item.type, index)}
+            renderItem={({item}) => (
+              <SportView
+                item={item}
+                imageBaseUrl={imageBaseUrl}
+                onPress={() => {
+                  setPlayerDetailPopup(false);
+                  navigation.navigate('HomeStack', {
+                    screen: 'SportActivityHome',
+                    params: {
+                      sport: item.sport,
+                      sportType: item?.sport_type,
+                      uid: playerDetail.uid,
+                      entityType: item.setting.entity_type,
+                      showPreview: true,
+                      backScreen: 'ScorekeeperListScreen',
+                      backScreenParams: {
+                        screen: 'EntitySearchScreen',
+                      },
+                    },
+                  });
+                }}
+                buttonState={getButtonStateForPeople({
+                  entityId: playerDetail.uid,
+                  entityType: Verbs.entityTypeReferee,
+                  sportObj: item,
+                  authContext,
+                })}
+              />
+            )}
             showsVerticalScrollIndicator={false}
           />
         </View>
@@ -704,58 +702,6 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP('70%'),
   },
 
-  sportView: {
-    justifyContent: 'space-between',
-    borderRadius: 8,
-    backgroundColor: colors.lightGrayBackground,
-    shadowColor: colors.googleColor,
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowRadius: 3,
-    shadowOpacity: 0.2,
-    elevation: 5,
-    marginBottom: 20,
-    borderLeftWidth: 8,
-    paddingVertical: 5,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  innerViewContainer: {
-    flex: 1,
-    marginRight: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  sportName: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-  matchCount: {
-    fontSize: 12,
-    lineHeight: 14,
-    fontFamily: fonts.RLight,
-    color: colors.lightBlackColor,
-  },
-  sportIcon: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
-  imageContainer: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 5,
-  },
   loaderStyle: {
     height: 25,
     width: 25,

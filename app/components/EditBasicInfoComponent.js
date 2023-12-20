@@ -27,6 +27,7 @@ import * as Utility from '../utils/index';
 import Verbs from '../Constants/Verbs';
 import TCPhoneNumber from './TCPhoneNumber';
 import AuthContext from '../auth/context';
+import TCCountryCodeModal from './TCCountryCodeModal';
 
 const EditBasicInfoComponent = ({
   userInfo = {},
@@ -40,6 +41,8 @@ const EditBasicInfoComponent = ({
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState([]);
   const [countrycode, setCountryCode] = useState();
+  const [countryCodeVisible, setCountryCodeVisible] = useState(false);
+  const [currenrIndex, setCurrentIndex] = useState();
 
   const authContext = useContext(AuthContext);
 
@@ -146,6 +149,21 @@ const EditBasicInfoComponent = ({
     setUserInfo(obj);
   };
 
+  const changedValue = (val, index) => {
+    const tempCode = [...phoneNumber];
+    tempCode[index].country_code = val;
+    setPhoneNumber(tempCode);
+    const filteredNumber = phoneNumber.filter(
+      (obj) =>
+        ![null, undefined, ''].includes(obj.phone_number && obj.country_code),
+    );
+
+    setUserInfo({
+      ...userInfo,
+      phone_numbers: filteredNumber,
+    });
+  };
+
   const renderPhoneNumbers = ({item, index}) => (
     <TCPhoneNumber
       marginBottom={2}
@@ -153,21 +171,14 @@ const EditBasicInfoComponent = ({
       value={item.country_code}
       from={!(phoneNumber.length > 1)}
       numberValue={item.phone_number}
-      onValueChange={(value) => {
-        const tempCode = [...phoneNumber];
-        tempCode[index].country_code = value;
-        setPhoneNumber(tempCode);
-        const filteredNumber = phoneNumber.filter(
-          (obj) =>
-            ![null, undefined, ''].includes(
-              obj.phone_number && obj.country_code,
-            ),
-        );
-
-        setUserInfo({
-          ...userInfo,
-          phone_numbers: filteredNumber,
-        });
+      onCountryCodePress={(val) => {
+        setCurrentIndex(index);
+        if (val) {
+          setCountryCodeVisible(val);
+        }
+      }}
+      onValueChange={(val) => {
+        changedValue(val, index);
       }}
       onChangeText={(text) => {
         const tempPhone = [...phoneNumber];
@@ -443,6 +454,17 @@ const EditBasicInfoComponent = ({
               .filter((w) => w)
               .join(', ');
             setUserInfo(obj);
+          }}
+        />
+
+        <TCCountryCodeModal
+          countryCodeVisible={countryCodeVisible}
+          onCloseModal={() => {
+            setCountryCodeVisible(false);
+          }}
+          countryCodeObj={(obj) => {
+            changedValue(obj, currenrIndex);
+            setCountryCodeVisible(false);
           }}
         />
       </View>

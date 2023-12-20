@@ -495,7 +495,7 @@ export default {
   scorekeeperIn: 'en_Scorekeeper In',
   totalGames: 'en_game',
   message: 'en_Message',
-  followSportTeam: 'en_Follow sport Teams.',
+  followSportTeam: 'en_Follow sport groups.',
   follow: 'en_Follow',
   following: 'en_Following',
   invite: 'en_Invite',
@@ -1515,8 +1515,7 @@ export default {
   oldPasswordCanNotBlankValidation: 'en_Old Password cannot be blank.',
   newPasswordCanNotBlankValidation: 'en_New Password cannot be blank.',
   emailNotVerifiedText: 'en_Your email hasn’t been verified yet.',
-  passwordSamevalidation:
-    'en_New Password and Confirm Password should be same.',
+  passwordSamevalidation: 'en_New Password and Confirm Password do not match.',
 
   emailVerificationLintNotSendText:
     'en_Email Verification Link is already Sent, Try after some moment',

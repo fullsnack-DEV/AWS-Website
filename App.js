@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import {Alert, StatusBar} from 'react-native';
+import {StatusBar} from 'react-native';
 import {decode, encode} from 'base-64';
 import messaging from '@react-native-firebase/messaging';
 import Orientation from 'react-native-orientation';
@@ -9,11 +9,13 @@ import AuthContext from './app/auth/context';
 import LocationContext from './app/context/LocationContext';
 import NavigationMainContainer from './NavigationMainContainer';
 import * as Utility from './app/utils';
-import {strings} from './Localization/translation';
 
 import {ImageUploadProvider} from './app/context/GetContexts';
 import CommonAlert from './app/screens/account/commonScreen/CommonAlert';
 import {getAppSettingsWithoutAuth} from './app/api/Users';
+
+import InternetStatus from './app/components/InterNetStatus';
+import {TabBarProvider} from './app/context/TabbarContext';
 
 console.disableYellowBox = true;
 
@@ -75,17 +77,17 @@ function App() {
     global.atob = decode;
   }
 
-  useEffect(() => {
-    if (!networkConnected) {
-      showNetworkAlert();
-    }
-  }, [networkConnected]);
+  // useEffect(() => {
+  //   if (!networkConnected) {
+  //     showNetworkAlert();
+  //   }
+  // }, [networkConnected]);
 
   const showNetworkAlert = () => {
-    Alert.alert(
-      strings.alertmessagetitle,
-      strings.networkConnectivityErrorMessage,
-    );
+    // Alert.alert(
+    //   strings.alertmessagetitle,
+    //   strings.networkConnectivityErrorMessage,
+    // );
   };
 
   useEffect(() => {
@@ -194,7 +196,10 @@ function App() {
       {alertData?.visible && <CommonAlert alertData={alertData} />}
       <LocationContext.Provider value={{selectedLocation, setSelectedLoaction}}>
         <ImageUploadProvider>
-          <NavigationMainContainer />
+          <TabBarProvider>
+            <NavigationMainContainer />
+            <InternetStatus />
+          </TabBarProvider>
         </ImageUploadProvider>
       </LocationContext.Provider>
     </AuthContext.Provider>

@@ -31,6 +31,7 @@ const FeedAbsoluteTopView = memo(
     currentViewIndex,
     // eslint-disable-next-line no-unused-vars
     onThreeDotPress = () => {},
+    commentModalOpen = false,
   }) => {
     const userImage = feedItem?.actor?.data?.thumbnail
       ? {uri: feedItem?.actor?.data?.thumbnail}
@@ -62,6 +63,7 @@ const FeedAbsoluteTopView = memo(
       <SafeAreaView
         style={[
           styles.topMainContainer,
+          {zIndex: commentModalOpen ? -1 : 1},
           {
             position: Platform.OS === 'ios' ? 'relative' : 'absolute',
           },
@@ -142,10 +144,8 @@ const styles = StyleSheet.create({
   topMainContainer: {
     // flex: 1,
     top: Platform.OS === 'ios' ? 0 : 30,
-    zIndex: 99,
   },
   topSubContainer: {
-    zIndex: 100,
     paddingHorizontal: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',

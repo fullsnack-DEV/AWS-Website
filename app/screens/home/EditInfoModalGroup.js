@@ -2,7 +2,6 @@
 import {
   View,
   Text,
-  ScrollView,
   Alert,
   StyleSheet,
   Image,
@@ -12,6 +11,7 @@ import {
 
 import React, {useState, useEffect, useCallback, useContext} from 'react';
 import {FlatList} from 'react-native-gesture-handler';
+import {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {format} from 'react-string-format';
 import ImagePicker from 'react-native-image-crop-picker';
 import {useIsFocused} from '@react-navigation/native';
@@ -268,7 +268,9 @@ export default function EditInfoModalGroup({
       setImagesPick(true);
       setGroupData({
         ...groupData,
-        jersey_images: [...groupData.jersey_images, data.path],
+        jersey_images: groupData?.jersey_images
+          ? [...groupData.jersey_images, data.path]
+          : [data.path],
       });
     });
   };
@@ -293,7 +295,7 @@ export default function EditInfoModalGroup({
       <View style={{flex: 1}}>
         <ActivityLoader visible={loading} />
         <TCKeyboardView>
-          <ScrollView style={{marginHorizontal: 15, paddingTop: 20}}>
+          <BottomSheetScrollView style={{marginHorizontal: 15, paddingTop: 20}}>
             <View style={{marginBottom: 35}}>
               <Text style={styles.labelText}>
                 {strings.sportsTitleText.toUpperCase()}
@@ -466,7 +468,7 @@ export default function EditInfoModalGroup({
               </Pressable>
             </View>
 
-            <View style={{marginBottom: 35}}>
+            <View style={{marginBottom: 100}}>
               <Text style={styles.labelText}>
                 {strings.jerseyText.toUpperCase()}
               </Text>
@@ -582,7 +584,7 @@ export default function EditInfoModalGroup({
                 </Pressable>
               </View>
             ) : null}
-          </ScrollView>
+          </BottomSheetScrollView>
         </TCKeyboardView>
 
         <LocationModal

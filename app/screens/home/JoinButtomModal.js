@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'react-string-format';
@@ -25,6 +25,54 @@ export default function JoinButtonModal({
   const authContext = useContext(AuthContext);
   const navigation = useNavigation();
 
+  const [teamOptions, setTeamOptions] = useState([]);
+  const [teamOptiosnForJoin, setTeamOptiosnForJoin] = useState([]);
+  const [clubOptiosnForJoin, setClubOptiosnForJoin] = useState([]);
+  const [clubOptions, setClubOptions] = useState([]);
+
+  useEffect(() => {
+    setTeamOptions([
+      strings.bio,
+      strings.basicinfotitle,
+      // strings.homeFacility,
+      strings.membersTitle,
+      strings.tcLevelPointsText,
+      strings.tcranking,
+      strings.matchVenues,
+      strings.clubsTitleText,
+      strings.membershipFee,
+      strings.bylaw,
+    ]);
+
+    setTeamOptiosnForJoin([
+      strings.bio,
+      strings.basicInfoText,
+      // strings.homeFacility,
+      strings.matchVenues,
+      strings.membershipFeesTitle,
+      strings.bylaw,
+    ]);
+
+    setClubOptiosnForJoin([
+      strings.bio,
+      strings.basicInfoText,
+      // strings.homeFacility,
+      strings.matchVenues,
+      strings.membershipFeesTitle,
+      strings.bylaw,
+    ]);
+
+    setClubOptions([
+      strings.bio,
+      strings.basicInfoText,
+      strings.membersTitle,
+      strings.teamsTiteInfo,
+      strings.membershipFee,
+      strings.bylaw,
+      strings.history,
+    ]);
+  }, [isVisible]);
+
   return (
     <CustomModalWrapper
       isVisible={isVisible}
@@ -42,6 +90,10 @@ export default function JoinButtonModal({
         <GroupInfo
           navigation={navigation}
           groupDetails={currentUserData}
+          teamOptions={teamOptions}
+          clubOptions={clubOptions}
+          teamOptiosnForJoin={teamOptiosnForJoin}
+          clubOptiosnForJoin={clubOptiosnForJoin}
           isAdmin={currentUserData?.am_i_admin}
           authContext={authContext}
           onSeeAll={(option = '', clubsofteam = []) => {

@@ -116,12 +116,14 @@ export default function MembersProfileScreen({navigation, route}) {
   const handleBackPress = useCallback(() => {
     if (route.params?.comeFrom === 'HomeScreen') {
       navigation.setOptions({});
-      navigation.navigate('Account', {
+      navigation.navigate('HomeStack', {
         screen: 'HomeScreen',
         params: {...route.params?.routeParams},
       });
     } else {
-      navigation.replace('App', {screen: 'Members'});
+      navigation.navigate('Members', {
+        screen: 'GroupMembersScreen',
+      });
     }
   }, [navigation, route.params]);
 
@@ -1386,7 +1388,7 @@ export default function MembersProfileScreen({navigation, route}) {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
       <SwitchAccountLoader
         isVisible={showSwitchScreen}
         entityName={authContext.managedEntities[0]?.full_name}

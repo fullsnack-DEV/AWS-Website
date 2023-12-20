@@ -29,6 +29,7 @@ import MultipleVideoRender from '../../components/Home/MultipleVideoRender';
 import {strings} from '../../../Localization/translation';
 import {widthPercentageToDP} from '../../utils';
 import images from '../../Constants/ImagePath';
+import ActivityLoader from '../../components/loader/ActivityLoader';
 
 const AllInOneGallery = ({
   navigation,
@@ -47,6 +48,7 @@ const AllInOneGallery = ({
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
   const [taggedNumber, setTaggedNumber] = useState(0);
   const [uplodedNumber, setUploadedNumber] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useImperativeHandle(galleryRef, () => ({
     refreshGallery() {
@@ -90,6 +92,7 @@ const AllInOneGallery = ({
         }
 
         setGalleryData([...res.payload?.results]);
+        setLoading(false);
       })
       .catch(() => {
         setIsNextDataLoading(false);
@@ -164,6 +167,7 @@ const AllInOneGallery = ({
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <ActivityLoader visible={loading} />
       <ScreenHeader
         title={strings.galleryTitle}
         leftIcon={images.backArrow}

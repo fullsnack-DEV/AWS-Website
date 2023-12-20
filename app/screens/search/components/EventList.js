@@ -155,35 +155,45 @@ const EventList = ({
     }
   }, [list, getEvents]);
 
-  const renderListEmptyComponent = () =>
-    loading ? (
-      <View
-        style={{
-          minHeight: Dimensions.get('window').height * 0.4,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <ActivityIndicator size={'small'} />
-      </View>
-    ) : (
-      <View
-        style={{
-          minHeight: Dimensions.get('window').height * 0.4,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <Text style={styles.noEventText}>
-          {isUpcoming
-            ? strings.noUpcomingEventToShow
-            : strings.noCompletedEventToShow}
-        </Text>
-        <Text style={styles.dataNotFoundText}>
-          {isUpcoming
-            ? strings.newEventWillAppearHereText
-            : strings.newCompletedEventOccurHere}
-        </Text>
-      </View>
-    );
+  const renderListEmptyComponent = () => {
+    if (loading) {
+      // Show loader if data is still loading
+      return (
+        <View
+          style={{
+            minHeight: Dimensions.get('window').height * 0.4,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <ActivityIndicator size={'small'} />
+        </View>
+      );
+    }
+    if (list.length === 0) {
+      // Show "No event to show" text if there are no events
+      return (
+        <View
+          style={{
+            minHeight: Dimensions.get('window').height * 0.4,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Text style={styles.noEventText}>
+            {isUpcoming
+              ? strings.noUpcomingEventToShow
+              : strings.noCompletedEventToShow}
+          </Text>
+          <Text style={styles.dataNotFoundText}>
+            {isUpcoming
+              ? strings.newEventWillAppearHereText
+              : strings.newCompletedEventOccurHere}
+          </Text>
+        </View>
+      );
+    }
+    // If there are events and loading is false, render nothing as empty component
+    return null;
+  };
 
   const renderSectionHeader = ({section: {title}}) => (
     <View style={styles.sectionHeader}>

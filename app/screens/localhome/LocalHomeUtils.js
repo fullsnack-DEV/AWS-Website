@@ -1,4 +1,3 @@
-import {Alert} from 'react-native';
 import {strings} from '../../../Localization/translation';
 import Verbs from '../../Constants/Verbs';
 
@@ -592,7 +591,8 @@ const getNotificationCountHome = (authContext, handleSetNotificationCount) => {
       handleSetNotificationCount(count);
     })
     .catch((error) => {
-      Alert.alert(strings.alertmessagetitle, error.message);
+      console.log(error.message);
+      // Alert.alert(strings.alertmessagetitle, error.message);
     });
 };
 
