@@ -8,23 +8,10 @@ import {
   Pressable,
   Image,
 } from 'react-native';
-import React, {
-  useMemo,
-  useState,
-  useCallback,
-  useContext,
-  useEffect,
-} from 'react';
+import React, {useState, useCallback, useContext, useEffect} from 'react';
 import {FlatList} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import {useNavigation} from '@react-navigation/native';
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetBackdrop,
-} from '@gorhom/bottom-sheet';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
 import {unfollowGroup} from '../../api/Groups';
@@ -43,24 +30,7 @@ import {
   unfollowUser,
 } from '../../api/Users';
 import images from '../../Constants/ImagePath';
-
-const renderBackdrop = (props) => (
-  <BottomSheetBackdrop
-    {...props}
-    disappearsOnIndex={-1}
-    appearsOnIndex={1}
-    style={{
-      backgroundColor: colors.modalBackgroundColor,
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: '99%',
-    }}
-    opacity={6}
-  />
-);
+import CustomModalWrapper from '../../components/CustomModalWrapper';
 
 const tabList = [strings.following, strings.followerTitleText];
 
@@ -76,16 +46,12 @@ const obj = {
 };
 
 export default function UserConnectionModal({
-  ModalRef,
   closeModal,
   refreshModal,
   entityType,
   userId,
-  // eslint-disable-next-line no-unused-vars
-  userName,
   tab,
 }) {
-  const snapPoints = useMemo(() => ['95%', '95%'], []);
   const [loading, setLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -310,85 +276,68 @@ export default function UserConnectionModal({
   };
 
   return (
-    <BottomSheetModalProvider>
-      <BottomSheetModal
-        onDismiss={() => closeModal()}
-        ref={ModalRef}
-        backgroundStyle={{
-          borderRadius: 10,
-        }}
-        index={1}
-        handleIndicatorStyle={{
-          backgroundColor: colors.modalHandleColor,
-          width: 40,
-          height: 5,
-          marginTop: 5,
-          alignSelf: 'center',
-          borderRadius: 5,
-        }}
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        enableDismissOnClose
-        backdropComponent={renderBackdrop}>
-        <View style={styles.tabRow}>
-          {tabList.map((item) => (
-            <Pressable
-              key={item}
+    <CustomModalWrapper
+      isVisible={refreshModal}
+      closeModal={closeModal}
+      containerStyle={{padding: 0, flex: 1}}>
+      <View style={styles.tabRow}>
+        {tabList.map((item) => (
+          <Pressable
+            key={item}
+            style={[
+              styles.tabItem,
+              selectedTab === item
+                ? {
+                    paddingBottom: 7,
+                    borderBottomWidth: 3,
+                    borderBottomColor: colors.orangeColorCard,
+                  }
+                : {},
+            ]}
+            onPress={() => setSelectedTab(item)}>
+            <Text
               style={[
-                styles.tabItem,
+                styles.tabItemText,
                 selectedTab === item
-                  ? {
-                      paddingBottom: 7,
-                      borderBottomWidth: 3,
-                      borderBottomColor: colors.orangeColorCard,
-                    }
+                  ? {color: colors.orangeColorCard, fontFamily: fonts.RBlack}
                   : {},
-              ]}
-              onPress={() => setSelectedTab(item)}>
-              <Text
-                style={[
-                  styles.tabItemText,
-                  selectedTab === item
-                    ? {color: colors.orangeColorCard, fontFamily: fonts.RBlack}
-                    : {},
-                ]}>
-                {`${getCount(item)} ${item}`}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-        <View style={{flex: 1}}>
-          <View style={styles.searchBarView}>
-            <View style={styles.floatingInput}>
-              <View style={styles.inputContainer}>
-                <TextInput
-                  placeholderTextColor={colors.userPostTimeColor}
-                  style={styles.textInputStyle}
-                  value={searchQuery}
-                  onChangeText={(text) => {
-                    setSearchQuery(text);
-                  }}
-                  placeholder={strings.searchText}
-                />
-                {searchQuery.length > 0 && (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSearchQuery('');
-                    }}>
-                    <Image
-                      source={images.closeRound}
-                      style={{height: 15, width: 15}}
-                    />
-                  </TouchableOpacity>
-                )}
-              </View>
+              ]}>
+              {`${getCount(item)} ${item}`}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+      <View style={{flex: 1}}>
+        <View style={styles.searchBarView}>
+          <View style={styles.floatingInput}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholderTextColor={colors.userPostTimeColor}
+                style={styles.textInputStyle}
+                value={searchQuery}
+                onChangeText={(text) => {
+                  setSearchQuery(text);
+                }}
+                placeholder={strings.searchText}
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setSearchQuery('');
+                  }}>
+                  <Image
+                    source={images.closeRound}
+                    style={{height: 15, width: 15}}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
-
-          {loading ? <UserListShimmer /> : renderList(selectedTab)}
         </View>
-      </BottomSheetModal>
-    </BottomSheetModalProvider>
+
+        {loading ? <UserListShimmer /> : renderList(selectedTab)}
+      </View>
+    </CustomModalWrapper>
   );
 }
 const styles = StyleSheet.create({
@@ -477,5 +426,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     zIndex: 1,
     width: '90%',
+    // marginTop: 20,
   },
 });

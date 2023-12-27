@@ -390,6 +390,7 @@ export default function CreateEventScreen({navigation, route}) {
   };
 
   const openImagePicker = (width = 680, height = 300) => {
+    setloading(true);
     const cropCircle = false;
     ImagePicker.openPicker({
       width,
@@ -399,6 +400,7 @@ export default function CreateEventScreen({navigation, route}) {
     }).then((data) => {
       setBackgroundThumbnail(data.path);
       setBackgroundImageChanged(true);
+      setloading(false);
     });
   };
 

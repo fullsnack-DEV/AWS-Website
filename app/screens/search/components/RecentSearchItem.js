@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
-import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, Text, Image} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
@@ -59,7 +60,9 @@ const RecentSearchItem = ({
     return (
       <TouchableOpacity
         style={styles.innerContainer}
-        onPress={() => onPress(data)}>
+        onPress={() => {
+          onPress(data);
+        }}>
         <GroupIcon
           imageUrl={data.thumbnail}
           entityType={data.entity_type ?? Verbs.entityTypePlayer}

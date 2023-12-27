@@ -116,7 +116,7 @@ const SportActivitiesScreen = ({navigation, route}) => {
       'hardwareBackPress',
       backAction,
     );
-    return () => backHandler.remove();
+    BackHandler.removeEventListener('hardwareBackPress', backHandler);
   }, [handleBackPress]);
 
   return (

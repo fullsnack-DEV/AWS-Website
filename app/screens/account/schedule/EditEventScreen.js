@@ -377,6 +377,7 @@ export default function EditEventScreen({navigation, route}) {
   };
 
   const openImagePicker = (width = 680, height = 300) => {
+    setloading(true);
     const cropCircle = false;
     ImagePicker.openPicker({
       width,
@@ -386,6 +387,7 @@ export default function EditEventScreen({navigation, route}) {
     }).then((data) => {
       setBackgroundThumbnail(data.path);
       setBackgroundImageChanged(true);
+      setloading(false);
     });
   };
 
@@ -557,7 +559,7 @@ export default function EditEventScreen({navigation, route}) {
     return true;
   };
 
-  const handleBackPress = () => {
+  const handleBackPress = useCallback(() => {
     Alert.alert(
       strings.areYouWantToUnsavedChanges,
       '',
@@ -582,7 +584,7 @@ export default function EditEventScreen({navigation, route}) {
       ],
       {cancelable: false},
     );
-  };
+  });
   useEffect(() => {
     const backAction = () => {
       handleBackPress();

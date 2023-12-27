@@ -469,6 +469,8 @@ const HomeScreen = ({navigation, route}) => {
       route.params?.comeFrom === 'GroupMemberScreen'
     ) {
       navigation.navigate('App', {screen: 'Account'});
+    } else if (route.params?.comeFrom === 'UserConnectionsModal') {
+      navigation.navigate('App', {screen: 'Account'});
     } else if (route.params?.comeFrom === 'EntitySearchScreen') {
       navigation.navigate('UniversalSearchStack', {
         screen: route.params.backScreen,
@@ -520,7 +522,9 @@ const HomeScreen = ({navigation, route}) => {
       'hardwareBackPress',
       backAction,
     );
-    return () => backHandler.remove();
+    return () => {
+      backHandler.remove();
+    };
   }, [handleBackPress]);
 
   return (

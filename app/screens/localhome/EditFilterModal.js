@@ -419,9 +419,31 @@ export default function EditFilterModal({
     onClose();
   };
 
+  const handleCloseAddModal = () => {
+    setVisibleAddModal(false);
+    setAddedsport([...sportList]);
+    if (authContext.entity.role !== Verbs.entityTypeClub) {
+      setAddedsport([...notRegisterSport, ...registerSports]);
+    } else {
+      setAddedsport([...sportList]);
+    }
+  };
+
   return (
     <>
-      <Modal visible={visible} collapsable transparent animationType="fade">
+      <Modal
+        visible={visible}
+        collapsable
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          if (visible && !visibleAddModal) {
+            onClose();
+          }
+          if (visibleAddModal) {
+            handleCloseAddModal();
+          }
+        }}>
         <GestureHandlerRootView style={{flex: 1}}>
           <View style={styles.parent}>
             <View style={styles.Mcard}>
@@ -477,13 +499,7 @@ export default function EditFilterModal({
           isVisible={visibleAddModal}
           title={strings.addorDeleteFavSportTitle}
           closeModal={() => {
-            setVisibleAddModal(false);
-            setAddedsport([...sportList]);
-            if (authContext.entity.role !== Verbs.entityTypeClub) {
-              setAddedsport([...notRegisterSport, ...registerSports]);
-            } else {
-              setAddedsport([...sportList]);
-            }
+            handleCloseAddModal();
           }}
           modalType={ModalTypes.style6}
           headerRightButtonText={strings.save}

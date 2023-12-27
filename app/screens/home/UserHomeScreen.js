@@ -70,21 +70,19 @@ const UserHomeScreen = ({
   const [refreshModal, setRefreshModal] = useState(false);
   const [tab, setTab] = useState('');
   const mainFlatListRef = useRef();
-  const ModalRef = useRef();
 
   const {onSwitchProfile} = useSwitchAccount();
 
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', () =>
-      navigation.goBack(),
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        setRefreshModal(false);
+      },
     );
 
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', () =>
-        navigation.goBack(),
-      );
-    };
-  }, [navigation]);
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
     if (userData?.user_id) {
@@ -711,8 +709,7 @@ const UserHomeScreen = ({
         currentUserData={currentUserData}
         onConnectionButtonPress={(tabs = '') => {
           setTab(tabs);
-
-          ModalRef.current.present();
+          setRefreshModal(true);
         }}
         onAction={onUserAction}
         isAdmin={isAdmin}
@@ -793,7 +790,6 @@ const UserHomeScreen = ({
         onSelect={handleSportActivityOption}
       />
       <UserConnectionModal
-        ModalRef={ModalRef}
         refreshModal={refreshModal}
         closeModal={() => setRefreshModal(false)}
         entityType={route.params.role ?? authContext.entity.role}

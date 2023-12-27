@@ -306,7 +306,7 @@ const SportActivityModal = ({
           </ScrollView>
         </View>
         <BottomSheet
-        type='ios'
+          type="ios"
           isVisible={showMoreOptions}
           closeModal={() => {
             setShowMoreOptions(false);
@@ -343,8 +343,7 @@ const styles = StyleSheet.create({
     padding: 0,
     paddingHorizontal: 10,
     paddingVertical: 2,
-
-     },
+  },
 });
 
 export default SportActivityModal;
