@@ -21,7 +21,6 @@ export const blockedSlots = async (entityType, entityID, authContext) =>
 //   authContext,
 // });
 
-
 export const editSlots = async (entity_type, entity_id, data, authContext) =>
   makeAPIRequest({
     method: 'post',
@@ -35,7 +34,7 @@ export const deleteEvent = async (
   entity_id,
   eventID,
   authContext,
-  data = {}
+  data = {},
 ) =>
   makeAPIRequest({
     method: 'delete',
@@ -97,5 +96,26 @@ export const removeAttendeeFromEvent = async (
     method: 'delete',
     url: `${Config.BASE_URL}events/${event_id}/attend`,
     data: user_ids,
+    authContext,
+  });
+
+export const likeEvent = async (event_id, authContext) =>
+  makeAPIRequest({
+    method: 'put',
+    url: `${Config.BASE_URL}events/${event_id}/like`,
+    authContext,
+  });
+
+export const likeEventUsers = async (event_id, authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}events/${event_id}/like`,
+    authContext,
+  });
+
+export const myLikeEvents = async (authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}events/me/like`,
     authContext,
   });

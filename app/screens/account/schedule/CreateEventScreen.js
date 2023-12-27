@@ -33,10 +33,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {format} from 'react-string-format';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {getCountry} from 'country-currency-map';
-import {
-  checkPermAndGetGeoCoordinates,
-  getGeocoordinatesWithPlaceName,
-} from '../../../utils/location';
+import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
@@ -174,8 +171,8 @@ export default function CreateEventScreen({navigation, route}) {
   const [mapRegion, setMapRegion] = useState({
     latitude: DEFAULT_LATITUDE,
     longitude: DEFAULT_LONGITUDE,
-    latitudeDelta: LATITUDE_DELTA,
-    longitudeDelta: LONGITUDE_DELTA,
+    latitudeDelta: 0.008,
+    longitudeDelta: 0.008,
   });
   const [mapcoordinate, setMapCoordinate] = useState({
     latitude: 0,
@@ -187,28 +184,32 @@ export default function CreateEventScreen({navigation, route}) {
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
   const [currency, setSelectedCurrency] = useState('');
 
-  const getDefaultCoordinates = useCallback(async () => {
-    const result = await checkPermAndGetGeoCoordinates(Platform.OS);
-
-    if (result.message) {
-      // this is error case
-      if (result.code === 2 && result.PERMISSION_DENIED === 1) {
-        Alert.alert('', Verbs.gpsErrorDeined);
-      }
-    } else {
-      const obj = {
-        latitude: result.coords.latitude,
-        longitude: result.coords.longitude,
-      };
-      setMapCoordinate((prevProps) => ({...prevProps, ...obj}));
-    }
-  }, []);
-
   useEffect(() => {
-    if (isFocused && !mapcoordinate?.latitude) {
-      getDefaultCoordinates();
+    if (isFocused && !mapcoordinate.longitude) {
+      getGeocoordinatesWithPlaceName(Platform.OS)
+        .then((location) => {
+          if (location.position) {
+            const obj = {
+              latitude: location.position.coords.latitude,
+              longitude: location.position.coords.longitude,
+            };
+
+            setMapRegion((prevProps) => ({...prevProps, ...obj}));
+            setMapCoordinate((prevProps) => ({...prevProps, ...obj}));
+            setSearchLocation(location.formattedAddress ?? '');
+          }
+        })
+        .catch((e) => {
+          if (e.name === Verbs.gpsErrorDeined) {
+            Alert.alert('', Verbs.gpsErrorDeined);
+          } else {
+            setTimeout(() => {
+              Alert.alert(strings.alertmessagetitle, e.message);
+            }, 10);
+          }
+        });
     }
-  }, [isFocused, mapcoordinate?.latitude, getDefaultCoordinates]);
+  }, [isFocused]);
 
   useEffect(() => {
     const currencyObj = getCountry(authContext.entity.obj.country);
@@ -1059,6 +1060,7 @@ export default function CreateEventScreen({navigation, route}) {
                     }}>
                     <Text style={styles.label}>{searchLocation}</Text>
                   </Pressable>
+
                   <EventMapView region={mapRegion} coordinate={mapcoordinate} />
                   <Pressable
                     style={styles.detailsContainer}
@@ -1578,8 +1580,11 @@ export default function CreateEventScreen({navigation, route}) {
         title={strings.sportsTitleText}
         sportsList={sportsData}
         sport={selectedSport}
-        onNext={(sport) => {
-          setSelectedSport(sport);
+        onNext={(sports) => {
+          const {sport_name, sport_type, sport} = sports;
+          const selectedSportData = {sport_name, sport_type, sport};
+
+          setSelectedSport(selectedSportData);
           setVisibleSportsModal(false);
         }}
         rightButtonText={strings.apply}

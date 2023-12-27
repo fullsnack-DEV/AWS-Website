@@ -13,6 +13,7 @@ import EditEventScreen from '../screens/account/schedule/EditEventScreen';
 import fonts from '../Constants/Fonts';
 import InviteToEventScreen from '../screens/account/schedule/InviteToEventScreen';
 import GoingListScreen from '../screens/account/schedule/GoingListScreen';
+import LikedEventScreen from '../screens/account/schedule/LikedEventScreen';
 
 const Stack = createStackNavigator();
 
@@ -100,6 +101,13 @@ const ScheduleNavigator = () => (
       component={ViewPrivacyScreen}
       options={{
         title: strings.privacySettings,
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="LikedEventScreen"
+      component={LikedEventScreen}
+      options={{
         headerShown: false,
       }}
     />

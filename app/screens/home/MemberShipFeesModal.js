@@ -188,6 +188,7 @@ export default function MemberShipFeesModal({visible, onClose, groupDetails}) {
                 inputRef.current.focus();
               }}>
               <TextInput
+                multiline
                 ref={inputRef}
                 style={styles.input}
                 value={details}

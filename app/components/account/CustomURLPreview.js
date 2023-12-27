@@ -1,7 +1,9 @@
 import React from 'react';
-import {Dimensions, Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {LinkPreview} from '@flyerhq/react-native-link-preview';
 import colors from '../../Constants/Colors';
+
 import fonts from '../../Constants/Fonts';
 
 const urlRegex =
@@ -23,7 +25,7 @@ const CustomURLPreview = ({text}) => {
   return (
     <LinkPreview
       text={desc}
-      containerStyle={{marginTop: 15}}
+      containerStyle={{}}
       renderLinkPreview={({previewData}) => (
         <View>
           {previewData?.image?.url && (
@@ -54,9 +56,9 @@ const CustomURLPreview = ({text}) => {
 const styles = StyleSheet.create({
   previewImageStyle: {
     height: 175,
-    borderRadius: 10,
+    alignItems: 'center',
+
     marginBottom: 15,
-    width: Dimensions.get('screen').width - 30,
   },
   previewTextContainerStyle: {
     // marginBottom: 15,
@@ -82,10 +84,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   previewImage: {
-    width: '100%',
     height: '100%',
+    width: wp('100%'),
+    backgroundColor: 'red',
     resizeMode: 'cover',
-    borderRadius: 10,
   },
 });
 

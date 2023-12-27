@@ -915,7 +915,7 @@ export default function LookingTeamScreen({navigation, route}) {
         }}
         modalType={ModalTypes.style2}
         externalSnapPoints={snapPoints}
-        containerStyle={{paddingTop: 0, paddingHorizontal: 0}}>
+        containerStyle={{paddingTop: 0, paddingHorizontal: 0, zIndex: 30}}>
         <View
           onLayout={(event) => {
             const contentHeight = event.nativeEvent.layout.height + 80;

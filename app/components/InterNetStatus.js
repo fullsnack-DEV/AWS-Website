@@ -23,7 +23,7 @@ const InternetStatus = () => {
     const unsubscribe = NetInfo.addEventListener((state) => {
       setIsConnected(state.isConnected);
 
-      if (!state.isConnected) {
+      if (!state.isConnected && !state.isInternetReachable) {
         errorPositionX.value = withSpring(0, {
           damping: 10,
           stiffness: 100,

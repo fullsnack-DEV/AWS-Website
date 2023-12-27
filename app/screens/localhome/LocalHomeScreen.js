@@ -1242,7 +1242,6 @@ function LocalHomeScreen({navigation, route}) {
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled
             removeClippedSubviews={true}
-            bounces={false}
             renderToHardwareTextureAndroid
             initialNumToRender={10}
             maxToRenderPerBatch={10}

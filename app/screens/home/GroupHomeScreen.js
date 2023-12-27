@@ -1796,7 +1796,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.borderlinecolor,
     borderTopWidth: 1,
     paddingHorizontal: 15,
-
+    zIndex: -10,
     marginBottom: 12,
   },
   challengeButtonContainer: {

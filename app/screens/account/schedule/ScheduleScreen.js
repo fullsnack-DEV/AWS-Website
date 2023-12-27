@@ -146,7 +146,11 @@ export default function ScheduleScreen({navigation, route}) {
     strings.filterPickaDate,
   ];
 
-  const settingsOptions = [strings.eventsViewSettings, strings.viewPrivacy];
+  const settingsOptions = [
+    strings.likeEvent,
+    strings.eventsViewSettings,
+    strings.viewPrivacy,
+  ];
 
   // let nextThreeMonth = new Date();
   // nextThreeMonth = nextThreeMonth.setMonth(nextThreeMonth.getMonth() + 3);
@@ -2044,6 +2048,10 @@ export default function ScheduleScreen({navigation, route}) {
             if (option === strings.eventsViewSettings) {
               navigation.navigate('ScheduleStack', {
                 screen: 'ViewEventSettingsScreen',
+              });
+            } else if (option === strings.likeEvent) {
+              navigation.navigate('ScheduleStack', {
+                screen: 'LikedEventScreen',
               });
             } else {
               navigation.navigate('ScheduleStack', {

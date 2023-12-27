@@ -55,7 +55,7 @@ const SendNewInvoiceModal = ({
   const [amount, setAmount] = useState(0);
   const [currency, setCurrency] = useState('USD');
   const [selectedDueDate, setSelectedDueDate] = useState();
-  const [description, setDescription] = useState();
+  const [description, setDescription] = useState('');
   const [dueDateVisible, setDueDateVisible] = useState(false);
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
   const [showRecipientsModal, setShowRecipientsModal] = useState(false);
@@ -317,6 +317,10 @@ const SendNewInvoiceModal = ({
     </View>
   );
 
+  const handleDec = (val) => {
+    setDescription(val);
+  };
+
   return (
     <>
       <CustomModalWrapper
@@ -463,16 +467,16 @@ const SendNewInvoiceModal = ({
                 style={{marginTop: 9}}
                 title={strings.descriptionText.toUpperCase()}
               />
+
               <TextInput
                 showSoftInputOnFocus
                 style={styles.descriptionTxt}
                 multiline
+                maxFontSizeMultiplier={9}
                 textAlignVertical="top"
                 placeholder={strings.enterDescription}
-                onChangeText={(text) => {
-                  setDescription(text);
-                }}
-                value={description}
+                onChangeText={handleDec}
+                height={100}
               />
             </View>
             {/* Code for Recipients Header */}

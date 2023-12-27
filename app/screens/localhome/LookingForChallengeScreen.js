@@ -1244,7 +1244,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
         }}
         modalType={ModalTypes.style2}
         externalSnapPoints={snapPoints}
-        containerStyle={{paddingBottom: 0, paddingHorizontal: 15}}>
+        containerStyle={{paddingBottom: 0, paddingHorizontal: 15, zIndex: 30}}>
         <View
           onLayout={(event) => {
             let contentHeight = event.nativeEvent.layout.height + 80;
@@ -1330,6 +1330,7 @@ const styles = StyleSheet.create({
     height: 55,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: -20,
   },
 
   bottomPopupContainer: {

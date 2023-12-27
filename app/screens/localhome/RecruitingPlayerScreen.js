@@ -971,6 +971,7 @@ const styles = StyleSheet.create({
     height: 55,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: -20,
   },
   bottomPopupContainer: {
     flex: 1,

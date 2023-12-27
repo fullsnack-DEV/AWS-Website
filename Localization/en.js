@@ -3257,4 +3257,5 @@ export default {
   challengeSubtext: '(en_You will be the match host.)',
   uplaodButtonText: 'en_Upload',
   jerseyText: 'en_Jersey',
+  likeEvent: 'en_Like Event',
 };

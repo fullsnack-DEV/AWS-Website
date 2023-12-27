@@ -91,6 +91,8 @@ const EventList = ({
           updatedList = updatedList.filter(
             (item) => item.start_datetime <= filters.toDateTime,
           );
+        } else {
+          return eventList;
         }
       }
       return updatedList;
@@ -112,6 +114,7 @@ const EventList = ({
         list: eventList,
         loggedInEntityId: authContext.entity.uid,
       });
+
       if (response.owners.length > 0) {
         setOwners(response.owners);
       }

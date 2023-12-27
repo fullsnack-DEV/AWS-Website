@@ -125,16 +125,6 @@ function SingleImage({
 }
 
 const styles = StyleSheet.create({
-  // imageStyle: {
-  //   height: 50,
-  //   width: 50,
-  // },
-  // loadingTextStyle: {
-  //   color: colors.googleColor,
-  //   fontFamily: fonts.RBold,
-  //   fontSize: 14,
-  //   marginTop: 25,
-  // },
   mainContainer: {
     backgroundColor: colors.whiteColor,
     borderRadius: 0,
@@ -143,20 +133,21 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 5},
     shadowRadius: 15,
     elevation: 2,
-    height: wp('91%'),
+    height: wp('100%'),
 
     marginVertical: '1%',
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
-    // aspectRatio: 7 / 5,
   },
   uploadedImage: {
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
-    // borderRadius: 8,
-    height: wp('96%'),
+
+    height: wp('100%'),
+    width: wp('100%'),
+    aspectRatio: 750 / 900,
   },
 });
 

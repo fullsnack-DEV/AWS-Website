@@ -14,6 +14,7 @@ import {
   SafeAreaView,
   Pressable,
   BackHandler,
+  Platform,
 } from 'react-native';
 import {format} from 'react-string-format';
 
@@ -445,7 +446,11 @@ const HomeScreen = ({navigation, route}) => {
     ) {
       setShowMoreOptionsModal(true);
       if (isAdmin) {
-        setMoreOptions([strings.recruitingMembers]);
+        if (Platform.OS === 'ios') {
+          setMoreOptions([strings.recruitingMembers]);
+        } else {
+          setMoreOptions([strings.recruitingMembers, strings.cancel]);
+        }
       } else {
         setMoreOptions([strings.reportThisAccount, strings.blockThisAccount]);
       }

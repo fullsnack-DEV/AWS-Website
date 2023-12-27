@@ -17,6 +17,7 @@ const GoingUsersModal = ({
   onRemovePress = () => {},
   onPressChat = () => {},
   onPressInvoice = () => {},
+  authContext,
 }) => (
   <CustomModalWrapper
     isVisible={isVisible}
@@ -42,6 +43,8 @@ const GoingUsersModal = ({
             isOwner={item.user_id === ownerId}
             onProfilePress={() => onProfilePress(item)}
             onRemovePress={() => onRemovePress(item)}
+            authContext={authContext}
+            ownerId={ownerId}
           />
         )}
       />

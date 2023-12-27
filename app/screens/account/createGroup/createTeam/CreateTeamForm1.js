@@ -46,6 +46,7 @@ export default function CreateTeamForm1({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [sportsSelection, setSportsSelection] = useState();
   const Pickerref = useRef(null);
+  const Pickerref2 = useRef(null);
   const [teamName, setTeamName] = useState('');
   const [homeCity, setHomeCity] = useState('');
   const [city, setCity] = useState('');
@@ -463,9 +464,16 @@ export default function CreateTeamForm1({navigation, route}) {
 
   const openPicker = () => {
     if (Platform.OS === 'android') {
-      Pickerref?.current?.togglePicker(true);
+      Pickerref?.current?.focus();
     } else {
       Pickerref.current.togglePicker(true);
+    }
+  };
+  const openPicker2 = () => {
+    if (Platform.OS === 'android') {
+      Pickerref2?.current?.focus();
+    } else {
+      Pickerref2?.current?.togglePicker(true);
     }
   };
 
@@ -712,6 +720,7 @@ export default function CreateTeamForm1({navigation, route}) {
                       label: strings.minPlaceholder,
                       value: 0,
                     }}
+                    pickerProps={{ref: Pickerref}}
                     ref={Platform.OS === 'ios' ? Pickerref : null}
                     items={minAgeValue}
                     onValueChange={(value) => {
@@ -771,18 +780,19 @@ export default function CreateTeamForm1({navigation, route}) {
                   -
                 </Text>
                 <Pressable
-                  onPress={() => openPicker()}
+                  onPress={() => openPicker2()}
                   style={{
                     width: '45%',
                     justifyContent: 'flex-start',
                   }}>
                   <RNPickerSelect
-                    ref={Platform.OS === 'ios' ? Pickerref : null}
+                    ref={Platform.OS === 'ios' ? Pickerref2 : null}
                     testID="max-age-picker"
                     placeholder={{
                       label: strings.maxPlaceholder,
                       value: 0,
                     }}
+                    pickerProps={{ref: Pickerref2}}
                     fixAndroidTouchableBug={true}
                     items={maxAgeValue}
                     onValueChange={(value) => {
@@ -815,7 +825,7 @@ export default function CreateTeamForm1({navigation, route}) {
                     Icon={() => {
                       if (Platform.OS === 'ios') {
                         return (
-                          <TouchableOpacity onPress={() => openPicker()}>
+                          <TouchableOpacity onPress={() => openPicker2()}>
                             <Image
                               source={images.dropDownArrow}
                               style={styles.miniDownArrow}

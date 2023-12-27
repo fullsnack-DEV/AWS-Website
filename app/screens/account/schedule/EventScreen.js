@@ -32,6 +32,7 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {
   attendEvent,
   deleteEvent,
+  likeEvent,
   removeAttendeeFromEvent,
 } from '../../../api/Schedule';
 
@@ -70,6 +71,7 @@ import NewsFeedList from '../../newsfeeds/NewsFeedList';
 import LikersModal from '../../../components/modals/LikersModal';
 import CommentModal from '../../../components/newsFeed/CommentModal';
 import FeedsShimmer from '../../../components/shimmer/newsFeed/FeedsShimmer';
+import EventLikersModal from './EventLikersModal';
 
 export default function EventScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -103,6 +105,7 @@ export default function EventScreen({navigation, route}) {
   const [selectedPost, setSelectedPost] = useState({});
   const [showLikeModal, setShowLikeModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
+  const [openLikesModal, setOpenLikesModal] = useState(false);
 
   useEffect(() => {
     if (route.params?.isCreatePost) {
@@ -571,6 +574,7 @@ export default function EventScreen({navigation, route}) {
       .then(() => {
         setloading(false);
         setShowGoingModal(false);
+
         navigation.navigate('App', {
           screen: 'Schedule',
         });
@@ -770,6 +774,45 @@ export default function EventScreen({navigation, route}) {
     return false;
   };
 
+  const onLikeEvent = () => {
+    setloading(true);
+    likeEvent(eventData.cal_id, authContext)
+      .then(() => {
+        if (eventData?.likes?.includes(authContext.entity.uid)) {
+          const {likes: likedUsers} = eventData;
+
+          const updatedLikes = likedUsers.filter(
+            (item) => item !== authContext.entity.uid,
+          );
+
+          const updatedData = {...eventData, likes: updatedLikes};
+
+          setEventData(updatedData);
+        } else {
+          let updatedLikes;
+
+          if (eventData?.likes) {
+            updatedLikes = [...eventData.likes, authContext.entity.uid];
+          } else {
+            updatedLikes = [authContext.entity.uid];
+          }
+
+          const updatedEventData = {
+            ...eventData,
+            likes: updatedLikes,
+          };
+
+          setEventData(updatedEventData);
+        }
+
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        console.log(e.message);
+      });
+  };
+
   return (
     <SafeAreaView style={styles.mainContainerStyle}>
       <ScreenHeader
@@ -786,8 +829,15 @@ export default function EventScreen({navigation, route}) {
             });
           }
         }}
-        rightIcon1={images.unlikeImage}
+        rightIcon1={
+          eventData?.likes?.includes(authContext.entity.uid)
+            ? images.likeImage
+            : images.unlikeImage
+        }
         rightIcon2={images.vertical3Dot}
+        rightIcon1Press={() => {
+          onLikeEvent();
+        }}
         rightIcon2Press={() => {
           if (isOrganizer) {
             setMoreOptions([
@@ -823,6 +873,31 @@ export default function EventScreen({navigation, route}) {
             {!eventData.is_Offline && (
               <Text style={styles.onlineText}>{strings.onlineText}</Text>
             )}
+            <TouchableOpacity
+              onPress={() => setOpenLikesModal(true)}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 15,
+                justifyContent: 'center',
+              }}>
+              <Image
+                source={images.likeImage}
+                style={{
+                  height: 15,
+                  width: 15,
+                }}
+                tintColor={colors.blackColor}
+              />
+              <Text
+                style={{
+                  marginTop: 1,
+                  fontFamily: fonts.RBold,
+                  marginLeft: 5,
+                }}>
+                {eventData?.likes?.length ?? 0}
+              </Text>
+            </TouchableOpacity>
           </View>
 
           <EventTimeItem
@@ -974,14 +1049,16 @@ export default function EventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>
                 {strings.eventFilterOrganiserTitle}
               </Text>
-              {organizer && (
+              {organizer && !loading && (
                 <View>
                   <TCProfileView
                     type="medium"
-                    name={organizer.group_name ?? organizer.full_name}
-                    location={`${organizer.city}, ${
+                    name={organizer.group_name ?? organizer.full_name ?? ''}
+                    location={`${organizer.city ?? ''}, ${
                       organizer.state_abbr ? organizer.state_abbr : ''
-                    }${organizer.state_abbr ? ',' : ''} ${organizer.country}`}
+                    }${organizer.state_abbr ? ',' : ''} ${
+                      organizer.country ?? ''
+                    }`}
                     image={getOrganizerProfile(organizer)}
                     alignSelf={'flex-start'}
                     marginTop={10}
@@ -1477,6 +1554,7 @@ export default function EventScreen({navigation, route}) {
         closeModal={() => setShowGoingModal(false)}
         goingList={going}
         ownerId={eventData.owner_id}
+        authContext={authContext}
         onProfilePress={(obj) => {
           navigation.push('HomeStack', {
             screen: 'HomeScreen',
@@ -1528,6 +1606,13 @@ export default function EventScreen({navigation, route}) {
           setShowActionSheet(false);
           setSendNewInvoice(false);
         }}
+      />
+
+      <EventLikersModal
+        isVisible={openLikesModal}
+        eventId={eventData.cal_id}
+        authContext={authContext}
+        closeModal={() => setOpenLikesModal(false)}
       />
 
       <LikersModal

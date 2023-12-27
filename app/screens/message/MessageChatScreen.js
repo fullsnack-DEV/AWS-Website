@@ -329,7 +329,7 @@ const MessageChatScreen = ({navigation, route}) => {
           Alert.alert(strings.alertmessagetitle, err.message);
         });
     } else if (option === tagOptions[1]) {
-      navigation.navigate('Account', {
+      navigation.navigate('HomeStack', {
         screen: 'HomeScreen',
         params: {
           uid: memberId,

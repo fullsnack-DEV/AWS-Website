@@ -243,7 +243,7 @@ export default function LogModal({
                 marginHorizontal: 0,
                 textAlignVertical: 'top',
               }}
-              value={notes}
+              // value={notes}
             />
           </View>
         </View>

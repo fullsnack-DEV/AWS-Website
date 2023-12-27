@@ -236,7 +236,7 @@ const NewsFeedPostItems = memo(
             showMoreOptions
           />
         )}
-        <View style={{paddingHorizontal: 15}}>
+        <View style={{paddingHorizontal: 5}}>
           <FeedFooter
             like={like}
             likeCount={likeCount}

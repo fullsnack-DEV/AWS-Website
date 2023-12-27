@@ -107,9 +107,9 @@ function EditMemberBasicInfoModal({
     }
 
     const countryOBJ = {
-      country: selectedCountryItem.name,
+      country: selectedCountryItem?.name,
       code: dialCode,
-      iso: selectedCountryItem.code,
+      iso: selectedCountryItem?.code,
     };
 
     setCountryCode(countryOBJ);
@@ -521,7 +521,7 @@ function EditMemberBasicInfoModal({
         title={strings.editbasicinfotitle}
         containerStyle={{padding: 0, flex: 1}}>
         <>
-          <TCKeyboardView>
+          <TCKeyboardView containerStyle={{flex: 1}}>
             <ScrollView>
               <ActivityLoader visible={loading} />
 

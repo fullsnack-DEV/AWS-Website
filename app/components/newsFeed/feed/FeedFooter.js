@@ -18,7 +18,15 @@ const FeedFooter = ({
 }) => (
   <>
     <View
-      style={[styles.row, {justifyContent: 'space-between', marginTop: 15}]}>
+      style={[
+        styles.row,
+        {
+          justifyContent: 'space-between',
+          marginTop: 15,
+
+          height: 43,
+        },
+      ]}>
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.commentShareLikeView}
@@ -58,7 +66,11 @@ const FeedFooter = ({
         <View
           style={[
             styles.row,
-            {paddingTop: 15, justifyContent: 'space-between'},
+            {
+              paddingTop: 15,
+              justifyContent: 'space-between',
+              marginHorizontal: 10,
+            },
           ]}>
           <View style={styles.row}>
             {likeCount > 0 ? (
@@ -107,15 +119,15 @@ const FeedFooter = ({
 
 const styles = StyleSheet.create({
   commentShareLikeView: {
-    width: 25,
-    height: 25,
+    width: 38,
+    height: 38,
     alignItems: 'center',
     justifyContent: 'center',
   },
   icon: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    width: '60%',
+    height: '60%',
+    resizeMode: 'contain',
   },
   row: {
     flexDirection: 'row',

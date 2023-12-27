@@ -103,6 +103,10 @@ function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
     }
   };
 
+  useEffect(() => {
+    getMembers();
+  }, [isVisible]);
+
   const onCloseModal = () => {
     setSearchText('');
     setSelectedList([]);
@@ -311,7 +315,6 @@ function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
         isVisible={isVisible}
         closeModal={onCloseModal}
         modalType={ModalTypes.style1}
-        onModalShow={() => getMembers()}
         headerRightButtonText={strings.send}
         onRightButtonPress={() => sendRequestForBasicInfo()}
         title={strings.sendrequestForBaicInfoText}
@@ -375,7 +378,7 @@ function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
             const contentHeight = event.nativeEvent.layout.height + 80;
 
             setSnapPoints([
-              '50%',
+              '30%',
               contentHeight,
               Dimensions.get('window').height - 40,
             ]);

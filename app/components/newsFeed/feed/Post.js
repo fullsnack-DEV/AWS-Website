@@ -104,7 +104,15 @@ const Post = ({
             setChildIndex={setChildIndex}
           />
         )}
-        <View style={{paddingHorizontal: 15}}>
+        {!isRepost ? (
+          <View style={{paddingHorizontal: 15}}>{renderURLPreview()}</View>
+        ) : null}
+        <View
+          style={{
+            paddingHorizontal: 15,
+            marginTop: !isRepost ? 10 : 0,
+            marginBottom: !isRepost ? 8 : 0,
+          }}>
           <NewsFeedDescription
             descriptions={data.text}
             numberOfLineDisplay={data.attachments?.length > 0 ? 3 : 14}
@@ -116,10 +124,6 @@ const Post = ({
             descriptionTxt={isRepost ? styles.repostText : {}}
           />
         </View>
-
-        {!isRepost ? (
-          <View style={{paddingHorizontal: 15}}>{renderURLPreview()}</View>
-        ) : null}
       </View>
     </View>
   );

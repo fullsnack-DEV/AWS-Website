@@ -1797,17 +1797,6 @@ export default function MembersProfileScreen({navigation, route}) {
                 </TouchableOpacity>
               </View>
 
-              <EditMemberInfoModal
-                isVisible={showEditInfoModal}
-                closeModal={() => {
-                  setShowEditInfoModal(false);
-                  getMemberInformation();
-                  getMembers();
-                }}
-                memberdetails={memberDetail}
-                uidNo={authContext.entity.uid}
-              />
-
               <ActionSheet
                 ref={actionSheet}
                 // title={'NewsFeed Post'}
@@ -1829,7 +1818,16 @@ export default function MembersProfileScreen({navigation, route}) {
           )}
         </>
       )}
-
+      <EditMemberInfoModal
+        isVisible={showEditInfoModal}
+        closeModal={() => {
+          setShowEditInfoModal(false);
+          getMemberInformation();
+          getMembers();
+        }}
+        memberdetails={memberDetail}
+        uidNo={authContext.entity.uid}
+      />
       <EditMemberModal
         isVisible={visibleEditMemberModal}
         closeModal={() => {

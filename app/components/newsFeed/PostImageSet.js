@@ -81,13 +81,13 @@ const styles = StyleSheet.create({
   lengthViewStyle: {
     alignItems: 'center',
     alignSelf: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+
     borderRadius: wp('5%'),
     justifyContent: 'center',
     padding: wp('1.5%'),
     position: 'absolute',
     right: 10,
-    top: 18,
+    top: 15,
   },
   // loadingTextStyle: {
   //   color: colors.googleColor,
@@ -110,10 +110,11 @@ const styles = StyleSheet.create({
   uploadedImage: {
     alignItems: 'center',
     alignSelf: 'center',
-    // borderRadius: 8,
+
     justifyContent: 'center',
-    height: wp('91%'),
+    height: wp('100%'),
     width: wp('100%'),
+    aspectRatio: 1,
   },
 });
 

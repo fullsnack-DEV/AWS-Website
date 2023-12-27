@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-end',
     backgroundColor: 'rgba(0,0,0,0.5)',
+
     borderRadius: 8,
     justifyContent: 'center',
     padding: wp('2%'),
@@ -224,8 +225,8 @@ const styles = StyleSheet.create({
     elevation: 2,
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 8,
-    height: wp('96%'),
+
+    height: wp('100%'),
     justifyContent: 'center',
     marginVertical: wp('1%'),
     width: wp('100%'),
@@ -233,10 +234,11 @@ const styles = StyleSheet.create({
   singleImageDisplayStyle: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderRadius: 8,
-    height: wp('96%'),
+
+    width: '100%',
     justifyContent: 'center',
-    width: wp('100%'),
+
+    aspectRatio: 750 / 900,
   },
   currentTime: {
     fontSize: 15,
