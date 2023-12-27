@@ -56,6 +56,7 @@ import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import fonts from '../../Constants/Fonts';
 // import CustomMediaView from './components/CustomMediaView';
 import MessageAvatar from './components/MessageAvatar';
+import CustomMediaView from './components/CustomMediaView';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
@@ -419,6 +420,7 @@ const MessageChatScreen = ({navigation, route}) => {
         <ChatOverlayProvider
           translucentStatusBar={false}
           topInset={0}
+          bottomInset={0}
           MessageActionList={() => (
             <CustomMessageActionList
               channel={channel}
@@ -453,7 +455,12 @@ const MessageChatScreen = ({navigation, route}) => {
                   }}
                 />
               )}
-              MessageAvatar={() => <MessageAvatar channel={channel} />}
+              MessageAvatar={() => (
+                <MessageAvatar
+                  channel={channel}
+                  chatUserId={authContext.chatClient.userID}
+                />
+              )}
               myMessageTheme={myMessageTheme}
               MessageHeader={({message}) => (
                 <CustomMessageHeader message={message} channel={channel} />
@@ -467,18 +474,16 @@ const MessageChatScreen = ({navigation, route}) => {
                   }}
                 />
               )}
-              // Gallery={() => (
-              //   <CustomMediaView
-              //     onPress={(data = {}) => {
-              //       navigation.navigate('MessageMediaFullScreen', {
-              //         ...data,
-              //       });
-              //     }}
-              //     onLongPress={() => {
-              //       console.log('long pressed');
-              //     }}
-              //   />
-              // )}
+              Gallery={() => (
+                <CustomMediaView
+                  chatUserId={authContext.chatClient.userID}
+                  onPress={(data = {}) => {
+                    navigation.navigate('MessageMediaFullScreen', {
+                      ...data,
+                    });
+                  }}
+                />
+              )}
               Reply={CustomReplyComponent}
               ImageUploadPreview={CustomImageUploadPreview}
               ReactionList={() => null}
@@ -514,29 +519,28 @@ const MessageChatScreen = ({navigation, route}) => {
             </Channel>
           </Chat>
         </ChatOverlayProvider>
-
-        <ReactionsModal
-          isVisible={isVisible}
-          closeModal={() => setIsVisible(false)}
-          reactionsList={allReaction}
-        />
-
-        <BottomSheet
-          type="ios"
-          optionList={deleteOptions}
-          isVisible={deleteMessageModal}
-          closeModal={() => setDeleteMessageModal(false)}
-          onSelect={handleMessageDeletion}
-        />
-
-        <BottomSheet
-          type="ios"
-          optionList={tagOptions}
-          isVisible={showTagOptions}
-          closeModal={() => setShowTagOptions(false)}
-          onSelect={handleTagOptions}
-        />
       </View>
+      <ReactionsModal
+        isVisible={isVisible}
+        closeModal={() => setIsVisible(false)}
+        reactionsList={allReaction}
+      />
+
+      <BottomSheet
+        type="ios"
+        optionList={deleteOptions}
+        isVisible={deleteMessageModal}
+        closeModal={() => setDeleteMessageModal(false)}
+        onSelect={handleMessageDeletion}
+      />
+
+      <BottomSheet
+        type="ios"
+        optionList={tagOptions}
+        isVisible={showTagOptions}
+        closeModal={() => setShowTagOptions(false)}
+        onSelect={handleTagOptions}
+      />
       {/* Chat group details */}
       <ChatGroupDetails
         // isVisible={showDetails}

@@ -52,6 +52,7 @@ export const themeStyle = {
       deletedContainerInner: {
         borderWidth: 0,
         backgroundColor: colors.whiteColor,
+        marginLeft: 40,
       },
       containerInner: {
         maxWidth: Dimensions.get('window').width * 0.7,

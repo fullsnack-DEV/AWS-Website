@@ -46,7 +46,11 @@ export const connectUserToStreamChat = async (authContext) => {
   ) {
     await authContext.chatClient.disconnectUser();
   }
-  await authContext.chatClient.connectUser({id: streamUserId}, streamChatToken);
+  const user = await authContext.chatClient.connectUser(
+    {id: streamUserId},
+    streamChatToken,
+  );
+  authContext.setUnreadMessageCount(user?.me?.total_unread_count ?? 0);
 };
 
 export const createStreamChatChannel = async ({

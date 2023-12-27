@@ -14,11 +14,12 @@ const SearchList = ({list = [], currentTab = '', searchText = ''}) => {
   const {navigate} = useNavigation();
   const authContext = useContext(AuthContext);
 
-  const ListEmptyComponent = () => (
-    <View style={styles.centerMsgContainer}>
-      <Text style={styles.msgAppearText}>{strings.noRecordFoundText}</Text>
-    </View>
-  );
+  const ListEmptyComponent = () =>
+    searchText && list.length === 0 ? (
+      <View style={styles.centerMsgContainer}>
+        <Text style={styles.msgAppearText}>{strings.noRecordFoundText}</Text>
+      </View>
+    ) : null;
 
   const getMessage = (data = {}) => {
     const message = currentTab === strings.message ? data.message : '';

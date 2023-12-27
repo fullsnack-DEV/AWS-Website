@@ -1,8 +1,9 @@
 // @flow
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import {
   AutoCompleteInput,
+  useChannelContext,
   useMessageInputContext,
 } from 'stream-chat-react-native';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -12,6 +13,7 @@ import {widthPercentageToDP as wp} from '../../../utils';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import BottomSheet from '../../../components/modals/BottomSheet';
+import Verbs from '../../../Constants/Verbs';
 
 const CancelFileUpload = (files, removeFile) => {
   files.forEach((item) => {
@@ -97,8 +99,21 @@ const CustomFileUploadPreview = () => {
 
 const CustomInput = () => {
   const [showBottomSheet, setShowBottomSheet] = useState(false);
-  const {sendMessage, ImageUploadPreview, uploadNewImage} =
-    useMessageInputContext();
+
+  const {
+    imageUploads,
+    ImageUploadPreview,
+    uploadNewImage,
+    setImageUploads,
+    uploadNewFile,
+    fileUploads,
+    setFileUploads,
+    text,
+    mentionedUsers,
+    setText,
+  } = useMessageInputContext();
+
+  const {channel} = useChannelContext();
 
   const pickImageFromGallery = () => {
     ImagePicker.openPicker({
@@ -106,11 +121,20 @@ const CustomInput = () => {
     })
       .then((imageList) => {
         setShowBottomSheet(false);
-        imageList.forEach((image) =>
-          uploadNewImage({
-            uri: image.path,
-          }),
-        );
+
+        imageList.forEach((image) => {
+          const mediaType = image.mime.split('/')[0];
+
+          if (mediaType === Verbs.mediaTypeImage) {
+            uploadNewImage({
+              uri: image.path,
+            });
+          } else if (mediaType === Verbs.mediaTypeVideo) {
+            uploadNewFile({
+              uri: image.path,
+            });
+          }
+        });
       })
       .catch(() => {
         setShowBottomSheet(false);
@@ -145,6 +169,67 @@ const CustomInput = () => {
     }
   };
 
+  const handleMediaUpload = useCallback(
+    async (list = [], mediaType = Verbs.mediaTypeImage) => {
+      const attachments = list.map((item) => ({
+        type: mediaType,
+        asset_url: item.url,
+        thumb_url: item.url,
+      }));
+      if (mediaType === Verbs.mediaTypeImage) {
+        setImageUploads(list);
+      }
+      if (mediaType === Verbs.mediaTypeVideo) {
+        setFileUploads(list);
+      }
+      await channel.sendMessage(
+        {
+          attachments: [...attachments],
+        },
+        {skip_push: true},
+      );
+      if (mediaType === Verbs.mediaTypeImage) {
+        setImageUploads([]);
+      }
+      if (mediaType === Verbs.mediaTypeVideo) {
+        setFileUploads([]);
+      }
+    },
+    [channel, setImageUploads, setFileUploads],
+  );
+
+  useEffect(() => {
+    if (imageUploads.length > 0) {
+      const data = imageUploads.find((item) => item.state === 'uploading');
+      if (!data) {
+        handleMediaUpload(imageUploads, Verbs.mediaTypeImage);
+      }
+    }
+  }, [imageUploads, handleMediaUpload]);
+
+  useEffect(() => {
+    if (fileUploads.length > 0) {
+      const data = fileUploads.find((item) => item.state === 'uploading');
+      if (!data) {
+        handleMediaUpload(fileUploads, Verbs.mediaTypeVideo);
+      }
+    }
+  }, [fileUploads, handleMediaUpload]);
+
+  const handleSendMessage = async () => {
+    const obj = {};
+    if (mentionedUsers.length > 0) {
+      obj.mentioned_users = mentionedUsers;
+    }
+    if (text) {
+      obj.text = text;
+    }
+    if (text || mentionedUsers.length > 0) {
+      await channel.sendMessage(obj, {skip_push: true});
+      setText('');
+    }
+  };
+
   return (
     <View style={styles.parent}>
       <ImageUploadPreview />
@@ -164,7 +249,9 @@ const CustomInput = () => {
               additionalTextInputProps={{placeholder: strings.sendAMessage}}
             />
           </View>
-          <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
+          <TouchableOpacity
+            onPress={handleSendMessage}
+            style={styles.sendButton}>
             <Image style={{width: 17, height: 19}} source={images.chatBtn} />
           </TouchableOpacity>
         </View>

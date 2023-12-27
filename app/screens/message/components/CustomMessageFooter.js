@@ -1,11 +1,13 @@
 // @flow
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View, StyleSheet, TouchableOpacity, Image, Text} from 'react-native';
 import moment from 'moment';
 import {useMessageContext} from 'stream-chat-react-native';
 import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import {newReactionData} from '../constants';
+import AuthContext from '../../../auth/context';
+import {checkIsMessageDeleted} from '../../../utils/streamChat';
 
 const MAX_REACTION_COUNT = 99;
 
@@ -56,11 +58,18 @@ const Reactions = ({messageId, reactions = {}, onPress = () => {}}) => {
 
 const CustomMessageFooter = ({onPress = () => {}}) => {
   const {message} = useMessageContext();
+  const authContext = useContext(AuthContext);
+
+  const isDeletedMessage = checkIsMessageDeleted(
+    authContext.chatClient.userID,
+    message,
+  );
 
   return (
     <View style={styles.reactionAndTimeContainer}>
-      {message.latest_reactions?.length > 0 ||
-      message.own_reactions?.length > 0 ? (
+      {!isDeletedMessage &&
+      (message.latest_reactions?.length > 0 ||
+        message.own_reactions?.length > 0) ? (
         <Reactions
           messageId={message.id}
           reactions={message.reaction_counts}
@@ -79,7 +88,7 @@ const CustomMessageFooter = ({onPress = () => {}}) => {
 
 const styles = StyleSheet.create({
   reactionContainer: {
-    padding: 3,
+    padding: 5,
     marginRight: 5,
     borderRadius: 10,
     flexDirection: 'row',
@@ -91,7 +100,7 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
-    marginBottom: 15,
+    // marginBottom: 15,
   },
   reactionAndTimeContainer: {
     flexDirection: 'row',

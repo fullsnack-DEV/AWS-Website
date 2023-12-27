@@ -319,6 +319,12 @@ const AppNavigator = ({navigation}) => {
               />
             );
           },
+          ...(authContext.unreadMessageCount > 0 && {
+            tabBarBadge:
+              authContext.unreadMessageCount > 300
+                ? '300+'
+                : authContext.unreadMessageCount,
+          }),
         })}
       />
       <Tab.Screen

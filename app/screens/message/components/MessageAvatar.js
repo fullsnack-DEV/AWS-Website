@@ -4,9 +4,11 @@ import {StyleSheet} from 'react-native';
 import {useMessageContext} from 'stream-chat-react-native';
 import GroupIcon from '../../../components/GroupIcon';
 import Verbs from '../../../Constants/Verbs';
+import {checkIsMessageDeleted} from '../../../utils/streamChat';
 
-const MessageAvatar = ({channel = {}}) => {
+const MessageAvatar = ({channel = {}, chatUserId = ''}) => {
   const {message, isMyMessage} = useMessageContext();
+  const isDeletedMessage = checkIsMessageDeleted(chatUserId, message);
 
   const getMessageAvtar = (messageUserId = '') => {
     const obj = {
@@ -40,7 +42,10 @@ const MessageAvatar = ({channel = {}}) => {
       groupName={message.user.group_name ?? message.user.name}
       entityType={getMessageAvtar(message.user.id).entityType}
       textstyle={{fontSize: 10, marginTop: 1}}
-      containerStyle={styles.iconContainer}
+      containerStyle={[
+        styles.iconContainer,
+        isDeletedMessage ? {bottom: 0} : {},
+      ]}
       placeHolderStyle={styles.placeHolderStyle}
     />
   );

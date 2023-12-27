@@ -35,6 +35,7 @@ function App() {
   const [streamChatToken, setStreamChatToken] = useState(null);
   const [chatClient, setChatClient] = useState(null);
   const [baseUrlEventImages, setBaseUrlEventImages] = useState('');
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
   useEffect(() => {
     if (!chatClient?.userID) {
@@ -53,6 +54,16 @@ function App() {
         });
     }
   }, [chatClient?.userID]);
+
+  useEffect(() => {
+    if (chatClient) {
+      chatClient.on((event) => {
+        if (event.total_unread_count !== undefined) {
+          setUnreadMessageCount(event.total_unread_count ?? 0);
+        }
+      });
+    }
+  }, [chatClient]);
 
   const setTokenData = useCallback(async (token) => {
     setToken(token);
@@ -167,6 +178,8 @@ function App() {
       chatClient,
       setentityList,
       baseUrlEventImages,
+      unreadMessageCount,
+      setUnreadMessageCount,
     }),
     [
       role,
@@ -188,6 +201,8 @@ function App() {
       chatClient,
       setentityList,
       baseUrlEventImages,
+      unreadMessageCount,
+      setUnreadMessageCount,
     ],
   );
 
