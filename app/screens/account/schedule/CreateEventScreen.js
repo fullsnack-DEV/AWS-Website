@@ -11,7 +11,6 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Image,
   Text,
   SafeAreaView,
   Alert,
@@ -21,7 +20,7 @@ import {
   BackHandler,
   // Dimensions,
 } from 'react-native';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 import moment from 'moment';
 import {
   widthPercentageToDP as wp,
@@ -45,7 +44,6 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
-import {createEvent} from '../../../api/Schedule';
 // import TCProfileView from '../../../components/TCProfileView';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTabView';
@@ -58,27 +56,24 @@ import {
   ordinal_suffix_of,
   getDayFromDate,
   countNumberOfWeekFromDay,
-  countNumberOfWeeks,
   getRoundedDate,
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
-import uploadImages from '../../../utils/imageAction';
+
 import Verbs from '../../../Constants/Verbs';
 import ScreenHeader from '../../../components/ScreenHeader';
-import CustomModalWrapper from '../../../components/CustomModalWrapper';
+
 import {
   DEFAULT_LATITUDE,
   DEFAULT_LONGITUDE,
   LATITUDE_DELTA,
   LONGITUDE_DELTA,
-  ModalTypes,
 } from '../../../Constants/GeneralConstants';
 import {getSportList} from '../../../utils/sportsActivityUtils';
 import SportsListModal from '../registerPlayer/modals/SportsListModal';
 import AddressWithMapModal from '../../../components/AddressWithMap/AddressWithMapModal';
 import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
-import GroupList from '../../../components/Schedule/GroupEvent/GroupList';
 import GroupIcon from '../../../components/GroupIcon';
 
 export default function CreateEventScreen({navigation, route}) {
@@ -90,10 +85,7 @@ export default function CreateEventScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
-  const [eventPosted, setEventPosted] = useState({
-    value: 1,
-    text: strings.scheduleAndPostText,
-  });
+
   const [minAttendees, setMinAttendees] = useState('');
   const [maxAttendees, setMaxAttendees] = useState('');
   const [eventFee, setEventFee] = useState('');
@@ -117,46 +109,13 @@ export default function CreateEventScreen({navigation, route}) {
   const [onlineUrl, setOnlineUrl] = useState('');
   const [loading, setloading] = useState(false);
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
-  const [visibleWhoModal, setVisibleWhoModal] = useState(false);
-  const [visibleWhoCanPostModal, setVisibleWhoCanPostModal] = useState(false);
+
   const [selectedSport, setSelectedSport] = useState({});
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-  const [snapPoints, setSnapPoints] = useState([]);
-
-  const see = 'see';
-  const join = 'join';
-  const posted = 'posted';
-  const invite = 'invite';
-  const post = 'post';
 
   const indexOne = 0;
-  const indexTwo = 1;
-  const indexThree = 2;
-
-  const [whoOption, setWhoOption] = useState();
-  const [whoCanJoinOption, setWhoCanJoinOption] = useState({
-    text: strings.everyoneRadio,
-    value: 0,
-  });
-
-  const [whoCanSeeOption, setWhoCanSeeOption] = useState({
-    text: strings.everyoneRadio,
-    value: 0,
-  });
-
-  const [whoCanInviteOption, setWhoCanInviteOption] = useState({
-    text: strings.attendeeRadioText,
-    value: 0,
-  });
-
-  const [whoCanPost, setWhoCanPost] = useState({
-    text: strings.everyoneRadio,
-    value: 0,
-  });
 
   const [sportsData, setSportsData] = useState([]);
-  const [groupsSeeList, setGroupsSeeList] = useState([]);
-  const [groupsJoinList, setGroupsJoinList] = useState([]);
 
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
@@ -183,6 +142,10 @@ export default function CreateEventScreen({navigation, route}) {
 
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
   const [currency, setSelectedCurrency] = useState('');
+
+  const [groupsSeeList, setGroupsSeeList] = useState([]);
+  const [groupsJoinList, setGroupsJoinList] = useState([]);
+  const [occurance, setOccurance] = useState(0);
 
   useEffect(() => {
     if (isFocused && !mapcoordinate.longitude) {
@@ -329,56 +292,6 @@ export default function CreateEventScreen({navigation, route}) {
       });
   }, [authContext]);
 
-  const renderWhoCan = ({item}) => (
-    <TouchableOpacity
-      style={{
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 15,
-      }}
-      onPress={() => {
-        if (whoOption === see) {
-          setWhoCanSeeOption(item);
-        } else if (whoOption === join) {
-          setWhoCanJoinOption(item);
-        } else if (whoOption === invite) {
-          setWhoCanInviteOption(item);
-        } else if (whoOption === post) {
-          setWhoCanPost(item);
-        } else {
-          setEventPosted(item);
-        }
-
-        setVisibleWhoModal(false);
-        setVisibleWhoCanPostModal(false);
-      }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginBottom: 15,
-          flex: 1,
-        }}>
-        <Text style={styles.languageList}>{item.text}</Text>
-        <View style={styles.checkbox}>
-          {(whoOption === see && whoCanSeeOption.value === item?.value) ||
-          (whoOption === join && whoCanJoinOption.value === item?.value) ||
-          (whoOption === posted && eventPosted.value === item?.value) ||
-          (whoOption === invite && whoCanInviteOption.value === item?.value) ||
-          (whoOption === post && whoCanPost.value === item?.value) ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
   const onBGImageClicked = () => {
     setTimeout(() => {
       if (backgroundThumbnail) {
@@ -466,10 +379,6 @@ export default function CreateEventScreen({navigation, route}) {
   };
 
   const checkValidation = useCallback(() => {
-    // if (!backgroundThumbnail) {
-    //   Alert.alert(strings.appName, 'Please choose event featured image.');
-    //   return false;
-    // }
     if (eventTitle === '') {
       Alert.alert(strings.appName, strings.eventTitleValidation);
       return false;
@@ -500,13 +409,13 @@ export default function CreateEventScreen({navigation, route}) {
       Alert.alert(strings.appName, strings.enterVenueUrlValidation);
       return false;
     }
-    // if (
-    //   !locationDetail?.venue_detail ||
-    //   locationDetail?.venue_detail?.length < 1
-    // ) {
-    //   Alert.alert(strings.appName, strings.enterVenueDescriptionValidation);
-    //   return false;
-    // }
+    if (
+      !locationDetail?.venue_detail ||
+      locationDetail?.venue_detail?.length < 1
+    ) {
+      Alert.alert(strings.appName, strings.enterVenueDescriptionValidation);
+      return false;
+    }
 
     if (Number(minAttendees) > 0 && Number(maxAttendees) > 0) {
       if (Number(minAttendees) === 0) {
@@ -525,194 +434,81 @@ export default function CreateEventScreen({navigation, route}) {
 
     return true;
   }, [
-    eventDescription,
-    eventEndDateTime,
-    eventStartDateTime,
     eventTitle,
-    maxAttendees,
-    minAttendees,
     selectedSport.sport,
+    eventDescription,
+    eventStartDateTime,
+    eventEndDateTime,
     is_Offline,
     onlineUrl,
+    locationDetail?.venue_detail,
     locationDetail?.venue_name,
+    minAttendees,
+    maxAttendees,
   ]);
-
-  const createEventDone = (data) => {
-    const arr = [...data];
-    const entity = authContext.entity;
-    const uid = entity.uid || entity.auth.user_id;
-    const entityRole =
-      entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
-
-    let rule;
-    if (selectWeekMonth === Verbs.eventRecurringEnum.Daily) {
-      rule = 'FREQ=DAILY';
-    } else if (selectWeekMonth === Verbs.eventRecurringEnum.Weekly) {
-      rule = 'FREQ=WEEKLY';
-    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfMonth) {
-      rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(eventStartDateTime)
-        .substring(0, 2)
-        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
-    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfMonth) {
-      rule = `FREQ=MONTHLY;BYMONTHDAY=${eventStartDateTime.getDate()}`;
-    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfYear) {
-      rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(eventStartDateTime)
-        .substring(0, 2)
-        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
-    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfYear) {
-      rule = `FREQ=YEARLY;BYMONTHDAY=${eventStartDateTime.getDate()};BYMONTH=${eventStartDateTime.getMonth()}`;
-    }
-
-    if (rule) {
-      arr[0].rrule = rule;
-    }
-
-    createEvent(entityRole, uid, arr, authContext)
-      .then((response) => {
-        setTimeout(() => {
-          setloading(false);
-          navigation.navigate('App', {
-            screen: 'Schedule',
-            params: {
-              event: response.payload[0],
-            },
-          });
-        }, 1000);
-      })
-      .catch((e) => {
-        setloading(false);
-        Alert.alert(strings.alertmessagetitle, e.messages);
-      });
-  };
-
-  const generateRandomImage = () => {
-    const image1 = 'backgroundFullImage.png';
-    const image2 = 'backgroundFullImage1.png';
-    const imageUrls = [image1, image2];
-    const randomIndex = Math.floor(Math.random() * imageUrls.length);
-    return imageUrls[randomIndex];
-  };
 
   const onDonePress = () => {
     if (checkValidation()) {
-      setloading(true);
       const entity = authContext.entity;
       const entityRole =
         entity.role === Verbs.entityTypeUser
           ? Verbs.entityTypeUsers
           : Verbs.entityTypeGroups;
-      const data = [
-        {
-          title: eventTitle,
-          descriptions: eventDescription,
-          allDay: toggle,
-          start_datetime: getTCDate(eventStartDateTime),
-          end_datetime: getTCDate(eventEndDateTime),
-          is_recurring: selectWeekMonth !== Verbs.eventRecurringEnum.Never,
-          repeat: selectWeekMonth,
-          untilDate: getTCDate(eventUntilDateTime),
-          blocked: is_Blocked,
-          selected_sport: selectedSport,
-          who_can_invite: {
-            ...whoCanInviteOption,
-          },
-          who_can_see: {
-            ...whoCanSeeOption,
-          },
-          who_can_join: {
-            ...whoCanJoinOption,
-          },
-          who_can_post: {
-            ...whoCanPost,
-          },
-          event_posted_at: eventPosted,
-          event_fee: {
-            value: `${parseFloat(eventFee).toFixed(2)}`,
-            currency_type: currency,
-          },
-          refund_policy: refundPolicy,
-          min_attendees: Number(minAttendees),
-          max_attendees: Number(maxAttendees),
-          entity_type:
-            authContext.entity.role === Verbs.entityTypeUser
-              ? Verbs.entityTypePlayer
-              : authContext.entity.role,
-          participants: [
-            {
-              entity_id:
-                authContext.entity.obj.user_id ||
-                authContext.entity.obj.group_id,
-              entity_type: entityRole,
-            },
-          ],
+      const data = {
+        title: eventTitle,
+        descriptions: eventDescription,
+        allDay: toggle,
+        start_datetime: getTCDate(eventStartDateTime),
+        end_datetime: getTCDate(eventEndDateTime),
+        is_recurring: selectWeekMonth !== Verbs.eventRecurringEnum.Never,
+        repeat: selectWeekMonth,
+        // untilDate: getTCDate(eventUntilDateTime),
+        blocked: is_Blocked,
+        selected_sport: selectedSport,
 
-          location: {
-            location_name: searchLocation,
-            latitude: locationDetail.latitude,
-            longitude: locationDetail.longitude,
-            venue_name: locationDetail.venue_name,
-            venue_detail: locationDetail.venue_detail,
-          },
-          online_url: onlineUrl,
-          is_Offline,
+        event_fee: {
+          value: `${parseFloat(eventFee).toFixed(2)}`,
+          currency_type: currency,
         },
-      ];
+        refund_policy: refundPolicy,
+        min_attendees: Number(minAttendees),
+        max_attendees: Number(maxAttendees),
+        entity_type:
+          authContext.entity.role === Verbs.entityTypeUser
+            ? Verbs.entityTypePlayer
+            : authContext.entity.role,
+        participants: [
+          {
+            entity_id:
+              authContext.entity.obj.user_id || authContext.entity.obj.group_id,
+            entity_type: entityRole,
+          },
+        ],
 
-      if (whoCanSeeOption.value === 2) {
-        const checkedGroup = groupsSeeList.filter((obj) => obj.isSelected);
-        const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-        if (authContext.entity.role === Verbs.entityTypeUser) {
-          data[0].who_can_see.group_ids = resultOfIds;
-        } else {
-          data[0].who_can_see.group_ids = [authContext.entity.uid];
-        }
-      }
+        location: {
+          location_name: searchLocation,
+          latitude: locationDetail.latitude,
+          longitude: locationDetail.longitude,
+          venue_name: locationDetail.venue_name,
+          venue_detail: locationDetail.venue_detail,
+        },
+        online_url: onlineUrl,
+        is_Offline,
+        occurrence: occurance,
+        tzid: Intl.DateTimeFormat()?.resolvedOptions().timeZone,
+      };
 
-      if (whoCanJoinOption.value === 2) {
-        const checkedGroup = groupsJoinList.filter((obj) => obj.isSelected);
-        const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-        if (authContext.entity.role === Verbs.entityTypeUser) {
-          data[0].who_can_join.group_ids = resultOfIds;
-        } else {
-          data[0].who_can_join.group_ids = [authContext.entity.uid];
-        }
-      }
+      console.log(data, 'From navigatio');
 
-      if (backgroundImageChanged) {
-        const imageArray = [];
-        imageArray.push({path: backgroundThumbnail});
-        uploadImages(imageArray, authContext)
-          .then((responses) => {
-            const attachments = responses.map((item) => ({
-              type: 'image',
-              url: item.fullImage,
-              thumbnail: item.thumbnail,
-            }));
-
-            let bgInfo = attachments[0];
-            if (attachments.length > 1) {
-              bgInfo = attachments[1];
-            }
-            data[0].background_thumbnail = bgInfo.thumbnail;
-            data[0].background_full_image = bgInfo.url;
-            setBackgroundImageChanged(false);
-            createEventDone(data);
-          })
-          .catch((e) => {
-            setTimeout(() => {
-              console.log(e);
-              Alert.alert(strings.appName, e.messages);
-            }, 0.1);
-          });
-      } else {
-        const image = `${
-          authContext.baseUrlEventImages
-        }${generateRandomImage()}`;
-
-        data[0].background_thumbnail = image;
-        data[0].background_full_image = image;
-        createEventDone(data);
-      }
+      navigation.navigate('CreateEventScreen2', {
+        createEventData: data,
+        backgroundImageChangedFlag: backgroundImageChanged,
+        backgroundThumbnailFlag: backgroundThumbnail,
+        eventStartDateTimeflag: eventStartDateTime,
+        selectWeekMonthFlag: selectWeekMonth,
+        groupsSeeListFlag: groupsSeeList,
+        groupsJoinListFlag: groupsJoinList,
+      });
     }
   };
 
@@ -769,121 +565,6 @@ export default function CreateEventScreen({navigation, route}) {
     return () => backHandler.remove();
   }, [handleBackPress]);
 
-  const getOptions = () => {
-    if (
-      authContext.entity.role === Verbs.entityTypeUser ||
-      authContext.entity.role === Verbs.entityTypePlayer
-    ) {
-      if (whoOption === see) {
-        return [
-          {
-            text: strings.everyoneTitleText,
-            value: 0,
-          },
-          {
-            text: strings.followerTitleText,
-            value: 2,
-          },
-
-          {
-            text: strings.oraganizerOnly,
-            value: 1,
-          },
-        ];
-      }
-
-      if (whoOption === join) {
-        return [
-          {
-            text: strings.everyoneTitleText,
-            value: 0,
-          },
-          {
-            text: strings.followingAndFollowers,
-            value: 2,
-          },
-          {
-            text: strings.followersRadio,
-            value: 3,
-          },
-          {
-            text: strings.invited,
-            value: 4,
-          },
-          {
-            text: strings.oraganizerOnly,
-            value: 1,
-          },
-          // strings.everyoneTitleText,
-          // strings.followingAndFollowers,
-          // strings.following,
-          // strings.inviteOnly,
-          // strings.onlymeTitleText,
-        ];
-      }
-
-      if (whoOption === invite) {
-        return [
-          {
-            text: strings.attendeeRadioText,
-            value: 0,
-          },
-          {
-            text: strings.oraganizerOnly,
-            value: 1,
-          },
-        ];
-      }
-      if (whoOption === post) {
-        return [
-          {
-            text: strings.everyoneRadio,
-            value: 0,
-          },
-          {
-            text: strings.attendeeRadioText,
-            value: 1,
-          },
-          {
-            text: strings.oraganizerOnly,
-            value: 2,
-          },
-        ];
-      }
-    }
-    if (
-      authContext.entity.role === Verbs.entityTypeTeam ||
-      authContext.entity.role === Verbs.entityTypeClub
-    ) {
-      if (whoOption === see) {
-        return [
-          {text: strings.everyoneTitleText, value: 0},
-          {text: strings.followerTitleText, value: 3},
-          {text: strings.membersTitle, value: 2},
-          {text: strings.oraganizerOnly, value: 1},
-        ];
-      }
-
-      if (whoOption === join) {
-        return [
-          {text: strings.everyoneTitleText, value: 0},
-          {text: strings.followerTitleText, value: 3},
-          {text: strings.membersTitle, value: 2},
-          {text: strings.invited, value: 4},
-          {text: strings.oraganizerOnly, value: 1},
-        ];
-      }
-
-      if (whoOption === invite) {
-        return [
-          {text: strings.attendeeRadioText, value: 0},
-          {text: strings.oraganizerOnly, value: 1},
-        ];
-      }
-    }
-    return [];
-  };
-
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -891,7 +572,7 @@ export default function CreateEventScreen({navigation, route}) {
         leftIcon={images.backArrow}
         leftIconPress={handleBackPress}
         isRightIconText
-        rightButtonText={strings.done}
+        rightButtonText={strings.next}
         onRightButtonPress={() => {
           onDonePress();
         }}
@@ -901,7 +582,11 @@ export default function CreateEventScreen({navigation, route}) {
 
       <TCKeyboardView>
         <ScrollView bounces={false} nestedScrollEnabled={true}>
-          <View style={{paddingTop: 10, paddingHorizontal: 10}}>
+          <View
+            style={{
+              paddingTop: 10,
+              paddingHorizontal: 10,
+            }}>
             <EventBackgroundPhoto
               isEdit={!!backgroundThumbnail}
               isPreview={false}
@@ -964,20 +649,7 @@ export default function CreateEventScreen({navigation, route}) {
               <Text style={styles.headerTextStyle}>
                 {strings.organizerTitle}
               </Text>
-              {/* <TCProfileView
-                type="medium"
-                name={
-                  authContext.entity.obj.group_name ??
-                  authContext.entity.obj.full_name
-                }
-                image={
-                  authContext.entity.obj.thumbnail
-                    ? {uri: authContext.entity.obj.thumbnail}
-                    : images.teamPH
-                }
-                alignSelf={'flex-start'}
-                marginTop={10}
-              /> */}
+
               <View
                 style={{
                   marginTop: 10,
@@ -1023,6 +695,7 @@ export default function CreateEventScreen({navigation, route}) {
               isRequired={true}>
               <EventVenueTogglebtn
                 offline={is_Offline}
+                reducewidth={true}
                 firstTabTitle={strings.offline}
                 secondTabTitle={strings.online}
                 onFirstTabPress={() => setIsOffline(true)}
@@ -1041,20 +714,6 @@ export default function CreateEventScreen({navigation, route}) {
                     placeholderTextColor={colors.userPostTimeColor}
                   />
 
-                  {/* <TCTouchableLabel
-                    placeholder={strings.addressPlaceholder}
-                    title={searchLocation}
-                    showShadow={false}
-                    showNextArrow={false}
-                    onPress={() => {
-                      setVisibleLocationModal(true);
-                    }}
-                    style={{
-                      width: '100%',
-                      alignSelf: 'center',
-                      backgroundColor: colors.textFieldBackground,
-                    }}
-                  /> */}
                   <Pressable
                     style={styles.textInputStyle}
                     onPress={() => {
@@ -1233,28 +892,107 @@ export default function CreateEventScreen({navigation, route}) {
                 }}
                 titleStyle={{color: colors.userPostTimeColor}}
               />
+
               {selectWeekMonth !== Verbs.eventRecurringEnum.Never && (
-                <EventTimeSelectItem
-                  title={strings.until}
-                  toggle={!toggle}
-                  date={
-                    eventUntilDateTime
-                      ? moment(eventUntilDateTime).format('ll')
-                      : moment(new Date()).format('ll')
-                  }
-                  time={
-                    eventUntilDateTime
-                      ? moment(eventUntilDateTime).format('h:mm a')
-                      : moment(new Date()).format('h:mm a')
-                  }
-                  containerStyle={{marginBottom: 12}}
-                  onDatePress={() => setUntilDateVisible(!untilDateVisible)}
-                />
+                <View>
+                  <EventMonthlySelection
+                    title={strings.repeat}
+                    dataSource={[
+                      {
+                        label: '3 Times',
+                        value: 3,
+                      },
+                      {
+                        label: '4 Times',
+                        value: 4,
+                      },
+                      {
+                        label: '5 Times',
+                        value: 5,
+                      },
+                      {
+                        label: '6 Times',
+                        value: 6,
+                      },
+                      {
+                        label: '7 Times',
+                        value: 7,
+                      },
+                      {
+                        label: '8 Times',
+                        value: 8,
+                      },
+                      {
+                        label: '9 Times',
+                        value: 9,
+                      },
+                      {
+                        label: '10 Times',
+                        value: 10,
+                      },
+                      // {
+                      //   label: '11 Times',
+                      //   value: Verbs.eventRecurringEnum.Weekly,
+                      // },
+                      // {
+                      //   label: '12 Times',
+                      //   value: Verbs.eventRecurringEnum.Weekly,
+                      // },
+                      // {
+                      //   label: '13 Times',
+                      //   value: Verbs.eventRecurringEnum.Weekly,
+                      // },
+
+                      // {
+                      //   label: '14 Times',
+                      //   value: Verbs.eventRecurringEnum.Weekly,
+                      // },
+                      // {
+                      //   label: '15 Times',
+                      //   value: Verbs.eventRecurringEnum.Weekly,
+                      // },
+                      // {
+                      //   label: '16 Times',
+                      //   value: Verbs.eventRecurringEnum.Weekly,
+                      // },
+                      // {
+                      //   label: '17 Times',
+                      //   value: Verbs.eventRecurringEnum.Weekly,
+                      // },
+                      // {
+                      //   label: '18 Times',
+                      //   value: Verbs.eventRecurringEnum.Weekly,
+                      // },
+                      // {
+                      //   label: '19 Times',
+                      //   value: Verbs.eventRecurringEnum.Weekly,
+                      // },
+                      // {
+                      //   label: '20 Times',
+                      //   value: Verbs.eventRecurringEnum.Weekly,
+                      // },
+                    ]}
+                    placeholder={strings.never}
+                    value={occurance}
+                    onValueChange={(value) => {
+                      console.log(value, 'From value');
+                      setOccurance(value);
+                      // if (value === strings.never) {
+                      //   setEventUntildateTime(eventEndDateTime);
+                      // }
+                      // setSelectWeekMonth(value);
+                    }}
+                    titleStyle={{color: colors.userPostTimeColor}}
+                  />
+                </View>
               )}
             </EventItemRender>
 
             <EventItemRender
-              containerStyle={{marginTop: -40, marginBottom: 10}}
+              containerStyle={{
+                marginTop: -40,
+                marginBottom: 10,
+              }}
               title={''}>
               <Text style={styles.availableSubHeader}>
                 {strings.availableSubTitle}
@@ -1338,208 +1076,13 @@ export default function CreateEventScreen({navigation, route}) {
                 {strings.numberOfAttend}
                 {/* <Text style={styles.opetionalTextStyle}>{strings.optional}</Text> */}
               </Text>
-              <Text style={styles.subTitleText}>
-                {strings.eventMayBeCancelledByOrganizerText}
-              </Text>
+
               <NumberOfAttendees
                 onChangeMinText={setMinAttendees}
                 onChangeMaxText={setMaxAttendees}
                 min={minAttendees}
                 max={maxAttendees}
               />
-            </View>
-
-            <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption(see);
-                  setVisibleWhoModal(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {whoCanSeeOption.text}
-                  </Text>
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
-                  />
-                </View>
-              </TouchableOpacity>
-
-              {whoCanSeeOption.value === indexThree &&
-              authContext.entity.role === Verbs.entityTypeUser ? (
-                <GroupList
-                  list={groupsSeeList}
-                  onCheck={(index) => {
-                    groupsSeeList[index].isSelected =
-                      !groupsSeeList[index].isSelected;
-                    setGroupsSeeList([...groupsSeeList]);
-                  }}
-                  onAllPress={(isAllSelected) => {
-                    const newList = groupsSeeList.map((item) => ({
-                      ...item,
-                      isSelected: !isAllSelected,
-                    }));
-                    setGroupsSeeList([...newList]);
-                  }}
-                  containerStyle={{marginTop: 20}}
-                />
-              ) : null}
-            </View>
-
-            <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption(join);
-                  setVisibleWhoModal(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {whoCanJoinOption.text}
-                  </Text>
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
-                  />
-                </View>
-              </TouchableOpacity>
-
-              {whoCanJoinOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser ? (
-                <GroupList
-                  list={groupsJoinList}
-                  onCheck={(index) => {
-                    groupsJoinList[index].isSelected =
-                      !groupsJoinList[index].isSelected;
-                    setGroupsJoinList([...groupsJoinList]);
-                  }}
-                  onAllPress={(isAllSelected) => {
-                    const newList = groupsJoinList.map((item) => ({
-                      ...item,
-                      isSelected: !isAllSelected,
-                    }));
-                    setGroupsJoinList([...newList]);
-                  }}
-                  containerStyle={{marginTop: 20}}
-                />
-              ) : null}
-            </View>
-
-            <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.whoCanInvite}</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption(invite);
-                  setVisibleWhoModal(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {whoCanInviteOption.text}
-                  </Text>
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
-                  />
-                </View>
-              </TouchableOpacity>
-
-              {whoCanInviteOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser ? (
-                <GroupList
-                  list={groupsSeeList}
-                  onCheck={(index) => {
-                    groupsSeeList[index].isSelected =
-                      !groupsSeeList[index].isSelected;
-                    setGroupsSeeList([...groupsSeeList]);
-                  }}
-                  onAllPress={(isAllSelected) => {
-                    const newList = groupsSeeList.map((item) => ({
-                      ...item,
-                      isSelected: !isAllSelected,
-                    }));
-                    setGroupsSeeList([...newList]);
-                  }}
-                  containerStyle={{marginTop: 20}}
-                />
-              ) : null}
-            </View>
-            {/* who Can write post on Event Home */}
-
-            <View style={styles.containerStyle}>
-              <Text
-                style={[styles.headerTextStyle, {textTransform: 'uppercase'}]}>
-                {strings.whoCanWritePostoneventHome}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption(post);
-                  setVisibleWhoCanPostModal(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {whoCanPost.text}
-                  </Text>
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
-                  />
-                </View>
-              </TouchableOpacity>
-
-              {/* {whoCanInviteOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser ? (
-                <GroupList
-                  list={groupsSeeList}
-                  onCheck={(index) => {
-                    groupsSeeList[index].isSelected =
-                      !groupsSeeList[index].isSelected;
-                    setGroupsSeeList([...groupsSeeList]);
-                  }}
-                  onAllPress={(isAllSelected) => {
-                    const newList = groupsSeeList.map((item) => ({
-                      ...item,
-                      isSelected: !isAllSelected,
-                    }));
-                    setGroupsSeeList([...newList]);
-                  }}
-                  containerStyle={{marginTop: 20}}
-                />
-              ) : null} */}
-            </View>
-
-            <View style={styles.containerStyle}>
-              <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity
-                  style={styles.checkboxPost}
-                  onPress={() => {
-                    if (eventPosted.value === indexTwo) {
-                      setEventPosted({
-                        value: 0,
-                        text: strings.scheduleOnlyText,
-                      });
-                    } else {
-                      setEventPosted({
-                        value: 1,
-                        text: strings.scheduleAndPostText,
-                      });
-                    }
-                  }}>
-                  <Image
-                    source={
-                      eventPosted.value === 1
-                        ? images.yellowCheckBox
-                        : images.uncheckWhite
-                    }
-                    style={styles.checkboxPostImg}
-                    resizeMode={'contain'}
-                  />
-                </TouchableOpacity>
-                <Text style={[styles.allDayText, {flex: 1, flexWrap: 'wrap'}]}>
-                  {strings.eventPostCreate}
-                </Text>
-              </View>
             </View>
 
             <DateTimePickerView
@@ -1591,55 +1134,6 @@ export default function CreateEventScreen({navigation, route}) {
         }}
         rightButtonText={strings.apply}
       />
-
-      <CustomModalWrapper
-        isVisible={visibleWhoModal}
-        closeModal={() => setVisibleWhoModal(false)}
-        modalType={ModalTypes.style2}
-        title={whoOption === join ? strings.whoCanJoin : strings.whoCanSee}
-        containerStyle={{
-          padding: 15,
-          marginBottom: Platform.OS === 'ios' ? 35 : 0,
-        }}
-        externalSnapPoints={snapPoints}>
-        <View
-          onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
-
-            setSnapPoints([contentHeight, contentHeight]);
-          }}>
-          {getOptions().map((item, index) => renderWhoCan({item, index}))}
-        </View>
-      </CustomModalWrapper>
-      <CustomModalWrapper
-        isVisible={visibleWhoCanPostModal}
-        closeModal={() => setVisibleWhoCanPostModal(false)}
-        modalType={ModalTypes.style2}
-        title={whoOption === join ? strings.whoCanJoin : strings.whoCanSee}
-        containerStyle={{
-          padding: 15,
-          marginBottom: Platform.OS === 'ios' ? 35 : 0,
-        }}
-        externalSnapPoints={snapPoints}>
-        <View
-          onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
-
-            setSnapPoints([
-              // '50%',
-              contentHeight,
-              contentHeight,
-              // Dimensions.get('window').height - 40,
-            ]);
-          }}>
-          <FlatList
-            data={getOptions()}
-            renderItem={renderWhoCan}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-      </CustomModalWrapper>
 
       <ActionSheet
         ref={actionSheet}
@@ -1712,36 +1206,13 @@ export default function CreateEventScreen({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
-  checkboxPostImg: {
-    width: wp('4.5%'),
-    height: wp('4.5%'),
-    marginTop: 5,
-  },
-  checkboxPost: {
-    left: wp(0),
-    marginRight: 10,
-  },
-  allDayText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
   availableSubHeader: {
     fontSize: 16,
     lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  checkboxImg: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-    // alignSelf: 'center',
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-  },
+
   textInputStyle: {
     backgroundColor: colors.textFieldBackground,
     borderRadius: 5,
@@ -1757,27 +1228,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
   },
-  textInputDropStyle: {
-    flex: 1,
-    alignSelf: 'center',
-    textAlign: 'center',
-    color: colors.lightBlackColor,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-  },
-  dropContainer: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    borderRadius: 5,
-    width: wp('94%'),
-    height: 40,
-    alignSelf: 'center',
-    backgroundColor: colors.textFieldBackground,
-    marginTop: 10,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    alignItems: 'center',
-  },
+
   detailsContainer: {
     backgroundColor: colors.textFieldBackground,
     marginTop: 10,
@@ -1801,13 +1252,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     marginVertical: 3,
   },
-  downArrowWhoCan: {
-    height: 15,
-    resizeMode: 'contain',
-    tintColor: colors.lightBlackColor,
-    width: 15,
-    right: 15,
-  },
+
   eventFeeStyle: {
     flex: 1,
     fontSize: 16,
@@ -1836,12 +1281,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    marginRight: 10,
-  },
+
   subTitleText: {
     fontFamily: fonts.RRegular,
     fontSize: 16,

@@ -425,7 +425,9 @@ const HomeScreen = ({navigation, route}) => {
         if (Platform.OS === 'ios') {
           setMoreOptions([strings.recruitingMembers]);
         } else {
-          setMoreOptions([strings.recruitingMembers]);
+
+          setMoreOptions([strings.recruitingMembers, strings.cancel]);
+
         }
       } else {
         setMoreOptions([strings.reportThisAccount, strings.blockThisAccount]);

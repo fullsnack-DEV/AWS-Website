@@ -15,6 +15,9 @@ import InviteToEventScreen from '../screens/account/schedule/InviteToEventScreen
 import GoingListScreen from '../screens/account/schedule/GoingListScreen';
 import LikedEventScreen from '../screens/account/schedule/LikedEventScreen';
 
+import CreateEventScreen2 from '../screens/account/schedule/CreateEventScreen2';
+
+
 const Stack = createStackNavigator();
 
 const ScheduleNavigator = () => (
@@ -64,6 +67,12 @@ const ScheduleNavigator = () => (
       component={CreateEventScreen}
       options={{headerShown: false}}
     />
+    <Stack.Screen
+      name="CreateEventScreen2"
+      component={CreateEventScreen2}
+      options={{headerShown: false}}
+    />
+
     <Stack.Screen
       name="DefaultColorScreen"
       component={DefaultColorScreen}

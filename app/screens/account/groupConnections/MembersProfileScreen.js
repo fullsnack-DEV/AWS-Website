@@ -1752,10 +1752,12 @@ export default function MembersProfileScreen({navigation, route}) {
                 </TouchableOpacity>
               </View>
 
+
               <BottomSheet
                 isVisible={showActionSheet}
                 closeModal={() => setShowActionSheet(false)}
                 optionList={[
+
                   strings.sendrequestForBaicInfoText,
                   strings.editAdminPrivillege,
                 ]}

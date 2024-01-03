@@ -244,7 +244,7 @@ export default {
   enterFeePlaceholder: 'en_Enter fee',
   venueNamePlaceholder: 'en_Venue Name',
   venueAddressPlaceholder: 'en_Address',
-  venueDetailsPlaceholder: 'en_Details',
+  venueDetailsPlaceholder: 'en_Details (optional)',
   feeDetailsText: 'en_Fee Details',
   feeDetailsPlaceholder: 'en_Write Details regarding the registration fee…',
   membershipFeeTitle: 'en_Membership Fee',
@@ -3259,8 +3259,14 @@ export default {
   uplaodButtonText: 'en_Upload',
   jerseyText: 'en_Jersey',
   likeEvent: 'en_Like Event',
+
+  createEventPostTitle: 'en_CREATE EVENT POST',
+  doNotCreateText: 'en_Do not create',
+  createText: 'Create',
+
   welcomToTownCupText: 'en_Welcome to TownsCup!',
   postsFromOtherGroupWillAppearHere:
     'en_Posts from people and groups you are following will appear here.',
   newReservationWillAppearHere: 'en_New Reservation will appear here.',
+
 };

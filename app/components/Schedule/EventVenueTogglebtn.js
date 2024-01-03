@@ -1,10 +1,7 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, Text} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
@@ -21,37 +18,44 @@ export default function EventVenueTogglebtn({
   inactiveEventPricacy,
   activeEventPrivacyText,
   inactiveEventPrivacyText,
+  reducewidth = false,
 }) {
   return (
     <LinearGradient
       colors={[startGradientColor, endGradientColor]}
-      style={[styles.eventPrivacyContianer, style]}>
+      style={[
+        styles.eventPrivacyContianer,
+        style,
+        {width: reducewidth ? '40%' : '50%'},
+      ]}>
       <TouchableOpacity
         onPress={onFirstTabPress}
         style={
-            offline ? [styles.activeEventPricacy, activeEventPricacy] : 
-            [styles.inactiveEventPricacy, inactiveEventPricacy]
+          offline
+            ? [styles.activeEventPricacy, activeEventPricacy]
+            : [styles.inactiveEventPricacy, inactiveEventPricacy]
         }>
         <Text
           style={
-            offline ? [styles.activeEventPrivacyText, activeEventPrivacyText] : 
-            [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
+            offline
+              ? [styles.activeEventPrivacyText, activeEventPrivacyText]
+              : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
           }>
-          {firstTabTitle} 
+          {firstTabTitle}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={onSecondTabPress}
         style={
-        !offline ? 
-         [styles.activeEventPricacy, activeEventPricacy] : 
-         [styles.inactiveEventPricacy, inactiveEventPricacy]
+          !offline
+            ? [styles.activeEventPricacy, activeEventPricacy]
+            : [styles.inactiveEventPricacy, inactiveEventPricacy]
         }>
         <Text
           style={
-            !offline ? 
-          [styles.activeEventPrivacyText, activeEventPrivacyText] : 
-          [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
+            !offline
+              ? [styles.activeEventPrivacyText, activeEventPrivacyText]
+              : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
           }>
           {secondTabTitle}
         </Text>
@@ -63,41 +67,44 @@ export default function EventVenueTogglebtn({
 const styles = StyleSheet.create({
   eventPrivacyContianer: {
     flexDirection: 'row',
-    borderRadius: wp('5%'),
-    paddingHorizontal: wp('2%'),
-    paddingVertical: wp('1%'),
+    borderRadius: 100,
+    paddingHorizontal: 5,
+    paddingVertical: 3,
     marginVertical: 15,
-    width: wp('40%'),
-    alignSelf: 'center',
+
+    flexShrink: 1,
     height: 30,
     backgroundColor: colors.greeColor,
     position: 'absolute',
     right: 5,
-    top: -10
+    top: -10,
   },
   activeEventPricacy: {
-    flex: 1,
+    paddingHorizontal: 5,
     backgroundColor: colors.whiteColor,
 
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: wp('5%'),
+    borderRadius: 100,
   },
   inactiveEventPricacy: {
+    paddingHorizontal: 5,
     flex: 1,
-    paddingVertical: hp('0.5'),
+    paddingVertical: 3,
     alignItems: 'center',
   },
   activeEventPrivacyText: {
+    paddingHorizontal: 5,
     color: colors.greeColor,
     fontFamily: fonts.RBold,
-    letterSpacing: 0.5,
+
     fontSize: 11,
   },
   inactiveEventPrivacyText: {
+    paddingHorizontal: 5,
     color: colors.grayColor,
     fontFamily: fonts.RBold,
-    letterSpacing: 0.5,
+
     fontSize: 11,
   },
 });

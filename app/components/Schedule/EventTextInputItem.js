@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontFamily: fonts.RRegular,
-    height: 150,
+    height: 100,
   },
 });
 
