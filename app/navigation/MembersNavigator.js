@@ -49,22 +49,7 @@ const MembersNavigator = () => (
     <Stack.Screen
       name="MembersProfileScreen"
       component={MembersProfileScreen}
-      options={{
-        title: strings.memberProfile,
-        headerTintColor: colors.blackColor,
-        headerTitleAlign: 'center',
-
-        headerTitleStyle: {
-          fontFamily: fonts.RMedium,
-          fontSize: 16,
-        },
-
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
     <Stack.Screen
       name="InviteMembersByEmailScreen"

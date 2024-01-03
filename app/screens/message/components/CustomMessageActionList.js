@@ -32,7 +32,7 @@ const CustomMessageActionList = ({
       title: strings.delete,
     },
   ];
-
+  // return null;
   return (
     <View style={styles.parent}>
       {messageActions.map(({actionType, ...rest}) => (

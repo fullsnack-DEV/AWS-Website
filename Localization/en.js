@@ -427,7 +427,7 @@ export default {
   doneByText: 'en_Done by',
   detailText: 'en_DETAILS',
   respondWithinText: 'en_RESPOND',
-  noReservationFountText: 'en_No Reservations Found',
+  noReservationFountText: 'en_No Reservation',
   // member connection
   connectAccountText: 'en_Invite or Connect Account',
   connectProfile: 'en_Connect the profile to this account',
@@ -3080,6 +3080,7 @@ export default {
     "en_This message will be deleted from everyone's device",
   uploadingText: 'en_Uploading',
   uploadedText: ' en_Image uploaded',
+  uploadedVideoText: ' en_Video uploaded',
   messageDeletedText: 'en_This mesage was deleted.',
   photoText: 'en_Photo',
   replyTo: 'en_Reply to',
@@ -3258,4 +3259,8 @@ export default {
   uplaodButtonText: 'en_Upload',
   jerseyText: 'en_Jersey',
   likeEvent: 'en_Like Event',
+  welcomToTownCupText: 'en_Welcome to TownsCup!',
+  postsFromOtherGroupWillAppearHere:
+    'en_Posts from people and groups you are following will appear here.',
+  newReservationWillAppearHere: 'en_New Reservation will appear here.',
 };

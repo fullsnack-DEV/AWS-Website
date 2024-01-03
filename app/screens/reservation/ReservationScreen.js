@@ -1,10 +1,8 @@
-/* eslint-disable react/jsx-no-undef */
 import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {View, StyleSheet, Alert, FlatList, SafeAreaView} from 'react-native';
 
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import {getReservationList} from '../../api/Reservations';
-import TCNoDataView from '../../components/TCNoDataView';
 import {strings} from '../../../Localization/translation';
 
 import AuthContext from '../../auth/context';
@@ -16,6 +14,8 @@ import ReservationMainScreenShimmer from '../../components/shimmer/schedule/Rese
 import ReservationCard from '../../components/reservations/ReservationCard';
 import ReservationStatus from '../../Constants/ReservationStatus';
 import GameStatus from '../../Constants/GameStatus';
+import ListEmptyComponent from '../../components/NoDataComponents/ListEmptyComponent';
+import images from '../../Constants/ImagePath';
 
 export default function ReservationScreen({navigation}) {
   const [loading, setloading] = useState(false);
@@ -131,46 +131,38 @@ export default function ReservationScreen({navigation}) {
   );
 
   const keyExtractor = useCallback((item, index) => index.toString(), []);
+
+  const renderView = (list = []) => {
+    if (firstTimeLoading) {
+      return <ReservationMainScreenShimmer />;
+    }
+    if (!loading && list.length === 0) {
+      return (
+        <ListEmptyComponent
+          title={strings.noReservationFountText}
+          subTitle={strings.newReservationWillAppearHere}
+          imageUrl={images.reservationNoData}
+        />
+      );
+    }
+    return (
+      <View style={{flex: 1}}>
+        <FlatList
+          data={list}
+          keyExtractor={keyExtractor}
+          renderItem={matchReservationView}
+          style={{paddingTop: 15}}
+          ListFooterComponent={<SafeAreaView forceInset={{bottom: 'always'}} />}
+        />
+      </View>
+    );
+  };
+
   return (
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
-
-      <View tabLabel={strings.upcomingTitleText} style={{flex: 1}}>
-        {/* eslint-disable-next-line no-nested-ternary */}
-        {firstTimeLoading ? (
-          <ReservationMainScreenShimmer />
-        ) : upcoming.length === 0 && loading === false ? (
-          <TCNoDataView title={strings.noReservationFountText} />
-        ) : (
-          <FlatList
-            data={upcoming}
-            keyExtractor={keyExtractor}
-            renderItem={matchReservationView}
-            style={{paddingTop: 15}}
-            ListFooterComponent={
-              <SafeAreaView forceInset={{bottom: 'always'}} />
-            }
-          />
-        )}
-      </View>
-      <View tabLabel={strings.past} style={{flex: 1}}>
-        {/* eslint-disable-next-line no-nested-ternary */}
-        {firstTimeLoading ? (
-          <ReservationMainScreenShimmer />
-        ) : past.length === 0 && loading === false ? (
-          <TCNoDataView title={strings.noReservationFountText} />
-        ) : (
-          <FlatList
-            data={past}
-            keyExtractor={keyExtractor}
-            renderItem={matchReservationView}
-            style={{paddingTop: 15}}
-            ListFooterComponent={
-              <SafeAreaView forceInset={{bottom: 'always'}} />
-            }
-          />
-        )}
-      </View>
+      {renderView(upcoming)}
+      {renderView(past)}
     </View>
   );
 }

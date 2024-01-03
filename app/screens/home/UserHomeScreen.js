@@ -78,6 +78,7 @@ const UserHomeScreen = ({
       'hardwareBackPress',
       () => {
         setRefreshModal(false);
+        return false;
       },
     );
 

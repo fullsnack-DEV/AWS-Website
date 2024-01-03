@@ -252,6 +252,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',
+    height: 40,
   },
   input: {
     flex: 1,

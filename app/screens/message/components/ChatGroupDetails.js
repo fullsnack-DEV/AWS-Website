@@ -224,7 +224,14 @@ const ChatGroupDetails = ({
 
                     <View style={{flex: 1}}>
                       <Text style={styles.channelName} numberOfLines={1}>
-                        {getChannelName(channel, streamUserId)}
+                        {getChannelName(channel, streamUserId)}{' '}
+                        {channel.data?.channel_type ===
+                          Verbs.channelTypeAuto && (
+                          <Image
+                            source={images.shieldWithStar}
+                            style={styles.shieldIcon}
+                          />
+                        )}
                       </Text>
                     </View>
                   </View>
@@ -397,6 +404,11 @@ const styles = StyleSheet.create({
   addIcon: {
     width: '100%',
     height: '100%',
+    resizeMode: 'contain',
+  },
+  shieldIcon: {
+    height: 20,
+    width: 20,
     resizeMode: 'contain',
   },
 });

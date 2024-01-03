@@ -85,30 +85,11 @@ import HomeScheduleScreen from '../screens/home/HomeScheduleScreen';
 const Stack = createStackNavigator();
 
 const HomeNavigator = () => (
-  <Stack.Navigator
-    screenOptions={{
-      // headerTintColor: colors.blackColor,
-      // headerTransparent: true,
-      // headerTitle: true,
-      gestureEnabled: false,
-      headerBackTitleVisible: false,
-    }}>
+  <Stack.Navigator initialRouteName="HomeScreen">
     <Stack.Screen
       name="HomeScreen"
       component={HomeScreen}
-      options={{
-        title: 'Home',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen

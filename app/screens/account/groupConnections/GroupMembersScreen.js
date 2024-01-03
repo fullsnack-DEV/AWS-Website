@@ -1,13 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-nested-ternary */
 
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useContext,
-  useCallback,
-} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {
   View,
   StyleSheet,
@@ -21,13 +15,7 @@ import {
   BackHandler,
   RefreshControl,
 } from 'react-native';
-import {
-  useFocusEffect,
-  useIsFocused,
-  useNavigationState,
-} from '@react-navigation/native';
-
-import ActionSheet from '@alessiocancian/react-native-actionsheet';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 
 import AuthContext from '../../../auth/context';
 
@@ -47,7 +35,6 @@ import {getHitSlop} from '../../../utils';
 import {followUser, unfollowUser} from '../../../api/Users';
 import TCFollowUnfollwButton from '../../../components/TCFollowUnfollwButton';
 import Verbs from '../../../Constants/Verbs';
-import Header from '../../../components/Home/Header';
 import GroupMemberShimmer from './GroupMemberShimmer';
 import ScreenHeader from '../../../components/ScreenHeader';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
@@ -57,12 +44,10 @@ import GroupPrivacyModal from './GroupPrivacyModal';
 import MemberFilterModal from './MemberFilterModal';
 import {getPendingRequest} from '../../../api/Notificaitons';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
+import BottomSheet from '../../../components/modals/BottomSheet';
 
 export default function GroupMembersScreen({navigation, route}) {
-  const actionSheet = useRef();
-  const actionSheetPlus = useRef();
   const authContext = useContext(AuthContext);
-  const [refresh] = useState(route.params?.refresh);
 
   const isFocused = useIsFocused();
   // For activity indigator
@@ -78,11 +63,9 @@ export default function GroupMembersScreen({navigation, route}) {
 
   const [pointEvent] = useState('auto');
   const [active, setActive] = useState(true);
-  const [noResults, setNoResults] = useState(false);
 
   const [groupObjNew, setGroupObjNew] = useState({});
   const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
-  const routes = useNavigationState((state) => state.routes);
   const [userJoinedGrpList, setUserJoinedGrpList] = useState();
   const [clubToCheckAdmin, setClubToCheckAdmin] = useState(false);
   const [visiblePrivacyModal, setVisiblePrivacyModal] = useState(false);
@@ -91,6 +74,8 @@ export default function GroupMembersScreen({navigation, route}) {
   const [filterloading, setFilterLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [shimmerLoading, setShimmerLoading] = useState(false);
+  const [showActionSheetPlus, setShowActionSheetPlus] = useState(false);
+  const [showActionSheet, setShowActionSheet] = useState(false);
 
   useEffect(() => {
     const backAction = () => {
@@ -865,8 +850,8 @@ export default function GroupMembersScreen({navigation, route}) {
           title={strings.membersTitle}
           rightIcon1={switchUser.uid === groupID ? images.createMember : null}
           rightIcon2={switchUser.uid === groupID ? images.vertical3Dot : null}
-          rightIcon1Press={() => actionSheet.current.show()}
-          rightIcon2Press={() => actionSheetPlus.current.show()}
+          rightIcon1Press={() => setShowActionSheet(true)}
+          rightIcon2Press={() => setShowActionSheetPlus(true)}
           iconContainerStyle={{marginRight: 7}}
         />
       </View>
@@ -900,50 +885,61 @@ export default function GroupMembersScreen({navigation, route}) {
         )}
       </View>
 
-      <ActionSheet
-        ref={actionSheet}
-        options={[
-          strings.inviteMemberText,
-          strings.createMemberProfileText,
-          strings.cancel,
-        ]}
-        userInterfaceStyle="light"
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            setShowInviteMember(true);
-          } else if (index === 1) {
-            navigation.navigate('MebmersStack', {
-              screen: 'CreateMemberProfileForm1',
-              params: {
-                routeParams: {...route.params},
-              },
-            });
+      <BottomSheet
+        isVisible={showActionSheet}
+        closeModal={() => setShowActionSheet(false)}
+        optionList={[strings.inviteMemberText, strings.createMemberProfileText]}
+        onSelect={(option) => {
+          switch (option) {
+            case strings.inviteMemberText:
+              setShowInviteMember(true);
+              break;
+
+            case strings.createMemberProfileText:
+              navigation.navigate('MebmersStack', {
+                screen: 'CreateMemberProfileForm1',
+                params: {
+                  routeParams: {...route.params},
+                },
+              });
+              break;
+
+            default:
+              break;
           }
         }}
       />
-      <ActionSheet
-        ref={actionSheetPlus}
-        options={[
+
+      <BottomSheet
+        optionList={[
           strings.sendrequestForBaicInfoText,
           strings.invoice,
           strings.privacyPolicy,
-          strings.cancel,
         ]}
-        userInterfaceStyle="light"
-        cancelButtonIndex={3}
-        onPress={(index) => {
-          if (index === 0) {
-            setShowInfoModal(true);
-          } else if (index === 1) {
-            setTimeout(() => {
-              SetSendNewInvoice(true);
-            }, 20);
-          } else if (index === 2) {
-            setVisiblePrivacyModal(true);
+        isVisible={showActionSheetPlus}
+        closeModal={() => setShowActionSheetPlus(false)}
+        onSelect={(option) => {
+          switch (option) {
+            case strings.sendrequestForBaicInfoText:
+              setShowInfoModal(true);
+              break;
+
+            case strings.invoice:
+              setTimeout(() => {
+                SetSendNewInvoice(true);
+              }, 20);
+              break;
+
+            case strings.privacyPolicy:
+              setVisiblePrivacyModal(true);
+              break;
+
+            default:
+              break;
           }
         }}
       />
+
       <GroupPrivacyModal
         isVisible={visiblePrivacyModal}
         closeModal={() => setVisiblePrivacyModal(false)}

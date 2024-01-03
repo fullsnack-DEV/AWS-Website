@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, {
   useState,
   useContext,
@@ -22,21 +23,19 @@ import {
   MessageInput,
   MessageList,
   OverlayProvider as ChatOverlayProvider,
-  useMessageInputContext,
   ImageGallery,
 } from 'stream-chat-react-native';
-import * as Progress from 'react-native-progress';
+
 import {format} from 'react-string-format';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import ScreenHeader from '../../components/ScreenHeader';
-import {widthPercentageToDP as wp} from '../../utils';
 import AuthContext from '../../auth/context';
 
 import {strings} from '../../../Localization/translation';
 import BottomSheet from '../../components/modals/BottomSheet';
 import ChatGroupDetails from './components/ChatGroupDetails';
-import {getChannelName} from '../../utils/streamChat';
+import {checkIsMessageDeleted, getChannelName} from '../../utils/streamChat';
 
 import CustomTypingIndicator from './components/CustomTypingIndicator';
 import CustomMessageHeader from './components/CustomMessageHeader';
@@ -57,6 +56,7 @@ import fonts from '../../Constants/Fonts';
 // import CustomMediaView from './components/CustomMediaView';
 import MessageAvatar from './components/MessageAvatar';
 import CustomMediaView from './components/CustomMediaView';
+import CustomImageUploadPreview from './components/CustomImageUploadPreview';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
@@ -126,89 +126,6 @@ const MessageChatScreen = ({navigation, route}) => {
       setChannelName(name);
     }
   }, [channel, authContext.chatClient.userID]);
-
-  const CustomImageUploadPreview = () => {
-    const {imageUploads, setImageUploads, numberOfUploads, removeImage} =
-      useMessageInputContext();
-
-    setImageUploads(imageUploads);
-    let imageState;
-    imageUploads.forEach((item) => {
-      imageState = item.state;
-    });
-
-    return (
-      <>
-        {imageUploads.length > 0 ? (
-          <View style={{marginBottom: imageState === 'uploading' ? 12 : 8}}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingHorizontal: 5,
-                paddingVertical: 5,
-              }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                <Image
-                  style={{width: 28, height: 28, marginRight: 10}}
-                  source={{
-                    uri: imageUploads[0].url ?? imageUploads[0].thumb_url,
-                  }}
-                  onPress={() => {
-                    CancelImageUpload(imageUploads, removeImage);
-                  }}
-                />
-                <Text>
-                  {imageState === 'uploading'
-                    ? `${strings.uploadingText}... ${numberOfUploads}`
-                    : strings.uploadedText}
-                </Text>
-              </View>
-              <View>
-                <TouchableOpacity
-                  onPress={() => {
-                    CancelImageUpload(imageUploads, removeImage);
-                  }}>
-                  <Image
-                    style={{width: 12, height: 12}}
-                    source={images.crossSingle}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-            {imageState !== 'uploading' && (
-              <View style={styles.chatSeparateLine} />
-            )}
-
-            {imageState === 'uploading' && (
-              <View style={{position: 'absolute', bottom: -8, left: -10}}>
-                <Progress.Bar
-                  width={wp(100)}
-                  height={5}
-                  borderRadius={5}
-                  borderWidth={0}
-                  color={'rgba(255, 138, 1, 0.6)'}
-                  unfilledColor={colors.grayBackgroundColor}
-                  indeterminate={true}
-                />
-              </View>
-            )}
-          </View>
-        ) : null}
-      </>
-    );
-  };
-
-  const CancelImageUpload = (imageUploads, removeImage) => {
-    imageUploads.forEach((item) => {
-      removeImage(item.id);
-    });
-  };
 
   const CustomImageGalleryComponent = () => <ImageGallery />;
 
@@ -510,6 +427,15 @@ const MessageChatScreen = ({navigation, route}) => {
                     ...data,
                   });
                 }
+              }}
+              onLongPressMessage={({actionHandlers, message}) => {
+                const isDeletedMessage = checkIsMessageDeleted(
+                  authContext.chatClient.userID,
+                  message,
+                );
+                if (!isDeletedMessage) {
+                  actionHandlers.showMessageOverlay();
+                }
               }}>
               <MessageList
                 noGroupByUser
@@ -561,12 +487,6 @@ const MessageChatScreen = ({navigation, route}) => {
 };
 
 const styles = StyleSheet.create({
-  chatSeparateLine: {
-    borderColor: colors.writePostSepratorColor,
-    // marginTop: 15,
-    borderWidth: 0.5,
-    width: wp(15),
-  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',

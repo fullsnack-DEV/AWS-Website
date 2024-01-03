@@ -1,11 +1,8 @@
-/* eslint-disable consistent-return */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
-/* eslint-disable no-unneeded-ternary */
-/* eslint-disable no-param-reassign  */
-/* eslint-disable no-prototype-builtins  */
-
 import React, {
-  useLayoutEffect,
   useEffect,
   useState,
   useRef,
@@ -71,6 +68,8 @@ import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
 import useStreamChatUtils from '../../../hooks/useStreamChatUtils';
 import EditMemberModal from './editMemberProfile/EditMemberModal';
 import EditMemberInfoModal from './editMemberProfile/EditMemberInfoModal';
+import ScreenHeader from '../../../components/ScreenHeader';
+import BottomSheet from '../../../components/modals/BottomSheet';
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
@@ -78,6 +77,7 @@ export default function MembersProfileScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
 
   const isFocused = useIsFocused();
+  const [showActionSheet, setShowActionSheet] = useState(false);
   const [loading, setloading] = useState(false);
   const [sendNewInvoice, SetSendNewInvoice] = useState(false);
   const [firstTimeLoad, setFirstTimeLoad] = useState(true);
@@ -87,7 +87,6 @@ export default function MembersProfileScreen({navigation, route}) {
   const [editMembership, setEditMembership] = useState(false);
   const [memberDetail, setMemberDetail] = useState({});
   const [switchUser, setSwitchUser] = useState({});
-  const [from] = useState(route?.params?.from);
   const [groupID] = useState(route?.params?.groupID);
   const [memberID] = useState(route?.params?.memberID);
   const [whoSeeID] = useState(route?.params?.whoSeeID);
@@ -140,67 +139,6 @@ export default function MembersProfileScreen({navigation, route}) {
 
     return () => backHandler.remove();
   }, [handleBackPress]);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: showSwitchScreen ? false : true,
-
-      headerRight: () =>
-        whoSeeID === entity.uid &&
-        !loading && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <TouchableOpacity onPress={() => SetSendNewInvoice(true)}>
-              <Image
-                source={images.invoiceIcon}
-                style={[
-                  styles.navigationRightItem,
-                  {
-                    marginRight: memberDetail?.connected ? 5 : 12,
-                    height: 50,
-                    width: 50,
-                    resizeMode: 'contain',
-                  },
-                ]}
-              />
-            </TouchableOpacity>
-
-            {memberDetail?.connected && (
-              <TouchableOpacity onPress={() => actionSheet.current?.show()}>
-                <Image
-                  source={images.vertical3Dot}
-                  style={[styles.navigationRightItem, {marginRight: 10}]}
-                />
-              </TouchableOpacity>
-            )}
-          </View>
-        ),
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            handleBackPress();
-          }}>
-          <Image source={images.backArrow} style={styles.backArrowStyle} />
-        </TouchableOpacity>
-      ),
-    });
-  }, [
-    navigation,
-    memberDetail,
-    editBasicInfo,
-    editMembership,
-    editTeam,
-    switchUser,
-    editProfile,
-    loading,
-    whoSeeID,
-    from,
-    showSwitchScreen,
-    handleBackPress,
-  ]);
 
   const editTeamProfile = useCallback(() => {
     setloading(true);
@@ -1389,6 +1327,27 @@ export default function MembersProfileScreen({navigation, route}) {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      {!showSwitchScreen && (
+        <ScreenHeader
+          title={strings.memberProfile}
+          leftIcon={images.backArrow}
+          leftIconPress={handleBackPress}
+          rightIcon1={
+            whoSeeID === entity.uid && !loading ? images.invoiceIcon : null
+          }
+          rightIcon2={
+            whoSeeID === entity.uid && !loading && memberDetail?.connected
+              ? images.vertical3Dot
+              : null
+          }
+          rightIcon1Press={() => {
+            SetSendNewInvoice(true);
+          }}
+          rightIcon2Press={() => setShowActionSheet(true)}
+          iconContainerStyle={{width: 45, height: 45}}
+        />
+      )}
+
       <SwitchAccountLoader
         isVisible={showSwitchScreen}
         entityName={authContext.managedEntities[0]?.full_name}
@@ -1497,9 +1456,7 @@ export default function MembersProfileScreen({navigation, route}) {
                                 strings.configureEmailAccounttext,
                               );
                             } else {
-                              return Linking.openURL(
-                                `mailto:${memberDetail.email}`,
-                              );
+                              Linking.openURL(`mailto:${memberDetail.email}`);
                             }
                           })
                           .catch((err) => {
@@ -1729,9 +1686,7 @@ export default function MembersProfileScreen({navigation, route}) {
                   renderItem={({item}) => (
                     <Pressable>
                       <GroupMembership
-                        onlybadge={
-                          entity.role === Verbs.entityTypeTeam ? true : false
-                        }
+                        onlybadge={entity.role === Verbs.entityTypeTeam}
                         groupData={item}
                         switchID={entity.uid}
                         edit={editTeam}
@@ -1797,20 +1752,25 @@ export default function MembersProfileScreen({navigation, route}) {
                 </TouchableOpacity>
               </View>
 
-              <ActionSheet
-                ref={actionSheet}
-                // title={'NewsFeed Post'}
-                options={[
+              <BottomSheet
+                isVisible={showActionSheet}
+                closeModal={() => setShowActionSheet(false)}
+                optionList={[
                   strings.sendrequestForBaicInfoText,
                   strings.editAdminPrivillege,
-                  strings.cancel,
                 ]}
-                cancelButtonIndex={2}
-                onPress={(index) => {
-                  if (index === 1) {
-                    setShowAdminPrivillege(true);
-                  } else if (index === 0) {
-                    setShowBasicInfoRequestModal(true);
+                onSelect={(option) => {
+                  switch (option) {
+                    case strings.sendrequestForBaicInfoText:
+                      setShowBasicInfoRequestModal(true);
+                      break;
+
+                    case strings.editAdminPrivillege:
+                      setShowAdminPrivillege(true);
+                      break;
+
+                    default:
+                      break;
                   }
                 }}
               />
@@ -1849,18 +1809,6 @@ export default function MembersProfileScreen({navigation, route}) {
   );
 }
 const styles = StyleSheet.create({
-  navigationRightItem: {
-    height: 25,
-    marginRight: 15,
-    resizeMode: 'center',
-    width: 25,
-  },
-  backArrowStyle: {
-    height: 25,
-    width: 25,
-    marginLeft: 15,
-    resizeMode: 'contain',
-  },
   roleView: {
     flexDirection: 'row',
     justifyContent: 'space-between',

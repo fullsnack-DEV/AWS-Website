@@ -7,17 +7,15 @@ import React, {
 } from 'react';
 import {
   Alert,
-  FlatList,
   Image,
   Pressable,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
 import _ from 'lodash';
-import ScreenHeader from '../../components/ScreenHeader';
+import {FlatList} from 'react-native-gesture-handler';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -30,8 +28,16 @@ import TabBarForInvitee from './components/TabBarForInvitee';
 import InviteeCard from './components/InviteeCard';
 import SelectedInviteeCard from './components/SelectedInviteeCard';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 
-const MessageInviteScreen = ({navigation, route}) => {
+const MessageInviteScreen = ({
+  isVisible = false,
+  closeModal = () => {},
+  selectedInviteesData = [],
+  onCreateChannel = () => {},
+  onCreateNewGroup = () => {},
+}) => {
   const authContext = useContext(AuthContext);
   const {createChannel, isCreatingChannel} = useStreamChatUtils();
 
@@ -88,8 +94,10 @@ const MessageInviteScreen = ({navigation, route}) => {
   }, [authContext.entity.uid]);
 
   useEffect(() => {
-    getInviteesData();
-  }, [getInviteesData]);
+    if (isVisible) {
+      getInviteesData();
+    }
+  }, [isVisible, getInviteesData]);
 
   const getConditionsForSearch = useCallback(
     (entityType) => {
@@ -189,49 +197,42 @@ const MessageInviteScreen = ({navigation, route}) => {
         .then(async (channel) => {
           if (channel !== null) {
             await channel.watch();
-            navigation.navigate('MessageChatScreen', {
-              channel,
-            });
+            onCreateChannel(channel);
           }
         })
         .catch((err) => {
           Alert.alert(strings.alertmessagetitle, err.message);
         });
     } else if (selectedInvitees.length > 1) {
-      navigation.navigate('MessageNewGroupScreen', {
-        selectedInviteesData: selectedInvitees,
-      });
+      onCreateNewGroup(selectedInvitees);
     }
   };
 
   useEffect(() => {
-    if (route.params?.selectedInviteesData) {
-      setSelectedInvitees([...route.params.selectedInviteesData]);
+    if (isVisible && selectedInviteesData.length > 0) {
+      setSelectedInvitees([...selectedInviteesData]);
     }
-  }, [route.params?.selectedInviteesData]);
+  }, [isVisible, selectedInviteesData]);
 
   return (
-    <SafeAreaView style={styles.mainContainer}>
-      <ScreenHeader
-        title={strings.invite}
-        leftIcon={images.backArrow}
-        leftIconPress={() => {
-          navigation.goBack();
-        }}
-        isRightIconText
-        rightButtonText={
-          selectedInvitees.length > 1 ? strings.next : strings.create
+    <CustomModalWrapper
+      isVisible={isVisible}
+      closeModal={closeModal}
+      modalType={ModalTypes.style1}
+      title={strings.invite}
+      leftIconPress={closeModal}
+      isRightIconText
+      headerRightButtonText={
+        selectedInvitees.length > 1 ? strings.next : strings.create
+      }
+      isRightButtonDisabled={selectedInvitees.length === 0}
+      onRightButtonPress={() => {
+        if (selectedInvitees.length > 0) {
+          handlePress();
         }
-        rightButtonTextStyle={
-          selectedInvitees.length === 0 ? {color: colors.userPostTimeColor} : {}
-        }
-        onRightButtonPress={() => {
-          if (selectedInvitees.length > 0) {
-            handlePress();
-          }
-        }}
-        loading={isCreatingChannel}
-      />
+      }}
+      loading={isCreatingChannel}
+      containerStyle={{padding: 0, flex: 1}}>
       <Pressable
         style={styles.textInputStyle}
         onPress={() => inputRef.current.focus()}>
@@ -252,9 +253,13 @@ const MessageInviteScreen = ({navigation, route}) => {
           </Pressable>
         )}
       </Pressable>
-      {/* Selected invitees list */}
+
       {selectedInvitees.length > 0 ? (
-        <View style={{marginBottom: 15, paddingHorizontal: 15}}>
+        <View
+          style={{
+            marginBottom: 15,
+            paddingHorizontal: 15,
+          }}>
           <FlatList
             data={selectedInvitees}
             renderItem={({item}) => (
@@ -304,17 +309,13 @@ const MessageInviteScreen = ({navigation, route}) => {
           />
         )}
       </View>
-    </SafeAreaView>
+    </CustomModalWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-  },
   textInputStyle: {
     backgroundColor: colors.textFieldBackground,
-    // paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 20,
     margin: 15,

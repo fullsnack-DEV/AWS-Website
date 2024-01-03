@@ -8,14 +8,15 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import {View, ActivityIndicator, FlatList, Text} from 'react-native';
+import {View, ActivityIndicator, FlatList} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 import NewsFeedPostItems from '../../components/newsFeed/feed/NewsFeedPostItems';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
-import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
+import ListEmptyComponent from '../../components/NoDataComponents/ListEmptyComponent';
+import images from '../../Constants/ImagePath';
 
 const viewabilityConfig = {itemVisiblePercentThreshold: 50};
 const NewsFeedList = ({
@@ -34,7 +35,6 @@ const NewsFeedList = ({
   onLikePress = () => {},
   onStartShouldSetResponderCapture = () => {},
   updateCommentCount,
-  noDataFoundText = strings.noPostFoundText,
   feedAPI,
   isNewsFeedScreen = false,
   openProfilId,
@@ -163,19 +163,15 @@ const NewsFeedList = ({
   const listEmpty = useCallback(() => {
     if (feedAPI) {
       return (
-        <Text
-          style={{
-            fontSize: 16,
-            fontFamily: fonts.RLight,
-            textAlign: 'center',
-            padding: 15,
-          }}>
-          {noDataFoundText}
-        </Text>
+        <ListEmptyComponent
+          title={strings.welcomToTownCupText}
+          subTitle={strings.postsFromOtherGroupWillAppearHere}
+          imageUrl={images.feedNoData}
+        />
       );
     }
     return <View></View>;
-  }, [feedAPI, noDataFoundText]);
+  }, [feedAPI]);
 
   return (
     <View

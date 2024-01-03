@@ -574,6 +574,11 @@ const images = {
   localHomeFooterImage: require('../assets/images/localHomefooterImage.png'),
   calendarIcon: require('../assets/images/calendarIcon.png'),
   horizontaldots: require('../assets/images/horizontalDots.png'),
+  chatNoData: require('../assets/images/chat_no_data.png'),
+  eventsNoData: require('../assets/images/events_no_data.png'),
+  feedNoData: require('../assets/images/feed_no_data.png'),
+  reservationNoData: require('../assets/images/reservation_no_data.png'),
+  shieldWithStar: require('../assets/images/shield_with_star.png'),
 };
 
 export default images;

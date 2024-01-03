@@ -1,10 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-return-assign */
-/* eslint-disable no-undef */
-/* eslint-disable no-param-reassign */
-/* eslint-disable array-callback-return */
-/* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
+/* eslint-disable consistent-return */
+/* eslint-disable array-callback-return */
+/* eslint-disable no-param-reassign */
 import React, {
   useState,
   useRef,
@@ -25,6 +23,7 @@ import {
   ScrollView,
   StatusBar,
   BackHandler,
+  Platform,
 } from 'react-native';
 
 import {
@@ -77,6 +76,7 @@ import EventListShimmer from '../../../components/shimmer/schedule/EventListShim
 import ScreenHeader from '../../../components/ScreenHeader';
 import AvailabilityShimmer from '../../../components/shimmer/schedule/AvailibilityShimmer';
 import {useTabBar} from '../../../context/TabbarContext';
+import ChallengeAvailability from './ChallengeAvailability';
 
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
@@ -204,6 +204,10 @@ export default function ScheduleScreen({navigation, route}) {
   const [filterCancelled, setFilterCancelled] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
   const [isFromHomeScreen] = useState(route?.params?.isFromHomeScreen);
+  const [isFromSlots, setIsFromSlots] = useState(false);
+  const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
+    useState(false);
+  const [editableSlots, setEditableSlots] = useState([]);
 
   const {toggleTabBar} = useTabBar();
 
@@ -388,7 +392,7 @@ export default function ScheduleScreen({navigation, route}) {
           }
         })
         .catch((e) => {
-          setLoading(false);
+          setloading(false);
           console.log('Error==>', e.message);
           Alert.alert(strings.townsCupTitle, e.message);
         });
@@ -1044,7 +1048,7 @@ export default function ScheduleScreen({navigation, route}) {
             {item?.sport
               ? item?.sport === strings.all
                 ? strings.all
-                : getSportName(item, authContext)
+                : Utility.getSportName(item, authContext)
               : item}
           </Text>
         </View>
@@ -1276,6 +1280,98 @@ export default function ScheduleScreen({navigation, route}) {
     );
     return () => backHandler.remove();
   }, [isFromHomeScreen, navigation, route.params?.uid, route.params?.role]);
+
+  const deleteFromSlotData = async (delArr) => {
+    const tempSlot = [...allSlots];
+    delArr.forEach((cal_id) => {
+      const index = tempSlot.findIndex((item) => item.cal_id === cal_id);
+      allSlots.splice(index, 1);
+    });
+    setAllSlots([...allSlots]);
+    return allSlots;
+  };
+
+  const deleteOrCreateSlotData = async (payload) => {
+    const tempSlot = [...allSlots];
+    if (payload.deleteSlotsIds.length > 0) {
+      payload.deleteSlotsIds.forEach((cal_id) => {
+        const index = allSlots.findIndex((item) => item.cal_id === cal_id);
+        tempSlot.splice(index, 1);
+      });
+    }
+
+    if (payload.newSlots.length > 0) {
+      payload.newSlots.forEach((item) => {
+        tempSlot.push(item);
+      });
+    }
+
+    setAllSlots([...tempSlot]);
+  };
+
+  const generateTimestampRanges = (startTimestamp, endTimestamp) => {
+    const startDate = startTimestamp * Verbs.THOUSAND_SECOND;
+    const endDate = endTimestamp * Verbs.THOUSAND_SECOND;
+    const ranges = [];
+    let startOfCurrentRange = startDate;
+
+    while (startOfCurrentRange < endDate) {
+      const startDateFullDate = new Date(startOfCurrentRange);
+      let endOfCurrentDay = new Date(
+        startDateFullDate.getFullYear(),
+        startDateFullDate.getMonth(),
+        startDateFullDate.getDate() + 1,
+      ).getTime();
+
+      if (endOfCurrentDay > endDate) {
+        endOfCurrentDay = endDate;
+      }
+
+      ranges.push({start: startOfCurrentRange, end: endOfCurrentDay});
+
+      startOfCurrentRange = endOfCurrentDay;
+    }
+
+    return ranges;
+  };
+
+  const addToSlotData = (data) => {
+    const tempData = [...allSlots];
+    data.forEach((item1) => {
+      allSlots.forEach((item2, key) => {
+        if (
+          item1.start_datetime <= item2.end_datetime &&
+          item1.end_datetime > item2.end_datetime
+        ) {
+          tempData[key].end_datetime = item1.end_datetime;
+        } else if (
+          item1.end_datetime >= item2.start_datetime &&
+          item1.start_datetime < item2.end_datetime
+        ) {
+          tempData[key].start_datetime = item1.start_datetime;
+        }
+      });
+      tempData.push(item1);
+    });
+    // tempData = newBlockedSlots(tempData);
+    const newPlans = tempData.flatMap((plan) => {
+      const {start_datetime, end_datetime} = plan;
+      const timestampRange = generateTimestampRanges(
+        start_datetime,
+        end_datetime,
+      );
+      if (timestampRange.length > 1) {
+        return timestampRange.map(({start, end}) => ({
+          ...plan,
+          start_datetime: start / Verbs.THOUSAND_SECOND,
+          end_datetime: end / Verbs.THOUSAND_SECOND,
+          actual_enddatetime: end / Verbs.THOUSAND_SECOND,
+        }));
+      }
+      return plan;
+    });
+    setAllSlots(newPlans);
+  };
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -1516,7 +1612,8 @@ export default function ScheduleScreen({navigation, route}) {
               Verbs.entityTypePlayer,
               Verbs.entityTypeClub,
             ].includes(authContext.entity.role) &&
-            filterSetting.sort > 0 && (
+            filterSetting.sort > 0 &&
+            eventData.length > 0 && (
               <View style={styles.sportsListView}>
                 <FlatList
                   ref={refContainer}
@@ -1635,6 +1732,9 @@ export default function ScheduleScreen({navigation, route}) {
                 <AvailibilityScheduleScreen
                   allSlots={allSlots}
                   isAdmin={isAdmin}
+                  setIsFromSlots={setIsFromSlots}
+                  setVisibleAvailabilityModal={setVisibleAvailabilityModal}
+                  setEditableSlots={setEditableSlots}
                 />
               )}
             </>
@@ -2195,6 +2295,20 @@ export default function ScheduleScreen({navigation, route}) {
           }}
         />
       </View>
+
+      <ChallengeAvailability
+        isVisible={visibleAvailabilityModal}
+        closeModal={() => {
+          setIsFromSlots(false);
+          setVisibleAvailabilityModal(false);
+        }}
+        slots={editableSlots}
+        addToSlotData={addToSlotData}
+        showAddMore={true}
+        deleteFromSlotData={deleteFromSlotData}
+        deleteOrCreateSlotData={deleteOrCreateSlotData}
+        isFromSlot={isFromSlots}
+      />
 
       {/*  Availability edit modal */}
       {/* <Modal

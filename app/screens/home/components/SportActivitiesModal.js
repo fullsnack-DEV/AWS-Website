@@ -2,7 +2,6 @@ import {View, StyleSheet, ActivityIndicator} from 'react-native';
 import React, {useEffect, useContext, useState} from 'react';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
-import {ModalTypes} from '../../../Constants/GeneralConstants';
 import {strings} from '../../../../Localization/translation';
 
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -102,8 +101,8 @@ export default function SportActivitiesModal({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={onCloseModal}
-      modalType={ModalTypes.style2}
-      title={strings.sportActivity}
+      // modalType={ModalTypes.style2}
+      // title={strings.sportActivity}
       containerStyle={{padding: 0, flex: 1}}>
       {isAdmin ? (
         <ScreenHeader

@@ -10,6 +10,8 @@ import TCEventCard from '../../../components/Schedule/TCEventCard';
 import {strings} from '../../../../Localization/translation';
 import Verbs from '../../../Constants/Verbs';
 import {getJSDate, getTCDate} from '../../../utils';
+import ListEmptyComponent from '../../../components/NoDataComponents/ListEmptyComponent';
+import images from '../../../Constants/ImagePath';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -301,12 +303,11 @@ export default function EventScheduleScreen({
             scrollEnabled={true}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
-              <View style={{marginTop: 15}}>
-                <Text style={styles.noEventText}>{strings.noEventText}</Text>
-                <Text style={styles.dataNotFoundText}>
-                  {strings.newEventWillAppearHereText}
-                </Text>
-              </View>
+              <ListEmptyComponent
+                title={strings.noEventText}
+                subTitle={strings.newEventWillAppearHereText}
+                imageUrl={images.eventsNoData}
+              />
             }
             style={{backgroundColor: colors.whiteColor}}
             renderItem={({item}) => {
@@ -395,17 +396,5 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-  },
-  dataNotFoundText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.veryLightBlack,
-    alignSelf: 'center',
-  },
-  noEventText: {
-    fontSize: 20,
-    fontFamily: fonts.RBold,
-    color: colors.veryLightBlack,
-    alignSelf: 'center',
   },
 });

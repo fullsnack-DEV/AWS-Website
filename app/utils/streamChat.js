@@ -181,11 +181,10 @@ export const getLastMessageTime = (channel = {}) => {
 };
 
 export const getChannelMembers = (channel = {}) => {
-  const {state} = channel;
+  const {state, data} = channel;
   const keys = Object.keys(state.members);
 
   const admins = keys.filter((memberId) => memberId.includes('@'));
-
   const groupIds = [];
   admins.forEach((item) => {
     const groupId = item.split('@')[0];
@@ -195,32 +194,59 @@ export const getChannelMembers = (channel = {}) => {
   });
 
   const adminList = [];
-  groupIds.forEach((item) => {
-    const objList = [];
-    keys.forEach((memberId) => {
-      if (state.members[memberId].user_id.includes(item)) {
-        objList.push(state.members[memberId]);
+  if (data?.channel_type === Verbs.channelTypeAuto) {
+    admins.forEach((adminId) => {
+      const memberId = adminId.split('@')[1];
+      const member = state.members[memberId];
+      if (member) {
+        const obj = {
+          profiles: [
+            {
+              imageUrl: member.user.image ?? '',
+              entityType: member.user.entityType,
+            },
+          ],
+          memberName: member.user.name,
+          members: [
+            {
+              ...member,
+              user: {
+                ...member.user,
+                entityType: Verbs.entityTypePlayer,
+              },
+            },
+          ],
+        };
+        adminList.push(obj);
       }
     });
+  } else {
+    groupIds.forEach((item) => {
+      const objList = [];
+      keys.forEach((memberId) => {
+        if (state.members[memberId].user_id.includes(item)) {
+          objList.push(state.members[memberId]);
+        }
+      });
 
-    const groupName = objList.find((member) => member.user.group_name)?.user
-      .group_name;
+      const groupName = objList.find((member) => member.user.group_name)?.user
+        .group_name;
 
-    const profiles = [
-      {
-        imageUrl: objList[0].user.group_image ?? '',
-        entityType: objList[0].user.entityType,
-      },
-    ];
+      const profiles = [
+        {
+          imageUrl: objList[0].user.group_image ?? '',
+          entityType: objList[0].user.entityType,
+        },
+      ];
 
-    const obj = {
-      profiles,
-      memberName: groupName,
-      members: [...objList],
-    };
-    adminList.push(obj);
-  });
-
+      const obj = {
+        profiles,
+        memberName: groupName,
+        members: [...objList],
+      };
+      adminList.push(obj);
+    });
+  }
   const str = admins.join('_');
   const membersList = [];
   keys.forEach((memberId) => {

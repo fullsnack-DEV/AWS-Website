@@ -21,7 +21,7 @@ const MessageAvatar = ({channel = {}, chatUserId = ''}) => {
       member.user?.entityType === Verbs.entityTypeTeam ||
       member.user?.entityType === Verbs.entityTypeClub
     ) {
-      if (member.role === 'moderator' || member.role === 'owner') {
+      if (member?.role === 'moderator' || member?.role === 'owner') {
         obj.imageUrl = channel.data?.image;
         obj.entityType = member.user?.entityType;
       } else {

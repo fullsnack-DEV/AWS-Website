@@ -473,6 +473,10 @@ const AccountScreen = ({navigation, route}) => {
               isEntityCreated: true,
               groupName: response.payload.group_name,
               entityObj: response.payload,
+              comeFrom: 'App',
+              routeParams: {
+                screen: 'Account',
+              },
             },
           });
         } else if (type === Verbs.declineVerb) {
@@ -595,6 +599,10 @@ const AccountScreen = ({navigation, route}) => {
                   role: authContext.entity.role,
                   backButtonVisible: true,
                   menuBtnVisible: false,
+                  comeFrom: 'App',
+                  routeParams: {
+                    screen: 'Account',
+                  },
                 },
               });
             }}

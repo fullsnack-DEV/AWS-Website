@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {Alert, SafeAreaView, StatusBar} from 'react-native';
+import {Alert, BackHandler, SafeAreaView, StatusBar} from 'react-native';
 import Orientation from 'react-native-orientation';
 import {useIsFocused} from '@react-navigation/native';
 import ActionSheet from 'react-native-actionsheet';
@@ -175,6 +175,28 @@ const FeedViewScreen = ({navigation, route}) => {
     },
     [authContext, feedSubItem?.text],
   );
+  const handleBackPress = useCallback(() => {
+    if (route.params?.parentStack) {
+      navigation.navigate(route.params?.parentStack, {
+        screen: route.params.screen,
+      });
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation, route.params?.parentStack, route.params?.screen]);
+
+  useEffect(() => {
+    const backAction = () => {
+      handleBackPress();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [handleBackPress]);
 
   // Main render
   return (

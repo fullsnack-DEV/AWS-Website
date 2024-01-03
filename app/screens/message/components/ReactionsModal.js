@@ -31,7 +31,9 @@ const ReactionsModal = ({
       reactionsList.forEach((reaction) => {
         const keys = Object.keys(obj);
         obj.all = {
-          count: obj.all?.count ?? 0 + reaction.score,
+          count: obj.all?.count
+            ? obj.all.count + reaction.score
+            : reaction.score,
           user: [
             ...(obj.all?.user ?? []),
             {...reaction.user, reaction_type: reaction.type},

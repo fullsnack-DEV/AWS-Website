@@ -6,7 +6,6 @@ import {getJSDate} from '../../../utils';
 import BlockSlotView from '../../../components/Schedule/BlockSlotView';
 import Verbs from '../../../Constants/Verbs';
 import colors from '../../../Constants/Colors';
-import ChallengeAvailability from './ChallengeAvailability';
 import * as Utility from '../../../utils/index';
 import fonts from '../../../Constants/Fonts';
 import {strings} from '../../../../Localization/translation';
@@ -21,6 +20,9 @@ const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export default function AvailibilityScheduleScreen({
   allSlots,
   isAdmin = false,
+  setEditableSlots = () => {},
+  setVisibleAvailabilityModal = () => {},
+  setIsFromSlots = () => {},
 }) {
   const [loading, setLoading] = useState(false);
   const [allData, setAllData] = useState(allSlots);
@@ -29,13 +31,11 @@ export default function AvailibilityScheduleScreen({
   const [blockedDaySlots, setBlockedDaySlots] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [editableSlots, setEditableSlots] = useState([]);
+
   const [listView, setListView] = useState(true);
   const [listViewData, setListViewData] = useState([]);
-  const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
-    useState(false);
+
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
-  const [isFromSlots, setIsFromSlots] = useState(false);
 
   useEffect(() => {
     setAllData(allSlots);
@@ -45,7 +45,7 @@ export default function AvailibilityScheduleScreen({
   useEffect(() => {
     setSlotList(slots);
     setEditableSlots(slots);
-  }, [slots]);
+  }, [slots, setEditableSlots]);
 
   const generateTimestampRanges = (startTimestamp, endTimestamp) => {
     const startDate = startTimestamp * Verbs.THOUSAND_SECOND;
@@ -539,54 +539,39 @@ export default function AvailibilityScheduleScreen({
   };
 
   return (
-    <>
-      <ScrollView
-        bounces={false}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: 12}}>
-        <ActivityLoader visible={loading} />
-        {listView ? (
-          <AvailabilityHeader
-            isListView={listView}
-            selectedDate={selectedDate}
-            onToggleView={() => setListView(!listView)}
-            containerStyle={{
-              paddingHorizontal: 15,
-              paddingTop: 22,
-            }}
-          />
-        ) : null}
+    <ScrollView
+      bounces={false}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{paddingBottom: 12}}>
+      <ActivityLoader visible={loading} />
+      {listView ? (
+        <AvailabilityHeader
+          isListView={listView}
+          selectedDate={selectedDate}
+          onToggleView={() => setListView(!listView)}
+          containerStyle={{
+            paddingHorizontal: 15,
+            paddingTop: 22,
+          }}
+        />
+      ) : null}
 
-        {renderContent()}
+      {renderContent()}
 
-        {isAdmin && !listView ? (
-          <TouchableOpacity
-            onPress={() => {
-              setIsFromSlots(true);
-              setVisibleAvailabilityModal(true);
-            }}
-            style={{
-              alignSelf: 'center',
-              marginTop: 20,
-            }}>
-            <Text style={styles.buttonText}>{strings.editAvailability}</Text>
-          </TouchableOpacity>
-        ) : null}
-      </ScrollView>
-      <ChallengeAvailability
-        isVisible={visibleAvailabilityModal}
-        closeModal={() => {
-          setIsFromSlots(false);
-          setVisibleAvailabilityModal(false);
-        }}
-        slots={editableSlots}
-        addToSlotData={addToSlotData}
-        showAddMore={true}
-        deleteFromSlotData={deleteFromSlotData}
-        deleteOrCreateSlotData={deleteOrCreateSlotData}
-        isFromSlot={isFromSlots}
-      />
-    </>
+      {isAdmin && !listView ? (
+        <TouchableOpacity
+          onPress={() => {
+            setIsFromSlots(true);
+            setVisibleAvailabilityModal(true);
+          }}
+          style={{
+            alignSelf: 'center',
+            marginTop: 20,
+          }}>
+          <Text style={styles.buttonText}>{strings.editAvailability}</Text>
+        </TouchableOpacity>
+      ) : null}
+    </ScrollView>
   );
 }
 

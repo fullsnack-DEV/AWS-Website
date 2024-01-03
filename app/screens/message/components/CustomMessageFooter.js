@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     fontFamily: fonts.RRegular,
     color: colors.userPostTimeColor,
-    // marginBottom: 15,
+    marginBottom: 10,
   },
   reactionAndTimeContainer: {
     flexDirection: 'row',

@@ -351,7 +351,8 @@ export default function ChallengeAvailability({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeModal}
-      modalType={isFromSlot ? ModalTypes.style4 : ModalTypes.style1}
+      // modalType={isFromSlot ? ModalTypes.style4 : ModalTypes.style1}
+      modalType={ModalTypes.style1}
       title={strings.editChallengeAvailibility}
       headerRightButtonText={strings.save}
       onRightButtonPress={handleSave}

@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useLayoutEffect,
-  useCallback,
-} from 'react';
+import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {
   Image,
   StyleSheet,
@@ -50,7 +44,6 @@ import {getDataForNextScreen} from '../localhome/LocalHomeUtils';
 import {locationType} from '../../utils/constant';
 import SportActivitiesModal from './components/SportActivitiesModal';
 import RecruitingMemberModal from './RecruitingMemberModal';
-import {useTabBar} from '../../context/TabbarContext';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -71,23 +64,6 @@ const HomeScreen = ({navigation, route}) => {
   const [loggedInGroupMembers, setLoggedInGroupMembers] = useState([]);
   const [visibleSportActivities, setVisibleSportAcitivities] = useState(false);
   const [visibleRecrutingModal, setVisibleRecrutingModal] = useState(false);
-
-  const {toggleTabBar} = useTabBar();
-  useEffect(() => {
-    // Set TabBar visibility to true when this screen mounts
-    toggleTabBar(false);
-
-    return () => {
-      // Set TabBar visibility to false when this screen unmounts
-      toggleTabBar(true);
-    };
-  }, [isFocused, toggleTabBar]);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
 
   const getUserData = (uid) => {
     setLoading(true);
@@ -449,7 +425,7 @@ const HomeScreen = ({navigation, route}) => {
         if (Platform.OS === 'ios') {
           setMoreOptions([strings.recruitingMembers]);
         } else {
-          setMoreOptions([strings.recruitingMembers, strings.cancel]);
+          setMoreOptions([strings.recruitingMembers]);
         }
       } else {
         setMoreOptions([strings.reportThisAccount, strings.blockThisAccount]);
@@ -468,8 +444,6 @@ const HomeScreen = ({navigation, route}) => {
       route.params?.comeFrom === 'IncomingChallengeScreen' ||
       route.params?.comeFrom === 'GroupMemberScreen'
     ) {
-      navigation.navigate('App', {screen: 'Account'});
-    } else if (route.params?.comeFrom === 'UserConnectionsModal') {
       navigation.navigate('App', {screen: 'Account'});
     } else if (route.params?.comeFrom === 'EntitySearchScreen') {
       navigation.navigate('UniversalSearchStack', {
@@ -496,15 +470,14 @@ const HomeScreen = ({navigation, route}) => {
       navigation.navigate('LocalHomeStack', {
         screen: 'JoinTeamScreen',
       });
+    } else if (route.params?.comeFrom === 'UserTagSelectionListScreen') {
+      navigation.navigate('NewsFeedStack', {
+        screen: 'UserTagSelectionListScreen',
+        params: {
+          ...route.params.routeParams,
+        },
+      });
     } else if (route.params?.comeFrom) {
-      if (route.params?.comeFrom === 'UserTagSelectionListScreen') {
-        navigation.navigate('NewsFeedStack', {
-          screen: 'UserTagSelectionListScreen',
-          params: {
-            ...route.params.routeParams,
-          },
-        });
-      }
       navigation.navigate(route.params.comeFrom, {
         ...route.params.routeParams,
       });

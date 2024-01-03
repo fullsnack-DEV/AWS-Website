@@ -4,7 +4,6 @@ import React, {
   useRef,
   useCallback,
   useContext,
-  useMemo,
 } from 'react';
 import {
   View,
@@ -50,7 +49,6 @@ import {
   urlRegex,
 } from '../../Constants/GeneralConstants';
 import {createRePost} from '../../api/NewsFeeds';
-import ImageProgress from '../../components/newsFeed/ImageProgress';
 import FeedMedia from '../../components/newsFeed/feed/FeedMedia';
 import FeedProfile from '../../components/newsFeed/feed/FeedProfile';
 import NewsFeedDescription from '../../components/newsFeed/NewsFeedDescription';
@@ -796,8 +794,6 @@ const WritePostScreen = ({navigation, route}) => {
     </>
   );
 
-  const renderImageProgress = useMemo(() => <ImageProgress />, []);
-
   const onDiscardPress = () => {
     if (route.params?.comeFrom === 'HomeScreen') {
       navigation.navigate('HomeStack', {
@@ -961,7 +957,6 @@ const WritePostScreen = ({navigation, route}) => {
         }
       />
       <ActivityLoader visible={loading} />
-      {renderImageProgress}
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : null}

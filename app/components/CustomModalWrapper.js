@@ -52,6 +52,7 @@ const CustomModalWrapper = ({
   const {bottom, top} = useSafeAreaInsets();
   const backHandlerRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState();
+  const subscriptionRef = useRef(null);
 
   useEffect(() => {
     if (isVisible) {
@@ -108,6 +109,7 @@ const CustomModalWrapper = ({
           <ScreenHeader
             leftIcon={backIcon ?? images.crossImage}
             leftIconPress={() => {
+              subscriptionRef?.current?.remove();
               modalRef?.current?.dismiss();
               closeModal();
               leftIconPress();
@@ -139,6 +141,7 @@ const CustomModalWrapper = ({
           <ScreenHeader
             rightIcon1={images.crossImage}
             rightIcon1Press={() => {
+              subscriptionRef?.current?.remove();
               modalRef?.current?.dismiss();
               closeModal();
             }}
@@ -152,6 +155,7 @@ const CustomModalWrapper = ({
             title={title}
             rightIcon1={images.crossImage}
             rightIcon1Press={() => {
+              subscriptionRef?.current?.remove();
               modalRef?.current?.dismiss();
               closeModal();
             }}
@@ -181,27 +185,28 @@ const CustomModalWrapper = ({
   };
 
   // eslint-disable-next-line consistent-return
-  const onBackPress = () => {
-    if (backHandlerRef !== null) {
-      modalRef.current?.dismiss();
-      return true;
-    }
-  };
-
-  // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (currentIndex !== -1) {
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      subscriptionRef.current = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => {
+          if (backHandlerRef !== null) {
+            subscriptionRef?.current?.remove();
+            modalRef.current?.dismiss();
+          }
+          return true;
+        },
+      );
 
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      return () => subscriptionRef?.current?.remove();
     }
-  }, [currentIndex, isVisible]);
+  }, [currentIndex]);
 
   useEffect(() => {
     if (isVisible) {
       modalRef?.current?.present();
     } else {
+      subscriptionRef?.current?.remove();
       modalRef?.current?.dismiss();
     }
   }, [isVisible]);
@@ -210,6 +215,7 @@ const CustomModalWrapper = ({
     <BottomSheetModalProvider>
       <BottomSheetModal
         onDismiss={() => {
+          subscriptionRef?.current?.remove();
           modalRef?.current?.dismiss();
           closeModal();
         }}

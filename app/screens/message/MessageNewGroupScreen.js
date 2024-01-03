@@ -1,10 +1,8 @@
 import React, {useState, useEffect, useContext, useRef} from 'react';
 import {
   Alert,
-  FlatList,
   Image,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -12,27 +10,32 @@ import {
   View,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
+import {FlatList} from 'react-native-gesture-handler';
 import AuthContext from '../../auth/context';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
-import ActivityLoader from '../../components/loader/ActivityLoader';
 import * as Utility from '../../utils/index';
 import {strings} from '../../../Localization/translation';
 import uploadImages from '../../utils/imageAction';
-import ScreenHeader from '../../components/ScreenHeader';
 import SelectedInviteeCard from './components/SelectedInviteeCard';
 import BottomSheet from '../../components/modals/BottomSheet';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import Verbs from '../../Constants/Verbs';
+import CustomModalWrapper from '../../components/CustomModalWrapper';
+import {ModalTypes} from '../../Constants/GeneralConstants';
 
 const NUM_OF_COLS = 5;
 
-const MessageNewGroupScreen = ({route, navigation}) => {
+const MessageNewGroupScreen = ({
+  isVisible = false,
+  closeModal = () => {},
+  selectedInviteesData = [],
+  onCreateChannel = () => {},
+}) => {
   const authContext = useContext(AuthContext);
   const timeoutRef = useRef();
 
-  const {selectedInviteesData} = route.params;
   const [selectedInvitees, setSelectedInvitees] = useState([]);
   const [groupName, setGroupName] = useState('');
   const [profileImageChanged, setProfileImageChanged] = useState(false);
@@ -43,7 +46,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
   const {createChannel} = useStreamChatUtils();
 
   useEffect(() => {
-    if (selectedInviteesData?.length > 0) {
+    if (isVisible && selectedInviteesData.length > 0) {
       const dummyCount =
         NUM_OF_COLS - (selectedInviteesData.length % NUM_OF_COLS);
       const dummyViews = [];
@@ -52,19 +55,19 @@ const MessageNewGroupScreen = ({route, navigation}) => {
       }
       setSelectedInvitees([...selectedInviteesData, ...dummyViews]);
     }
-  }, [selectedInviteesData]);
+  }, [isVisible, selectedInviteesData]);
 
-  useEffect(() => {
-    if (route?.params?.dialog) {
-      setGroupName(route?.params?.dialog?.name);
-    }
-  }, [route?.params?.dialog]);
+  // useEffect(() => {
+  //   if (route?.params?.dialog) {
+  //     setGroupName(route?.params?.dialog?.name);
+  //   }
+  // }, [route?.params?.dialog]);
 
   const removeSelectedEntity = (user) => {
     const data = [...selectedInvitees];
     const updatedData = data.filter((item) => user.id !== item.id);
     if (updatedData.length === 0) {
-      navigation.navigate('MessageInviteScreen');
+      closeModal();
     } else {
       setSelectedInvitees([...updatedData, {}]);
     }
@@ -108,9 +111,7 @@ const MessageNewGroupScreen = ({route, navigation}) => {
         setLoading(false);
 
         if (channel !== null) {
-          navigation.push('MessageChatScreen', {
-            channel,
-          });
+          onCreateChannel(channel);
         }
       })
       .catch((err) => {
@@ -172,23 +173,23 @@ const MessageNewGroupScreen = ({route, navigation}) => {
     }
   };
 
-  return (
-    <SafeAreaView style={styles.mainContainer}>
-      <ActivityLoader visible={loading} />
-      <ScreenHeader
-        title={strings.newGroup}
-        leftIcon={images.backArrow}
-        leftIconPress={() => {
-          const newList = selectedInvitees.filter((item) => item.id);
-          navigation.navigate('MessageInviteScreen', {
-            selectedInviteesData: newList,
-          });
-        }}
-        isRightIconText
-        rightButtonText={strings.create}
-        onRightButtonPress={onSaveButtonClicked}
-      />
+  const handleModalClose = () => {
+    const newList = selectedInvitees.filter((item) => item.id);
+    closeModal(newList);
+  };
 
+  return (
+    <CustomModalWrapper
+      isVisible={isVisible}
+      closeModal={handleModalClose}
+      modalType={ModalTypes.style6}
+      title={strings.newGroup}
+      leftIconPress={handleModalClose}
+      isRightIconText
+      headerRightButtonText={strings.create}
+      onRightButtonPress={onSaveButtonClicked}
+      containerStyle={{padding: 0, flex: 1}}
+      loading={loading}>
       <View style={styles.avatarContainer}>
         <TouchableOpacity
           style={styles.imageContainer}
@@ -276,7 +277,6 @@ const MessageNewGroupScreen = ({route, navigation}) => {
           />
         ) : null}
       </View>
-
       <BottomSheet
         type="ios"
         isVisible={showBottomSheet}
@@ -284,14 +284,11 @@ const MessageNewGroupScreen = ({route, navigation}) => {
         optionList={bottomSheetOptions}
         onSelect={handleBottomSheetOption}
       />
-    </SafeAreaView>
+    </CustomModalWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-  },
   avatarContainer: {
     paddingVertical: 25,
     alignItems: 'center',

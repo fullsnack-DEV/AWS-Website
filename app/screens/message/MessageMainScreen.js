@@ -23,10 +23,16 @@ import Verbs from '../../Constants/Verbs';
 import ChatShimmer from '../../components/shimmer/Chat/ChatShimmer';
 import {connectUserToStreamChat} from '../../utils/streamChat';
 import {useTabBar} from '../../context/TabbarContext';
+import ListEmptyComponent from '../../components/NoDataComponents/ListEmptyComponent';
+import MessageInviteScreen from './MessageInviteScreen';
+import MessageNewGroupScreen from './MessageNewGroupScreen';
 
 const MessageMainScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showNewGroupModal, setShowNewGroupModal] = useState(false);
+  const [selectedInviteesList, setSelectedInviteesList] = useState([]);
 
   const {toggleTabBar} = useTabBar();
 
@@ -51,13 +57,6 @@ const MessageMainScreen = ({navigation}) => {
       handleUserConnection();
     }
   }, [authContext.chatClient, handleUserConnection]);
-
-  const ListEmptyComponent = () => (
-    <View style={styles.centerMsgContainer}>
-      <Text style={styles.noMsgText}>{strings.noChat}</Text>
-      <Text style={styles.msgAppearText}>{strings.newChatsAppear}</Text>
-    </View>
-  );
 
   const customChannelFilterFunction = (channels = []) => {
     const channelsList = [...channels];
@@ -88,9 +87,7 @@ const MessageMainScreen = ({navigation}) => {
           <TouchableOpacity
             style={[styles.iconContainer, {marginRight: 15}]}
             onPress={() => {
-              navigation.navigate('MessageStack', {
-                screen: 'MessageInviteScreen',
-              });
+              setShowInviteModal(true);
             }}>
             <Image source={images.chatCreate} style={styles.icon} />
           </TouchableOpacity>
@@ -118,12 +115,56 @@ const MessageMainScreen = ({navigation}) => {
                 sort={[{last_message_at: -1}]}
                 Preview={ChannelView}
                 LoadingIndicator={() => <ChatShimmer />}
-                EmptyStateIndicator={() => ListEmptyComponent()}
+                EmptyStateIndicator={() => (
+                  <ListEmptyComponent
+                    title={strings.noChat}
+                    subTitle={strings.newChatsAppear}
+                    imageUrl={images.chatNoData}
+                  />
+                )}
               />
             </Chat>
           </ChatOverlayProvider>
         </View>
       ) : null}
+
+      <MessageInviteScreen
+        isVisible={showInviteModal}
+        closeModal={() => setShowInviteModal(false)}
+        onCreateChannel={(channel) => {
+          setShowInviteModal(false);
+          navigation.navigate('MessageStack', {
+            screen: 'MessageChatScreen',
+            params: {
+              channel,
+            },
+          });
+        }}
+        onCreateNewGroup={(selectedInvitees) => {
+          setSelectedInviteesList(selectedInvitees);
+          setShowNewGroupModal(true);
+        }}
+        selectedInviteesData={selectedInviteesList}
+      />
+
+      <MessageNewGroupScreen
+        isVisible={showNewGroupModal}
+        closeModal={(updatedInviteeList = []) => {
+          setSelectedInviteesList(updatedInviteeList);
+          setShowNewGroupModal(false);
+        }}
+        selectedInviteesData={selectedInviteesList}
+        onCreateChannel={(channel) => {
+          setShowInviteModal(false);
+          setShowNewGroupModal(false);
+          navigation.navigate('MessageStack', {
+            screen: 'MessageChatScreen',
+            params: {
+              channel,
+            },
+          });
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -162,24 +203,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'contain ',
-  },
-  centerMsgContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  noMsgText: {
-    fontSize: 20,
-    lineHeight: 30,
-    textAlign: 'center',
-    fontFamily: fonts.RBold,
-    color: colors.veryLightBlack,
-  },
-  msgAppearText: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RRegular,
-    color: colors.veryLightBlack,
   },
 });
 
