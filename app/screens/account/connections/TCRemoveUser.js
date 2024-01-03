@@ -43,13 +43,11 @@ const TCRemoveUser = ({
         </View>
       </TouchableOpacity>
       <>
-        {!isOwner && (
-          <TouchableOpacity
-            onPress={onRemovePress}
-            style={styles.buttonContainer}>
-            <Text style={styles.buttonText}>{strings.remove}</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          onPress={onRemovePress}
+          style={styles.buttonContainer}>
+          <Text style={styles.buttonText}>{strings.remove}</Text>
+        </TouchableOpacity>
       </>
     </View>
     <View style={styles.seperateContainer} />

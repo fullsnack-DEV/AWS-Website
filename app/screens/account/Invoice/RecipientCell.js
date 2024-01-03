@@ -23,6 +23,7 @@ const RecipientCell = ({
   isChecked = false,
   selectAllTitle = '',
   rowType = InvoiceRowType.Recipient,
+  fromMember = false,
 }) => {
   let imagePlacholder = images.clubBcgPlaceholder;
   if (item.entity_type === Verbs.entityTypeTeam) {
@@ -150,6 +151,7 @@ const RecipientCell = ({
                     flexDirection: 'column',
                     alignItems: 'center',
                     width: 44,
+                    display: fromMember ? 'none' : 'flex',
                   }}>
                   <Image
                     source={images.closeRound}

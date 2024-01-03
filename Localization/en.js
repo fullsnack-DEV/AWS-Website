@@ -3260,6 +3260,9 @@ export default {
   jerseyText: 'en_Jersey',
   likeEvent: 'en_Like Event',
 
+  venueText1: 'en_This function is currently under construction.',
+  venueText2:
+    'en_Please check later for updates. You will be able to look for and book a venue here soon.',
   createEventPostTitle: 'en_CREATE EVENT POST',
   doNotCreateText: 'en_Do not create',
   createText: 'Create',
@@ -3268,5 +3271,4 @@ export default {
   postsFromOtherGroupWillAppearHere:
     'en_Posts from people and groups you are following will appear here.',
   newReservationWillAppearHere: 'en_New Reservation will appear here.',
-
 };

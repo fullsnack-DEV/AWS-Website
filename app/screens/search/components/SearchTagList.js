@@ -1,38 +1,12 @@
 // @flow
 import React from 'react';
 import {View, StyleSheet, Text, Pressable} from 'react-native';
-import {strings} from '../../../../Localization/translation';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 
-const TagOptions = [
-  {
-    label: strings.upcomingMatchesTitle,
-    value: strings.upcomingTitleText,
-    parentTag: 2,
-  },
-  {
-    label: strings.completedMatches,
-    value: strings.completedTitleText,
-    parentTag: 2,
-  },
-  {label: strings.tournamentsTitle, value: null, parentTag: null},
-  {label: strings.eventsTitle, value: strings.completedTitleText, parentTag: 3},
-  {label: strings.teamsTitleText, value: strings.teamsTitleText, parentTag: 1},
-  {label: strings.clubsTitleText, value: strings.clubsTitleText, parentTag: 1},
-  {label: strings.leaguesTitle, value: strings.leaguesTitle, parentTag: 1},
-  {label: strings.playerTitle, value: strings.playerTitle, parentTag: 0},
-  {label: strings.refereesTitle, value: strings.refereesTitle, parentTag: 0},
-  {
-    label: strings.scorekeeperTitle,
-    value: strings.scorekeeperTitle,
-    parentTag: 0,
-  },
-];
-
-const SearchTagList = ({onPress = () => {}}) => (
+const SearchTagList = ({onPress = () => {}, searchTagOption}) => (
   <View style={styles.parent}>
-    {TagOptions.map((tag, index) => (
+    {searchTagOption.map((tag, index) => (
       <Pressable
         key={index}
         style={styles.tagItem}

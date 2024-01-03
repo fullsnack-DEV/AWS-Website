@@ -211,6 +211,12 @@ const Verbs = {
   admin: 'admin',
   is_active: 'is_active',
   DOUBLE_TEAM_INVITE_NONE: 0,
+  EVERYONE_EVENT: 0,
+  ATTENDEE_EVENT: 1,
+  ORGANIZER_EVENT: 2,
+  FOLLOWERS_EVENT: 'Followers',
+  FOLLOWING_AND_FOLLOWERS: 'Following and Followers',
+  INVITED_EVENT: 'Invited',
 };
 
 export default Verbs;

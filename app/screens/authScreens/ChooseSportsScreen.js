@@ -102,6 +102,7 @@ export default function ChooseSportsScreen({navigation, route}) {
         setloading(false);
       }
 
+      setloading(false);
       navigation.navigate('FollowTeams', {
         sportInfo: {
           ...route?.params?.locationInfo,

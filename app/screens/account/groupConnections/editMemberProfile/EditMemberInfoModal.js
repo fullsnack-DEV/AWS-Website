@@ -1,5 +1,12 @@
 /* eslint-disable no-else-return */
-import React, {useState, useEffect, useContext, memo} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  memo,
+  useCallback,
+  useRef,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -9,15 +16,17 @@ import {
   Image,
   Platform,
   TouchableOpacity,
+  Pressable,
 } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
+
 import {
   widthPercentageToDP,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-
+import {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import LinearGradient from 'react-native-linear-gradient';
 
 import ActivityLoader from '../../../../components/loader/ActivityLoader';
@@ -50,6 +59,7 @@ import AddressLocationModal from '../../../../components/AddressLocationModal/Ad
 import TCPhoneNumber from '../../../../components/TCPhoneNumber';
 import CustomModalWrapper from '../../../../components/CustomModalWrapper';
 import {ModalTypes} from '../../../../Constants/GeneralConstants';
+import TCCountryCodeModal from '../../../../components/TCCountryCodeModal';
 
 function EditMemberBasicInfoModal({
   isVisible,
@@ -58,7 +68,8 @@ function EditMemberBasicInfoModal({
   uidNo,
 }) {
   const authContext = useContext(AuthContext);
-
+  const Pickerref = useRef(null);
+  const Pickerref2 = useRef(null);
   const [loading, setloading] = useState(false);
 
   const [showDate, setShowDate] = useState(false);
@@ -72,8 +83,10 @@ function EditMemberBasicInfoModal({
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
 
   const [maxDateValue] = useState(new Date());
+  const [countryCodeVisible, setCountryCodeVisible] = useState(false);
 
   const [phoneNumber, setPhoneNumber] = useState([]);
+  const [currenrIndex, setCurrentIndex] = useState();
 
   const [memberInfo, setMemberInfo] = useState({
     height: {
@@ -115,7 +128,7 @@ function EditMemberBasicInfoModal({
     setCountryCode(countryOBJ);
   }, [isVisible]);
 
-  const onModalShow = () => {
+  const onModalShow = useCallback(() => {
     setPhoneNumber(
       memberdetails?.phone_numbers?.length === 0 ||
         memberdetails?.phone_numbers === undefined
@@ -142,7 +155,11 @@ function EditMemberBasicInfoModal({
     setCountry(memberdetails?.coutry);
     setState(memberdetails?.state);
     setLocation(memberdetails?.mail_street_address);
-  };
+  }, [countrycode, memberdetails, uidNo]);
+
+  useEffect(() => {
+    onModalShow();
+  }, [isVisible, onModalShow]);
 
   const addPhoneNumber = () => {
     const obj = {
@@ -255,6 +272,23 @@ function EditMemberBasicInfoModal({
     setShowDate(!showDate);
   };
 
+  const changedValue = (val, index) => {
+    const tempCode = [...phoneNumber];
+    tempCode[index].country_code = val;
+    setPhoneNumber(tempCode);
+    const filteredNumber = phoneNumber.filter(
+      (obj) =>
+        ![null, undefined, ''].includes(obj.phone_number && obj.country_code),
+    );
+    setMemberInfo({
+      ...memberInfo,
+      phone_numbers: filteredNumber.map(({country_code, phone_number}) => ({
+        country_code,
+        phone_number,
+      })),
+    });
+  };
+
   const renderPhoneNumber = ({item, index}) => (
     <TCPhoneNumber
       marginBottom={2}
@@ -262,23 +296,14 @@ function EditMemberBasicInfoModal({
       value={item.country_code}
       from={!(phoneNumber.length > 1)}
       numberValue={item.phone_number}
-      onValueChange={(value) => {
-        const tempCode = [...phoneNumber];
-        tempCode[index].country_code = value;
-        setPhoneNumber(tempCode);
-        const filteredNumber = phoneNumber.filter(
-          (obj) =>
-            ![null, undefined, ''].includes(
-              obj.phone_number && obj.country_code,
-            ),
-        );
-        setMemberInfo({
-          ...memberInfo,
-          phone_numbers: filteredNumber.map(({country_code, phone_number}) => ({
-            country_code,
-            phone_number,
-          })),
-        });
+      onCountryCodePress={(val) => {
+        setCurrentIndex(index);
+        if (val) {
+          setCountryCodeVisible(val);
+        }
+      }}
+      onValueChange={(val) => {
+        changedValue(val, index);
       }}
       onChangeText={(text) => {
         const tempPhone = [...phoneNumber];
@@ -300,6 +325,14 @@ function EditMemberBasicInfoModal({
       }}
     />
   );
+
+  const openPicker2 = () => {
+    if (Platform.OS === 'android') {
+      Pickerref2?.current?.focus();
+    } else {
+      Pickerref2?.current?.togglePicker(true);
+    }
+  };
 
   const heightView = () => (
     <View>
@@ -328,56 +361,88 @@ function EditMemberBasicInfoModal({
             value={memberInfo?.height?.height}
           />
         </View>
-        <RNPickerSelect
-          placeholder={{
-            label: strings.heightTypeText,
-            value: null,
-          }}
-          items={heightMesurement}
-          onValueChange={(value) => {
-            setMemberInfo({
-              ...memberInfo,
-              height: {
-                height: memberInfo?.height?.height,
-                height_type: value,
-              },
-            });
-          }}
-          value={memberInfo?.height?.height_type}
-          useNativeAndroidPickerStyle={false}
+        <Pressable
           style={{
-            placeholder: {
-              color: colors.userPostTimeColor,
-            },
-            inputIOS: {
-              fontSize: wp('3.5%'),
-              paddingVertical: 12,
-              paddingHorizontal: 15,
-              width: wp('45%'),
-              color: 'black',
-              backgroundColor: colors.lightGrey,
-              borderRadius: 5,
-              textAlign: 'center',
-            },
-            inputAndroid: {
-              paddingVertical: 12,
-              paddingHorizontal: 15,
-              width: widthPercentageToDP('45%'),
-              color: 'black',
-              paddingRight: 30,
-              backgroundColor: colors.textFieldBackground,
-              borderRadius: 5,
-              textAlign: 'center',
-              height: 40,
-            },
+            alignItems: 'center',
           }}
-          Icon={() => (
-            <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
-          )}
-        />
+          onPress={() => openPicker2()}>
+          <RNPickerSelect
+            placeholder={{
+              label: strings.heightTypeText,
+              value: null,
+            }}
+            items={heightMesurement}
+            onValueChange={(value) => {
+              setMemberInfo({
+                ...memberInfo,
+                height: {
+                  height: memberInfo?.height?.height,
+                  height_type: value,
+                },
+              });
+            }}
+            value={memberInfo?.height?.height_type}
+            useNativeAndroidPickerStyle={true}
+            style={{
+              viewContainer: {
+                width: widthPercentageToDP('45%'),
+                borderRadius: 5,
+                backgroundColor: colors.textFieldBackground,
+                justifyContent: 'center',
+                height: 40,
+              },
+              placeholder: {
+                color: colors.userPostTimeColor,
+                textAlign: 'center',
+              },
+              inputIOS: {
+                fontSize: wp('3.5%'),
+                paddingVertical: 12,
+                paddingHorizontal: 15,
+                width: wp('45%'),
+                color: 'black',
+                backgroundColor: colors.lightGrey,
+                borderRadius: 5,
+                textAlign: 'center',
+              },
+              // inputAndroid: {
+              //   paddingVertical: 12,
+              //   paddingHorizontal: 15,
+              //   width: widthPercentageToDP('45%'),
+              //   color: 'black',
+              //   paddingRight: 30,
+              //   backgroundColor: colors.textFieldBackground,
+              //   borderRadius: 5,
+              //   textAlign: 'center',
+              //   height: 40,
+              // },
+            }}
+            Icon={() => {
+              if (Platform.OS === 'ios') {
+                return (
+                  <TouchableOpacity onPress={() => openPicker2()}>
+                    <Image
+                      source={images.dropDownArrow}
+                      style={styles.miniDownArrow}
+                    />
+                  </TouchableOpacity>
+                );
+              }
+              return null;
+            }}
+          />
+        </Pressable>
       </View>
     </View>
   );
+
+  const openPicker = () => {
+    if (Platform.OS === 'android') {
+      Pickerref?.current?.focus();
+    } else {
+      Pickerref.current.togglePicker(true);
+    }
+  };
 
   const weightView = () => (
     <View>
@@ -406,54 +471,77 @@ function EditMemberBasicInfoModal({
             value={memberInfo?.weight?.weight}
           />
         </View>
-        <RNPickerSelect
-          placeholder={{
-            label: strings.weightTypeText,
-            value: null,
-          }}
-          items={weightMesurement}
-          onValueChange={(value) => {
-            setMemberInfo({
-              ...memberInfo,
-              weight: {
-                weight: memberInfo?.weight?.weight,
-                weight_type: value,
+        <Pressable onPress={() => openPicker()}>
+          <RNPickerSelect
+            placeholder={{
+              label: strings.weightTypeText,
+              value: null,
+            }}
+            pickerProps={{ref: Pickerref}}
+            ref={Platform.OS === 'ios' ? Pickerref : null}
+            items={weightMesurement}
+            onValueChange={(value) => {
+              setMemberInfo({
+                ...memberInfo,
+                weight: {
+                  weight: memberInfo?.weight?.weight,
+                  weight_type: value,
+                },
+              });
+            }}
+            value={memberInfo?.weight?.weight_type}
+            useNativeAndroidPickerStyle={true}
+            style={{
+              viewContainer: {
+                width: widthPercentageToDP('45%'),
+                borderRadius: 5,
+                backgroundColor: colors.textFieldBackground,
+                justifyContent: 'center',
+                height: 40,
               },
-            });
-          }}
-          value={memberInfo?.weight?.weight_type}
-          useNativeAndroidPickerStyle={false}
-          style={{
-            placeholder: {
-              color: colors.userPostTimeColor,
-            },
-            inputIOS: {
-              fontSize: wp('3.5%'),
-              paddingVertical: 12,
-              paddingHorizontal: 15,
-              width: wp('45%'),
-              color: 'black',
-              backgroundColor: colors.lightGrey,
-              borderRadius: 5,
-              textAlign: 'center',
-            },
-            inputAndroid: {
-              fontSize: widthPercentageToDP('4%'),
-              paddingVertical: 12,
-              paddingHorizontal: 15,
-              width: widthPercentageToDP('45%'),
-              color: 'black',
-              paddingRight: 30,
-              backgroundColor: colors.textFieldBackground,
-              borderRadius: 5,
-              textAlign: 'center',
-              height: 40,
-            },
-          }}
-          Icon={() => (
-            <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
-          )}
-        />
+              placeholder: {
+                color: colors.userPostTimeColor,
+                textAlign: 'center',
+              },
+
+              inputIOS: {
+                fontSize: wp('3.5%'),
+                paddingVertical: 12,
+                paddingHorizontal: 15,
+                width: wp('45%'),
+                color: 'black',
+                backgroundColor: colors.lightGrey,
+                borderRadius: 5,
+                textAlign: 'center',
+              },
+              // inputAndroid: {
+              //   fontSize: widthPercentageToDP('4%'),
+              //   paddingVertical: 12,
+              //   paddingHorizontal: 15,
+              //   width: widthPercentageToDP('45%'),
+              //   color: 'black',
+              //   paddingRight: 30,
+              //   backgroundColor: colors.textFieldBackground,
+              //   borderRadius: 5,
+              //   textAlign: 'center',
+              //   height: 40,
+              // },
+            }}
+            Icon={() => {
+              if (Platform.OS === 'ios') {
+                return (
+                  <TouchableOpacity onPress={() => openPicker()}>
+                    <Image
+                      source={images.dropDownArrow}
+                      style={styles.miniDownArrow}
+                    />
+                  </TouchableOpacity>
+                );
+              }
+              return null;
+            }}
+          />
+        </Pressable>
       </View>
     </View>
   );
@@ -521,8 +609,8 @@ function EditMemberBasicInfoModal({
         title={strings.editbasicinfotitle}
         containerStyle={{padding: 0, flex: 1}}>
         <>
-          <TCKeyboardView containerStyle={{flex: 1}}>
-            <ScrollView>
+          <BottomSheetScrollView>
+            <TCKeyboardView>
               <ActivityLoader visible={loading} />
 
               {memberInfo.connected && (
@@ -714,10 +802,21 @@ function EditMemberBasicInfoModal({
                   />
                 </View>
               )}
-            </ScrollView>
-          </TCKeyboardView>
+            </TCKeyboardView>
+          </BottomSheetScrollView>
         </>
       </CustomModalWrapper>
+
+      <TCCountryCodeModal
+        countryCodeVisible={countryCodeVisible}
+        onCloseModal={() => {
+          setCountryCodeVisible(false);
+        }}
+        countryCodeObj={(obj) => {
+          changedValue(obj, currenrIndex);
+          setCountryCodeVisible(false);
+        }}
+      />
       <AddressLocationModal
         visibleLocationModal={visibleLocationModal}
         setVisibleAddressModalhandler={() => setVisibleLocationModal(false)}

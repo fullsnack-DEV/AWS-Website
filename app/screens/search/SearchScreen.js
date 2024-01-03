@@ -59,6 +59,42 @@ const SearchScreen = ({navigation, route}) => {
   const [filterResult, setFilterResult] = useState([]);
   const [searchResult, setSearchResult] = useState([]);
   const [fetchingRecords, setFetchingRecords] = useState(false);
+  const [searchTagOption] = useState([
+    {
+      label: strings.upcomingMatchesTitle,
+      value: strings.upcomingTitleText,
+      parentTag: 2,
+    },
+    {
+      label: strings.completedMatches,
+      value: strings.completedTitleText,
+      parentTag: 2,
+    },
+    {label: strings.tournamentsTitle, value: null, parentTag: null},
+    {
+      label: strings.eventsTitle,
+      value: strings.completedTitleText,
+      parentTag: 3,
+    },
+    {
+      label: strings.teamsTitleText,
+      value: strings.teamsTitleText,
+      parentTag: 1,
+    },
+    {
+      label: strings.clubsTitleText,
+      value: strings.clubsTitleText,
+      parentTag: 1,
+    },
+    {label: strings.leaguesTitle, value: strings.leaguesTitle, parentTag: 1},
+    {label: strings.playerTitle, value: strings.playerTitle, parentTag: 0},
+    {label: strings.refereesTitle, value: strings.refereesTitle, parentTag: 0},
+    {
+      label: strings.scorekeeperTitle,
+      value: strings.scorekeeperTitle,
+      parentTag: 0,
+    },
+  ]);
 
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
@@ -420,7 +456,10 @@ const SearchScreen = ({navigation, route}) => {
       </View>
       {!showRecentResults && (
         <ScrollView showsVerticalScrollIndicator={false}>
-          <SearchTagList onPress={handleTagPress} />
+          <SearchTagList
+            onPress={handleTagPress}
+            searchTagOption={searchTagOption}
+          />
           <View style={[styles.separator, {marginTop: 10}]} />
 
           {peoples.length > 0 || groups.length > 0 ? (

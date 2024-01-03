@@ -95,6 +95,7 @@ const EventList = ({
           return eventList;
         }
       }
+
       return updatedList;
     },
     [

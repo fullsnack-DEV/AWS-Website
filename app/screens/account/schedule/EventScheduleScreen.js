@@ -178,6 +178,7 @@ export default function EventScheduleScreen({
           filData.push(temp);
         }
       }
+
       setFilterData([...filData]);
     } else {
       setFilterData([]);
@@ -339,7 +340,9 @@ export default function EventScheduleScreen({
                       marginHorizontal: 15,
                     }}>
                     <TCEventCard
-                      onPress={() => onItemPress(item)}
+                      onPress={() => {
+                        onItemPress(item);
+                      }}
                       data={item}
                       profileID={profileID}
                       screenUserId={screenUserId}

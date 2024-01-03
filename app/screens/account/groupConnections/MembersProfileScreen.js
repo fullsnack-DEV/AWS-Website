@@ -122,6 +122,9 @@ export default function MembersProfileScreen({navigation, route}) {
     } else {
       navigation.navigate('Members', {
         screen: 'GroupMembersScreen',
+        params: {
+          refresh: true,
+        },
       });
     }
   }, [navigation, route.params]);
@@ -604,7 +607,7 @@ export default function MembersProfileScreen({navigation, route}) {
 
             onSwitchProfile(authContext.user);
 
-            navigation.navigate('Account', {
+            navigation.navigate('AccountStack', {
               screen: 'AccountScreen',
               initial: false,
               params: {
@@ -963,7 +966,9 @@ export default function MembersProfileScreen({navigation, route}) {
                   }}>
                   <Image
                     source={
-                      groupMemberDetail.status?.includes('en_Long-term Away')
+                      groupMemberDetail.status?.includes(
+                        strings.longTermAwayPlaceholder,
+                      )
                         ? images.orangeCheckBox
                         : images.uncheckWhite
                     }
@@ -1790,6 +1795,14 @@ export default function MembersProfileScreen({navigation, route}) {
         memberdetails={memberDetail}
         uidNo={authContext.entity.uid}
       />
+      <SendNewInvoiceModal
+        isVisible={sendNewInvoice}
+        invoiceType={InvoiceType.SingleInvoice}
+        onClose={() => SetSendNewInvoice(false)}
+        isSingleInvoice={true}
+        member={memberDetail}
+        fromMember={true}
+      />
       <EditMemberModal
         isVisible={visibleEditMemberModal}
         closeModal={() => {
@@ -1798,14 +1811,6 @@ export default function MembersProfileScreen({navigation, route}) {
           getMembers();
         }}
         Info={memberDetail}
-      />
-
-      <SendNewInvoiceModal
-        isVisible={sendNewInvoice}
-        invoiceType={InvoiceType.SingleInvoice}
-        onClose={() => SetSendNewInvoice(false)}
-        isSingleInvoice={true}
-        member={memberDetail}
       />
     </SafeAreaView>
   );

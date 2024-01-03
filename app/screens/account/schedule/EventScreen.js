@@ -72,6 +72,7 @@ import LikersModal from '../../../components/modals/LikersModal';
 import CommentModal from '../../../components/newsFeed/CommentModal';
 import FeedsShimmer from '../../../components/shimmer/newsFeed/FeedsShimmer';
 import EventLikersModal from './EventLikersModal';
+import ImageProgress from '../../../components/newsFeed/ImageProgress';
 
 export default function EventScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -759,16 +760,16 @@ export default function EventScreen({navigation, route}) {
   };
 
   const isWritePostVisible = (who_can_post) => {
-    if (who_can_post?.text === strings.everyoneRadio) {
+    if (who_can_post?.value === Verbs.EVERYONE_EVENT) {
       return true;
     }
-    if (who_can_post?.text === strings.attendeeRadioText) {
+    if (who_can_post?.value === Verbs.ATTENDEE_EVENT) {
       const userExists = going.some(
         (item) => item.user_id === authContext.entity.uid,
       );
       return userExists;
     }
-    if (who_can_post?.text === strings.oraganizerOnly) {
+    if (who_can_post?.value === Verbs.ORGANIZER_EVENT) {
       return eventData.created_by.uid === authContext.entity.uid;
     }
     return false;
@@ -854,6 +855,10 @@ export default function EventScreen({navigation, route}) {
         containerStyle={{marginLeft: 8}}
         // loading={loading}
       />
+      <View style={{position: 'absolute', bottom: 32, zIndex: 100}}>
+        <ImageProgress />
+      </View>
+
       <ActivityLoader visible={loading} />
 
       <ScrollView stickyHeaderIndices={[2]}>

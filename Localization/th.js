@@ -3255,4 +3255,8 @@ export default {
   whoCanWritePostoneventHome: 'th_Who can Write a Post in Event Home',
   oraganizerOnly: 'th_Organizer only',
   teamsTiteInfo: 'th_Teams',
+  challengeSubtext: '(en_You will be the match host.)',
+  uplaodButtonText: 'en_Upload',
+  jerseyText: 'en_Jersey',
+  likeEvent: 'en_Like Event',
 };

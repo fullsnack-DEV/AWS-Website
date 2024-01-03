@@ -41,13 +41,12 @@ export default function LikedEventScreen({navigation}) {
               params: {
                 data: item,
                 gameData: item,
-                comeFrom: 'LocalHomeStack',
+                comeFrom: 'EventScreen',
                 screen: 'LocalHomeEventScreen',
               },
             });
           }}
-          filters={'Pune'}
-          eventType={strings.upcomingTitleText}
+          eventType={strings.completedTitleText}
         />
       </View>
     </SafeAreaView>

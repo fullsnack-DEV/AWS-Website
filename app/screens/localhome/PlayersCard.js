@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import {
   View,
   Text,
@@ -7,7 +8,7 @@ import {
   ImageBackground,
 } from 'react-native';
 import React, {useMemo} from 'react';
-
+import {Shadow} from 'react-native-shadow-2';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
@@ -214,81 +215,91 @@ function PlayersCard({
   );
 
   return (
-    <TouchableOpacity
-      disabled={isdeactivated}
-      activeOpacity={0.9}
-      style={[styles.cardContainer, {overflow: 'hidden'}]}
-      onPress={onPress}>
-      <ImageBackground
-        style={styles.inneimgContainer}
-        source={imageSource()}
-        blurRadius={8}
-        imageStyle={{
-          overflow: 'hidden',
-
-          zIndex: -10,
-        }}
-        borderBottomRightRadius={5}
-        borderBottomLeftRadius={5}
-        borderTopLeftRadius={5}
-        borderTopRightRadius={5}>
-        <Text numberOfLines={1} style={styles.nameStyle}>
-          {getName}
-          {/* {sportText} */}
-        </Text>
-
-        {/* team Logo  */}
-
+    <Shadow
+      distance={Platform.OS === 'android' ? 2 : 0}
+      offset={Platform.OS === 'android' ? ['0%', '2.2%'] : [0, 0]}
+      startColor={'rgba(0,0,0,0.05)'}
+      stretch
+      containerStyle={styles.containerStyle}
+      style={styles.cardContainer}>
+      <TouchableOpacity
+        disabled={isdeactivated}
+        activeOpacity={0.9}
+        style={[styles.cardContainer, {overflow: 'hidden'}]}
+        onPress={onPress}>
         <ImageBackground
-          source={images.curvecut}
-          tintColor={colors.offwhite}
-          resizeMode="contain"
+          style={styles.inneimgContainer}
+          source={imageSource()}
+          blurRadius={8}
           imageStyle={{
-            zIndex: 10,
+            overflow: 'hidden',
+            flex: 1,
+            zIndex: -10,
           }}
-          style={styles.imageContaienrstyle}>
-          <View style={[styles.teamLogoContainer, {zIndex: 20}]}>
-            {renderFastImage}
-          </View>
-          <View style={{position: 'absolute', top: 15, zIndex: 20}}>
-            <View style={styles.mainContentcontainer}>
-              <Text style={styles.teamnameTextStyle} numberOfLines={1}>
-                {getEntityName()}
-              </Text>
-              <Text style={styles.locationNameTextStyle} numberOfLines={1}>
-                {item.city} {item.state_abbr}
-              </Text>
+          borderBottomRightRadius={5}
+          borderBottomLeftRadius={5}
+          borderTopLeftRadius={5}
+          borderTopRightRadius={5}>
+          <Text numberOfLines={1} style={styles.nameStyle}>
+            {getName}
+            {/* {sportText} */}
+          </Text>
+
+          {/* team Logo  */}
+
+          <ImageBackground
+            source={images.curvecut}
+            tintColor={colors.offwhite}
+            resizeMode="contain"
+            imageStyle={{
+              zIndex: 10,
+              overflow: 'hidden',
+            }}
+            style={styles.imageContaienrstyle}>
+            <View style={[styles.teamLogoContainer, {zIndex: 20}]}>
+              {renderFastImage}
+            </View>
+            <View style={{position: 'absolute', top: 15, zIndex: 20}}>
+              <View style={styles.mainContentcontainer}>
+                <Text style={styles.teamnameTextStyle} numberOfLines={1}>
+                  {getEntityName()}
+                </Text>
+                <Text style={styles.locationNameTextStyle} numberOfLines={1}>
+                  {item.city} {item.state_abbr}
+                </Text>
+              </View>
+
+              {getFooterComponent()}
             </View>
 
-            {getFooterComponent()}
-          </View>
-
-          {/* name */}
+            {/* name */}
+          </ImageBackground>
         </ImageBackground>
-      </ImageBackground>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </Shadow>
   );
 }
 
 const styles = StyleSheet.create({
   cardContainer: {
-    height: 176,
+    height: 178,
     width: 125,
-    backgroundColor: '#FCFCFC',
-    borderRadius: 5,
+    backgroundColor: colors.whiteGradientColor,
+    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 5,
+  },
+  containerStyle: {
     marginLeft: 15,
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.shadowColor,
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 0.4,
-        shadowRadius: 7,
-      },
-      android: {
-        elevation: 7,
-      },
-    }),
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowRadius: 7,
+    shadowOpacity: 9,
+    shadowColor: colors.maskColor,
+    backgroundColor: colors.privacyBgColor,
+    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 5,
   },
 
   teamLogoContainer: {
@@ -340,12 +351,15 @@ const styles = StyleSheet.create({
     width: 125,
     zIndex: 200,
     marginTop: 15,
+    flex: 1,
   },
   inneimgContainer: {
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
+    height: 150,
+    flex: 1,
   },
   nameStyle: {
     fontFamily: fonts.RBold,

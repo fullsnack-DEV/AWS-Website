@@ -1,4 +1,6 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import {View, Text, StyleSheet, Platform, TouchableOpacity} from 'react-native';
+import {Shadow} from 'react-native-shadow-2';
 import React, {useCallback, useMemo} from 'react';
 import FastImage from 'react-native-fast-image';
 import images from '../../Constants/ImagePath';
@@ -77,42 +79,50 @@ function TeamCard({
   );
 
   return (
-    <TouchableOpacity
-      style={[styles.cardContainer, {elevation: isdeactivated ? 0 : 6}]}
-      onPress={onPress}
-      disabled={isdeactivated}>
-      {/* team Logo  */}
-      {renderImageBgandName}
+    <Shadow
+      distance={Platform.OS === 'android' ? 2 : 0}
+      offset={Platform.OS === 'android' ? ['0%', '2.2%'] : [0, 0]}
+      startColor={'rgba(0,0,0,0.05)'}
+      stretch
+      containerStyle={styles.containerStyle}
+      style={styles.cardContainer}>
+      <TouchableOpacity
+        style={{elevation: isdeactivated ? 0 : 0}}
+        onPress={onPress}
+        disabled={isdeactivated}>
+        {/* team Logo  */}
+        {renderImageBgandName}
 
-      {placholder ? (
-        <View style={styles.teamLogoContainer}>{placeHolderImage()}</View>
-      ) : (
-        <GroupIcon
-          entityType={item.entity_type}
-          imageUrl={item?.thumbnail ?? ''}
-          groupName={item.group_name}
-          containerStyle={styles.teamLogoContainer}
-          grpImageStyle={styles.teamlogoImg}
-          textstyle={{
-            fontSize: 10,
-            marginTop: 1,
-          }}
-          showPlaceholder={false}
-        />
-      )}
+        {placholder ? (
+          <View style={styles.teamLogoContainer}>{placeHolderImage()}</View>
+        ) : (
+          <GroupIcon
+            entityType={item.entity_type}
+            imageUrl={item?.thumbnail ?? ''}
+            groupName={item.group_name}
+            containerStyle={styles.teamLogoContainer}
+            grpImageStyle={styles.teamlogoImg}
+            textstyle={{
+              fontSize: 10,
+              marginTop: 1,
+            }}
+            showPlaceholder={false}
+          />
+        )}
 
-      {/* name */}
-      <View style={styles.mainContentcontainer}>
-        <Text style={styles.teamnameTextStyle} numberOfLines={1}>
-          {item.group_name}
-        </Text>
-        <Text style={styles.locationNameTextStyle} numberOfLines={1}>
-          {item?.city} {item?.state_abbr}
-        </Text>
-      </View>
+        {/* name */}
+        <View style={styles.mainContentcontainer}>
+          <Text style={styles.teamnameTextStyle} numberOfLines={1}>
+            {item.group_name}
+          </Text>
+          <Text style={styles.locationNameTextStyle} numberOfLines={1}>
+            {item?.city} {item?.state_abbr}
+          </Text>
+        </View>
 
-      {getFooterComponent()}
-    </TouchableOpacity>
+        {getFooterComponent()}
+      </TouchableOpacity>
+    </Shadow>
   );
 }
 
@@ -122,19 +132,24 @@ const styles = StyleSheet.create({
   cardContainer: {
     height: 178,
     width: 125,
-    backgroundColor: '#FCFCFC',
-    marginLeft: 15,
-    borderRadius: 5,
-
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.shadowColor,
-        shadowOffset: {width: 0, height: 4},
-        shadowOpacity: 0.4,
-        shadowRadius: 7,
-      },
-    }),
+    backgroundColor: colors.whiteGradientColor,
+    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 5,
   },
+  containerStyle: {
+    marginLeft: 15,
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowRadius: 7,
+    shadowOpacity: 9,
+    shadowColor: colors.maskColor,
+    backgroundColor: colors.privacyBgColor,
+    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 5,
+  },
+
   imgStyles: {
     width: 125,
     height: 60,

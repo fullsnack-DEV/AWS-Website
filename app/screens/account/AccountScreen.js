@@ -55,6 +55,8 @@ import SportsListModal from './registerPlayer/modals/SportsListModal';
 import {getUserSettings} from '../../api/Users';
 import {getActivityLogCount} from '../../api/ActivityLog';
 import {useTabBar} from '../../context/TabbarContext';
+// eslint-disable-next-line import/order
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 const AccountScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -340,6 +342,7 @@ const AccountScreen = ({navigation, route}) => {
   const handleLogout = async () => {
     setOnLoad(true);
     await onLogout(authContext);
+    GoogleSignin.signOut();
     setOnLoad(false);
   };
 

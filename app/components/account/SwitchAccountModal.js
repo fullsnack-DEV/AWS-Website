@@ -90,10 +90,18 @@ const SwitchAccountModal = ({
         ],
       );
     } else {
-      setShowLoader(true);
-      setIsPressed(false);
-      setSelectedAccount(entity);
-      await onSwitchProfile(entity);
+      try {
+        setShowLoader(true);
+        setIsPressed(false);
+        setSelectedAccount(entity);
+
+        await onSwitchProfile(entity);
+
+        closeModal();
+      } catch (error) {
+        console.error('Error occurred:', error);
+        closeModal();
+      }
     }
     // closeModal();
   };

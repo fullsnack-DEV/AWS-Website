@@ -145,10 +145,10 @@ export default function BasicInfoScreen({navigation}) {
           setUserInfo={(obj) => {
             const UpdatedObj = obj;
 
-            if (obj.phone_numbers.length > 0) {
-              UpdatedObj.phone_numbers = obj.phone_numbers;
+            if (obj?.phone_numbers?.length > 0) {
+              UpdatedObj.phone_numbers = obj?.phone_numbers;
             } else {
-              UpdatedObj.phone_numbers = userInfo.phone_numbers;
+              UpdatedObj.phone_numbers = userInfo?.phone_numbers;
             }
 
             setUserInfo(UpdatedObj);

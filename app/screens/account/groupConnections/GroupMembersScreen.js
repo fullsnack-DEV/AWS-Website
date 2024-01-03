@@ -129,19 +129,17 @@ export default function GroupMembersScreen({navigation, route}) {
 
   useEffect(() => {
     if (visibleFilterModal) {
-      getMembers(groupID, authContext);
+      setTimeout(() => {
+        getMembers(groupID, authContext);
+      }, 300);
     }
 
     getPendingRequestData();
-  }, [isFocused, visibleFilterModal]);
+  }, [visibleFilterModal]);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (active) {
-        getMembers(groupID, authContext);
-
-        setActive(false);
-      }
+      getMembers(groupID, authContext);
     }, [active, authContext, groupID]),
   );
 
@@ -954,6 +952,7 @@ export default function GroupMembersScreen({navigation, route}) {
       <InviteMemberModal
         isVisible={showInviteMember}
         closeModal={() => setShowInviteMember(false)}
+        members={members}
       />
       <RequestBasicInfoModal
         isVisible={showInfoModal}

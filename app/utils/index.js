@@ -2710,6 +2710,11 @@ export const getNumberFromCurrency = (value) => {
 export const formatCurrency = (value, currency) => {
   const temp = value.replace(/[^0-9.-]+/g, '');
   const fee = parseFloat(temp);
+
+  if (Number.isNaN(fee)) {
+    return '0';
+  }
+
   const formattedNumber = fee.toLocaleString('en-US', {
     style: 'currency',
     currency,
@@ -2717,7 +2722,6 @@ export const formatCurrency = (value, currency) => {
 
   return formattedNumber;
 };
-
 export const setSearchDataToLocal = async (data = {}) => {
   await AsyncStorage.setItem('LocalSearchData', JSON.stringify(data));
 };

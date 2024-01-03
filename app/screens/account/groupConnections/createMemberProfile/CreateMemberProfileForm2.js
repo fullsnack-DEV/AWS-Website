@@ -1,4 +1,10 @@
-import React, {useState, useContext, useEffect, useCallback} from 'react';
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -9,6 +15,8 @@ import {
   Platform,
   TouchableWithoutFeedback,
   SafeAreaView,
+  TouchableOpacity,
+  Pressable,
 } from 'react-native';
 
 import {useIsFocused} from '@react-navigation/native';
@@ -41,6 +49,7 @@ import TCTextField from '../../../../components/TCTextField';
 
 import AddressLocationModal from '../../../../components/AddressLocationModal/AddressLocationModal';
 import ScreenHeader from '../../../../components/ScreenHeader';
+import TCCountryCodeModal from '../../../../components/TCCountryCodeModal';
 
 let entity = {};
 export default function CreateMemberProfileForm2({navigation, route}) {
@@ -74,6 +83,11 @@ export default function CreateMemberProfileForm2({navigation, route}) {
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
 
   const [countrycode, setCountryCode] = useState();
+  const [countryCodeVisible, setCountryCodeVisible] = useState(false);
+  const [currenrIndex, setCurrentIndex] = useState();
+
+  const Pickerref = useRef(null);
+  const Pickerref2 = useRef(null);
 
   useEffect(() => {
     const selectedCountryItem = countryCodeList.find(
@@ -205,6 +219,25 @@ export default function CreateMemberProfileForm2({navigation, route}) {
     setShowDate(!showDate);
   };
 
+  const changedValue = (val, index) => {
+    const tempCode = [...phoneNumber];
+
+    tempCode[index].country_code = val;
+    setPhoneNumber(tempCode);
+    const filteredNumber = phoneNumber.filter(
+      (obj) =>
+        ![null, undefined, ''].includes(obj.phone_number && obj.country_code),
+    );
+
+    setMemberInfo({
+      ...memberInfo,
+      phone_numbers: filteredNumber.map(({country_code, phone_number}) => ({
+        country_code,
+        phone_number,
+      })),
+    });
+  };
+
   const renderPhoneNumber = ({item, index}) => (
     <TCPhoneNumber
       marginBottom={2}
@@ -212,25 +245,14 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       value={item.country_code}
       numberValue={item.phone_number}
       from={true}
-      onValueChange={(value) => {
-        const tempCode = [...phoneNumber];
-
-        tempCode[index].country_code = value;
-        setPhoneNumber(tempCode);
-        const filteredNumber = phoneNumber.filter(
-          (obj) =>
-            ![null, undefined, ''].includes(
-              obj.phone_number && obj.country_code,
-            ),
-        );
-
-        setMemberInfo({
-          ...memberInfo,
-          phone_numbers: filteredNumber.map(({country_code, phone_number}) => ({
-            country_code,
-            phone_number,
-          })),
-        });
+      onCountryCodePress={(val) => {
+        setCurrentIndex(index);
+        if (val) {
+          setCountryCodeVisible(val);
+        }
+      }}
+      onValueChange={(val) => {
+        changedValue(val, index);
       }}
       onChangeText={(text) => {
         const tempPhone = [...phoneNumber];
@@ -252,6 +274,21 @@ export default function CreateMemberProfileForm2({navigation, route}) {
       }}
     />
   );
+
+  const openPicker = () => {
+    if (Platform.OS === 'android') {
+      Pickerref?.current?.focus();
+    } else {
+      Pickerref.current.togglePicker(true);
+    }
+  };
+  const openPicker2 = () => {
+    if (Platform.OS === 'android') {
+      Pickerref2?.current?.focus();
+    } else {
+      Pickerref2?.current?.togglePicker(true);
+    }
+  };
 
   const heightView = () => (
     <View
@@ -280,56 +317,83 @@ export default function CreateMemberProfileForm2({navigation, route}) {
           maxLength={3}
         />
       </View>
-      <RNPickerSelect
-        placeholder={{
-          label: strings.heightTypeText,
-          value: null,
-        }}
-        items={heightMesurement}
-        onValueChange={(value) => {
-          setMemberInfo({
-            ...memberInfo,
-            height: {
-              height: memberInfo?.height?.height,
-              height_type: value,
-            },
-          });
-        }}
-        value={memberInfo?.height?.height_type}
-        useNativeAndroidPickerStyle={false}
+      <View
         style={{
-          inputIOS: {
-            fontSize: widthPercentageToDP('3.5%'),
-            paddingVertical: 12,
-            paddingHorizontal: 15,
-            width: widthPercentageToDP('45%'),
-            color: 'black',
-            paddingRight: 30,
-            backgroundColor: colors.textFieldBackground,
-            borderRadius: 5,
-            textAlign: 'center',
-            ...styles.shadowStyle,
-          },
-          inputAndroid: {
-            fontSize: widthPercentageToDP('4%'),
-            paddingVertical: 12,
-            paddingHorizontal: 15,
-            width: widthPercentageToDP('45%'),
-            color: 'black',
-            paddingRight: 30,
-            backgroundColor: colors.textFieldBackground,
-            borderRadius: 5,
-            height: 40,
+          flexDirection: 'row',
 
-            textAlign: 'center',
-
-            ...styles.shadowStyle,
-          },
-        }}
-        Icon={() => (
-          <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
-        )}
-      />
+          alignItems: 'center',
+          marginLeft: 15,
+          marginRight: 15,
+          justifyContent: 'space-between',
+        }}>
+        <Pressable
+          onPress={() => openPicker()}
+          style={{
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}>
+          <RNPickerSelect
+            placeholder={{
+              label: strings.heightTypeText,
+              value: null,
+            }}
+            pickerProps={{ref: Pickerref}}
+            ref={Platform.OS === 'ios' ? Pickerref : null}
+            items={heightMesurement}
+            onValueChange={(value) => {
+              setMemberInfo({
+                ...memberInfo,
+                height: {
+                  height: memberInfo?.height?.height,
+                  height_type: value,
+                },
+              });
+            }}
+            fixAndroidTouchableBug={true}
+            value={memberInfo?.height?.height_type}
+            useNativeAndroidPickerStyle={true}
+            style={{
+              placeholder: {
+                color: colors.blackColor,
+              },
+              viewContainer: {
+                backgroundColor: colors.lightGrey,
+                justifyContent: 'center',
+                borderRadius: 5,
+                width: widthPercentageToDP('45%'),
+                height: 40,
+                paddingLeft: Platform.OS === 'ios' ? 0 : 60,
+              },
+              inputIOS: {
+                fontSize: widthPercentageToDP('3.5%'),
+                paddingVertical: 12,
+                paddingHorizontal: 15,
+                width: widthPercentageToDP('45%'),
+                color: 'black',
+                paddingRight: 30,
+                backgroundColor: colors.textFieldBackground,
+                borderRadius: 5,
+                textAlign: 'center',
+                height: 40,
+                ...styles.shadowStyle,
+              },
+            }}
+            Icon={() => {
+              if (Platform.OS === 'ios') {
+                return (
+                  <TouchableOpacity onPress={() => openPicker()}>
+                    <Image
+                      source={images.dropDownArrow}
+                      style={styles.miniDownArrow}
+                    />
+                  </TouchableOpacity>
+                );
+              }
+              return null;
+            }}
+          />
+        </Pressable>
+      </View>
     </View>
   );
 
@@ -360,55 +424,82 @@ export default function CreateMemberProfileForm2({navigation, route}) {
           value={memberInfo?.weight?.weight}
         />
       </View>
-      <RNPickerSelect
-        placeholder={{
-          label: strings.weightTypeText,
-          value: null,
-        }}
-        items={weightMesurement}
-        onValueChange={(value) => {
-          setMemberInfo({
-            ...memberInfo,
-            weight: {
-              weight: memberInfo?.weight?.weight,
-              weight_type: value,
-            },
-          });
-        }}
-        value={memberInfo?.weight?.weight_type}
-        useNativeAndroidPickerStyle={false}
+      <View
         style={{
-          inputIOS: {
-            fontSize: widthPercentageToDP('3.5%'),
-            paddingVertical: 12,
-            paddingHorizontal: 15,
-            width: widthPercentageToDP('45%'),
-            color: 'black',
-            paddingRight: 30,
-            backgroundColor: colors.textFieldBackground,
-            borderRadius: 5,
-            textAlign: 'center',
-            height: 40,
-            ...styles.shadowStyle,
-          },
-          inputAndroid: {
-            fontSize: widthPercentageToDP('4%'),
-            paddingVertical: 12,
-            paddingHorizontal: 15,
-            width: widthPercentageToDP('45%'),
-            color: 'black',
-            paddingRight: 30,
-            backgroundColor: colors.textFieldBackground,
-            borderRadius: 5,
-            textAlign: 'center',
-            height: 40,
-            ...styles.shadowStyle,
-          },
-        }}
-        Icon={() => (
-          <Image source={images.dropDownArrow} style={styles.miniDownArrow} />
-        )}
-      />
+          flexDirection: 'row',
+
+          alignItems: 'center',
+          marginLeft: 15,
+          marginRight: 15,
+          justifyContent: 'space-between',
+        }}>
+        <Pressable
+          onPress={() => openPicker2()}
+          style={{
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}>
+          <RNPickerSelect
+            placeholder={{
+              label: strings.weightTypeText,
+              value: null,
+            }}
+            pickerProps={{ref: Pickerref2}}
+            ref={Platform.OS === 'ios' ? Pickerref2 : null}
+            items={weightMesurement}
+            onValueChange={(value) => {
+              setMemberInfo({
+                ...memberInfo,
+                weight: {
+                  weight: memberInfo?.weight?.weight,
+                  weight_type: value,
+                },
+              });
+            }}
+            value={memberInfo?.weight?.weight_type}
+            useNativeAndroidPickerStyle={true}
+            style={{
+              placeholder: {
+                color: colors.blackColor,
+              },
+              viewContainer: {
+                backgroundColor: colors.lightGrey,
+                justifyContent: 'center',
+                borderRadius: 5,
+                width: widthPercentageToDP('45%'),
+                height: 40,
+                paddingLeft: Platform.OS === 'ios' ? 0 : 60,
+              },
+              inputIOS: {
+                fontSize: widthPercentageToDP('3.5%'),
+                paddingVertical: 12,
+                paddingHorizontal: 15,
+                width: widthPercentageToDP('45%'),
+                color: 'black',
+                paddingRight: 30,
+                backgroundColor: colors.textFieldBackground,
+                borderRadius: 5,
+                textAlign: 'center',
+                height: 40,
+                ...styles.shadowStyle,
+              },
+            }}
+            Icon={() => {
+              if (Platform.OS === 'ios') {
+                return (
+                  <TouchableOpacity onPress={() => openPicker2()}>
+                    <Image
+                      source={images.dropDownArrow}
+                      style={styles.miniDownArrow}
+                    />
+                  </TouchableOpacity>
+                );
+              }
+              return null;
+            }}
+          />
+        </Pressable>
+      </View>
     </View>
   );
 
@@ -443,6 +534,7 @@ export default function CreateMemberProfileForm2({navigation, route}) {
             title={strings.gender.toUpperCase()}
             style={{marginBottom: 10, marginTop: 20}}
           />
+
           <TCPicker
             dataSource={DataSource.Gender}
             placeholder={strings.choose}
@@ -573,6 +665,17 @@ export default function CreateMemberProfileForm2({navigation, route}) {
           onAddressSelect={onSelectAddress}
           handleSetLocationOptions={onSelectAddress}
           onDonePress={(street, code) => setCityandPostal(street, code)}
+        />
+
+        <TCCountryCodeModal
+          countryCodeVisible={countryCodeVisible}
+          onCloseModal={() => {
+            setCountryCodeVisible(false);
+          }}
+          countryCodeObj={(obj) => {
+            changedValue(obj, currenrIndex);
+            setCountryCodeVisible(false);
+          }}
         />
       </ScrollView>
     </SafeAreaView>

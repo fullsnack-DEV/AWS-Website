@@ -1162,7 +1162,12 @@ function LocalHomeScreen({navigation, route}) {
   ];
 
   const handleTagPress = (selectedTag = {}) => {
-    console.log(selectedTag, 'from selected Tag');
+    if (selectedTag.label === strings.venuesText) {
+      navigation.navigate('LocalHomeStack', {
+        screen: 'VenueScreen',
+      });
+      return;
+    }
     if (selectedTag.parentTag === null) return;
 
     navigation.navigate('UniversalSearchStack', {

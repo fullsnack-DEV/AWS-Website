@@ -38,8 +38,7 @@ export default function MemberFilterModal({
     connected: Verbs.ALL_ROLE,
   });
   const [nonMemberSelected, setNonMemberSelected] = useState(false);
-
-  const filterEntity = [
+  const [filterEntity] = useState([
     {
       title: strings.alltitle,
       role: Verbs.ALL_ROLE,
@@ -76,10 +75,11 @@ export default function MemberFilterModal({
       is_role: true,
       is_checked: true,
     },
-  ];
+  ]);
 
   const [role, setRole] = useState(filterEntity);
-  const ConnectionData = [
+
+  const [ConnectionData] = useState([
     {
       title: strings.alltitle,
       connected: Verbs.ALL_ROLE,
@@ -92,7 +92,7 @@ export default function MemberFilterModal({
       title: strings.disconnectedToAccount,
       connected: false,
     },
-  ];
+  ]);
 
   const [connectData] = useState(ConnectionData);
 
@@ -239,50 +239,13 @@ export default function MemberFilterModal({
     }
 
     if (item.is_role) {
-      if (item.role === 'is_all') {
-        setIsAllForRole(!isallForRole);
-        const updatedRole = role.map((roleItem) => ({
-          ...roleItem,
-          is_checked: isallForGroup,
-        }));
-
-        setRole(updatedRole);
-      } else if (item.is_role) {
-        const updatedRole = role.map((roleItem) => {
-          if (roleItem.title === strings.alltitle) {
-            // eslint-disable-next-line no-param-reassign
-            roleItem.is_checked = false; // Set is_checked to false for 'All'
-          }
-          if (roleItem.title === item.title && 'is_checked' in roleItem) {
-            return {
-              ...roleItem,
-              is_checked: !roleItem.is_checked,
-            };
-          }
-          return roleItem;
-        });
-        const uncheckedElements = updatedRole.filter(
-          (roleItem) => !roleItem.is_checked,
-        );
-        if (
-          uncheckedElements.length === 1 &&
-          !uncheckedElements[0].is_checked
-        ) {
-          const elementToToggle = uncheckedElements[0];
-          const updatedElement = {...elementToToggle, is_checked: true};
-          const updatedConnectWithToggledElement = updatedRole.map((roleItem) =>
-            roleItem === elementToToggle ? updatedElement : roleItem,
-          );
-
-          setParentGroup(updatedConnectWithToggledElement);
-          return;
-        }
-      }
-    }
-
-    if (item.is_role) {
       if (item.role === Verbs.ALL_ROLE) {
-        setIsAllForRole(!isallForRole);
+        if (isallForRole) {
+          setIsAllForRole(false);
+        } else {
+          setIsAllForRole(true);
+        }
+
         const updatedRole = role.map((roleItem) => ({
           ...roleItem,
           is_checked: isallForRole,

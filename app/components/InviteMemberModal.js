@@ -38,6 +38,7 @@ function InviteMemberModal({
   closeModal = () => {},
   forUser = false,
   currentUserData = {},
+  members = [],
 }) {
   const [loading, setloading] = useState(true);
   const authContext = useContext(AuthContext);
@@ -79,8 +80,18 @@ function InviteMemberModal({
         .then((response) => {
           setloading(false);
 
-          setPlayers([...response]);
-          setFilteredList([...response]);
+          if (members.length > 0) {
+            const filteredResponse = response.filter(
+              (respUser) =>
+                !members.some((member) => member.user_id === respUser.user_id),
+            );
+
+            setPlayers([...filteredResponse]);
+            setFilteredList([...filteredResponse]);
+          } else {
+            setPlayers([...response]);
+            setFilteredList([...response]);
+          }
         })
         .catch((error) => {
           setloading(false);

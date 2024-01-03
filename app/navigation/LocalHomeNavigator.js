@@ -17,6 +17,7 @@ import fonts from '../Constants/Fonts';
 import JoinTeamScreen from '../screens/localhome/JoinTeamScreen';
 import JoinClubScreen from '../screens/localhome/JoinClubScreen';
 import LocalHomEventScreen from '../screens/localhome/LocalHomEventScreen';
+import VenueScreen from '../screens/localhome/VenueScreen';
 
 const Stack = createStackNavigator();
 
@@ -153,6 +154,14 @@ const LocalHomeNavigator = () => (
         },
       }}
     />
+    <Stack.Screen
+      name="VenueScreen"
+      component={VenueScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+
     <Stack.Screen
       name="RefereesListScreen"
       component={RefereesListScreen}

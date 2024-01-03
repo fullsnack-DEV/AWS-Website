@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React, {useContext, useEffect, useState} from 'react';
 import {
   StyleSheet,
@@ -6,8 +7,10 @@ import {
   ImageBackground,
   Image,
   Pressable,
+  Platform,
 } from 'react-native';
 import moment from 'moment';
+import {Shadow} from 'react-native-shadow-2';
 import images from '../../Constants/ImagePath';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -45,60 +48,67 @@ export default function TCEventCard({
   }, [data.owner_id, owners]);
 
   return (
-    <Pressable onPress={onPress} style={[styles.parent, containerStyle]}>
-      <ImageBackground
-        imageStyle={styles.eventBackgroundImage}
-        source={{uri: data?.background_thumbnail}}
-        resizeMode="cover"
-        style={styles.backgroundImageContainer}>
-        <Image source={images.threeDotIcon} style={styles.moreOptionsIcon} />
+    <Shadow
+      distance={Platform.OS === 'android' ? 2 : 0}
+      offset={Platform.OS === 'android' ? ['0%', '2.2%'] : [0, 0]}
+      startColor={'rgba(0,0,0,0.05)'}
+      stretch
+      style={styles.parent}>
+      <Pressable onPress={onPress} style={[styles.parent, containerStyle]}>
+        <ImageBackground
+          imageStyle={styles.eventBackgroundImage}
+          source={{uri: data?.background_thumbnail}}
+          resizeMode="cover"
+          style={styles.backgroundImageContainer}>
+          <Image source={images.threeDotIcon} style={styles.moreOptionsIcon} />
 
-        <View style={{marginHorizontal: 15, marginBottom: 5}}>
-          <Text style={styles.eventTitle} numberOfLines={1}>
-            {title.toUpperCase()}
-          </Text>
-        </View>
-      </ImageBackground>
-
-      <View style={{paddingHorizontal: 15, paddingVertical: 10, flex: 1}}>
-        <View style={[styles.row, {marginBottom: 5, flex: 1}]}>
-          <View>
-            <Text style={styles.eventTime}>
-              {`${moment(startDate).format('ddd, MMM DD - h:mma')}`}{' '}
+          <View style={{marginHorizontal: 15, marginBottom: 5}}>
+            <Text style={styles.eventTitle} numberOfLines={1}>
+              {title.toUpperCase()}
             </Text>
           </View>
-          <Text style={[styles.eventTime, {marginHorizontal: 10}]}>|</Text>
+        </ImageBackground>
 
-          <View style={{flex: 1}}>
-            <Text
-              style={data?.is_Offline ? styles.eventTime : styles.onlineText}
-              numberOfLines={1}>
-              {data?.is_Offline ? location : strings.onlineText}
+        <View style={{paddingHorizontal: 15, paddingVertical: 10, flex: 1}}>
+          <View style={[styles.row, {marginBottom: 5, flex: 1}]}>
+            <View>
+              <Text style={styles.eventTime}>
+                {`${moment(startDate).format('ddd, MMM DD - h:mma')}`}{' '}
+              </Text>
+            </View>
+            <Text style={[styles.eventTime, {marginHorizontal: 10}]}>|</Text>
+
+            <View style={{flex: 1}}>
+              <Text
+                style={data?.is_Offline ? styles.eventTime : styles.onlineText}
+                numberOfLines={1}>
+                {data?.is_Offline ? location : strings.onlineText}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <GroupIcon
+              imageUrl={ownerDetails?.thumbnail}
+              groupName={ownerDetails?.group_name ?? ownerDetails?.full_name}
+              entityType={ownerDetails.entity_type}
+              containerStyle={[
+                styles.groupIconStyle,
+                ownerDetails.entity_type === Verbs.entityTypePlayer ||
+                ownerDetails.entity_type === Verbs.entityTypeUser
+                  ? {paddingTop: 0, borderWidth: 0}
+                  : {},
+              ]}
+              textstyle={{fontSize: 10, marginTop: 0}}
+              placeHolderStyle={styles.groupIconPlaceholder}
+            />
+            <Text style={styles.ownerText}>
+              {ownerDetails?.group_name ?? ownerDetails?.full_name}
             </Text>
           </View>
         </View>
-
-        <View style={styles.row}>
-          <GroupIcon
-            imageUrl={ownerDetails?.thumbnail}
-            groupName={ownerDetails?.group_name ?? ownerDetails?.full_name}
-            entityType={ownerDetails.entity_type}
-            containerStyle={[
-              styles.groupIconStyle,
-              ownerDetails.entity_type === Verbs.entityTypePlayer ||
-              ownerDetails.entity_type === Verbs.entityTypeUser
-                ? {paddingTop: 0, borderWidth: 0}
-                : {},
-            ]}
-            textstyle={{fontSize: 10, marginTop: 0}}
-            placeHolderStyle={styles.groupIconPlaceholder}
-          />
-          <Text style={styles.ownerText}>
-            {ownerDetails?.group_name ?? ownerDetails?.full_name}
-          </Text>
-        </View>
-      </View>
-    </Pressable>
+      </Pressable>
+    </Shadow>
   );
 }
 
@@ -106,12 +116,16 @@ const styles = StyleSheet.create({
   parent: {
     backgroundColor: colors.whiteColor,
     borderRadius: 10,
-    elevation: 5,
-    marginBottom: 15,
-    shadowColor: colors.googleColor,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.5,
-    shadowRadius: 7,
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowRadius: 3,
+    shadowOpacity: 0.2,
+    shadowColor: colors.shadowColor,
+    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 5,
+    // marginBottom: 15,
   },
   backgroundImageContainer: {
     borderTopLeftRadius: 10,

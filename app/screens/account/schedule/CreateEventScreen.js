@@ -885,6 +885,7 @@ export default function CreateEventScreen({navigation, route}) {
                 placeholder={strings.never}
                 value={selectWeekMonth}
                 onValueChange={(value) => {
+                  console.log(value, 'From cal');
                   if (value === strings.never) {
                     setEventUntildateTime(eventEndDateTime);
                   }

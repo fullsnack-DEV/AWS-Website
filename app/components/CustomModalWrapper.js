@@ -211,6 +211,19 @@ const CustomModalWrapper = ({
     }
   }, [isVisible]);
 
+  const getPanGestureState = () => {
+    if (
+      modalType === ModalTypes.style5 ||
+      modalType === ModalTypes.style2 ||
+      modalType === ModalTypes.style7 ||
+      modalType === ModalTypes.style9 ||
+      modalType === ModalTypes.default
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <BottomSheetModalProvider>
       <BottomSheetModal
@@ -230,7 +243,7 @@ const CustomModalWrapper = ({
 
           setCurrentIndex(index);
         }}
-        enablePanDownToClose
+        enablePanDownToClose={getPanGestureState()}
         enableDismissOnClose
         backdropComponent={ModalBackDrop}
         handleComponent={() => getModalHeader()}
