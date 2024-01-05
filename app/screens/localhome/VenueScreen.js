@@ -46,17 +46,16 @@ export default function VenueScreen({navigation}) {
             }}>
             {strings.venueText2}
           </Text>
-          <Image
-            source={images.localHomeVenue}
-            style={{
-              width: 207,
-              height: 225,
-              resizeMode: 'cover',
-              alignSelf: 'center',
-              marginTop: 35,
-            }}
-          />
         </View>
+        <Image
+          source={images.localHomeVenue}
+          style={{
+            width: 240,
+            height: 225,
+
+            marginTop: 35,
+          }}
+        />
       </View>
     </SafeAreaView>
   );

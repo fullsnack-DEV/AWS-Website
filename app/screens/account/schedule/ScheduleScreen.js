@@ -31,7 +31,6 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-import {RRule} from 'rrule';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
@@ -335,32 +334,6 @@ export default function ScheduleScreen({navigation, route}) {
     setEndDateVisible(false);
   };
 
-  const getEventOccuranceFromRule = (event) => {
-    const ruleObj = RRule.parseString(event.rrule);
-    ruleObj.dtstart = Utility.getJSDate(event.start_datetime);
-    ruleObj.until = Utility.getJSDate(event.untilDate);
-    const rule = new RRule(ruleObj);
-    const duration = event.end_datetime - event.start_datetime;
-    let occr = rule.all();
-    if (event.exclusion_dates) {
-      // _.remove(occr, function (date) {
-      //   return event.exclusion_dates.includes(Utility.getTCDate(date))
-      // })
-      occr = occr.filter(
-        (date) => !event.exclusion_dates.includes(Utility.getTCDate(date)),
-      );
-    }
-    occr = occr.map((RRItem) => {
-      // console.log('Item', Math.round(new Date(RRItem) / 1000))
-      const newEvent = {...event};
-      newEvent.start_datetime = Utility.getTCDate(RRItem);
-      newEvent.end_datetime = newEvent.start_datetime + duration;
-      RRItem = newEvent;
-      return RRItem;
-    });
-    return occr;
-  };
-
   // Check any event assigned to others option.
   useEffect(() => {
     const events = eventData.filter((obj) => !obj.game);
@@ -549,6 +522,7 @@ export default function ScheduleScreen({navigation, route}) {
       }
       return item;
     });
+
     setEventData(
       (eventTimeTableData || []).sort(
         (a, b) =>
@@ -766,6 +740,7 @@ export default function ScheduleScreen({navigation, route}) {
     setIndigator(true);
     const eventTimeTableData = [];
     const participants = await getQueryParticipants();
+
     Utility.getEventsSlots(participants)
       .then((response) => {
         const allUserIds = [];
@@ -816,16 +791,6 @@ export default function ScheduleScreen({navigation, route}) {
             }, 10);
           });
 
-        // getGroupIndex(getGroupDetailQuery)
-        //   .then((res) => {
-        //     setOwners([...owners, ...res]);
-        //   })
-        //   .catch((e) => {
-        //     setTimeout(() => {
-        //       Alert.alert(strings.alertmessagetitle, e.message);
-        //     }, 10);
-        //   });
-
         let resCalenders = [];
         let eventsCal = [];
         if (response) {
@@ -856,17 +821,20 @@ export default function ScheduleScreen({navigation, route}) {
         }
 
         setAllSlots(resCalenders);
-        eventsCal.forEach((item) => {
-          if (item?.rrule) {
-            let rEvents = getEventOccuranceFromRule(item);
-            rEvents = rEvents.filter(
-              (x) => x.end_datetime > Utility.getTCDate(new Date()),
-            );
-            eventTimeTableData.push(...rEvents);
-          } else {
-            eventTimeTableData.push(item);
-          }
-        });
+
+        // eventsCal.forEach((item) => {
+        //   if (item?.rrule) {
+        //     let rEvents = getEventOccuranceFromRule(item);
+        //     rEvents = rEvents.filter(
+        //       (x) => x.end_datetime > Utility.getTCDate(new Date()),
+        //     );
+        //     eventTimeTableData.push(...rEvents);
+        //   } else {
+        //     eventTimeTableData.push(item);
+        //   }
+        // });
+
+        eventTimeTableData.push(...eventsCal);
 
         let gameIDs = [...new Set(response.map((item) => item.game_id))];
         gameIDs = (gameIDs || []).filter((item) => item !== undefined);
@@ -901,6 +869,7 @@ export default function ScheduleScreen({navigation, route}) {
           });
         }
         setIndigator(false);
+
         configureEvents(eventTimeTableData);
       })
       .catch((e) => {

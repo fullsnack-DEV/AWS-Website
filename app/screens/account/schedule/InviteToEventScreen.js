@@ -22,6 +22,9 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import images from '../../../Constants/ImagePath';
 import GroupIcon from '../../../components/GroupIcon';
 import Verbs from '../../../Constants/Verbs';
+import {EventInvitePrivacy} from '../../../Constants/GeneralConstants';
+import {getUserFollowerFollowing} from '../../../api/Users';
+import {getGroupMembers} from '../../../api/Groups';
 
 export default function InviteToEventScreen({navigation, route}) {
   const [loading, setloading] = useState(true);
@@ -31,6 +34,8 @@ export default function InviteToEventScreen({navigation, route}) {
   const [searchText, setSearchText] = useState('');
   const [filteredList, setFilteredList] = useState([]);
 
+  const [followingList, setFolloweingList] = useState([]);
+  const [memberIds, setMemberIds] = useState([]);
   const {start_datetime, end_datetime, eventId} = route.params;
 
   const getUsers = useCallback(() => {
@@ -44,7 +49,7 @@ export default function InviteToEventScreen({navigation, route}) {
     };
 
     getUserIndex(membersQuery)
-      .then((response) => {
+      .then(async (response) => {
         setloading(false);
         setPlayers([...response]);
         setFilteredList([...response]);
@@ -55,8 +60,51 @@ export default function InviteToEventScreen({navigation, route}) {
       });
   }, []);
 
+  // eslint-disable-next-line consistent-return
+  const getFollowignList = async () => {
+    try {
+      const res = await getUserFollowerFollowing(
+        authContext.entity.uid,
+        Verbs.entityTypePlayers,
+        Verbs.followingVerb,
+        authContext,
+      );
+
+      const followingUserIds = res.payload.map((item) => item.user_id);
+
+      setFolloweingList(followingUserIds);
+    } catch (e) {
+      console.log(e.message);
+      return false;
+    }
+  };
+
+  const getMembers = async () => {
+    getGroupMembers(authContext.entity.uid, authContext)
+      .then((res) => {
+        const memberUserIds = res.payload.map((item) => item.user_id);
+        setMemberIds(memberUserIds);
+
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        setTimeout(() => {
+          Alert.alert(strings.alertmessagetitle, e.message);
+        }, 10);
+      });
+  };
+
   useEffect(() => {
     getUsers();
+    if (
+      authContext.entity.role === Verbs.entityTypeClub ||
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
+      getMembers();
+    } else {
+      getFollowignList();
+    }
   }, [getUsers]);
 
   useEffect(() => {
@@ -104,6 +152,45 @@ export default function InviteToEventScreen({navigation, route}) {
       });
   };
 
+  const checkInviteToEventPrivacyOfUser = (user) => {
+    if (user.invite_me_event === EventInvitePrivacy.none) {
+      return false;
+    }
+    if (user.invite_me_event === EventInvitePrivacy.everyoneTitleText) {
+      return true;
+    }
+    if (user.invite_me_event === EventInvitePrivacy.followersMyTeamClub) {
+      // fetch current viewers following  and then check if this user is present in his following list or not
+
+      if (
+        authContext.entity.role === Verbs.entityTypePlayer ||
+        authContext.entity.role === Verbs.entityTypeUser
+      ) {
+        return followingList?.includes(user.user_id);
+      }
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        return memberIds?.includes(user.user_id);
+      }
+      if (authContext.entity.role === Verbs.entityTypeClub) {
+        return memberIds?.includes(user.user_id);
+      }
+    } else if (user.invite_me_event === EventInvitePrivacy.myTeamClub) {
+      if (
+        authContext.entity.role === Verbs.entityTypeUser ||
+        authContext.entity.role === Verbs.entityTypePlayer
+      ) {
+        return false;
+      }
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        return memberIds?.includes(user.user_id);
+      }
+      if (authContext.entity.role === Verbs.entityTypeClub) {
+        return memberIds?.includes(user.user_id);
+      }
+    }
+    return true;
+  };
+
   const selectPlayer = (item) => {
     let newList = [...selectedList];
 
@@ -120,14 +207,21 @@ export default function InviteToEventScreen({navigation, route}) {
 
   const renderPlayer = ({item}) => {
     const isChecked = selectedList.includes(item.user_id);
+
     return (
       <>
         <Pressable
+          disabled={checkInviteToEventPrivacyOfUser(item)}
           style={[
+            {
+              opacity: checkInviteToEventPrivacyOfUser(item) ? 1 : 0.4,
+            },
             styles.row,
             {flex: 1, paddingHorizontal: 5, justifyContent: 'space-between'},
           ]}
-          onPress={() => selectPlayer(item)}>
+          onPress={() => {
+            selectPlayer(item);
+          }}>
           <View style={[styles.row, {flex: 1}]}>
             <GroupIcon
               imageUrl={item.thumbnail}

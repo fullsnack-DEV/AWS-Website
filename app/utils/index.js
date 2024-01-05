@@ -2101,6 +2101,7 @@ export const getEventsSlots = async (participants) => {
       //   });
       // }
       // console.log('calender elastic search :=>', JSON.stringify(body));
+      console.log(getCalendarIndex(body), 'From call');
       return getCalendarIndex(body);
     });
   } catch (error) {

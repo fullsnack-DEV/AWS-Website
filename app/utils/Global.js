@@ -149,7 +149,7 @@ const globalApiCall = async ({
   try {
     const response = await axios(options);
     if (!response.data.status) {
-      console.log('ERROR RESPONSE ::', response.data);
+      console.log('ERROR RESPONSE ::', JSON.stringify(response.data));
       throw response.data.messages || response;
     }
     //  console.log('RESPONSE ::', options, '\n', response.data);

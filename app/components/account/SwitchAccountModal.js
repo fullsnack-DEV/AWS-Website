@@ -247,7 +247,7 @@ const SwitchAccountModal = ({
     <CustomModalWrapper
       modalType={ModalTypes.default}
       isVisible={isVisible}
-      closeModal={closeModal}
+      closeModal={() => closeModal()}
       title={strings.switchAccount}
       containerStyle={styles.modalContainer}>
       {isFetchingList ? (
@@ -369,10 +369,7 @@ const SwitchAccountModal = ({
         entityType={selectedAccount.entity_type}
         entityImage={selectedAccount.thumbnail}
         stopLoading={() => {
-          closeModal({
-            uid: selectedAccount.group_id ?? selectedAccount.user_id,
-            role: selectedAccount.entity_type,
-          });
+          // closeModal();
           setShowLoader(false);
         }}
       />

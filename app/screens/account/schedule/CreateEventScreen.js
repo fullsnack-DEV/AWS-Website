@@ -30,6 +30,8 @@ import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
 import {format} from 'react-string-format';
+import {RRule} from 'rrule';
+
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {getCountry} from 'country-currency-map';
 import {getGeocoordinatesWithPlaceName} from '../../../utils/location';
@@ -57,6 +59,7 @@ import {
   getDayFromDate,
   countNumberOfWeekFromDay,
   getRoundedDate,
+  getJSDate,
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
@@ -75,6 +78,7 @@ import SportsListModal from '../registerPlayer/modals/SportsListModal';
 import AddressWithMapModal from '../../../components/AddressWithMap/AddressWithMapModal';
 import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
 import GroupIcon from '../../../components/GroupIcon';
+import TCFormProgress from '../../../components/TCFormProgress';
 
 export default function CreateEventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -146,6 +150,7 @@ export default function CreateEventScreen({navigation, route}) {
   const [groupsSeeList, setGroupsSeeList] = useState([]);
   const [groupsJoinList, setGroupsJoinList] = useState([]);
   const [occurance, setOccurance] = useState(0);
+  const [endDateOfOcuuredEvent, setEndDateOfOccuredEvent] = useState();
 
   useEffect(() => {
     if (isFocused && !mapcoordinate.longitude) {
@@ -498,8 +503,6 @@ export default function CreateEventScreen({navigation, route}) {
         tzid: Intl.DateTimeFormat()?.resolvedOptions().timeZone,
       };
 
-      console.log(data, 'From navigatio');
-
       navigation.navigate('CreateEventScreen2', {
         createEventData: data,
         backgroundImageChangedFlag: backgroundImageChanged,
@@ -565,6 +568,66 @@ export default function CreateEventScreen({navigation, route}) {
     return () => backHandler.remove();
   }, [handleBackPress]);
 
+  const getRecurringEventsByOccurrence = (eventObject) => {
+    const ruleObj = RRule.parseString(eventObject.rrule);
+
+    ruleObj.dtstart = getJSDate(eventObject.start_datetime);
+    ruleObj.count = eventObject.occurrence;
+    // ruleObj.tzid = eventObject.tzid;
+    const rule = new RRule(ruleObj);
+
+    const duration = eventObject.end_datetime - eventObject.start_datetime;
+
+    let dates = rule.all();
+
+    dates = dates.map((RRItem) => {
+      const newEvent = {};
+      newEvent.start_datetime = Math.round(new Date(RRItem) / 1000);
+      newEvent.end_datetime = newEvent.start_datetime + duration;
+      // eslint-disable-next-line no-param-reassign
+      RRItem = newEvent;
+      return RRItem;
+    });
+
+    const lastEvent = dates[dates.length - 1];
+
+    setEndDateOfOccuredEvent(
+      moment(getJSDate(lastEvent.end_datetime)).format('MMMM DD, YYYY'),
+    );
+    return dates;
+  };
+
+  const getTheEndDate = (occr) => {
+    let rule;
+    if (selectWeekMonth === Verbs.eventRecurringEnum.Daily) {
+      rule = 'FREQ=DAILY';
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.Weekly) {
+      rule = 'FREQ=WEEKLY';
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfMonth) {
+      rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(eventStartDateTime)
+        .substring(0, 2)
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfMonth) {
+      rule = `FREQ=MONTHLY;BYMONTHDAY=${eventStartDateTime.getDate()}`;
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfYear) {
+      rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(eventStartDateTime)
+        .substring(0, 2)
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfYear) {
+      rule = `FREQ=YEARLY;BYMONTHDAY=${eventStartDateTime.getDate()};BYMONTH=${eventStartDateTime.getMonth()}`;
+    }
+
+    const eventObj = {
+      rrule: rule,
+      occurrence: occr,
+      tzid: Intl.DateTimeFormat()?.resolvedOptions().timeZone,
+      start_datetime: getTCDate(eventStartDateTime),
+      end_datetime: getTCDate(eventEndDateTime),
+    };
+
+    getRecurringEventsByOccurrence(eventObj);
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -578,6 +641,8 @@ export default function CreateEventScreen({navigation, route}) {
         }}
         // loading={loading}
       />
+
+      <TCFormProgress totalSteps={2} curruentStep={1} />
       <ActivityLoader visible={loading} />
 
       <TCKeyboardView>
@@ -585,7 +650,7 @@ export default function CreateEventScreen({navigation, route}) {
           <View
             style={{
               paddingTop: 10,
-              paddingHorizontal: 10,
+              width: '100%',
             }}>
             <EventBackgroundPhoto
               isEdit={!!backgroundThumbnail}
@@ -595,7 +660,11 @@ export default function CreateEventScreen({navigation, route}) {
                   ? {uri: backgroundThumbnail}
                   : images.backgroundGrayPlceholder
               }
-              containerStyle={{marginBottom: 35}}
+              containerStyle={{
+                marginBottom: 35,
+                width: '100%',
+                alignSelf: 'center',
+              }}
               onPress={() => onBGImageClicked()}
             />
           </View>
@@ -689,7 +758,10 @@ export default function CreateEventScreen({navigation, route}) {
             </View>
 
             <EventItemRender
-              containerStyle={{position: 'relative', marginBottom: 35}}
+              containerStyle={{
+                position: 'relative',
+                marginBottom: 35,
+              }}
               headerTextStyle={{fontSize: 16}}
               title={strings.place}
               isRequired={true}>
@@ -812,31 +884,6 @@ export default function CreateEventScreen({navigation, route}) {
                 onDatePress={() => setEndDateVisible(!endDateVisible)}
               />
 
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                  marginBottom: 20,
-                }}>
-                <Text>{strings.timezone} &nbsp;</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    Alert.alert(strings.timezoneAvailability);
-                  }}>
-                  <Text
-                    style={{
-                      textDecorationLine: 'underline',
-                      textDecorationStyle: 'solid',
-                      textDecorationColor: colors.darkGrayColor,
-                    }}>
-                    {Intl.DateTimeFormat()
-                      ?.resolvedOptions()
-                      .timeZone.split('/')
-                      .pop()}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
               <EventMonthlySelection
                 title={strings.repeat}
                 dataSource={[
@@ -885,7 +932,6 @@ export default function CreateEventScreen({navigation, route}) {
                 placeholder={strings.never}
                 value={selectWeekMonth}
                 onValueChange={(value) => {
-                  console.log(value, 'From cal');
                   if (value === strings.never) {
                     setEventUntildateTime(eventEndDateTime);
                   }
@@ -976,8 +1022,9 @@ export default function CreateEventScreen({navigation, route}) {
                     placeholder={strings.never}
                     value={occurance}
                     onValueChange={(value) => {
-                      console.log(value, 'From value');
                       setOccurance(value);
+                      getTheEndDate(value);
+
                       // if (value === strings.never) {
                       //   setEventUntildateTime(eventEndDateTime);
                       // }
@@ -988,6 +1035,50 @@ export default function CreateEventScreen({navigation, route}) {
                 </View>
               )}
             </EventItemRender>
+
+            {occurance !== 0 && (
+              <View
+                style={{
+                  alignSelf: 'flex-end',
+                  marginBottom: 10,
+                  marginTop: -10,
+                }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    lineHeight: 24,
+                    fontFamily: fonts.RRegular,
+                  }}>
+                  {strings.from}{' '}
+                  {moment(eventStartDateTime).format('MMMM DD, YYYY')}{' '}
+                  {strings.to} {endDateOfOcuuredEvent}
+                </Text>
+              </View>
+            )}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                marginBottom: 20,
+              }}>
+              <Text>{strings.timezone} &nbsp;</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert(strings.timezoneAvailability);
+                }}>
+                <Text
+                  style={{
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'solid',
+                    textDecorationColor: colors.darkGrayColor,
+                  }}>
+                  {Intl.DateTimeFormat()
+                    ?.resolvedOptions()
+                    .timeZone.split('/')
+                    .pop()}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             <EventItemRender
               containerStyle={{

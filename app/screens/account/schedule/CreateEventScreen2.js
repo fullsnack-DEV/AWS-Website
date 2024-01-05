@@ -38,6 +38,7 @@ import TCThinDivider from '../../../components/TCThinDivider';
 import {getGroupIndex} from '../../../api/elasticSearch';
 import GroupIcon from '../../../components/GroupIcon';
 import {getTeamsOfClub} from '../../../api/Groups';
+import TCFormProgress from '../../../components/TCFormProgress';
 
 export default function CreateEventScreen2({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -152,6 +153,7 @@ export default function CreateEventScreen2({navigation, route}) {
   );
 
   const createEventDone = (data) => {
+    setloading(true);
     const arr = {...data};
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
@@ -193,6 +195,7 @@ export default function CreateEventScreen2({navigation, route}) {
               event: response?.payload[0],
             },
           });
+          console.log(response, 'from after creating event');
         }, 1000);
       })
       .catch((e) => {
@@ -454,7 +457,9 @@ export default function CreateEventScreen2({navigation, route}) {
         }}
         // loading={loading}
       />
-      {/* <ActivityLoader visible={loading} /> */}
+
+      <TCFormProgress totalSteps={2} curruentStep={2} />
+      <ActivityLoader visible={loading} />
 
       <TCKeyboardView>
         <ScrollView bounces={false} nestedScrollEnabled={true}>

@@ -102,6 +102,13 @@ export const InvoiceRecipientTabType = {
   Teams: 1,
 };
 
+export const EventInvitePrivacy = {
+  everyoneTitleText: 1,
+  followersMyTeamClub: 2,
+  myTeamClub: 3,
+  none: 0,
+};
+
 export const groupInviteOptionsList = [
   {
     key: strings.yes,
@@ -133,20 +140,16 @@ export const eventsInviteOptionsList = [
     id: 1,
   },
   {
-    key: strings.myFollowingFollowersAndGroups,
+    key: strings.followersMyTeamClub,
     id: 2,
   },
   {
-    key: strings.myFollowingAndGroups,
+    key: strings.myTeamClub,
     id: 3,
   },
   {
-    key: strings.myGroups,
-    id: 4,
-  },
-  {
     key: strings.none,
-    id: 0,
+    id: 4,
   },
 ];
 
@@ -170,11 +173,10 @@ export const MonthData = [
 ];
 
 export const eventsInviteOptions = {
-  0: strings.none,
   1: strings.everyoneTitleText,
-  2: strings.myFollowingFollowersAndGroups,
-  3: strings.myFollowingAndGroups,
-  4: strings.myGroups,
+  2: strings.followersMyTeamClub,
+  3: strings.myTeamClub,
+  0: strings.none,
 };
 
 export const currencyList = [

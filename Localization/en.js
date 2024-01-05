@@ -3271,4 +3271,6 @@ export default {
   postsFromOtherGroupWillAppearHere:
     'en_Posts from people and groups you are following will appear here.',
   newReservationWillAppearHere: 'en_New Reservation will appear here.',
+  followersMyTeamClub: 'en_followers, my teams & clubs',
+  myTeamClub: 'en_my teams & clubs',
 };
