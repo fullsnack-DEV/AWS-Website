@@ -16,6 +16,11 @@ import {strings} from '../../../Localization/translation';
 import {displayLocation} from '../../utils';
 import Verbs from '../../Constants/Verbs';
 import BottomSheet from '../modals/BottomSheet';
+import usePrivacySettings from '../../hooks/usePrivacySettings';
+import {
+  PersonUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../Constants/PrivacyOptionsConstant';
 
 const UserHomeHeader = ({
   currentUserData,
@@ -29,6 +34,8 @@ const UserHomeHeader = ({
   const [options, setOptions] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [buttonTitle, setButtonTitle] = useState('');
+
+  const {getPrivacyStatus} = usePrivacySettings();
 
   const getButtonTitle = useCallback(
     (checkIsMember) => {
@@ -222,7 +229,11 @@ const UserHomeHeader = ({
       <View style={{marginTop: 15}}>
         <Text style={styles.title}> {currentUserData.full_name}</Text>
         <Text style={styles.location}>{displayLocation(currentUserData)}</Text>
-        {currentUserData.description ? (
+        {currentUserData.description &&
+        getPrivacyStatus(
+          PersonUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Slogan]],
+          currentUserData,
+        ) ? (
           <Text style={styles.description}>{currentUserData.description}</Text>
         ) : null}
       </View>

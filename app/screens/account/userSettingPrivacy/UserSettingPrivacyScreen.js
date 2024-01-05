@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useLayoutEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -35,12 +35,6 @@ export default function UserSettingPrivacyScreen({navigation}) {
     strings.deactivateAccountText,
     strings.terminateAccountText,
   ];
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
 
   const handleOptions = (options) => {
     switch (options) {
@@ -80,9 +74,7 @@ export default function UserSettingPrivacyScreen({navigation}) {
         break;
 
       case strings.privacyText:
-        navigation.navigate('GroupOwnPrivacySetting', {
-          type: Verbs.entityTypeUser,
-        });
+        navigation.navigate('PersonalUserPrivacySettingsScreen');
         break;
 
       case strings.timezoneText:

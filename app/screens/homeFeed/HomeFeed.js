@@ -43,6 +43,7 @@ const HomeFeed = ({
   pulltoRefresh,
   routeParams = {},
   forEvent = false,
+  postsPrivacyStatus = true,
 }) => {
   const authContext = useContext(AuthContext);
   const [fullScreenLoading, setFullScreenLoading] = useState(false);
@@ -363,7 +364,7 @@ const HomeFeed = ({
         ListHeaderComponent={ListHeaderComponent}
         scrollEnabled={true}
         onDeletePost={onDeletePost}
-        postData={currentTab === 0 ? postData : []}
+        postData={currentTab === 0 && postsPrivacyStatus ? postData : []}
         onLikePress={onLikePress}
         onEndReached={onEndReached}
         footerLoading={footerLoading && isNextDataLoading}

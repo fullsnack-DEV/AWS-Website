@@ -50,6 +50,10 @@ const UserHomeScreen = ({
   pulltoRefresh,
   routeParams = {},
   loggedInGroupMembers = [],
+  sportActivityPrivacyStatus = true,
+  postPrivacyStatus = true,
+  eventsPrivacyStatus = true,
+  galleryPrivacyStatus = true,
 }) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
@@ -704,52 +708,66 @@ const UserHomeScreen = ({
     {useNativeDriver: false},
   );
 
-  const userDetailsSection = () => (
-    <>
-      <UserHomeHeader
-        currentUserData={currentUserData}
-        onConnectionButtonPress={(tabs = '') => {
-          setTab(tabs);
-          setRefreshModal(true);
-        }}
-        onAction={onUserAction}
-        isAdmin={isAdmin}
-        followRequestSent={followRequestSent}
-        loggedInEntity={authContext.entity}
-      />
-      <View style={styles.activityList}>
-        <OrderedSporList
-          user={currentUserData}
-          type="horizontal"
+  const userDetailsSection = () => {
+    const tabList = [];
+    if (eventsPrivacyStatus) {
+      tabList.push(strings.event);
+    }
+    if (galleryPrivacyStatus) {
+      tabList.push(strings.galleryTitle);
+    }
+
+    return (
+      <>
+        <UserHomeHeader
+          currentUserData={currentUserData}
+          onConnectionButtonPress={(tabs = '') => {
+            setTab(tabs);
+            setRefreshModal(true);
+          }}
+          onAction={onUserAction}
           isAdmin={isAdmin}
-          onCardPress={handleSportActivityPress}
+          followRequestSent={followRequestSent}
+          loggedInEntity={authContext.entity}
         />
-      </View>
-      <PostsTabView
-        list={[strings.event, strings.galleryTitle]}
-        onPress={(option) => {
-          if (option === strings.galleryTitle) {
-            navigation.navigate('UserGalleryScreen', {
-              isAdmin,
-              galleryRef,
-              entityType: route?.params?.role ?? authContext.entity?.role,
-              entityID: route?.params?.uid ?? authContext.entity?.uid,
-              currentUserData,
-            });
-          } else if (option === strings.event) {
-            navigation.navigate('HomeScheduleScreen', {
-              isAdmin,
-              isFromHomeScreen: true,
-              role: route.params?.role ?? authContext.entity.role,
-              uid: route.params?.uid ?? authContext.entity.uid,
-              forUserHomeEvent: true,
-              currentUserData,
-            });
-          }
-        }}
-      />
-    </>
-  );
+        <View style={styles.activityList}>
+          {sportActivityPrivacyStatus && (
+            <OrderedSporList
+              user={currentUserData}
+              type="horizontal"
+              isAdmin={isAdmin}
+              onCardPress={handleSportActivityPress}
+            />
+          )}
+        </View>
+
+        <PostsTabView
+          list={tabList}
+          onPress={(option) => {
+            if (option === strings.galleryTitle) {
+              navigation.navigate('UserGalleryScreen', {
+                isAdmin,
+                galleryRef,
+                entityType: route?.params?.role ?? authContext.entity?.role,
+                entityID: route?.params?.uid ?? authContext.entity?.uid,
+                currentUserData,
+              });
+            } else if (option === strings.event) {
+              navigation.navigate('HomeScheduleScreen', {
+                isAdmin,
+                isFromHomeScreen: true,
+                role: route.params?.role ?? authContext.entity.role,
+                uid: route.params?.uid ?? authContext.entity.uid,
+                forUserHomeEvent: true,
+                currentUserData,
+              });
+            }
+          }}
+          postPrivacyStatus={postPrivacyStatus}
+        />
+      </>
+    );
+  };
 
   return (
     <>
@@ -772,6 +790,7 @@ const UserHomeScreen = ({
             currentTab={0}
             pulltoRefresh={pulltoRefresh}
             routeParams={routeParams}
+            postsPrivacyStatus={postPrivacyStatus}
           />
         </View>
 

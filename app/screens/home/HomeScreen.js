@@ -44,6 +44,12 @@ import {getDataForNextScreen} from '../localhome/LocalHomeUtils';
 import {locationType} from '../../utils/constant';
 import SportActivitiesModal from './components/SportActivitiesModal';
 import RecruitingMemberModal from './RecruitingMemberModal';
+import {useTabBar} from '../../context/TabbarContext';
+import usePrivacySettings from '../../hooks/usePrivacySettings';
+import {
+  PersonUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../Constants/PrivacyOptionsConstant';
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -64,6 +70,56 @@ const HomeScreen = ({navigation, route}) => {
   const [loggedInGroupMembers, setLoggedInGroupMembers] = useState([]);
   const [visibleSportActivities, setVisibleSportAcitivities] = useState(false);
   const [visibleRecrutingModal, setVisibleRecrutingModal] = useState(false);
+  const [sportActivityPrivacyStatus, setSportActivityPrivacyStatus] =
+    useState(false);
+  const [postsPrivacyStatus, setPostsPrivacyStatus] = useState(false);
+  const [eventsPrivacyStatus, setEventsPrivacyStatus] = useState(false);
+  const [galleryPrivacyStatus, setGalleryPrivacyStatus] = useState(false);
+
+  const {getPrivacyStatus} = usePrivacySettings();
+  const {toggleTabBar} = useTabBar();
+  
+  useEffect(() => {
+    // Set TabBar visibility to true when this screen mounts
+    toggleTabBar(false);
+
+    return () => {
+      // Set TabBar visibility to false when this screen unmounts
+      toggleTabBar(true);
+    };
+  }, [isFocused, toggleTabBar]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
+
+  useEffect(() => {
+    const status = getPrivacyStatus(
+      PersonUserPrivacyEnum[currentUserData[PrivacyKeyEnum.SportActivityList]],
+      currentUserData,
+    );
+    setSportActivityPrivacyStatus(status);
+
+    const postsPrivacy = getPrivacyStatus(
+      PersonUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Posts]],
+      currentUserData,
+    );
+    setPostsPrivacyStatus(postsPrivacy);
+
+    const eventPrivacy = getPrivacyStatus(
+      PersonUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Events]],
+      currentUserData,
+    );
+    setEventsPrivacyStatus(eventPrivacy);
+
+    const galleryPrivacy = getPrivacyStatus(
+      PersonUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Posts]],
+      currentUserData,
+    );
+    setGalleryPrivacyStatus(galleryPrivacy);
+  }, [currentUserData, getPrivacyStatus]);
 
   const getUserData = (uid) => {
     setLoading(true);
@@ -257,6 +313,10 @@ const HomeScreen = ({navigation, route}) => {
           }}
           routeParams={route.params}
           loggedInGroupMembers={loggedInGroupMembers}
+          sportActivityPrivacyStatus={sportActivityPrivacyStatus}
+          postPrivacyStatus={postsPrivacyStatus}
+          eventsPrivacyStatus={eventsPrivacyStatus}
+          galleryPrivacyStatus={galleryPrivacyStatus}
         />
       );
     }
@@ -407,14 +467,16 @@ const HomeScreen = ({navigation, route}) => {
       route.params.role === Verbs.entityTypeUser
     ) {
       setShowMoreOptionsModal(true);
-      if (isAdmin) {
+      if (isAdmin && sportActivityPrivacyStatus) {
         setMoreOptions([strings.sportActivity]);
-      } else {
+      } else if (sportActivityPrivacyStatus) {
         setMoreOptions([
           strings.sportActivity,
           strings.reportThisAccount,
           strings.blockThisAccount,
         ]);
+      } else {
+        setMoreOptions([strings.reportThisAccount, strings.blockThisAccount]);
       }
     } else if (
       route.params.role === Verbs.entityTypeClub ||

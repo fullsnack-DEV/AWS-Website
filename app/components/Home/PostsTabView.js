@@ -5,10 +5,17 @@ import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-const PostsTabView = ({list = [], onPress = () => {}}) =>
+const PostsTabView = ({
+  list = [],
+  onPress = () => {},
+  postPrivacyStatus = true,
+}) =>
   list.length > 0 ? (
     <View style={styles.parent}>
-      <Text style={styles.title}>{strings.postsTitleText}</Text>
+      {postPrivacyStatus && (
+        <Text style={styles.title}>{strings.postsTitleText}</Text>
+      )}
+
       <FlatList
         data={list}
         keyExtractor={(item) => item}

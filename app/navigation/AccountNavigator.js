@@ -96,11 +96,12 @@ import IncomingReservationSettings from '../screens/account/registerReferee/Inco
 import TimeZoneScreen from '../screens/account/userSettingPrivacy/TimeZoneScreen';
 
 import WhoCanSeeFollowers from '../screens/account/GroupSetting/WhoCanSeeFollwersScreen';
-import GroupOwnPrivacySetting from '../screens/account/GroupSetting/GroupOwnPrivacySettings';
 // Scorekeeper Review Screen
 
 import RespondToInviteScreen from '../screens/account/createGroup/createTeam/RespondToInviteScreen';
 import ActivityLogScreen from '../screens/account/ActivityLogScreen';
+import PersonalUserPrivacySettingsScreen from '../screens/account/privacySettings/PersonalUserPrivacySettingsScreen';
+import PrivacyOptionsScreen from '../screens/account/privacySettings/PrivacyOptionsScreen';
 
 const Stack = createStackNavigator();
 
@@ -270,18 +271,7 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="UserSettingPrivacyScreen"
       component={UserSettingPrivacyScreen}
-      options={{
-        title: strings.settingAndPrivacy,
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
 
     <Stack.Screen
@@ -1284,22 +1274,17 @@ const AccountNavigator = () => (
     />
 
     <Stack.Screen
-      name="GroupOwnPrivacySetting"
-      component={GroupOwnPrivacySetting}
-      options={{
-        title: 'Team',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      name="PersonalUserPrivacySettingsScreen"
+      component={PersonalUserPrivacySettingsScreen}
+      options={{headerShown: false}}
     />
+
+    <Stack.Screen
+      name="PrivacyOptionsScreen"
+      component={PrivacyOptionsScreen}
+      options={{headerShown: false}}
+    />
+
     <Stack.Screen
       name="WhoCanInviteMemberScreen"
       component={WhoCanInviteMemberScreen}
