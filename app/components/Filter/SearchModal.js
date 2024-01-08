@@ -31,13 +31,12 @@ import {
   groupsType,
 } from '../../utils/constant';
 import LocationModal from '../LocationModal/LocationModal';
-import BottomSheet from '../modals/BottomSheet';
-import DateTimePickerView from '../Schedule/DateTimePickerModal';
 import CustomModalWrapper from '../CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
-import FilterTimeSelectItem from './FilterTimeSelectItem';
 import fonts from '../../Constants/Fonts';
 import {widthPercentageToDP, getJSDate} from '../../utils';
+import AvailableTimeComponent from '../AvailableTimeComponent';
+import Verbs from '../../Constants/Verbs';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 const SearchModal = ({
@@ -51,46 +50,45 @@ const SearchModal = ({
   onPressCancel = () => {},
   onPressApply = () => {},
   isEventFilter = false,
+  showTimeComponent = false,
+  selectedTab = '',
 }) => {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
   const [filters, setFilters] = useState(filterObject);
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-  const [showTimeActionSheet, setShowTimeActionSheet] = useState(false);
-  const [filterOptions, setFilterOptions] = useState([]);
-  const [datePickerShow, setDatePickerShow] = useState(false);
-  const [tag, setTag] = useState();
-  const [startDates, setStartDate] = useState(new Date());
-  // const [groups, setGroups] = useState(groupsType);
+
   const [groups, setGroups] = useState(groupsType);
-  const [showTimeComponent, setShowTimeComponent] = useState(false);
   const [showFeeComponent, setShowFeeComponent] = useState(false);
   const [showSportComponent, setShowSportComponent] = useState(false);
-  const [showPastDates, setShowPastDates] = useState(false);
+  const [isTimeComponentVisible, setIsTimeComponentVisible] = useState(false);
+
+  const calculateVisibilityForTimeComponent = useCallback(() => {
+    if (!selectedTab) {
+      return true;
+    }
+    if (
+      selectedTab === strings.playerTitle &&
+      filters?.sport_type === Verbs.singleSport
+    ) {
+      return true;
+    }
+    if (
+      selectedTab !== strings.clubsTitleText ||
+      selectedTab !== strings.leaguesTitleText
+    ) {
+      return true;
+    }
+    return false;
+  }, [filters?.sport_type, selectedTab]);
 
   useEffect(() => {
-    if (fType === filterType.RECENTMATCHS) {
-      setShowPastDates(true);
-      setFilterOptions([
-        strings.filterAntTime,
-        strings.filterToday,
-        strings.filterYesterday,
-        strings.filterLast7Day,
-        strings.filterThisMonth,
-        strings.filterLastMonth,
-        strings.filterPickaDate,
-      ]);
+    if (showTimeComponent && filters?.sport !== strings.allSport) {
+      setIsTimeComponentVisible(calculateVisibilityForTimeComponent());
     } else {
-      setFilterOptions([
-        strings.filterAntTime,
-        strings.filterToday,
-        strings.filterTomorrow,
-        strings.filterNext7Day,
-        strings.filterThisMonth,
-        strings.filterNextMonth,
-        strings.filterPickaDate,
-      ]);
+      setIsTimeComponentVisible(false);
     }
-  }, [fType]);
+  }, [showTimeComponent, filters?.sport, calculateVisibilityForTimeComponent]);
+
   useEffect(() => {
     if (isVisible) {
       if (fType === filterType.RECRUIITINGMEMBERS) {
@@ -111,14 +109,7 @@ const SearchModal = ({
           availableTime: filterObject.availableTime ?? strings.filterAntTime,
         });
       }
-      setShowTimeComponent(
-        fType === filterType.REFEREES ||
-          fType === filterType.SCOREKEEPERS ||
-          fType === filterType.TEAMAVAILABLECHALLENGE ||
-          fType === filterType.UPCOMINGMATCHES ||
-          fType === filterType.PLAYERAVAILABLECHALLENGE ||
-          fType === filterType.RECENTMATCHS,
-      );
+
       setShowSportComponent(
         fType === filterType.REFEREES ||
           fType === filterType.SCOREKEEPERS ||
@@ -188,41 +179,7 @@ const SearchModal = ({
     },
     [filters],
   );
-  const handleDatePress = (date) => {
-    if (tag === 1) {
-      setStartDate(new Date(date));
-      console.log('kjkj');
-      const dateObject = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        0,
-        0,
-        0,
-      ); // Start of the day
-      const fromDate = Number(parseFloat(dateObject / 1000).toFixed(0));
-      const temp = {...filters};
-      temp.fromDateTime = fromDate;
-      setFilters({...temp});
-    } else if (tag === 2) {
-      const toDateObject = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        23,
-        59,
-        59,
-      ); // End of the day
-      const toDate = Number(parseFloat(toDateObject / 1000).toFixed(0));
-      const temp = {...filters};
-      temp.toDateTime = toDate;
-      setFilters({...temp});
-    }
-    setDatePickerShow(false);
-  };
-  const handleCancelPress = () => {
-    setDatePickerShow(false);
-  };
+
   const renderSports = ({item}) => (
     <Pressable
       style={styles.listItem}
@@ -295,23 +252,9 @@ const SearchModal = ({
       sortOption: sortOptionType.RANDOM,
       eventType: strings.upcomingTitleText,
     });
-    setTag(0);
+    // setTag(0);
   }, []);
-  // const applyValidation = useCallback(() => {
-  //   if (Number(filters.minFee) > 0 && Number(filters.maxFee) <= 0) {
-  //     Alert.alert(strings.refereeFeeMax);
-  //     return false;
-  //   }
-  //   if (Number(filters.minFee) <= 0 && Number(filters.maxFee) > 0) {
-  //     Alert.alert(strings.refereeFeeMin);
-  //     return false;
-  //   }
-  //   if (Number(filters.minFee) > Number(filters.maxFee)) {
-  //     Alert.alert(strings.refereeFeeCorrect);
-  //     return false;
-  //   }
-  //   return true;
-  // }, [filters]);
+
   const applyDateValidation = useCallback(() => {
     if (
       (filters.availableTime === strings.filterPickaDate &&
@@ -718,179 +661,13 @@ const SearchModal = ({
                   </View>
                 )}
 
-                {showTimeComponent && (
-                  <View
-                    style={{
-                      flexDirection: 'column',
-                      margin: 15,
-                      marginTop: 20,
-                      justifyContent: 'space-between',
-                    }}>
-                    <View>
-                      <Text style={styles.filterTitleBold}>
-                        {strings.availableTime}
-                      </Text>
-                    </View>
-                    {isEventFilter && (
-                      <View style={{marginTop: 15}}>
-                        <TouchableOpacity
-                          style={{
-                            flexDirection: 'row',
-                            marginBottom: 15,
-                            justifyContent: 'space-between',
-                          }}
-                          onPress={() => {
-                            setShowPastDates(false);
-                            setFilterOptions([
-                              strings.filterAntTime,
-                              strings.filterToday,
-                              strings.filterTomorrow,
-                              strings.filterNext7Day,
-                              strings.filterThisMonth,
-                              strings.filterNextMonth,
-                              strings.filterPickaDate,
-                            ]);
-                            setFilters({
-                              ...filters,
-                              eventType: strings.upcomingTitleText,
-                            });
-                          }}>
-                          <Text style={styles.filterTitle}>
-                            {strings.upcomingTitleText}
-                          </Text>
-
-                          <Image
-                            source={
-                              filters.eventType === strings.upcomingTitleText
-                                ? images.checkRoundOrange
-                                : images.radioUnselect
-                            }
-                            style={styles.radioButtonStyle}
-                          />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={{
-                            flexDirection: 'row',
-                            marginBottom: 15,
-                            justifyContent: 'space-between',
-                          }}
-                          onPress={() => {
-                            setShowPastDates(true);
-                            setFilterOptions([
-                              strings.filterAntTime,
-                              strings.filterToday,
-                              strings.filterYesterday,
-                              strings.filterLast7Day,
-                              strings.filterThisMonth,
-                              strings.filterLastMonth,
-                              strings.filterPickaDate,
-                            ]);
-                            setFilters({
-                              ...filters,
-                              eventType: strings.completedTitleText,
-                            });
-                          }}>
-                          <Text style={styles.filterTitle}>
-                            {strings.completedTitleText}
-                          </Text>
-
-                          <Image
-                            source={
-                              filters.eventType === strings.completedTitleText
-                                ? images.checkRoundOrange
-                                : images.radioUnselect
-                            }
-                            style={styles.radioButtonStyle}
-                          />
-                        </TouchableOpacity>
-                      </View>
-                    )}
-
-                    <View style={{marginTop: 10}}>
-                      <View
-                        style={[
-                          {
-                            justifyContent: 'flex-start',
-                          },
-                          styles.sportsContainer,
-                        ]}>
-                        <TouchableWithoutFeedback
-                          onPress={() => {
-                            setShowTimeActionSheet(true);
-                          }}>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'center',
-                            }}>
-                            <View>
-                              <Text style={styles.searchCityText}>
-                                {filters.availableTime}
-                              </Text>
-                            </View>
-                            <View
-                              style={{
-                                position: 'absolute',
-                                right: 0,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}>
-                              <Icon
-                                size={24}
-                                color="black"
-                                name="chevron-down"
-                              />
-                            </View>
-                          </View>
-                        </TouchableWithoutFeedback>
-                      </View>
-                    </View>
-                    {filters.availableTime === strings.filterPickaDate && (
-                      <View style={{marginTop: 10}}>
-                        <FilterTimeSelectItem
-                          title={strings.from}
-                          date={
-                            // filters.fromDateTime
-                            //   ? moment(filters.fromDateTime).format('ll')
-                            //   : ''
-                            filters.fromDateTime
-                              ? moment(
-                                  getJSDate(filters.fromDateTime).getTime(),
-                                ).format('ll')
-                              : ''
-                          }
-                          onDatePress={() => {
-                            setTag(1);
-                            setDatePickerShow(true);
-                          }}
-                          onXCirclePress={() =>
-                            setFilters({...filters, fromDateTime: ''})
-                          }
-                        />
-                        <FilterTimeSelectItem
-                          title={strings.to}
-                          date={
-                            // filters.toDateTime
-                            //   ? moment(filters.toDateTime).format('ll')
-                            //   : ''
-                            filters.toDateTime
-                              ? moment(
-                                  getJSDate(filters.toDateTime).getTime(),
-                                ).format('ll')
-                              : ''
-                          }
-                          onDatePress={() => {
-                            setDatePickerShow(true);
-                            setTag(2);
-                          }}
-                          onXCirclePress={() =>
-                            setFilters({...filters, toDateTime: ''})
-                          }
-                        />
-                      </View>
-                    )}
-                  </View>
+                {isTimeComponentVisible && (
+                  <AvailableTimeComponent
+                    filters={filters}
+                    isEventFilter={isEventFilter}
+                    fType={fType}
+                    setFilters={setFilters}
+                  />
                 )}
                 {filters?.sport !== strings.allSport && showFeeComponent && (
                   <View
@@ -1004,261 +781,6 @@ const SearchModal = ({
             </ScrollView>
           </KeyboardAvoidingView>
         </View>
-        <BottomSheet
-          isVisible={showTimeActionSheet}
-          closeModal={() => {
-            setShowTimeActionSheet(false);
-          }}
-          optionList={filterOptions}
-          onSelect={(option) => {
-            if (option === strings.filterAntTime) {
-              setTag(0);
-              const temp = {...filters};
-              temp.fromDateTime = Number(
-                parseFloat(new Date().getTime() / 1000).toFixed(0),
-              );
-              temp.toDateTime = '';
-              temp.availableTime = option;
-
-              setFilters({...temp});
-            } else if (option === strings.filterToday) {
-              const today = new Date();
-              const fromDate = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                today.getDate(),
-                0,
-                0,
-                0,
-              ); // Start of the day
-              const toDate = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                today.getDate(),
-                23,
-                59,
-                59,
-              ); // End of the day
-              setTag(0);
-              const temp = {...filters};
-              temp.fromDateTime =
-                fType === filterType.RECENTMATCHS
-                  ? Number(parseFloat(fromDate / 1000).toFixed(0))
-                  : Number(parseFloat(today / 1000).toFixed(0));
-              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
-              temp.availableTime = option;
-              setFilters({...temp});
-            } else if (option === strings.filterTomorrow) {
-              const now = new Date();
-              const tomorrow = new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate() + 1,
-              );
-              const startDate = new Date(
-                tomorrow.getFullYear(),
-                tomorrow.getMonth(),
-                tomorrow.getDate(),
-                0,
-                0,
-                0,
-              );
-              const endDate = new Date(
-                tomorrow.getFullYear(),
-                tomorrow.getMonth(),
-                tomorrow.getDate(),
-                23,
-                59,
-                59,
-              );
-              setTag(0);
-              const temp = {...filters};
-              temp.fromDateTime = Number(
-                parseFloat(startDate / 1000).toFixed(0),
-              );
-              temp.toDateTime = Number(parseFloat(endDate / 1000).toFixed(0));
-              temp.availableTime = option;
-              setFilters({...temp});
-            } else if (option === strings.filterYesterday) {
-              const yesterday = new Date();
-              yesterday.setDate(yesterday.getDate() - 1);
-              const fromDate = new Date(
-                yesterday.getFullYear(),
-                yesterday.getMonth(),
-                yesterday.getDate(),
-                0,
-                0,
-                0,
-              ); // Start of the day
-              const toDate = new Date(
-                yesterday.getFullYear(),
-                yesterday.getMonth(),
-                yesterday.getDate(),
-                23,
-                59,
-                59,
-              ); // End of the day
-              setTag(0);
-              const temp = {...filters};
-              temp.fromDateTime = Number(
-                parseFloat(fromDate / 1000).toFixed(0),
-              );
-              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
-              temp.availableTime = option;
-              setFilters({...temp});
-            } else if (option === strings.filterLast7Day) {
-              const today = new Date();
-              const fromDate = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                today.getDate() - 6,
-                0,
-                0,
-                0,
-              ); // Start of the day for 7 days ago
-              const toDate = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                today.getDate(),
-                23,
-                59,
-                59,
-              ); // End of the day for today
-              setTag(0);
-              const temp = {...filters};
-              temp.fromDateTime = Number(
-                parseFloat(fromDate / 1000).toFixed(0),
-              );
-              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
-              temp.availableTime = option;
-              setFilters({...temp});
-            } else if (option === strings.filterThisMonth) {
-              const today = new Date();
-              const fromDate = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                1,
-                0,
-                0,
-                0,
-              ); // Start of the month
-              const toDate = new Date(
-                today.getFullYear(),
-                today.getMonth() + 1,
-                0,
-                23,
-                59,
-                59,
-              ); // End of the month
-
-              setTag(0);
-              const temp = {...filters};
-              // temp.fromDateTime = Number(
-              //   parseFloat(fromDate / 1000).toFixed(0),
-              // );
-              temp.fromDateTime =
-                fType === filterType.RECENTMATCHS
-                  ? Number(parseFloat(fromDate / 1000).toFixed(0))
-                  : Number(parseFloat(today / 1000).toFixed(0));
-              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
-              temp.availableTime = option;
-              setFilters({...temp});
-            } else if (option === strings.filterLastMonth) {
-              const today = new Date();
-              const fromDate = new Date(
-                today.getFullYear(),
-                today.getMonth() - 1,
-                1,
-                0,
-                0,
-                0,
-              ); // Start of the previous month
-              const toDate = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                0,
-                23,
-                59,
-                59,
-              ); // End of the previous month
-
-              setTag(0);
-              const temp = {...filters};
-              temp.fromDateTime = Number(
-                parseFloat(fromDate / 1000).toFixed(0),
-              );
-              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
-              temp.availableTime = option;
-              setFilters({...temp});
-            } else if (option === strings.filterNext7Day) {
-              const now = new Date();
-              const fromDate = now; // Set "from" date as the current time
-
-              const toDate = new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate() + 7,
-                23,
-                59,
-                59,
-              ); // Set "to" date as the end of the next 7 days
-              setTag(0);
-              const temp = {...filters};
-              temp.fromDateTime = Number(
-                parseFloat(fromDate / 1000).toFixed(0),
-              );
-              temp.toDateTime = Number(parseFloat(toDate / 1000).toFixed(0));
-              temp.availableTime = option;
-              setFilters({...temp});
-            } else if (option === strings.filterNextMonth) {
-              const now = new Date();
-              const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1);
-
-              const startDate = new Date(
-                nextMonth.getFullYear(),
-                nextMonth.getMonth(),
-                1,
-              );
-              const endDate = new Date(
-                nextMonth.getFullYear(),
-                nextMonth.getMonth() + 1,
-                0,
-              );
-              setTag(0);
-              const temp = {...filters};
-              temp.fromDateTime = Number(
-                parseFloat(startDate / 1000).toFixed(0),
-              );
-              temp.toDateTime = Number(parseFloat(endDate / 1000).toFixed(0));
-              temp.availableTime = option;
-              setFilters({...temp});
-            } else {
-              const temp = {...filters};
-              temp.availableTime = option;
-              setFilters({...temp});
-            }
-            setShowTimeActionSheet(false);
-          }}
-        />
-        {showPastDates ? (
-          <DateTimePickerView
-            visible={datePickerShow}
-            onDone={handleDatePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            mode={'date'}
-            maximumDate={new Date()}
-          />
-        ) : (
-          <DateTimePickerView
-            visible={datePickerShow}
-            onDone={handleDatePress}
-            onCancel={handleCancelPress}
-            onHide={handleCancelPress}
-            mode={'date'}
-            minimumDate={startDates}
-          />
-        )}
       </CustomModalWrapper>
       <LocationModal
         visibleLocationModal={visibleLocationModal}

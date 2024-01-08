@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {
   Image,
@@ -44,7 +45,6 @@ import {getDataForNextScreen} from '../localhome/LocalHomeUtils';
 import {locationType} from '../../utils/constant';
 import SportActivitiesModal from './components/SportActivitiesModal';
 import RecruitingMemberModal from './RecruitingMemberModal';
-import {useTabBar} from '../../context/TabbarContext';
 import usePrivacySettings from '../../hooks/usePrivacySettings';
 import {
   PersonUserPrivacyEnum,
@@ -77,23 +77,6 @@ const HomeScreen = ({navigation, route}) => {
   const [galleryPrivacyStatus, setGalleryPrivacyStatus] = useState(false);
 
   const {getPrivacyStatus} = usePrivacySettings();
-  const {toggleTabBar} = useTabBar();
-  
-  useEffect(() => {
-    // Set TabBar visibility to true when this screen mounts
-    toggleTabBar(false);
-
-    return () => {
-      // Set TabBar visibility to false when this screen unmounts
-      toggleTabBar(true);
-    };
-  }, [isFocused, toggleTabBar]);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
 
   useEffect(() => {
     const status = getPrivacyStatus(
@@ -487,9 +470,7 @@ const HomeScreen = ({navigation, route}) => {
         if (Platform.OS === 'ios') {
           setMoreOptions([strings.recruitingMembers]);
         } else {
-
           setMoreOptions([strings.recruitingMembers, strings.cancel]);
-
         }
       } else {
         setMoreOptions([strings.reportThisAccount, strings.blockThisAccount]);

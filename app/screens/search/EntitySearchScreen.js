@@ -71,6 +71,7 @@ import ScreenHeader from '../../components/ScreenHeader';
 import JoinButtonModal from '../home/JoinButtomModal';
 import SportView from '../localhome/SportView';
 import EventList from './components/EventList';
+import {getAvailableEntityIdList} from '../../utils/elasticApiCall';
 
 const pageSize = 10;
 let stopFetchMore = true;
@@ -658,7 +659,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
   }, [generalFilter, generalPageFrom, generalList]);
 
-  const getPlayersList = useCallback(() => {
+  const getPlayersList = useCallback(async () => {
     setSmallLoader(true);
     const playersQuery = {
       size: pageSize,
@@ -719,6 +720,30 @@ export default function EntitySearchScreen({navigation, route}) {
         });
       }
     }
+
+    if (
+      playerFilter.availableTime &&
+      playerFilter.availableTime !== strings.filterAntTime &&
+      playerFilter?.fromDateTime &&
+      playerFilter?.toDateTime
+    ) {
+      const obj = {
+        fromDate: playerFilter.fromDateTime ?? '',
+        toDate: playerFilter.toDateTime ?? '',
+      };
+      const response = await getAvailableEntityIdList(obj);
+
+      if (response.length > 0) {
+        playersQuery.query.bool.must_not = [
+          {
+            terms: {
+              'user_id.keyword': [...response],
+            },
+          },
+        ];
+      }
+    }
+
     getUserIndex(playersQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -738,7 +763,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
   }, [playerFilter, pageFrom, playerList]);
 
-  const getRefereesList = useCallback(() => {
+  const getRefereesList = useCallback(async () => {
     setSmallLoader(true);
     const refereeQuery = {
       size: pageSize,
@@ -796,6 +821,30 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
+
+    if (
+      refereeFilters.availableTime &&
+      refereeFilters.availableTime !== strings.filterAntTime &&
+      refereeFilters?.fromDateTime &&
+      refereeFilters?.toDateTime
+    ) {
+      const obj = {
+        fromDate: refereeFilters.fromDateTime ?? '',
+        toDate: refereeFilters.toDateTime ?? '',
+      };
+      const response = await getAvailableEntityIdList(obj);
+
+      if (response.length > 0) {
+        refereeQuery.query.bool.must_not = [
+          {
+            terms: {
+              'user_id.keyword': [...response],
+            },
+          },
+        ];
+      }
+    }
+
     getUserIndex(refereeQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -815,7 +864,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
   }, [refereesPageFrom, referees, refereeFilters]);
 
-  const getScoreKeepersList = useCallback(() => {
+  const getScoreKeepersList = useCallback(async () => {
     setSmallLoader(true);
     // Score keeper query
     const scoreKeeperQuery = {
@@ -878,6 +927,30 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
+
+    if (
+      scoreKeeperFilters.availableTime &&
+      scoreKeeperFilters.availableTime !== strings.filterAntTime &&
+      scoreKeeperFilters?.fromDateTime &&
+      scoreKeeperFilters?.toDateTime
+    ) {
+      const obj = {
+        fromDate: scoreKeeperFilters.fromDateTime ?? '',
+        toDate: scoreKeeperFilters.toDateTime ?? '',
+      };
+      const response = await getAvailableEntityIdList(obj);
+
+      if (response.length > 0) {
+        scoreKeeperQuery.query.bool.must_not = [
+          {
+            terms: {
+              'user_id.keyword': [...response],
+            },
+          },
+        ];
+      }
+    }
+
     getUserIndex(scoreKeeperQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -898,7 +971,7 @@ export default function EntitySearchScreen({navigation, route}) {
       });
   }, [scorekeeperPageFrom, scorekeepers, scoreKeeperFilters]);
 
-  const getTeamList = useCallback(() => {
+  const getTeamList = useCallback(async () => {
     setSmallLoader(true);
     const teamsQuery = {
       size: pageSize,
@@ -938,6 +1011,30 @@ export default function EntitySearchScreen({navigation, route}) {
         },
       });
     }
+
+    if (
+      teamFilters.availableTime &&
+      teamFilters.availableTime !== strings.filterAntTime &&
+      teamFilters?.fromDateTime &&
+      teamFilters?.toDateTime
+    ) {
+      const obj = {
+        fromDate: teamFilters.fromDateTime ?? '',
+        toDate: teamFilters.toDateTime ?? '',
+      };
+      const response = await getAvailableEntityIdList(obj);
+
+      if (response.length > 0) {
+        teamsQuery.query.bool.must_not = [
+          {
+            terms: {
+              'group_id.keyword': [...response],
+            },
+          },
+        ];
+      }
+    }
+
     getGroupIndex(teamsQuery)
       .then((res) => {
         setSmallLoader(false);
@@ -2629,6 +2726,37 @@ export default function EntitySearchScreen({navigation, route}) {
     }
   };
 
+  const getSports = () => {
+    let entityType = '';
+    switch (currentSubTab) {
+      case strings.playerTitle:
+      case strings.completedTitleText:
+      case strings.upcomingTitleText:
+        entityType = Verbs.entityTypePlayer;
+        break;
+
+      case strings.refereesTitle:
+        entityType = Verbs.entityTypeReferee;
+        break;
+
+      case strings.scorekeeperTitle:
+        entityType = Verbs.entityTypeScorekeeper;
+        break;
+
+      case strings.teamsTitleText:
+        entityType = Verbs.entityTypeTeam;
+        break;
+
+      case strings.clubsTitleText:
+        entityType = Verbs.entityTypeClub;
+        break;
+
+      default:
+        break;
+    }
+    return [...defaultSport, ...getSportList(authContext.sports, entityType)];
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -2780,36 +2908,7 @@ export default function EntitySearchScreen({navigation, route}) {
         }}
       />
       <SearchModal
-        sports={
-          (currentSubTab === strings.playerTitle && [
-            ...defaultSport,
-            ...getSportList(authContext.sports, Verbs.entityTypePlayer),
-          ]) ||
-          (currentSubTab === strings.refereesTitle && [
-            ...defaultSport,
-            ...getSportList(authContext.sports, Verbs.entityTypeReferee),
-          ]) ||
-          (currentSubTab === strings.scorekeeperTitle && [
-            ...defaultSport,
-            ...getSportList(authContext.sports, Verbs.entityTypeScorekeeper),
-          ]) ||
-          (currentSubTab === strings.teamsTitleText && [
-            ...defaultSport,
-            ...getSportList(authContext.sports, Verbs.entityTypeTeam),
-          ]) ||
-          (currentSubTab === strings.clubsTitleText && [
-            ...defaultSport,
-            ...getSportList(authContext.sports, Verbs.entityTypeClub),
-          ]) ||
-          (currentSubTab === strings.completedTitleText && [
-            ...defaultSport,
-            ...getSportList(authContext.sports, Verbs.entityTypePlayer),
-          ]) ||
-          (currentSubTab === strings.upcomingTitleText && [
-            ...defaultSport,
-            ...getSportList(authContext.sports, Verbs.entityTypePlayer),
-          ])
-        }
+        sports={getSports()}
         fType={
           currentTab === 3
             ? filterType.UPCOMINGMATCHES
@@ -2823,6 +2922,8 @@ export default function EntitySearchScreen({navigation, route}) {
           setSettingPopup(false);
         }}
         isEventFilter={currentTab === 3}
+        showTimeComponent
+        selectedTab={currentSubTab}
       />
 
       <CustomModalWrapper

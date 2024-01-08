@@ -540,19 +540,7 @@ const ReservationNavigator = () => (
     <Stack.Screen
       name="HomeScreen"
       component={HomeScreen}
-      options={{
-        title: 'Home',
-        headerTintColor: colors.blackColor,
-        headerTitleStyle: {
-          fontWeight: '500',
-        },
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: colors.whiteColor,
-          borderBottomColor: colors.grayColor,
-          borderBottomWidth: 0.3,
-        },
-      }}
+      options={{headerShown: false}}
     />
   </Stack.Navigator>
 );
