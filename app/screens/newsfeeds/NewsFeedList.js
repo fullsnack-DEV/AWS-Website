@@ -177,34 +177,40 @@ const NewsFeedList = ({
     <View
       onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
       style={{flex: 1}}>
-      <FlatList
-        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-        onScroll={onFeedScroll}
-        ref={refs}
-        style={{flex: 1}}
-        contentContainerStyle={{paddingVertical: 15}}
-        scrollEventThrottle={16}
-        removeClippedSubviews={true}
-        legacyImplementation={true}
-        maxToRenderPerBatch={10}
-        initialNumToRender={5}
-        ListEmptyComponent={listEmpty}
-        bounces={true}
-        data={postData}
-        ItemSeparatorComponent={newsFeedListItemSeperator}
-        ListHeaderComponent={ListHeaderComponent}
-        scrollEnabled={scrollEnabled}
-        ListFooterComponent={newsFeedListFooterComponent}
-        showsVerticalScrollIndicator={false}
-        renderItem={renderNewsFeed}
-        onEndReached={onEndReached}
-        onMomentumScrollBegin={onMomentumScrollBegin}
-        onEndReachedThreshold={0.5}
-        refreshing={pullRefresh}
-        onRefresh={newsFeedOnRefresh}
-        nestedScrollEnabled={true}
-        keyExtractor={newsFeedKeyExtractor}
-      />
+      {postData.length > 0 ? (
+        <FlatList
+          viewabilityConfigCallbackPairs={
+            viewabilityConfigCallbackPairs.current
+          }
+          onScroll={onFeedScroll}
+          ref={refs}
+          style={{flex: 1}}
+          contentContainerStyle={{paddingVertical: 15}}
+          scrollEventThrottle={16}
+          removeClippedSubviews={true}
+          legacyImplementation={true}
+          maxToRenderPerBatch={10}
+          initialNumToRender={5}
+          ListEmptyComponent={listEmpty}
+          bounces={true}
+          data={postData}
+          ItemSeparatorComponent={newsFeedListItemSeperator}
+          ListHeaderComponent={ListHeaderComponent}
+          scrollEnabled={scrollEnabled}
+          ListFooterComponent={newsFeedListFooterComponent}
+          showsVerticalScrollIndicator={false}
+          renderItem={renderNewsFeed}
+          onEndReached={onEndReached}
+          onMomentumScrollBegin={onMomentumScrollBegin}
+          onEndReachedThreshold={0.5}
+          refreshing={pullRefresh}
+          onRefresh={newsFeedOnRefresh}
+          nestedScrollEnabled={true}
+          keyExtractor={newsFeedKeyExtractor}
+        />
+      ) : (
+        listEmpty()
+      )}
     </View>
   );
 };

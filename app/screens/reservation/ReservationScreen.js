@@ -20,7 +20,7 @@ import images from '../../Constants/ImagePath';
 export default function ReservationScreen({navigation}) {
   const [loading, setloading] = useState(false);
   const [upcoming, setUpcoming] = useState([]);
-  const [past, setPast] = useState([]);
+  const [setPast] = useState([]);
   const authContext = useContext(AuthContext);
   const [firstTimeLoading, setFirstTimeLoading] = useState(true);
 
@@ -162,7 +162,7 @@ export default function ReservationScreen({navigation}) {
     <View style={styles.mainContainer}>
       <ActivityLoader visible={loading} />
       {renderView(upcoming)}
-      {renderView(past)}
+      {/* {renderView(past)} */}
     </View>
   );
 }

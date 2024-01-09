@@ -298,8 +298,12 @@ export default function EventScheduleScreen({
 
   return (
     <>
-      <View style={styles.mainContainer}>
-        {filterData && (
+      <View
+        style={[
+          styles.mainContainer,
+          filterData?.length === 0 ? {paddingTop: 0} : {},
+        ]}>
+        {filterData?.length > 0 ? (
           <SectionList
             scrollEnabled={true}
             showsVerticalScrollIndicator={false}
@@ -377,6 +381,12 @@ export default function EventScheduleScreen({
             refreshing={loading}
             onRefresh={refreshData}
             renderSectionFooter={() => <View style={{height: 20}} />}
+          />
+        ) : (
+          <ListEmptyComponent
+            title={strings.noEventText}
+            subTitle={strings.newEventWillAppearHereText}
+            imageUrl={images.eventsNoData}
           />
         )}
       </View>
