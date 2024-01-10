@@ -521,6 +521,7 @@ export default function EventScreen({navigation, route}) {
   );
 
   const handleActions = (option) => {
+    setShowActionSheet(false);
     switch (option) {
       case strings.sendInvoice:
         setShowActionSheet(false);
@@ -550,7 +551,11 @@ export default function EventScreen({navigation, route}) {
             {
               text: strings.delete,
               style: 'destructive',
-              onPress: () => setRecurringEditModal(true),
+              onPress: () => {
+                setShowActionSheet(false);
+
+                setRecurringEditModal(true);
+              },
             },
           ]);
         } else {
@@ -1068,8 +1073,11 @@ export default function EventScreen({navigation, route}) {
                     alignSelf={'flex-start'}
                     marginTop={10}
                     profileImageStyle={{width: 40, height: 40}}
-                    profileContainerStyle={{marginRight: 10}}
+                    profileContainerStyle={{
+                      marginRight: 10,
+                    }}
                   />
+
                   <Image
                     source={images.starProfile}
                     style={styles.starProfile}
@@ -1505,6 +1513,7 @@ export default function EventScreen({navigation, route}) {
         backdropTransitionOutTiming={10}
         style={{
           margin: 0,
+          flex: 1,
         }}>
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
@@ -1774,7 +1783,7 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     position: 'absolute',
-    left: 22,
+    left: 26,
     bottom: 0,
   },
   seeAllText: {

@@ -16,7 +16,7 @@ import GoingListScreen from '../screens/account/schedule/GoingListScreen';
 import LikedEventScreen from '../screens/account/schedule/LikedEventScreen';
 
 import CreateEventScreen2 from '../screens/account/schedule/CreateEventScreen2';
-
+import EditEventScreen2 from '../screens/account/schedule/EditEventScreen2';
 
 const Stack = createStackNavigator();
 
@@ -62,6 +62,13 @@ const ScheduleNavigator = () => (
       component={EditEventScreen}
       options={{headerShown: false}}
     />
+
+    <Stack.Screen
+      name="EditEventScreen2"
+      component={EditEventScreen2}
+      options={{headerShown: false}}
+    />
+
     <Stack.Screen
       name="CreateEventScreen"
       component={CreateEventScreen}

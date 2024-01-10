@@ -21,11 +21,12 @@ import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import AuthContext from '../../../auth/context';
 import TCThinDivider from '../../../components/TCThinDivider';
-import {getGroups, getTeamsOfClub} from '../../../api/Groups';
+import {getGroupDetails, getGroups, getTeamsOfClub} from '../../../api/Groups';
 import * as Utility from '../../../utils/index';
 import ChangeOtherListScreen from './ChangeOtherListScreen';
 import ChangeSportsOrderScreen from './ChangeSportsOrderScreen';
 import {getUserSettings, saveUserSettings} from '../../../api/Users';
+import {getGroupIndex} from '../../../api/elasticSearch';
 
 export default function ViewEventSettingsScreen({navigation}) {
   const authContext = useContext(AuthContext);
@@ -36,11 +37,11 @@ export default function ViewEventSettingsScreen({navigation}) {
     strings.eventFilterSportTitle,
   ];
 
-  const sortFilterDataClub = [
+  const [sortFilterDataClub] = useState([
     strings.eventFilterNoneTitle,
     strings.eventFilterOrganiserTitle,
     strings.eventFilterSportTitle,
-  ];
+  ]);
 
   const [loading, setLoading] = useState(false);
   const [sortFilterOption, setSortFilterOpetion] = useState(1);
@@ -52,19 +53,29 @@ export default function ViewEventSettingsScreen({navigation}) {
   const [listOfSports, setListOfSports] = useState(false);
   const [optionValue, setOptionValue] = useState(1);
   const [userSetting, setUserSetting] = useState();
+  const [optionRender, setOptionRender] = useState(0);
+  const [listOfClubs, setListofClubs] = useState([]);
 
   useEffect(() => {
     checkHasSports(authContext);
     checkHasRole(authContext);
+
     getUserSettings(authContext).then((setting) => {
-      const eventViewOption = [Verbs.entityTypeClub].includes(
-        authContext.entity.role,
-      )
-        ? setting?.payload?.user?.club_event_view_settings_option
-        : setting?.payload?.user?.event_view_settings_option;
+      let eventViewOption;
+
+      if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+        eventViewOption =
+          setting?.payload?.user?.club_event_view_settings_option;
+      } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+        eventViewOption =
+          setting?.payload?.user?.team_event_view_settings_option;
+      } else {
+        eventViewOption = setting?.payload?.user?.event_view_settings_option;
+      }
       if (eventViewOption) {
         setSortFilterOpetion(eventViewOption);
         setOptionValue(eventViewOption);
+        setOptionRender(eventViewOption ?? 0);
       }
       setUserSetting(setting.payload.user);
     });
@@ -78,6 +89,34 @@ export default function ViewEventSettingsScreen({navigation}) {
         .catch((e) => {
           setLoading(false);
           Alert.alert(strings.townsCupTitle, e.message);
+        });
+    } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+      // get all the clubs of the team
+
+      getGroupDetails(authContext.entity.uid, authContext)
+        .then((res) => {
+          const groupIDs = res.payload?.parent_groups ?? [];
+
+          const groupQuery = {
+            query: {
+              terms: {
+                _id: groupIDs,
+              },
+            },
+          };
+
+          getGroupIndex(groupQuery)
+            .then((response) => {
+              //  setGroups(response);
+              checkHasGroup(response);
+              setListofClubs(response);
+            })
+            .catch((e) => {
+              Alert.alert('', e.messages);
+            });
+        })
+        .catch((e) => {
+          console.log(e.message);
         });
     } else {
       getGroups(authContext)
@@ -120,7 +159,13 @@ export default function ViewEventSettingsScreen({navigation}) {
       if (data.payload && data.payload.length > 0) {
         setHasGroup(true);
       } else {
+        setHasGroup(false);
+      }
+    } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+      if (data && data.length > 0) {
         setHasGroup(true);
+      } else {
+        setHasGroup(false);
       }
     } else if (Object.entries(data.payload).length > 0) {
       const group = data.payload?.teams.length + data?.payload?.clubs.length;
@@ -128,7 +173,7 @@ export default function ViewEventSettingsScreen({navigation}) {
         setHasGroup(true);
       }
     } else {
-      setHasGroup(true);
+      setHasGroup(false);
     }
   };
 
@@ -140,6 +185,7 @@ export default function ViewEventSettingsScreen({navigation}) {
       }));
 
       const data = Utility.uniqueArray(res, Verbs.sportType);
+
       if (data.length === 0) {
         setHasSports(false);
       }
@@ -167,67 +213,106 @@ export default function ViewEventSettingsScreen({navigation}) {
     }
   };
 
-  const renderSortFilterOpetions = ({index, item}) => {
-    if (item === strings.eventFilterSportTitle && !hasSports) {
-      return null;
+  const renderOpacityOfOptions = (item) => {
+    if (item === strings.eventFilterOrganiserTitle) {
+      if (authContext.entity.role === Verbs.entityTypeClub && !hasGroup) {
+        return false;
+      }
+
+      if (
+        authContext.entity.role === Verbs.entityTypePlayer ||
+        authContext.entity.role === Verbs.entityTypeUser
+      ) {
+        if (!hasGroup) {
+          return false;
+        }
+      }
     }
 
-    if (item === strings.eventFilterRoleTitle && !hasRole) {
-      return null;
+    if (item === strings.eventFilterRoleTitle) {
+      if (!hasRole) {
+        return false;
+      }
     }
 
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          marginBottom: 15,
-          justifyContent: 'space-between',
-          marginLeft: 15,
-          marginRight: 15,
-        }}>
-        <View>
-          <Text style={styles.filterTitle}>{item}</Text>
-          {item === strings.eventFilterSportTitle &&
-            sortFilterOption === index &&
-            registeredSports.length > 1 && (
-              <Text
-                style={styles.changeOrderStyle}
-                onPress={() => {
-                  setListOfSports(true);
-                }}>
-                {strings.changeListOfSport}
-              </Text>
-            )}
+    if (item === strings.eventFilterSportTitle) {
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        return true;
+      }
+      if (!hasSports) {
+        return false;
+      }
+    }
 
-          {item === strings.eventFilterOrganiserTitle &&
-            sortFilterOption === index &&
-            hasGroup && (
-              <Text
-                style={styles.changeOrderStyle}
-                onPress={() => {
-                  setListOfOrganiser(true);
-                }}>
-                {strings.chnageListOfOrganizer}
-              </Text>
-            )}
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            setSortFilterOpetion(index);
-            setOptionValue(index);
-          }}>
-          <Image
-            source={
-              sortFilterOption === index
-                ? images.radioRoundOrange
-                : images.radioUnselect
-            }
-            style={styles.radioButtonStyle}
-          />
-        </TouchableOpacity>
-      </View>
-    );
+    return true;
   };
+
+  const renderSortFilterOpetions = ({index, item}) => (
+    <View
+      // pointerEvents={!renderOpacityOfOptions(item) ? 'none' : 'box-only'}
+      style={{
+        flexDirection: 'row',
+        marginBottom: 15,
+        justifyContent: 'space-between',
+        marginLeft: 15,
+        marginRight: 15,
+      }}>
+      <View>
+        <Text
+          style={[
+            styles.filterTitle,
+            {
+              opacity: !renderOpacityOfOptions(item) ? 0.4 : 1,
+            },
+          ]}>
+          {item}
+        </Text>
+        {item === strings.eventFilterSportTitle &&
+          sortFilterOption === index &&
+          registeredSports.length > 1 && (
+            <Text
+              style={styles.changeOrderStyle}
+              onPress={() => {
+                setListOfSports(true);
+              }}>
+              {strings.changeListOfSport}
+            </Text>
+          )}
+
+        {item === strings.eventFilterOrganiserTitle &&
+          sortFilterOption === index &&
+          hasGroup && (
+            <Text
+              style={styles.changeOrderStyle}
+              onPress={() => {
+                setListOfOrganiser(true);
+              }}>
+              {strings.chnageListOfOrganizer}
+            </Text>
+          )}
+      </View>
+      <TouchableOpacity
+        onPress={() => {
+          if (renderOpacityOfOptions(item)) {
+            setSortFilterOpetion(index);
+
+            setOptionRender(index);
+            setOptionValue(index);
+          } else {
+            Alert.alert('option is not Activated');
+          }
+        }}>
+        <Image
+          source={
+            index === optionRender
+              ? images.radioRoundOrange
+              : images.radioUnselect
+          }
+          style={styles.radioButtonStyle}
+        />
+      </TouchableOpacity>
+    </View>
+  );
 
   const onDonePress = () => {
     setLoading(true);
@@ -236,6 +321,12 @@ export default function ViewEventSettingsScreen({navigation}) {
       params = {
         ...userSetting,
         club_event_view_settings_option: optionValue,
+      };
+    }
+    if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+      params = {
+        ...userSetting,
+        team_event_view_settings_option: optionValue,
       };
     } else {
       params = {
@@ -298,6 +389,7 @@ export default function ViewEventSettingsScreen({navigation}) {
             Verbs.entityTypeUser,
             Verbs.entityTypePlayer,
             Verbs.entityTypeClub,
+            Verbs.entityTypeTeam,
           ].includes(authContext.entity.role) && (
             <View>
               <TCThinDivider width={'100%'} marginBottom={15} />
@@ -305,7 +397,9 @@ export default function ViewEventSettingsScreen({navigation}) {
                 <Text style={styles.titleText}>{strings.sortBy}</Text>
                 <FlatList
                   data={
-                    [Verbs.entityTypeClub].includes(authContext.entity.role)
+                    [Verbs.entityTypeClub, Verbs.entityTypeTeam].includes(
+                      authContext.entity.role,
+                    )
                       ? sortFilterDataClub
                       : sortFilterData
                   }
@@ -336,6 +430,7 @@ export default function ViewEventSettingsScreen({navigation}) {
             closeBtn={setListOfOrganiser}
             userSetting={userSetting}
             setUserSetting={setUserSetting}
+            clubLists={listOfClubs}
           />
         </View>
       </Modal>

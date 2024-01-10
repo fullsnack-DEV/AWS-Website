@@ -106,7 +106,9 @@ export const EventInvitePrivacy = {
   everyoneTitleText: 1,
   followersMyTeamClub: 2,
   myTeamClub: 3,
-  none: 0,
+
+  none: 4,
+
 };
 
 export const groupInviteOptionsList = [

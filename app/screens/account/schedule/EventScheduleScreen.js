@@ -197,6 +197,7 @@ export default function EventScheduleScreen({
         Verbs.entityTypePlayer,
         Verbs.entityTypeUser,
         Verbs.entityTypeClub,
+        Verbs.entityTypeTeam,
       ].includes(authContext.entity.role)
     ) {
       if (
@@ -232,7 +233,11 @@ export default function EventScheduleScreen({
         }
       } else if (
         filterOptions.sort ===
-        ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 2 : 3)
+        ([Verbs.entityTypeClub, Verbs.entityTypeTeam].includes(
+          authContext.entity.role,
+        )
+          ? 2
+          : 3)
       ) {
         if (
           selectedFilter.title.sport !== strings.all &&
@@ -247,7 +252,11 @@ export default function EventScheduleScreen({
         }
       } else if (
         filterOptions.sort ===
-        ([Verbs.entityTypeClub].includes(authContext.entity.role) ? 1 : 1)
+        ([Verbs.entityTypeClub, Verbs.entityTypeTeam].includes(
+          authContext.entity.role,
+        )
+          ? 1
+          : 1)
       ) {
         if (
           selectedFilter.title.group_name !== strings.all &&

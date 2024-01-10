@@ -95,6 +95,13 @@ const Verbs = {
     WeekOfYear: 5,
     DayOfYear: 6,
   },
+
+  viewEventPrivacyOptions: {
+    none: 0,
+    organizer: 1,
+    sport: 2,
+  },
+
   gpsErrorDeined: 'gpsErrorForDenied',
 
   sportTypeSingle: 'single',

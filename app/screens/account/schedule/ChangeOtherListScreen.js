@@ -28,6 +28,7 @@ export default function ChangeOtherListScreen({
   closeBtn,
   userSetting,
   setUserSetting,
+  clubLists = [],
 }) {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,11 @@ export default function ChangeOtherListScreen({
         params = {
           ...userSetting,
           club_schedule_group_filter: addedGroups,
+        };
+      } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+        params = {
+          ...userSetting,
+          team_schedule_group_filter: addedGroups,
         };
       } else {
         params = {
@@ -95,6 +101,36 @@ export default function ChangeOtherListScreen({
           setLoading(false);
           Alert.alert('', e.messages);
         });
+    } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+      setLoading(false);
+
+      getUserSettings(authContext).then((setting) => {
+        setUserSetting(setting.payload.user);
+        if (
+          setting.payload.user?.team_schedule_group_filter &&
+          setting.payload.user?.team_schedule_group_filter.length > 0
+        ) {
+          setAddedGroups([
+            ...(setting.payload?.user?.team_schedule_group_filter ?? []),
+          ]);
+          setremovedGroups(
+            clubLists.filter(
+              (e) =>
+                !setting.payload.user?.club_schedule_group_filter.some(
+                  (item) => item.group_id === e.group_id,
+                ),
+            ),
+          );
+        } else {
+          const groups = clubLists.map((obj) => ({
+            ...obj,
+            isSelected: false,
+          }));
+          setAddedGroups(groups.filter((obj) => obj.isSelected));
+          setremovedGroups(groups.filter((obj) => !obj.isSelected));
+        }
+        setLoading(false);
+      });
     } else {
       getGroups(authContext)
         .then((response) => {

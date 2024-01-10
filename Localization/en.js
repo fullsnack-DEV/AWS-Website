@@ -3286,4 +3286,7 @@ export default {
   newReservationWillAppearHere: 'en_New Reservation will appear here.',
   followersMyTeamClub: 'en_followers, my teams & clubs',
   myTeamClub: 'en_my teams & clubs',
+
+  sportBarAlertText: 'en_You can add up to 10 sports to the filter bar.',
+
 };

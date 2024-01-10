@@ -49,6 +49,7 @@ export default function ChangeSportsOrderScreen({
   });
 
   useEffect(() => {
+    setloading(true);
     let sportsList = [];
     if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
       sportsList = [...(authContext.entity.obj.sports ?? [])];
@@ -76,13 +77,34 @@ export default function ChangeSportsOrderScreen({
         if (
           setting?.payload?.user !== {} &&
           setting?.payload?.user?.schedule_sport_filter &&
-          setting?.payload?.user?.schedule_sport_filter?.length > 0
+          setting?.payload?.user?.schedule_sport_filter?.length > 0 &&
+          (authContext.entity.role === Verbs.entityTypePlayer ||
+            authContext.entity.role === Verbs.entityTypeUser)
         ) {
+          setloading(false);
           setAddedSport([...setting?.payload?.user?.schedule_sport_filter]);
+
           setRemovedSport(
             data.filter(
               (e) =>
                 !setting?.payload?.user?.schedule_sport_filter?.some(
+                  (item) => item.sport === e.sport,
+                ),
+            ),
+          );
+        } else if (
+          setting?.payload?.user?.club_schedule_sport_filter &&
+          setting?.payload?.user?.club_schedule_sport_filter?.length > 0 &&
+          authContext.entity.role === Verbs.entityTypeClub
+        ) {
+          setAddedSport([
+            ...setting?.payload?.user?.club_schedule_sport_filter,
+          ]);
+
+          setRemovedSport(
+            data.filter(
+              (e) =>
+                !setting?.payload?.user?.club_schedule_sport_filter?.some(
                   (item) => item.sport === e.sport,
                 ),
             ),
@@ -94,6 +116,7 @@ export default function ChangeSportsOrderScreen({
         setloading(false);
       })
       .catch((e) => {
+        setloading(false);
         Alert.alert(e.message);
       });
   }, [
@@ -124,19 +147,13 @@ export default function ChangeSportsOrderScreen({
       setloading(false);
     } else {
       setloading(false);
-      Alert.alert('Please select any of the group.');
     }
   };
 
   const renderRemoveSportsActivity = useCallback(
     ({item, drag}) => (
       <View style={styles.sportsBackgroundView}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+        <View style={styles.removeSportActivityStyles}>
           <TouchableOpacity
             onPress={() => {
               const findIndex = addedSport.findIndex(
@@ -197,7 +214,7 @@ export default function ChangeSportsOrderScreen({
                 addedSport.push(item);
                 setAddedSport([...addedSport]);
               } else {
-                Alert.alert('You can add up to 10 sports to the filter bar.');
+                Alert.alert(strings.sportBarAlertText);
               }
             }}
             style={{alignSelf: 'center'}}>
@@ -258,19 +275,8 @@ export default function ChangeSportsOrderScreen({
                 </Text>
               </View>
             }
-            style={{
-              flex: 1,
-              width: '100%',
-              alignContent: 'center',
-              marginBottom: 15,
-              paddingVertical: 15,
-            }}
-            dragHitSlop={{
-              top: 15,
-              bottom: 15,
-              left: 15,
-              right: 15,
-            }}
+            style={styles.dragFlatListStyle}
+            dragHitSlop={styles.draghitSlop}
             onMoveEnd={(data) => {
               setAddedSport([...data]);
             }}
@@ -287,13 +293,7 @@ export default function ChangeSportsOrderScreen({
             data={removedSport}
             keyExtractor={keyExtractor}
             renderItem={renderAddSportsActivity}
-            style={{
-              flex: 1,
-              width: '100%',
-              alignContent: 'center',
-              marginBottom: 15,
-              paddingVertical: 15,
-            }}
+            style={styles.dragFlatListStyle}
           />
         ) : (
           <View style={{marginTop: 15}}>
@@ -406,5 +406,23 @@ const styles = StyleSheet.create({
     height: 40,
     marginRight: 10,
     borderRadius: 50,
+  },
+  dragFlatListStyle: {
+    flex: 1,
+    width: '100%',
+    alignContent: 'center',
+    marginBottom: 15,
+    paddingVertical: 15,
+  },
+  draghitSlop: {
+    top: 15,
+    bottom: 15,
+    left: 15,
+    right: 15,
+  },
+  removeSportActivityStyles: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

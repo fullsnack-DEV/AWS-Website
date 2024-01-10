@@ -14,7 +14,6 @@ import {
   SafeAreaView,
   Alert,
   TextInput,
-  Dimensions,
   Platform,
   Pressable,
   BackHandler,
@@ -26,12 +25,11 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import ActionSheet from 'react-native-actionsheet';
-
-import Modal from 'react-native-modal';
 import {useIsFocused} from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {format} from 'react-string-format';
+import {RRule} from 'rrule';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
 import EventMapView from '../../../components/Schedule/EventMapView';
@@ -50,7 +48,6 @@ import BlockAvailableTabView from '../../../components/Schedule/BlockAvailableTa
 import TCKeyboardView from '../../../components/TCKeyboardView';
 import TCTouchableLabel from '../../../components/TCTouchableLabel';
 import EventBackgroundPhoto from '../../../components/Schedule/EventBackgroundPhoto';
-import TCThinDivider from '../../../components/TCThinDivider';
 import {
   deleteConfirmation,
   getRoundedDate,
@@ -63,9 +60,6 @@ import {
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
-import GroupEventItems from '../../../components/Schedule/GroupEvent/GroupEventItems';
-import uploadImages from '../../../utils/imageAction';
-import {editEvent} from '../../../api/Schedule';
 import Verbs from '../../../Constants/Verbs';
 import AddressLocationModal from '../../../components/AddressLocationModal/AddressLocationModal';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -74,6 +68,7 @@ import CustomModalWrapper from '../../../components/CustomModalWrapper';
 import {ModalTypes} from '../../../Constants/GeneralConstants';
 import {getSportList} from '../../../utils/sportsActivityUtils';
 import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
+import TCFormProgress from '../../../components/TCFormProgress';
 
 export default function EditEventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -109,22 +104,10 @@ export default function EditEventScreen({navigation, route}) {
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
   const [visibleWhoCanPostModal, setVisibleWhoCanPostModal] = useState(false);
   const [selectedSport, setSelectedSport] = useState({});
-  const [recurringEditModal, setRecurringEditModal] = useState(false);
+
   const [visibleLocationModal, setVisibleLocationModal] = useState(false);
-  const THISEVENT = 0;
-  const FUTUREEVENT = 1;
-  const ALLEVENT = 2;
 
-  const recurringEditList = [
-    {text: strings.thisEventOnly, value: THISEVENT},
-    {
-      text: strings.thisAndAllEvent,
-      value: FUTUREEVENT,
-    },
-    {text: strings.allEvents, value: ALLEVENT},
-  ];
-
-  const [whoOption, setWhoOption] = useState();
+  const [whoOption] = useState('');
   const [whoCanJoinOption, setWhoCanJoinOption] = useState({});
 
   const [whoCanSeeOption, setWhoCanSeeOption] = useState({});
@@ -136,7 +119,7 @@ export default function EditEventScreen({navigation, route}) {
   const [sportsData, setSportsData] = useState([]);
   const [groupsSeeList, setGroupsSeeList] = useState([]);
   const [groupsJoinList, setGroupsJoinList] = useState([]);
-  const [isAll, setIsAll] = useState(false);
+
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [untilDateVisible, setUntilDateVisible] = useState(false);
@@ -147,14 +130,18 @@ export default function EditEventScreen({navigation, route}) {
   const refundPolicyInputRef = useRef();
   const [canOrganizerEdit, setCanOrganizerEdit] = useState(true);
   const [snapPoints, setSnapPoints] = useState([]);
+  const [occurance, setOccurance] = useState(0);
+  const [endDateOfOcuuredEvent, setEndDateOfOccuredEvent] = useState(0);
 
   useEffect(() => {
     if (isFocused) {
       if (route.params?.data) {
         const data = {...route.params.data};
+
         setEventData(data);
         setEventTitle(data.title);
         setEventDescription(data.descriptions);
+        setOccurance(data?.occurrence ?? 0);
         setEventPosted({...data.event_posted_at});
         setMinAttendees(data.min_attendees ?? '');
         setMaxAttendees(data.max_attendees ?? '');
@@ -316,56 +303,6 @@ export default function EditEventScreen({navigation, route}) {
     </TouchableOpacity>
   );
 
-  const getImage = (item) => {
-    if (item.thumbnail) {
-      return {uri: item.thumbnail};
-    }
-    if (item.entity_type === Verbs.entityTypeTeam) {
-      return images.teamPlaceholder;
-    }
-    return images.clubPlaceholder;
-  };
-
-  const renderSeeGroups = ({item, index}) => (
-    <GroupEventItems
-      eventImageSource={
-        item.entity_type === Verbs.entityTypeTeam
-          ? images.teamPatch
-          : images.clubPatch
-      }
-      eventText={item.group_name}
-      groupImageSource={getImage(item)}
-      checkBoxImage={
-        item.isSelected ? images.orangeCheckBox : images.uncheckWhite
-      }
-      onCheckBoxPress={() => {
-        groupsSeeList[index].isSelected = !groupsSeeList[index].isSelected;
-        setGroupsSeeList([...groupsSeeList]);
-        setIsAll(false);
-      }}
-    />
-  );
-
-  const renderJoinGroups = ({item, index}) => (
-    <GroupEventItems
-      eventImageSource={
-        item.entity_type === Verbs.entityTypeTeam
-          ? images.teamPatch
-          : images.clubPatch
-      }
-      eventText={item.group_name}
-      groupImageSource={getImage(item)}
-      checkBoxImage={
-        item.isSelected ? images.orangeCheckBox : images.uncheckWhite
-      }
-      onCheckBoxPress={() => {
-        groupsJoinList[index].isSelected = !groupsJoinList[index].isSelected;
-        setGroupsJoinList([...groupsJoinList]);
-        setIsAll(false);
-      }}
-    />
-  );
-
   const onBGImageClicked = () => {
     setTimeout(() => {
       if (backgroundThumbnail) {
@@ -507,58 +444,6 @@ export default function EditEventScreen({navigation, route}) {
     selectedSport,
   ]);
 
-  const createEventDone = (data, recurrringOption) => {
-    const obj = {...data};
-    const entity = authContext.entity;
-    const uid = entity.uid || entity.auth.user_id;
-    const entityRole = entity.role === 'user' ? 'users' : 'groups';
-
-    let rule;
-    if (selectWeekMonth === Verbs.eventRecurringEnum.Daily) {
-      rule = 'FREQ=DAILY';
-    } else if (selectWeekMonth === Verbs.eventRecurringEnum.Weekly) {
-      rule = 'FREQ=WEEKLY';
-    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfMonth) {
-      rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(eventStartDateTime)
-        .substring(0, 2)
-        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
-    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfMonth) {
-      rule = `FREQ=MONTHLY;BYMONTHDAY=${eventStartDateTime.getDate()}`;
-    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfYear) {
-      rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(eventStartDateTime)
-        .substring(0, 2)
-        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
-    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfYear) {
-      rule = `FREQ=YEARLY;BYMONTHDAY=${eventStartDateTime.getDate()};BYMONTH=${eventStartDateTime.getMonth()}`;
-    }
-
-    if (rule) {
-      obj.untilDate = getTCDate(eventUntilDateTime);
-      obj.rrule = rule;
-      if (recurrringOption === '') {
-        setEventData({...obj});
-        setRecurringEditModal(true);
-        setloading(false);
-        return true;
-      }
-      obj.recurring_modification_type = recurrringOption;
-    }
-
-    editEvent(entityRole, uid, obj, authContext)
-      .then(() => {
-        setloading(false);
-        navigation.navigate('EventScreen', {
-          event: obj,
-        });
-      })
-      .catch((e) => {
-        setloading(false);
-        console.log('Error ::--', e);
-        Alert.alert(e.messages);
-      });
-    return true;
-  };
-
   const handleBackPress = useCallback(() => {
     Alert.alert(
       strings.areYouWantToUnsavedChanges,
@@ -598,11 +483,12 @@ export default function EditEventScreen({navigation, route}) {
     return () => backHandler.remove();
   }, [handleBackPress]);
 
-  const onDonePress = (recurrringOption = '') => {
+  const onDonePress = () => {
     if (checkValidation()) {
-      setloading(true);
+      // setloading(true);
       const entity = authContext.entity;
       const entityRole = entity.role === 'user' ? 'users' : 'groups';
+
       const data = {
         ...eventData,
         title: eventTitle,
@@ -653,26 +539,6 @@ export default function EditEventScreen({navigation, route}) {
         online_url: onlineUrl,
       };
 
-      if (whoCanSeeOption.value === 2) {
-        const checkedGroup = groupsSeeList.filter((obj) => obj.isSelected);
-        const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-        if (authContext.entity.role === Verbs.entityTypeUser) {
-          data.who_can_see.group_ids = resultOfIds;
-        } else {
-          data.who_can_see.group_ids = [authContext.entity.uid];
-        }
-      }
-
-      if (whoCanJoinOption.value === 2) {
-        const checkedGroup = groupsJoinList.filter((obj) => obj.isSelected);
-        const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-        if (authContext.entity.role === Verbs.entityTypeUser) {
-          data.who_can_join.group_ids = resultOfIds;
-        } else {
-          data.who_can_join.group_ids = [authContext.entity.uid];
-        }
-      }
-
       data.start_datetime = eventOldStartDateTime;
       data.new_start_datetime = getTCDate(eventStartDateTime);
       data.end_datetime = eventOldEndDateTime;
@@ -680,60 +546,20 @@ export default function EditEventScreen({navigation, route}) {
       data.untilDate = eventOldUntilDateTime;
       data.new_untilDate = eventData.untilDate;
 
-      if (backgroundImageChanged) {
-        const imageArray = [];
-        imageArray.push({path: backgroundThumbnail});
-        uploadImages(imageArray, authContext)
-          .then((responses) => {
-            const attachments = responses.map((item) => ({
-              type: 'image',
-              url: item.fullImage,
-              thumbnail: item.thumbnail,
-            }));
+      // navigation.navigate('EditEventScreen2');
 
-            let bgInfo = attachments[0];
-            if (attachments.length > 1) {
-              bgInfo = attachments[1];
-            }
-            data.background_thumbnail = bgInfo.thumbnail;
-            data.background_full_image = bgInfo.url;
-            setBackgroundImageChanged(false);
-            createEventDone(data, recurrringOption);
-          })
-          .catch((e) => {
-            setTimeout(() => {
-              Alert.alert(strings.appName, e.messages);
-            }, 0.1);
-          });
-      } else {
-        createEventDone(data, recurrringOption);
-      }
+      navigation.navigate('EditEventScreen2', {
+        createEventData: data,
+        backgroundImageChangedFlag: backgroundImageChanged,
+        backgroundThumbnailFlag: backgroundThumbnail,
+        eventStartDateTimeflag: eventStartDateTime,
+        selectWeekMonthFlag: selectWeekMonth,
+        groupsSeeListFlag: groupsSeeList,
+        groupsJoinListFlag: groupsJoinList,
+        eventUntilDateTimeflag: eventUntilDateTime,
+      });
     }
   };
-
-  const renderEditRecurringOptions = ({item}) => (
-    <View
-      style={{
-        flexDirection: 'row',
-        marginVertical: 10,
-        justifyContent: 'center',
-        marginLeft: 15,
-        marginRight: 15,
-      }}>
-      <View>
-        <Text
-          style={styles.filterTitle}
-          onPress={() => {
-            setRecurringEditModal(false);
-            setTimeout(() => {
-              onDonePress(item.value);
-            }, 1000);
-          }}>
-          {item.text}
-        </Text>
-      </View>
-    </View>
-  );
 
   const onSelectAddress = (_location) => {
     setLocationDetail({
@@ -866,63 +692,72 @@ export default function EditEventScreen({navigation, route}) {
     return [];
   };
 
+  const getRecurringEventsByOccurrence = (eventObject) => {
+    console.log(eventObject, 'From coming obj');
+    const ruleObj = RRule.parseString(eventObject?.rrule);
+
+    ruleObj.dtstart = getJSDate(eventObject.start_datetime);
+    ruleObj.count = eventObject?.occurrence;
+    // ruleObj.tzid = eventObject.tzid;
+    const rule = new RRule(ruleObj);
+
+    const duration = eventObject.end_datetime - eventObject.start_datetime;
+
+    let dates = rule.all();
+
+    dates = dates.map((RRItem) => {
+      const newEvent = {};
+      newEvent.start_datetime = Math.round(new Date(RRItem) / 1000);
+      newEvent.end_datetime = newEvent.start_datetime + duration;
+      // eslint-disable-next-line no-param-reassign
+      RRItem = newEvent;
+      return RRItem;
+    });
+
+    const lastEvent = dates[dates.length - 1];
+    console.log(
+      moment(getJSDate(lastEvent?.end_datetime)).format('MMMM DD, YYYY'),
+      'fromor',
+    );
+
+    setEndDateOfOccuredEvent(
+      moment(getJSDate(lastEvent?.end_datetime)).format('MMMM DD, YYYY'),
+    );
+    return dates;
+  };
+
+  const getEndDateWhenOccurenceChange = (occr) => {
+    let rule;
+    if (selectWeekMonth === Verbs.eventRecurringEnum.Daily) {
+      rule = 'FREQ=DAILY';
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.Weekly) {
+      rule = 'FREQ=WEEKLY';
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfMonth) {
+      rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(eventStartDateTime)
+        .substring(0, 2)
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfMonth) {
+      rule = `FREQ=MONTHLY;BYMONTHDAY=${eventStartDateTime.getDate()}`;
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.WeekOfYear) {
+      rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(eventStartDateTime)
+        .substring(0, 2)
+        .toUpperCase()};BYSETPOS=${countNumberOfWeeks(eventStartDateTime)}`;
+    } else if (selectWeekMonth === Verbs.eventRecurringEnum.DayOfYear) {
+      rule = `FREQ=YEARLY;BYMONTHDAY=${eventStartDateTime.getDate()};BYMONTH=${eventStartDateTime.getMonth()}`;
+    }
+
+    eventData.rrule = rule;
+    eventData.occurrence = occr;
+
+    getRecurringEventsByOccurrence(eventData);
+  };
+
+  // const getTheEndDate = (eData) => {
+  //   getRecurringEventsByOccurrence(eData);
+  // };
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Modal
-        isVisible={recurringEditModal}
-        backdropColor="black"
-        onBackdropPress={() => setRecurringEditModal(false)}
-        onRequestClose={() => setRecurringEditModal(false)}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={10}
-        backdropTransitionOutTiming={10}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={{
-            width: '100%',
-            height: Dimensions.get('window').height / 4,
-            backgroundColor: 'white',
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            borderTopLeftRadius: 10,
-            borderTopRightRadius: 10,
-            shadowColor: '#000',
-            shadowOffset: {width: 0, height: 1},
-            shadowOpacity: 0.5,
-            shadowRadius: 5,
-            elevation: 15,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 15,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                alignSelf: 'center',
-                marginVertical: 10,
-                fontSize: 16,
-                fontFamily: fonts.RRegular,
-              }}>
-              {strings.updateRecurringEvent}
-            </Text>
-          </View>
-          <TCThinDivider width="92%" />
-          <FlatList
-            ItemSeparatorComponent={() => <TCThinDivider width="92%" />}
-            showsVerticalScrollIndicator={false}
-            data={recurringEditList}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderEditRecurringOptions}
-          />
-        </View>
-      </Modal>
       <ScreenHeader
         title={strings.editEvent}
         leftIcon={images.backArrow}
@@ -934,11 +769,12 @@ export default function EditEventScreen({navigation, route}) {
         }}
       />
 
+      <TCFormProgress totalSteps={2} curruentStep={1} />
       <ActivityLoader visible={loading} />
 
       <TCKeyboardView>
         <ScrollView bounces={false} nestedScrollEnabled={true}>
-          <View style={{paddingHorizontal: 10, paddingTop: 10}}>
+          <View style={{width: '110%', paddingTop: 10, alignSelf: 'center'}}>
             <EventBackgroundPhoto
               isEdit={!!backgroundThumbnail}
               isPreview={false}
@@ -1168,108 +1004,207 @@ export default function EditEventScreen({navigation, route}) {
                   canOrganizerEdit ? {} : {color: colors.placeHolderColor}
                 }
               />
+              <Pressable
+                style={{
+                  opacity: 0.3,
+                }}
+                pointerEvents="none">
+                <EventMonthlySelection
+                  title={strings.repeat}
+                  dataSource={[
+                    {
+                      label: strings.never,
+                      value: Verbs.eventRecurringEnum.Never,
+                    },
+                    {
+                      label: strings.daily,
+                      value: Verbs.eventRecurringEnum.Daily,
+                    },
+                    {
+                      label: strings.weeklyText,
+                      value: Verbs.eventRecurringEnum.Weekly,
+                    },
+                    {
+                      label: format(
+                        strings.monthlyOnText,
+                        `${countNumberOfWeekFromDay(
+                          eventStartDateTime,
+                        )} ${getDayFromDate(eventStartDateTime)}`,
+                      ),
+                      value: Verbs.eventRecurringEnum.WeekOfMonth,
+                    },
+                    {
+                      label: format(
+                        strings.monthlyOnDayText,
+                        ordinal_suffix_of(eventStartDateTime.getDate()),
+                      ),
+                      value: Verbs.eventRecurringEnum.DayOfMonth,
+                    },
+                    {
+                      label: format(
+                        strings.yearlyOnText,
+                        `${countNumberOfWeekFromDay(
+                          eventStartDateTime,
+                        )} ${getDayFromDate(eventStartDateTime)}`,
+                      ),
+                      value: Verbs.eventRecurringEnum.WeekOfYear,
+                    },
+                    {
+                      label: format(
+                        strings.yearlyOnDayText,
+                        ordinal_suffix_of(eventStartDateTime.getDate()),
+                      ),
+                      value: Verbs.eventRecurringEnum.DayOfYear,
+                    },
+                  ]}
+                  placeholder={strings.never}
+                  value={selectWeekMonth}
+                  onValueChange={(value) => {
+                    if (value === strings.never) {
+                      setEventUntildateTime(eventEndDateTime);
+                    }
+                    setSelectWeekMonth(value);
+                  }}
+                  titleStyle={{color: colors.userPostTimeColor}}
+                />
+              </Pressable>
+              <Pressable
+                style={{
+                  opacity: 0.3,
+                }}
+                pointerEvents="none">
+                <EventMonthlySelection
+                  title={strings.repeat}
+                  dataSource={[
+                    {
+                      label: '3 Times',
+                      value: 3,
+                    },
+                    {
+                      label: '4 Times',
+                      value: 4,
+                    },
+                    {
+                      label: '5 Times',
+                      value: 5,
+                    },
+                    {
+                      label: '6 Times',
+                      value: 6,
+                    },
+                    {
+                      label: '7 Times',
+                      value: 7,
+                    },
+                    {
+                      label: '8 Times',
+                      value: 8,
+                    },
+                    {
+                      label: '9 Times',
+                      value: 9,
+                    },
+                    {
+                      label: '10 Times',
+                      value: 10,
+                    },
+                    // {
+                    //   label: '11 Times',
+                    //   value: Verbs.eventRecurringEnum.Weekly,
+                    // },
+                    // {
+                    //   label: '12 Times',
+                    //   value: Verbs.eventRecurringEnum.Weekly,
+                    // },
+                    // {
+                    //   label: '13 Times',
+                    //   value: Verbs.eventRecurringEnum.Weekly,
+                    // },
 
+                    // {
+                    //   label: '14 Times',
+                    //   value: Verbs.eventRecurringEnum.Weekly,
+                    // },
+                    // {
+                    //   label: '15 Times',
+                    //   value: Verbs.eventRecurringEnum.Weekly,
+                    // },
+                    // {
+                    //   label: '16 Times',
+                    //   value: Verbs.eventRecurringEnum.Weekly,
+                    // },
+                    // {
+                    //   label: '17 Times',
+                    //   value: Verbs.eventRecurringEnum.Weekly,
+                    // },
+                    // {
+                    //   label: '18 Times',
+                    //   value: Verbs.eventRecurringEnum.Weekly,
+                    // },
+                    // {
+                    //   label: '19 Times',
+                    //   value: Verbs.eventRecurringEnum.Weekly,
+                    // },
+                    // {
+                    //   label: '20 Times',
+                    //   value: Verbs.eventRecurringEnum.Weekly,
+                    // },
+                  ]}
+                  placeholder={strings.never}
+                  value={occurance}
+                  onValueChange={(value) => {
+                    setOccurance(value);
+                    getEndDateWhenOccurenceChange(value);
+                  }}
+                  editable={canOrganizerEdit}
+                />
+              </Pressable>
+            </EventItemRender>
+
+            {eventData?.occurrence !== 0 ? (
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                  marginBottom: 20,
+                  alignSelf: 'flex-end',
+                  marginBottom: 10,
+                  marginTop: -10,
                 }}>
-                <Text>{strings.timezone} &nbsp;</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    Alert.alert(strings.timezoneAvailability);
+                <Text
+                  style={{
+                    fontSize: 16,
+                    lineHeight: 24,
+                    fontFamily: fonts.RRegular,
                   }}>
-                  <Text
-                    style={{
-                      textDecorationLine: 'underline',
-                      textDecorationStyle: 'solid',
-                      textDecorationColor: '#000',
-                    }}>
-                    {Intl.DateTimeFormat()
-                      ?.resolvedOptions()
-                      .timeZone.split('/')
-                      .pop()}
-                  </Text>
-                </TouchableOpacity>
+                  {strings.from}
+                  {moment(eventStartDateTime).format('MMMM DD, YYYY')}
+                  {strings.to} {endDateOfOcuuredEvent}
+                </Text>
               </View>
+            ) : null}
 
-              <EventMonthlySelection
-                title={strings.repeat}
-                dataSource={[
-                  {
-                    label: format(strings.never),
-                    value: Verbs.eventRecurringEnum.Never,
-                  },
-                  {label: strings.daily, value: Verbs.eventRecurringEnum.Daily},
-                  {
-                    label: strings.weeklyText,
-                    value: Verbs.eventRecurringEnum.Weekly,
-                  },
-                  {
-                    label: format(
-                      strings.monthlyOnText,
-                      `${countNumberOfWeekFromDay(
-                        eventStartDateTime,
-                      )} ${getDayFromDate(eventStartDateTime)}`,
-                    ),
-                    value: Verbs.eventRecurringEnum.WeekOfMonth,
-                  },
-                  {
-                    label: format(
-                      strings.monthlyOnDayText,
-                      ordinal_suffix_of(eventStartDateTime.getDate()),
-                    ),
-                    value: Verbs.eventRecurringEnum.DayOfMonth,
-                  },
-                  {
-                    label: format(
-                      strings.yearlyOnText,
-                      `${countNumberOfWeekFromDay(
-                        eventStartDateTime,
-                      )} ${getDayFromDate(eventStartDateTime)}`,
-                    ),
-                    value: Verbs.eventRecurringEnum.WeekOfYear,
-                  },
-                  {
-                    label: format(
-                      strings.yearlyOnDayText,
-                      ordinal_suffix_of(eventStartDateTime.getDate()),
-                    ),
-                    value: Verbs.eventRecurringEnum.DayOfYear,
-                  },
-                ]}
-                placeholder={strings.never}
-                value={selectWeekMonth}
-                onValueChange={(value) => {
-                  setSelectWeekMonth(value);
-                }}
-                editable={canOrganizerEdit}
-              />
-
-              {selectWeekMonth !== Verbs.eventRecurringEnum.Never && (
-                <EventTimeSelectItem
-                  title={strings.until}
-                  toggle={!toggle}
-                  date={
-                    eventUntilDateTime
-                      ? moment(eventUntilDateTime).format('ll')
-                      : moment(new Date()).format('ll')
-                  }
-                  time={
-                    eventUntilDateTime
-                      ? moment(eventUntilDateTime).format('h:mm a')
-                      : moment(new Date()).format('h:mm a')
-                  }
-                  containerStyle={{marginBottom: 12}}
-                  onDatePress={() =>
-                    canOrganizerEdit
-                      ? setUntilDateVisible(!untilDateVisible)
-                      : {}
-                  }
-                />
-              )}
-            </EventItemRender>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+                marginBottom: 20,
+              }}>
+              <Text>{strings.timezone} &nbsp;</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert(strings.timezoneAvailability);
+                }}>
+                <Text
+                  style={{
+                    textDecorationLine: 'underline',
+                    textDecorationStyle: 'solid',
+                    textDecorationColor: '#000',
+                  }}>
+                  {Intl.DateTimeFormat()
+                    ?.resolvedOptions()
+                    .timeZone.split('/')
+                    .pop()}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             <EventItemRender
               containerStyle={{marginTop: -40, marginBottom: 10}}
@@ -1351,7 +1286,7 @@ export default function EditEventScreen({navigation, route}) {
                   multiline={true}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
-                  editable={canOrganizerEdit}
+                  editable={false}
                 />
               </Pressable>
               {/* <Text style={[styles.subTitleText, {marginTop: 0}]}>
@@ -1374,211 +1309,6 @@ export default function EditEventScreen({navigation, route}) {
                 max={maxAttendees}
               />
             </View>
-
-            <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.whoCanSee}</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption('see');
-                  setVisibleWhoModal(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {whoCanSeeOption.text}
-                  </Text>
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
-                  />
-                </View>
-              </TouchableOpacity>
-            </View>
-            {whoCanSeeOption.value === 2 &&
-              authContext.entity.role === 'user' && (
-                <View>
-                  <View style={styles.allStyle}>
-                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setIsAll(!isAll);
-                        const groups = groupsSeeList.map((obj) => ({
-                          ...obj,
-                          isSelected: !isAll,
-                        }));
-                        setGroupsSeeList([...groups]);
-                      }}>
-                      <Image
-                        source={
-                          isAll ? images.orangeCheckBox : images.uncheckWhite
-                        }
-                        style={styles.imageStyle}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <FlatList
-                    scrollEnabled={false}
-                    data={[...groupsSeeList]}
-                    showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={() => (
-                      <View style={{height: wp('4%')}} />
-                    )}
-                    renderItem={renderSeeGroups}
-                    keyExtractor={(item, index) => index.toString()}
-                    style={styles.listStyle}
-                  />
-                </View>
-              )}
-
-            <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.whoCanJoin}</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption('join');
-                  setVisibleWhoModal(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {whoCanJoinOption.text}
-                  </Text>
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
-                  />
-                </View>
-              </TouchableOpacity>
-            </View>
-            {whoCanJoinOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser && (
-                <View>
-                  <View style={styles.allStyle}>
-                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setIsAll(!isAll);
-                        const groups = groupsJoinList.map((obj) => ({
-                          ...obj,
-                          isSelected: !isAll,
-                        }));
-                        setGroupsJoinList([...groups]);
-                      }}>
-                      <Image
-                        source={
-                          isAll ? images.orangeCheckBox : images.uncheckWhite
-                        }
-                        style={styles.imageStyle}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <FlatList
-                    scrollEnabled={false}
-                    data={[...groupsJoinList]}
-                    showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={() => (
-                      <View style={{height: wp('4%')}} />
-                    )}
-                    renderItem={renderJoinGroups}
-                    keyExtractor={(item, index) => index.toString()}
-                    style={styles.listStyle}
-                  />
-                </View>
-              )}
-
-            <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.whoCanInvite}</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption('invite');
-                  setVisibleWhoModal(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {whoCanInviteOption.text}
-                  </Text>
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
-                  />
-                </View>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.containerStyle}>
-              <Text
-                style={[styles.headerTextStyle, {textTransform: 'uppercase'}]}>
-                {strings.whoCanWritePostoneventHome}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setWhoOption(post);
-                  setVisibleWhoCanPostModal(true);
-                }}>
-                <View style={styles.dropContainer}>
-                  <Text style={styles.textInputDropStyle}>
-                    {whoCanPost.text}
-                  </Text>
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.downArrowWhoCan}
-                  />
-                </View>
-              </TouchableOpacity>
-
-              {/* {whoCanInviteOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser ? (
-                <GroupList
-                  list={groupsSeeList}
-                  onCheck={(index) => {
-                    groupsSeeList[index].isSelected =
-                      !groupsSeeList[index].isSelected;
-                    setGroupsSeeList([...groupsSeeList]);
-                  }}
-                  onAllPress={(isAllSelected) => {
-                    const newList = groupsSeeList.map((item) => ({
-                      ...item,
-                      isSelected: !isAllSelected,
-                    }));
-                    setGroupsSeeList([...newList]);
-                  }}
-                  containerStyle={{marginTop: 20}}
-                />
-              ) : null} */}
-            </View>
-
-            {whoCanInviteOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser && (
-                <View>
-                  <View style={styles.allStyle}>
-                    <Text style={styles.titleTextStyle}>{strings.all}</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setIsAll(!isAll);
-                        const groups = groupsSeeList.map((obj) => ({
-                          ...obj,
-                          isSelected: !isAll,
-                        }));
-                        setGroupsSeeList([...groups]);
-                      }}>
-                      <Image
-                        source={
-                          isAll ? images.orangeCheckBox : images.uncheckWhite
-                        }
-                        style={styles.imageStyle}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <FlatList
-                    scrollEnabled={false}
-                    data={[...groupsSeeList]}
-                    showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={() => (
-                      <View style={{height: wp('4%')}} />
-                    )}
-                    renderItem={renderSeeGroups}
-                    keyExtractor={(item, index) => index.toString()}
-                    style={styles.listStyle}
-                  />
-                </View>
-              )}
 
             <DateTimePickerView
               date={eventStartDateTime}
@@ -1676,12 +1406,7 @@ export default function EditEventScreen({navigation, route}) {
           onLayout={(event) => {
             const contentHeight = event.nativeEvent.layout.height + 80;
 
-            setSnapPoints([
-              // '50%',
-              contentHeight,
-              contentHeight,
-              // Dimensions.get('window').height - 40,
-            ]);
+            setSnapPoints([contentHeight, contentHeight]);
           }}>
           <FlatList
             data={getOptions()}
@@ -1760,27 +1485,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: fonts.RRegular,
   },
-  textInputDropStyle: {
-    flex: 1,
-    alignSelf: 'center',
-    textAlign: 'center',
-    color: colors.lightBlackColor,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-  },
-  dropContainer: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    borderRadius: 5,
-    width: wp('94%'),
-    height: 40,
-    alignSelf: 'center',
-    backgroundColor: colors.textFieldBackground,
-    marginTop: 10,
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    alignItems: 'center',
-  },
+
   detailsContainer: {
     backgroundColor: colors.textFieldBackground,
     marginTop: 10,
@@ -1811,13 +1516,6 @@ const styles = StyleSheet.create({
     fontSize: wp('4%'),
   },
 
-  downArrowWhoCan: {
-    height: 15,
-    resizeMode: 'contain',
-    tintColor: colors.lightBlackColor,
-    width: 15,
-    right: 15,
-  },
   eventFeeStyle: {
     width: '82%',
     fontSize: 16,
@@ -1853,39 +1551,7 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
     marginTop: 10,
   },
-  allStyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    margin: 15,
-    marginTop: 0,
-    marginBottom: 0,
-  },
-  titleTextStyle: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-    marginLeft: 15,
-    marginRight: 15,
-  },
 
-  imageStyle: {
-    width: wp('5.5%'),
-    resizeMode: 'contain',
-    marginRight: 10,
-  },
-  listStyle: {
-    marginBottom: 15,
-    marginTop: 15,
-    paddingBottom: 10,
-  },
-  filterTitle: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RRegular,
-    color: '#0093FF',
-  },
   activeEventPricacy: {
     paddingVertical: 4,
     borderRadius: 6,

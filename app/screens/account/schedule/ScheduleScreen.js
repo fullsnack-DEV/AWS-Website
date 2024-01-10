@@ -62,7 +62,7 @@ import {
 } from '../../../api/elasticSearch';
 import TCAccountDeactivate from '../../../components/TCAccountDeactivate';
 import {getUserSettings} from '../../../api/Users';
-import {getGroups, getTeamsOfClub} from '../../../api/Groups';
+import {getGroupDetails, getGroups, getTeamsOfClub} from '../../../api/Groups';
 import TCThinDivider from '../../../components/TCThinDivider';
 import {reservationOpetions} from '../../../utils/constant';
 import Verbs from '../../../Constants/Verbs';
@@ -185,10 +185,7 @@ export default function ScheduleScreen({navigation, route}) {
     option: 0,
     title: strings.all,
   });
-  const [filterSetting, setFilterSetting] = useState({
-    sort: 1,
-    time: 0,
-  });
+
   const [timeFilterOpetion, setTimeFilterOpetion] = useState(0);
   const [rsvpFilterOption, setRsvpFilterOption] = useState(0);
   const [filterPopup, setFilterPopup] = useState(false);
@@ -207,9 +204,14 @@ export default function ScheduleScreen({navigation, route}) {
   const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
     useState(false);
   const [editableSlots, setEditableSlots] = useState([]);
+  const [showOtherOptionForClub, setShowOtherOptionForClub] = useState(false);
 
+  const [showOtherOptionForTeam, setShowOtherOptionforTeam] = useState(false);
   const {toggleTabBar} = useTabBar();
-
+  const [filterSetting, setFilterSetting] = useState({
+    sort: 1,
+    time: 0,
+  });
   useEffect(() => {
     // Set TabBar visibility to true when this screen mounts
     toggleTabBar(true);
@@ -334,6 +336,35 @@ export default function ScheduleScreen({navigation, route}) {
     setEndDateVisible(false);
   };
 
+  // Check Validation to show the event settings for clubs
+  useEffect(() => {
+    if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+      getTeamsOfClub(authContext.entity.uid, authContext)
+        .then((response) => {
+          setShowOtherOptionForClub(response?.payload?.length);
+        })
+        .catch((e) => {
+          setloading(false);
+
+          Alert.alert(strings.townsCupTitle, e.message);
+        });
+    } else {
+      setEventSettingsOption(settingsOptions);
+    }
+
+    if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+      getGroupDetails(authContext.entity.uid, authContext)
+        .then(async (res) => {
+          const groupIDs = res.payload?.parent_groups ?? [];
+
+          setShowOtherOptionforTeam(groupIDs.length);
+        })
+        .catch((e) => {
+          console.log(e.message);
+        });
+    }
+  }, [authContext, isFocused]);
+
   // Check any event assigned to others option.
   useEffect(() => {
     const events = eventData.filter((obj) => !obj.game);
@@ -345,67 +376,64 @@ export default function ScheduleScreen({navigation, route}) {
     setFilterCancelled(false);
   }, [eventData]);
 
-  // Check Validation to show the event settings for clubs
-  useEffect(() => {
-    if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-      getTeamsOfClub(authContext.entity.uid, authContext)
-        .then((response) => {
-          const res = authContext?.entity?.obj?.sports.map((obj) => ({
-            sport: obj.sport,
-          }));
-          const data = Utility.uniqueArray(res, Verbs.sportType);
-          if (
-            (!response?.payload || response?.payload.length === 0) &&
-            data.length === 0
-          ) {
-            const newSettingsOption = eventSettingsOption.filter(
-              (item) => item !== strings.eventsViewSettings,
-            );
-            setEventSettingsOption(newSettingsOption);
-          }
-        })
-        .catch((e) => {
-          setloading(false);
-          console.log('Error==>', e.message);
-          Alert.alert(strings.townsCupTitle, e.message);
-        });
-    } else if (
-      [Verbs.entityTypeTeam].includes(authContext.entity.obj.entity_type)
-    ) {
-      const newSettingsOption = eventSettingsOption.filter(
-        (item) => item !== strings.eventsViewSettings,
-      );
-      setEventSettingsOption(newSettingsOption);
-    } else {
-      setEventSettingsOption(settingsOptions);
-    }
-  }, [authContext, isFocused]);
-
   useEffect(() => {
     getUserSettings(authContext)
       .then((setting) => {
         if (setting?.payload?.user !== {}) {
-          const scheduleFilter = [Verbs.entityTypeClub].includes(
-            authContext.entity.role,
-          )
-            ? setting?.payload?.user?.club_schedule_group_filter
-            : setting?.payload?.user?.schedule_group_filter;
-          // const eventViewOption = [Verbs.entityTypeClub].includes(authContext.entity.role) ?
-          // setting?.payload?.user?.club_event_view_settings_option : setting?.payload?.user?.event_view_settings_option;
+          let scheduleFilter = [];
 
-          // setFilterSetting({...filterSetting, sort :  eventViewOption})
-          // setSelectedOptions({
-          //   ...selectedOptions,
-          //   option: 0,
-          //   title: strings.all,
-          // });
+          if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+            scheduleFilter =
+              setting?.payload?.user?.club_schedule_group_filter ?? [];
+          } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+            scheduleFilter =
+              setting?.payload?.user?.team_schedule_group_filter ?? [];
+          } else {
+            scheduleFilter =
+              setting?.payload?.user?.schedule_group_filter ?? [];
+          }
 
           if (scheduleFilter && scheduleFilter?.length > 0) {
             if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-              setOrganizerOptions([
+              const checkOtherStatus =
+                setting?.payload?.user?.club_schedule_group_filter.length ===
+                showOtherOptionForClub;
+
+              const updatedOrganizerOptions = [
                 {group_name: strings.all, group_id: 0},
                 ...scheduleFilter,
-              ]);
+              ];
+
+              if (!checkOtherStatus) {
+                updatedOrganizerOptions.push({
+                  group_name: strings.othersText,
+                  group_id: 2,
+                });
+              }
+
+              setOrganizerOptions(updatedOrganizerOptions);
+            } else if (
+              [Verbs.entityTypeTeam].includes(authContext.entity.role)
+            ) {
+              // render the others option
+
+              const checkOtherStatus =
+                setting?.payload?.user?.team_schedule_group_filter.length ===
+                showOtherOptionForTeam;
+
+              const updatedOrganizerOptions = [
+                {group_name: strings.all, group_id: 0},
+                ...scheduleFilter,
+              ];
+
+              if (!checkOtherStatus) {
+                updatedOrganizerOptions.push({
+                  group_name: strings.othersText,
+                  group_id: 2,
+                });
+              }
+
+              setOrganizerOptions(updatedOrganizerOptions);
             } else {
               setOrganizerOptions([
                 {group_name: strings.all, group_id: 0},
@@ -414,24 +442,6 @@ export default function ScheduleScreen({navigation, route}) {
                 {group_name: strings.othersText, group_id: 2},
               ]);
             }
-          } else if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-            getTeamsOfClub(authContext.entity.uid, authContext)
-              .then((response) => {
-                if (response.payload && response.payload.length > 0) {
-                  setOrganizerOptions([
-                    {group_name: strings.all, group_id: 0},
-                    ...response.payload,
-                  ]);
-                } else {
-                  setOrganizerOptions([{group_name: strings.all, group_id: 0}]);
-                }
-                setloading(false);
-              })
-              .catch((e) => {
-                setTimeout(() => {
-                  Alert.alert(strings.alertmessagetitle, e.message);
-                }, 10);
-              });
           } else {
             getGroups(authContext)
               .then((response) => {
@@ -455,16 +465,21 @@ export default function ScheduleScreen({navigation, route}) {
               })
               .catch((e) => {
                 setloading(false);
-                console.log('Error==>', e.message);
+
                 Alert.alert(strings.townsCupTitle, e.message);
               });
           }
 
-          const sportsFilter = [Verbs.entityTypeClub].includes(
-            authContext.entity.role,
-          )
-            ? setting?.payload?.user?.club_schedule_sport_filter
-            : setting?.payload?.user?.schedule_sport_filter;
+          let sportsFilter;
+
+          if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+            sportsFilter = setting?.payload?.user?.club_schedule_sport_filter;
+          } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+            sportsFilter = setting?.payload?.user?.team_schedule_sport_filter;
+          } else {
+            sportsFilter = setting?.payload?.user?.schedule_sport_filter;
+          }
+
           if (sportsFilter && sportsFilter?.length > 0) {
             setSports([
               {sport: strings.all},
@@ -475,6 +490,10 @@ export default function ScheduleScreen({navigation, route}) {
             let sportsList = [];
             if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
               sportsList = [...(authContext.entity.obj.sports ?? [])];
+            } else if (
+              [Verbs.entityTypeTeam].includes(authContext.entity.role)
+            ) {
+              sportsList = [{sport: authContext.entity.obj.sport} ?? []];
             } else {
               sportsList = [
                 ...(authContext?.entity?.obj?.registered_sports?.filter(
@@ -493,6 +512,7 @@ export default function ScheduleScreen({navigation, route}) {
               sport: obj.sport,
             }));
             const data = Utility.uniqueArray(res, Verbs.sportType);
+
             setSports([
               {sport: strings.all},
               ...data,
@@ -504,10 +524,10 @@ export default function ScheduleScreen({navigation, route}) {
       })
       .catch((e) => {
         setloading(false);
-        console.log('Error==>', e.message);
+
         Alert.alert(e.message);
       });
-  }, [authContext]);
+  }, [isFocused]);
 
   const configureEvents = useCallback((eventsData, games) => {
     const eventTimeTableData = eventsData.map((item) => {
@@ -694,6 +714,53 @@ export default function ScheduleScreen({navigation, route}) {
         .catch((e) => {
           Alert.alert(strings.townsCupTitle, e.message);
         });
+    } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+      await getGroupDetails(authContext.entity.uid, authContext)
+        .then(async (res) => {
+          const groupIDs = res.payload?.parent_groups ?? [];
+
+          const groupQuery = {
+            query: {
+              terms: {
+                _id: groupIDs,
+              },
+            },
+          };
+
+          await getGroupIndex(groupQuery)
+            .then((response) => {
+              //  setGroups(response);
+              participants = [authContext?.entity?.uid];
+              const clubs = [];
+
+              const group_data = [
+                {
+                  id: authContext.entity?.obj?.group_id,
+                  name: authContext.entity?.obj?.group_name,
+                },
+              ];
+
+              if (response && response?.length > 0) {
+                response?.forEach((item) => {
+                  clubs.push(item.group_id);
+                  const temp = {};
+                  temp.id = item.group_id;
+                  temp.name = item.group_name;
+                  group_data.push(temp);
+                });
+              }
+
+              participants = [authContext?.entity?.uid, ...clubs];
+
+              setAllUserData(group_data);
+            })
+            .catch((e) => {
+              Alert.alert('', e.messages);
+            });
+        })
+        .catch((e) => {
+          console.log(e.message);
+        });
     } else {
       await getGroups(authContext)
         .then((response) => {
@@ -757,6 +824,7 @@ export default function ScheduleScreen({navigation, route}) {
             }
           }
         });
+
         const getUserDetailQuery = {
           size: 1000,
           from: 0,
@@ -821,18 +889,6 @@ export default function ScheduleScreen({navigation, route}) {
         }
 
         setAllSlots(resCalenders);
-
-        // eventsCal.forEach((item) => {
-        //   if (item?.rrule) {
-        //     let rEvents = getEventOccuranceFromRule(item);
-        //     rEvents = rEvents.filter(
-        //       (x) => x.end_datetime > Utility.getTCDate(new Date()),
-        //     );
-        //     eventTimeTableData.push(...rEvents);
-        //   } else {
-        //     eventTimeTableData.push(item);
-        //   }
-        // });
 
         eventTimeTableData.push(...eventsCal);
 
@@ -929,7 +985,28 @@ export default function ScheduleScreen({navigation, route}) {
           selectedOptions.title.group_name === item.group_name ||
           selectedOptions.title === item.group_name
         ) {
-          if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+          if (
+            [Verbs.entityTypeClub].includes(authContext.entity.role) ||
+            [Verbs.entityTypeTeam].includes(authContext.entity.role)
+          ) {
+            return styles.clubActiveWrapper;
+          }
+          return styles.clubInactiveWrapper;
+        }
+        return styles.clubInactiveWrapper;
+      }
+      if (
+        filterSetting.sort ===
+        ([Verbs.entityTypeTeam].includes(authContext.entity.role) ? 1 : 1)
+      ) {
+        if (
+          selectedOptions.title.group_name === item.group_name ||
+          selectedOptions.title === item.group_name
+        ) {
+          if (
+            [Verbs.entityTypeClub].includes(authContext.entity.role) ||
+            [Verbs.entityTypeTeam].includes(authContext.entity.role)
+          ) {
             return styles.clubActiveWrapper;
           }
           return styles.clubInactiveWrapper;
@@ -951,6 +1028,23 @@ export default function ScheduleScreen({navigation, route}) {
         }
         return styles.clubInactiveWrapper;
       }
+
+      if (
+        filterSetting.sort ===
+        ([Verbs.entityTypeTeam].includes(authContext.entity.role) ? 2 : 3)
+      ) {
+        if (
+          selectedOptions.title.sport === item.sport ||
+          selectedOptions.title === item.sport
+        ) {
+          if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+            return styles.clubActiveWrapper;
+          }
+          return styles.clubInactiveWrapper;
+        }
+        return styles.clubInactiveWrapper;
+      }
+
       if (
         filterSetting.sort ===
         ([Verbs.entityTypeClub].includes(authContext.entity.role) ? -1 : 2)
@@ -1447,65 +1541,16 @@ export default function ScheduleScreen({navigation, route}) {
             }
           />
         )}
-        {/* <Header
-          leftComponent={
-            <Text style={styles.eventTitleTextStyle}>
-              {[Verbs.entityTypeClub].includes(authContext.entity.role)
-                ? strings.events
-                : strings.schedule}
-            </Text>
-          }
-          showBackgroundColor={true}
-          rightComponent={
-            scheduleIndexCounter === 0 && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
-                {[Verbs.entityTypeClub].includes(authContext.entity.role) && (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setFilterPopup(true);
-                    }}>
-                    <FastImage
-                      source={images.localHomeFilter}
-                      style={{height: 25, width: 25, marginRight: 15}}
-                      resizeMode={'contain'}
-                    />
-                  </TouchableOpacity>
-                )}
 
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('CreateEventScreen', {
-                      comeName: 'ScheduleScreen',
-                    });
-                  }}>
-                  <Image
-                    source={images.addEvent}
-                    style={styles.headerRightImg}
-                  />
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => setSettingsModal(true)}>
-                  <Image
-                    source={images.vertical3Dot}
-                    style={styles.threeDotImageStyle}
-                  />
-                </TouchableOpacity>
-              </View>
-            )
-          }
-        /> */}
         <View style={styles.separateLine} />
       </View>
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       <View
         style={[
           styles.mainContainer,
-          {opacity: authContext.isAccountDeactivated ? 0.5 : 1},
+          {
+            opacity: authContext.isAccountDeactivated ? 0.5 : 1,
+          },
         ]}
         pointerEvents={authContext.isAccountDeactivated ? 'none' : 'auto'}
         needsOffscreenAlphaCompositing>
@@ -1580,6 +1625,7 @@ export default function ScheduleScreen({navigation, route}) {
               Verbs.entityTypeUser,
               Verbs.entityTypePlayer,
               Verbs.entityTypeClub,
+              Verbs.entityTypeTeam,
             ].includes(authContext.entity.role) &&
             filterSetting.sort > 0 &&
             eventData.length > 0 && (
@@ -1590,12 +1636,16 @@ export default function ScheduleScreen({navigation, route}) {
                   showsHorizontalScrollIndicator={false}
                   data={
                     (filterSetting.sort ===
-                      ([Verbs.entityTypeClub].includes(authContext.entity.role)
+                      ([Verbs.entityTypeClub, Verbs.entityTypeTeam].includes(
+                        authContext.entity.role,
+                      )
                         ? 1
                         : 1) &&
                       organizerOptions) ||
                     (filterSetting.sort ===
-                      ([Verbs.entityTypeClub].includes(authContext.entity.role)
+                      ([Verbs.entityTypeClub, Verbs.entityTypeTeam].includes(
+                        authContext.entity.role,
+                      )
                         ? 2
                         : 3) &&
                       sports) ||
@@ -1608,12 +1658,16 @@ export default function ScheduleScreen({navigation, route}) {
                   keyExtractor={keyExtractor}
                   renderItem={
                     (filterSetting.sort ===
-                      ([Verbs.entityTypeClub].includes(authContext.entity.role)
+                      ([Verbs.entityTypeClub, Verbs.entityTypeTeam].includes(
+                        authContext.entity.role,
+                      )
                         ? 1
                         : 1) &&
                       organizerListView) ||
                     (filterSetting.sort ===
-                      ([Verbs.entityTypeClub].includes(authContext.entity.role)
+                      ([Verbs.entityTypeClub, Verbs.entityTypeTeam].includes(
+                        authContext.entity.role,
+                      )
                         ? 2
                         : 3) &&
                       sportOptionsListView) ||

@@ -54,9 +54,7 @@ export default function CreateEventScreen2({navigation, route}) {
 
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
   const [visibleWhoCanPostModal, setVisibleWhoCanPostModal] = useState(false);
-  const [groupIDs, setGroupIds] = useState(
-    authContext.entity.obj.parent_groups ?? [],
-  );
+  const [groupIDs] = useState(authContext.entity.obj.parent_groups ?? []);
   const [groups, setGroups] = useState([]);
 
   const [snapPoints, setSnapPoints] = useState([]);
@@ -99,8 +97,6 @@ export default function CreateEventScreen2({navigation, route}) {
   );
 
   const [selectWeekMonth] = useState(route.params?.selectWeekMonthFlag);
-
-  console.log(authContext.entity.obj, 'From obj');
 
   const renderWhoCan = ({item}) => (
     <TouchableOpacity
@@ -183,8 +179,6 @@ export default function CreateEventScreen2({navigation, route}) {
       arr.rrule = rule;
     }
 
-    console.log(arr, 'From the event Sending obj');
-
     createEvent(entityRole, uid, arr, authContext)
       .then((response) => {
         setTimeout(() => {
@@ -209,7 +203,6 @@ export default function CreateEventScreen2({navigation, route}) {
   const getTeamsforClubs = () => {
     getTeamsOfClub(authContext.entity.obj.group_id, authContext)
       .then((res) => {
-        console.log(res.payload, 'frompay');
         setGroups(res.payload);
       })
       .catch((e) => {
@@ -232,7 +225,6 @@ export default function CreateEventScreen2({navigation, route}) {
       getGroupIndex(groupQuery)
         .then((response) => {
           setGroups(response);
-          console.log(response, 'From resres');
         })
         .catch((e) => {
           Alert.alert('', e.messages);
@@ -251,11 +243,13 @@ export default function CreateEventScreen2({navigation, route}) {
   };
 
   const onDonePress = () => {
-    setloading(true);
-
     const routeData = route.params?.createEventData;
-
     routeData.event_posted_at = eventPosted;
+
+    routeData.who_can_invite = {...whoCanInviteOption};
+    routeData.who_can_see = {...whoCanPost};
+    routeData.who_can_join = {...whoCanJoinOption};
+    routeData.who_can_post = {...whoCanPost};
 
     if (whoCanSeeOption.value === 2) {
       const checkedGroup = groupsSeeList.filter((obj) => obj.isSelected);
@@ -299,7 +293,6 @@ export default function CreateEventScreen2({navigation, route}) {
         })
         .catch((e) => {
           setTimeout(() => {
-            console.log(e);
             Alert.alert(strings.appName, e.messages);
           }, 0.1);
         });
@@ -713,70 +706,67 @@ export default function CreateEventScreen2({navigation, route}) {
                             keyExtractor={(item) => item.group_id}
                             style={{marginTop: 24}}
                             bounces={false}
-                            renderItem={({item, index}) => {
-                              console.log(item, 'logged');
-                              return (
+                            renderItem={({item, index}) => (
+                              <View
+                                style={{
+                                  flexDirection: 'row',
+                                  justifyContent: 'space-between',
+                                  marginHorizontal: 15,
+                                  marginVertical: 10,
+                                }}>
                                 <View
                                   style={{
                                     flexDirection: 'row',
-                                    justifyContent: 'space-between',
-                                    marginHorizontal: 15,
-                                    marginVertical: 10,
+                                    alignItems: 'center',
                                   }}>
-                                  <View
-                                    style={{
-                                      flexDirection: 'row',
-                                      alignItems: 'center',
-                                    }}>
-                                    <GroupIcon
-                                      imageUrl={item?.thumbnail}
-                                      groupName={
-                                        item?.group_name ?? item?.full_name
-                                      }
-                                      entityType={item.entity_type}
-                                      containerStyle={{
-                                        width: 30,
-                                        height: 30,
-                                        borderWidth: 1,
-                                      }}
-                                      textstyle={{
-                                        fontSize: 10,
-                                        marginTop: 1,
-                                      }}
-                                      placeHolderStyle={{
-                                        width: 12,
-                                        height: 12,
-                                        bottom: -2,
-                                        right: -2,
-                                      }}
-                                    />
-                                    <Text
-                                      style={{
-                                        fontSize: 16,
-                                        lineHeight: 24,
-                                        fontFamily: fonts.RRegular,
-                                        marginLeft: 8,
-                                        marginTop: 2,
-                                      }}>
-                                      {item?.group_name}
-                                    </Text>
-                                  </View>
-
-                                  <Image
-                                    source={images.whiteUncheck}
-                                    style={{
-                                      height: 22,
-                                      width: 22,
-                                      resizeMode: 'contain',
-                                      alignSelf: 'center',
+                                  <GroupIcon
+                                    imageUrl={item?.thumbnail}
+                                    groupName={
+                                      item?.group_name ?? item?.full_name
+                                    }
+                                    entityType={item.entity_type}
+                                    containerStyle={{
+                                      width: 30,
+                                      height: 30,
                                       borderWidth: 1,
-                                      borderColor: colors.veryLightGray,
-                                      borderRadius: 7,
+                                    }}
+                                    textstyle={{
+                                      fontSize: 10,
+                                      marginTop: 1,
+                                    }}
+                                    placeHolderStyle={{
+                                      width: 12,
+                                      height: 12,
+                                      bottom: -2,
+                                      right: -2,
                                     }}
                                   />
+                                  <Text
+                                    style={{
+                                      fontSize: 16,
+                                      lineHeight: 24,
+                                      fontFamily: fonts.RRegular,
+                                      marginLeft: 8,
+                                      marginTop: 2,
+                                    }}>
+                                    {item?.group_name}
+                                  </Text>
                                 </View>
-                              );
-                            }}
+
+                                <Image
+                                  source={images.whiteUncheck}
+                                  style={{
+                                    height: 22,
+                                    width: 22,
+                                    resizeMode: 'contain',
+                                    alignSelf: 'center',
+                                    borderWidth: 1,
+                                    borderColor: colors.veryLightGray,
+                                    borderRadius: 7,
+                                  }}
+                                />
+                              </View>
+                            )}
                           />
                         </View>
                       )}

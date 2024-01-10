@@ -974,8 +974,8 @@ export default function CreateEventScreen({navigation, route}) {
                         value: 9,
                       },
                       {
-                        label: '10 Times',
-                        value: 10,
+                        label: '12 Times',
+                        value: 12,
                       },
                       // {
                       //   label: '11 Times',

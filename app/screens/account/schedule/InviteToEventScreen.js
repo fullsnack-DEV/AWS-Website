@@ -160,7 +160,6 @@ export default function InviteToEventScreen({navigation, route}) {
       return true;
     }
     if (user.invite_me_event === EventInvitePrivacy.followersMyTeamClub) {
-      // fetch current viewers following  and then check if this user is present in his following list or not
 
       if (
         authContext.entity.role === Verbs.entityTypePlayer ||
@@ -211,7 +210,9 @@ export default function InviteToEventScreen({navigation, route}) {
     return (
       <>
         <Pressable
-          disabled={checkInviteToEventPrivacyOfUser(item)}
+
+          disabled={!checkInviteToEventPrivacyOfUser(item)}
+
           style={[
             {
               opacity: checkInviteToEventPrivacyOfUser(item) ? 1 : 0.4,

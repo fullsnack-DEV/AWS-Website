@@ -58,12 +58,12 @@ const styles = StyleSheet.create({
   },
   profileView: {
     backgroundColor: colors.whiteColor,
-    height: 30,
-    width: 30,
-    borderRadius: 88,
+    height: 44,
+    width: 44,
+    borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.thinDividerColor,
   },
   topTextContainer: {

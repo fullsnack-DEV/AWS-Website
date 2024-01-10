@@ -54,7 +54,7 @@ export default function TCEventCard({
       startColor={'rgba(0,0,0,0.05)'}
       stretch
       style={styles.parent}>
-      <Pressable onPress={onPress} style={[styles.parent, containerStyle]}>
+      <Pressable onPress={onPress} style={containerStyle}>
         <ImageBackground
           imageStyle={styles.eventBackgroundImage}
           source={{uri: data?.background_thumbnail}}
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     shadowColor: colors.shadowColor,
     borderBottomRightRadius: 5,
     borderBottomLeftRadius: 5,
-    // marginBottom: 15,
+    marginBottom: 15,
   },
   backgroundImageContainer: {
     borderTopLeftRadius: 10,
