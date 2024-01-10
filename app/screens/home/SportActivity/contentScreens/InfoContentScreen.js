@@ -24,6 +24,7 @@ import ServicableArea from '../components/ServicableArea';
 import {getTitleForRegister} from '../../../../utils/sportsActivityUtils';
 import CustomModalWrapper from '../../../../components/CustomModalWrapper';
 import BottomSheet from '../../../../components/modals/BottomSheet';
+import {PrivacyKeyEnum} from '../../../../Constants/PrivacyOptionsConstant';
 
 const OptionList = [
   strings.bio,
@@ -47,6 +48,7 @@ const InfoContentScreen = ({
   openPrivacySettings = () => {},
   entityType = Verbs.entityTypePlayer,
   onPressCertificate = () => {},
+  privacyStatus = {},
 }) => {
   const [options, setOptions] = useState([]);
   const [showInfo, setShowInfo] = useState(false);
@@ -115,7 +117,7 @@ const InfoContentScreen = ({
         );
 
       case strings.basicInfoText:
-        return <UserDetails user={user} />;
+        return <UserDetails user={user} privacyStatus={privacyStatus} />;
 
       case strings.clubstitle:
         return (
@@ -302,51 +304,82 @@ const InfoContentScreen = ({
         data={options}
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
-        renderItem={({item, index}) => (
-          <View>
-            <View
-              style={[
-                styles.sectionContainer,
-                item === strings.basicInfoText
-                  ? {paddingVertical: 0, paddingTop: 25, paddingBottom: 10}
-                  : {},
-                item === strings.matchVenues || item === strings.homeFacility
-                  ? {paddingHorizontal: 0}
-                  : {},
-              ]}>
+        renderItem={({item, index}) => {
+          if (
+            item === strings.teamstitle &&
+            !privacyStatus[PrivacyKeyEnum.Teams]
+          ) {
+            return null;
+          }
+
+          if (
+            item === strings.clubstitle &&
+            !privacyStatus[PrivacyKeyEnum.Clubs]
+          ) {
+            return null;
+          }
+
+          if (
+            item === strings.homeFacility &&
+            !privacyStatus[PrivacyKeyEnum.HomeFacility]
+          ) {
+            return null;
+          }
+
+          if (
+            item === strings.leagues &&
+            !privacyStatus[PrivacyKeyEnum.Leagues]
+          ) {
+            return null;
+          }
+
+          return (
+            <View>
               <View
                 style={[
-                  styles.row,
-                  {marginBottom: 15},
+                  styles.sectionContainer,
+                  item === strings.basicInfoText
+                    ? {paddingVertical: 0, paddingTop: 25, paddingBottom: 10}
+                    : {},
                   item === strings.matchVenues || item === strings.homeFacility
-                    ? {paddingHorizontal: 17}
+                    ? {paddingHorizontal: 0}
                     : {},
                 ]}>
-                <View style={[styles.row, {justifyContent: 'center'}]}>
-                  <Text style={styles.sectionTitle}>{item}</Text>
-                  {item === strings.matchVenues ? (
+                <View
+                  style={[
+                    styles.row,
+                    {marginBottom: 15},
+                    item === strings.matchVenues ||
+                    item === strings.homeFacility
+                      ? {paddingHorizontal: 17}
+                      : {},
+                  ]}>
+                  <View style={[styles.row, {justifyContent: 'center'}]}>
+                    <Text style={styles.sectionTitle}>{item}</Text>
+                    {item === strings.matchVenues ? (
+                      <TouchableOpacity
+                        style={styles.infoButtonContainer}
+                        onPress={() => setShowInfo(true)}>
+                        <Image source={images.infoIcon} style={styles.icon} />
+                      </TouchableOpacity>
+                    ) : null}
+                  </View>
+                  {isAdmin ? (
                     <TouchableOpacity
-                      style={styles.infoButtonContainer}
-                      onPress={() => setShowInfo(true)}>
-                      <Image source={images.infoIcon} style={styles.icon} />
+                      style={styles.editButtonContainer}
+                      onPress={() => editOptions(item)}>
+                      <Image source={images.editPencil} style={styles.icon} />
                     </TouchableOpacity>
                   ) : null}
                 </View>
-                {isAdmin ? (
-                  <TouchableOpacity
-                    style={styles.editButtonContainer}
-                    onPress={() => editOptions(item)}>
-                    <Image source={images.editPencil} style={styles.icon} />
-                  </TouchableOpacity>
-                ) : null}
+                {renderSectionContent(item)}
               </View>
-              {renderSectionContent(item)}
+              {index !== options.length - 1 ? (
+                <View style={styles.separator} />
+              ) : null}
             </View>
-            {index !== options.length - 1 ? (
-              <View style={styles.separator} />
-            ) : null}
-          </View>
-        )}
+          );
+        }}
       />
       {/* <Modal visible={showInfo} transparent animationType="slide"></Modal> */}
       <CustomModalWrapper

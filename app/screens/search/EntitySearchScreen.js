@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   useState,
   useEffect,
@@ -748,8 +749,29 @@ export default function EntitySearchScreen({navigation, route}) {
       .then((res) => {
         setSmallLoader(false);
         if (res.length > 0) {
-          const result = modifiedPlayerElasticSearchResult(res);
-          const fetchedData = [...playerList, ...result];
+          let result = [...res];
+          if (
+            playerFilter?.availableTime &&
+            playerFilter?.fromDateTime &&
+            playerFilter?.toDateTime &&
+            playerFilter.sport
+          ) {
+            const filterArr = [];
+            res.forEach((item) => {
+              const sport = (item.registered_sports ?? []).find(
+                (ele) =>
+                  ele.sport === playerFilter.sport &&
+                  playerFilter.sport_type === ele.sport_type &&
+                  (ele.setting?.availibility ?? Verbs.on) === Verbs.on,
+              );
+              if (sport) {
+                filterArr.push(item);
+              }
+            });
+            result = filterArr;
+          }
+          const modifiedResult = modifiedPlayerElasticSearchResult(result);
+          const fetchedData = [...playerList, ...modifiedResult];
           setplayerList(fetchedData);
           setPageFrom(pageFrom + pageSize);
           stopFetchMore = true;
@@ -849,7 +871,27 @@ export default function EntitySearchScreen({navigation, route}) {
       .then((res) => {
         setSmallLoader(false);
         if (res.length > 0) {
-          const modifiedResult = modifiedRefereeElasticSearchResult(res);
+          let result = [...res];
+          if (
+            refereeFilters?.availableTime &&
+            refereeFilters?.fromDateTime &&
+            refereeFilters?.toDateTime &&
+            refereeFilters.sport
+          ) {
+            const filterArr = [];
+            res.forEach((item) => {
+              const sport = (item.referee_data ?? []).find(
+                (ele) =>
+                  ele.sport === refereeFilters.sport &&
+                  (ele.setting?.availibility ?? Verbs.on) === Verbs.on,
+              );
+              if (sport) {
+                filterArr.push(item);
+              }
+            });
+            result = filterArr;
+          }
+          const modifiedResult = modifiedRefereeElasticSearchResult(result);
           const fetchedData = [...referees, ...modifiedResult];
           setReferees(fetchedData);
           setRefereesPageFrom(refereesPageFrom + pageSize);
@@ -955,7 +997,27 @@ export default function EntitySearchScreen({navigation, route}) {
       .then((res) => {
         setSmallLoader(false);
         if (res.length > 0) {
-          const modifiedResult = modifiedScoreKeeperElasticSearchResult(res);
+          let result = [...res];
+          if (
+            scoreKeeperFilters?.availableTime &&
+            scoreKeeperFilters?.fromDateTime &&
+            scoreKeeperFilters?.toDateTime &&
+            scoreKeeperFilters.sport
+          ) {
+            const filterArr = [];
+            res.forEach((item) => {
+              const sport = (item.scorekeeper_data ?? []).find(
+                (ele) =>
+                  ele.sport === scoreKeeperFilters.sport &&
+                  (ele.setting?.availibility ?? Verbs.on) === Verbs.on,
+              );
+              if (sport) {
+                filterArr.push(item);
+              }
+            });
+            result = filterArr;
+          }
+          const modifiedResult = modifiedScoreKeeperElasticSearchResult(result);
           const fetchedData = [...scorekeepers, ...modifiedResult];
 
           setScorekeepers(fetchedData);
@@ -1039,7 +1101,18 @@ export default function EntitySearchScreen({navigation, route}) {
       .then((res) => {
         setSmallLoader(false);
         if (res.length > 0) {
-          const modifiedResult = modifiedTeamElasticSearchResult(res);
+          let result = [...res];
+          if (
+            teamFilters?.availableTime &&
+            teamFilters?.fromDateTime &&
+            teamFilters?.toDateTime
+          ) {
+            const filterArr = res.filter(
+              (item) => item.setting?.availibility === Verbs.on,
+            );
+            result = filterArr;
+          }
+          const modifiedResult = modifiedTeamElasticSearchResult(result);
           const fetchedData = [...teams, ...modifiedResult];
 
           setTeams(fetchedData);
@@ -2307,7 +2380,7 @@ export default function EntitySearchScreen({navigation, route}) {
                         comeFrom: 'EntitySearchScreen',
                         backScreen: 'EntitySearchScreen',
                         parentStack: route.params?.parentStack,
-                        screen: route.params.screen,
+                        screen: route.params?.screen ?? '',
                       },
                     });
                   } else if (sportsObj.length > 1) {
@@ -3202,7 +3275,7 @@ export default function EntitySearchScreen({navigation, route}) {
                       sport: item.sport,
                       sportType: item?.sport_type,
                       uid: playerDetail.uid,
-                      entityType: item.setting.entity_type,
+                      entityType: item.entity_type,
                       showPreview: true,
                       backScreen: 'UniversalSearchStack',
                       backScreenParams: {

@@ -468,7 +468,7 @@ const getButtonStateForPeople = ({
       buttonState.book = false;
     }
   }
-  console.log(buttonState, 'from state');
+
   return buttonState;
 };
 

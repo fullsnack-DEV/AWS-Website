@@ -304,6 +304,7 @@ const LocalHomEventScreen = ({navigation}) => {
       <SearchModal
         fType={filterType.UPCOMINGMATCHES}
         showSportOption
+        showTimeComponent
         sports={sports}
         filterObject={filters}
         feeTitle={strings.refereeFee}

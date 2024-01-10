@@ -18,7 +18,9 @@ import Verbs from '../../Constants/Verbs';
 import BottomSheet from '../modals/BottomSheet';
 import usePrivacySettings from '../../hooks/usePrivacySettings';
 import {
-  PersonUserPrivacyEnum,
+  FollowerFollowingOptionsEnum,
+  InviteToGroupOptionsEnum,
+  PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
 } from '../../Constants/PrivacyOptionsConstant';
 
@@ -75,9 +77,29 @@ const UserHomeHeader = ({
         }
       }
 
-      setButtonTitle(name);
+      if (
+        name === strings.invite &&
+        !getPrivacyStatus(
+          InviteToGroupOptionsEnum[
+            currentUserData[PrivacyKeyEnum.InviteToJoinGroup]
+          ],
+          currentUserData,
+        )
+      ) {
+        setButtonTitle('');
+      } else if (
+        name === strings.follow &&
+        !getPrivacyStatus(
+          FollowerFollowingOptionsEnum[currentUserData[PrivacyKeyEnum.Follow]],
+          currentUserData,
+        )
+      ) {
+        setButtonTitle('');
+      } else {
+        setButtonTitle(name);
+      }
     },
-    [isAdmin, currentUserData, loggedInEntity],
+    [isAdmin, currentUserData, loggedInEntity, getPrivacyStatus],
   );
 
   useEffect(() => {
@@ -201,68 +223,78 @@ const UserHomeHeader = ({
           />
         </View>
 
-        <TouchableOpacity
-          style={[
-            styles.buttonContainer,
-
-            isMember ? {flexDirection: 'row', alignItems: 'center'} : {},
-          ]}
-          onPress={() => handleButtonPress(buttonTitle)}>
-          <Text
+        {buttonTitle && (
+          <TouchableOpacity
             style={[
-              styles.buttonText,
-              buttonTitle === strings.follow
-                ? {color: colors.darkYellowColor}
-                : {},
+              styles.buttonContainer,
+              isMember ? {flexDirection: 'row', alignItems: 'center'} : {},
+            ]}
+            onPress={() => handleButtonPress(buttonTitle)}>
+            <Text
+              style={[
+                styles.buttonText,
+                buttonTitle === strings.follow
+                  ? {color: colors.darkYellowColor}
+                  : {},
 
-              buttonTitle === strings.invite
-                ? {color: colors.darkYellowColor}
-                : {},
-            ]}>
-            {buttonTitle}
-          </Text>
-          {isMember ? (
-            <Image source={images.check} style={styles.checkIcon} />
-          ) : null}
-        </TouchableOpacity>
+                buttonTitle === strings.invite
+                  ? {color: colors.darkYellowColor}
+                  : {},
+              ]}>
+              {buttonTitle}
+            </Text>
+            {isMember ? (
+              <Image source={images.check} style={styles.checkIcon} />
+            ) : null}
+          </TouchableOpacity>
+        )}
       </View>
       <View style={{marginTop: 15}}>
         <Text style={styles.title}> {currentUserData.full_name}</Text>
         <Text style={styles.location}>{displayLocation(currentUserData)}</Text>
         {currentUserData.description &&
         getPrivacyStatus(
-          PersonUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Slogan]],
+          PersonalUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Slogan]],
           currentUserData,
         ) ? (
           <Text style={styles.description}>{currentUserData.description}</Text>
         ) : null}
       </View>
-      <View style={[styles.row, {justifyContent: 'flex-start', marginTop: 20}]}>
-        <Pressable
-          style={[styles.row, {marginRight: 25}]}
-          onPress={() => onConnectionButtonPress(strings.following)}>
-          <Text
-            style={[
-              styles.location,
-              {fontFamily: fonts.RBold, marginRight: 5},
-            ]}>
-            {currentUserData.following_count}
-          </Text>
-          <Text style={styles.location}>{strings.following}</Text>
-        </Pressable>
-        <Pressable
-          style={styles.row}
-          onPress={() => onConnectionButtonPress(strings.followerTitleText)}>
-          <Text
-            style={[
-              styles.location,
-              {fontFamily: fonts.RBold, marginRight: 5},
-            ]}>
-            {currentUserData.follower_count}
-          </Text>
-          <Text style={styles.location}>{strings.followerTitleText}</Text>
-        </Pressable>
-      </View>
+      {getPrivacyStatus(
+        PersonalUserPrivacyEnum[
+          currentUserData[PrivacyKeyEnum.FollowingAndFollowers]
+        ],
+        currentUserData,
+      ) && (
+        <View
+          style={[styles.row, {justifyContent: 'flex-start', marginTop: 20}]}>
+          <Pressable
+            style={[styles.row, {marginRight: 25}]}
+            onPress={() => onConnectionButtonPress(strings.following)}>
+            <Text
+              style={[
+                styles.location,
+                {fontFamily: fonts.RBold, marginRight: 5},
+              ]}>
+              {currentUserData.following_count}
+            </Text>
+            <Text style={styles.location}>{strings.following}</Text>
+          </Pressable>
+          <Pressable
+            style={styles.row}
+            onPress={() => onConnectionButtonPress(strings.followerTitleText)}>
+            <Text
+              style={[
+                styles.location,
+                {fontFamily: fonts.RBold, marginRight: 5},
+              ]}>
+              {currentUserData.follower_count}
+            </Text>
+            <Text style={styles.location}>{strings.followerTitleText}</Text>
+          </Pressable>
+        </View>
+      )}
+
       <BottomSheet
         isVisible={showModal}
         type="ios"

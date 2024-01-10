@@ -50,6 +50,8 @@ import InfoSection from './components/InfoSection';
 import LookingForSettingModal from './contentScreens/LookingForSettingModal';
 import EditWrapperScreen from './EditWrapperScreen';
 import PrivacySettingsScreen from './PrivacySettingsScreen';
+import usePrivacySettings from '../../../hooks/usePrivacySettings';
+import {PrivacyKeyEnum} from '../../../Constants/PrivacyOptionsConstant';
 
 const SportActivityHome = ({navigation, route}) => {
   const [userData, setCurrentUserData] = useState({});
@@ -83,6 +85,8 @@ const SportActivityHome = ({navigation, route}) => {
   const [showWrapperModal, setShowWrapperModal] = useState(false);
   const lookingForModalRef = useRef();
   const privacySettingModalRef = useRef();
+  const {getPrivacyStatusForSportActivity} = usePrivacySettings();
+  const [infoContentPrivacyStatus, setInfoContentPrivacyStatus] = useState({});
 
   const getUserData = useCallback(
     (userId) => {
@@ -435,6 +439,8 @@ const SportActivityHome = ({navigation, route}) => {
     } else {
       setActiveTab(section);
     }
+    const privacySetting = getPrivacyStatusForSportActivity(sportObj, userData);
+    setInfoContentPrivacyStatus(privacySetting);
     setShowSetionModal(true);
   };
 
@@ -630,15 +636,18 @@ const SportActivityHome = ({navigation, route}) => {
             />
           ) : null}
 
-          <ScoreBoardList
-            loading={isFetchingMatchList}
-            matchList={matchList}
-            onSeeAll={() =>
-              handleSectionClick(getScoreboardListTitle(entityType))
-            }
-            screenType={Verbs.screenTypeModal}
-            title={getScoreboardListTitle(entityType)}
-          />
+          {infoContentPrivacyStatus[PrivacyKeyEnum.Scoreboard] && (
+            <ScoreBoardList
+              loading={isFetchingMatchList}
+              matchList={matchList}
+              onSeeAll={() =>
+                handleSectionClick(getScoreboardListTitle(entityType))
+              }
+              screenType={Verbs.screenTypeModal}
+              title={getScoreboardListTitle(entityType)}
+            />
+          )}
+
           {entityType === Verbs.entityTypePlayer ? (
             <StatSection
               onSeeAll={() => handleSectionClick(strings.statsTitle)}
@@ -686,6 +695,7 @@ const SportActivityHome = ({navigation, route}) => {
         sport={sport}
         sportType={sportType}
         sportIcon={sportIcon}
+        infoContentPrivacyStatus={infoContentPrivacyStatus}
       />
 
       <LookingForSettingModal

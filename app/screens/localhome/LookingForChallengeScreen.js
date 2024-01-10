@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
 import React, {
@@ -58,6 +59,7 @@ import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import ScreenHeader from '../../components/ScreenHeader';
 import SportView from './SportView';
+import {getAvailableEntityIdList} from '../../utils/elasticApiCall';
 
 let stopFetchMore = true;
 let timeout;
@@ -160,7 +162,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
     return modifiedData;
   };
   const getPlayerAvailableForChallenge = useCallback(
-    (filerdata) => {
+    async (filerdata) => {
       setSmallLoader(true);
       // Looking Challengee query
       const availableForchallengeQuery = {
@@ -283,6 +285,30 @@ export default function LookingForChallengeScreen({navigation, route}) {
         });
       }
 
+      if (
+        filerdata?.availableTime &&
+        filerdata?.availableTime !== strings.filterAntTime &&
+        filerdata?.fromDateTime &&
+        filerdata?.toDateTime
+      ) {
+        const obj = {
+          fromDate: filerdata.fromDateTime ?? '',
+          toDate: filerdata.toDateTime ?? '',
+        };
+
+        const response = await getAvailableEntityIdList(obj);
+
+        if (response.length > 0) {
+          availableForchallengeQuery.query.bool.must_not = [
+            {
+              terms: {
+                'user_id.keyword': [...response],
+              },
+            },
+          ];
+        }
+      }
+
       // Looking Challengee query
 
       getUserIndex(availableForchallengeQuery)
@@ -310,7 +336,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
   );
 
   const getTeamAvailableForChallenge = useCallback(
-    (filerdata) => {
+    async (filerdata) => {
       setSmallLoader(true);
       // Looking Challengee query
       const availableForchallengeQuery = {
@@ -391,6 +417,29 @@ export default function LookingForChallengeScreen({navigation, route}) {
         });
       }
 
+      if (
+        filerdata?.availableTime &&
+        filerdata?.availableTime !== strings.filterAntTime &&
+        filerdata?.fromDateTime &&
+        filerdata?.toDateTime
+      ) {
+        const obj = {
+          fromDate: filerdata.fromDateTime ?? '',
+          toDate: filerdata.toDateTime ?? '',
+        };
+
+        const response = await getAvailableEntityIdList(obj);
+
+        if (response.length > 0) {
+          availableForchallengeQuery.query.bool.must_not = [
+            {
+              terms: {
+                'group_id.keyword': [...response],
+              },
+            },
+          ];
+        }
+      }
       // Looking Challengee query
 
       getGroupIndex(availableForchallengeQuery)
@@ -724,6 +773,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
       }
     });
     setFilters({...tempFilter});
+    applyFilter({...tempFilter});
     setTimeout(() => {
       setPageFrom(0);
       setAvailableChallenge([]);
@@ -1197,6 +1247,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
             : filterType.PLAYERAVAILABLECHALLENGE
         }
         showSportOption={!forTeams}
+        showTimeComponent
         favoriteSportsList={route.params.registerFavSports}
         sports={sports}
         filterObject={filters}
@@ -1236,7 +1287,8 @@ export default function LookingForChallengeScreen({navigation, route}) {
         }}
         onPressCancel={() => {
           setSettingPopup(false);
-        }}></SearchModal>
+        }}
+      />
       <CustomModalWrapper
         isVisible={playerDetailPopup}
         closeModal={() => {

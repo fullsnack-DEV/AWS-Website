@@ -102,6 +102,8 @@ import RespondToInviteScreen from '../screens/account/createGroup/createTeam/Res
 import ActivityLogScreen from '../screens/account/ActivityLogScreen';
 import PersonalUserPrivacySettingsScreen from '../screens/account/privacySettings/PersonalUserPrivacySettingsScreen';
 import PrivacyOptionsScreen from '../screens/account/privacySettings/PrivacyOptionsScreen';
+import SportActivityPrivacyOptionsScreen from '../screens/account/privacySettings/SportActivityPrivacyOptionsScreen';
+import SportActivityPrivacyChildOptions from '../screens/account/privacySettings/SportActivityPrivacyChildOptions';
 
 const Stack = createStackNavigator();
 
@@ -1276,6 +1278,18 @@ const AccountNavigator = () => (
     <Stack.Screen
       name="PersonalUserPrivacySettingsScreen"
       component={PersonalUserPrivacySettingsScreen}
+      options={{headerShown: false}}
+    />
+
+    <Stack.Screen
+      name="SportActivityPrivacyOptionsScreen"
+      component={SportActivityPrivacyOptionsScreen}
+      options={{headerShown: false}}
+    />
+
+    <Stack.Screen
+      name="SportActivityPrivacyChildOptions"
+      component={SportActivityPrivacyChildOptions}
       options={{headerShown: false}}
     />
 

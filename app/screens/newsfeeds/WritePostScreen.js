@@ -55,6 +55,11 @@ import NewsFeedDescription from '../../components/newsFeed/NewsFeedDescription';
 import CustomURLPreview from '../../components/account/CustomURLPreview';
 import MatchCard from './MatchCard';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import usePrivacySettings from '../../hooks/usePrivacySettings';
+import {
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../Constants/PrivacyOptionsConstant';
 
 const WritePostScreen = ({navigation, route}) => {
   const textInputRef = useRef();
@@ -91,6 +96,7 @@ const WritePostScreen = ({navigation, route}) => {
   const [snapPoints, setSnapPoints] = useState([]);
   const flatListRef = useRef();
   const [loading, setLoading] = useState(false);
+  const {getPrivacyStatus} = usePrivacySettings();
 
   const handleRepost = () => {
     const item = {...route.params.repostData};
@@ -582,7 +588,12 @@ const WritePostScreen = ({navigation, route}) => {
     data.forEach((obj) => {
       const id = obj.group_id ?? obj.user_id ?? obj.entity_id;
       const item = tagsOfEntity.find((temp) => temp.entity_id === id);
-      if (!item && id !== authContext.entity.uid) {
+      const privacyStatus = getPrivacyStatus(
+        PersonalUserPrivacyEnum[obj[PrivacyKeyEnum.Tag]],
+        obj,
+      );
+
+      if (!item && id !== authContext.entity.uid && privacyStatus) {
         arr.push(obj);
       }
     });

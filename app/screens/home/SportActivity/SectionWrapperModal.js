@@ -30,6 +30,7 @@ const SectionWrapperModal = ({
   sport,
   sportType,
   sportIcon,
+  infoContentPrivacyStatus = {},
 }) => {
   const authContext = useContext(AuthContext);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
@@ -58,6 +59,7 @@ const SectionWrapperModal = ({
                 },
               });
             }}
+            privacyStatus={infoContentPrivacyStatus}
           />
         );
 

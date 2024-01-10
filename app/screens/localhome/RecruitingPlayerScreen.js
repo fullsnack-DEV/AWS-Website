@@ -53,6 +53,7 @@ import {acceptRequest, declineRequest} from '../../api/Notificaitons';
 import {getSportList} from '../../utils/sportsActivityUtils';
 import SearchModal from '../../components/Filter/SearchModal';
 import ScreenHeader from '../../components/ScreenHeader';
+import {getAvailableEntityIdList} from '../../utils/elasticApiCall';
 
 let stopFetchMore = true;
 let timeout;
@@ -218,7 +219,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
     return modifiedData;
   };
   const getRecruitingPlayer = useCallback(
-    (filerdata) => {
+    async (filerdata) => {
       setSmallLoader(true);
       const recruitingPlayersQuery = {
         size: pageSize,
@@ -300,6 +301,30 @@ export default function RecruitingPlayerScreen({navigation, route}) {
             group_name: `*${filerdata.searchText.toLowerCase()}*`,
           },
         });
+      }
+
+      if (
+        filerdata?.availableTime &&
+        filerdata?.availableTime !== strings.filterAntTime &&
+        filerdata?.fromDateTime &&
+        filerdata?.toDateTime
+      ) {
+        const obj = {
+          fromDate: filerdata.fromDateTime ?? '',
+          toDate: filerdata.toDateTime ?? '',
+        };
+
+        const response = await getAvailableEntityIdList(obj);
+
+        if (response.length > 0) {
+          recruitingPlayersQuery.query.bool.must_not = [
+            {
+              terms: {
+                'group_id.keyword': [...response],
+              },
+            },
+          ];
+        }
       }
 
       // Looking Challengee query
@@ -919,6 +944,7 @@ export default function RecruitingPlayerScreen({navigation, route}) {
         showSportOption={true}
         filterObject={filters}
         isVisible={settingPopup}
+        showTimeComponent
         onPressApply={async (filterData) => {
           setloading(false);
           let tempFilter = {};

@@ -8,7 +8,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import {View, ActivityIndicator, FlatList} from 'react-native';
+import {View, ActivityIndicator, FlatList, Text} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 import NewsFeedPostItems from '../../components/newsFeed/feed/NewsFeedPostItems';
@@ -17,6 +17,7 @@ import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
 import ListEmptyComponent from '../../components/NoDataComponents/ListEmptyComponent';
 import images from '../../Constants/ImagePath';
+import fonts from '../../Constants/Fonts';
 
 const viewabilityConfig = {itemVisiblePercentThreshold: 50};
 const NewsFeedList = ({
@@ -162,16 +163,28 @@ const NewsFeedList = ({
 
   const listEmpty = useCallback(() => {
     if (feedAPI) {
-      return (
+      return isNewsFeedScreen ? (
         <ListEmptyComponent
           title={strings.welcomToTownCupText}
           subTitle={strings.postsFromOtherGroupWillAppearHere}
           imageUrl={images.feedNoData}
         />
+      ) : (
+        <View style={{alignItems: 'center'}}>
+          <Text
+            style={{
+              fontSize: 16,
+              lineHeight: 24,
+              color: colors.userPostTimeColor,
+              fontFamily: fonts.RMedium,
+            }}>
+            {strings.noPostFoundText}
+          </Text>
+        </View>
       );
     }
     return <View></View>;
-  }, [feedAPI]);
+  }, [feedAPI, isNewsFeedScreen]);
 
   return (
     <View

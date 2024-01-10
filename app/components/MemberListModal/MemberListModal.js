@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-shadow */
 // @flow
 import React, {useEffect, useState, useContext} from 'react';
@@ -32,6 +33,11 @@ import {
 } from '../../api/Groups';
 import AuthContext from '../../auth/context';
 import {onResendRequest} from '../../utils/accountUtils';
+import usePrivacySettings from '../../hooks/usePrivacySettings';
+import {
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../Constants/PrivacyOptionsConstant';
 
 const MemberListModal = ({
   isVisible,
@@ -52,15 +58,28 @@ const MemberListModal = ({
   const [doubleExist, setDoubleExist] = useState(true);
   const [loading, setLoading] = useState(false);
   const isFocused = useIsFocused();
+  const {getPrivacyStatus} = usePrivacySettings();
 
   useEffect(() => {
-    setFollowersSelection('');
-    if (sportsList.length > 0) {
-      const doubleTeamPlayers = sportsList.filter(
-        (item) => item.who_can_invite_for_doubles_team !== 0,
-      );
+    if (isVisible) {
+      setFollowersSelection('');
+      if (sportsList.length > 0) {
+        const doubleTeamPlayers = sportsList.filter((item) => {
+          if (item[PrivacyKeyEnum.CreateTeamForDoubleSport]) {
+            const status = getPrivacyStatus(
+              PersonalUserPrivacyEnum[
+                item[PrivacyKeyEnum.CreateTeamForDoubleSport]
+              ],
+              item,
+            );
 
-      Setplayers(doubleTeamPlayers);
+            return status;
+          }
+          return true;
+        });
+
+        Setplayers(doubleTeamPlayers);
+      }
     }
   }, [isFocused, sportsList, isVisible]);
 

@@ -43,6 +43,7 @@ import SearchModal from '../../components/Filter/SearchModal';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import ScreenHeader from '../../components/ScreenHeader';
+import {getAvailableEntityIdList} from '../../utils/elasticApiCall';
 
 let stopFetchMore = true;
 let timeout;
@@ -119,7 +120,7 @@ export default function LookingTeamScreen({navigation, route}) {
   }, [filters]);
 
   const getLookingEntity = useCallback(
-    (filerLookingEntity) => {
+    async (filerLookingEntity) => {
       // Looking team query
       setSmallLoader(true);
       const lookingQuery = {
@@ -250,6 +251,30 @@ export default function LookingTeamScreen({navigation, route}) {
             full_name: `*${filerLookingEntity.searchText.toLowerCase()}*`,
           },
         });
+      }
+
+      if (
+        filerLookingEntity?.availableTime &&
+        filerLookingEntity?.availableTime !== strings.filterAntTime &&
+        filerLookingEntity?.fromDateTime &&
+        filerLookingEntity?.toDateTime
+      ) {
+        const obj = {
+          fromDate: filerLookingEntity.fromDateTime ?? '',
+          toDate: filerLookingEntity.toDateTime ?? '',
+        };
+
+        const response = await getAvailableEntityIdList(obj);
+
+        if (response.length > 0) {
+          lookingQuery.query.bool.must_not = [
+            {
+              terms: {
+                'user_id.keyword': [...response],
+              },
+            },
+          ];
+        }
       }
 
       // Looking team query
@@ -875,6 +900,7 @@ export default function LookingTeamScreen({navigation, route}) {
           (authContext.entity.role === Verbs.entityTypeClub && true) ||
           (authContext.entity.role === Verbs.entityTypeLeague && true)
         }
+        showTimeComponent
         onPressApply={async (filterData) => {
           setloading(false);
           let tempFilter = {};

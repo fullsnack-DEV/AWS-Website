@@ -457,7 +457,7 @@ export default {
   mainHome: 'en_MAIN HOME',
   sportsActivityPage: 'en_SPORT ACTIVITY PAGE',
   otherTitle: 'en_OTHER',
-  CreateTeamDoublesSports: 'en_Create Team for Doubles Sports',
+  createTeamDoublesSports: 'en_Create Team for Doubles Sports',
   slogan: 'en_Slogan',
   commentAndReply: 'en_Comment & Reply',
   shareTitle: 'en_Share',
@@ -3286,7 +3286,43 @@ export default {
   newReservationWillAppearHere: 'en_New Reservation will appear here.',
   followersMyTeamClub: 'en_followers, my teams & clubs',
   myTeamClub: 'en_my teams & clubs',
-
+  playingSportText: 'en_Playing {0}',
+  refreeingSportText: 'en_Refereeing {0}',
+  eventsPrivacySubText:
+    'en_You can change who can see an individual event in your events section and the change applies to only that post.',
+  whoCanSeeYourScoreboard: 'en_Who can see your scoreboard?',
+  yourMatchesOfWhatPeriodCanOtherPeopleView:
+    'en_Your matches of what period can other people view?',
+  recentMatchResultText:
+    'en_The recentest match result is always visible to everyone.',
+  past3Months: 'en_Past 3 months',
+  past1Month: 'en_Past 1 month',
+  whoCanSeeHomeFacility: 'en_Who can see your home facility?',
+  whoCanSeeYourTeams: 'en_Who can see your teams?',
+  whoCanSeeYourClubs: 'en_Who can see your clubs?',
+  whoCanSeeYourLeagues: 'en_Who can see your leagues?',
+  whoCanSeeYourYearOfBirth: 'en_Who can see your year of birth?',
+  whoCanSeeYourGender: 'en_Who can see your gender?',
+  whoCanSeeYourHeight: 'en_Who can see your height?',
+  whoCanSeeYourWeight: 'en_Who can see your weight?',
+  whoCanSeeYouLanguages: 'en_Who can see your languages?',
+  whocaninviteyoutochat: 'en_Who can invite you to chat?',
+  whocantagpostcommentorreply:
+    'en_Who can tag you in a post, comment or reply?',
+  whocanfollowyou: 'en_Who can follow you?',
+  byrequestaccepted: 'en_By request accepted',
+  whoCanViewFollowingAndFollowers:
+    'en_Who can view your following & followers?',
+  whoCanInviteYouToJoinGroup: 'en_Who can invite you to join their group?',
+  whoCanInviteYouToJoinEvent: 'en_Who can invite you to join an event?',
+  teamAndTheirMembers: 'en_Team & their members',
+  clubAndTheirMembers: 'en_Club & their members',
+  leagueAndTheirMembers: 'en_League & their members',
+  whocaninviteteamtogetherdoublesports:
+    'en_Who can invite you to create a team together in doubles sports?',
+  privacyDoubleSportSubText:
+    'en_Doubles sports are sports that require two players to create a team. (e.g. tennis doubles, badminton doubles, table tennis doubles...)',
+  whoCanCommentOnYourPost: 'en_Who can comment & reply on your post?',
+  whoCanShareYourPost: 'en_Who can share your post?',
   sportBarAlertText: 'en_You can add up to 10 sports to the filter bar.',
-
 };

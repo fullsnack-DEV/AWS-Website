@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, memo, useEffect, useState, useContext} from 'react';
 import {Alert, View} from 'react-native';
 import Share from 'react-native-share';
@@ -11,6 +12,12 @@ import Post from './Post';
 import PostForEvent from './PostForEvent';
 import {getPostData} from '../../../utils';
 import colors from '../../../Constants/Colors';
+import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
+import usePrivacySettings from '../../../hooks/usePrivacySettings';
+import {
+  BinaryPrivacyOptionsEnum,
+  PrivacyKeyEnum,
+} from '../../../Constants/PrivacyOptionsConstant';
 
 const NewsFeedPostItems = memo(
   ({
@@ -42,6 +49,11 @@ const NewsFeedPostItems = memo(
     const [postType, setPostType] = useState('');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [moreOptions, setMoreOptions] = useState([]);
+    const [privacyStatusForComment, setPrivacyStatusForComment] =
+      useState(true);
+    const [privacyStatusForShare, setPrivacyStatusForShare] = useState(true);
+
+    const {getPrivacyStatus} = usePrivacySettings();
 
     useEffect(() => {
       let filterLike = [];
@@ -170,6 +182,76 @@ const NewsFeedPostItems = memo(
       openCommentModal(item);
     }, [item, openCommentModal]);
 
+    const getEntityDetails = useCallback(() => {
+      if (
+        item.actor?.data?.entity_type === Verbs.entityTypePlayer ||
+        item.actor?.data?.entity_type === Verbs.entityTypeUser
+      ) {
+        if (item.actor?.id) {
+          const query = {
+            size: 1000,
+            from: 0,
+            query: {
+              terms: {
+                'user_id.keyword': [item.actor.id],
+              },
+            },
+          };
+          getUserIndex(query)
+            .then((response) => {
+              const user = {...response[0]};
+              const privacyForComment = getPrivacyStatus(
+                BinaryPrivacyOptionsEnum[user[PrivacyKeyEnum.CommentOnPost]],
+                user,
+              );
+              const privacyForShare = getPrivacyStatus(
+                BinaryPrivacyOptionsEnum[user[PrivacyKeyEnum.SharePost]],
+                user,
+              );
+              setPrivacyStatusForComment(privacyForComment);
+              setPrivacyStatusForShare(privacyForShare);
+            })
+            .catch((err) => {
+              console.log({err});
+            });
+        }
+      } else if (
+        item.actor?.data?.entity_type === Verbs.entityTypeTeam ||
+        item.actor?.data?.entity_type === Verbs.entityTypeClub
+      ) {
+        const query = {
+          size: 1000,
+          from: 0,
+          query: {
+            terms: {
+              'group_id.keyword': [item.actor.id],
+            },
+          },
+        };
+        getGroupIndex(query)
+          .then((response) => {
+            const group = {...response[0]};
+            const privacyForComment = getPrivacyStatus(
+              BinaryPrivacyOptionsEnum[group[PrivacyKeyEnum.CommentOnPost]],
+              group,
+            );
+            const privacyForShare = getPrivacyStatus(
+              BinaryPrivacyOptionsEnum[group[PrivacyKeyEnum.SharePost]],
+              group,
+            );
+            setPrivacyStatusForComment(privacyForComment);
+            setPrivacyStatusForShare(privacyForShare);
+          })
+          .catch((err) => {
+            console.log({err});
+          });
+      }
+    }, [item.actor]);
+
+    useEffect(() => {
+      getEntityDetails();
+    }, [getEntityDetails]);
+
     return (
       <View
         style={{
@@ -250,6 +332,8 @@ const NewsFeedPostItems = memo(
             }}
             onWriteCommentPress={onWriteCommentPress}
             onNewsFeedLikePress={onNewsFeedLikePress}
+            privacyStatusForShare={privacyStatusForShare}
+            privacyStatusForComment={privacyStatusForComment}
           />
         </View>
         <BottomSheet

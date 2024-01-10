@@ -41,6 +41,7 @@ import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import ScreenHeader from '../../components/ScreenHeader';
 import SportView from './SportView';
+import {getAvailableEntityIdList} from '../../utils/elasticApiCall';
 
 let stopFetchMore = true;
 let timeout;
@@ -114,7 +115,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
     return modifiedData;
   };
   const getScorekeepers = useCallback(
-    (filerScorekeeper) => {
+    async (filerScorekeeper) => {
       setSmallLoader(true);
       const scorekeeperQuery = {
         size: pageSize,
@@ -186,6 +187,30 @@ export default function ScorekeeperListScreen({navigation, route}) {
             full_name: `*${filerScorekeeper.searchText.toLowerCase()}*`,
           },
         });
+      }
+
+      if (
+        filerScorekeeper?.availableTime &&
+        filerScorekeeper?.availableTime !== strings.filterAntTime &&
+        filerScorekeeper?.fromDateTime &&
+        filerScorekeeper?.toDateTime
+      ) {
+        const obj = {
+          fromDate: filerScorekeeper.fromDateTime ?? '',
+          toDate: filerScorekeeper.toDateTime ?? '',
+        };
+
+        const response = await getAvailableEntityIdList(obj);
+
+        if (response.length > 0) {
+          scorekeeperQuery.query.bool.must_not = [
+            {
+              terms: {
+                'user_id.keyword': [...response],
+              },
+            },
+          ];
+        }
       }
       console.log('scorekeeperQuery==>', JSON.stringify(scorekeeperQuery));
       // Scorekeeper query
@@ -583,6 +608,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
           (authContext.entity.role === Verbs.entityTypeTeam && false) ||
           (authContext.entity.role === Verbs.entityTypeClub && true)
         }
+        showTimeComponent
         filterObject={filters}
         isVisible={settingPopup}
         feeTitle={strings.scorekeeperFeeText}

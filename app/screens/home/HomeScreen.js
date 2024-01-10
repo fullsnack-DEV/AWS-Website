@@ -47,7 +47,7 @@ import SportActivitiesModal from './components/SportActivitiesModal';
 import RecruitingMemberModal from './RecruitingMemberModal';
 import usePrivacySettings from '../../hooks/usePrivacySettings';
 import {
-  PersonUserPrivacyEnum,
+  PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
 } from '../../Constants/PrivacyOptionsConstant';
 
@@ -75,33 +75,42 @@ const HomeScreen = ({navigation, route}) => {
   const [postsPrivacyStatus, setPostsPrivacyStatus] = useState(false);
   const [eventsPrivacyStatus, setEventsPrivacyStatus] = useState(false);
   const [galleryPrivacyStatus, setGalleryPrivacyStatus] = useState(false);
+  const [chatPrivacyStatus, setChatPrivacyStatus] = useState(false);
 
   const {getPrivacyStatus} = usePrivacySettings();
 
   useEffect(() => {
     const status = getPrivacyStatus(
-      PersonUserPrivacyEnum[currentUserData[PrivacyKeyEnum.SportActivityList]],
+      PersonalUserPrivacyEnum[
+        currentUserData[PrivacyKeyEnum.SportActivityList]
+      ],
       currentUserData,
     );
     setSportActivityPrivacyStatus(status);
 
     const postsPrivacy = getPrivacyStatus(
-      PersonUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Posts]],
+      PersonalUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Posts]],
       currentUserData,
     );
     setPostsPrivacyStatus(postsPrivacy);
 
     const eventPrivacy = getPrivacyStatus(
-      PersonUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Events]],
+      PersonalUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Events]],
       currentUserData,
     );
     setEventsPrivacyStatus(eventPrivacy);
 
     const galleryPrivacy = getPrivacyStatus(
-      PersonUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Posts]],
+      PersonalUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Posts]],
       currentUserData,
     );
     setGalleryPrivacyStatus(galleryPrivacy);
+
+    const chatPrivacy = getPrivacyStatus(
+      PersonalUserPrivacyEnum[currentUserData[PrivacyKeyEnum.chatsTitle]],
+      currentUserData,
+    );
+    setChatPrivacyStatus(chatPrivacy);
   }, [currentUserData, getPrivacyStatus]);
 
   const getUserData = (uid) => {
@@ -581,7 +590,7 @@ const HomeScreen = ({navigation, route}) => {
           </View>
         </View>
         <View style={[styles.row, {marginLeft: 22}]}>
-          {!isAdmin ? (
+          {!isAdmin && chatPrivacyStatus ? (
             <Pressable
               style={styles.imageContainer}
               onPress={() => {

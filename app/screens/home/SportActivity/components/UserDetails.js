@@ -6,8 +6,9 @@ import {strings} from '../../../../../Localization/translation';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 import {getJSDate} from '../../../../utils';
+import {PrivacyKeyEnum} from '../../../../Constants/PrivacyOptionsConstant';
 
-const UserDetails = ({user = {}}) => {
+const UserDetails = ({user = {}, privacyStatus = {}}) => {
   const getLanguage = () => {
     let language = '';
     if ((user.language ?? []).length > 0) {
@@ -34,7 +35,7 @@ const UserDetails = ({user = {}}) => {
 
   return (
     <View style={styles.parent}>
-      {user.gender ? (
+      {user.gender && privacyStatus[PrivacyKeyEnum.Gender] ? (
         <View style={styles.row}>
           <View style={{alignItems: 'flex-start'}}>
             <Text
@@ -53,7 +54,7 @@ const UserDetails = ({user = {}}) => {
         </View>
       ) : null}
 
-      {user.birthday ? (
+      {user.birthday && privacyStatus[PrivacyKeyEnum.YearOfBirth] ? (
         <View style={styles.row}>
           <View style={{alignItems: 'flex-start'}}>
             <Text
@@ -74,7 +75,7 @@ const UserDetails = ({user = {}}) => {
         </View>
       ) : null}
 
-      {user.height?.height ? (
+      {user.height?.height && privacyStatus[PrivacyKeyEnum.Height] ? (
         <View style={styles.row}>
           <View style={{alignItems: 'flex-start'}}>
             <Text
@@ -93,7 +94,7 @@ const UserDetails = ({user = {}}) => {
         </View>
       ) : null}
 
-      {user.weight?.weight ? (
+      {user.weight?.weight && privacyStatus[PrivacyKeyEnum.Weight] ? (
         <View style={styles.row}>
           <View style={{alignItems: 'flex-start'}}>
             <Text
@@ -112,7 +113,8 @@ const UserDetails = ({user = {}}) => {
         </View>
       ) : null}
 
-      {(user.language ?? []).length > 0 ? (
+      {(user.language ?? []).length > 0 &&
+      privacyStatus[PrivacyKeyEnum.Langueages] ? (
         <View style={styles.row}>
           <View style={{alignItems: 'flex-start'}}>
             <Text

@@ -15,6 +15,8 @@ const FeedFooter = ({
   onWriteCommentPress = () => {},
   onNewsFeedLikePress = () => {},
   setShowShareOptionsModal = () => {},
+  privacyStatusForComment = true,
+  privacyStatusForShare = true,
 }) => (
   <>
     <View
@@ -37,20 +39,24 @@ const FeedFooter = ({
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={onWriteCommentPress}
-          style={[styles.commentShareLikeView, {marginLeft: 15}]}>
-          <Image style={styles.icon} source={images.commentImage} />
-        </TouchableOpacity>
+        {privacyStatusForComment && (
+          <TouchableOpacity
+            onPress={onWriteCommentPress}
+            style={[styles.commentShareLikeView, {marginLeft: 15}]}>
+            <Image style={styles.icon} source={images.commentImage} />
+          </TouchableOpacity>
+        )}
       </View>
 
-      <TouchableOpacity
-        onPress={() => {
-          setShowShareOptionsModal();
-        }}
-        style={styles.commentShareLikeView}>
-        <Image style={styles.icon} source={images.shareImage} />
-      </TouchableOpacity>
+      {privacyStatusForShare && (
+        <TouchableOpacity
+          onPress={() => {
+            setShowShareOptionsModal();
+          }}
+          style={styles.commentShareLikeView}>
+          <Image style={styles.icon} source={images.shareImage} />
+        </TouchableOpacity>
+      )}
     </View>
 
     {likeCount > 0 || commentCount > 0 || repostCount > 0 ? (

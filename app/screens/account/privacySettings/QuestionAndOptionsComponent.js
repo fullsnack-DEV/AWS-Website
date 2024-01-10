@@ -10,12 +10,19 @@ const QuestionAndOptionsComponent = ({
   options = [],
   onSelect = () => {},
   selectedOption = {},
+  subText = '',
+  privacyKey = '',
 }) => (
   <View>
-    <Text style={styles.questionText}>{title}</Text>
+    <View style={{marginBottom: 25}}>
+      <Text style={styles.questionText}>{title}</Text>
+      {subText && (
+        <Text style={[styles.radioBtnText, {marginTop: 5}]}>{subText}</Text>
+      )}
+    </View>
     {options.map((option, index) => (
       <TouchableOpacity
-        onPress={() => onSelect(option)}
+        onPress={() => onSelect({...option, key: privacyKey})}
         key={index}
         style={[
           styles.row,
@@ -45,7 +52,6 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     fontFamily: fonts.RMedium,
     color: colors.lightBlackColor,
-    marginBottom: 25,
   },
   row: {
     flexDirection: 'row',

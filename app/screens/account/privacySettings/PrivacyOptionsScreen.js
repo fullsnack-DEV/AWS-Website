@@ -1,4 +1,10 @@
-import {StyleSheet, SafeAreaView, View, BackHandler} from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  BackHandler,
+  ScrollView,
+} from 'react-native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {useIsFocused} from '@react-navigation/native';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -7,21 +13,100 @@ import images from '../../../Constants/ImagePath';
 import QuestionAndOptionsComponent from './QuestionAndOptionsComponent';
 import AuthContext from '../../../auth/context';
 import {
-  PersonUserPrivacyEnum,
+  BinaryPrivacyOptionsEnum,
+  FollowerFollowingOptionsEnum,
+  InviteToEventOptionsEnum,
+  InviteToGroupOptionsEnum,
+  PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
+  ScoreboardPeriodPrivacyOptionsEnum,
 } from '../../../Constants/PrivacyOptionsConstant';
 import {patchPlayer} from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {setAuthContextData} from '../../../utils';
+import colors from '../../../Constants/Colors';
+import Verbs from '../../../Constants/Verbs';
 
 const PrivacyOptionsScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
   const {headerTitle, privacyOptions} = route.params;
 
-  const [selectedOption, setSelectedOption] = useState({});
-  const [sectionKey, setSectionKey] = useState('');
+  const [selectedOptions, setSelectedOptions] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const getPrivacyKeyVal = useCallback(
+    (item) => {
+      const entity = {...authContext.entity.obj};
+
+      if (route.params?.isFromSportActivitySettings) {
+        if (route.params?.sportObject?.privacy_settings) {
+          const sportPrivacyObj = {
+            ...route.params.sportObject.privacy_settings,
+          };
+
+          if (
+            [
+              PrivacyKeyEnum.Clubs,
+              PrivacyKeyEnum.Leagues,
+              PrivacyKeyEnum.Teams,
+              PrivacyKeyEnum.HomeFacility,
+              PrivacyKeyEnum.ScoreboardTimePeriod,
+              PrivacyKeyEnum.Scoreboard,
+            ].includes(item.key)
+          ) {
+            return sportPrivacyObj[item.key] >= 0
+              ? sportPrivacyObj[item.key]
+              : 1;
+          }
+          return sportPrivacyObj[item.key] >= 0 ? sportPrivacyObj[item.key] : 0;
+        }
+        if (
+          [
+            PrivacyKeyEnum.Clubs,
+            PrivacyKeyEnum.Leagues,
+            PrivacyKeyEnum.Teams,
+            PrivacyKeyEnum.HomeFacility,
+            PrivacyKeyEnum.ScoreboardTimePeriod,
+            PrivacyKeyEnum.Scoreboard,
+          ].includes(item.key)
+        ) {
+          return 1;
+        }
+        return 0;
+      }
+      return entity[item.key] ?? 1;
+    },
+    [
+      authContext.entity.obj,
+      route.params?.isFromSportActivitySettings,
+      route.params?.sportObject?.privacy_settings,
+    ],
+  );
+
+  const getLabelForOption = useCallback((key, privacyVal) => {
+    switch (key) {
+      case PrivacyKeyEnum.YearOfBirth:
+        return ScoreboardPeriodPrivacyOptionsEnum[privacyVal];
+
+      case PrivacyKeyEnum.Follow:
+      case PrivacyKeyEnum.FollowingAndFollowers:
+        return FollowerFollowingOptionsEnum[privacyVal];
+
+      case PrivacyKeyEnum.InviteToJoinEvent:
+        return InviteToEventOptionsEnum[privacyVal];
+
+      case PrivacyKeyEnum.InviteToJoinGroup:
+        return InviteToGroupOptionsEnum[privacyVal];
+
+      case strings.commentAndReply:
+      case strings.shareTitle:
+        return BinaryPrivacyOptionsEnum[privacyVal];
+
+      default:
+        return PersonalUserPrivacyEnum[privacyVal];
+    }
+  }, []);
 
   useEffect(() => {
     const backAction = () => {
@@ -37,60 +122,78 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
     return () => backHandler.remove();
   }, [navigation]);
 
-  const getKeyForSection = useCallback(() => {
-    switch (headerTitle) {
-      case strings.slogan:
-        return PrivacyKeyEnum.Slogan;
-
-      case strings.SportActivitiesList:
-        return PrivacyKeyEnum.SportActivityList;
-
-      case strings.postTitle:
-        return PrivacyKeyEnum.Posts;
-
-      case strings.event:
-        return PrivacyKeyEnum.Events;
-
-      case strings.galleryTitle:
-        return PrivacyKeyEnum.Gallery;
-
-      default:
-        return '';
-    }
-  }, [headerTitle]);
-
   useEffect(() => {
     if (isFocused) {
-      const entity = {...authContext.entity.obj};
-      const key = getKeyForSection();
-      setSectionKey(key);
-
-      const privacyVal = entity[key] ?? 1;
-
-      setSelectedOption({
-        label: PersonUserPrivacyEnum[privacyVal],
-        value: privacyVal,
+      const newValues = privacyOptions.map((item) => {
+        const privacyVal = getPrivacyKeyVal(item);
+        const obj = {
+          label: getLabelForOption(item.key, privacyVal),
+          value: privacyVal,
+          key: item.key,
+        };
+        return obj;
       });
+
+      setSelectedOptions(newValues);
     }
-  }, [isFocused, authContext.entity.obj, getKeyForSection]);
+  }, [isFocused, getPrivacyKeyVal, privacyOptions, getLabelForOption]);
 
   const handleSave = () => {
-    const payload = {};
-    if (sectionKey) {
-      payload[sectionKey] = selectedOption.value;
+    let payload = {};
+    const privacyKeyValues = {};
+    selectedOptions.forEach((item) => {
+      privacyKeyValues[item.key] = item.value;
+    });
 
-      setLoading(true);
-      patchPlayer(payload, authContext)
-        .then(async (response) => {
-          await setAuthContextData(response.payload, authContext);
-          navigation.goBack();
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log('error ==>', err);
-          setLoading(false);
+    if (
+      route.params?.isFromSportActivitySettings &&
+      route.params?.sportObject?.sport
+    ) {
+      const entity = {...authContext.entity.obj};
+      if (route.params.sportObject.type === Verbs.entityTypePlayer) {
+        const updatedSports = (entity.registered_sports ?? []).map((item) => {
+          if (item.sport === route.params.sportObject.sport) {
+            return {
+              ...item,
+              privacy_settings: {
+                ...(item?.privacy_settings ?? {}),
+                ...privacyKeyValues,
+              },
+            };
+          }
+          return item;
         });
+        payload.registered_sports = [...updatedSports];
+      } else if (route.params.sportObject.type === Verbs.entityTypeReferee) {
+        const updatedSports = (entity.referee_data ?? []).map((item) => {
+          if (item.sport === route.params.sportObject.sport) {
+            return {
+              ...item,
+              privacy_settings: {
+                ...(item?.privacy_settings ?? {}),
+                ...privacyKeyValues,
+              },
+            };
+          }
+          return item;
+        });
+        payload.referee_data = [...updatedSports];
+      }
+    } else {
+      payload = {...privacyKeyValues};
     }
+
+    setLoading(true);
+    patchPlayer(payload, authContext)
+      .then(async (response) => {
+        await setAuthContextData(response.payload, authContext);
+        navigation.goBack();
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log('error ==>', err);
+        setLoading(false);
+      });
   };
 
   return (
@@ -106,17 +209,39 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
 
       <ActivityLoader visible={loading} />
 
-      <View style={styles.container}>
-        {(privacyOptions ?? []).map((item, index) => (
-          <QuestionAndOptionsComponent
-            key={index}
-            title={item.question}
-            options={item.options}
-            onSelect={(option) => setSelectedOption(option)}
-            selectedOption={selectedOption}
-          />
-        ))}
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}>
+        {(privacyOptions ?? []).map((item, index) => {
+          const selectedOption =
+            selectedOptions.find((ele) => item.key === ele.key) ?? {};
+
+          return (
+            <View key={index}>
+              <QuestionAndOptionsComponent
+                title={item.question}
+                subText={item?.subText}
+                options={item.options}
+                privacyKey={item.key}
+                onSelect={(option) => {
+                  const updatedList = selectedOptions.map((ele) => {
+                    if (ele.key === option.key) {
+                      return {...option};
+                    }
+                    return ele;
+                  });
+
+                  setSelectedOptions(updatedList);
+                }}
+                selectedOption={selectedOption}
+              />
+              {privacyOptions.length - 1 !== index && (
+                <View style={styles.separatorLine} />
+              )}
+            </View>
+          );
+        })}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -127,7 +252,12 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingHorizontal: 15,
-    paddingTop: 20,
+    paddingVertical: 20,
+  },
+  separatorLine: {
+    height: 1,
+    backgroundColor: colors.grayBackgroundColor,
+    marginVertical: 25,
   },
 });
 

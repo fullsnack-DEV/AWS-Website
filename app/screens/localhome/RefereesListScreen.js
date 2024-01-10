@@ -41,6 +41,7 @@ import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import ScreenHeader from '../../components/ScreenHeader';
 import SportView from './SportView';
+import {getAvailableEntityIdList} from '../../utils/elasticApiCall';
 
 let stopFetchMore = true;
 
@@ -117,7 +118,7 @@ export default function RefereesListScreen({navigation, route}) {
   };
 
   const getReferees = useCallback(
-    (filerReferee) => {
+    async (filerReferee) => {
       setSmallLoader(true);
       const refereeQuery = {
         size: pageSize,
@@ -276,6 +277,31 @@ export default function RefereesListScreen({navigation, route}) {
           },
         });
       }
+
+      if (
+        filerReferee?.availableTime &&
+        filerReferee?.availableTime !== strings.filterAntTime &&
+        filerReferee?.fromDateTime &&
+        filerReferee?.toDateTime
+      ) {
+        const obj = {
+          fromDate: filerReferee.fromDateTime ?? '',
+          toDate: filerReferee.toDateTime ?? '',
+        };
+
+        const response = await getAvailableEntityIdList(obj);
+
+        if (response.length > 0) {
+          refereeQuery.query.bool.must_not = [
+            {
+              terms: {
+                'user_id.keyword': [...response],
+              },
+            },
+          ];
+        }
+      }
+
       getUserIndex(refereeQuery)
         .then((res) => {
           setSmallLoader(false);
@@ -672,6 +698,7 @@ export default function RefereesListScreen({navigation, route}) {
           (authContext.entity.role === Verbs.entityTypeTeam && false) ||
           (authContext.entity.role === Verbs.entityTypeClub && true)
         }
+        showTimeComponent
         sports={sports}
         filterObject={filters}
         feeTitle={strings.refereeFee}
