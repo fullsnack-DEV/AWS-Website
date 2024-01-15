@@ -29,6 +29,13 @@ import {ModalTypes} from '../../../Constants/GeneralConstants';
 import Verbs from '../../../Constants/Verbs';
 import InviteeCard from './InviteeCard';
 import SelectedInviteeCard from './SelectedInviteeCard';
+import {
+  GroupDefalutPrivacyOptionsEnum,
+  GroupDefaultPrivacyOptionsForDoubleTeamEnum,
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../../Constants/PrivacyOptionsConstant';
+import usePrivacySettings from '../../../hooks/usePrivacySettings';
 
 const TAB_ITEMS = [
   strings.peopleTitleText,
@@ -52,6 +59,7 @@ const InviteModal = ({
 
   const inputRef = useRef();
   const searchRef = useRef();
+  const {getPrivacyStatus} = usePrivacySettings();
 
   const getInviteesData = useCallback(() => {
     setLoading(true);
@@ -88,6 +96,7 @@ const InviteModal = ({
             image: item.full_image ?? item.thumbnail,
             entityType: item.entity_type,
             city: item.city,
+            data: {...item},
           };
         });
 
@@ -182,6 +191,29 @@ const InviteModal = ({
     setSelectedInvitees([...selectedInvitees]);
   };
 
+  const checkPrivacyStatus = (entityObj = {}) => {
+    let status = true;
+    if (
+      [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(
+        entityObj.entityType,
+      )
+    ) {
+      const isDoubleSportTeam = entityObj.data.sport_type === Verbs.doubleSport;
+      const privacyVal = isDoubleSportTeam
+        ? GroupDefaultPrivacyOptionsForDoubleTeamEnum[
+            entityObj.data[PrivacyKeyEnum.Chats]
+          ]
+        : GroupDefalutPrivacyOptionsEnum[entityObj.data[PrivacyKeyEnum.Chats]];
+      status = getPrivacyStatus(privacyVal, entityObj.data);
+    } else {
+      status = getPrivacyStatus(
+        PersonalUserPrivacyEnum[entityObj.data[PrivacyKeyEnum.Chats]],
+        entityObj.data,
+      );
+    }
+    return status;
+  };
+
   return (
     <CustomModalWrapper
       isVisible={isVisible}
@@ -263,11 +295,13 @@ const InviteModal = ({
               const isChecked = selectedInvitees.some(
                 (val) => val.id === item.id,
               );
+              const chatPrivacyStatus = checkPrivacyStatus(item);
               return (
                 <InviteeCard
                   item={item}
                   onPress={() => toggleSelection(isChecked, item)}
                   isChecked={isChecked}
+                  privacyStatus={chatPrivacyStatus}
                 />
               );
             }}

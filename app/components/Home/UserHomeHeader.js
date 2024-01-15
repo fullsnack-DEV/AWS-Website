@@ -16,13 +16,7 @@ import {strings} from '../../../Localization/translation';
 import {displayLocation} from '../../utils';
 import Verbs from '../../Constants/Verbs';
 import BottomSheet from '../modals/BottomSheet';
-import usePrivacySettings from '../../hooks/usePrivacySettings';
-import {
-  FollowerFollowingOptionsEnum,
-  InviteToGroupOptionsEnum,
-  PersonalUserPrivacyEnum,
-  PrivacyKeyEnum,
-} from '../../Constants/PrivacyOptionsConstant';
+import {PrivacyKeyEnum} from '../../Constants/PrivacyOptionsConstant';
 
 const UserHomeHeader = ({
   currentUserData,
@@ -30,14 +24,13 @@ const UserHomeHeader = ({
   onAction,
   isAdmin,
   loggedInEntity,
+  privacyObj = {},
 }) => {
   const isFocused = useIsFocused();
   const [isMember, setIsMember] = useState(false);
   const [options, setOptions] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [buttonTitle, setButtonTitle] = useState('');
-
-  const {getPrivacyStatus} = usePrivacySettings();
 
   const getButtonTitle = useCallback(
     (checkIsMember) => {
@@ -77,29 +70,25 @@ const UserHomeHeader = ({
         }
       }
 
-      if (
-        name === strings.invite &&
-        !getPrivacyStatus(
-          InviteToGroupOptionsEnum[
-            currentUserData[PrivacyKeyEnum.InviteToJoinGroup]
-          ],
-          currentUserData,
-        )
-      ) {
-        setButtonTitle('');
-      } else if (
-        name === strings.follow &&
-        !getPrivacyStatus(
-          FollowerFollowingOptionsEnum[currentUserData[PrivacyKeyEnum.Follow]],
-          currentUserData,
-        )
-      ) {
-        setButtonTitle('');
+      if (name === strings.invite) {
+        if (
+          loggedInEntity.role === Verbs.entityTypeTeam &&
+          !privacyObj[PrivacyKeyEnum.InviteForTeam]
+        ) {
+          setButtonTitle('');
+        } else if (
+          loggedInEntity.role === Verbs.entityTypeClub &&
+          !privacyObj[PrivacyKeyEnum.InviteForClub]
+        ) {
+          setButtonTitle('');
+        } else {
+          setButtonTitle(name);
+        }
       } else {
         setButtonTitle(name);
       }
     },
-    [isAdmin, currentUserData, loggedInEntity, getPrivacyStatus],
+    [isAdmin, currentUserData, loggedInEntity, privacyObj],
   );
 
   useEffect(() => {
@@ -252,20 +241,11 @@ const UserHomeHeader = ({
       <View style={{marginTop: 15}}>
         <Text style={styles.title}> {currentUserData.full_name}</Text>
         <Text style={styles.location}>{displayLocation(currentUserData)}</Text>
-        {currentUserData.description &&
-        getPrivacyStatus(
-          PersonalUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Slogan]],
-          currentUserData,
-        ) ? (
+        {currentUserData.description && privacyObj[PrivacyKeyEnum.Slogan] ? (
           <Text style={styles.description}>{currentUserData.description}</Text>
         ) : null}
       </View>
-      {getPrivacyStatus(
-        PersonalUserPrivacyEnum[
-          currentUserData[PrivacyKeyEnum.FollowingAndFollowers]
-        ],
-        currentUserData,
-      ) && (
+      {privacyObj[PrivacyKeyEnum.FollowingAndFollowers] && (
         <View
           style={[styles.row, {justifyContent: 'flex-start', marginTop: 20}]}>
           <Pressable

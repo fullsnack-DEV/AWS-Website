@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState, useContext, useCallback} from 'react';
 import {
   Image,
@@ -47,9 +46,32 @@ import SportActivitiesModal from './components/SportActivitiesModal';
 import RecruitingMemberModal from './RecruitingMemberModal';
 import usePrivacySettings from '../../hooks/usePrivacySettings';
 import {
+  BinaryPrivacyOptionsEnum,
+  FollowerFollowingOptionsEnum,
+  GroupDefalutPrivacyOptionsEnum,
+  GroupDefaultPrivacyOptionsForDoubleTeamEnum,
   PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
 } from '../../Constants/PrivacyOptionsConstant';
+
+const personalPrivacyKeyArr = [
+  PrivacyKeyEnum.SportActivityList,
+  PrivacyKeyEnum.Slogan,
+  PrivacyKeyEnum.Posts,
+  PrivacyKeyEnum.Gallery,
+  PrivacyKeyEnum.FollowingAndFollowers,
+  PrivacyKeyEnum.Events,
+  PrivacyKeyEnum.InviteForTeam,
+  PrivacyKeyEnum.InviteForClub,
+  PrivacyKeyEnum.Chats,
+];
+
+const groupPrivacyKeyArr = [
+  PrivacyKeyEnum.Posts,
+  PrivacyKeyEnum.PostWrite,
+  PrivacyKeyEnum.Chats,
+  PrivacyKeyEnum.Gallery,
+];
 
 const HomeScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -70,48 +92,49 @@ const HomeScreen = ({navigation, route}) => {
   const [loggedInGroupMembers, setLoggedInGroupMembers] = useState([]);
   const [visibleSportActivities, setVisibleSportAcitivities] = useState(false);
   const [visibleRecrutingModal, setVisibleRecrutingModal] = useState(false);
-  const [sportActivityPrivacyStatus, setSportActivityPrivacyStatus] =
-    useState(false);
-  const [postsPrivacyStatus, setPostsPrivacyStatus] = useState(false);
-  const [eventsPrivacyStatus, setEventsPrivacyStatus] = useState(false);
-  const [galleryPrivacyStatus, setGalleryPrivacyStatus] = useState(false);
-  const [chatPrivacyStatus, setChatPrivacyStatus] = useState(false);
+  const [personalPrivacyObject, setPersonalPrivacyObject] = useState({});
+  const [groupPrivacyObject, setGroupPrivacyObject] = useState({});
 
   const {getPrivacyStatus} = usePrivacySettings();
 
   useEffect(() => {
-    const status = getPrivacyStatus(
-      PersonalUserPrivacyEnum[
-        currentUserData[PrivacyKeyEnum.SportActivityList]
-      ],
-      currentUserData,
-    );
-    setSportActivityPrivacyStatus(status);
+    if (isFocused && currentUserData?.entity_type) {
+      if (
+        [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(
+          currentUserData.entity_type,
+        )
+      ) {
+        const obj = {};
+        groupPrivacyKeyArr.forEach((key) => {
+          const isDoubleSportTeam =
+            currentUserData.sport_type === Verbs.doubleSport;
+          const privacyVal = isDoubleSportTeam
+            ? GroupDefaultPrivacyOptionsForDoubleTeamEnum[currentUserData[key]]
+            : GroupDefalutPrivacyOptionsEnum[currentUserData[key]];
 
-    const postsPrivacy = getPrivacyStatus(
-      PersonalUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Posts]],
-      currentUserData,
-    );
-    setPostsPrivacyStatus(postsPrivacy);
+          obj[key] = getPrivacyStatus(privacyVal, currentUserData);
+        });
+        setGroupPrivacyObject(obj);
+      } else {
+        const obj = {};
+        personalPrivacyKeyArr.forEach((item) => {
+          let privacyVal = PersonalUserPrivacyEnum[currentUserData[item]];
+          if (item === PrivacyKeyEnum.FollowingAndFollowers) {
+            privacyVal = FollowerFollowingOptionsEnum[currentUserData[item]];
+          } else if (
+            item === PrivacyKeyEnum.InviteForTeam ||
+            item === PrivacyKeyEnum.InviteForClub
+          ) {
+            privacyVal = BinaryPrivacyOptionsEnum[currentUserData[item]];
+          }
 
-    const eventPrivacy = getPrivacyStatus(
-      PersonalUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Events]],
-      currentUserData,
-    );
-    setEventsPrivacyStatus(eventPrivacy);
+          obj[item] = getPrivacyStatus(privacyVal, currentUserData);
+        });
 
-    const galleryPrivacy = getPrivacyStatus(
-      PersonalUserPrivacyEnum[currentUserData[PrivacyKeyEnum.Posts]],
-      currentUserData,
-    );
-    setGalleryPrivacyStatus(galleryPrivacy);
-
-    const chatPrivacy = getPrivacyStatus(
-      PersonalUserPrivacyEnum[currentUserData[PrivacyKeyEnum.chatsTitle]],
-      currentUserData,
-    );
-    setChatPrivacyStatus(chatPrivacy);
-  }, [currentUserData, getPrivacyStatus]);
+        setPersonalPrivacyObject(obj);
+      }
+    }
+  }, [isFocused, currentUserData]);
 
   const getUserData = (uid) => {
     setLoading(true);
@@ -305,10 +328,7 @@ const HomeScreen = ({navigation, route}) => {
           }}
           routeParams={route.params}
           loggedInGroupMembers={loggedInGroupMembers}
-          sportActivityPrivacyStatus={sportActivityPrivacyStatus}
-          postPrivacyStatus={postsPrivacyStatus}
-          eventsPrivacyStatus={eventsPrivacyStatus}
-          galleryPrivacyStatus={galleryPrivacyStatus}
+          privacyObj={personalPrivacyObject}
         />
       );
     }
@@ -338,6 +358,8 @@ const HomeScreen = ({navigation, route}) => {
             fetchGroupDetails(uid, role, admin, fromRefresh);
           }}
           routeParams={route.params}
+          viewPostPrivacyStatus={groupPrivacyObject[PrivacyKeyEnum.Posts]}
+          writePostPrivacyStatus={groupPrivacyObject[PrivacyKeyEnum.PostWrite]}
         />
       );
     }
@@ -459,9 +481,9 @@ const HomeScreen = ({navigation, route}) => {
       route.params.role === Verbs.entityTypeUser
     ) {
       setShowMoreOptionsModal(true);
-      if (isAdmin && sportActivityPrivacyStatus) {
+      if (isAdmin && personalPrivacyObject[PrivacyKeyEnum.SportActivityList]) {
         setMoreOptions([strings.sportActivity]);
-      } else if (sportActivityPrivacyStatus) {
+      } else if (personalPrivacyObject[PrivacyKeyEnum.SportActivityList]) {
         setMoreOptions([
           strings.sportActivity,
           strings.reportThisAccount,
@@ -553,6 +575,13 @@ const HomeScreen = ({navigation, route}) => {
       backHandler.remove();
     };
   }, [handleBackPress]);
+
+  const chatPrivacyStatus = [
+    Verbs.entityTypeTeam,
+    Verbs.entityTypeClub,
+  ].includes(currentUserData.entity_type)
+    ? groupPrivacyObject[PrivacyKeyEnum.Chats]
+    : personalPrivacyObject[PrivacyKeyEnum.Chats];
 
   return (
     <SafeAreaView style={styles.mainContainer}>

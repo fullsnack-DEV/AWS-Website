@@ -8,6 +8,11 @@ import {strings} from '../../Localization/translation';
 import Verbs from '../Constants/Verbs';
 import {filterType} from '../utils/constant';
 import {getButtonStateForPeople} from '../utils/sportsActivityUtils';
+import usePrivacySettings from '../hooks/usePrivacySettings';
+import {
+  BinaryPrivacyOptionsEnum,
+  PrivacyKeyEnum,
+} from '../Constants/PrivacyOptionsConstant';
 
 function TCPlayerView({
   onPress,
@@ -34,6 +39,8 @@ function TCPlayerView({
   });
   const [isInviteButtonShow, setIsInviteButtonShow] = useState(false);
   const [filteredSportData, setFilteredSportData] = useState([]);
+
+  const {getPrivacyStatus} = usePrivacySettings();
 
   const filterSport = useCallback(() => {
     let sportList = [];
@@ -62,14 +69,28 @@ function TCPlayerView({
   }, [sportFilter.sport, fType, sports]);
 
   useEffect(() => {
-    if (
-      isUniversalSearch === false &&
-      (authContext.entity.role === Verbs.entityTypeTeam ||
-        authContext.entity.role === Verbs.entityTypeClub)
-    ) {
-      setIsInviteButtonShow(true);
+    if (isUniversalSearch === false) {
+      if (
+        authContext.entity.role === Verbs.entityTypeTeam &&
+        getPrivacyStatus(
+          BinaryPrivacyOptionsEnum[data[PrivacyKeyEnum.InviteForTeam]],
+          data,
+        )
+      ) {
+        setIsInviteButtonShow(true);
+      } else if (
+        authContext.entity.role === Verbs.entityTypeClub &&
+        getPrivacyStatus(
+          BinaryPrivacyOptionsEnum[data[PrivacyKeyEnum.InviteForClub]],
+          data,
+        )
+      ) {
+        setIsInviteButtonShow(true);
+      } else {
+        setIsInviteButtonShow(false);
+      }
     }
-  }, [isUniversalSearch, authContext.entity]);
+  }, [isUniversalSearch, authContext.entity, data]);
 
   useEffect(() => {
     if (sportFilter.sport) {

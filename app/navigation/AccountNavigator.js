@@ -103,7 +103,7 @@ import ActivityLogScreen from '../screens/account/ActivityLogScreen';
 import PersonalUserPrivacySettingsScreen from '../screens/account/privacySettings/PersonalUserPrivacySettingsScreen';
 import PrivacyOptionsScreen from '../screens/account/privacySettings/PrivacyOptionsScreen';
 import SportActivityPrivacyOptionsScreen from '../screens/account/privacySettings/SportActivityPrivacyOptionsScreen';
-import SportActivityPrivacyChildOptions from '../screens/account/privacySettings/SportActivityPrivacyChildOptions';
+import GroupPrivacyScreen from '../screens/account/privacySettings/GroupPrivacyScreen';
 
 const Stack = createStackNavigator();
 
@@ -1288,8 +1288,8 @@ const AccountNavigator = () => (
     />
 
     <Stack.Screen
-      name="SportActivityPrivacyChildOptions"
-      component={SportActivityPrivacyChildOptions}
+      name="GroupPrivacyScreen"
+      component={GroupPrivacyScreen}
       options={{headerShown: false}}
     />
 

@@ -12,6 +12,7 @@ import {
   ScrollView,
   View,
   BackHandler,
+  Alert,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {strings} from '../../../../Localization/translation';
@@ -51,7 +52,12 @@ import LookingForSettingModal from './contentScreens/LookingForSettingModal';
 import EditWrapperScreen from './EditWrapperScreen';
 import PrivacySettingsScreen from './PrivacySettingsScreen';
 import usePrivacySettings from '../../../hooks/usePrivacySettings';
-import {PrivacyKeyEnum} from '../../../Constants/PrivacyOptionsConstant';
+import {
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../../Constants/PrivacyOptionsConstant';
+import useStreamChatUtils from '../../../hooks/useStreamChatUtils';
+import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 const SportActivityHome = ({navigation, route}) => {
   const [userData, setCurrentUserData] = useState({});
@@ -85,8 +91,10 @@ const SportActivityHome = ({navigation, route}) => {
   const [showWrapperModal, setShowWrapperModal] = useState(false);
   const lookingForModalRef = useRef();
   const privacySettingModalRef = useRef();
-  const {getPrivacyStatusForSportActivity} = usePrivacySettings();
+  const {getPrivacyStatusForSportActivity, getPrivacyStatus} =
+    usePrivacySettings();
   const [infoContentPrivacyStatus, setInfoContentPrivacyStatus] = useState({});
+  const {createChannel, isCreatingChannel} = useStreamChatUtils();
 
   const getUserData = useCallback(
     (userId) => {
@@ -500,6 +508,42 @@ const SportActivityHome = ({navigation, route}) => {
     return '';
   };
 
+  const onMessageButtonPress = () => {
+    const invitee = [
+      {
+        id: userData.user_id,
+        name: userData.full_name,
+        image: userData.full_image,
+        entityType: userData.entity_type,
+        city: userData.city,
+      },
+    ];
+
+    if (invitee[0]?.id) {
+      createChannel(invitee)
+        .then(async (channel) => {
+          if (channel) {
+            await channel.watch();
+
+            navigation.navigate('MessageStack', {
+              screen: 'MessageChatScreen',
+              params: {
+                channel,
+                comeFrom: 'HomeStack',
+                routeParams: {
+                  screen: 'SportActivityHome',
+                  params: {sport, sportType, uid, entityType},
+                },
+              },
+            });
+          }
+        })
+        .catch((err) => {
+          Alert.alert(strings.alertmessagetitle, err.message);
+        });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.parent}>
       <ScreenHeader
@@ -526,7 +570,7 @@ const SportActivityHome = ({navigation, route}) => {
             });
           }
         }}
-        rightIcon1={!isAdmin ? images.tab_message : null}
+        // rightIcon1={!isAdmin ? images.tab_message : null}
         rightIcon2={images.chat3Dot}
         containerStyle={{
           paddingBottom: 7,
@@ -545,7 +589,7 @@ const SportActivityHome = ({navigation, route}) => {
           isLookingForClub={sportObj?.lookingForTeamClub}
           isAdmin={isAdmin}
           onMessageClick={() => {
-            //
+            onMessageButtonPress();
           }}
           level={sportObj?.level}
           loading={isFectchingUser}
@@ -562,8 +606,11 @@ const SportActivityHome = ({navigation, route}) => {
             });
           }}
           sportType={sportObj?.sport_type}
+          chatPrivacyStatus={getPrivacyStatus(
+            PersonalUserPrivacyEnum[userData[PrivacyKeyEnum.Chats]],
+          )}
         />
-
+        <ActivityLoader visible={isCreatingChannel} />
         <ChallengeButton
           isAdmin={isAdmin}
           loggedInEntity={authContext.entity.obj}

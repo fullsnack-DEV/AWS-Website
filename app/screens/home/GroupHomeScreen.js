@@ -77,6 +77,8 @@ const GroupHomeScreen = ({
   restrictReturn = false,
   pulltoRefresh = () => {},
   routeParams = {},
+  viewPostPrivacyStatus = true,
+  writePostPrivacyStatus = true,
 }) => {
   const authContext = useContext(AuthContext);
 
@@ -1574,6 +1576,8 @@ const GroupHomeScreen = ({
               pulltoRefresh();
             }}
             routeParams={routeParams}
+            postsPrivacyStatus={viewPostPrivacyStatus}
+            writePostPrivacyStatus={writePostPrivacyStatus}
           />
         </View>
 

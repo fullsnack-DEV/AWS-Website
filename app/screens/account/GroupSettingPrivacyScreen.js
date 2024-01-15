@@ -6,7 +6,6 @@ import {
   Image,
   FlatList,
   SafeAreaView,
-  Alert,
   TouchableOpacity,
 } from 'react-native';
 import AuthContext from '../../auth/context';
@@ -33,19 +32,17 @@ export default function GroupSettingPrivacyScreen({navigation}) {
         ? [
             strings.profileText,
             strings.basicinfotitle,
-            strings.member,
-            strings.club,
+            strings.memberRecruitingBadge,
             strings.privacyText,
             strings.pauseTeamTitle,
-            strings.terminateAccountText,
+            strings.terminateTeam,
           ]
         : [
             strings.profileText,
-            strings.membersTitle,
-            strings.team,
+            strings.memberRecruitingBadge,
             strings.privacyText,
             strings.pauseClubTitle,
-            strings.terminateAccountText,
+            strings.terminateClub,
           ];
     setGroupSettings(options);
   }, [authContext.entity.role]);
@@ -62,30 +59,12 @@ export default function GroupSettingPrivacyScreen({navigation}) {
         });
         break;
 
-      case strings.membersTitle:
-      case strings.member:
+      case strings.memberRecruitingBadge:
         navigation.navigate('GroupMembersSettingScreen');
         break;
 
-      case strings.club:
-        navigation.navigate('ClubSettingPrivacyScreen');
-        break;
-
-      case strings.team:
-        navigation.navigate('TeamSettingPrivacyScreen');
-        break;
-
-      case strings.event:
-        navigation.navigate('EventSettingPrivacyScreen');
-        break;
-
-      case strings.account:
-        Alert.alert(strings.thisFeatureisUnderDevelopment);
-
-        break;
-
       case strings.privacyText:
-        navigation.navigate('GroupOwnPrivacySetting');
+        navigation.navigate('GroupPrivacyScreen');
         break;
 
       case strings.pauseClubTitle:
@@ -93,7 +72,8 @@ export default function GroupSettingPrivacyScreen({navigation}) {
         navigation.navigate('PauseGroupScreen');
         break;
 
-      case strings.terminateAccountText:
+      case strings.terminateTeam:
+      case strings.terminateClub:
         navigation.navigate('TerminateAccountScreen');
         break;
 

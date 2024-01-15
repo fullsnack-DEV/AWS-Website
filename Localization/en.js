@@ -461,7 +461,7 @@ export default {
   slogan: 'en_Slogan',
   commentAndReply: 'en_Comment & Reply',
   shareTitle: 'en_Share',
-  SportActivitiesList: 'en_Sport Activities List',
+  SportActivitiesList: 'en_Sport Activity List',
   lookingForTeam: 'en_Looking for a team?',
   hiringPlayers: 'en_Hiring players?',
   enterSloganPlaceholder: 'en_Enter Your Slogan',
@@ -1535,7 +1535,7 @@ export default {
 
   profileText: 'en_Profile',
   basicInfoText: 'en_Basic Info',
-  sportActivityText: 'en_Sports Activities',
+  sportActivityText: 'en_Sport Activity',
   timezoneText: 'en_Time Zone',
   currencyText: 'en_Currency',
   deactivateAccountText: 'en_Deactivate Account',
@@ -3267,12 +3267,10 @@ export default {
   jerseyText: 'en_Jersey',
   likeEvent: 'en_Like Event',
   whoCanViewYourSlogan: 'en_Who can view your slogan?',
-  whoCanSeeSportActivityList: 'en_Who can see your sport activity list?',
-  whoCanViewYourPostsSection: 'en_Who can view your posts section?',
+  whoCanSeeSportActivityList: 'en_Who can view your sport activity list?',
+  whoCanViewYourPostsSection: 'en_Who can view posts in your profile?',
   whoCanViewYourEventsSection: 'en_Who can view your events section?',
-  whoCanViewYourGallerySection: 'en_Who can view your gallery section?',
-  followersMyTeamClub: 'en_Followers, my teams & clubs',
-  myTeamClub: 'en_My teams & clubs',
+  whoCanViewYourGallerySection: 'en_Who can view your gallery?',
   venueText1: 'en_This function is currently under construction.',
   venueText2:
     'en_Please check later for updates. You will be able to look for and book a venue here soon.',
@@ -3284,8 +3282,8 @@ export default {
   postsFromOtherGroupWillAppearHere:
     'en_Posts from people and groups you are following will appear here.',
   newReservationWillAppearHere: 'en_New Reservation will appear here.',
-  followersMyTeamClub: 'en_followers, my teams & clubs',
-  myTeamClub: 'en_my teams & clubs',
+  followersMyTeamClub: 'en_Followers, my teams & clubs',
+  myTeamClub: 'en_My teams & clubs',
   playingSportText: 'en_Playing {0}',
   refreeingSportText: 'en_Refereeing {0}',
   eventsPrivacySubText:
@@ -3314,7 +3312,7 @@ export default {
   whoCanViewFollowingAndFollowers:
     'en_Who can view your following & followers?',
   whoCanInviteYouToJoinGroup: 'en_Who can invite you to join their group?',
-  whoCanInviteYouToJoinEvent: 'en_Who can invite you to join an event?',
+  whoCanInviteYouToJoinEvent: 'en_Who can invite you to an event?',
   teamAndTheirMembers: 'en_Team & their members',
   clubAndTheirMembers: 'en_Club & their members',
   leagueAndTheirMembers: 'en_League & their members',
@@ -3325,4 +3323,37 @@ export default {
   whoCanCommentOnYourPost: 'en_Who can comment & reply on your post?',
   whoCanShareYourPost: 'en_Who can share your post?',
   sportBarAlertText: 'en_You can add up to 10 sports to the filter bar.',
+  whoCanViewPostSection: "en_Who can view your team's posts section?",
+  whoCanViewEventSection: "en_Who can view your team's events section?",
+  whoCanViewGallerySection: "en_Who can view your team's gallery section?",
+  whoCanFollowYourTeam: 'en_Who can follow your team?',
+  whoCanInviteYourTeamToChat: 'en_Who can invite your team to chat?',
+  whoCanTagYourTeamOnPostCommentOrReply:
+    'en_Who can tag your team on a post, comment or reply?',
+  followersAndClub: 'en_Followers & club',
+  teamMembersAndClub: 'en_Team members & Club',
+  onlyTeamTitle: 'en_Only team',
+  whoCanWritePostTeamsPostsSection:
+    "en_Who can write a post in your team's posts section?",
+  whoCanInvitePersonToJoinYourTeam:
+    'en_Who can invite a person to join your team?',
+  whoCanViewYourTeamMembers: 'en_Who can view your team members?',
+  requestAccepted: 'en_Request accepeted',
+  invitedOnly: 'en_Invited only',
+  teamMembers: 'en_Team members',
+  clubsAndTeam: 'en_Clubs & team',
+  groupsBottomText: `en_"Club" refers to a club that the team belongs to.`,
+  scorekeepingSportText: 'en_Scorekeeping {0}',
+  followingFollower: 'en_Following & Follower',
+  teamClubAndLeague: 'en_Team, Club & League',
+  eventInvitation: 'en_Event Invitation',
+  whoCanInviteToJoinTeams:
+    'en_Do you want to allow teams to invite you to join their teams?',
+  whoCanInviteToJoinClubs:
+    'en_Do you want to allow clubs to invite you to join their clubs?',
+  whoCanInviteToJoinLeaguesTournaments:
+    'en_Do you want to allow leagues to invite you to join their leagues or tournaments?',
+  memberRecruitingBadge: 'en_Member-recruiting Badge',
+  terminateTeam: 'en_Terminate Team',
+  terminateClub: 'en_Terminate Club',
 };

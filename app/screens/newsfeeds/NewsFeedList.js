@@ -8,7 +8,13 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import {View, ActivityIndicator, FlatList, Text} from 'react-native';
+import {
+  View,
+  ActivityIndicator,
+  FlatList,
+  Text,
+  Dimensions,
+} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useIsFocused} from '@react-navigation/native';
 import NewsFeedPostItems from '../../components/newsFeed/feed/NewsFeedPostItems';
@@ -45,6 +51,7 @@ const NewsFeedList = ({
   dummyCall = () => {},
   fromEvent = false,
   routeData = {},
+  viewPostPrivacyStatus = true,
 }) => {
   const [userID, setUserID] = useState('');
 
@@ -162,13 +169,18 @@ const NewsFeedList = ({
   ]);
 
   const listEmpty = useCallback(() => {
+    if (!viewPostPrivacyStatus) {
+      return null;
+    }
     if (feedAPI) {
       return isNewsFeedScreen ? (
-        <ListEmptyComponent
-          title={strings.welcomToTownCupText}
-          subTitle={strings.postsFromOtherGroupWillAppearHere}
-          imageUrl={images.feedNoData}
-        />
+        <View style={{height: Dimensions.get('window').height * 0.8}}>
+          <ListEmptyComponent
+            title={strings.welcomToTownCupText}
+            subTitle={strings.postsFromOtherGroupWillAppearHere}
+            imageUrl={images.feedNoData}
+          />
+        </View>
       ) : (
         <View style={{alignItems: 'center'}}>
           <Text
@@ -183,47 +195,41 @@ const NewsFeedList = ({
         </View>
       );
     }
-    return <View></View>;
-  }, [feedAPI, isNewsFeedScreen]);
+    return null;
+  }, [feedAPI, isNewsFeedScreen, viewPostPrivacyStatus]);
 
   return (
     <View
       onStartShouldSetResponderCapture={onStartShouldSetResponderCapture}
       style={{flex: 1}}>
-      {postData.length > 0 ? (
-        <FlatList
-          viewabilityConfigCallbackPairs={
-            viewabilityConfigCallbackPairs.current
-          }
-          onScroll={onFeedScroll}
-          ref={refs}
-          style={{flex: 1}}
-          contentContainerStyle={{paddingVertical: 15}}
-          scrollEventThrottle={16}
-          removeClippedSubviews={true}
-          legacyImplementation={true}
-          maxToRenderPerBatch={10}
-          initialNumToRender={5}
-          ListEmptyComponent={listEmpty}
-          bounces={true}
-          data={postData}
-          ItemSeparatorComponent={newsFeedListItemSeperator}
-          ListHeaderComponent={ListHeaderComponent}
-          scrollEnabled={scrollEnabled}
-          ListFooterComponent={newsFeedListFooterComponent}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderNewsFeed}
-          onEndReached={onEndReached}
-          onMomentumScrollBegin={onMomentumScrollBegin}
-          onEndReachedThreshold={0.5}
-          refreshing={pullRefresh}
-          onRefresh={newsFeedOnRefresh}
-          nestedScrollEnabled={true}
-          keyExtractor={newsFeedKeyExtractor}
-        />
-      ) : (
-        listEmpty()
-      )}
+      <FlatList
+        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+        onScroll={onFeedScroll}
+        ref={refs}
+        style={{flex: 1}}
+        contentContainerStyle={{paddingVertical: 15}}
+        scrollEventThrottle={16}
+        removeClippedSubviews={true}
+        legacyImplementation={true}
+        maxToRenderPerBatch={10}
+        initialNumToRender={5}
+        ListEmptyComponent={listEmpty}
+        bounces={true}
+        data={postData}
+        ItemSeparatorComponent={newsFeedListItemSeperator}
+        ListHeaderComponent={ListHeaderComponent}
+        scrollEnabled={scrollEnabled}
+        ListFooterComponent={newsFeedListFooterComponent}
+        showsVerticalScrollIndicator={false}
+        renderItem={renderNewsFeed}
+        onEndReached={onEndReached}
+        onMomentumScrollBegin={onMomentumScrollBegin}
+        onEndReachedThreshold={0.5}
+        refreshing={pullRefresh}
+        onRefresh={newsFeedOnRefresh}
+        nestedScrollEnabled={true}
+        keyExtractor={newsFeedKeyExtractor}
+      />
     </View>
   );
 };

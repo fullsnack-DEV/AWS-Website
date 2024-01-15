@@ -14,7 +14,6 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
-import Verbs from '../../../Constants/Verbs';
 import ScreenHeader from '../../../components/ScreenHeader';
 
 export default function UserSettingPrivacyScreen({navigation}) {
@@ -26,9 +25,6 @@ export default function UserSettingPrivacyScreen({navigation}) {
     strings.profileText,
     strings.basicInfoText,
     strings.sportActivityText,
-    strings.team,
-    strings.club,
-    strings.event,
     strings.privacyText,
     strings.timezoneText,
     strings.appLanguage,
@@ -52,25 +48,6 @@ export default function UserSettingPrivacyScreen({navigation}) {
 
       case strings.sportActivityText:
         navigation.navigate('HomeStack', {screen: 'SportActivityScreen'});
-        break;
-
-      case strings.team:
-        navigation.navigate('GroupInviteSettingPrivacyScreen', {
-          type: Verbs.entityTypeTeam,
-        });
-        break;
-
-      case strings.club:
-        navigation.navigate('GroupInviteSettingPrivacyScreen', {
-          type: Verbs.entityTypeClub,
-        });
-        break;
-
-      case strings.event:
-        // navigation.navigate('UserEventSettingPrivacyScreen');
-        navigation.navigate('GroupInviteSettingPrivacyScreen', {
-          type: Verbs.eventVerb,
-        });
         break;
 
       case strings.privacyText:

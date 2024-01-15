@@ -30,6 +30,13 @@ import SelectedInviteeCard from './components/SelectedInviteeCard';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
+import usePrivacySettings from '../../hooks/usePrivacySettings';
+import {
+  GroupDefalutPrivacyOptionsEnum,
+  GroupDefaultPrivacyOptionsForDoubleTeamEnum,
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../Constants/PrivacyOptionsConstant';
 
 const MessageInviteScreen = ({
   isVisible = false,
@@ -50,6 +57,7 @@ const MessageInviteScreen = ({
 
   const inputRef = useRef();
   const searchRef = useRef();
+  const {getPrivacyStatus} = usePrivacySettings();
 
   const TAB_ITEMS = [
     strings.allType,
@@ -81,6 +89,7 @@ const MessageInviteScreen = ({
           image: item.full_image ?? item.thumbnail,
           entityType: item.entity_type ?? Verbs.entityTypePlayer,
           city: item.city,
+          data: {...item},
         }));
 
         const sortedList = _.sortBy(newList, 'name');
@@ -214,6 +223,29 @@ const MessageInviteScreen = ({
     }
   }, [isVisible, selectedInviteesData]);
 
+  const checkPrivacyStatus = (entityObj = {}) => {
+    let status = true;
+    if (
+      [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(
+        entityObj.entityType,
+      )
+    ) {
+      const isDoubleSportTeam = entityObj.data.sport_type === Verbs.doubleSport;
+      const privacyVal = isDoubleSportTeam
+        ? GroupDefaultPrivacyOptionsForDoubleTeamEnum[
+            entityObj.data[PrivacyKeyEnum.Chats]
+          ]
+        : GroupDefalutPrivacyOptionsEnum[entityObj.data[PrivacyKeyEnum.Chats]];
+      status = getPrivacyStatus(privacyVal, entityObj.data);
+    } else {
+      status = getPrivacyStatus(
+        PersonalUserPrivacyEnum[entityObj.data[PrivacyKeyEnum.Chats]],
+        entityObj.data,
+      );
+    }
+    return status;
+  };
+
   return (
     <CustomModalWrapper
       isVisible={isVisible}
@@ -295,11 +327,13 @@ const MessageInviteScreen = ({
               const isChecked = selectedInvitees.some(
                 (val) => val.id === item.id,
               );
+              const chatPrivacyStatus = checkPrivacyStatus(item);
               return (
                 <InviteeCard
                   item={item}
                   onPress={() => toggleSelection(isChecked, item)}
                   isChecked={isChecked}
+                  privacyStatus={chatPrivacyStatus}
                 />
               );
             }}

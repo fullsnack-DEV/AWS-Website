@@ -23,7 +23,6 @@ import {
   defaultOptions,
   followerFollowingOptions,
   inviteToEventOptions,
-  inviteToGroupOptions,
 } from '../../../Constants/PrivacyOptionsConstant';
 import AuthContext from '../../../auth/context';
 import {
@@ -48,7 +47,16 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
       Verbs.entityTypeReferee,
     );
 
-    const finalList = [...playingSportsList, ...refereeingSportsList];
+    const scorekeepingSportsList = getEntitySportList(
+      authContext.entity.obj,
+      Verbs.entityTypeScorekeeper,
+    );
+
+    const finalList = [
+      ...playingSportsList,
+      ...refereeingSportsList,
+      ...scorekeepingSportsList,
+    ];
 
     const formattedSportsList = finalList.map((sport) => {
       const obj = {label: null, extraData: null};
@@ -65,6 +73,11 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
       if (sport.type === Verbs.entityTypeReferee) {
         obj.label = format(
           strings.refreeingSportText,
+          obj.extraData.sport_name,
+        );
+      } else if (sport.type === Verbs.entityTypeScorekeeper) {
+        obj.label = format(
+          strings.scorekeepingSportText,
           obj.extraData.sport_name,
         );
       } else {
@@ -181,17 +194,7 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
           },
         ];
 
-      case strings.createTeamDoublesSports:
-        return [
-          {
-            question: strings.whocaninviteteamtogetherdoublesports,
-            subText: strings.privacyDoubleSportSubText,
-            options: defaultOptions,
-            key: PrivacyKeyEnum.CreateTeamForDoubleSport,
-          },
-        ];
-
-      case strings.followingAndFollowers:
+      case strings.followingFollower:
         return [
           {
             question: strings.whocanfollowyou,
@@ -200,40 +203,42 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
           },
           {
             question: strings.whoCanViewFollowingAndFollowers,
-            options: followerFollowingOptions,
+            options: defaultOptions,
             key: PrivacyKeyEnum.FollowingAndFollowers,
           },
         ];
 
-      case strings.invite:
+      case strings.teamClubAndLeague:
         return [
           {
-            question: strings.whoCanInviteYouToJoinGroup,
-            options: inviteToGroupOptions,
-            key: PrivacyKeyEnum.InviteToJoinGroup,
+            question: strings.whocaninviteteamtogetherdoublesports,
+            subText: strings.privacyDoubleSportSubText,
+            options: defaultOptions,
+            key: PrivacyKeyEnum.CreateTeamForDoubleSport,
           },
+          {
+            question: strings.whoCanInviteToJoinTeams,
+            options: binaryPrivacyOptions,
+            key: PrivacyKeyEnum.InviteForTeam,
+          },
+          {
+            question: strings.whoCanInviteToJoinClubs,
+            options: binaryPrivacyOptions,
+            key: PrivacyKeyEnum.InviteForClub,
+          },
+          {
+            question: strings.whoCanInviteToJoinLeaguesTournaments,
+            options: binaryPrivacyOptions,
+            key: PrivacyKeyEnum.InviteForLeague,
+          },
+        ];
+
+      case strings.eventInvitation:
+        return [
           {
             question: strings.whoCanInviteYouToJoinEvent,
             options: inviteToEventOptions,
             key: PrivacyKeyEnum.InviteToJoinEvent,
-          },
-        ];
-
-      case strings.commentAndReply:
-        return [
-          {
-            question: strings.whoCanCommentOnYourPost,
-            options: binaryPrivacyOptions,
-            key: PrivacyKeyEnum.CommentOnPost,
-          },
-        ];
-
-      case strings.shareTitle:
-        return [
-          {
-            question: strings.whoCanShareYourPost,
-            options: binaryPrivacyOptions,
-            key: PrivacyKeyEnum.SharePost,
           },
         ];
 
@@ -243,17 +248,49 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
   };
 
   const handleOptions = (options = '', extraData = null) => {
+    if (options === strings.blocked) {
+      return;
+    }
+
     if (extraData) {
       if (extraData?.sport) {
-        navigation.navigate('SportActivityPrivacyOptionsScreen', {
-          headerTitle: options,
-          sportObject: {...extraData},
-        });
+        if (extraData.type === Verbs.entityTypePlayer) {
+          navigation.navigate('SportActivityPrivacyOptionsScreen', {
+            headerTitle: options,
+            sportObject: {...extraData},
+          });
+        } else {
+          const refereeScorekeeperQuestions = [
+            {
+              question: strings.whoCanSeeYourYearOfBirth,
+              options: defaultOptions,
+              key: PrivacyKeyEnum.YearOfBirth,
+            },
+            {
+              question: strings.whoCanSeeYourGender,
+              options: defaultOptions,
+              key: PrivacyKeyEnum.Gender,
+            },
+            {
+              question: strings.whoCanSeeYouLanguages,
+              options: defaultOptions,
+              key: PrivacyKeyEnum.Langueages,
+            },
+          ];
+          navigation.navigate('PrivacyOptionsScreen', {
+            headerTitle: options,
+            privacyOptions: refereeScorekeeperQuestions,
+            isFromSportActivitySettings: true,
+            sportObject: extraData,
+            entityType: authContext.entity.role,
+          });
+        }
       }
     } else {
       const routeParams = {
         headerTitle: options,
         privacyOptions: [],
+        entityType: authContext.entity.role,
       };
       routeParams.privacyOptions = getQuestionAndOptions(options);
       navigation.navigate('PrivacyOptionsScreen', {...routeParams});

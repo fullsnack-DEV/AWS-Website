@@ -6,9 +6,17 @@ import colors from '../../../Constants/Colors';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 
-const InviteeCard = ({item = {}, isChecked = false, onPress = () => {}}) => (
+const InviteeCard = ({
+  item = {},
+  isChecked = false,
+  onPress = () => {},
+  privacyStatus = true,
+}) => (
   <>
-    <TouchableOpacity style={styles.parent} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.parent, {opacity: privacyStatus ? 1 : 0.5}]}
+      onPress={onPress}
+      disabled={!privacyStatus}>
       <View style={styles.userDetails}>
         <GroupIcon
           imageUrl={item.image}

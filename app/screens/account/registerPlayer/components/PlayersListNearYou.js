@@ -16,12 +16,16 @@ import images from '../../../../Constants/ImagePath';
 import Verbs from '../../../../Constants/Verbs';
 import {displayLocation} from '../../../../utils';
 import ListShimmer from './ListShimmer';
+import usePrivacySettings from '../../../../hooks/usePrivacySettings';
+import {
+  BinaryPrivacyOptionsEnum,
+  PrivacyKeyEnum,
+} from '../../../../Constants/PrivacyOptionsConstant';
 
 const PlayersListNearYou = ({
   sportType,
   list = [],
   fromCreateClub = false,
-
   onChanllenge = () => {},
   searchPlayer = () => {},
   onUserClick = () => {},
@@ -29,67 +33,87 @@ const PlayersListNearYou = ({
   onInviteClick = () => {},
   loading = false,
   listloading = false,
+  loggedInEntityType = Verbs.entityTypeTeam,
 }) => {
-  const renderPlayerCard = ({item}) => (
-    <>
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.imageContainer}
-          onPress={() => onUserClick(item)}>
-          {item?.full_image ? (
-            <Image
-              source={{uri: item.full_image}}
-              style={[styles.image, {borderRadius: 20}]}
-            />
-          ) : (
-            <Image
-              source={images.profilePlaceHolder}
-              style={[styles.image, {borderRadius: 20}]}
-            />
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{flex: 1, alignItems: 'flex-start', marginHorizontal: 10}}
-          onPress={() => onUserClick(item)}>
-          <Text style={styles.name} numberOfLines={1}>
-            {item.full_name}
-          </Text>
+  const {getPrivacyStatus} = usePrivacySettings();
 
-          <Text style={styles.address} numberOfLines={1}>
-            {displayLocation(item)}
-          </Text>
-        </TouchableOpacity>
-        {sportType === Verbs.sportTypeSingle && !fromCreateClub ? (
+  const getPrivacyVal = (data = {}) => {
+    if (loggedInEntityType === Verbs.entityTypeTeam) {
+      return data[PrivacyKeyEnum.InviteForTeam];
+    }
+    return data[PrivacyKeyEnum.InviteForClub];
+  };
+
+  const renderPlayerCard = ({item}) => {
+    const inviteStatus = [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(
+      loggedInEntityType,
+    )
+      ? getPrivacyStatus(BinaryPrivacyOptionsEnum(getPrivacyVal(item), item))
+      : true;
+
+    return (
+      <>
+        <View style={styles.row}>
           <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={() => onChanllenge(item)}>
-            <Text style={styles.buttonText}>{strings.challenge}</Text>
+            style={styles.imageContainer}
+            onPress={() => onUserClick(item)}>
+            {item?.full_image ? (
+              <Image
+                source={{uri: item.full_image}}
+                style={[styles.image, {borderRadius: 20}]}
+              />
+            ) : (
+              <Image
+                source={images.profilePlaceHolder}
+                style={[styles.image, {borderRadius: 20}]}
+              />
+            )}
           </TouchableOpacity>
-        ) : null}
-        {sportType === Verbs.sportTypeDouble ? (
           <TouchableOpacity
-            style={[
-              styles.buttonContainer,
-              {backgroundColor: colors.lightGrayBackground},
-            ]}
-            onPress={() => onChoose(item)}>
-            <Text style={[styles.buttonText, {color: colors.themeColor}]}>
-              {strings.choose}
+            style={{flex: 1, alignItems: 'flex-start', marginHorizontal: 10}}
+            onPress={() => onUserClick(item)}>
+            <Text style={styles.name} numberOfLines={1}>
+              {item.full_name}
+            </Text>
+
+            <Text style={styles.address} numberOfLines={1}>
+              {displayLocation(item)}
             </Text>
           </TouchableOpacity>
-        ) : null}
+          {sportType === Verbs.sportTypeSingle && !fromCreateClub ? (
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => onChanllenge(item)}>
+              <Text style={styles.buttonText}>{strings.challenge}</Text>
+            </TouchableOpacity>
+          ) : null}
+          {sportType === Verbs.sportTypeDouble ? (
+            <TouchableOpacity
+              style={[
+                styles.buttonContainer,
+                {backgroundColor: colors.lightGrayBackground},
+              ]}
+              onPress={() => onChoose(item)}>
+              <Text style={[styles.buttonText, {color: colors.themeColor}]}>
+                {strings.choose}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
 
-        {fromCreateClub && sportType === Verbs.sportTypeSingle ? (
-          <TouchableOpacity
-            style={[styles.buttonContainer, {width: 75}]}
-            onPress={() => onInviteClick(item)}>
-            <Text style={styles.buttonText}>{strings.invite}</Text>
-          </TouchableOpacity>
-        ) : null}
-      </View>
-      <View style={styles.dividor} />
-    </>
-  );
+          {fromCreateClub &&
+          sportType === Verbs.sportTypeSingle &&
+          inviteStatus ? (
+            <TouchableOpacity
+              style={[styles.buttonContainer, {width: 75}]}
+              onPress={() => onInviteClick(item)}>
+              <Text style={styles.buttonText}>{strings.invite}</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+        <View style={styles.dividor} />
+      </>
+    );
+  };
 
   if (list.length > 0) {
     return (

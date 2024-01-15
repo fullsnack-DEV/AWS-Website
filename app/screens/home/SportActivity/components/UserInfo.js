@@ -29,6 +29,7 @@ const UserInfo = ({
   entityType = Verbs.entityTypePlayer,
   sportType = '',
   onPressUser = () => {},
+  chatPrivacyStatus = true,
 }) => {
   const getLookingForContainer = () => {
     if (isLookingForClub && entityType === Verbs.entityTypePlayer) {
@@ -98,7 +99,7 @@ const UserInfo = ({
           </View>
           {getLookingForContainer()}
         </View>
-        {!isAdmin ? (
+        {!isAdmin && chatPrivacyStatus ? (
           <TouchableOpacity
             style={styles.messageIconContainer}
             onPress={onMessageClick}>

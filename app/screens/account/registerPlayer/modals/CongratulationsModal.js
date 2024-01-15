@@ -280,6 +280,7 @@ const CongratulationsModal = ({
             onUserClick(item);
           }}
           onChoose={onChoose}
+          loggedInEntityType={authContext.entity.role}
         />
       );
     }

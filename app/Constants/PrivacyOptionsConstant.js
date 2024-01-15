@@ -17,7 +17,7 @@ const PrivacyKeyEnum = {
   Langueages: 'who_can_see_languages',
   Scoreboard: 'who_can_see_scoreboard',
   ScoreboardTimePeriod: 'what_period_can_other_people_can_see',
-  Follow: 'who_can_follow_you',
+  Follow: 'who_can_follow_me',
   Chats: 'who_can_invite_you_to_chat',
   FollowingAndFollowers: 'who_can_view_follower_following',
   InviteToJoinGroup: 'who_can_invite_to_join_group',
@@ -26,6 +26,14 @@ const PrivacyKeyEnum = {
   CreateTeamForDoubleSport: 'who_can_invite_for_doubles_team',
   SharePost: 'who_can_share_post',
   CommentOnPost: 'who_can_comment_reply_post',
+  PostWrite: 'who_can_write_posts',
+  MemberToJoinTeam: 'who_can_Join_Team',
+  InvitePersonToJoinTeam: 'who_can_invite_person_to_join_your_team',
+  ViewYourTeamMembers: 'who_Can_View_Your_Team_Members',
+  Followers: 'who_Can_Follow_Your_Team',
+  InviteForTeam: 'who_can_invite_for_team',
+  InviteForClub: 'who_can_invite_for_club',
+  InviteForLeague: 'who_can_invite_for_league',
 };
 
 const UserPrivacySettingOptions = [
@@ -61,25 +69,24 @@ const UserPrivacySettingOptions = [
   {
     title: strings.otherTitle,
     data: [
-      {label: strings.followingAndFollowers, extraData: null},
+      {label: strings.followingFollower, extraData: null},
+      {label: strings.teamClubAndLeague, extraData: null},
+      {label: strings.eventInvitation, extraData: null},
       {label: strings.chatsTitle, extraData: null},
-      {label: strings.invite, extraData: null},
       {label: strings.tag, extraData: null},
-      {label: strings.createTeamDoublesSports, extraData: null},
-      {label: strings.commentAndReply, extraData: null},
-      {label: strings.shareTitle, extraData: null},
+      {label: strings.blocked, extraData: null},
     ],
   },
 ];
 
 const binaryPrivacyOptions = [
-  {label: strings.everyoneTitleText, value: 1},
-  {label: strings.onlymeTitleText, value: 0},
+  {label: strings.yes, value: 1},
+  {label: strings.no, value: 0},
 ];
 
 const BinaryPrivacyOptionsEnum = {
-  0: strings.onlymeTitleText,
-  1: strings.everyoneTitleText,
+  0: strings.no,
+  1: strings.yes,
 };
 
 const PersonalUserPrivacyEnum = {
@@ -111,13 +118,13 @@ const scoreboardPeriodPrivacyOptions = [
 ];
 
 const followerFollowingOptions = [
-  {label: strings.everyoneTitleText, value: 1},
-  {label: strings.byrequestaccepted, value: 2},
+  {label: strings.everyoneTitleText, value: 0},
+  {label: strings.byrequestaccepted, value: 1},
 ];
 
 const FollowerFollowingOptionsEnum = {
-  1: strings.everyoneTitleText,
-  2: strings.byrequestaccepted,
+  0: strings.everyoneTitleText,
+  1: strings.byrequestaccepted,
 };
 
 const inviteToGroupOptions = [
@@ -147,6 +154,62 @@ const InviteToEventOptionsEnum = {
   2: strings.followersMyTeamClub,
   3: strings.myTeamClub,
 };
+const GroupPrivacySettingsOptions = [
+  strings.postTitle,
+  strings.events,
+  strings.galleryTitle,
+  strings.membersTitle,
+  strings.followerTitleText,
+  strings.chatsTitle,
+  strings.invite,
+  strings.tag,
+];
+
+const groupPrivacyDefalutOptions = [
+  {label: strings.everyoneTitleText, value: 1},
+  {label: strings.followersAndClub, value: 2},
+  {label: strings.teamMembersAndClub, value: 3},
+  {label: strings.clubsAndTeam, value: 4},
+];
+
+const GroupDefalutPrivacyOptionsEnum = {
+  1: strings.everyoneTitleText,
+  2: strings.followersAndClub,
+  3: strings.teamMembersAndClub,
+  4: strings.clubsAndTeam,
+};
+
+const groupDefaultPrivacyOptionsForDoubleTeam = [
+  {label: strings.everyoneTitleText, value: 1},
+  {label: strings.followersAndClub, value: 2},
+  {label: strings.teamMembersAndClub, value: 3},
+  {label: strings.onlyTeamTitle, value: 0},
+];
+
+const GroupDefaultPrivacyOptionsForDoubleTeamEnum = {
+  1: strings.everyoneTitleText,
+  2: strings.followersAndClub,
+  3: strings.teamMembersAndClub,
+  0: strings.onlyTeamTitle,
+};
+
+const groupMemberJoinTeam = [
+  {label: strings.everyoneText, values: 1},
+  {label: strings.requestAccepted, values: 2},
+  {label: strings.invitedOnly, values: 0},
+];
+
+const groupMemberInvitePersonJoinTeam = [
+  {label: strings.teamMembers, value: 1},
+  {label: strings.onlyTeamTitle, value: 0},
+];
+
+const groupMembersSportdefaultOptions = [
+  {label: strings.everyoneTitleText, value: 1},
+  {label: strings.followersAndClub, value: 2},
+  {label: strings.teamMembersAndClub, value: 3},
+  {label: strings.clubsAndTeam, value: 4},
+];
 
 export {
   UserPrivacySettingOptions,
@@ -163,4 +226,12 @@ export {
   InviteToGroupOptionsEnum,
   binaryPrivacyOptions,
   BinaryPrivacyOptionsEnum,
+  GroupPrivacySettingsOptions,
+  groupPrivacyDefalutOptions,
+  groupMemberJoinTeam,
+  groupMemberInvitePersonJoinTeam,
+  groupMembersSportdefaultOptions,
+  groupDefaultPrivacyOptionsForDoubleTeam,
+  GroupDefalutPrivacyOptionsEnum,
+  GroupDefaultPrivacyOptionsForDoubleTeamEnum,
 };

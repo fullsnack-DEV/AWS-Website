@@ -53,7 +53,7 @@ import GroupMembership from '../../../components/groupConnections/GroupMembershi
 import TCMemberProfile from '../../../components/TCMemberProfile';
 import {shortMonthNames} from '../../../utils/constant';
 import Verbs from '../../../Constants/Verbs';
-import {sendInvitationInGroup} from '../../../api/Users';
+import {getUserDetails, sendInvitationInGroup} from '../../../api/Users';
 import {getHitSlop, getJSDate, showAlert} from '../../../utils';
 import TCProfileButton from '../../../components/TCProfileButton';
 import TCKeyboardView from '../../../components/TCKeyboardView';
@@ -70,6 +70,11 @@ import EditMemberModal from './editMemberProfile/EditMemberModal';
 import EditMemberInfoModal from './editMemberProfile/EditMemberInfoModal';
 import ScreenHeader from '../../../components/ScreenHeader';
 import BottomSheet from '../../../components/modals/BottomSheet';
+import usePrivacySettings from '../../../hooks/usePrivacySettings';
+import {
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../../Constants/PrivacyOptionsConstant';
 
 let entity = {};
 export default function MembersProfileScreen({navigation, route}) {
@@ -111,6 +116,9 @@ export default function MembersProfileScreen({navigation, route}) {
   const [showEditInfoModal, setShowEditInfoModal] = useState(false);
   const {onSwitchProfile} = useSwitchAccount();
   entity = authContext.entity;
+
+  const {getPrivacyStatus} = usePrivacySettings();
+  const [chatPrivacyStatus, setChatPrivacyStatus] = useState(true);
 
   const handleBackPress = useCallback(() => {
     if (route.params?.comeFrom === 'HomeScreen') {
@@ -294,6 +302,20 @@ export default function MembersProfileScreen({navigation, route}) {
     if (!firstTimeLoad) setloading(true);
     entity = authContext.entity;
     setSwitchUser(entity);
+
+    getUserDetails(memberID, authContext)
+      .then((res) => {
+        if (res.payload?.user_id) {
+          const status = getPrivacyStatus(
+            PersonalUserPrivacyEnum[res.payload[PrivacyKeyEnum.Chats]],
+            res.payload,
+          );
+          setChatPrivacyStatus(status);
+        }
+      })
+      .catch((err) => {
+        console.log('error for getting userinfo ==>', err);
+      });
 
     // Setting of Edit option
 
@@ -1442,17 +1464,26 @@ export default function MembersProfileScreen({navigation, route}) {
                       getJSDate(memberDetail.updated_date).getFullYear(),
                     )}
                   </Text>
-                  <TCProfileButton
-                    title={
-                      memberDetail.connected ? strings.message : strings.email
-                    }
-                    style={[styles.messageButtonStyle, {width: 80}]}
-                    textStyle={styles.buttonTextStyle}
-                    showArrow={false}
-                    onPressProfile={() => {
-                      if (memberDetail.connected) {
-                        onMessageButtonPress(memberDetail);
-                      } else {
+
+                  {memberDetail.connected ? (
+                    chatPrivacyStatus && (
+                      <TCProfileButton
+                        title={strings.message}
+                        style={[styles.messageButtonStyle, {width: 80}]}
+                        textStyle={styles.buttonTextStyle}
+                        showArrow={false}
+                        onPressProfile={() => {
+                          onMessageButtonPress(memberDetail);
+                        }}
+                      />
+                    )
+                  ) : (
+                    <TCProfileButton
+                      title={strings.email}
+                      style={[styles.messageButtonStyle, {width: 80}]}
+                      textStyle={styles.buttonTextStyle}
+                      showArrow={false}
+                      onPressProfile={() => {
                         Linking.canOpenURL('mailto:')
                           .then((supported) => {
                             if (!supported) {
@@ -1467,9 +1498,9 @@ export default function MembersProfileScreen({navigation, route}) {
                           .catch((err) => {
                             console.error(err);
                           });
-                      }
-                    }}
-                  />
+                      }}
+                    />
+                  )}
                 </View>
 
                 {!memberDetail.connected && (
@@ -1757,12 +1788,10 @@ export default function MembersProfileScreen({navigation, route}) {
                 </TouchableOpacity>
               </View>
 
-
               <BottomSheet
                 isVisible={showActionSheet}
                 closeModal={() => setShowActionSheet(false)}
                 optionList={[
-
                   strings.sendrequestForBaicInfoText,
                   strings.editAdminPrivillege,
                 ]}

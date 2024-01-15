@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {strings} from '../../Localization/translation';
 import AuthContext from '../auth/context';
 import Verbs from '../Constants/Verbs';
@@ -7,16 +7,58 @@ import {
   PrivacyKeyEnum,
   ScoreboardPeriodPrivacyOptionsEnum,
 } from '../Constants/PrivacyOptionsConstant';
+import {getUserFollowerFollowing} from '../api/Users';
+import {getGroupMembers} from '../api/Groups';
 
 const usePrivacySettings = () => {
   const authContext = useContext(AuthContext);
+  const [followings, setFollowings] = useState([]);
+  const [memberList, setMemberList] = useState([]);
+
+  useEffect(() => {
+    getUserFollowerFollowing(
+      authContext.entity.uid,
+      Verbs.entityTypePlayers,
+      Verbs.followingVerb,
+      authContext,
+    )
+      .then((res) => {
+        const idList =
+          res.payload?.length > 0
+            ? res.payload.map((item) => item.user_id ?? item.group_id)
+            : [];
+        setFollowings(idList);
+      })
+      .catch((err) => {
+        console.log('error ==>', err);
+      });
+  }, [authContext]);
+
+  useEffect(() => {
+    if (
+      authContext.entity.role === Verbs.entityTypeTeam ||
+      authContext.entity.role === Verbs.entityTypeClub
+    ) {
+      getGroupMembers(authContext.entity.uid, authContext)
+        .then((res) => {
+          const idList =
+            res.payload?.length > 0
+              ? res.payload.map((item) => item.user_id)
+              : [];
+          setMemberList(idList);
+        })
+        .catch((err) => {
+          console.log('error ==>', err);
+        });
+    }
+  }, [authContext]);
 
   const checkIsMyTeamClub = (entityId = '') => {
     if (
       authContext.entity.role === Verbs.entityTypeTeam ||
       authContext.entity.role === Verbs.entityTypeClub
     ) {
-      return authContext.entity.obj.user_history.includes(entityId);
+      return memberList.includes(entityId);
     }
 
     return false;
@@ -32,7 +74,13 @@ const usePrivacySettings = () => {
       return true;
     }
 
-    if ([strings.onlymeTitleText, strings.noneText].includes(privacyVal)) {
+    if (
+      [
+        strings.onlymeTitleText,
+        strings.noneText,
+        strings.onlyTeamTitle,
+      ].includes(privacyVal)
+    ) {
       return authContext.entity.uid === entityId;
     }
 
@@ -43,12 +91,9 @@ const usePrivacySettings = () => {
 
     if (privacyVal === strings.followersMyTeamClub) {
       const isMyTeamClub = checkIsMyTeamClub(entityId);
+      const isMyFollower = followings.includes(entityId);
 
-      return isMyTeamClub || entityObj.is_following;
-    }
-
-    if (privacyVal === strings.byrequestaccepted) {
-      return entityObj.is_following;
+      return isMyTeamClub || isMyFollower;
     }
 
     if (
@@ -58,6 +103,40 @@ const usePrivacySettings = () => {
       const isMyTeamClub = checkIsMyTeamClub(entityId);
       return isMyTeamClub;
     }
+
+    if (privacyVal === strings.followersAndClub) {
+      const isMyFollower = followings.includes(authContext.entity.uid);
+      const isMyClub =
+        entityObj.parent_groups?.length > 0
+          ? entityObj.parent_groups.includes(authContext.entity.uid)
+          : false;
+
+      return isMyClub || isMyFollower;
+    }
+
+    if (privacyVal === strings.teamMembersAndClub) {
+      const isTeamMember =
+        entityObj.user_history?.length > 0
+          ? entityObj.user_history.includes(authContext.entity.uid)
+          : false;
+
+      const isMyClub =
+        entityObj.parent_groups?.length > 0
+          ? entityObj.parent_groups.includes(authContext.entity.uid)
+          : false;
+
+      return isTeamMember || isMyClub;
+    }
+
+    if (privacyVal === strings.clubsAndTeam) {
+      const isMyClub =
+        entityObj.parent_groups?.length > 0
+          ? entityObj.parent_groups.includes(authContext.entity.uid)
+          : false;
+
+      return isMyClub;
+    }
+
     return true;
   };
 

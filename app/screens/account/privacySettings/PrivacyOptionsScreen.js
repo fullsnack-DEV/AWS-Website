@@ -4,6 +4,7 @@ import {
   View,
   BackHandler,
   ScrollView,
+  Text,
 } from 'react-native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {useIsFocused} from '@react-navigation/native';
@@ -15,8 +16,9 @@ import AuthContext from '../../../auth/context';
 import {
   BinaryPrivacyOptionsEnum,
   FollowerFollowingOptionsEnum,
+  GroupDefalutPrivacyOptionsEnum,
+  GroupDefaultPrivacyOptionsForDoubleTeamEnum,
   InviteToEventOptionsEnum,
-  InviteToGroupOptionsEnum,
   PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
   ScoreboardPeriodPrivacyOptionsEnum,
@@ -26,6 +28,8 @@ import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {setAuthContextData} from '../../../utils';
 import colors from '../../../Constants/Colors';
 import Verbs from '../../../Constants/Verbs';
+import fonts from '../../../Constants/Fonts';
+import {patchGroup} from '../../../api/Groups';
 
 const PrivacyOptionsScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -84,29 +88,63 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
     ],
   );
 
-  const getLabelForOption = useCallback((key, privacyVal) => {
-    switch (key) {
-      case PrivacyKeyEnum.YearOfBirth:
-        return ScoreboardPeriodPrivacyOptionsEnum[privacyVal];
+  const getLabelForOption = useCallback(
+    (key, privacyVal) => {
+      if (
+        [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(
+          authContext.entity.role,
+        )
+      ) {
+        switch (key) {
+          case PrivacyKeyEnum.Posts:
+            if (authContext.entity.obj.sport_type === Verbs.doubleSport) {
+              return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
+            }
+            return GroupDefalutPrivacyOptionsEnum[privacyVal];
 
-      case PrivacyKeyEnum.Follow:
-      case PrivacyKeyEnum.FollowingAndFollowers:
-        return FollowerFollowingOptionsEnum[privacyVal];
+          case PrivacyKeyEnum.PostWrite:
+            if (authContext.entity.obj.sport_type === Verbs.doubleSport) {
+              return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
+            }
+            return GroupDefalutPrivacyOptionsEnum[privacyVal];
 
-      case PrivacyKeyEnum.InviteToJoinEvent:
-        return InviteToEventOptionsEnum[privacyVal];
+          case PrivacyKeyEnum.Chats:
+            if (authContext.entity.obj.sport_type === Verbs.doubleSport) {
+              return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
+            }
+            return GroupDefalutPrivacyOptionsEnum[privacyVal];
 
-      case PrivacyKeyEnum.InviteToJoinGroup:
-        return InviteToGroupOptionsEnum[privacyVal];
+          case PrivacyKeyEnum.Gallery:
+            if (authContext.entity.obj.sport_type === Verbs.doubleSport) {
+              return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
+            }
+            return GroupDefalutPrivacyOptionsEnum[privacyVal];
 
-      case strings.commentAndReply:
-      case strings.shareTitle:
-        return BinaryPrivacyOptionsEnum[privacyVal];
+          default:
+            return GroupDefalutPrivacyOptionsEnum[privacyVal];
+        }
+      } else {
+        switch (key) {
+          case PrivacyKeyEnum.YearOfBirth:
+            return ScoreboardPeriodPrivacyOptionsEnum[privacyVal];
 
-      default:
-        return PersonalUserPrivacyEnum[privacyVal];
-    }
-  }, []);
+          case PrivacyKeyEnum.Follow:
+            return FollowerFollowingOptionsEnum[privacyVal];
+
+          case PrivacyKeyEnum.InviteToJoinEvent:
+            return InviteToEventOptionsEnum[privacyVal];
+
+          case PrivacyKeyEnum.InviteForTeam:
+          case PrivacyKeyEnum.InviteForClub:
+            return BinaryPrivacyOptionsEnum[privacyVal];
+
+          default:
+            return PersonalUserPrivacyEnum[privacyVal];
+        }
+      }
+    },
+    [authContext.entity.obj.sport_type, authContext.entity.role],
+  );
 
   useEffect(() => {
     const backAction = () => {
@@ -146,54 +184,74 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
     });
 
     if (
-      route.params?.isFromSportActivitySettings &&
-      route.params?.sportObject?.sport
+      [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(
+        authContext.entity.role,
+      )
     ) {
-      const entity = {...authContext.entity.obj};
-      if (route.params.sportObject.type === Verbs.entityTypePlayer) {
-        const updatedSports = (entity.registered_sports ?? []).map((item) => {
-          if (item.sport === route.params.sportObject.sport) {
-            return {
-              ...item,
-              privacy_settings: {
-                ...(item?.privacy_settings ?? {}),
-                ...privacyKeyValues,
-              },
-            };
-          }
-          return item;
-        });
-        payload.registered_sports = [...updatedSports];
-      } else if (route.params.sportObject.type === Verbs.entityTypeReferee) {
-        const updatedSports = (entity.referee_data ?? []).map((item) => {
-          if (item.sport === route.params.sportObject.sport) {
-            return {
-              ...item,
-              privacy_settings: {
-                ...(item?.privacy_settings ?? {}),
-                ...privacyKeyValues,
-              },
-            };
-          }
-          return item;
-        });
-        payload.referee_data = [...updatedSports];
-      }
-    } else {
       payload = {...privacyKeyValues};
-    }
 
-    setLoading(true);
-    patchPlayer(payload, authContext)
-      .then(async (response) => {
-        await setAuthContextData(response.payload, authContext);
-        navigation.goBack();
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log('error ==>', err);
-        setLoading(false);
-      });
+      setLoading(true);
+      patchGroup(authContext.entity.uid, payload, authContext)
+        .then(async (response) => {
+          await setAuthContextData(response.payload, authContext);
+          navigation.goBack();
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log('error ==>', err);
+          setLoading(false);
+        });
+    } else {
+      if (
+        route.params?.isFromSportActivitySettings &&
+        route.params?.sportObject?.sport
+      ) {
+        const entity = {...authContext.entity.obj};
+        if (route.params.sportObject.type === Verbs.entityTypePlayer) {
+          const updatedSports = (entity.registered_sports ?? []).map((item) => {
+            if (item.sport === route.params.sportObject.sport) {
+              return {
+                ...item,
+                privacy_settings: {
+                  ...(item?.privacy_settings ?? {}),
+                  ...privacyKeyValues,
+                },
+              };
+            }
+            return item;
+          });
+          payload.registered_sports = [...updatedSports];
+        } else if (route.params.sportObject.type === Verbs.entityTypeReferee) {
+          const updatedSports = (entity.referee_data ?? []).map((item) => {
+            if (item.sport === route.params.sportObject.sport) {
+              return {
+                ...item,
+                privacy_settings: {
+                  ...(item?.privacy_settings ?? {}),
+                  ...privacyKeyValues,
+                },
+              };
+            }
+            return item;
+          });
+          payload.referee_data = [...updatedSports];
+        }
+      } else {
+        payload = {...privacyKeyValues};
+      }
+
+      setLoading(true);
+      patchPlayer(payload, authContext)
+        .then(async (response) => {
+          await setAuthContextData(response.payload, authContext);
+          navigation.goBack();
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log('error ==>', err);
+          setLoading(false);
+        });
+    }
   };
 
   return (
@@ -208,40 +266,48 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
       />
 
       <ActivityLoader visible={loading} />
+      <View style={{flex: 1}}>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          showsVerticalScrollIndicator={false}>
+          {(privacyOptions ?? []).map((item, index) => {
+            const selectedOption =
+              selectedOptions.find((ele) => item.key === ele.key) ?? {};
 
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}>
-        {(privacyOptions ?? []).map((item, index) => {
-          const selectedOption =
-            selectedOptions.find((ele) => item.key === ele.key) ?? {};
+            return (
+              <View key={index}>
+                <QuestionAndOptionsComponent
+                  title={item.question}
+                  subText={item?.subText}
+                  options={item.options}
+                  privacyKey={item.key}
+                  onSelect={(option) => {
+                    const updatedList = selectedOptions.map((ele) => {
+                      if (ele.key === option.key) {
+                        return {...option};
+                      }
+                      return ele;
+                    });
 
-          return (
-            <View key={index}>
-              <QuestionAndOptionsComponent
-                title={item.question}
-                subText={item?.subText}
-                options={item.options}
-                privacyKey={item.key}
-                onSelect={(option) => {
-                  const updatedList = selectedOptions.map((ele) => {
-                    if (ele.key === option.key) {
-                      return {...option};
-                    }
-                    return ele;
-                  });
-
-                  setSelectedOptions(updatedList);
-                }}
-                selectedOption={selectedOption}
-              />
-              {privacyOptions.length - 1 !== index && (
-                <View style={styles.separatorLine} />
-              )}
-            </View>
-          );
-        })}
-      </ScrollView>
+                    setSelectedOptions(updatedList);
+                  }}
+                  selectedOption={selectedOption}
+                />
+                {privacyOptions.length - 1 !== index && (
+                  <View style={styles.separatorLine} />
+                )}
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
+      {[Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(
+        authContext.entity.role,
+      ) && (
+        <View style={styles.bottomContainer}>
+          <Text style={styles.note}>{strings.groupsBottomText}</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -258,6 +324,17 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.grayBackgroundColor,
     marginVertical: 25,
+  },
+  bottomContainer: {
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingBottom: 25,
+  },
+  note: {
+    fontSize: 14,
+    lineHeight: 24,
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
 });
 

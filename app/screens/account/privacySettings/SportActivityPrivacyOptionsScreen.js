@@ -26,45 +26,103 @@ const SportActivityPrivacyOptionsScreen = ({navigation, route}) => {
 
   useEffect(() => {
     if (sportObject?.type) {
-      if (sportObject.type === Verbs.entityTypeReferee) {
-        setOptions([strings.infoTitle]);
-      } else {
+      if (sportObject.type === Verbs.entityTypePlayer) {
         setOptions([strings.infoTitle, strings.scoreboard]);
       }
     }
   }, [sportObject?.type]);
 
   const getChildOptions = () => {
-    if (sportObject.type === Verbs.entityTypePlayer) {
-      if (sportObject.sport_type === Verbs.singleSport) {
-        return [
-          strings.basicinfotitle,
-          strings.homeFacility,
-          strings.clubsTitleText,
-          strings.leaguesTitle,
-        ];
-      }
+    if (sportObject.sport_type === Verbs.singleSport) {
       return [
         strings.basicinfotitle,
-        strings.teamsTitleText,
+        strings.homeFacility,
         strings.clubsTitleText,
         strings.leaguesTitle,
       ];
     }
-    if (sportObject.type === Verbs.entityTypeReferee) {
-      return [strings.basicinfotitle];
+    return [
+      strings.basicinfotitle,
+      strings.teamsTitleText,
+      strings.clubsTitleText,
+      strings.leaguesTitle,
+    ];
+  };
+
+  const getQuestions = (option) => {
+    switch (option) {
+      case strings.homeFacility:
+        return [
+          {
+            question: strings.whoCanSeeHomeFacility,
+            options: defaultOptions,
+            key: PrivacyKeyEnum.HomeFacility,
+          },
+        ];
+
+      case strings.clubsTitleText:
+        return [
+          {
+            question: strings.whoCanSeeYourClubs,
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Clubs,
+          },
+        ];
+
+      case strings.teamsTitleText:
+        return [
+          {
+            question: strings.whoCanSeeYourTeams,
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Teams,
+          },
+        ];
+
+      case strings.leaguesTitle:
+        return [
+          {
+            question: strings.whoCanSeeYourLeagues,
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Leagues,
+          },
+        ];
+
+      case strings.basicinfotitle:
+        return [
+          {
+            question: strings.whoCanSeeYourYearOfBirth,
+            options: defaultOptions,
+            key: PrivacyKeyEnum.YearOfBirth,
+          },
+          {
+            question: strings.whoCanSeeYourGender,
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Gender,
+          },
+          {
+            question: strings.whoCanSeeYourHeight,
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Height,
+          },
+          {
+            question: strings.whoCanSeeYourWeight,
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Weight,
+          },
+          {
+            question: strings.whoCanSeeYouLanguages,
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Langueages,
+          },
+        ];
+
+      default:
+        return [];
     }
-    return [];
   };
 
   const onOptionPress = (option = '') => {
-    if (option === strings.infoTitle) {
-      navigation.navigate('SportActivityPrivacyChildOptions', {
-        headerTitle: option,
-        options: getChildOptions(),
-        sportObject,
-      });
-    } else {
+    if (option === strings.scoreboard) {
       const scoreboardOptions = [
         {
           question: strings.whoCanSeeYourScoreboard,
@@ -80,8 +138,15 @@ const SportActivityPrivacyOptionsScreen = ({navigation, route}) => {
       ];
 
       navigation.navigate('PrivacyOptionsScreen', {
-        headerTitle: options,
+        headerTitle: option,
         privacyOptions: scoreboardOptions,
+        isFromSportActivitySettings: true,
+        sportObject,
+      });
+    } else {
+      navigation.navigate('PrivacyOptionsScreen', {
+        headerTitle: option,
+        privacyOptions: getQuestions(option),
         isFromSportActivitySettings: true,
         sportObject,
       });
@@ -101,16 +166,39 @@ const SportActivityPrivacyOptionsScreen = ({navigation, route}) => {
           ? options.map((option, index) => (
               <View key={index}>
                 <TouchableOpacity
+                  disabled={option === strings.infoTitle}
                   style={styles.buttonContainer}
                   onPress={() => onOptionPress(option)}>
                   <View style={{flex: 1}}>
                     <Text style={styles.label}>{option}</Text>
                   </View>
-                  <View style={styles.nextArrow}>
-                    <Image source={images.nextArrow} style={styles.image} />
-                  </View>
+                  {option !== strings.infoTitle && (
+                    <View style={styles.nextArrow}>
+                      <Image source={images.nextArrow} style={styles.image} />
+                    </View>
+                  )}
                 </TouchableOpacity>
                 <View style={styles.separatorLine} />
+                {option === strings.infoTitle &&
+                  getChildOptions().map((item, idx) => (
+                    <View key={item + idx} style={{paddingLeft: 35}}>
+                      <TouchableOpacity
+                        style={styles.buttonContainer}
+                        onPress={() => onOptionPress(item)}>
+                        <View style={{flex: 1}}>
+                          <Text style={styles.label}>{item}</Text>
+                        </View>
+
+                        <View style={styles.nextArrow}>
+                          <Image
+                            source={images.nextArrow}
+                            style={styles.image}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      <View style={styles.separatorLine} />
+                    </View>
+                  ))}
               </View>
             ))
           : null}

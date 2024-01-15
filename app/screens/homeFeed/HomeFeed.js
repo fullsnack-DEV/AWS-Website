@@ -44,6 +44,7 @@ const HomeFeed = ({
   routeParams = {},
   forEvent = false,
   postsPrivacyStatus = true,
+  writePostPrivacyStatus = true,
 }) => {
   const authContext = useContext(AuthContext);
   const [fullScreenLoading, setFullScreenLoading] = useState(false);
@@ -207,7 +208,7 @@ const HomeFeed = ({
 
   const StickyHeaderComponent = useMemo(
     () =>
-      isAdmin && (
+      (isAdmin || writePostPrivacyStatus) && (
         <WritePost
           navigation={navigation}
           postDataItem={currentUserData}
@@ -227,7 +228,7 @@ const HomeFeed = ({
           }}
         />
       ),
-    [isAdmin, currentUserData, navigation, routeParams],
+    [isAdmin, currentUserData, navigation, routeParams, writePostPrivacyStatus],
   );
 
   const ListHeaderComponent = useMemo(
@@ -380,6 +381,7 @@ const HomeFeed = ({
           setShowLikeModal(false);
           setShowCommentModal(true);
         }}
+        viewPostPrivacyStatus={postsPrivacyStatus}
       />
       <LikersModal
         data={selectedPost}

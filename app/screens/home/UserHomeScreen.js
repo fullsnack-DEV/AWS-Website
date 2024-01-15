@@ -38,6 +38,7 @@ import useSwitchAccount from '../../hooks/useSwitchAccount';
 import {showAlert} from '../../utils';
 import JoinRequestModal from '../../components/notificationComponent/JoinRequestModal';
 import SportActivitiesModal from './components/SportActivitiesModal';
+import {PrivacyKeyEnum} from '../../Constants/PrivacyOptionsConstant';
 
 const UserHomeScreen = ({
   navigation,
@@ -50,10 +51,7 @@ const UserHomeScreen = ({
   pulltoRefresh,
   routeParams = {},
   loggedInGroupMembers = [],
-  sportActivityPrivacyStatus = true,
-  postPrivacyStatus = true,
-  eventsPrivacyStatus = true,
-  galleryPrivacyStatus = true,
+  privacyObj = {},
 }) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
@@ -69,12 +67,11 @@ const UserHomeScreen = ({
   const [followRequestSent, setFollowRequestSent] = useState(false);
   const [addSportActivityModal, setAddSportActivityModal] = useState(false);
   const [visibleSportActivities, setVisibleSportactivities] = useState(false);
-
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
   const [refreshModal, setRefreshModal] = useState(false);
   const [tab, setTab] = useState('');
-  const mainFlatListRef = useRef();
 
+  const mainFlatListRef = useRef();
   const {onSwitchProfile} = useSwitchAccount();
 
   useEffect(() => {
@@ -710,10 +707,10 @@ const UserHomeScreen = ({
 
   const userDetailsSection = () => {
     const tabList = [];
-    if (eventsPrivacyStatus) {
+    if (privacyObj[PrivacyKeyEnum.Events]) {
       tabList.push(strings.event);
     }
-    if (galleryPrivacyStatus) {
+    if (privacyObj[PrivacyKeyEnum.Gallery]) {
       tabList.push(strings.galleryTitle);
     }
 
@@ -731,7 +728,7 @@ const UserHomeScreen = ({
           loggedInEntity={authContext.entity}
         />
         <View style={styles.activityList}>
-          {sportActivityPrivacyStatus && (
+          {privacyObj[PrivacyKeyEnum.SportActivityList] && (
             <OrderedSporList
               user={currentUserData}
               type="horizontal"
@@ -763,7 +760,7 @@ const UserHomeScreen = ({
               });
             }
           }}
-          postPrivacyStatus={postPrivacyStatus}
+          postPrivacyStatus={privacyObj[PrivacyKeyEnum.Posts]}
         />
       </>
     );
@@ -790,7 +787,7 @@ const UserHomeScreen = ({
             currentTab={0}
             pulltoRefresh={pulltoRefresh}
             routeParams={routeParams}
-            postsPrivacyStatus={postPrivacyStatus}
+            postsPrivacyStatus={privacyObj[PrivacyKeyEnum.Posts]}
           />
         </View>
 

@@ -57,6 +57,16 @@ import fonts from '../../Constants/Fonts';
 import MessageAvatar from './components/MessageAvatar';
 import CustomMediaView from './components/CustomMediaView';
 import CustomImageUploadPreview from './components/CustomImageUploadPreview';
+import Verbs from '../../Constants/Verbs';
+import {getUserDetails} from '../../api/Users';
+import usePrivacySettings from '../../hooks/usePrivacySettings';
+import {
+  GroupDefalutPrivacyOptionsEnum,
+  GroupDefaultPrivacyOptionsForDoubleTeamEnum,
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../Constants/PrivacyOptionsConstant';
+import {getGroupDetails} from '../../api/Groups';
 
 const MessageChatScreen = ({navigation, route}) => {
   const {channel} = route.params;
@@ -80,6 +90,7 @@ const MessageChatScreen = ({navigation, route}) => {
   const [selectedTagMember, setSelectedTagMember] = useState({});
   const timeoutRef = useRef();
   const channelInfoModalRef = useRef();
+  const {getPrivacyStatus} = usePrivacySettings();
 
   const handleBackPress = useCallback(() => {
     navigation.setOptions({});
@@ -89,6 +100,7 @@ const MessageChatScreen = ({navigation, route}) => {
         params: {...route.params.routeParams, from: 'chatscreen'},
       });
     } else if (route.params?.comeFrom) {
+      console.log('route.params.routeParams ==>', route.params.routeParams);
       navigation.navigate(route.params.comeFrom, {
         ...route.params.routeParams,
       });
@@ -194,12 +206,11 @@ const MessageChatScreen = ({navigation, route}) => {
     );
   };
 
-  const handleTagPress = (mentions = [], mentionText = '') => {
+  const handleTagPress = async (mentions = [], mentionText = '') => {
     const entity_name = mentionText.slice(1);
     const member = mentions.find(
       (item) => item.group_name ?? item.name === entity_name,
     );
-
     if (!member) {
       return;
     }
@@ -210,11 +221,35 @@ const MessageChatScreen = ({navigation, route}) => {
     if (memberId === authContext.entity.uid) {
       return;
     }
+    let chatPrivacyStatus = true;
+    if (
+      [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(member.entityType)
+    ) {
+      const groupId = member.id.split('@')[0];
+      const response = await getGroupDetails(groupId, authContext);
+      const isDoubleSportTeam =
+        response.payload.sport_type === Verbs.doubleSport;
+      const privacyVal = isDoubleSportTeam
+        ? GroupDefaultPrivacyOptionsForDoubleTeamEnum[
+            response.payload[PrivacyKeyEnum.Chats]
+          ]
+        : GroupDefalutPrivacyOptionsEnum[
+            response.payload[PrivacyKeyEnum.Chats]
+          ];
+      chatPrivacyStatus = getPrivacyStatus(privacyVal, response.payload);
+    } else {
+      const response = await getUserDetails(member.id, authContext);
+      chatPrivacyStatus = getPrivacyStatus(
+        PersonalUserPrivacyEnum[response.payload[PrivacyKeyEnum.Chats]],
+      );
+    }
 
-    const options = [
-      format(strings.chatWith, entity_name),
-      format(strings.goToHomeOf, entity_name),
-    ];
+    const options = chatPrivacyStatus
+      ? [
+          format(strings.chatWith, entity_name),
+          format(strings.goToHomeOf, entity_name),
+        ]
+      : [format(strings.goToHomeOf, entity_name)];
 
     setSelectedTagMember(member);
     setTagOptions(options);
