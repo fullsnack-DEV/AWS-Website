@@ -444,13 +444,7 @@ export default function EntitySearchScreen({navigation, route}) {
         console.log({err});
         setSmallLoader(false);
       });
-  }, [
-    upcomingEventPageFrom,
-    upcomingEventFilters.location,
-    upcomingEventFilters.sport,
-    upcomingEventFilters.sport_type,
-    upcomingEventFilters?.searchText,
-  ]);
+  }, [upcomingEventPageFrom, upcomingEventFilters]);
 
   const getCompletedEventList = useCallback(() => {
     setSmallLoader(true);
@@ -520,13 +514,7 @@ export default function EntitySearchScreen({navigation, route}) {
         console.log({err});
         setSmallLoader(false);
       });
-  }, [
-    completedEventPageFrom,
-    completedEventFilters.location,
-    completedEventFilters.sport,
-    completedEventFilters.sport_type,
-    completedEventFilters?.searchText,
-  ]);
+  }, [completedEventPageFrom, completedEventFilters]);
 
   useEffect(() => {
     getUpcomingEventList();
@@ -569,8 +557,33 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [upcomingGameFilters]);
 
   const modifiedPlayerElasticSearchResult = (response) => {
+    let list = [...response];
+    if (playerFilter?.minFee || playerFilter?.maxFee) {
+      const minFee = playerFilter.minFee ? Number(playerFilter.minFee) : 0;
+      const maxFee = playerFilter.maxFee ? Number(playerFilter.maxFee) : 0;
+
+      const sortedList = [];
+      response.forEach((item) => {
+        const sport = (item.registered_sports ?? []).find(
+          (ele) =>
+            ele.sport === playerFilter.sport &&
+            playerFilter.sport_type === ele.sport_type,
+        );
+
+        if (sport && minFee <= sport?.setting?.game_fee?.fee) {
+          if (maxFee) {
+            if (maxFee >= sport?.setting?.game_fee?.fee) {
+              sortedList.push(item);
+            }
+          } else {
+            sortedList.push(item);
+          }
+        }
+        list = [...sortedList];
+      });
+    }
     const modifiedData = [];
-    for (const item of response) {
+    for (const item of list) {
       const registerSports = item.registered_sports.map((obj) => ({
         ...obj,
         sport_name: Utility.getSportName(obj, authContext),
@@ -581,8 +594,32 @@ export default function EntitySearchScreen({navigation, route}) {
     return modifiedData;
   };
   const modifiedRefereeElasticSearchResult = (response) => {
+    let list = [...response];
+    if (refereeFilters?.minFee || refereeFilters?.maxFee) {
+      const minFee = refereeFilters.minFee ? Number(refereeFilters.minFee) : 0;
+      const maxFee = refereeFilters.maxFee ? Number(refereeFilters.maxFee) : 0;
+
+      const sortedList = [];
+      response.forEach((item) => {
+        const sport = (item.referee_data ?? []).find(
+          (ele) => ele.sport === refereeFilters.sport,
+        );
+
+        if (sport && minFee <= sport?.setting?.game_fee?.fee) {
+          if (maxFee) {
+            if (maxFee >= sport?.setting?.game_fee?.fee) {
+              sortedList.push(item);
+            }
+          } else {
+            sortedList.push(item);
+          }
+        }
+        list = [...sortedList];
+      });
+    }
+
     const modifiedData = [];
-    for (const item of response) {
+    for (const item of list) {
       const refereeSports = item.referee_data.map((obj) => ({
         ...obj,
         sport_name: Utility.getSportName(obj, authContext),
@@ -593,8 +630,35 @@ export default function EntitySearchScreen({navigation, route}) {
     return modifiedData;
   };
   const modifiedScoreKeeperElasticSearchResult = (response) => {
+    let list = [...response];
+    if (scoreKeeperFilters?.minFee || scoreKeeperFilters?.maxFee) {
+      const minFee = scoreKeeperFilters.minFee
+        ? Number(scoreKeeperFilters.minFee)
+        : 0;
+      const maxFee = scoreKeeperFilters.maxFee
+        ? Number(scoreKeeperFilters.maxFee)
+        : 0;
+
+      const sortedList = [];
+      response.forEach((item) => {
+        const sport = (item.scorekeeper_data ?? []).find(
+          (ele) => ele.sport === scoreKeeperFilters.sport,
+        );
+
+        if (sport && minFee <= sport?.setting?.game_fee?.fee) {
+          if (maxFee) {
+            if (maxFee >= sport?.setting?.game_fee?.fee) {
+              sortedList.push(item);
+            }
+          } else {
+            sortedList.push(item);
+          }
+        }
+        list = [...sortedList];
+      });
+    }
     const modifiedData = [];
-    for (const item of response) {
+    for (const item of list) {
       const scoreKeeperSports = item.scorekeeper_data.map((obj) => ({
         ...obj,
         sport_name: Utility.getSportName(obj, authContext),
@@ -605,7 +669,27 @@ export default function EntitySearchScreen({navigation, route}) {
     return modifiedData;
   };
   const modifiedTeamElasticSearchResult = (response) => {
-    const modifiedData = response.map((obj) => ({
+    let list = [...response];
+    if (teamFilters?.minFee || teamFilters?.maxFee) {
+      const minFee = teamFilters.minFee ? Number(teamFilters.minFee) : 0;
+      const maxFee = teamFilters.maxFee ? Number(teamFilters.maxFee) : 0;
+
+      const sortedList = [];
+      response.forEach((item) => {
+        if (minFee <= item?.setting?.game_fee?.fee) {
+          if (maxFee) {
+            if (maxFee >= item?.setting?.game_fee?.fee) {
+              sortedList.push(item);
+            }
+          } else {
+            sortedList.push(item);
+          }
+        }
+      });
+      list = [...sortedList];
+    }
+
+    const modifiedData = list.map((obj) => ({
       ...obj,
       sport_name: Utility.getSportName(obj, authContext),
     }));
@@ -1435,200 +1519,118 @@ export default function EntitySearchScreen({navigation, route}) {
     </View>
   );
 
-  const handleTagPress = useCallback(
-    ({item}) => {
-      console.log(item, 'fromactual log');
-      // switch (currentSubTab) {
-      //   case strings.generalText:
-      //     break;
-      //   case strings.playerTitle: {
-      //     const tempFilter = playerFilter;
-      //     Object.keys(tempFilter).forEach((key) => {
-      //       if (key === Object.keys(item)[0]) {
-      //         if (Object.keys(item)[0] === 'sport') {
-      //           tempFilter.sport = strings.allSport;
-      //           tempFilter.sport_type = strings.allSport;
-      //           tempFilter.sport_name = strings.allSport;
-      //         }
-      //         if (Object.keys(item)[0] === 'location') {
-      //           tempFilter.location = strings.worldTitleText;
-      //           tempFilter.locationOption = locationType.WORLD;
-      //           tempFilter.isSearchPlaceholder = true;
-      //         }
-      //       }
-      //     });
+  const handleTagPress = ({item}) => {
+    const tempFilter = {...getFilterObject(currentSubTab)};
+    Object.keys(tempFilter).forEach((key) => {
+      if (key === Object.keys(item)[0]) {
+        if (Object.keys(item)[0] === 'sport') {
+          tempFilter.sport = strings.allSport;
+          tempFilter.sport_name = strings.allSport;
+          tempFilter.sport_type = strings.allSport;
+          tempFilter.minFee = 0;
+          tempFilter.maxFee = 0;
+          delete tempFilter.fee;
+        }
+        if (Object.keys(item)[0] === 'location') {
+          tempFilter.location = strings.worldTitleText;
+          tempFilter.locationOption = locationType.WORLD;
+          tempFilter.isSearchPlaceholder = true;
+        }
+        if (Object.keys(item)[0] === 'fee') {
+          tempFilter.minFee = 0;
+          tempFilter.maxFee = 0;
+          delete tempFilter.fee;
+        }
+        if (Object.keys(item)[0] === 'availableTime') {
+          delete tempFilter.availableTime;
+          delete tempFilter.fromDateTime;
+          delete tempFilter.toDateTime;
+        }
+      }
+    });
 
-      //     // applyFilter();
-      //     setTimeout(() => {
-      //       setPageFrom(0);
-      //       setplayerList([]);
-      //       setPlayerFilter({...tempFilter});
-      //     }, 10);
+    switch (currentSubTab) {
+      case strings.playerTitle:
+        setTimeout(() => {
+          setPageFrom(0);
+          setplayerList([]);
+          setPlayerFilter({...tempFilter});
+        }, 10);
 
-      //     break;
-      //   }
-      //   case strings.refereesTitle: {
-      //     const tempFilter = refereeFilters;
-      //     Object.keys(tempFilter).forEach((key) => {
-      //       if (key === Object.keys(item)[0]) {
-      //         if (Object.keys(item)[0] === 'sport') {
-      //           tempFilter.sport = strings.allSport;
-      //           tempFilter.sport_type = strings.allSport;
-      //           tempFilter.sport_name = strings.allSport;
-      //         }
-      //         if (Object.keys(item)[0] === 'location') {
-      //           tempFilter.location = strings.worldTitleText;
-      //           tempFilter.locationOption = locationType.WORLD;
-      //           tempFilter.isSearchPlaceholder = true;
-      //         }
-      //       }
-      //     });
-      //     setTimeout(() => {
-      //       setRefereesPageFrom(0);
-      //       setReferees([]);
-      //       setrRefereeFilters({...tempFilter});
-      //     }, 10);
-      //     break;
-      //   }
-      //   case strings.scorekeeperTitle: {
-      //     const tempFilter = scoreKeeperFilters;
-      //     Object.keys(tempFilter).forEach((key) => {
-      //       if (key === Object.keys(item)[0]) {
-      //         if (Object.keys(item)[0] === 'sport') {
-      //           tempFilter.sport = strings.allSport;
-      //           tempFilter.sport_type = strings.allSport;
-      //           tempFilter.sport_name = strings.allSport;
-      //         }
-      //         if (Object.keys(item)[0] === 'location') {
-      //           tempFilter.location = strings.worldTitleText;
-      //           tempFilter.locationOption = locationType.WORLD;
-      //           tempFilter.isSearchPlaceholder = true;
-      //         }
-      //       }
-      //     });
+        break;
 
-      //     setTimeout(() => {
-      //       setScorekeeperPageFrom(0);
-      //       setScorekeepers([]);
-      //       setScoreKeeperFilters({...tempFilter});
-      //     }, 10);
+      case strings.refereesTitle:
+        setTimeout(() => {
+          setRefereesPageFrom(0);
+          setReferees([]);
+          setrRefereeFilters({...tempFilter});
+        }, 10);
+        break;
 
-      //     break;
-      //   }
-      //   case strings.teamsTitleText: {
-      //     const tempFilter = teamFilters;
-      //     Object.keys(tempFilter).forEach((key) => {
-      //       if (key === Object.keys(item)[0]) {
-      //         if (Object.keys(item)[0] === 'sport') {
-      //           tempFilter.sport = strings.allSport;
-      //           tempFilter.sport_type = strings.allSport;
-      //           tempFilter.sport_name = strings.allSport;
-      //         }
-      //         if (Object.keys(item)[0] === 'location') {
-      //           tempFilter.location = strings.worldTitleText;
-      //           tempFilter.locationOption = locationType.WORLD;
-      //           tempFilter.isSearchPlaceholder = true;
-      //         }
-      //       }
-      //     });
+      case strings.scorekeeperTitle:
+        setTimeout(() => {
+          setScorekeeperPageFrom(0);
+          setScorekeepers([]);
+          setScoreKeeperFilters({...tempFilter});
+        }, 10);
 
-      //     // applyFilter();
-      //     setTimeout(() => {
-      //       setTeamsPageFrom(0);
-      //       setTeams([]);
-      //       setTeamFilters({...tempFilter});
-      //     }, 10);
+        break;
 
-      //     break;
-      //   }
-      //   case strings.clubsTitleText: {
-      //     const tempFilter = clubFilters;
-      //     Object.keys(tempFilter).forEach((key) => {
-      //       if (key === Object.keys(item)[0]) {
-      //         if (Object.keys(item)[0] === 'sport') {
-      //           tempFilter.sport = strings.allSport;
-      //           tempFilter.sport_type = strings.allSport;
-      //           tempFilter.sport_name = strings.allSport;
-      //         }
-      //         if (Object.keys(item)[0] === 'location') {
-      //           tempFilter.location = strings.worldTitleText;
-      //           tempFilter.locationOption = locationType.WORLD;
-      //           tempFilter.isSearchPlaceholder = true;
-      //         }
-      //       }
-      //     });
+      case strings.teamsTitleText:
+        setTimeout(() => {
+          setTeamsPageFrom(0);
+          setTeams([]);
+          setTeamFilters({...tempFilter});
+        }, 10);
 
-      //     // applyFilter();
-      //     setTimeout(() => {
-      //       setClubsPageFrom(0);
-      //       setClubs([]);
-      //       setClubFilters({...tempFilter});
-      //     }, 10);
+        break;
 
-      //     break;
-      //   }
-      //   case strings.completedTitleText: {
-      //     const tempFilter = completedGameFilters;
-      //     Object.keys(tempFilter).forEach((key) => {
-      //       if (key === Object.keys(item)[0]) {
-      //         if (Object.keys(item)[0] === 'sport') {
-      //           tempFilter.sport = strings.allSport;
-      //           tempFilter.sport_type = strings.allSport;
-      //           tempFilter.sport_name = strings.allSport;
-      //         }
-      //         if (Object.keys(item)[0] === 'location') {
-      //           tempFilter.location = strings.worldTitleText;
-      //           tempFilter.locationOption = locationType.WORLD;
-      //           tempFilter.isSearchPlaceholder = true;
-      //         }
-      //       }
-      //     });
-      //     // applyFilter();
-      //     setTimeout(() => {
-      //       setCompletedGamePageFrom(0);
-      //       setCompletedGame([]);
-      //       setCompletedGameFilters({...tempFilter});
-      //     }, 10);
-      //     break;
-      //   }
-      //   case strings.upcomingTitleText: {
-      //     const tempFilter = upcomingGameFilters;
-      //     Object.keys(tempFilter).forEach((key) => {
-      //       if (key === Object.keys(item)[0]) {
-      //         if (Object.keys(item)[0] === 'sport') {
-      //           tempFilter.sport = strings.allSport;
-      //           tempFilter.sport_type = strings.allSport;
-      //           tempFilter.sport_name = strings.allSport;
-      //         }
-      //         if (Object.keys(item)[0] === 'location') {
-      //           tempFilter.location = strings.worldTitleText;
-      //           tempFilter.locationOption = locationType.WORLD;
-      //           tempFilter.isSearchPlaceholder = true;
-      //         }
-      //       }
-      //     });
-      //     setTimeout(() => {
-      //       setUpcomingGamePageFrom(0);
-      //       setUpcomingGame([]);
-      //       setUpcomingGameFilters({...tempFilter});
-      //     }, 10);
-      //     break;
-      //   }
-      //   default:
-      //     break;
-      // }
-    },
-    [
-      clubFilters,
-      completedGameFilters,
-      currentSubTab,
-      playerFilter,
-      refereeFilters,
-      scoreKeeperFilters,
-      teamFilters,
-      upcomingGameFilters,
-    ],
-  );
+      case strings.clubsTitleText:
+        setTimeout(() => {
+          setClubsPageFrom(0);
+          setClubs([]);
+          setClubFilters({...tempFilter});
+        }, 10);
+
+        break;
+
+      case strings.completedTitleText:
+        if (currentTab === 2) {
+          setTimeout(() => {
+            setCompletedGamePageFrom(0);
+            setCompletedGame([]);
+            setCompletedGameFilters({...tempFilter});
+          }, 10);
+        } else if (currentTab === 3) {
+          setTimeout(() => {
+            setCompletedEventPageFrom(0);
+            setCompletedEvents([]);
+            setCompletedEventFilters({...tempFilter});
+          }, 10);
+        }
+        break;
+
+      case strings.upcomingTitleText:
+        if (currentTab === 2) {
+          setTimeout(() => {
+            setUpcomingGamePageFrom(0);
+            setUpcomingGame([]);
+            setUpcomingGameFilters({...tempFilter});
+          }, 10);
+        } else if (currentTab === 3) {
+          setTimeout(() => {
+            setUpcomingEventPageFrom(0);
+            setUpcomingEvents([]);
+            setUpcomingEventFilters({...tempFilter});
+          }, 10);
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
+
   const getLocation = async () => {
     try {
       setloading(true);
@@ -2830,6 +2832,26 @@ export default function EntitySearchScreen({navigation, route}) {
     return [...defaultSport, ...getSportList(authContext.sports, entityType)];
   };
 
+  const getFeeTitle = () => {
+    if (currentSubTab === strings.refereesTitle) {
+      return strings.refereeFee;
+    }
+
+    if (currentSubTab === strings.scorekeeperTitle) {
+      return strings.scorekeeperFee;
+    }
+
+    if (
+      currentTab === 3 &&
+      (currentSubTab === strings.upcomingTitleText ||
+        currentSubTab === strings.completedTitleText)
+    ) {
+      return strings.eventFeeTitle;
+    }
+
+    return strings.matchFee;
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <ScreenHeader
@@ -2988,6 +3010,7 @@ export default function EntitySearchScreen({navigation, route}) {
             : filterType.LOOKINGFORTEAMCLUB
         }
         showSportOption
+        showFeeOption
         filterObject={getFilterObject(currentSubTab)}
         isVisible={settingPopup}
         onPressApply={handleApplySearch}
@@ -2997,6 +3020,7 @@ export default function EntitySearchScreen({navigation, route}) {
         isEventFilter={currentTab === 3}
         showTimeComponent
         selectedTab={currentSubTab}
+        feeTitle={getFeeTitle()}
       />
 
       <CustomModalWrapper

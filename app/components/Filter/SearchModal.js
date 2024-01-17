@@ -51,6 +51,7 @@ const SearchModal = ({
   onPressApply = () => {},
   isEventFilter = false,
   showTimeComponent = false,
+  showFeeOption = false,
   selectedTab = '',
 }) => {
   const [visibleSportsModal, setVisibleSportsModal] = useState(false);
@@ -90,6 +91,14 @@ const SearchModal = ({
   }, [showTimeComponent, filters?.sport, calculateVisibilityForTimeComponent]);
 
   useEffect(() => {
+    if (showFeeOption && filters?.sport !== strings.allSport) {
+      setShowFeeComponent(calculateVisibilityForTimeComponent());
+    } else {
+      setShowFeeComponent(false);
+    }
+  }, [filters?.sport, calculateVisibilityForTimeComponent, showFeeOption]);
+
+  useEffect(() => {
     if (isVisible) {
       if (fType === filterType.RECRUIITINGMEMBERS) {
         setFilters({
@@ -117,12 +126,6 @@ const SearchModal = ({
           fType === filterType.UPCOMINGMATCHES ||
           fType === filterType.RECRUIITINGMEMBERS ||
           fType === filterType.LOOKINGFORTEAMCLUB,
-      );
-
-      setShowFeeComponent(
-        fType === filterType.REFEREES ||
-          fType === filterType.SCOREKEEPERS ||
-          fType === filterType.PLAYERAVAILABLECHALLENGE,
       );
     }
   }, [fType, filterObject, isVisible, showSportComponent]);
@@ -661,6 +664,7 @@ const SearchModal = ({
                   </View>
                 )}
 
+                {/* Available time component */}
                 {isTimeComponentVisible && (
                   <AvailableTimeComponent
                     filters={filters}
@@ -669,14 +673,10 @@ const SearchModal = ({
                     setFilters={setFilters}
                   />
                 )}
-                {filters?.sport !== strings.allSport && showFeeComponent && (
-                  <View
-                    style={{
-                      flexDirection: 'column',
-                      margin: 15,
-                      marginTop: 5,
-                      justifyContent: 'space-between',
-                    }}>
+
+                {/* Fees component */}
+                {showFeeComponent && (
+                  <View style={styles.feeContainer}>
                     <View style={{}}>
                       <Text style={styles.filterTitleBold}>{feeTitle}</Text>
                     </View>
@@ -687,9 +687,9 @@ const SearchModal = ({
                           justifyContent: 'space-between',
                         }}>
                         <TextInput
-                          onChangeText={(text) =>
-                            setFilters({...filters, minFee: text})
-                          }
+                          onChangeText={(text) => {
+                            setFilters({...filters, minFee: text});
+                          }}
                           value={filters.minFee}
                           style={styles.minFee}
                           placeholder={strings.minPlaceholder}
@@ -731,6 +731,7 @@ const SearchModal = ({
                     </View>
                   </View>
                 )}
+
                 {fType === filterType.RECRUIITINGMEMBERS && (
                   <View
                     style={{
@@ -981,5 +982,11 @@ const styles = StyleSheet.create({
   },
   groupCheckbox: {
     alignSelf: 'center',
+  },
+  feeContainer: {
+    flexDirection: 'column',
+    margin: 15,
+    marginTop: 5,
+    justifyContent: 'space-between',
   },
 });

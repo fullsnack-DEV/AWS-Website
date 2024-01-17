@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
 import React, {useCallback, useState, useEffect, useContext} from 'react';
@@ -287,7 +288,38 @@ export default function LookingTeamScreen({navigation, route}) {
             const filterData = fetchData.filter(
               (obj) => obj?.user_id !== authContext.entity.auth?.user.user_id,
             );
-            setLookingEntity(filterData);
+
+            let list = [...filterData];
+            if (lookingQuery?.minFee || lookingQuery?.maxFee) {
+              const minFee = lookingQuery.minFee
+                ? Number(lookingQuery.minFee)
+                : 0;
+              const maxFee = lookingQuery.maxFee
+                ? Number(lookingQuery.maxFee)
+                : 0;
+
+              const sortedList = [];
+              filterData.forEach((item) => {
+                const sport = (item.registered_sports ?? []).find(
+                  (ele) =>
+                    ele.sport === lookingQuery.sport &&
+                    lookingQuery.sport_type === ele.sport_type,
+                );
+
+                if (sport && minFee <= sport?.setting?.game_fee?.fee) {
+                  if (maxFee) {
+                    if (maxFee >= sport?.setting?.game_fee?.fee) {
+                      sortedList.push(item);
+                    }
+                  } else {
+                    sortedList.push(item);
+                  }
+                }
+                list = [...sortedList];
+              });
+            }
+
+            setLookingEntity(list);
             setPageFrom(pageFrom + pageSize);
             stopFetchMore = true;
           }
@@ -901,6 +933,7 @@ export default function LookingTeamScreen({navigation, route}) {
           (authContext.entity.role === Verbs.entityTypeLeague && true)
         }
         showTimeComponent
+        showFeeOption
         onPressApply={async (filterData) => {
           setloading(false);
           let tempFilter = {};

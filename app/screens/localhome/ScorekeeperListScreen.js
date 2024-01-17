@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable array-callback-return */
 import React, {useCallback, useState, useEffect, useContext} from 'react';
@@ -102,9 +103,32 @@ export default function ScorekeeperListScreen({navigation, route}) {
     applyFilter(tempFilter);
   }, [location]);
 
-  const modifiedScoreKeeperElasticSearchResult = (response) => {
+  const modifiedScoreKeeperElasticSearchResult = (response, filterData) => {
+    let list = [...response];
+    if (filterData?.minFee || filterData?.maxFee) {
+      const minFee = filterData.minFee ? Number(filterData.minFee) : 0;
+      const maxFee = filterData.maxFee ? Number(filterData.maxFee) : 0;
+
+      const sortedList = [];
+      response.forEach((item) => {
+        const sport = (item.scorekeeper_data ?? []).find(
+          (ele) => ele.sport === filterData.sport,
+        );
+
+        if (sport && minFee <= sport?.setting?.game_fee?.fee) {
+          if (maxFee) {
+            if (maxFee >= sport?.setting?.game_fee?.fee) {
+              sortedList.push(item);
+            }
+          } else {
+            sortedList.push(item);
+          }
+        }
+        list = [...sortedList];
+      });
+    }
     const modifiedData = [];
-    for (const item of response) {
+    for (const item of list) {
       const scoreKeeperSports = item.scorekeeper_data.map((obj) => ({
         ...obj,
         sport_name: Utility.getSportName(obj, authContext),
@@ -218,7 +242,10 @@ export default function ScorekeeperListScreen({navigation, route}) {
         .then((res) => {
           setSmallLoader(false);
           if (res.length > 0) {
-            const modifiedResult = modifiedScoreKeeperElasticSearchResult(res);
+            const modifiedResult = modifiedScoreKeeperElasticSearchResult(
+              res,
+              filerScorekeeper,
+            );
             const fetchedData = [...scorekeepers, ...modifiedResult];
             const filterData = fetchedData.filter(
               (obj) => obj.user_id !== authContext.entity.uid,
@@ -609,6 +636,7 @@ export default function ScorekeeperListScreen({navigation, route}) {
           (authContext.entity.role === Verbs.entityTypeClub && true)
         }
         showTimeComponent
+        showFeeOption
         filterObject={filters}
         isVisible={settingPopup}
         feeTitle={strings.scorekeeperFeeText}

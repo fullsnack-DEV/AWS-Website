@@ -104,9 +104,32 @@ export default function RefereesListScreen({navigation, route}) {
     applyFilter(tempFilter);
   }, [location]);
 
-  const modifiedRefereeElasticSearchResult = (response) => {
+  const modifiedRefereeElasticSearchResult = (response, filterData) => {
+    let list = [...response];
+    if (filterData?.minFee || filterData?.maxFee) {
+      const minFee = filterData.minFee ? Number(filterData.minFee) : 0;
+      const maxFee = filterData.maxFee ? Number(filterData.maxFee) : 0;
+
+      const sortedList = [];
+      response.forEach((item) => {
+        const sport = (item.referee_data ?? []).find(
+          (ele) => ele.sport === filterData.sport,
+        );
+
+        if (sport && minFee <= sport?.setting?.game_fee?.fee) {
+          if (maxFee) {
+            if (maxFee >= sport?.setting?.game_fee?.fee) {
+              sortedList.push(item);
+            }
+          } else {
+            sortedList.push(item);
+          }
+        }
+        list = [...sortedList];
+      });
+    }
     const modifiedData = [];
-    for (const item of response) {
+    for (const item of list) {
       const refereeSports = item.referee_data.map((obj) => ({
         ...obj,
         sport_name: Utility.getSportName(obj, authContext),
@@ -306,7 +329,10 @@ export default function RefereesListScreen({navigation, route}) {
         .then((res) => {
           setSmallLoader(false);
           if (res.length > 0) {
-            const modifiedResult = modifiedRefereeElasticSearchResult(res);
+            const modifiedResult = modifiedRefereeElasticSearchResult(
+              res,
+              filerReferee,
+            );
             const fetchedData = [...referees, ...modifiedResult];
             const filterData = fetchedData.filter(
               (obj) => obj.user_id !== authContext.entity.uid,
@@ -699,6 +725,7 @@ export default function RefereesListScreen({navigation, route}) {
           (authContext.entity.role === Verbs.entityTypeClub && true)
         }
         showTimeComponent
+        showFeeOption
         sports={sports}
         filterObject={filters}
         feeTitle={strings.refereeFee}

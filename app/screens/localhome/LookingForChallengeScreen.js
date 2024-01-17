@@ -140,9 +140,34 @@ export default function LookingForChallengeScreen({navigation, route}) {
     setAvailableChallenge([]);
     applyFilter(tempFilter);
   }, [location]);
-  const modifiedPlayerElasticSearchResult = (response) => {
+  const modifiedPlayerElasticSearchResult = (response, filterData) => {
+    let list = [...response];
+    if (filterData?.minFee || filterData?.maxFee) {
+      const minFee = filterData.minFee ? Number(filterData.minFee) : 0;
+      const maxFee = filterData.maxFee ? Number(filterData.maxFee) : 0;
+
+      const sortedList = [];
+      response.forEach((item) => {
+        const sport = (item.registered_sports ?? []).find(
+          (ele) =>
+            ele.sport === filterData.sport &&
+            filterData.sport_type === ele.sport_type,
+        );
+
+        if (sport && minFee <= sport?.setting?.game_fee?.fee) {
+          if (maxFee) {
+            if (maxFee >= sport?.setting?.game_fee?.fee) {
+              sortedList.push(item);
+            }
+          } else {
+            sortedList.push(item);
+          }
+        }
+        list = [...sortedList];
+      });
+    }
     const modifiedData = [];
-    for (const item of response) {
+    for (const item of list) {
       const registerSports = item.registered_sports.map((obj) => ({
         ...obj,
         sport_name: Utility.getSportName(obj, authContext),
@@ -154,8 +179,27 @@ export default function LookingForChallengeScreen({navigation, route}) {
     }
     return modifiedData;
   };
-  const modifiedTeamElasticSearchResult = (response) => {
-    const modifiedData = response.map((obj) => ({
+  const modifiedTeamElasticSearchResult = (response, filterData) => {
+    let list = [...response];
+    if (filterData?.minFee || filterData?.maxFee) {
+      const minFee = filterData.minFee ? Number(filterData.minFee) : 0;
+      const maxFee = filterData.maxFee ? Number(filterData.maxFee) : 0;
+
+      const sortedList = [];
+      response.forEach((item) => {
+        if (minFee <= item.setting?.game_fee?.fee) {
+          if (maxFee) {
+            if (maxFee >= item.setting?.game_fee?.fee) {
+              sortedList.push(item);
+            }
+          } else {
+            sortedList.push(item);
+          }
+        }
+      });
+      list = [...sortedList];
+    }
+    const modifiedData = list.map((obj) => ({
       ...obj,
       sport_name: Utility.getSportName(obj, authContext),
     }));
@@ -315,7 +359,10 @@ export default function LookingForChallengeScreen({navigation, route}) {
         .then((res) => {
           setSmallLoader(false);
           if (res.length > 0) {
-            const modifiedResult = modifiedPlayerElasticSearchResult(res);
+            const modifiedResult = modifiedPlayerElasticSearchResult(
+              res,
+              filerdata,
+            );
             const fetchedData = [...availableChallenge, ...modifiedResult];
             const filterData = fetchedData.filter(
               (obj) => obj.user_id !== authContext.entity.uid,
@@ -446,7 +493,10 @@ export default function LookingForChallengeScreen({navigation, route}) {
         .then((res) => {
           setSmallLoader(false);
           if (res.length > 0) {
-            const modifiedResult = modifiedTeamElasticSearchResult(res);
+            const modifiedResult = modifiedTeamElasticSearchResult(
+              res,
+              filerdata,
+            );
             const fetchedData = [...availableChallenge, ...modifiedResult];
             const filterData = fetchedData.filter(
               (obj) => obj?.group_id !== authContext.entity.obj?.group_id,
@@ -1248,6 +1298,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
         }
         showSportOption={!forTeams}
         showTimeComponent
+        showFeeOption
         favoriteSportsList={route.params.registerFavSports}
         sports={sports}
         filterObject={filters}
