@@ -4,7 +4,10 @@ import {StyleSheet} from 'react-native';
 import {useMessageContext} from 'stream-chat-react-native';
 import GroupIcon from '../../../components/GroupIcon';
 import Verbs from '../../../Constants/Verbs';
-import {checkIsMessageDeleted} from '../../../utils/streamChat';
+import {
+  checkIsMessageDeleted,
+  getChannelMembers,
+} from '../../../utils/streamChat';
 
 const MessageAvatar = ({channel = {}, chatUserId = ''}) => {
   const {message, isMyMessage} = useMessageContext();
@@ -15,23 +18,19 @@ const MessageAvatar = ({channel = {}, chatUserId = ''}) => {
       imageUrl: '',
       entityType: Verbs.entityTypePlayer,
     };
+    const memberList = getChannelMembers(channel);
 
-    const member = channel.state.members[messageUserId];
-    if (
-      member.user?.entityType === Verbs.entityTypeTeam ||
-      member.user?.entityType === Verbs.entityTypeClub
-    ) {
-      if (member?.role === 'moderator' || member?.role === 'owner') {
-        obj.imageUrl = channel.data?.image;
-        obj.entityType = member.user?.entityType;
-      } else {
-        obj.imageUrl = channel.data?.image ?? '';
-        obj.entityType = member.user.entityType;
+    memberList.forEach((item) => {
+      const member = item.members.find((ele) => ele.user_id === messageUserId);
+      if (member) {
+        if (member.user.group_image) {
+          obj.imageUrl = member.user.group_image;
+        } else if (memberList.length > 2) {
+          obj.imageUrl = member.user.image;
+        }
+        obj.entityType = member.user.entityType ?? '';
       }
-    } else {
-      obj.imageUrl = member.user.group_image ?? member.user.image ?? '';
-      obj.entityType = member.user.entityType;
-    }
+    });
 
     return obj;
   };

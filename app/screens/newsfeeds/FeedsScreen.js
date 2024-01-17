@@ -19,6 +19,7 @@ import {
   deletePost,
   getNewsFeed,
   getNewsFeedNextList,
+  updatePost,
 } from '../../api/NewsFeeds';
 import colors from '../../Constants/Colors';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
@@ -42,7 +43,7 @@ const FeedsScreen = ({navigation, route}) => {
   const imageUploadContext = useContext(ImageUploadContext);
   const [postData, setPostData] = useState([]);
   const [firstTimeLoading, setFirstTimeLoading] = useState(false);
-  const [loading, setloading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
   const [footerLoading, setFooterLoading] = useState(false);
@@ -84,10 +85,12 @@ const FeedsScreen = ({navigation, route}) => {
         setFeedCalled(true);
         setFirstTimeLoading(false);
         setPostData([...response.payload.results]);
+        setLoading(false);
       })
       .catch((e) => {
         setFirstTimeLoading(false);
         setTimeout(() => console.log(e.message), 100);
+        setLoading(false);
       });
   }, [authContext, visited]);
 
@@ -119,7 +122,7 @@ const FeedsScreen = ({navigation, route}) => {
 
   const onDeletePost = useCallback(
     (item) => {
-      setloading(true);
+      setLoading(true);
       const params = {
         activity_id: item.id,
       };
@@ -139,10 +142,10 @@ const FeedsScreen = ({navigation, route}) => {
             );
             setPostData([...pData]);
           }
-          setloading(false);
+          setLoading(false);
         })
         .catch(() => {
-          setloading(false);
+          setLoading(false);
         });
     },
     [authContext, postData],
@@ -254,6 +257,38 @@ const FeedsScreen = ({navigation, route}) => {
 
   const renderImageProgress = useMemo(() => <ImageProgress />, []);
 
+  const updatePostPrivacy = (privacyObj = {}, postObj = {}) => {
+    if (postObj?.id) {
+      const postDataObj = JSON.parse(postObj.object);
+      const tagData = postDataObj.format_tagged_data.map((tag) => ({
+        entity_id: tag.entity_id,
+        entity_type: 'publictimeline',
+      }));
+      const format_tagged_data = [...postDataObj.format_tagged_data];
+      const dataParams = {
+        ...postDataObj,
+        activity_id: postObj.id,
+        text: postDataObj.text ?? '',
+        tagged: tagData ?? [],
+        format_tagged_data,
+        ...privacyObj,
+      };
+      if (postDataObj?.attachments?.length > 0) {
+        dataParams.attachments = [...postDataObj.attachments];
+      }
+
+      setLoading(true);
+      updatePost(dataParams, authContext)
+        .then(() => {
+          getFeeds();
+        })
+        .catch((e) => {
+          Alert.alert('', e.messages);
+          setLoading(false);
+        });
+    }
+  };
+
   const renderNewsFeedList = () => (
     <NewsFeedList
       navigation={navigation}
@@ -278,6 +313,7 @@ const FeedsScreen = ({navigation, route}) => {
         setShowLikeModal(false);
         setShowCommentModal(true);
       }}
+      onUpdatePost={updatePostPrivacy}
     />
   );
 
@@ -321,7 +357,7 @@ const FeedsScreen = ({navigation, route}) => {
 
   const createPostAfterUpload = (dataParams) => {
     let body = dataParams;
-    setloading(true);
+    setLoading(true);
 
     if (
       authContext.entity.role === Verbs.entityTypeClub ||
@@ -338,12 +374,12 @@ const FeedsScreen = ({navigation, route}) => {
       .then(() => {
         setVisited(false);
         getFeeds();
-        setloading(false);
+        setLoading(false);
       })
       .catch((e) => {
         console.log(e.message);
 
-        setloading(false);
+        setLoading(false);
       });
   };
 

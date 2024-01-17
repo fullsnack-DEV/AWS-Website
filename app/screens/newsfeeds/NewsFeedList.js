@@ -52,6 +52,7 @@ const NewsFeedList = ({
   fromEvent = false,
   routeData = {},
   viewPostPrivacyStatus = true,
+  onUpdatePost = () => {},
 }) => {
   const [userID, setUserID] = useState('');
 
@@ -106,6 +107,7 @@ const NewsFeedList = ({
           openCommentModal={openCommentModal}
           fromEvent={fromEvent}
           routeData={routeData}
+          onUpdatePost={onUpdatePost}
         />
         <View
           style={{backgroundColor: colors.grayBackgroundColor, height: 7}}
@@ -182,15 +184,29 @@ const NewsFeedList = ({
           />
         </View>
       ) : (
-        <View style={{alignItems: 'center'}}>
+        <View
+          style={{
+            alignItems: 'center',
+            marginTop: 25,
+          }}>
+          <Text
+            style={{
+              fontSize: 20,
+              lineHeight: 30,
+              color: colors.veryLightBlack,
+              fontFamily: fonts.RBold,
+            }}>
+            {strings.noPostTitle}
+          </Text>
           <Text
             style={{
               fontSize: 16,
               lineHeight: 24,
-              color: colors.userPostTimeColor,
-              fontFamily: fonts.RMedium,
+              color: colors.veryLightBlack,
+              fontFamily: fonts.RRegular,
+              paddingTop: 5,
             }}>
-            {strings.noPostFoundText}
+            {strings.noPostFoundSubTitle}
           </Text>
         </View>
       );

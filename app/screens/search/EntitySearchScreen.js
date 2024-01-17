@@ -2580,11 +2580,33 @@ export default function EntitySearchScreen({navigation, route}) {
   }, [route.params?.searchData]);
 
   const handleEntityPress = async (obj = {}) => {
-    const recentSearchData = await Utility.getLocalSearchData();
-    recentSearchData[authContext.entity.uid] = [
-      ...recentSearchData[authContext.entity.uid],
-      obj,
-    ];
+    const localSearchData = await Utility.getLocalSearchData();
+    const isEntityAlreadyRegistered = Object.keys(localSearchData).includes(
+      authContext.entity.uid,
+    );
+    const recentSearchData = {...localSearchData};
+
+    if (!isEntityAlreadyRegistered) {
+      recentSearchData[authContext.entity.uid] = [];
+    }
+
+    if (recentSearchData[authContext.entity.uid].length > 0) {
+      const entityId = obj.user_id ?? obj.group_id ?? obj.owner_id;
+      const data = recentSearchData[authContext.entity.uid].find(
+        (item) =>
+          entityId === item.user_id ||
+          entityId === item.group_id ||
+          entityId === item.owner_id,
+      );
+      if (!data) {
+        recentSearchData[authContext.entity.uid] = [
+          ...recentSearchData[authContext.entity.uid],
+          obj,
+        ];
+      }
+    } else {
+      recentSearchData[authContext.entity.uid] = [obj];
+    }
     Utility.setSearchDataToLocal(recentSearchData);
   };
 

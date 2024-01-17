@@ -16,6 +16,7 @@ const TagItemView = ({
   selectedList = [],
   entityId = '',
   sportName = '',
+  privacyStatus = true,
 }) => {
   const [isSelected, setIsSelected] = useState(false);
 
@@ -34,7 +35,12 @@ const TagItemView = ({
   return (
     <View style={styles.mainContainerStyle}>
       <TouchableOpacity
-        style={{flexDirection: 'row', alignItems: 'center'}}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          opacity: privacyStatus ? 1 : 0.5,
+        }}
+        disabled={!privacyStatus}
         onPress={onClickProfile}>
         <GroupIcon
           imageUrl={source}

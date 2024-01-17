@@ -34,17 +34,11 @@ import {getPickedData, MAX_UPLOAD_POST_ASSETS} from '../../utils/imageAction';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import AuthContext from '../../auth/context';
 import {strings} from '../../../Localization/translation';
-import {
-  whoCanDataSourceGroup,
-  whoCanDataSourceUser,
-} from '../../utils/constant';
 import ScreenHeader from '../../components/ScreenHeader';
 import GroupIcon from '../../components/GroupIcon';
 import Verbs from '../../Constants/Verbs';
-import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {
   hashTagRegex,
-  ModalTypes,
   tagRegex,
   urlRegex,
 } from '../../Constants/GeneralConstants';
@@ -60,6 +54,13 @@ import {
   PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
 } from '../../Constants/PrivacyOptionsConstant';
+import FeedsAdvancedSettingsModal from './FeedsAdvancedSettingsModal';
+
+const privacyOptions = [
+  PrivacyKeyEnum.LikeCount,
+  PrivacyKeyEnum.CommentOnPost,
+  PrivacyKeyEnum.SharePost,
+];
 
 const WritePostScreen = ({navigation, route}) => {
   const textInputRef = useRef();
@@ -74,7 +75,7 @@ const WritePostScreen = ({navigation, route}) => {
   const [searchFieldHeight, setSearchFieldHeight] = useState();
   const [tagsOfEntity, setTagsOfEntity] = useState([]);
   const [tagsOfGame, setTagsOfGame] = useState([]);
-  const [visibleWhoModal, setVisibleWhoModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const [searchTag, setSearchTag] = useState();
   const [searchText, setSearchText] = useState('');
@@ -88,15 +89,21 @@ const WritePostScreen = ({navigation, route}) => {
   const [groups, setGroups] = useState([]);
   const [showPreviewForUrl, setShowPreviewForUrl] = useState(true);
   const [tagModalHeight, setTagModalHeight] = useState(0);
-  const [privacySetting, setPrivacySetting] = useState({
-    text: strings.everyoneTitleText,
-    value: 0,
-  });
+  const [privacySetting, setPrivacySetting] = useState({});
 
-  const [snapPoints, setSnapPoints] = useState([]);
   const flatListRef = useRef();
   const [loading, setLoading] = useState(false);
   const {getPrivacyStatus} = usePrivacySettings();
+
+  useEffect(() => {
+    if (isFocused) {
+      const obj = {};
+      privacyOptions.forEach((key) => {
+        obj[key] = 1;
+      });
+      setPrivacySetting(obj);
+    }
+  }, [isFocused]);
 
   const handleRepost = () => {
     const item = {...route.params.repostData};
@@ -128,28 +135,16 @@ const WritePostScreen = ({navigation, route}) => {
     } else {
       const tagData = tagsOfEntity.map((tag) => ({
         entity_id: tag.entity_id,
-        entity_type: 'privatetimeline',
+        entity_type: 'publictimeline',
       }));
       const format_tagged_data = [...tagsOfEntity];
-      const who_can_see = {...privacySetting};
 
-      if (privacySetting.value === 2) {
-        if (
-          [
-            Verbs.entityTypeTeam,
-            Verbs.entityTypeClub,
-            Verbs.entityTypeLeague,
-          ].includes(authContext.entity.role)
-        ) {
-          who_can_see.group_ids = [authContext.entity.uid];
-        }
-      }
       if (route.params?.sendCallBack) {
         route.params.onPressDone(
           selectImage,
           searchText,
           tagData,
-          who_can_see,
+          privacySetting,
           format_tagged_data,
         );
         if (route?.params?.comeFrom) {
@@ -184,11 +179,9 @@ const WritePostScreen = ({navigation, route}) => {
         text: searchText,
         attachments: [],
         tagged: tagData ?? [],
-        who_can_see,
+        ...privacySetting,
         format_tagged_data,
       };
-
-      console.log(route.params, 'From params');
 
       if (route.params?.comeFrom === 'HomeScreen') {
         navigation.navigate('HomeStack', {
@@ -783,28 +776,6 @@ const WritePostScreen = ({navigation, route}) => {
       });
   };
 
-  const renderWhoCan = ({item}) => (
-    <>
-      <TouchableOpacity
-        style={[
-          styles.listItem,
-          privacySetting.value === item.value
-            ? {backgroundColor: colors.privacyBgColor}
-            : {},
-        ]}
-        onPress={() => {
-          setPrivacySetting(item);
-          setVisibleWhoModal(false);
-        }}>
-        <View style={[styles.icon, {marginRight: 10}]}>
-          <Image source={item.icon} style={styles.image} />
-        </View>
-        <Text style={styles.languageList}>{item.text}</Text>
-      </TouchableOpacity>
-      <View style={styles.separator} />
-    </>
-  );
-
   const onDiscardPress = () => {
     if (route.params?.comeFrom === 'HomeScreen') {
       navigation.navigate('HomeStack', {
@@ -900,6 +871,7 @@ const WritePostScreen = ({navigation, route}) => {
         screen: 'NewsFeed',
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     navigation,
     route.params.isRepost,
@@ -922,10 +894,6 @@ const WritePostScreen = ({navigation, route}) => {
 
     return () => backHandler.remove();
   }, [handleBackPress]);
-
-  const onCloseModal = () => {
-    setVisibleWhoModal(false);
-  };
 
   const renderPost = () => {
     const repostData = route.params.repostData;
@@ -1053,20 +1021,19 @@ const WritePostScreen = ({navigation, route}) => {
           <TouchableOpacity
             style={styles.onlyMeViewStyle}
             onPress={() => {
-              setVisibleWhoModal(true);
+              setShowSettingsModal(true);
               Keyboard.dismiss();
             }}>
             <View style={styles.icon}>
-              <Image source={images.lock} style={styles.image} />
+              <Image source={images.settingsIcon} style={styles.image} />
             </View>
-            <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
           </TouchableOpacity>
 
           <View
             style={[styles.onlyMeViewStyle, {justifyContent: 'space-between'}]}>
             {route.params.isRepost ? null : (
               <TouchableOpacity style={styles.icon}>
-                {/* <Image source={images.pollIcon} style={styles.image} /> */}
+                <Image source={images.pollIcon} style={styles.image} />
               </TouchableOpacity>
             )}
 
@@ -1094,40 +1061,19 @@ const WritePostScreen = ({navigation, route}) => {
         </View>
       </KeyboardAvoidingView>
 
-      <CustomModalWrapper
-        isVisible={visibleWhoModal}
-        closeModal={onCloseModal}
-        modalType={ModalTypes.style5}
-        title={strings.privacySettings}
-        headerRightButtonText={strings.apply}
-        onRightButtonPress={() => {
-          setVisibleWhoModal(false);
-          setPrivacySetting(privacySetting);
+      <FeedsAdvancedSettingsModal
+        showSettingsModal={showSettingsModal}
+        onCloseModal={() => {
+          setShowSettingsModal(false);
         }}
-        externalSnapPoints={snapPoints}>
-        <View
-          onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
-
-            setSnapPoints([
-              '50%',
-              contentHeight,
-              Dimensions.get('window').height - 40,
-            ]);
-          }}>
-          <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={
-              ['user', 'player'].includes(authContext.entity.role)
-                ? whoCanDataSourceUser
-                : whoCanDataSourceGroup
-            }
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderWhoCan}
-          />
-        </View>
-      </CustomModalWrapper>
+        onSelect={(settingsValue, privacyKey) => {
+          const updatedSettings = {...privacySetting};
+          updatedSettings[privacyKey] = settingsValue;
+          setPrivacySetting({...updatedSettings});
+          setShowSettingsModal(false);
+        }}
+        privacySettings={privacySetting}
+      />
     </SafeAreaView>
   );
 };
@@ -1166,13 +1112,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  onlyMeTextStyle: {
-    fontSize: 15,
-    lineHeight: 18,
-    color: colors.googleColor,
-    fontFamily: fonts.RRegular,
-    marginLeft: 5,
-  },
   onlyMeViewStyle: {
     // flex: 1,
     flexDirection: 'row',
@@ -1202,14 +1141,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
-  },
-  modalTitile: {
-    fontSize: 20,
-    lineHeight: 30,
-    textAlign: 'center',
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    marginBottom: 15,
   },
   userTextStyle: {
     fontSize: 16,
@@ -1247,22 +1178,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     borderRadius: 5,
     padding: 9,
-  },
-  languageList: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
-  listItem: {
-    paddingVertical: 15,
-    paddingHorizontal: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.grayBackgroundColor,
   },
   closeIcon: {
     width: 17,

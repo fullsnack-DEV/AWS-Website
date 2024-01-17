@@ -35,6 +35,9 @@ const FeedAbsoluteBottomView = ({
   isFullScreen = false,
   setIsFullScreen = () => {},
   setIsLandscape = () => {},
+  privacyStatusLikeCount = true,
+  privacyStatusCommenting = true,
+  privacyStatusReposting = true,
 }) => {
   const [slidingStatus, setSlidingStatus] = useState(false);
   const authContext = useContext(AuthContext);
@@ -210,81 +213,87 @@ const FeedAbsoluteBottomView = ({
           ]}>
           <View style={[styles.row, {justifyContent: 'space-between'}]}>
             <View style={styles.row}>
-              <View style={[styles.row, {marginRight: 35}]}>
-                <TouchableOpacity
-                  style={[styles.iconContainer, {marginRight: 15}]}
-                  onPress={() => {
-                    setLike(!like);
-                    if (like) setLikeCount((val) => val - 1);
-                    else setLikeCount((val) => val + 1);
-                    onLikePress();
-                  }}>
-                  <Image
-                    source={
-                      like ? images.feedViewLikeButton : images.feedViewUnLike
-                    }
-                    style={styles.icon}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (likeCount > 0) {
-                      openLikeModal();
-                    }
-                  }}>
-                  <Text style={styles.countText}>
-                    {likeCount}{' '}
-                    {likeCount > 1
-                      ? format(strings.likesTitle, likeCount)
-                      : format(strings.likeTitle, likeCount)}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              {privacyStatusLikeCount ? (
+                <View style={[styles.row, {marginRight: 35}]}>
+                  <TouchableOpacity
+                    style={[styles.iconContainer, {marginRight: 15}]}
+                    onPress={() => {
+                      setLike(!like);
+                      if (like) setLikeCount((val) => val - 1);
+                      else setLikeCount((val) => val + 1);
+                      onLikePress();
+                    }}>
+                    <Image
+                      source={
+                        like ? images.feedViewLikeButton : images.feedViewUnLike
+                      }
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (likeCount > 0) {
+                        openLikeModal();
+                      }
+                    }}>
+                    <Text style={styles.countText}>
+                      {likeCount}{' '}
+                      {likeCount > 1
+                        ? format(strings.likesTitle, likeCount)
+                        : format(strings.likeTitle, likeCount)}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : null}
 
+              {privacyStatusCommenting ? (
+                <View style={styles.row}>
+                  <TouchableOpacity
+                    style={[styles.iconContainer, {marginRight: 15}]}
+                    onPress={openCommentModal}>
+                    <Image
+                      source={images.feedViewCommentButton}
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (commentCount > 0) {
+                        openCommentModal();
+                      }
+                    }}>
+                    <Text style={styles.countText}>
+                      {commentCount}{' '}
+                      {commentCount > 1
+                        ? format(strings.comments, commentCount)
+                        : format(strings.comment, commentCount)}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ) : null}
+            </View>
+            {privacyStatusReposting ? (
               <View style={styles.row}>
+                <TouchableOpacity>
+                  <Text style={styles.countText}>
+                    {repostCount}{' '}
+                    {repostCount > 1
+                      ? format(strings.reposts, repostCount)
+                      : format(strings.repost, repostCount)}
+                  </Text>
+                </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.iconContainer, {marginRight: 15}]}
-                  onPress={openCommentModal}>
+                  style={[styles.iconContainer, {marginLeft: 15}]}
+                  onPress={() => {
+                    shareActionSheetRef.current.show();
+                  }}>
                   <Image
-                    source={images.feedViewCommentButton}
+                    source={images.feedViewShareButton}
                     style={styles.icon}
                   />
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (commentCount > 0) {
-                      openCommentModal();
-                    }
-                  }}>
-                  <Text style={styles.countText}>
-                    {commentCount}{' '}
-                    {commentCount > 1
-                      ? format(strings.comments, commentCount)
-                      : format(strings.comment, commentCount)}
-                  </Text>
-                </TouchableOpacity>
               </View>
-            </View>
-            <View style={styles.row}>
-              <TouchableOpacity>
-                <Text style={styles.countText}>
-                  {repostCount}{' '}
-                  {repostCount > 1
-                    ? format(strings.reposts, repostCount)
-                    : format(strings.repost, repostCount)}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.iconContainer, {marginLeft: 15}]}
-                onPress={() => {
-                  shareActionSheetRef.current.show();
-                }}>
-                <Image
-                  source={images.feedViewShareButton}
-                  style={styles.icon}
-                />
-              </TouchableOpacity>
-            </View>
+            ) : null}
           </View>
         </View>
       );
@@ -297,79 +306,94 @@ const FeedAbsoluteBottomView = ({
         ]}>
         <View style={[styles.row, {justifyContent: 'space-between'}]}>
           <View style={styles.row}>
-            <TouchableOpacity
-              style={[styles.iconContainer, {marginRight: 24}]}
-              onPress={() => {
-                setLike(!like);
-                if (like) setLikeCount((val) => val - 1);
-                else setLikeCount((val) => val + 1);
-                onLikePress();
-              }}>
-              <Image
-                source={
-                  like ? images.feedViewLikeButton : images.feedViewUnLike
-                }
-                style={styles.icon}
-              />
-            </TouchableOpacity>
+            {privacyStatusLikeCount ? (
+              <TouchableOpacity
+                style={[styles.iconContainer, {marginRight: 24}]}
+                onPress={() => {
+                  setLike(!like);
+                  if (like) setLikeCount((val) => val - 1);
+                  else setLikeCount((val) => val + 1);
+                  onLikePress();
+                }}>
+                <Image
+                  source={
+                    like ? images.feedViewLikeButton : images.feedViewUnLike
+                  }
+                  style={styles.icon}
+                />
+              </TouchableOpacity>
+            ) : null}
 
-            <TouchableOpacity
-              style={styles.iconContainer}
-              onPress={openCommentModal}>
-              <Image
-                source={images.feedViewCommentButton}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
+            {privacyStatusCommenting ? (
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={openCommentModal}>
+                <Image
+                  source={images.feedViewCommentButton}
+                  style={styles.icon}
+                />
+              </TouchableOpacity>
+            ) : null}
           </View>
 
-          <TouchableOpacity
-            style={styles.iconContainer}
-            onPress={() => {
-              shareActionSheetRef.current.show();
-            }}>
-            <Image source={images.feedViewShareButton} style={styles.icon} />
-          </TouchableOpacity>
+          {privacyStatusReposting ? (
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={() => {
+                shareActionSheetRef.current.show();
+              }}>
+              <Image source={images.feedViewShareButton} style={styles.icon} />
+            </TouchableOpacity>
+          ) : null}
         </View>
         <View style={styles.divider} />
         <View style={styles.row}>
           <View style={[styles.row, {flex: 1}]}>
-            <TouchableOpacity
-              onPress={() => {
-                if (likeCount > 0) {
-                  openLikeModal();
-                }
-              }}>
-              <Text style={styles.countText}>
-                {likeCount}{' '}
-                {likeCount > 1
-                  ? format(strings.likesTitle, likeCount)
-                  : format(strings.likeTitle, likeCount)}
-              </Text>
-            </TouchableOpacity>
-            <View style={styles.vrLine} />
-            <TouchableOpacity
-              onPress={() => {
-                if (commentCount > 0) {
-                  openCommentModal();
-                }
-              }}>
-              <Text style={styles.countText}>
-                {commentCount}{' '}
-                {commentCount > 1
-                  ? format(strings.comments, commentCount)
-                  : format(strings.comment, commentCount)}
-              </Text>
-            </TouchableOpacity>
+            {privacyStatusLikeCount ? (
+              <TouchableOpacity
+                onPress={() => {
+                  if (likeCount > 0) {
+                    openLikeModal();
+                  }
+                }}>
+                <Text style={styles.countText}>
+                  {likeCount}{' '}
+                  {likeCount > 1
+                    ? format(strings.likesTitle, likeCount)
+                    : format(strings.likeTitle, likeCount)}
+                </Text>
+              </TouchableOpacity>
+            ) : null}
+            {privacyStatusCommenting && privacyStatusLikeCount ? (
+              <View style={styles.vrLine} />
+            ) : null}
+
+            {privacyStatusCommenting ? (
+              <TouchableOpacity
+                onPress={() => {
+                  if (commentCount > 0) {
+                    openCommentModal();
+                  }
+                }}>
+                <Text style={styles.countText}>
+                  {commentCount}{' '}
+                  {commentCount > 1
+                    ? format(strings.comments, commentCount)
+                    : format(strings.comment, commentCount)}
+                </Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
-          <TouchableOpacity>
-            <Text style={styles.countText}>
-              {repostCount}{' '}
-              {repostCount > 1
-                ? format(strings.reposts, repostCount)
-                : format(strings.repost, repostCount)}
-            </Text>
-          </TouchableOpacity>
+          {privacyStatusReposting ? (
+            <TouchableOpacity>
+              <Text style={styles.countText}>
+                {repostCount}{' '}
+                {repostCount > 1
+                  ? format(strings.reposts, repostCount)
+                  : format(strings.repost, repostCount)}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
     );

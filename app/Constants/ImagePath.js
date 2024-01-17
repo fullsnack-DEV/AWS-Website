@@ -582,7 +582,7 @@ const images = {
   feedNoData: require('../assets/images/feed_no_data.png'),
   reservationNoData: require('../assets/images/reservation_no_data.png'),
   shieldWithStar: require('../assets/images/shield_with_star.png'),
-
+  settingsIcon: require('../assets/images/settingsIcon.png'),
 };
 
 export default images;

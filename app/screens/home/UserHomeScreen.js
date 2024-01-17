@@ -133,7 +133,6 @@ const UserHomeScreen = ({
             follower_count: currentUserData.follower_count + 1,
           };
           setCurrentUserData(obj);
-          setRefreshModal(true);
           setloading(false);
         }
         setloading(false);
@@ -163,7 +162,6 @@ const UserHomeScreen = ({
         };
 
         setCurrentUserData(obj);
-        setRefreshModal(true);
         setloading(false);
       })
       .catch((error) => {
@@ -631,10 +629,8 @@ const UserHomeScreen = ({
       onDecline,
       navigation,
       cancelGroupInvitation,
-
       authContext.entity.role,
       authContext.entity.uid,
-
       userID,
       cancelGroupInvitation,
     ],
@@ -726,6 +722,7 @@ const UserHomeScreen = ({
           isAdmin={isAdmin}
           followRequestSent={followRequestSent}
           loggedInEntity={authContext.entity}
+          privacyObj={privacyObj}
         />
         <View style={styles.activityList}>
           {privacyObj[PrivacyKeyEnum.SportActivityList] && (

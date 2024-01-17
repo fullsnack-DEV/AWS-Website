@@ -20,6 +20,7 @@ import FeedPostView from './FeedPostView';
 import {strings} from '../../../../Localization/translation';
 import LikersModal from '../../modals/LikersModal';
 import CommentModal from '../CommentModal';
+import {PrivacyKeyEnum} from '../../../Constants/PrivacyOptionsConstant';
 
 const FeedViewScreen = ({navigation, route}) => {
   const screenInsets = useSafeAreaInsets();
@@ -47,11 +48,29 @@ const FeedViewScreen = ({navigation, route}) => {
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [showLikeModal, setShowLikeModal] = useState(false);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
+  const [privacyStatusForComment, setPrivacyStatusForComment] = useState(true);
+  const [privacyStatusForShare, setPrivacyStatusForShare] = useState(true);
+  const [privacyStatusForLikeCount, setPrivacyStatusForLikeCount] =
+    useState(true);
 
   const onFullScreen = useCallback(
     () => setIsFullScreen((val) => setIsFullScreen(!val)),
     [],
   );
+
+  useEffect(() => {
+    if (feedItem?.id) {
+      const postObj = JSON.parse(feedItem.object);
+      const privacyObj = {
+        likeCount: postObj[PrivacyKeyEnum.LikeCount] ?? 1,
+        commenting: postObj[PrivacyKeyEnum.CommentOnPost] ?? 1,
+        reposting: postObj[PrivacyKeyEnum.SharePost] ?? 1,
+      };
+      setPrivacyStatusForComment(privacyObj.commenting);
+      setPrivacyStatusForShare(privacyObj.reposting);
+      setPrivacyStatusForLikeCount(privacyObj.likeCount);
+    }
+  }, [feedItem?.id, feedItem?.object]);
 
   useEffect(() => {
     setCurrentTime(0);
@@ -268,6 +287,9 @@ const FeedViewScreen = ({navigation, route}) => {
         setIsMute={setIsMute}
         setIsFullScreen={setIsFullScreen}
         setIsLandscape={setIsLandscape}
+        privacyStatusCommenting={privacyStatusForComment}
+        privacyStatusLikeCount={privacyStatusForLikeCount}
+        privacyStatusReposting={privacyStatusForShare}
       />
 
       <LikersModal

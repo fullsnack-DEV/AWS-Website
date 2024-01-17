@@ -40,6 +40,11 @@ import {getGroupSportName} from '../../utils/sportsActivityUtils';
 import Verbs from '../../Constants/Verbs';
 import SelectedMatchList from '../../components/newsFeed/SelectedMatchList';
 import {getTaggedEntityData, prepareTagName} from '../../utils';
+import usePrivacySettings from '../../hooks/usePrivacySettings';
+import {
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../Constants/PrivacyOptionsConstant';
 
 const tabList = [
   strings.peopleTitleText,
@@ -65,6 +70,8 @@ export default function UserTagSelectionListScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const intervalRef = useRef();
   const scrollRef = useRef();
+
+  const {getPrivacyStatus} = usePrivacySettings();
 
   const fetchData = useCallback(
     (searchValue = '') => {
@@ -351,34 +358,44 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={{paddingHorizontal: 17, paddingTop: 20}}
         showsHorizontalScrollIndicator={false}
-        renderItem={({item}) => (
-          <>
-            <TagItemView
-              source={item.thumbnail}
-              entityName={item.full_name ?? item.group_name}
-              userLocation={item.city}
-              entityType={item.entity_type}
-              onSelect={() => {
-                handleSelection(item);
-              }}
-              onClickProfile={() => {
-                navigation.navigate('HomeStack', {
-                  screen: 'HomeScreen',
-                  params: {
-                    uid: item.user_id ?? item.group_id,
-                    role: item.entity_type,
-                    comeFrom: 'UserTagSelectionListScreen',
-                    routeParams: {...route.params, tagsOfEntity: seletedEntity},
-                  },
-                });
-              }}
-              entityId={item.user_id ?? item.group_id}
-              selectedList={seletedEntity}
-              sportName={getGroupSportName(item, authContext.sports, 1)}
-            />
-            <View style={styles.sperateLine} />
-          </>
-        )}
+        renderItem={({item}) => {
+          const status = getPrivacyStatus(
+            PersonalUserPrivacyEnum[item[PrivacyKeyEnum.Tag]],
+            item,
+          );
+          return (
+            <>
+              <TagItemView
+                source={item.thumbnail}
+                entityName={item.full_name ?? item.group_name}
+                userLocation={item.city}
+                entityType={item.entity_type}
+                onSelect={() => {
+                  handleSelection(item);
+                }}
+                onClickProfile={() => {
+                  navigation.navigate('HomeStack', {
+                    screen: 'HomeScreen',
+                    params: {
+                      uid: item.user_id ?? item.group_id,
+                      role: item.entity_type,
+                      comeFrom: 'UserTagSelectionListScreen',
+                      routeParams: {
+                        ...route.params,
+                        tagsOfEntity: seletedEntity,
+                      },
+                    },
+                  });
+                }}
+                entityId={item.user_id ?? item.group_id}
+                selectedList={seletedEntity}
+                sportName={getGroupSportName(item, authContext.sports, 1)}
+                privacyStatus={status}
+              />
+              <View style={styles.sperateLine} />
+            </>
+          );
+        }}
       />
     );
   };

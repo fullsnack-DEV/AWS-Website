@@ -34,6 +34,7 @@ const PrivacyKeyEnum = {
   InviteForTeam: 'who_can_invite_for_team',
   InviteForClub: 'who_can_invite_for_club',
   InviteForLeague: 'who_can_invite_for_league',
+  LikeCount: 'who_can_see_like_count',
 };
 
 const UserPrivacySettingOptions = [
@@ -211,6 +212,16 @@ const groupMembersSportdefaultOptions = [
   {label: strings.clubsAndTeam, value: 4},
 ];
 
+const feedsPrivacyOption = [
+  {label: strings.offText, value: 0},
+  {label: strings.onText, value: 1},
+];
+
+const feedsHideUnhideOption = [
+  {label: strings.hide, value: 0},
+  {label: strings.unhide, value: 1},
+];
+
 export {
   UserPrivacySettingOptions,
   defaultOptions,
@@ -234,4 +245,6 @@ export {
   groupDefaultPrivacyOptionsForDoubleTeam,
   GroupDefalutPrivacyOptionsEnum,
   GroupDefaultPrivacyOptionsForDoubleTeamEnum,
+  feedsHideUnhideOption,
+  feedsPrivacyOption,
 };

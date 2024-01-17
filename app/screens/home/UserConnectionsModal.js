@@ -107,8 +107,10 @@ export default function UserConnectionModal({
   }, [authContext, userId]);
 
   useEffect(() => {
-    getData();
-  }, [userId, refreshModal]);
+    if (refreshModal) {
+      getData();
+    }
+  }, [userId, refreshModal, getData]);
 
   const getCount = (option) => {
     if (option === strings.following) {

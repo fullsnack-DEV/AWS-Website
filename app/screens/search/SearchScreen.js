@@ -38,7 +38,6 @@ import GroupsSection from './components/GroupsSection';
 import Verbs from '../../Constants/Verbs';
 import {
   filterEventForPrivacy,
-  getEventOccuranceFromRule,
   getLocalSearchData,
   setSearchDataToLocal,
 } from '../../utils';
@@ -103,8 +102,15 @@ const SearchScreen = ({navigation, route}) => {
 
   const getLocalData = useCallback(async () => {
     const localSearchData = await getLocalSearchData();
-    setRecentSearchResults(localSearchData);
-    const result = localSearchData[authContext.entity.uid] ?? [];
+    const isEntityAlreadyRegistered = Object.keys(localSearchData).includes(
+      authContext.entity.uid,
+    );
+    const finalRecentData = {...localSearchData};
+    if (!isEntityAlreadyRegistered) {
+      finalRecentData[authContext.entity.uid] = [];
+    }
+    setRecentSearchResults(finalRecentData);
+    const result = finalRecentData[authContext.entity.uid] ?? [];
     setFilterResult(result);
   }, [authContext.entity.uid]);
 
@@ -140,12 +146,15 @@ const SearchScreen = ({navigation, route}) => {
             must: [
               {
                 range: {
-                  start_datetime: {
+                  end_datetime: {
                     gt: Number(
                       parseFloat(new Date().getTime() / 1000).toFixed(0),
                     ),
                   },
                 },
+              },
+              {
+                match: {cal_type: Verbs.eventVerb},
               },
             ],
           },
@@ -196,22 +205,12 @@ const SearchScreen = ({navigation, route}) => {
             validEventList = event_list.validEventList;
           }
 
-          let finalList = [];
-          validEventList.forEach((item) => {
-            if (item?.rrule) {
-              const rEvents = getEventOccuranceFromRule(item);
-              finalList = [...finalList, ...rEvents];
-            } else {
-              finalList.push(item);
-            }
-          });
-
           if (searchData) {
-            setSearchResult([...peopleList, ...groupList, ...finalList]);
+            setSearchResult([...peopleList, ...groupList, ...validEventList]);
           } else {
             setPeoples(peopleList.splice(0, 3));
             setGroups(groupList.splice(0, 3));
-            setEvents(finalList.splice(0, 3));
+            setEvents(validEventList.splice(0, 3));
           }
           setLoading(false);
           setFetchingRecords(false);
@@ -305,10 +304,25 @@ const SearchScreen = ({navigation, route}) => {
 
   const handleListItemPress = (data = null) => {
     const localData = {...recentSearchResults};
-    localData[authContext.entity.uid] = [
-      ...(localData[authContext.entity.uid] ?? []),
-      data,
-    ];
+
+    if (localData[authContext.entity.uid].length > 0) {
+      const entityId = data.user_id ?? data.group_id ?? data.owner_id;
+      const obj = localData[authContext.entity.uid].find(
+        (item) =>
+          entityId === item.user_id ||
+          entityId === item.group_id ||
+          entityId === item.owner_id,
+      );
+      if (!obj) {
+        localData[authContext.entity.uid] = [
+          ...localData[authContext.entity.uid],
+          data,
+        ];
+      }
+    } else {
+      localData[authContext.entity.uid] = [data];
+    }
+
     setSearchDataToLocal(localData);
     setRecentSearchResults(localData);
 
@@ -426,10 +440,21 @@ const SearchScreen = ({navigation, route}) => {
           onSubmitEditing={() => {
             if (searchText) {
               const obj = {...(recentSearchResults ?? {})};
-              obj[authContext.entity.uid] = [
-                ...(obj[authContext.entity.uid] ?? []),
-                searchText,
-              ];
+
+              if (obj[authContext.entity.uid].length > 0) {
+                const data = obj[authContext.entity.uid].find(
+                  (item) => typeof item === 'string' && item === searchText,
+                );
+                if (!data) {
+                  obj[authContext.entity.uid] = [
+                    ...obj[authContext.entity.uid],
+                    searchText,
+                  ];
+                }
+              } else {
+                obj[authContext.entity.uid] = [searchText];
+              }
+
               setSearchDataToLocal(obj);
               setRecentSearchResults(obj);
               if (!isFocused) {
@@ -462,7 +487,7 @@ const SearchScreen = ({navigation, route}) => {
           />
           <View style={[styles.separator, {marginTop: 10}]} />
 
-          {peoples.length > 0 || groups.length > 0 ? (
+          {[...peoples, ...groups, ...events].length > 0 ? (
             <>
               <PeopleSection
                 list={peoples}

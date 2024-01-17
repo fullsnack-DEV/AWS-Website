@@ -192,9 +192,13 @@ const useStreamChatUtils = () => {
     });
     let response = {};
     try {
-      response = await channel.addMembers([...finalList], {
-        text: `${ownerName} invited ${nameList}`,
-      });
+      response = await channel.addMembers(
+        [...finalList],
+        {
+          text: `${ownerName} invited ${nameList}`,
+        },
+        {hide_history: true},
+      );
       setLoading(false);
     } catch (error) {
       console.log('error ==>', error);

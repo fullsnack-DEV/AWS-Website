@@ -2732,7 +2732,7 @@ export const getLocalSearchData = async () => {
   if (data) {
     return JSON.parse(data);
   }
-  return [];
+  return {};
 };
 
 export const getEventOccuranceFromRule = (event) => {

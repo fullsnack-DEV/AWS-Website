@@ -94,6 +94,8 @@ const HomeScreen = ({navigation, route}) => {
   const [visibleRecrutingModal, setVisibleRecrutingModal] = useState(false);
   const [personalPrivacyObject, setPersonalPrivacyObject] = useState({});
   const [groupPrivacyObject, setGroupPrivacyObject] = useState({});
+  const [showChatActionSheet, setShowChatActionSheet] = useState(false);
+  const [chatActions, setChatActions] = useState([]);
 
   const {getPrivacyStatus} = usePrivacySettings();
 
@@ -366,7 +368,7 @@ const HomeScreen = ({navigation, route}) => {
     return null;
   };
 
-  const onMessageButtonPress = (entityData = {}) => {
+  const handleCreateChannel = (entityData = {}) => {
     if (entityData.joined_members?.length > 0) {
       const invitee = [
         {
@@ -583,6 +585,84 @@ const HomeScreen = ({navigation, route}) => {
     ? groupPrivacyObject[PrivacyKeyEnum.Chats]
     : personalPrivacyObject[PrivacyKeyEnum.Chats];
 
+  const handleChatButtonPress = () => {
+    if (currentUserData.entity_type === Verbs.entityTypeTeam) {
+      const chatOptions = [
+        format(strings.toGroupName, currentUserData.group_name),
+      ];
+
+      const userIdList = (currentUserData.joined_members ?? []).map(
+        (item) => item.user_id,
+      );
+
+      if (
+        [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
+          authContext.entity.role,
+        ) &&
+        userIdList.includes(authContext.entity.uid)
+      ) {
+        chatOptions.push(strings.withAllMember);
+      }
+
+      setChatActions(chatOptions);
+      setShowChatActionSheet(true);
+    } else if (currentUserData.entity_type === Verbs.entityTypeClub) {
+      const chatOptions = [
+        format(strings.toGroupName, currentUserData.group_name),
+      ];
+      const userIdList = (currentUserData.joined_members ?? []).map(
+        (item) => item.user_id,
+      );
+
+      if (
+        [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
+          authContext.entity.role,
+        ) &&
+        userIdList.includes(authContext.entity.uid)
+      ) {
+        chatOptions.push(strings.withAllMember);
+      } else if (authContext.entity.role === Verbs.entityTypeTeam) {
+        const groupIdList = (currentUserData.joined_members ?? []).map(
+          (item) => item.group_id,
+        );
+        if (groupIdList.includes(authContext.entity.uid)) {
+          chatOptions.push(strings.withAllMember);
+        }
+      }
+
+      setChatActions(chatOptions);
+      setShowChatActionSheet(true);
+    } else {
+      handleCreateChannel(currentUserData);
+    }
+  };
+
+  const openGroupChannel = async () => {
+    const filter = {
+      type: 'messaging',
+      id: {$eq: currentUserData.group_id},
+    };
+
+    const channels = await authContext.chatClient.queryChannels(filter);
+    setShowChatActionSheet(false);
+    if (channels?.length > 0) {
+      await channels[0].watch();
+      const routeParams = {...route.params};
+      if (route.params?.comeFrom === 'EntitySearchScreen') {
+        routeParams.comeFrom = 'EntitySearchScreen';
+      }
+
+      navigation.navigate('MessageStack', {
+        screen: 'MessageChatScreen',
+        params: {
+          channel: channels[0],
+          comeFrom: 'HomeScreen',
+          routeParams,
+        },
+      });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={[styles.headerRow, {width: '100%'}]}>
@@ -622,9 +702,7 @@ const HomeScreen = ({navigation, route}) => {
           {!isAdmin && chatPrivacyStatus ? (
             <Pressable
               style={styles.imageContainer}
-              onPress={() => {
-                onMessageButtonPress(currentUserData);
-              }}>
+              onPress={handleChatButtonPress}>
               <Image
                 source={images.newchatIcon}
                 style={{width: 18, height: 18, marginTop: 4}}
@@ -654,7 +732,20 @@ const HomeScreen = ({navigation, route}) => {
         closeModal={() => setShowMoreOptionsModal(false)}
         optionList={moreOptions}
         onSelect={handleMoreOptions}
-        type="ios"
+      />
+
+      <BottomSheet
+        isVisible={showChatActionSheet}
+        closeModal={() => setShowChatActionSheet(false)}
+        optionList={chatActions}
+        onSelect={(option) => {
+          if (option === strings.withAllMember) {
+            openGroupChannel();
+          } else {
+            handleCreateChannel(currentUserData);
+            setShowChatActionSheet(false);
+          }
+        }}
       />
 
       {/* Modals */}

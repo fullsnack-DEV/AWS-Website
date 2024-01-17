@@ -32,15 +32,9 @@ import {displayLocation, getTaggedEntityData} from '../../utils';
 import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import {strings} from '../../../Localization/translation';
 import AuthContext from '../../auth/context';
-import {
-  whoCanDataSourceGroup,
-  whoCanDataSourceUser,
-} from '../../utils/constant';
 import ScreenHeader from '../../components/ScreenHeader';
-import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {
   hashTagRegex,
-  ModalTypes,
   tagRegex,
   urlRegex,
 } from '../../Constants/GeneralConstants';
@@ -51,6 +45,14 @@ import MatchCard from './MatchCard';
 import {MAX_UPLOAD_POST_ASSETS, getPickedData} from '../../utils/imageAction';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import {updatePost} from '../../api/NewsFeeds';
+import FeedsAdvancedSettingsModal from './FeedsAdvancedSettingsModal';
+import {PrivacyKeyEnum} from '../../Constants/PrivacyOptionsConstant';
+
+const privacyOptions = [
+  PrivacyKeyEnum.LikeCount,
+  PrivacyKeyEnum.CommentOnPost,
+  PrivacyKeyEnum.SharePost,
+];
 
 const EditPostScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -60,14 +62,6 @@ const EditPostScreen = ({navigation, route}) => {
   const imageUploadContext = useContext(ImageUploadContext);
   const {postData} = route.params;
 
-  // let postText = '';
-  // let postAttachments = [];
-  // if (postData && postData.object) {
-  //   postText = JSON.parse(postData.object).text;
-  //   if (JSON.parse(postData.object).attachments) {
-  //     postAttachments = JSON.parse(postData.object).attachments;
-  //   }
-  // }
   const [searchText, setSearchText] = useState('');
   const [selectImage, setSelectImage] = useState([]);
   const [lastTagStartIndex, setLastTagStartIndex] = useState(null);
@@ -86,7 +80,6 @@ const EditPostScreen = ({navigation, route}) => {
   const [privacySetting, setPrivacySetting] = useState({});
   const [showPreviewForUrl, setShowPreviewForUrl] = useState(true);
   const [tagsOfGame, setTagsOfGame] = useState([]);
-  const [snapPoints, setSnapPoints] = useState([]);
 
   useEffect(() => {
     if (isFocused && postData && postData.object) {
@@ -103,12 +96,11 @@ const EditPostScreen = ({navigation, route}) => {
     if (isFocused && postData?.id) {
       const obj = JSON.parse(postData.object);
       setTagsOfEntity(obj.format_tagged_data);
-      setPrivacySetting(
-        obj.who_can_see ?? {
-          text: strings.everyoneTitleText,
-          value: 0,
-        },
-      );
+      const result = {};
+      privacyOptions.forEach((key) => {
+        result[key] = obj[key] >= 0 ? obj[key] : 1;
+      });
+      setPrivacySetting(result);
     }
   }, [isFocused, postData]);
 
@@ -602,29 +594,6 @@ const EditPostScreen = ({navigation, route}) => {
         }}
       />
     ) : null;
-  const renderWhoCan = ({item}) => (
-    <>
-      <TouchableOpacity
-        style={[
-          styles.listItem,
-          privacySetting.value === item.value
-            ? {backgroundColor: colors.privacyBgColor}
-            : {},
-        ]}
-        onPress={() => {
-          setPrivacySetting(item);
-          setTimeout(() => {
-            setVisibleWhoModal(false);
-          }, 300);
-        }}>
-        <View style={[styles.icon, {marginRight: 10}]}>
-          <Image source={item.icon} style={styles.image} />
-        </View>
-        <Text style={styles.languageList}>{item.text}</Text>
-      </TouchableOpacity>
-      <View style={styles.separator} />
-    </>
-  );
 
   const updatePostAfterUpload = (dataParams) => {
     updatePost(dataParams, authContext)
@@ -657,21 +626,9 @@ const EditPostScreen = ({navigation, route}) => {
 
       const tagData = tagsOfEntity.map((tag) => ({
         entity_id: tag.entity_id,
-        entity_type: 'privatetimeline',
+        entity_type: 'publictimeline',
       }));
       const format_tagged_data = [...tagsOfEntity];
-      const who_can_see = {...privacySetting};
-      if (privacySetting.value === 2) {
-        if (
-          [
-            Verbs.entityTypeTeam,
-            Verbs.entityTypeClub,
-            Verbs.entityTypeLeague,
-          ].includes(authContext.entity.role)
-        ) {
-          who_can_see.group_ids = [authContext.entity.uid];
-        }
-      }
 
       const alreadyUrlDone = [];
       const createUrlData = [];
@@ -682,7 +639,7 @@ const EditPostScreen = ({navigation, route}) => {
           text: searchText,
           tagged: tagData ?? [],
           format_tagged_data,
-          who_can_see,
+          ...privacySetting,
         };
         updatePostAfterUpload(dataParams);
       } else if (selectImage) {
@@ -702,7 +659,7 @@ const EditPostScreen = ({navigation, route}) => {
           tagged: tagData ?? [],
           attachments: [...alreadyUrlDone],
           format_tagged_data,
-          who_can_see,
+          ...privacySetting,
         };
         if (createUrlData?.length > 0) {
           const imageArray = createUrlData.map((dataItem) => dataItem);
@@ -868,9 +825,8 @@ const EditPostScreen = ({navigation, route}) => {
             style={styles.onlyMeViewStyle}
             onPress={() => setVisibleWhoModal(true)}>
             <View style={styles.icon}>
-              <Image source={images.lock} style={styles.image} />
+              <Image source={images.settingsIcon} style={styles.image} />
             </View>
-            <Text style={styles.onlyMeTextStyle}>{privacySetting.text}</Text>
           </TouchableOpacity>
 
           <View
@@ -897,38 +853,19 @@ const EditPostScreen = ({navigation, route}) => {
         </View>
       </KeyboardAvoidingView>
 
-      <CustomModalWrapper
-        isVisible={visibleWhoModal}
-        closeModal={() => setVisibleWhoModal(false)}
-        modalType={ModalTypes.style2}
-        containerStyle={{
-          paddingTop: 15,
-          paddingHorizontal: 30,
+      <FeedsAdvancedSettingsModal
+        showSettingsModal={visibleWhoModal}
+        onCloseModal={() => {
+          setVisibleWhoModal(false);
         }}
-        externalSnapPoints={snapPoints}>
-        <View
-          onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
-
-            setSnapPoints([
-              '50%',
-              contentHeight,
-              Dimensions.get('window').height - 40,
-            ]);
-          }}>
-          <Text style={styles.modalTitile}>{strings.whoCanSeePost}</Text>
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={
-              ['user', 'player'].includes(authContext.entity.role)
-                ? whoCanDataSourceUser
-                : whoCanDataSourceGroup
-            }
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderWhoCan}
-          />
-        </View>
-      </CustomModalWrapper>
+        onSelect={(settingsValue, privacyKey) => {
+          const updatedSettings = {...privacySetting};
+          updatedSettings[privacyKey] = settingsValue;
+          setPrivacySetting({...updatedSettings});
+          setVisibleWhoModal(false);
+        }}
+        privacySettings={privacySetting}
+      />
     </SafeAreaView>
   );
 };
@@ -967,13 +904,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  onlyMeTextStyle: {
-    fontSize: 15,
-    lineHeight: 18,
-    color: colors.googleColor,
-    fontFamily: fonts.RRegular,
-    marginLeft: 5,
-  },
   onlyMeViewStyle: {
     // flex: 1,
     flexDirection: 'row',
@@ -1003,14 +933,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
-  },
-  modalTitile: {
-    fontSize: 20,
-    lineHeight: 30,
-    textAlign: 'center',
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    marginBottom: 15,
   },
   userTextStyle: {
     fontSize: 16,
@@ -1049,22 +971,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 9,
   },
-  languageList: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
-  listItem: {
-    paddingVertical: 15,
-    paddingHorizontal: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.grayBackgroundColor,
-  },
   closeIcon: {
     width: 17,
     height: 17,
@@ -1079,18 +985,6 @@ const styles = StyleSheet.create({
 
     marginLeft: 10,
   },
-  // repostContainer: {
-  //   marginLeft: 5,
-  //   paddingLeft: 12,
-  //   borderLeftWidth: 3,
-  //   borderLeftColor: colors.grayBackgroundColor,
-  // },
-  // repostText: {
-  //   fontSize: 12,
-  //   lineHeight: 17,
-  //   color: colors.userPostTimeColor,
-  //   fontFamily: fonts.RRegular,
-  // },
   playPauseBtn: {
     width: 25,
     height: 25,

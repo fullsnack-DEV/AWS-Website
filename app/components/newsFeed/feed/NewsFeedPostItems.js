@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, memo, useEffect, useState, useContext} from 'react';
 import {Alert, View} from 'react-native';
 import Share from 'react-native-share';
@@ -12,6 +11,7 @@ import Post from './Post';
 import PostForEvent from './PostForEvent';
 import {getPostData} from '../../../utils';
 import colors from '../../../Constants/Colors';
+import {PrivacyKeyEnum} from '../../../Constants/PrivacyOptionsConstant';
 
 const NewsFeedPostItems = memo(
   ({
@@ -31,6 +31,7 @@ const NewsFeedPostItems = memo(
     openCommentModal = () => {},
     fromEvent = false,
     routeData = {},
+    onUpdatePost = () => {},
   }) => {
     const authContext = useContext(AuthContext);
     const [childIndex, setChildIndex] = useState(0);
@@ -43,9 +44,25 @@ const NewsFeedPostItems = memo(
     const [postType, setPostType] = useState('');
     const [showMoreOptions, setShowMoreOptions] = useState(false);
     const [moreOptions, setMoreOptions] = useState([]);
-    // const [privacyStatusForComment, setPrivacyStatusForComment] =
-    //   useState(true);
-    // const [privacyStatusForShare, setPrivacyStatusForShare] = useState(true);
+    const [privacyStatusForComment, setPrivacyStatusForComment] =
+      useState(true);
+    const [privacyStatusForShare, setPrivacyStatusForShare] = useState(true);
+    const [privacyStatusForLikeCount, setPrivacyStatusForLikeCount] =
+      useState(true);
+
+    useEffect(() => {
+      if (item?.id) {
+        const postObj = JSON.parse(item.object);
+        const privacyObj = {
+          likeCount: postObj[PrivacyKeyEnum.LikeCount] ?? 1,
+          commenting: postObj[PrivacyKeyEnum.CommentOnPost] ?? 1,
+          reposting: postObj[PrivacyKeyEnum.SharePost] ?? 1,
+        };
+        setPrivacyStatusForComment(privacyObj.commenting);
+        setPrivacyStatusForShare(privacyObj.reposting);
+        setPrivacyStatusForLikeCount(privacyObj.likeCount);
+      }
+    }, [item?.id, item?.object]);
 
     useEffect(() => {
       let filterLike = [];
@@ -87,6 +104,7 @@ const NewsFeedPostItems = memo(
     }, [like, onLikePress]);
 
     const onActionSheetItemPress = (selectedOption) => {
+      const obj = {};
       switch (selectedOption) {
         case strings.edit:
           navigation.navigate('NewsFeedStack', {
@@ -101,7 +119,7 @@ const NewsFeedPostItems = memo(
           break;
 
         case strings.delete:
-        case strings.deleteFromPost:
+        case strings.deletePost:
           setShowMoreOptions(false);
           Alert.alert(
             strings.alertmessagetitle,
@@ -116,6 +134,42 @@ const NewsFeedPostItems = memo(
             ],
           );
 
+          break;
+
+        case strings.hideLikeCount:
+          obj[PrivacyKeyEnum.LikeCount] = 0;
+          onUpdatePost(obj, item);
+          setShowMoreOptions(false);
+          break;
+
+        case strings.unhideLikeCount:
+          obj[PrivacyKeyEnum.LikeCount] = 1;
+          onUpdatePost(obj, item);
+          setShowMoreOptions(false);
+          break;
+
+        case strings.turnOffCommenting:
+          obj[PrivacyKeyEnum.CommentOnPost] = 0;
+          onUpdatePost(obj, item);
+          setShowMoreOptions(false);
+          break;
+
+        case strings.turnOnCommenting:
+          obj[PrivacyKeyEnum.CommentOnPost] = 1;
+          onUpdatePost(obj, item);
+          setShowMoreOptions(false);
+          break;
+
+        case strings.turnOffResposting:
+          obj[PrivacyKeyEnum.SharePost] = 0;
+          onUpdatePost(obj, item);
+          setShowMoreOptions(false);
+          break;
+
+        case strings.turnOnReposting:
+          obj[PrivacyKeyEnum.SharePost] = 1;
+          onUpdatePost(obj, item);
+          setShowMoreOptions(false);
           break;
 
         case strings.report:
@@ -177,7 +231,6 @@ const NewsFeedPostItems = memo(
     return (
       <View
         style={{
-          // paddingHorizontal: 15,
           paddingTop: 17,
           paddingBottom: 20,
         }}>
@@ -188,17 +241,38 @@ const NewsFeedPostItems = memo(
             onThreeDotPress={() => {
               let option = [];
               if (item.actor.id === authContext.entity.uid) {
-                option = [strings.deleteFromPost];
+                const postObj = JSON.parse(item.object);
+
+                const privacyObj = {
+                  likeCount: postObj[PrivacyKeyEnum.LikeCount] ?? 1,
+                  commenting: postObj[PrivacyKeyEnum.CommentOnPost] ?? 1,
+                  reposting: postObj[PrivacyKeyEnum.SharePost] ?? 1,
+                };
+
+                if (privacyObj.commenting) {
+                  option.push(strings.turnOffCommenting);
+                } else {
+                  option.push(strings.turnOnCommenting);
+                }
+
+                if (privacyObj.likeCount) {
+                  option.push(strings.hideLikeCount);
+                } else {
+                  option.push(strings.unhideLikeCount);
+                }
+
+                if (privacyObj.reposting) {
+                  option.push(strings.turnOffResposting);
+                } else {
+                  option.push(strings.turnOnReposting);
+                }
+                option.push(strings.deletePost);
               } else {
                 option = [strings.report, strings.blockAccount];
               }
               setMoreOptions(option);
               setShowMoreOptions(true);
             }}
-            // showMoreOptions={
-            //   authContext.entity.role === Verbs.entityTypePlayer ||
-            //   authContext.entity.role === Verbs.entityTypeUser
-            // }
             showMoreOptions
           />
         ) : (
@@ -212,7 +286,33 @@ const NewsFeedPostItems = memo(
 
               let option = [];
               if (item.actor.id === authContext.entity.uid) {
-                option = [strings.edit, strings.delete];
+                option = [strings.edit];
+                const postObj = JSON.parse(item.object);
+
+                const privacyObj = {
+                  likeCount: postObj[PrivacyKeyEnum.LikeCount] ?? 1,
+                  commenting: postObj[PrivacyKeyEnum.CommentOnPost] ?? 1,
+                  reposting: postObj[PrivacyKeyEnum.SharePost] ?? 1,
+                };
+
+                if (privacyObj.likeCount) {
+                  option.push(strings.hideLikeCount);
+                } else {
+                  option.push(strings.unhideLikeCount);
+                }
+
+                if (privacyObj.commenting) {
+                  option.push(strings.turnOffCommenting);
+                } else {
+                  option.push(strings.turnOnCommenting);
+                }
+
+                if (privacyObj.reposting) {
+                  option.push(strings.turnOffResposting);
+                } else {
+                  option.push(strings.turnOnReposting);
+                }
+                option.push(strings.delete);
               } else if (tagUser?.id) {
                 option = [
                   strings.removeMyTagFromPost,
@@ -254,6 +354,9 @@ const NewsFeedPostItems = memo(
             }}
             onWriteCommentPress={onWriteCommentPress}
             onNewsFeedLikePress={onNewsFeedLikePress}
+            privacyStatusForComment={privacyStatusForComment}
+            privacyStatusForShare={privacyStatusForShare}
+            privacyStatusForLikeCount={privacyStatusForLikeCount}
           />
         </View>
         <BottomSheet
