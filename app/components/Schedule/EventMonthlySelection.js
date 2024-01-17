@@ -18,6 +18,7 @@ const EventMonthlySelection = ({
   title = '',
   titleStyle = {},
   editable = true,
+  forLongList = false,
 }) => {
   const [dropDownValue, setDropDownValue] = useState('');
   const [options, setOptions] = useState([]);
@@ -59,6 +60,7 @@ const EventMonthlySelection = ({
         isVisible={showBottomSheet}
         closeModal={() => setShowBottomSheet(false)}
         type="ios"
+        forLongList={forLongList}
         optionList={options}
         onSelect={(option) => {
           const obj = dataSource.find((item) => item.label === option);

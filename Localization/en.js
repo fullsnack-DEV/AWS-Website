@@ -3323,6 +3323,13 @@ export default {
   whoCanCommentOnYourPost: 'en_Who can comment & reply on your post?',
   whoCanShareYourPost: 'en_Who can share your post?',
   sportBarAlertText: 'en_You can add up to 10 sports to the filter bar.',
+  requestDoubleTeamText: 'en_sent you a request to create a team together',
+  selectClubText:
+    'en_ Select affiliated ${0} in whose posts you want to display the post about this event.',
+  shareEventPostText: 'en_ Share Event Post',
+  shareEventsubText:
+    'en_A post about this event will be created in posts of your ${0}.',
+
   whoCanViewPostSection: "en_Who can view your team's posts section?",
   whoCanViewEventSection: "en_Who can view your team's events section?",
   whoCanViewGallerySection: "en_Who can view your team's gallery section?",
@@ -3373,4 +3380,23 @@ export default {
   noPostTitle: 'en_No post',
   noPostFoundSubTitle: 'en_New posts will appear here.',
   toGroupName: 'en_To {0}',
+
+  threetimes: 'en_3 Times',
+  fourtimes: 'en_4 Times',
+  fivetimes: 'en_5 Times',
+  sixtimes: 'en_6 Times',
+  seventimes: 'en_7 Times',
+  eighttimes: 'en_8 Times',
+  ninetimes: 'en_9 Times',
+  tentimes: 'en_10 Times',
+  eleventimes: 'en_11 Times',
+  twelevetimes: 'en_12 Times',
+  thirteentimes: 'en_13 Times',
+  fourteenimes: 'en_14 Times',
+  fifteentimes: 'en_15 Times',
+  sixsteentimes: 'en_16 Times',
+  seventeentimes: 'en_17 Times',
+  eighteentimes: 'en_18 Times',
+  nineteentimes: 'en_19 Times',
+  twentyimes: 'en_20 Times',
 };

@@ -45,13 +45,14 @@ export default function ChallengeAvailability({
   slots,
   addToSlotData,
   showAddMore = false,
-  setHeightRange,
+  setHeightRange = false,
   deleteFromSlotData,
   deleteOrCreateSlotData,
   slotLevel = false,
   isFromSlot = false,
 }) {
   const authContext = useContext(AuthContext);
+  const [repeatValue, setrepeatValue] = useState(strings.daily);
   const [challengeAvailable, setChallengeAvailable] = useState([
     {
       id: 0,
@@ -151,7 +152,7 @@ export default function ChallengeAvailability({
         setOneTime(false);
       }
     }
-  }, [isVisible, slotLevel, slots]);
+  }, [isVisible]);
 
   const deleteItemById = (id) => {
     const filteredData = challengeAvailable.filter((item) => item.id !== id);
@@ -351,12 +352,14 @@ export default function ChallengeAvailability({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={closeModal}
-      // modalType={isFromSlot ? ModalTypes.style4 : ModalTypes.style1}
       modalType={ModalTypes.style1}
       title={strings.editChallengeAvailibility}
       headerRightButtonText={strings.save}
       onRightButtonPress={handleSave}
-      containerStyle={{paddingHorizontal: 15}}
+      containerStyle={{
+        paddingHorizontal: 15,
+      }}
+      fromAvalibility={false}
       externalSnapPoints={snapPoints}>
       <View
         onLayout={(event) => {
@@ -373,9 +376,9 @@ export default function ChallengeAvailability({
           data={challengeAvailable}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
-            <>
+            <View>
               {!slotLevel && !isFromSlot && (
-                <>
+                <View style={{flex: 1}}>
                   <View>
                     <Text style={styles.headerTitle}>
                       {strings.editTimeSlots}
@@ -406,7 +409,7 @@ export default function ChallengeAvailability({
                     }}
                     style={{marginTop: 23, marginBottom: 25}}
                   />
-                </>
+                </View>
               )}
               <View
                 style={{
@@ -434,7 +437,7 @@ export default function ChallengeAvailability({
                   </Text>
                 </TouchableOpacity>
               </View>
-            </>
+            </View>
           )}
           renderItem={({item: data, index}) => {
             const challengeItems = [...challengeAvailable];
@@ -456,6 +459,7 @@ export default function ChallengeAvailability({
                 style={{
                   marginTop: 10,
                   padding: 10,
+
                   backgroundColor: background,
                   borderWidth: 1,
                   borderColor: overlappedItems.includes(index)
@@ -608,7 +612,6 @@ export default function ChallengeAvailability({
                   <EventMonthlySelection
                     containerStyle={{
                       backgroundColor: colors.whiteColor,
-                      // backgroundColor: 'red',
                     }}
                     title={strings.repeat}
                     dataSource={[
@@ -662,12 +665,13 @@ export default function ChallengeAvailability({
                       },
                     ]}
                     placeholder={strings.doesNotRepeat}
-                    value={challengeAvailable[index].repeat}
+                    value={repeatValue}
                     onValueChange={(value) => {
                       const tempChallenge = [...challengeAvailable];
                       tempChallenge[index].is_recurring =
                         value !== Verbs.eventRecurringEnum.Never;
                       tempChallenge[index].repeat = value;
+                      setrepeatValue(value);
                       setChallengeAvailable(tempChallenge);
                     }}
                     fontColor={

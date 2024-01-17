@@ -425,7 +425,7 @@ const MemberListModal = ({
           <View
             style={{
               flex: 1,
-              marginBottom: 75,
+
               marginTop: 10,
             }}>
             <FlatList

@@ -46,14 +46,15 @@ export default function EditEventScreen2({navigation, route}) {
   const THISEVENT = 0;
   const FUTUREEVENT = 1;
   const ALLEVENT = 2;
-  const recurringEditList = [
+  const [recurringEditList, setRecurringeditLit] = useState([
     {text: strings.thisEventOnly, value: THISEVENT},
     {
       text: strings.thisAndAllEvent,
       value: FUTUREEVENT,
     },
     {text: strings.allEvents, value: ALLEVENT},
-  ];
+  ]);
+
   const [eventStartDateTime] = useState(route.params?.eventStartDateTimeflag);
   const [eventUntilDateTime] = useState(route.params?.eventUntilDateTimeflag);
 
@@ -206,6 +207,25 @@ export default function EditEventScreen2({navigation, route}) {
   const createEventDone = (data, recurrringOption) => {
     setloading(true);
     const obj = {...data};
+    const obj2 = {...data};
+
+    if (
+      obj.new_start_datetime !== obj.start_datetime ||
+      obj.new_end_datetime !== obj.end_datetime
+    ) {
+      setRecurringeditLit([
+        {text: strings.thisEventOnly, value: THISEVENT},
+        {
+          text: strings.thisAndAllEvent,
+          value: FUTUREEVENT,
+        },
+      ]);
+    }
+    obj.start_datetime = obj2.new_start_datetime;
+    obj.end_datetime = obj2.new_end_datetime;
+    delete obj.new_start_datetime;
+    delete obj.new_end_datetime;
+
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
     const entityRole = entity.role === 'user' ? 'users' : 'groups';
@@ -245,8 +265,8 @@ export default function EditEventScreen2({navigation, route}) {
     editEvent(entityRole, uid, obj, authContext)
       .then(() => {
         setloading(false);
-        obj.start_datetime = obj.new_start_datetime;
-        obj.end_datetime = obj.new_end_datetime;
+        obj.start_datetime = obj2.new_start_datetime;
+        obj.end_datetime = obj2.new_end_datetime;
 
         navigation.navigate('EventScreen', {
           event: obj,

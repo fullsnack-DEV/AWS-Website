@@ -57,17 +57,15 @@ export default function BlockSlotView({
           styles.card,
           {
             backgroundColor: item.blocked
-              ? colors.grayBackgroundColor
-              : colors.availabilitySlotsBackground,
+              ? colors.lightGrayBackground
+              : colors.blockColor,
           },
         ]}>
         <Text
           style={[
             styles.fieldValue,
             {
-              color: item.blocked
-                ? colors.darkGrayColor
-                : colors.greenGradientStart,
+              color: item.blocked ? colors.medianGrayColor : colors.whiteColor,
             },
           ]}
           numberOfLines={3}>
@@ -81,8 +79,8 @@ export default function BlockSlotView({
               styles.fieldValue,
               {
                 color: item.blocked
-                  ? colors.lightBlackColor
-                  : colors.greenGradientStart,
+                  ? colors.medianGrayColor
+                  : colors.whiteColor,
                 fontSize: 10,
                 marginTop: -2,
               },

@@ -51,9 +51,9 @@ export default function ViewEventSettingsScreen({navigation}) {
   const [registeredSports, setRegisteredSports] = useState([]);
   const [listOfOrganiser, setListOfOrganiser] = useState(false);
   const [listOfSports, setListOfSports] = useState(false);
-  const [optionValue, setOptionValue] = useState(1);
+  const [optionValue, setOptionValue] = useState();
   const [userSetting, setUserSetting] = useState();
-  const [optionRender, setOptionRender] = useState(0);
+  const [optionRender, setOptionRender] = useState();
   const [listOfClubs, setListofClubs] = useState([]);
 
   useEffect(() => {
@@ -227,6 +227,10 @@ export default function ViewEventSettingsScreen({navigation}) {
           return false;
         }
       }
+
+      if (authContext.entity.role === Verbs.entityTypeTeam && !hasGroup) {
+        return false;
+      }
     }
 
     if (item === strings.eventFilterRoleTitle) {
@@ -322,8 +326,7 @@ export default function ViewEventSettingsScreen({navigation}) {
         ...userSetting,
         club_event_view_settings_option: optionValue,
       };
-    }
-    if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+    } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
       params = {
         ...userSetting,
         team_event_view_settings_option: optionValue,
@@ -334,6 +337,7 @@ export default function ViewEventSettingsScreen({navigation}) {
         event_view_settings_option: optionValue,
       };
     }
+
     saveUserSettings(params, authContext)
       .then(async () => {
         setLoading(false);

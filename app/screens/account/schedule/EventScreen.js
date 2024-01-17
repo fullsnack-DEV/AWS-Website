@@ -1364,7 +1364,7 @@ export default function EventScreen({navigation, route}) {
                 seeLessStyle={styles.moreLessText}
                 seeMoreStyle={styles.moreLessText}
                 seeLessText={strings.lessText}>
-                {strings.attendeesMustRefundedText} {eventData.refund_policy}
+                {eventData.refund_policy}
               </ReadMore>
             </EventItemRender>
 

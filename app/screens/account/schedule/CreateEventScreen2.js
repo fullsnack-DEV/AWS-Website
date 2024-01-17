@@ -15,6 +15,7 @@ import {
   // Dimensions,
 } from 'react-native';
 import {FlatList, ScrollView} from 'react-native-gesture-handler';
+import {format} from 'react-string-format';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
 import EventItemRender from '../../../components/Schedule/EventItemRender';
@@ -58,6 +59,7 @@ export default function CreateEventScreen2({navigation, route}) {
   const [groups, setGroups] = useState([]);
 
   const [snapPoints, setSnapPoints] = useState([]);
+  const [teamsClubsArray, setTeamsClubsArray] = useState([]);
 
   const see = 'see';
   const join = 'join';
@@ -189,7 +191,6 @@ export default function CreateEventScreen2({navigation, route}) {
               event: response?.payload[0],
             },
           });
-          console.log(response, 'from after creating event');
         }, 1000);
       })
       .catch((e) => {
@@ -243,6 +244,7 @@ export default function CreateEventScreen2({navigation, route}) {
   };
 
   const onDonePress = () => {
+    setloading(true);
     const routeData = route.params?.createEventData;
     routeData.event_posted_at = eventPosted;
 
@@ -672,8 +674,10 @@ export default function CreateEventScreen2({navigation, route}) {
                           fontSize: 16,
                           lineHeight: 24,
                         }}>
-                        A post about this event will be created in posts of your
-                        team.
+                        {format(
+                          strings.shareEventsubText,
+                          authContext.entity.role,
+                        )}
                       </Text>
 
                       {getShowEventPostRenderCondition() && (
@@ -688,7 +692,7 @@ export default function CreateEventScreen2({navigation, route}) {
                               textTransform: 'uppercase',
                               lineHeight: 24,
                             }}>
-                            Share Event Post
+                            {strings.shareEventPostText}
                           </Text>
                           <Text
                             style={{
@@ -697,8 +701,10 @@ export default function CreateEventScreen2({navigation, route}) {
                               lineHeight: 24,
                               marginTop: 10,
                             }}>
-                            Select affiliated clubs in whose posts you want to
-                            display the post about this event.
+                            {format(
+                              strings.selectClubText,
+                              authContext.entity.role,
+                            )}
                           </Text>
 
                           <FlatList
@@ -706,7 +712,7 @@ export default function CreateEventScreen2({navigation, route}) {
                             keyExtractor={(item) => item.group_id}
                             style={{marginTop: 24}}
                             bounces={false}
-                            renderItem={({item, index}) => (
+                            renderItem={({item}) => (
                               <View
                                 style={{
                                   flexDirection: 'row',
@@ -752,19 +758,40 @@ export default function CreateEventScreen2({navigation, route}) {
                                     {item?.group_name}
                                   </Text>
                                 </View>
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    const i = teamsClubsArray.indexOf(
+                                      item.group_id,
+                                    );
 
-                                <Image
-                                  source={images.whiteUncheck}
-                                  style={{
-                                    height: 22,
-                                    width: 22,
-                                    resizeMode: 'contain',
-                                    alignSelf: 'center',
-                                    borderWidth: 1,
-                                    borderColor: colors.veryLightGray,
-                                    borderRadius: 7,
-                                  }}
-                                />
+                                    if (i !== -1) {
+                                      const newArray = [...teamsClubsArray];
+                                      newArray.splice(i, 1);
+                                      setTeamsClubsArray(newArray);
+                                    } else {
+                                      setTeamsClubsArray((prevArray) => [
+                                        ...prevArray,
+                                        item.group_id,
+                                      ]);
+                                    }
+                                  }}>
+                                  <Image
+                                    source={
+                                      teamsClubsArray.includes(item.group_id)
+                                        ? images.orangeCheckBox
+                                        : images.whiteUncheck
+                                    }
+                                    style={{
+                                      height: 22,
+                                      width: 22,
+                                      resizeMode: 'contain',
+                                      alignSelf: 'center',
+                                      borderWidth: 1,
+                                      borderColor: colors.veryLightGray,
+                                      borderRadius: 7,
+                                    }}
+                                  />
+                                </TouchableOpacity>
                               </View>
                             )}
                           />

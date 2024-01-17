@@ -14,9 +14,11 @@ import {
   TouchableOpacity,
   Alert,
   SafeAreaView,
+  FlatList,
 } from 'react-native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 
-import DraggableFlatList from 'react-native-drag-flatlist';
 import ActionSheet from 'react-native-actionsheet';
 import * as Utility from '../../../utils';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -241,90 +243,89 @@ export default function ChangeSportsOrderScreen({
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ActivityLoader visible={loading} />
-      <ScreenHeader
-        isFullTitle
-        title={strings.changelistofsports}
-        leftIcon={images.crossImage}
-        leftIconStyle={{width: 50}}
-        leftIconPress={() => {
-          closeBtn(false);
-        }}
-        isRightIconText
-        rightButtonText={strings.apply}
-        onRightButtonPress={onSavePress}
-      />
-      <TCThinDivider width={'100%'} />
-      <View style={{flex: 1, paddingBottom: 20}}>
-        <Text style={styles.mainTextStyle}>
-          {strings.sportsdisplayedinfilterbar}
-        </Text>
-        <Text style={styles.subTitle}>{strings.addUpTo10Sport}</Text>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <ActivityLoader visible={loading} />
+        <ScreenHeader
+          isFullTitle
+          title={strings.changelistofsports}
+          leftIcon={images.crossImage}
+          leftIconStyle={{width: 50}}
+          leftIconPress={() => {
+            closeBtn(false);
+          }}
+          isRightIconText
+          rightButtonText={strings.apply}
+          onRightButtonPress={onSavePress}
+        />
+        <TCThinDivider width={'100%'} />
+        <View style={{flex: 1, paddingBottom: 20}}>
+          <Text style={styles.mainTextStyle}>
+            {strings.sportsdisplayedinfilterbar}
+          </Text>
+          <Text style={styles.subTitle}>{strings.addUpTo10Sport}</Text>
 
-        {addedSport.length > 0 ? (
-          <DraggableFlatList
-            showsHorizontalScrollIndicator={false}
-            data={addedSport}
-            keyExtractor={keyExtractor}
-            renderItem={renderRemoveSportsActivity}
-            ListEmptyComponent={
-              <View style={{marginTop: 15}}>
-                <Text style={styles.noEventText}> {strings.noSports}</Text>
-                <Text style={styles.dataNotFoundText}>
-                  {strings.Neweventswillappearhere}
-                </Text>
-              </View>
-            }
-            style={styles.dragFlatListStyle}
-            dragHitSlop={styles.draghitSlop}
-            onMoveEnd={(data) => {
-              setAddedSport([...data]);
+          {addedSport.length > 0 ? (
+            <DraggableFlatList
+              showsHorizontalScrollIndicator={false}
+              data={addedSport}
+              keyExtractor={keyExtractor}
+              renderItem={renderRemoveSportsActivity}
+              ListEmptyComponent={
+                <View style={{marginTop: 15}}>
+                  <Text style={styles.noEventText}> {strings.noSports}</Text>
+                  <Text style={styles.dataNotFoundText}>
+                    {strings.Neweventswillappearhere}
+                  </Text>
+                </View>
+              }
+              onDragEnd={(data) => {
+                setAddedSport([...data]);
+              }}
+            />
+          ) : (
+            <View style={{marginTop: 15}}>
+              <Text style={styles.noEventText}>{strings.noSports}</Text>
+            </View>
+          )}
+          <Text style={styles.otherTitle}>{strings.otherSports}</Text>
+          {removedSport.length > 0 ? (
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              data={removedSport}
+              keyExtractor={keyExtractor}
+              renderItem={renderAddSportsActivity}
+            />
+          ) : (
+            <View style={{marginTop: 15}}>
+              <Text style={styles.noEventText}>{strings.noSports}</Text>
+            </View>
+          )}
+          <Text style={styles.headerTextStyle}>
+            {strings.someOrganizerJoinSportText}
+          </Text>
+          <ActionSheet
+            ref={actionSheet}
+            options={[
+              'Add New Sports Activity',
+              'sports Activity Tags Order',
+              'List / Unlist',
+              strings.cancel,
+            ]}
+            cancelButtonIndex={3}
+            onPress={(index) => {
+              if (index === 0) {
+                console.log('0');
+              } else if (index === 1) {
+                console.log('1');
+              } else if (index === 2) {
+                navigation.navigate('SportActivityScreen');
+              } else if (index === 3) {
+                console.log('3');
+              }
             }}
           />
-        ) : (
-          <View style={{marginTop: 15}}>
-            <Text style={styles.noEventText}>{strings.noSports}</Text>
-          </View>
-        )}
-        <Text style={styles.otherTitle}>{strings.otherSports}</Text>
-        {removedSport.length > 0 ? (
-          <DraggableFlatList
-            showsHorizontalScrollIndicator={false}
-            data={removedSport}
-            keyExtractor={keyExtractor}
-            renderItem={renderAddSportsActivity}
-            style={styles.dragFlatListStyle}
-          />
-        ) : (
-          <View style={{marginTop: 15}}>
-            <Text style={styles.noEventText}>{strings.noSports}</Text>
-          </View>
-        )}
-        <Text style={styles.headerTextStyle}>
-          {strings.someOrganizerJoinSportText}
-        </Text>
-        <ActionSheet
-          ref={actionSheet}
-          options={[
-            'Add New Sports Activity',
-            'sports Activity Tags Order',
-            'List / Unlist',
-            strings.cancel,
-          ]}
-          cancelButtonIndex={3}
-          onPress={(index) => {
-            if (index === 0) {
-              console.log('0');
-            } else if (index === 1) {
-              console.log('1');
-            } else if (index === 2) {
-              navigation.navigate('SportActivityScreen');
-            } else if (index === 3) {
-              console.log('3');
-            }
-          }}
-        />
-      </View>
+        </View>
+      </GestureHandlerRootView>
     </SafeAreaView>
   );
 }
@@ -407,19 +408,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 50,
   },
-  dragFlatListStyle: {
-    flex: 1,
-    width: '100%',
-    alignContent: 'center',
-    marginBottom: 15,
-    paddingVertical: 15,
-  },
-  draghitSlop: {
-    top: 15,
-    bottom: 15,
-    left: 15,
-    right: 15,
-  },
+
   removeSportActivityStyles: {
     flexDirection: 'row',
     justifyContent: 'center',

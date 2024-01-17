@@ -140,7 +140,7 @@ const colors = {
   availabilityBarColor: '#70D486',
   placeHolderColor: '#999999',
 
-  availabilitySlotsBackground: '#ECF6EE',
+  availabilitySlotsBackground: '#E2F7D1',
   modalBackgroundColor: 'rgba(0,0,0,0.5)',
   createClubGradientfrom: 'rgba(170, 216, 64, 0.6)',
   createClubGradientto: 'rgba(0, 193, 104, 0.6)',
@@ -171,5 +171,6 @@ const colors = {
   modalTransparentBG: 'rgba(255,255,255,0.1)',
   iosActionSheetBgColor: '#DFDFDF',
   leaveClubTextColor: '#FF0000',
+  blockColor: '#6DD819',
 };
 export default colors;

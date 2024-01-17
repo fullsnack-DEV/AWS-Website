@@ -562,6 +562,7 @@ export default function AvailibilityScheduleScreen({
         <TouchableOpacity
           onPress={() => {
             setIsFromSlots(true);
+
             setVisibleAvailabilityModal(true);
           }}
           style={{

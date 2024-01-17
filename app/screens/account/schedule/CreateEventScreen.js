@@ -72,6 +72,7 @@ import {
   DEFAULT_LONGITUDE,
   LATITUDE_DELTA,
   LONGITUDE_DELTA,
+  repeatArray,
 } from '../../../Constants/GeneralConstants';
 import {getSportList} from '../../../utils/sportsActivityUtils';
 import SportsListModal from '../registerPlayer/modals/SportsListModal';
@@ -186,9 +187,11 @@ export default function CreateEventScreen({navigation, route}) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authContext.entity.obj.country]);
+
   const handleStartDatePress = (date) => {
     const startDateTime = toggle ? new Date(date).setHours(0, 0, 0, 0) : date;
     setEventStartdateTime(startDateTime);
+
     let endDateTime = eventEndDateTime;
     const unitDate = eventUntilDateTime;
 
@@ -274,6 +277,13 @@ export default function CreateEventScreen({navigation, route}) {
 
   useEffect(() => {
     const list = getSportList(authContext.sports);
+
+    list.push({
+      default_setting: [],
+      sport_type: 'Other',
+      sport_name: 'Other',
+      sport: 'Other',
+    });
     setSportsData(list);
   }, [authContext.sports]);
 
@@ -586,6 +596,7 @@ export default function CreateEventScreen({navigation, route}) {
       newEvent.end_datetime = newEvent.start_datetime + duration;
       // eslint-disable-next-line no-param-reassign
       RRItem = newEvent;
+
       return RRItem;
     });
 
@@ -944,81 +955,8 @@ export default function CreateEventScreen({navigation, route}) {
                 <View>
                   <EventMonthlySelection
                     title={strings.repeat}
-                    dataSource={[
-                      {
-                        label: '3 Times',
-                        value: 3,
-                      },
-                      {
-                        label: '4 Times',
-                        value: 4,
-                      },
-                      {
-                        label: '5 Times',
-                        value: 5,
-                      },
-                      {
-                        label: '6 Times',
-                        value: 6,
-                      },
-                      {
-                        label: '7 Times',
-                        value: 7,
-                      },
-                      {
-                        label: '8 Times',
-                        value: 8,
-                      },
-                      {
-                        label: '9 Times',
-                        value: 9,
-                      },
-                      {
-                        label: '12 Times',
-                        value: 12,
-                      },
-                      // {
-                      //   label: '11 Times',
-                      //   value: Verbs.eventRecurringEnum.Weekly,
-                      // },
-                      // {
-                      //   label: '12 Times',
-                      //   value: Verbs.eventRecurringEnum.Weekly,
-                      // },
-                      // {
-                      //   label: '13 Times',
-                      //   value: Verbs.eventRecurringEnum.Weekly,
-                      // },
-
-                      // {
-                      //   label: '14 Times',
-                      //   value: Verbs.eventRecurringEnum.Weekly,
-                      // },
-                      // {
-                      //   label: '15 Times',
-                      //   value: Verbs.eventRecurringEnum.Weekly,
-                      // },
-                      // {
-                      //   label: '16 Times',
-                      //   value: Verbs.eventRecurringEnum.Weekly,
-                      // },
-                      // {
-                      //   label: '17 Times',
-                      //   value: Verbs.eventRecurringEnum.Weekly,
-                      // },
-                      // {
-                      //   label: '18 Times',
-                      //   value: Verbs.eventRecurringEnum.Weekly,
-                      // },
-                      // {
-                      //   label: '19 Times',
-                      //   value: Verbs.eventRecurringEnum.Weekly,
-                      // },
-                      // {
-                      //   label: '20 Times',
-                      //   value: Verbs.eventRecurringEnum.Weekly,
-                      // },
-                    ]}
+                    forLongList={true}
+                    dataSource={repeatArray}
                     placeholder={strings.never}
                     value={occurance}
                     onValueChange={(value) => {
@@ -1184,7 +1122,7 @@ export default function CreateEventScreen({navigation, route}) {
               onCancel={handleCancelPress}
               onHide={handleCancelPress}
               minimumDate={getRoundedDate(5)}
-              minutesGap={5}
+              minutesGap={15}
               mode={toggle ? 'date' : 'datetime'}
             />
             <DateTimePickerView
@@ -1194,7 +1132,7 @@ export default function CreateEventScreen({navigation, route}) {
               onCancel={handleCancelPress}
               onHide={handleCancelPress}
               minimumDate={moment(eventStartDateTime).add(5, 'm').toDate()}
-              minutesGap={5}
+              minutesGap={15}
               mode={toggle ? 'date' : 'datetime'}
             />
             <DateTimePickerView
@@ -1204,7 +1142,7 @@ export default function CreateEventScreen({navigation, route}) {
               onCancel={handleCancelPress}
               onHide={handleCancelPress}
               minimumDate={moment(eventEndDateTime).add(5, 'm').toDate()}
-              minutesGap={5}
+              minutesGap={15}
               mode={toggle ? 'date' : 'datetime'}
             />
           </View>
@@ -1217,6 +1155,7 @@ export default function CreateEventScreen({navigation, route}) {
         title={strings.sportsTitleText}
         sportsList={sportsData}
         sport={selectedSport}
+        setOthers={true}
         onNext={(sports) => {
           const {sport_name, sport_type, sport} = sports;
           const selectedSportData = {sport_name, sport_type, sport};

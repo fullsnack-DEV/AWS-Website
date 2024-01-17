@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
+  FlatList,
 } from 'react-native';
-import DraggableFlatList from 'react-native-drag-flatlist';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 import * as Utility from '../../../utils/index';
 import {getUserSettings} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
@@ -24,7 +26,6 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import GroupIcon from '../../../components/GroupIcon';
 
 export default function ChangeOtherListScreen({
-  navigation,
   closeBtn,
   userSetting,
   setUserSetting,
@@ -37,17 +38,38 @@ export default function ChangeOtherListScreen({
 
   const onDonePress = useCallback(async () => {
     setLoading(true);
+
     if (addedGroups.length > 0) {
       let params;
       if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+        const otherGroups = userSetting?.club_schedule_group_filter ?? [];
+
+        const GroupWithKey = [
+          {
+            groupid: authContext.entity.uid,
+            addedgroups: addedGroups,
+          },
+          ...otherGroups,
+        ];
+
         params = {
           ...userSetting,
-          club_schedule_group_filter: addedGroups,
+          club_schedule_group_filter: GroupWithKey,
         };
       } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+        const otherGroups = userSetting?.club_schedule_group_filter ?? [];
+
+        const GroupWithKey = [
+          {
+            groupid: authContext.entity.uid,
+            addedgroups: addedGroups,
+          },
+          ...otherGroups,
+        ];
+
         params = {
           ...userSetting,
-          team_schedule_group_filter: addedGroups,
+          team_schedule_group_filter: GroupWithKey,
         };
       } else {
         params = {
@@ -55,6 +77,7 @@ export default function ChangeOtherListScreen({
           schedule_group_filter: addedGroups,
         };
       }
+
       setUserSetting(params);
       closeBtn(false);
       setLoading(false);
@@ -62,7 +85,14 @@ export default function ChangeOtherListScreen({
       setLoading(false);
       Alert.alert('Please select any of the group.');
     }
-  }, [addedGroups, authContext, navigation]);
+  }, [
+    addedGroups,
+    authContext.entity.role,
+    authContext.entity.uid,
+    closeBtn,
+    setUserSetting,
+    userSetting,
+  ]);
 
   useEffect(() => {
     setLoading(true);
@@ -75,13 +105,32 @@ export default function ChangeOtherListScreen({
               setting.payload.user?.club_schedule_group_filter &&
               setting.payload.user?.club_schedule_group_filter.length > 0
             ) {
-              setAddedGroups([
-                ...setting.payload?.user?.club_schedule_group_filter,
-              ]);
+              let tempAddedGroup = [];
+              const groupArray =
+                setting?.payload?.user?.club_schedule_group_filter ?? [];
+
+              if (groupArray && Array.isArray(groupArray)) {
+                // Find the object with the specified groupId
+                const desiredGroup = groupArray.find(
+                  (group) => group.groupid === authContext.entity.uid,
+                );
+
+                if (desiredGroup) {
+                  // Extract addedGroups from the desiredGroup
+                  tempAddedGroup = desiredGroup.addedgroups ?? [];
+                } else {
+                  tempAddedGroup = [];
+                }
+              } else {
+                tempAddedGroup = [];
+              }
+
+              setAddedGroups(tempAddedGroup);
+
               setremovedGroups([
                 ...[...response.payload].filter(
                   (e) =>
-                    !setting.payload.user?.club_schedule_group_filter.some(
+                    !tempAddedGroup.some(
                       (item) => item.group_id === e.group_id,
                     ),
                 ),
@@ -110,15 +159,31 @@ export default function ChangeOtherListScreen({
           setting.payload.user?.team_schedule_group_filter &&
           setting.payload.user?.team_schedule_group_filter.length > 0
         ) {
-          setAddedGroups([
-            ...(setting.payload?.user?.team_schedule_group_filter ?? []),
-          ]);
+          let tempAddedGroup = [];
+          const groupArray =
+            setting?.payload?.user?.team_schedule_group_filter ?? [];
+
+          if (groupArray && Array.isArray(groupArray)) {
+            // Find the object with the specified groupId
+            const desiredGroup = groupArray.find(
+              (group) => group.groupid === authContext.entity.uid,
+            );
+
+            if (desiredGroup) {
+              // Extract addedGroups from the desiredGroup
+              tempAddedGroup = desiredGroup.addedgroups ?? [];
+            } else {
+              tempAddedGroup = [];
+            }
+          } else {
+            tempAddedGroup = [];
+          }
+
+          setAddedGroups(tempAddedGroup);
           setremovedGroups(
             clubLists.filter(
               (e) =>
-                !setting.payload.user?.club_schedule_group_filter.some(
-                  (item) => item.group_id === e.group_id,
-                ),
+                !tempAddedGroup.some((item) => item.group_id === e.group_id),
             ),
           );
         } else {
@@ -175,14 +240,16 @@ export default function ChangeOtherListScreen({
       const findIndex = addedGroups.findIndex(
         (a) => a.group_id === item.group_id,
       );
-      if (findIndex !== -1) {
-        addedGroups.splice(findIndex, 1);
-      }
-      const temp = {...item, isSelected: !item.isSelected};
 
-      setAddedGroups([...addedGroups]);
-      removedGroups.push(temp);
-      setremovedGroups([...removedGroups]);
+      if (findIndex !== -1) {
+        const updatedAddedGroups = addedGroups.slice();
+        updatedAddedGroups.splice(findIndex, 1);
+        setAddedGroups(updatedAddedGroups);
+      }
+
+      const updatedItem = {...item, isSelected: !item.isSelected};
+
+      setremovedGroups([...removedGroups, updatedItem]);
     },
     [addedGroups, removedGroups],
   );
@@ -193,14 +260,20 @@ export default function ChangeOtherListScreen({
         const findIndex = removedGroups.findIndex(
           (a) => a.group_id === item.group_id,
         );
-        const temp = {...item, isSelected: !item.isSelected};
 
         if (findIndex !== -1) {
+          // If the item is found in removedGroups, remove it
           removedGroups.splice(findIndex, 1);
+          setremovedGroups([...removedGroups]);
         }
-        setremovedGroups([...removedGroups]);
-        addedGroups.push(temp);
-        setAddedGroups([...addedGroups]);
+
+        // Create a new object with the updated properties
+        const updatedItem = {...item, isSelected: !item.isSelected};
+
+        // Add the updated item to addedGroups
+        if (addedGroups.length < 10) {
+          setAddedGroups([...addedGroups, updatedItem]);
+        }
       } else {
         Alert.alert(strings.addUpTo10Organizers);
       }
@@ -274,81 +347,67 @@ export default function ChangeOtherListScreen({
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ActivityLoader visible={loading} />
+      <GestureHandlerRootView style={{flex: 1}}>
+        <ActivityLoader visible={loading} />
 
-      <ScreenHeader
-        isFullTitle
-        title={strings.changelistforgarnizers}
-        leftIcon={images.crossImage}
-        leftIconStyle={{width: 50}}
-        leftIconPress={() => {
-          closeBtn(false);
-        }}
-        isRightIconText
-        rightButtonText={strings.apply}
-        onRightButtonPress={onDonePress}
-      />
-      <View style={styles.sperateLine} />
-      <TCThinDivider marginBottom={15} width={'100%'} />
-      <View style={{flex: 1, paddingBottom: 20}}>
-        <Text style={styles.mainTextStyle}>
-          {strings.organizerDisplayInFilterBartext}
-        </Text>
-        <Text style={styles.subTitle}>{strings.upTo10OrganizerText}</Text>
-        {addedGroups.length > 0 ? (
-          <DraggableFlatList
-            showsHorizontalScrollIndicator={false}
-            data={addedGroups}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderCheckedOrganizers}
-            style={{
-              flex: 1,
-              width: '100%',
-              alignContent: 'center',
-              marginBottom: 15,
-              paddingVertical: 15,
-            }}
-            dragHitSlop={{
-              top: 15,
-              bottom: 15,
-              left: 15,
-              right: 15,
-            }}
-            onMoveEnd={(data) => {
-              setAddedGroups([...data]);
-            }}
-          />
-        ) : (
-          <View style={{marginTop: 10}}>
-            <Text style={styles.noEventText}>{strings.noOrganizers}</Text>
+        <ScreenHeader
+          isFullTitle
+          title={strings.changelistforgarnizers}
+          leftIcon={images.crossImage}
+          leftIconStyle={{width: 50}}
+          leftIconPress={() => {
+            closeBtn(false);
+          }}
+          isRightIconText
+          rightButtonText={strings.apply}
+          onRightButtonPress={onDonePress}
+        />
+        <View style={styles.sperateLine} />
+        <TCThinDivider marginBottom={15} width={'100%'} />
+        <View style={{flex: 1, paddingBottom: 20}}>
+          <Text style={styles.mainTextStyle}>
+            {strings.organizerDisplayInFilterBartext}
+          </Text>
+          <Text style={styles.subTitle}>{strings.upTo10OrganizerText}</Text>
+          <View style={{flex: 0.7}}>
+            {addedGroups?.length > 0 ? (
+              <DraggableFlatList
+                showsHorizontalScrollIndicator={false}
+                data={addedGroups}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderCheckedOrganizers}
+                bounces={false}
+                onDragEnd={({data}) => {
+                  setAddedGroups([...data]);
+                }}
+              />
+            ) : (
+              <View style={{marginTop: 10}}>
+                <Text style={styles.noEventText}>{strings.noOrganizers}</Text>
+              </View>
+            )}
           </View>
-        )}
-        <Text style={styles.otherTitle}>{strings.otherOrganizers}</Text>
-
-        {removedGroups.length > 0 ? (
-          <DraggableFlatList
-            showsHorizontalScrollIndicator={false}
-            data={removedGroups}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderUnCheckedOrganizers}
-            style={{
-              flex: 1,
-              width: '100%',
-              alignContent: 'center',
-              marginBottom: 15,
-              paddingVertical: 15,
-            }}
-          />
-        ) : (
-          <View style={{marginTop: 15}}>
-            <Text style={styles.noEventText}>{strings.noOrganizers}</Text>
+          <Text style={styles.otherTitle}>{strings.otherOrganizers}</Text>
+          <View style={{flex: 0.7}}>
+            {removedGroups.length > 0 ? (
+              <FlatList
+                showsHorizontalScrollIndicator={false}
+                data={removedGroups}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderUnCheckedOrganizers}
+              />
+            ) : (
+              <View style={{marginTop: 15}}>
+                <Text style={styles.noEventText}>{strings.noOrganizers}</Text>
+              </View>
+            )}
           </View>
-        )}
 
-        <Text style={styles.headerTextStyle}>
-          {strings.someOrganizerJoinEventText}
-        </Text>
-      </View>
+          <Text style={styles.headerTextStyle}>
+            {strings.someOrganizerJoinEventText}
+          </Text>
+        </View>
+      </GestureHandlerRootView>
     </SafeAreaView>
   );
 }

@@ -841,9 +841,14 @@ function NotificationsListScreen({navigation, route}) {
             // JSON.parse(item.activities[0].object))
             onPress={() => onNotificationClick(item)}
             onPressFirstEntity={openHomePage}
-            isRepond={item.activities[0].verb.includes(
-              NotificationType.userRequestedJoingroup,
-            )}
+            isRepond={
+              item.activities[0].verb.includes(
+                NotificationType.userRequestedJoingroup,
+              ) ||
+              item.activities[0].verb.includes(
+                NotificationType.inviteToDoubleTeam,
+              )
+            }
           />
         );
       }

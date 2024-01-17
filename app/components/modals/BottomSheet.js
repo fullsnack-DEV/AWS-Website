@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Platform,
+  ScrollView,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {strings} from '../../../Localization/translation';
@@ -30,6 +31,7 @@ const BottomSheet = ({
   cancelButtonContainerStyle = {},
   cancelButtonTextStyle = {},
   subTextStyle = {},
+  forLongList = false,
 }) => {
   const [optionsWithSubText, setOptionsWithSubText] = useState([]);
 
@@ -50,7 +52,14 @@ const BottomSheet = ({
   const renderView = () => {
     if (Platform.OS === 'ios') {
       return (
-        <View style={styles.parent}>
+        <View
+          style={[
+            styles.parent,
+            {
+              height: forLongList ? 500 : 'auto',
+              marginBottom: forLongList ? 100 : 50,
+            },
+          ]}>
           <View style={[styles.card, cardStyle]}>
             {title && (
               <>
@@ -65,35 +74,38 @@ const BottomSheet = ({
                 <View style={[styles.dividor, separatorLineStyle]} />
               </>
             )}
-
-            {optionList.map((item, index) => (
-              <View key={index}>
-                <TouchableOpacity
-                  style={[styles.buttonContainer, itemStyle]}
-                  onPress={() => onSelect(item, index)}>
-                  <Text
-                    style={[
-                      styles.buttonText,
-                      item?.includes('Delete') ? {color: colors.redColor} : {},
-                      textStyle,
-                    ]}>
-                    {optionsWithSubText.length > 0 ? item.label : item}
-                  </Text>
-                  {optionsWithSubText.length > 0 && (
+            <ScrollView scrollEnabled={forLongList}>
+              {optionList.map((item, index) => (
+                <View key={index}>
+                  <TouchableOpacity
+                    style={[styles.buttonContainer, itemStyle]}
+                    onPress={() => onSelect(item, index)}>
                     <Text
                       style={[
-                        styles.subTitle,
-                        {color: colors.neonBlue, textAlign: 'center'},
+                        styles.buttonText,
+                        item?.includes('Delete')
+                          ? {color: colors.redColor}
+                          : {},
+                        textStyle,
                       ]}>
-                      {item.subText}
+                      {optionsWithSubText.length > 0 ? item.label : item}
                     </Text>
+                    {optionsWithSubText.length > 0 && (
+                      <Text
+                        style={[
+                          styles.subTitle,
+                          {color: colors.neonBlue, textAlign: 'center'},
+                        ]}>
+                        {item.subText}
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                  {index !== optionList.length - 1 && (
+                    <View style={[styles.dividor, separatorLineStyle]} />
                   )}
-                </TouchableOpacity>
-                {index !== optionList.length - 1 && (
-                  <View style={[styles.dividor, separatorLineStyle]} />
-                )}
-              </View>
-            ))}
+                </View>
+              ))}
+            </ScrollView>
           </View>
 
           <TouchableOpacity
@@ -118,7 +130,14 @@ const BottomSheet = ({
 
     if (Platform.OS === 'android') {
       return (
-        <View style={[styles.parent, cardStyle]}>
+        <View
+          style={[
+            styles.parent,
+            cardStyle,
+            {
+              height: forLongList ? 500 : 'auto',
+            },
+          ]}>
           <View style={styles.handle} />
           {title && (
             <View style={[{marginBottom: 30}, headerStyle]}>
@@ -126,27 +145,28 @@ const BottomSheet = ({
               {subTitle && <Text style={styles.subTitle}>{subTitle}</Text>}
             </View>
           )}
-
-          {optionList.map((item, index) => (
-            <TouchableOpacity
-              style={[
-                {marginBottom: index !== optionList.length - 1 ? 30 : 0},
-                itemStyle,
-              ]}
-              key={index}
-              onPress={() => onSelect(item, index)}>
-              <Text style={[styles.androidButtonText, textStyle]}>
-                {optionsWithSubText.length > 0
-                  ? optionsWithSubText[index].label
-                  : item}
-              </Text>
-              {optionsWithSubText.length > 0 && (
-                <Text style={[styles.subTitle, subTextStyle]}>
-                  {optionsWithSubText[index].subText}
+          <ScrollView>
+            {optionList.map((item, index) => (
+              <TouchableOpacity
+                style={[
+                  {marginBottom: index !== optionList.length - 1 ? 30 : 0},
+                  itemStyle,
+                ]}
+                key={index}
+                onPress={() => onSelect(item, index)}>
+                <Text style={[styles.androidButtonText, textStyle]}>
+                  {optionsWithSubText.length > 0
+                    ? optionsWithSubText[index].label
+                    : item}
                 </Text>
-              )}
-            </TouchableOpacity>
-          ))}
+                {optionsWithSubText.length > 0 && (
+                  <Text style={[styles.subTitle, subTextStyle]}>
+                    {optionsWithSubText[index].subText}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
       );
     }

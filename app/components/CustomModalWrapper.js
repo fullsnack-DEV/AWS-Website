@@ -45,6 +45,7 @@ const CustomModalWrapper = ({
   sportIcon = null,
   isRightIconText = true,
   isRightButtonDisabled = false,
+  fromAvalibility = true,
 }) => {
   const modalRef = useRef();
   const navigation = useNavigation();
@@ -244,7 +245,9 @@ const CustomModalWrapper = ({
           setCurrentIndex(index);
         }}
         enablePanDownToClose={getPanGestureState()}
+        enableHandlePanningGesture={fromAvalibility}
         enableDismissOnClose
+        enableContentPanningGesture={fromAvalibility}
         backdropComponent={ModalBackDrop}
         handleComponent={() => getModalHeader()}
         keyboardBehavior={Platform.OS === 'ios' ? 'extend' : 'interactive'}

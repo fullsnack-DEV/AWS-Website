@@ -108,7 +108,6 @@ export const EventInvitePrivacy = {
   myTeamClub: 3,
 
   none: 4,
-
 };
 
 export const groupInviteOptionsList = [
@@ -201,6 +200,82 @@ export const currencyList = [
   {
     countryName: 'Unites States',
     currency: 'USD',
+  },
+];
+
+export const repeatArray = [
+  {
+    label: strings.threetimes,
+    value: 3,
+  },
+  {
+    label: strings.fourtimes,
+    value: 4,
+  },
+  {
+    label: strings.fivetimes,
+    value: 5,
+  },
+  {
+    label: strings.sixtimes,
+    value: 6,
+  },
+  {
+    label: strings.seventimes,
+    value: 7,
+  },
+  {
+    label: strings.eighttimes,
+    value: 8,
+  },
+  {
+    label: strings.ninetimes,
+    value: 9,
+  },
+  {
+    label: strings.tentimes,
+    value: 10,
+  },
+  {
+    label: strings.eleventimes,
+    value: 11,
+  },
+  {
+    label: strings.twelevetimes,
+    value: 12,
+  },
+  {
+    label: strings.thirteentimes,
+    value: 13,
+  },
+
+  {
+    label: strings.fourteenimes,
+    value: 14,
+  },
+  {
+    label: strings.fifteentimes,
+    value: 15,
+  },
+  {
+    label: strings.sixsteentimes,
+    value: 16,
+  },
+  {
+    label: strings.seventeentimes,
+    value: 17,
+  },
+  {
+    label: strings.eighteentimes,
+    value: 18,
+  },
+  {
+    label: strings.nineteentimes,
+    value: 19,
+  },
+  {
+    label: strings.twentyimes,
+    value: 20,
   },
 ];
 

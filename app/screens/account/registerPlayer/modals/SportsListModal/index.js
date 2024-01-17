@@ -98,6 +98,7 @@ const SportsListModal = ({
       setMemberListModal(true);
 
       setDoubleSport(sport_data);
+      closeList();
     } else if (authContext.entity.role === Verbs.entityTypeClub) {
       closeList();
 

@@ -138,11 +138,11 @@ const CustomWeeklyCalender = ({
     return color;
   };
 
-  // const LeftArrow = () => (
-  //   <View style={styles.arrowContainer}>
-  //     <Image source={images.leftArrow} style={styles.arrowIcon} />
-  //   </View>
-  // );
+  const LeftArrow = () => (
+    <View style={styles.arrowContainer}>
+      <Image source={images.leftArrow} style={[styles.arrowIcon, {width: 6}]} />
+    </View>
+  );
 
   const RightArrow = () => (
     <View style={styles.arrowContainer}>
@@ -229,7 +229,7 @@ const CustomWeeklyCalender = ({
             }}
             monthTitleStyle={styles.yearLabel}
             yearTitleStyle={styles.yearLabel}
-            previousComponent={() => <View />}
+            previousComponent={<LeftArrow />}
             nextComponent={<RightArrow />}
             dayShape="square"
             dayLabelsWrapper={styles.dayLabelsWrapper}

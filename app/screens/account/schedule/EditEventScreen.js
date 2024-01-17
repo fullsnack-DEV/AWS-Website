@@ -87,6 +87,7 @@ export default function EditEventScreen({navigation, route}) {
     strings.defaultCurrency,
   );
   const [refundPolicy, setRefundPolicy] = useState('');
+  const [canEditRefundPolicy, setCanRefundEditPolicy] = useState(true);
   const [toggle] = useState(route.params?.data?.allDay);
   const eventOldStartDateTime = route.params?.data?.start_datetime;
   const eventOldEndDateTime = route.params?.data?.end_datetime;
@@ -130,8 +131,9 @@ export default function EditEventScreen({navigation, route}) {
   const refundPolicyInputRef = useRef();
   const [canOrganizerEdit, setCanOrganizerEdit] = useState(true);
   const [snapPoints, setSnapPoints] = useState([]);
+  const [actualStartDate, setActualStartDate] = useState(new Date());
+  const [actualEndDate, setActualEndtDate] = useState(new Date());
   const [occurance, setOccurance] = useState(0);
-  const [endDateOfOcuuredEvent, setEndDateOfOccuredEvent] = useState(0);
 
   useEffect(() => {
     if (isFocused) {
@@ -140,13 +142,18 @@ export default function EditEventScreen({navigation, route}) {
 
         setEventData(data);
         setEventTitle(data.title);
+        setActualStartDate(data?.actual_startdatetime);
+        setActualEndtDate(data?.actual_enddatetime);
         setEventDescription(data.descriptions);
-        setOccurance(data?.occurrence ?? 0);
+        setOccurance(data?.repeat ?? 0);
         setEventPosted({...data.event_posted_at});
         setMinAttendees(data.min_attendees ?? '');
         setMaxAttendees(data.max_attendees ?? '');
-        setEventFee(data.event_fee.value ?? '');
+        setEventFee(
+          data.event_fee.value === 'NaN' ? '0' : data.event_fee.value,
+        );
         setRefundPolicy(data.refund_policy ?? '');
+
         setEventStartdateTime(getJSDate(data.start_datetime));
         setEventEnddateTime(getJSDate(data.end_datetime));
         setEventUntildateTime(getJSDate(data.untilDate));
@@ -163,6 +170,15 @@ export default function EditEventScreen({navigation, route}) {
         setSelectWeekMonth(data.repeat);
         setBackgroundThumbnail(data.background_thumbnail);
         setSelectedCurrency(data.event_fee?.currency_type);
+        if (
+          data &&
+          typeof data.refund_policy === 'string' &&
+          data.refund_policy.trim() === ''
+        ) {
+          setCanRefundEditPolicy(true);
+        } else {
+          setCanRefundEditPolicy(false);
+        }
 
         const goingList =
           data?.going?.length > 0
@@ -693,7 +709,6 @@ export default function EditEventScreen({navigation, route}) {
   };
 
   const getRecurringEventsByOccurrence = (eventObject) => {
-    console.log(eventObject, 'From coming obj');
     const ruleObj = RRule.parseString(eventObject?.rrule);
 
     ruleObj.dtstart = getJSDate(eventObject.start_datetime);
@@ -714,15 +729,6 @@ export default function EditEventScreen({navigation, route}) {
       return RRItem;
     });
 
-    const lastEvent = dates[dates.length - 1];
-    console.log(
-      moment(getJSDate(lastEvent?.end_datetime)).format('MMMM DD, YYYY'),
-      'fromor',
-    );
-
-    setEndDateOfOccuredEvent(
-      moment(getJSDate(lastEvent?.end_datetime)).format('MMMM DD, YYYY'),
-    );
     return dates;
   };
 
@@ -1175,8 +1181,11 @@ export default function EditEventScreen({navigation, route}) {
                     fontFamily: fonts.RRegular,
                   }}>
                   {strings.from}
-                  {moment(eventStartDateTime).format('MMMM DD, YYYY')}
-                  {strings.to} {endDateOfOcuuredEvent}
+                  {moment(getJSDate(actualStartDate)).format(
+                    'MMMM DD, YYYY',
+                  )}{' '}
+                  {strings.to}{' '}
+                  {moment(getJSDate(actualEndDate)).format('MMMM DD, YYYY')}
                 </Text>
               </View>
             ) : null}
@@ -1286,7 +1295,7 @@ export default function EditEventScreen({navigation, route}) {
                   multiline={true}
                   textAlignVertical={'center'}
                   placeholderTextColor={colors.userPostTimeColor}
-                  editable={false}
+                  editable={canEditRefundPolicy}
                 />
               </Pressable>
               {/* <Text style={[styles.subTitleText, {marginTop: 0}]}>

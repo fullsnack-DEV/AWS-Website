@@ -179,6 +179,8 @@ export default function ScheduleScreen({navigation, route}) {
   const [isScorekeeping, setIsScoreKeeping] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isSortbyOthers, setIsSortByOthers] = useState(true);
+  const [clubsTeam, setClubsTeam] = useState([]);
+  const [teamsClub, setTeamsclub] = useState([]);
   const [eventSettingsOption, setEventSettingsOption] =
     useState(settingsOptions);
   const [selectedOptions, setSelectedOptions] = useState({
@@ -208,6 +210,7 @@ export default function ScheduleScreen({navigation, route}) {
 
   const [showOtherOptionForTeam, setShowOtherOptionforTeam] = useState(false);
   const {toggleTabBar} = useTabBar();
+  const [allUserGroups, setallUsersGroups] = useState([]);
   const [filterSetting, setFilterSetting] = useState({
     sort: 1,
     time: 0,
@@ -336,13 +339,55 @@ export default function ScheduleScreen({navigation, route}) {
     setEndDateVisible(false);
   };
 
+  const getAlUsersGroups = () => {
+    getGroups(authContext)
+      .then((response) => {
+        const {teams, clubs} = response.payload ?? [];
+        if (Object.keys(response.payload).length > 0) {
+          setFilterSetting({...filterSetting, sort: 1});
+          setallUsersGroups([...teams, ...clubs]);
+        } else {
+          setFilterSetting({...filterSetting, sort: 0});
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+
+        Alert.alert(strings.townsCupTitle, e.message);
+      });
+  };
+
   // Check Validation to show the event settings for clubs
   useEffect(() => {
     if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
       getTeamsOfClub(authContext.entity.uid, authContext)
         .then((response) => {
+          setClubsTeam(response?.payload);
+
           setShowOtherOptionForClub(response?.payload?.length);
+
+          if (response.payload?.length === 0) {
+            if (route?.params?.optionValue) {
+              setFilterSetting({
+                ...filterSetting,
+                sort: route?.params?.optionValue,
+              });
+              return;
+            }
+            setFilterSetting({...filterSetting, sort: 0});
+          } else {
+            if (route?.params?.optionValue) {
+              setFilterSetting({
+                ...filterSetting,
+                sort: route?.params?.optionValue,
+              });
+              return;
+            }
+            setFilterSetting({...filterSetting, sort: 1});
+          }
         })
+
         .catch((e) => {
           setloading(false);
 
@@ -358,12 +403,52 @@ export default function ScheduleScreen({navigation, route}) {
           const groupIDs = res.payload?.parent_groups ?? [];
 
           setShowOtherOptionforTeam(groupIDs.length);
+          const groupQuery = {
+            query: {
+              terms: {
+                _id: groupIDs,
+              },
+            },
+          };
+
+          await getGroupIndex(groupQuery)
+            .then((response) => {
+              //  setGroups(response);
+
+              const group_data = [
+                {
+                  id: authContext.entity?.obj?.group_id,
+                  name: authContext.entity?.obj?.group_name,
+                },
+              ];
+
+              if (response && response?.length > 0) {
+                setTeamsclub(response);
+              }
+
+              if (groupIDs.length === 0) {
+                setFilterSetting({...filterSetting, sort: 0});
+              }
+
+              setAllUserData(group_data);
+            })
+            .catch((e) => {
+              Alert.alert('', e.messages);
+            });
         })
         .catch((e) => {
           console.log(e.message);
         });
     }
-  }, [authContext, isFocused]);
+
+    if (
+      [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
+        authContext.entity.role,
+      )
+    ) {
+      getAlUsersGroups();
+    }
+  }, [authContext]);
 
   // Check any event assigned to others option.
   useEffect(() => {
@@ -375,159 +460,6 @@ export default function ScheduleScreen({navigation, route}) {
     }
     setFilterCancelled(false);
   }, [eventData]);
-
-  useEffect(() => {
-    getUserSettings(authContext)
-      .then((setting) => {
-        if (setting?.payload?.user !== {}) {
-          let scheduleFilter = [];
-
-          if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-            scheduleFilter =
-              setting?.payload?.user?.club_schedule_group_filter ?? [];
-          } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
-            scheduleFilter =
-              setting?.payload?.user?.team_schedule_group_filter ?? [];
-          } else {
-            scheduleFilter =
-              setting?.payload?.user?.schedule_group_filter ?? [];
-          }
-
-          if (scheduleFilter && scheduleFilter?.length > 0) {
-            if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-              const checkOtherStatus =
-                setting?.payload?.user?.club_schedule_group_filter.length ===
-                showOtherOptionForClub;
-
-              const updatedOrganizerOptions = [
-                {group_name: strings.all, group_id: 0},
-                ...scheduleFilter,
-              ];
-
-              if (!checkOtherStatus) {
-                updatedOrganizerOptions.push({
-                  group_name: strings.othersText,
-                  group_id: 2,
-                });
-              }
-
-              setOrganizerOptions(updatedOrganizerOptions);
-            } else if (
-              [Verbs.entityTypeTeam].includes(authContext.entity.role)
-            ) {
-              // render the others option
-
-              const checkOtherStatus =
-                setting?.payload?.user?.team_schedule_group_filter.length ===
-                showOtherOptionForTeam;
-
-              const updatedOrganizerOptions = [
-                {group_name: strings.all, group_id: 0},
-                ...scheduleFilter,
-              ];
-
-              if (!checkOtherStatus) {
-                updatedOrganizerOptions.push({
-                  group_name: strings.othersText,
-                  group_id: 2,
-                });
-              }
-
-              setOrganizerOptions(updatedOrganizerOptions);
-            } else {
-              setOrganizerOptions([
-                {group_name: strings.all, group_id: 0},
-                {group_name: Verbs.me, group_id: 1},
-                ...scheduleFilter,
-                {group_name: strings.othersText, group_id: 2},
-              ]);
-            }
-          } else {
-            getGroups(authContext)
-              .then((response) => {
-                const {teams, clubs} = response.payload ?? [];
-                if (response.payload.length > 0) {
-                  setOrganizerOptions([
-                    {group_name: strings.all, group_id: 0},
-                    {group_name: Verbs.me, group_id: 1},
-                    ...teams,
-                    ...clubs,
-                    {group_name: strings.othersText, group_id: 2},
-                  ]);
-                } else {
-                  setOrganizerOptions([
-                    {group_name: strings.all, group_id: 0},
-                    {group_name: Verbs.me, group_id: 1},
-                    {group_name: strings.othersText, group_id: 2},
-                  ]);
-                }
-                setloading(false);
-              })
-              .catch((e) => {
-                setloading(false);
-
-                Alert.alert(strings.townsCupTitle, e.message);
-              });
-          }
-
-          let sportsFilter;
-
-          if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-            sportsFilter = setting?.payload?.user?.club_schedule_sport_filter;
-          } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
-            sportsFilter = setting?.payload?.user?.team_schedule_sport_filter;
-          } else {
-            sportsFilter = setting?.payload?.user?.schedule_sport_filter;
-          }
-
-          if (sportsFilter && sportsFilter?.length > 0) {
-            setSports([
-              {sport: strings.all},
-              ...sportsFilter,
-              {sport: strings.othersText},
-            ]);
-          } else {
-            let sportsList = [];
-            if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-              sportsList = [...(authContext.entity.obj.sports ?? [])];
-            } else if (
-              [Verbs.entityTypeTeam].includes(authContext.entity.role)
-            ) {
-              sportsList = [{sport: authContext.entity.obj.sport} ?? []];
-            } else {
-              sportsList = [
-                ...(authContext?.entity?.obj?.registered_sports?.filter(
-                  (obj) => obj.is_active,
-                ) || []),
-                ...(authContext?.entity?.obj?.referee_data?.filter(
-                  (obj) => obj.is_active,
-                ) || []),
-                ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
-                  (obj) => obj.is_active,
-                ) || []),
-              ];
-            }
-
-            const res = sportsList.map((obj) => ({
-              sport: obj.sport,
-            }));
-            const data = Utility.uniqueArray(res, Verbs.sportType);
-
-            setSports([
-              {sport: strings.all},
-              ...data,
-              {sport: strings.othersText},
-            ]);
-          }
-        }
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-
-        Alert.alert(e.message);
-      });
-  }, [isFocused]);
 
   const configureEvents = useCallback((eventsData, games) => {
     const eventTimeTableData = eventsData.map((item) => {
@@ -681,6 +613,169 @@ export default function ScheduleScreen({navigation, route}) {
       }
     }
   }, [isFocused, filterCancelled]);
+
+  useEffect(() => {
+    setSelectedOptions({
+      option: 0,
+      title: strings.all,
+    });
+    getUserSettings(authContext)
+      .then((setting) => {
+        if (setting?.payload?.user) {
+          let scheduleFilter = [];
+
+          if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+            const groupArray =
+              setting?.payload?.user?.club_schedule_group_filter;
+
+            if (groupArray && Array.isArray(groupArray)) {
+              const desiredGroup = groupArray.find(
+                (group) => group.groupid === authContext.entity.uid,
+              );
+
+              if (desiredGroup) {
+                scheduleFilter = desiredGroup.addedgroups ?? [];
+              } else {
+                scheduleFilter = [];
+              }
+            } else {
+              scheduleFilter = clubsTeam;
+            }
+            const checkOtherStatus =
+              scheduleFilter.length === showOtherOptionForClub;
+
+            const updatedOrganizerOptions = [
+              {group_name: strings.all, group_id: 0},
+              ...scheduleFilter,
+            ];
+
+            if (!checkOtherStatus) {
+              updatedOrganizerOptions.push({
+                group_name: strings.othersText,
+                group_id: 2,
+              });
+            }
+
+            setOrganizerOptions(updatedOrganizerOptions);
+          } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+            const groupArray =
+              setting?.payload?.user?.team_schedule_group_filter;
+
+            if (groupArray && Array.isArray(groupArray)) {
+              const desiredGroup = groupArray.find(
+                (group) => group.groupid === authContext.entity.uid,
+              );
+
+              if (desiredGroup) {
+                scheduleFilter = desiredGroup.addedgroups ?? [];
+              } else {
+                scheduleFilter = [];
+              }
+            } else {
+              scheduleFilter = teamsClub;
+            }
+
+            const checkOtherStatus =
+              scheduleFilter.length === showOtherOptionForTeam;
+
+            const updatedOrganizerOptions = [
+              {group_name: strings.all, group_id: 0},
+              ...scheduleFilter,
+            ];
+
+            if (!checkOtherStatus) {
+              updatedOrganizerOptions.push({
+                group_name: strings.othersText,
+                group_id: 2,
+              });
+            }
+
+            setOrganizerOptions(updatedOrganizerOptions);
+          } else if (
+            [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
+              authContext.entity.role,
+            )
+          ) {
+            scheduleFilter =
+              setting?.payload?.user?.schedule_group_filter ?? [];
+
+            if (scheduleFilter.length > 0) {
+              setOrganizerOptions([
+                {group_name: strings.all, group_id: 0},
+                {group_name: Verbs.me, group_id: 1},
+                ...scheduleFilter,
+                {group_name: strings.othersText, group_id: 2},
+              ]);
+            } else {
+              setOrganizerOptions([
+                {group_name: strings.all, group_id: 0},
+                {group_name: Verbs.me, group_id: 1},
+                ...allUserGroups,
+                // {group_name: strings.othersText, group_id: 2},
+              ]);
+            }
+
+            setloading(false);
+          }
+
+          let sportsFilter;
+
+          if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+            sportsFilter = setting?.payload?.user?.club_schedule_sport_filter;
+          } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
+            sportsFilter = setting?.payload?.user?.team_schedule_sport_filter;
+          } else {
+            sportsFilter = setting?.payload?.user?.schedule_sport_filter;
+          }
+
+          if (sportsFilter && sportsFilter?.length > 0) {
+            setSports([
+              {sport: strings.all},
+              ...sportsFilter,
+              {sport: strings.othersText},
+            ]);
+          } else {
+            let sportsList = [];
+            if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
+              sportsList = [...(authContext.entity.obj.sports ?? [])];
+            } else if (
+              [Verbs.entityTypeTeam].includes(authContext.entity.role)
+            ) {
+              sportsList = [{sport: authContext.entity.obj.sport} ?? []];
+            } else {
+              sportsList = [
+                ...(authContext?.entity?.obj?.registered_sports?.filter(
+                  (obj) => obj.is_active,
+                ) || []),
+                ...(authContext?.entity?.obj?.referee_data?.filter(
+                  (obj) => obj.is_active,
+                ) || []),
+                ...(authContext?.entity?.obj?.scorekeeper_data?.filter(
+                  (obj) => obj.is_active,
+                ) || []),
+              ];
+            }
+
+            const res = sportsList.map((obj) => ({
+              sport: obj.sport,
+            }));
+            const data = Utility.uniqueArray(res, Verbs.sportType);
+
+            setSports([
+              {sport: strings.all},
+              ...data,
+              {sport: strings.othersText},
+            ]);
+          }
+        }
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+
+        Alert.alert(e.message);
+      });
+  }, [isFocused]);
 
   const onDayPress = async () => {
     await getEventsAndSlotsList();
@@ -1153,37 +1248,34 @@ export default function ScheduleScreen({navigation, route}) {
     [makeOpetionsSelected, selectedOptions.title],
   );
 
-  const organizerListView = useCallback(
-    ({item, index}) => (
-      <View style={wrapperClassStyle(item)}>
-        <Text
-          style={[
-            makeOpetionsSelected(item),
-            {
-              marginLeft: 15,
-              marginRight: [Verbs.entityTypeClub].includes(
-                authContext.entity.role,
-              )
-                ? 15
-                : 5,
-            },
-          ]}
-          onPress={() => {
-            refContainer.current.scrollToIndex({
-              animated: true,
-              index,
-              viewPosition: 0.5,
-            });
-            setSelectedOptions({
-              option: index,
-              title: item,
-            });
-          }}>
-          {item.group_name}
-        </Text>
-      </View>
-    ),
-    [makeOpetionsSelected, selectedOptions.title],
+  const organizerListView = ({item, index}) => (
+    <View style={wrapperClassStyle(item)}>
+      <Text
+        style={[
+          makeOpetionsSelected(item),
+          {
+            marginLeft: 15,
+            marginRight: [Verbs.entityTypeClub].includes(
+              authContext.entity.role,
+            )
+              ? 15
+              : 5,
+          },
+        ]}
+        onPress={() => {
+          refContainer.current.scrollToIndex({
+            animated: true,
+            index,
+            viewPosition: 0.5,
+          });
+          setSelectedOptions({
+            option: index,
+            title: item,
+          });
+        }}>
+        {item.group_name}
+      </Text>
+    </View>
   );
 
   const renderRsvpFilterOpetions = ({index, item}) => (
@@ -1633,6 +1725,7 @@ export default function ScheduleScreen({navigation, route}) {
                 <FlatList
                   ref={refContainer}
                   horizontal={true}
+                  extraData={organizerOptions}
                   showsHorizontalScrollIndicator={false}
                   data={
                     (filterSetting.sort ===
