@@ -467,17 +467,20 @@ const SearchScreen = ({navigation, route}) => {
             }
           }}
         />
-
-        <TouchableOpacity
-          onPress={() => {
-            setSearchText('');
-            setSearchResult([]);
-            inputRef.current.blur();
-            setShowRecentResults(false);
-            setFilterResult(recentSearchResults[authContext.entity.uid] ?? []);
-          }}>
-          <Image source={images.closeRound} style={{height: 15, width: 15}} />
-        </TouchableOpacity>
+        {searchText.length > 0 && (
+          <TouchableOpacity
+            onPress={() => {
+              setSearchText('');
+              setSearchResult([]);
+              inputRef.current.blur();
+              setShowRecentResults(false);
+              setFilterResult(
+                recentSearchResults[authContext.entity.uid] ?? [],
+              );
+            }}>
+            <Image source={images.closeRound} style={{height: 15, width: 15}} />
+          </TouchableOpacity>
+        )}
       </View>
       {!showRecentResults && (
         <ScrollView showsVerticalScrollIndicator={false}>

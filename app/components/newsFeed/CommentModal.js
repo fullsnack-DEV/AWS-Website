@@ -20,6 +20,7 @@ import {format} from 'react-string-format';
 import ParsedText from 'react-native-parsed-text';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {FlatList} from 'react-native-gesture-handler';
+import _ from 'lodash';
 import {
   createReaction,
   getReactions,
@@ -42,6 +43,14 @@ import GroupIcon from '../GroupIcon';
 import ActivityLoader from '../loader/ActivityLoader';
 import LikersModal from '../modals/LikersModal';
 import {tagRegex} from '../../Constants/GeneralConstants';
+import {getEntityIndex} from '../../api/elasticSearch';
+import usePrivacySettings from '../../hooks/usePrivacySettings';
+import {
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../Constants/PrivacyOptionsConstant';
+import EntityListViewForTag from './EntityListViewForTag';
+import {getTaggedEntityData} from '../../utils';
 
 const SwipeOptions = [
   {
@@ -82,8 +91,72 @@ const CommentModal = ({
   const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [replyingTo, setReplyingTo] = useState({});
   const [showAllRepliesOfReply, setShowAllRepliesOfReply] = useState(false);
+  const [entityList, setEntityList] = useState([]);
+  const [showTagList, setShowTagList] = useState(false);
+  const [filteredTagList, setFilteredTagList] = useState([]);
+  const [tagsOfEntity, setTagsOfEntity] = useState([]);
 
   const inputRef = useRef();
+  const timeoutRef = useRef();
+  const {getPrivacyStatus} = usePrivacySettings();
+
+  useEffect(() => {
+    if (showCommentModal) {
+      getEntityIndex({size: 10000})
+        .then((response) => {
+          const updatedList = response.filter((item) => {
+            const entityId = item.group_id ?? item.user_id ?? item.entity_id;
+            if (authContext.entity.uid === entityId) {
+              return false;
+            }
+            const privacyStatus = getPrivacyStatus(
+              PersonalUserPrivacyEnum[item[PrivacyKeyEnum.Tag]],
+              item,
+            );
+            return privacyStatus;
+          });
+          setEntityList(updatedList);
+        })
+        .catch((err) => {
+          console.log('error fetching entity list ==>', err);
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showCommentModal, authContext.entity.uid]);
+
+  useEffect(() => {
+    if (showCommentModal && commentTxt) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        const splittedValues = commentTxt.split(' ');
+        if (splittedValues[splittedValues.length - 1][0] === '@') {
+          const lastWord = splittedValues[splittedValues.length - 1].slice(1);
+          if (lastWord) {
+            const newList = entityList.filter((item) => {
+              const entityName = item.group_name ?? item.full_name ?? '';
+              if (entityName) {
+                return entityName
+                  .toLowerCase()
+                  .includes(lastWord.toLowerCase());
+              }
+              return false;
+            });
+            setFilteredTagList(newList);
+          } else {
+            setFilteredTagList([...entityList]);
+          }
+
+          setShowTagList(true);
+        } else {
+          setShowTagList(false);
+          setFilteredTagList([...entityList]);
+        }
+      }, 300);
+    } else {
+      setShowTagList(false);
+      setFilteredTagList([...entityList]);
+    }
+  }, [showCommentModal, commentTxt, entityList]);
 
   const fetchReactions = useCallback(() => {
     setIsMoreLoading(true);
@@ -236,6 +309,7 @@ const CommentModal = ({
       activity_id: postId,
       data: {
         text: commentTxt,
+        tagged_data: tagsOfEntity ?? [],
       },
     };
     setLoading(true);
@@ -245,6 +319,7 @@ const CommentModal = ({
         const dataOfComment = [...commentData];
         dataOfComment.unshift(response.payload);
         setCommentData([...dataOfComment]);
+        setTagsOfEntity([]);
         updateCommentCount({
           id: postId,
           count: dataOfComment?.length,
@@ -269,6 +344,7 @@ const CommentModal = ({
       ...replyParams,
       data: {
         text: commentTxt,
+        tagged_data: tagsOfEntity ?? [],
       },
     };
 
@@ -277,6 +353,7 @@ const CommentModal = ({
     createCommentReaction(body, authContext)
       .then(() => {
         setReplyParams({});
+        setTagsOfEntity([]);
         setLoading(false);
         if (commentData.length > 5) {
           setIsMoreLoading(true);
@@ -488,6 +565,62 @@ const CommentModal = ({
       });
   };
 
+  const onTagPress = (item = {}) => {
+    const tagsArray = [];
+    let joinedString = '@';
+    let entity_data = {};
+    let entity_name = '';
+    const entity_text = [
+      Verbs.entityTypePlayer,
+      Verbs.entityTypeUser,
+    ]?.includes(item.entity_type)
+      ? 'user_id'
+      : 'group_id';
+    const jsonData = {entity_type: '', entity_data, entity_id: ''};
+    jsonData.entity_type = [
+      Verbs.entityTypePlayer,
+      Verbs.entityTypeUser,
+    ]?.includes(item.entity_type)
+      ? Verbs.entityTypePlayer
+      : item?.entity_type;
+    jsonData.entity_id = item?.[entity_text];
+    if (item?.group_name) {
+      entity_name = _.startCase(_.toLower(item?.group_name))?.replace(/ /g, '');
+      entity_data.group_id = item.group_id;
+    } else {
+      const fName = _.startCase(_.toLower(item?.first_name))?.replace(/ /g, '');
+      const lName = _.startCase(_.toLower(item?.last_name))?.replace(/ /g, '');
+      entity_name = `${fName}${lName}`;
+      entity_data.user_id = item.user_id;
+    }
+    joinedString += `${entity_name} `;
+    entity_data.tagged_formatted_name = joinedString?.replace(/ /g, '');
+
+    entity_data = getTaggedEntityData(entity_data, item);
+    const splittedValue = commentTxt.split(' ');
+    const remainingText = splittedValue
+      .slice(0, splittedValue.length - 1)
+      .join(' ');
+    const str = `${remainingText} ${entity_data.tagged_formatted_name} `;
+
+    setCommentText(str);
+
+    const isExist = (item.data?.tagged_data ?? []).some(
+      (tagItem) => tagItem?.entity_id === item[entity_text],
+    );
+    if (!isExist) {
+      tagsArray.push({
+        entity_data,
+        entity_id: item?.[entity_text],
+        entity_type: jsonData?.entity_type,
+      });
+    }
+
+    setTagsOfEntity([...(item.data?.tagged_data ?? []), ...tagsArray]);
+    setShowTagList(false);
+    inputRef.current.focus();
+  };
+
   return (
     <>
       <CustomModalWrapper
@@ -499,13 +632,12 @@ const CommentModal = ({
           contentContainerStyle={{
             flex: 1,
             paddingTop: 25,
-            paddingHorizontal: 15,
           }}
           nestedScrollEnabled
           keyboardVerticalOffset={0}
           behavior={Platform.OS === 'ios' ? 'height' : 'height'}>
           <ActivityLoader visible={loading} />
-          <View style={{flex: 1}}>
+          <View style={{flex: 1, paddingHorizontal: 15}}>
             <FlatList
               data={commentData}
               keyExtractor={(item, index) => index.toString()}
@@ -608,6 +740,12 @@ const CommentModal = ({
             </View>
           </View>
         </KeyboardAwareScrollView>
+        {showTagList && (
+          <EntityListViewForTag
+            entityList={filteredTagList}
+            onSelect={onTagPress}
+          />
+        )}
       </CustomModalWrapper>
       <ReportCommentModal
         commentData={selectedCommentData}
@@ -661,7 +799,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   bottomContainer: {
-    padding: 15,
+    paddingTop: 15,
+    paddingHorizontal: 15,
     backgroundColor: colors.whiteColor,
     shadowColor: colors.blackColor,
     borderTopColor: colors.grayBackgroundColor,

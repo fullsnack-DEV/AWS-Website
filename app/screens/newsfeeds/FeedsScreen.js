@@ -262,7 +262,7 @@ const FeedsScreen = ({navigation, route}) => {
       const postDataObj = JSON.parse(postObj.object);
       const tagData = postDataObj.format_tagged_data.map((tag) => ({
         entity_id: tag.entity_id,
-        entity_type: 'publictimeline',
+        entity_type: 'taggedtimeline',
       }));
       const format_tagged_data = [...postDataObj.format_tagged_data];
       const dataParams = {

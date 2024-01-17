@@ -626,7 +626,7 @@ const EditPostScreen = ({navigation, route}) => {
 
       const tagData = tagsOfEntity.map((tag) => ({
         entity_id: tag.entity_id,
-        entity_type: 'publictimeline',
+        entity_type: 'taggedtimeline',
       }));
       const format_tagged_data = [...tagsOfEntity];
 

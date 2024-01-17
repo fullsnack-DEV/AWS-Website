@@ -13,8 +13,8 @@ import {
   TouchableOpacity,
   Text,
   SafeAreaView,
-  TouchableWithoutFeedback,
   Image,
+  TouchableWithoutFeedback,
   Alert,
   Platform,
   TextInput,
@@ -373,7 +373,7 @@ export default function EntitySearchScreen({navigation, route}) {
 
   useEffect(() => {
     if (route.params?.localItems) {
-      handleTagPress(route.params?.localItems);
+      handleTagPress({item: route.params?.localItems});
     }
   }, [route.params?.localItems]);
 
@@ -3440,7 +3440,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 5,
   },
-  // ========//
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
