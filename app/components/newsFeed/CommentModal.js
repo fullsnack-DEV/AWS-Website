@@ -106,16 +106,16 @@ const CommentModal = ({
         .then((response) => {
           const updatedList = response.filter((item) => {
             const entityId = item.group_id ?? item.user_id ?? item.entity_id;
-            if (authContext.entity.uid === entityId) {
-              return false;
-            }
-            const privacyStatus = getPrivacyStatus(
+            return authContext.entity.uid !== entityId;
+          });
+          const newList = updatedList.map((item) => {
+            const status = getPrivacyStatus(
               PersonalUserPrivacyEnum[item[PrivacyKeyEnum.Tag]],
               item,
             );
-            return privacyStatus;
+            return {...item, privacy_status: status};
           });
-          setEntityList(updatedList);
+          setEntityList(newList);
         })
         .catch((err) => {
           console.log('error fetching entity list ==>', err);
@@ -430,6 +430,20 @@ const CommentModal = ({
                   setShowLikeModal(true);
                 }}
                 showReplyButton={false}
+                onTagPress={(matchingString) => {
+                  const obj = (reply.data?.tagged_data ?? []).find(
+                    (tag) =>
+                      tag.entity_data.tagged_formatted_name === matchingString,
+                  );
+
+                  if (obj) {
+                    const entityData = {
+                      userId: obj.entity_id,
+                      entityType: obj.entity_type,
+                    };
+                    onProfilePress(entityData);
+                  }
+                }}
               />
             </SwipeableRow>
           ))}
@@ -488,6 +502,21 @@ const CommentModal = ({
                     setSelectedCommentData(reply);
                     setShowLikeModal(true);
                   }}
+                  onTagPress={(matchingString) => {
+                    const obj = (reply.data?.tagged_data ?? []).find(
+                      (tag) =>
+                        tag.entity_data.tagged_formatted_name ===
+                        matchingString,
+                    );
+
+                    if (obj) {
+                      const entityData = {
+                        userId: obj.entity_id,
+                        entityType: obj.entity_type,
+                      };
+                      onProfilePress(entityData);
+                    }
+                  }}
                 />
               </SwipeableRow>
               {reply.latest_children?.reply?.length > 0
@@ -530,6 +559,19 @@ const CommentModal = ({
           showLikesModal={() => {
             setSelectedCommentData(data);
             setShowLikeModal(true);
+          }}
+          onTagPress={(matchingString) => {
+            const obj = (data.data?.tagged_data ?? []).find(
+              (tag) => tag.entity_data.tagged_formatted_name === matchingString,
+            );
+
+            if (obj) {
+              const entityData = {
+                userId: obj.entity_id,
+                entityType: obj.entity_type,
+              };
+              onProfilePress(entityData);
+            }
           }}
         />
       </SwipeableRow>
@@ -613,6 +655,7 @@ const CommentModal = ({
         entity_data,
         entity_id: item?.[entity_text],
         entity_type: jsonData?.entity_type,
+        privacy_status: item.privacy_status ?? true,
       });
     }
 

@@ -279,6 +279,13 @@ export default function UserTagSelectionListScreen({navigation, route}) {
       currentTab === strings.matchesTitleText ? [] : [...seletedEntity];
 
     let newList = [...list];
+    const status =
+      currentTab === strings.matchesTitleText
+        ? getPrivacyStatus(
+            PersonalUserPrivacyEnum[data[PrivacyKeyEnum.Tag]],
+            data,
+          )
+        : false;
 
     if (list.length > 0) {
       let obj = null;
@@ -307,6 +314,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           entity_data,
           entity_type: data.entity_type ?? Verbs.entityTypePlayer,
           entity_id: data.user_id ?? data.group_id,
+          privacy_status: status,
         };
 
         newList = [...list, finalObj];
@@ -318,6 +326,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         entity_data,
         entity_type: data.entity_type ?? Verbs.entityTypePlayer,
         entity_id: data.user_id ?? data.group_id,
+        privacy_status: status,
       };
       newList.push(finalObj);
     }
@@ -358,44 +367,37 @@ export default function UserTagSelectionListScreen({navigation, route}) {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={{paddingHorizontal: 17, paddingTop: 20}}
         showsHorizontalScrollIndicator={false}
-        renderItem={({item}) => {
-          const status = getPrivacyStatus(
-            PersonalUserPrivacyEnum[item[PrivacyKeyEnum.Tag]],
-            item,
-          );
-          return (
-            <>
-              <TagItemView
-                source={item.thumbnail}
-                entityName={item.full_name ?? item.group_name}
-                userLocation={item.city}
-                entityType={item.entity_type}
-                onSelect={() => {
-                  handleSelection(item);
-                }}
-                onClickProfile={() => {
-                  navigation.navigate('HomeStack', {
-                    screen: 'HomeScreen',
-                    params: {
-                      uid: item.user_id ?? item.group_id,
-                      role: item.entity_type,
-                      comeFrom: 'UserTagSelectionListScreen',
-                      routeParams: {
-                        ...route.params,
-                        tagsOfEntity: seletedEntity,
-                      },
+        renderItem={({item}) => (
+          <>
+            <TagItemView
+              source={item.thumbnail}
+              entityName={item.full_name ?? item.group_name}
+              userLocation={item.city}
+              entityType={item.entity_type}
+              onSelect={() => {
+                handleSelection(item);
+              }}
+              onClickProfile={() => {
+                navigation.navigate('HomeStack', {
+                  screen: 'HomeScreen',
+                  params: {
+                    uid: item.user_id ?? item.group_id,
+                    role: item.entity_type,
+                    comeFrom: 'UserTagSelectionListScreen',
+                    routeParams: {
+                      ...route.params,
+                      tagsOfEntity: seletedEntity,
                     },
-                  });
-                }}
-                entityId={item.user_id ?? item.group_id}
-                selectedList={seletedEntity}
-                sportName={getGroupSportName(item, authContext.sports, 1)}
-                privacyStatus={status}
-              />
-              <View style={styles.sperateLine} />
-            </>
-          );
-        }}
+                  },
+                });
+              }}
+              entityId={item.user_id ?? item.group_id}
+              selectedList={seletedEntity}
+              sportName={getGroupSportName(item, authContext.sports, 1)}
+            />
+            <View style={styles.sperateLine} />
+          </>
+        )}
       />
     );
   };

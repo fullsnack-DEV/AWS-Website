@@ -192,15 +192,20 @@ const LocalHomEventScreen = ({navigation}) => {
     const key = Object.keys(item)[0];
     const tempFilter = {...filters};
     if (!key) return;
-    if (key === 'availableTime') {
+    if (key === Verbs.availableTime) {
       delete tempFilter.availableTime;
-      delete tempFilter.toDateTime;
       delete tempFilter.fromDateTime;
-    } else if (key === 'location') {
+      delete tempFilter.toDateTime;
+    } else if (key === Verbs.fee) {
+      delete tempFilter?.minFee;
+      delete tempFilter?.maxFee;
+      delete tempFilter?.currency;
+      delete tempFilter?.fee;
+    } else if (key === Verbs.locationType) {
       tempFilter.location = strings.worldTitleText;
       tempFilter.locationOption = locationType.WORLD;
       tempFilter.isSearchPlaceholder = true;
-    } else if (key === 'sport') {
+    } else if (key === Verbs.sportType) {
       tempFilter.sport = strings.allSport;
       tempFilter.sport_name = strings.allSport;
       tempFilter.sport_type = strings.allSport;

@@ -35,6 +35,7 @@ const PrivacyKeyEnum = {
   InviteForClub: 'who_can_invite_for_club',
   InviteForLeague: 'who_can_invite_for_league',
   LikeCount: 'who_can_see_like_count',
+  TeamJoinClub: 'what_team_join_club',
 };
 
 const UserPrivacySettingOptions = [
@@ -155,12 +156,24 @@ const InviteToEventOptionsEnum = {
   2: strings.followersMyTeamClub,
   3: strings.myTeamClub,
 };
-const GroupPrivacySettingsOptions = [
+const TeamPrivacySettingsOptions = [
   strings.postTitle,
   strings.events,
   strings.galleryTitle,
   strings.membersTitle,
   strings.clubAndLeague,
+  strings.followerText,
+  strings.chatsTitle,
+  strings.tag,
+  strings.blocked,
+];
+
+const ClubPrivacySettingsOptions = [
+  strings.postTitle,
+  strings.events,
+  strings.galleryTitle,
+  strings.membersTitle,
+  strings.team,
   strings.followerText,
   strings.chatsTitle,
   strings.tag,
@@ -251,6 +264,56 @@ const feedsHideUnhideOption = [
   {label: strings.unhide, value: 1},
 ];
 
+const defaultClubPrivacyOptions = [
+  {label: strings.everyoneTitleText, value: 1},
+  {label: strings.followerTitleText, value: 2},
+  {label: strings.clubMember, value: 3},
+  {label: strings.onlyClub, value: 4},
+];
+
+const DefaultClubPrivacyOptionsEnum = {
+  1: strings.everyoneTitleText,
+  2: strings.followerTitleText,
+  3: strings.clubMember,
+  4: strings.onlyClub,
+};
+
+const inviteToJoinClubOptions = [
+  {label: strings.clubMembersAndTeams, value: 1},
+  {label: strings.onlyClub, value: 0},
+];
+
+const InviteToJoinClubOptionsEnum = {
+  0: strings.onlyClub,
+  1: strings.clubMembersAndTeams,
+};
+
+const teamJoinClubOptions = [
+  {label: strings.allTeams, value: 0},
+  {label: strings.byrequestaccepted, value: 1},
+  {label: strings.invitedOnly, value: 2},
+];
+
+const TeamJoinClubOptionsEnum = {
+  0: strings.allTeams,
+  1: strings.byrequestaccepted,
+  2: strings.invitedOnly,
+};
+
+const clubChatPrivacyOptions = [
+  {label: strings.everyoneTitleText, value: 1},
+  {label: strings.followerTitleText, value: 2},
+  {label: strings.clubMember, value: 3},
+  {label: strings.teamsTitleText, value: 4},
+];
+
+const ClubChatPrivacyOptionsEnum = {
+  1: strings.everyoneTitleText,
+  2: strings.followerTitleText,
+  3: strings.clubMember,
+  4: strings.teamsTitleText,
+};
+
 export {
   UserPrivacySettingOptions,
   defaultOptions,
@@ -266,7 +329,7 @@ export {
   InviteToGroupOptionsEnum,
   binaryPrivacyOptions,
   BinaryPrivacyOptionsEnum,
-  GroupPrivacySettingsOptions,
+  TeamPrivacySettingsOptions,
   groupPrivacyDefalutOptions,
   groupJoinOptions,
   groupInviteToJoinOptions,
@@ -281,4 +344,13 @@ export {
   groupInviteToJoinForTeamSportOptions,
   GroupInviteToJoinForTeamSportOptionsEnum,
   TeamChatPrivacyOptionsEnum,
+  ClubPrivacySettingsOptions,
+  defaultClubPrivacyOptions,
+  DefaultClubPrivacyOptionsEnum,
+  inviteToJoinClubOptions,
+  InviteToJoinClubOptionsEnum,
+  teamJoinClubOptions,
+  TeamJoinClubOptionsEnum,
+  clubChatPrivacyOptions,
+  ClubChatPrivacyOptionsEnum,
 };

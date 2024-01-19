@@ -26,6 +26,11 @@ import {
   PrivacyKeyEnum,
   ScoreboardPeriodPrivacyOptionsEnum,
   TeamChatPrivacyOptionsEnum,
+  defaultClubPrivacyOptions,
+  groupJoinOptions,
+  InviteToJoinClubOptionsEnum,
+  TeamJoinClubOptionsEnum,
+  ClubChatPrivacyOptionsEnum,
 } from '../../../Constants/PrivacyOptionsConstant';
 import {patchPlayer} from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -94,11 +99,7 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
 
   const getLabelForOption = useCallback(
     (key, privacyVal) => {
-      if (
-        [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(
-          authContext.entity.role,
-        )
-      ) {
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
         switch (key) {
           case PrivacyKeyEnum.JoinAsMember:
             return GroupJoinOptionsEnum[privacyVal];
@@ -127,6 +128,27 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
               return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
             }
             return GroupDefalutPrivacyOptionsEnum[privacyVal];
+        }
+      } else if (authContext.entity.role === Verbs.entityTypeClub) {
+        switch (key) {
+          case PrivacyKeyEnum.Gallery:
+          case PrivacyKeyEnum.JoinAsMember:
+            return groupJoinOptions[privacyVal];
+
+          case PrivacyKeyEnum.InvitePersonToJoinGroup:
+            return InviteToJoinClubOptionsEnum[privacyVal];
+
+          case PrivacyKeyEnum.Follow:
+            return FollowerFollowingOptionsEnum[privacyVal];
+
+          case PrivacyKeyEnum.TeamJoinClub:
+            return TeamJoinClubOptionsEnum[privacyVal];
+
+          case PrivacyKeyEnum.Chats:
+            return ClubChatPrivacyOptionsEnum[privacyVal];
+
+          default:
+            return defaultClubPrivacyOptions[privacyVal];
         }
       } else {
         switch (key) {

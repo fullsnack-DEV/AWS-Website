@@ -796,7 +796,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
     const tempFilter = filters;
     Object.keys(tempFilter).forEach((key) => {
       if (key === Object.keys(item)[0]) {
-        if (Object.keys(item)[0] === 'sport') {
+        if (Object.keys(item)[0] === Verbs.sportType) {
           tempFilter.sport = strings.allSport;
           tempFilter.sport_name = strings.allSport;
           tempFilter.sport_type = strings.allSport;
@@ -804,20 +804,21 @@ export default function LookingForChallengeScreen({navigation, route}) {
           tempFilter.maxFee = 0;
           delete tempFilter.fee;
         }
-        if (Object.keys(item)[0] === 'location') {
+        if (Object.keys(item)[0] === Verbs.locationType) {
           tempFilter.location = strings.worldTitleText;
           tempFilter.locationOption = locationType.WORLD;
           tempFilter.isSearchPlaceholder = true;
         }
-        if (Object.keys(item)[0] === 'fee') {
-          tempFilter.minFee = 0;
-          tempFilter.maxFee = 0;
-          delete tempFilter.fee;
-        }
-        if (Object.keys(item)[0] === 'availableTime') {
+        if (Object.keys(item)[0] === Verbs.availableTime) {
           delete tempFilter.availableTime;
           delete tempFilter.fromDateTime;
           delete tempFilter.toDateTime;
+        }
+        if (Object.keys(item)[0] === Verbs.fee) {
+          delete tempFilter?.minFee;
+          delete tempFilter?.maxFee;
+          delete tempFilter?.currency;
+          delete tempFilter?.fee;
         }
         // delete tempFilter[key];
       }

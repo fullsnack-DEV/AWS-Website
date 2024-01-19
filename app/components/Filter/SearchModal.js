@@ -1,4 +1,10 @@
-import React, {useState, useCallback, useEffect, useMemo} from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useContext,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -16,6 +22,7 @@ import {
   SectionList,
 } from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
+import {getCountry} from 'country-currency-map';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import FastImage from 'react-native-fast-image';
@@ -37,6 +44,8 @@ import fonts from '../../Constants/Fonts';
 import {widthPercentageToDP, getJSDate} from '../../utils';
 import AvailableTimeComponent from '../AvailableTimeComponent';
 import Verbs from '../../Constants/Verbs';
+import AuthContext from '../../auth/context';
+import CurrencyModal from '../CurrencyModal/CurrencyModal';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 100 : 0;
 const SearchModal = ({
@@ -62,6 +71,8 @@ const SearchModal = ({
   const [showFeeComponent, setShowFeeComponent] = useState(false);
   const [showSportComponent, setShowSportComponent] = useState(false);
   const [isTimeComponentVisible, setIsTimeComponentVisible] = useState(false);
+  const [showCurrencyModal, setShowCurrencyModal] = useState(false);
+  const authContext = useContext(AuthContext);
 
   const calculateVisibilityForTimeComponent = useCallback(() => {
     if (!selectedTab) {
@@ -91,12 +102,32 @@ const SearchModal = ({
   }, [showTimeComponent, filters?.sport, calculateVisibilityForTimeComponent]);
 
   useEffect(() => {
+    if (isVisible && (filters?.minFee || filters?.maxFee)) {
+      setFilters((prevProps) => ({...prevProps, fee: true}));
+    }
+  }, [isVisible, filters?.minFee, filters?.maxFee]);
+
+  useEffect(() => {
     if (showFeeOption && filters?.sport !== strings.allSport) {
-      setShowFeeComponent(calculateVisibilityForTimeComponent());
+      const feeComponentVisibilityStatus =
+        calculateVisibilityForTimeComponent();
+      if (feeComponentVisibilityStatus) {
+        const Usercurrency = getCountry(authContext.entity.obj.country);
+        setFilters((prevPros) => ({
+          ...prevPros,
+          currency: Usercurrency?.currency,
+        }));
+      }
+      setShowFeeComponent(feeComponentVisibilityStatus);
     } else {
       setShowFeeComponent(false);
     }
-  }, [filters?.sport, calculateVisibilityForTimeComponent, showFeeOption]);
+  }, [
+    filters?.sport,
+    calculateVisibilityForTimeComponent,
+    showFeeOption,
+    authContext.entity.obj.country,
+  ]);
 
   useEffect(() => {
     if (isVisible) {
@@ -709,13 +740,14 @@ const SearchModal = ({
                           placeholderTextColor={colors.userPostTimeColor}
                         />
                       </View>
-                      <View
+                      <TouchableOpacity
                         style={{
                           flexDirection: 'column',
                           alignItems: 'flex-end',
                           alignContent: 'flex-end',
                           marginTop: 5,
-                        }}>
+                        }}
+                        onPress={() => setShowCurrencyModal(true)}>
                         <Text style={styles.timeZoneText}>
                           {strings.currencyText}{' '}
                           <Text
@@ -724,10 +756,10 @@ const SearchModal = ({
                               textDecorationLine: 'underline',
                               fontSize: 14,
                             }}>
-                            {strings.defaultCurrency}
+                            {filters.currency ?? strings.defaultCurrency}
                           </Text>
                         </Text>
-                      </View>
+                      </TouchableOpacity>
                     </View>
                   </View>
                 )}
@@ -849,6 +881,15 @@ const SearchModal = ({
           />
         </CustomModalWrapper>
       )}
+      <CurrencyModal
+        isVisible={showCurrencyModal}
+        closeList={() => setShowCurrencyModal(false)}
+        onNext={(item) => {
+          setFilters({...filters, currency: item});
+          setShowCurrencyModal(false);
+        }}
+        modalType={ModalTypes.style6}
+      />
     </>
   );
 };

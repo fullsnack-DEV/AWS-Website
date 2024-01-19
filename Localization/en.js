@@ -3405,4 +3405,23 @@ export default {
   doYouAllLeaguesToInviteYouToJoinLeagues:
     'en_Do you want to allow leagues to invite your team to join their leagues or tournaments?',
   whoCanSeeTeamFollowers: "en_Who can view your team's followers?",
+  onlyClub: 'en_Only club',
+  whoCanViewPostsInClubProfile: "en_Who can view posts in your club's profile?",
+  whoCanWritePostsInClubProfile:
+    "en_Who can write a post in your club's profile?",
+  writePostInClubProfileSubText: `en_If your club has an affiliated team involved in a team sport, the team’s posts related to a match or event may still be displayed in your club's profile. (Display these words when "only club" is selected.)`,
+  whoCanViewClubEventSection: "en_Who can view your club's events section?",
+  whoCanViewClubEventSectionSubText:
+    'en_You can change who can see an individual event in your events section and the change applies to only that post.',
+  whoCanViewClubGallerySection: "en_Who can view your club's gallery?",
+  whoCanJoinYourClub: 'en_Who can join your club?',
+  whoCanInviteToJoinClub: 'en_Who can invite a person to join your club?',
+  whoCanViewClubMembers: 'en_Who can view your club members?',
+  whatTeamCanJoinClub: 'en_What team can join your club?',
+  whoCanFollowYourClub: 'en_Who can follow your club?',
+  whoCanViewClubFollowers: "Who can view your club's followers?",
+  whoCanInviteClubToChat: 'en_Who can invite your club to chat?',
+  whoCanTagClub: 'en_Who can tag your club on a post, comment or reply?',
+  clubMembersAndTeams: 'en_Club members & teams',
+  allTeams: 'en_All teams',
 };

@@ -19,14 +19,19 @@ function WriteCommentItems({
   showLikesModal = () => {},
   containerStyle = {},
   showReplyButton = true,
+  onTagPress = () => {},
 }) {
   const authContext = useContext(AuthContext);
 
   const renderTagText = useCallback(
     (matchingString) => (
-      <Text style={styles.tagText}>{`${matchingString}`}</Text>
+      <Text
+        onPress={() => {
+          onTagPress(matchingString);
+        }}
+        style={styles.tagText}>{`${matchingString}`}</Text>
     ),
-    [],
+    [onTagPress],
   );
 
   return (

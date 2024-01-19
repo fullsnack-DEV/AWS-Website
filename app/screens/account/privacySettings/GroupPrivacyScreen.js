@@ -15,7 +15,7 @@ import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import {
-  GroupPrivacySettingsOptions,
+  TeamPrivacySettingsOptions,
   PrivacyKeyEnum,
   binaryPrivacyOptions,
   followerFollowingOptions,
@@ -25,6 +25,11 @@ import {
   groupInviteToJoinOptions,
   groupJoinOptions,
   groupPrivacyDefalutOptions,
+  defaultClubPrivacyOptions,
+  ClubPrivacySettingsOptions,
+  inviteToJoinClubOptions,
+  teamJoinClubOptions,
+  clubChatPrivacyOptions,
 } from '../../../Constants/PrivacyOptionsConstant';
 
 import Verbs from '../../../Constants/Verbs';
@@ -50,129 +55,234 @@ const GroupPrivacyScreen = ({navigation}) => {
   const getQuestionAndOptions = (option) => {
     const entity = {...authContext.entity.obj};
 
-    switch (option) {
-      case strings.postTitle:
-        return [
-          {
-            question: strings.whoCanViewPostSection,
-            options:
-              entity.sport_type === Verbs.doubleSport
-                ? groupDefaultPrivacyOptionsForDoubleTeam
-                : groupPrivacyDefalutOptions,
-            key: PrivacyKeyEnum.Posts,
-          },
-          {
-            question: strings.whoCanWritePostTeamsPostsSection,
-            options:
-              entity.sport_type === Verbs.doubleSport
-                ? groupDefaultPrivacyOptionsForDoubleTeam
-                : groupPrivacyDefalutOptions,
-            key: PrivacyKeyEnum.PostWrite,
-          },
-        ];
+    if (entity.entity_type === Verbs.entityTypeTeam) {
+      switch (option) {
+        case strings.postTitle:
+          return [
+            {
+              question: strings.whoCanViewPostSection,
+              options:
+                entity.sport_type === Verbs.doubleSport
+                  ? groupDefaultPrivacyOptionsForDoubleTeam
+                  : groupPrivacyDefalutOptions,
+              key: PrivacyKeyEnum.Posts,
+            },
+            {
+              question: strings.whoCanWritePostTeamsPostsSection,
+              options:
+                entity.sport_type === Verbs.doubleSport
+                  ? groupDefaultPrivacyOptionsForDoubleTeam
+                  : groupPrivacyDefalutOptions,
+              key: PrivacyKeyEnum.PostWrite,
+            },
+          ];
 
-      case strings.events:
-        return [
-          {
-            question: strings.whoCanViewEventSection,
-            options:
-              entity.sport_type === Verbs.doubleSport
-                ? groupDefaultPrivacyOptionsForDoubleTeam
-                : groupPrivacyDefalutOptions,
-            key: PrivacyKeyEnum.Events,
-          },
-        ];
+        case strings.events:
+          return [
+            {
+              question: strings.whoCanViewEventSection,
+              options:
+                entity.sport_type === Verbs.doubleSport
+                  ? groupDefaultPrivacyOptionsForDoubleTeam
+                  : groupPrivacyDefalutOptions,
+              key: PrivacyKeyEnum.Events,
+            },
+          ];
 
-      case strings.galleryTitle:
-        return [
-          {
-            question: strings.whoCanViewGallerySection,
-            options:
-              entity.sport_type === Verbs.doubleSport
-                ? groupDefaultPrivacyOptionsForDoubleTeam
-                : groupPrivacyDefalutOptions,
-            key: PrivacyKeyEnum.Gallery,
-          },
-        ];
+        case strings.galleryTitle:
+          return [
+            {
+              question: strings.whoCanViewGallerySection,
+              options:
+                entity.sport_type === Verbs.doubleSport
+                  ? groupDefaultPrivacyOptionsForDoubleTeam
+                  : groupPrivacyDefalutOptions,
+              key: PrivacyKeyEnum.Gallery,
+            },
+          ];
 
-      case strings.membersTitle:
-        return [
-          {
-            question: strings.whoCanJoinTitle,
-            options: groupJoinOptions,
-            key: PrivacyKeyEnum.JoinAsMember,
-          },
-          {
-            question: strings.whoCanInvitePersonToJoinYourTeam,
-            options:
-              entity.sport_type === Verbs.doubleSport
-                ? groupInviteToJoinOptions
-                : groupInviteToJoinForTeamSportOptions,
+        case strings.membersTitle:
+          return [
+            {
+              question: strings.whoCanJoinTitle,
+              options: groupJoinOptions,
+              key: PrivacyKeyEnum.JoinAsMember,
+            },
+            {
+              question: strings.whoCanInvitePersonToJoinYourTeam,
+              options:
+                entity.sport_type === Verbs.doubleSport
+                  ? groupInviteToJoinOptions
+                  : groupInviteToJoinForTeamSportOptions,
 
-            key: PrivacyKeyEnum.InvitePersonToJoinGroup,
-          },
-          {
-            question: strings.whoCanViewYourTeamMembers,
-            options: groupDefaultPrivacyOptionsForDoubleTeam,
-            key: PrivacyKeyEnum.ViewYourGroupMembers,
-          },
-        ];
+              key: PrivacyKeyEnum.InvitePersonToJoinGroup,
+            },
+            {
+              question: strings.whoCanViewYourTeamMembers,
+              options: groupDefaultPrivacyOptionsForDoubleTeam,
+              key: PrivacyKeyEnum.ViewYourGroupMembers,
+            },
+          ];
 
-      case strings.clubAndLeague:
-        return [
-          {
-            question: strings.doYouAllowClubToInviteYouToJoinClub,
-            options: binaryPrivacyOptions,
-            key: PrivacyKeyEnum.InviteForClub,
-          },
-          {
-            question: strings.doYouAllLeaguesToInviteYouToJoinLeagues,
-            options: binaryPrivacyOptions,
-            key: PrivacyKeyEnum.InviteForLeague,
-          },
-        ];
+        case strings.clubAndLeague:
+          return [
+            {
+              question: strings.doYouAllowClubToInviteYouToJoinClub,
+              options: binaryPrivacyOptions,
+              key: PrivacyKeyEnum.InviteForClub,
+            },
+            {
+              question: strings.doYouAllLeaguesToInviteYouToJoinLeagues,
+              options: binaryPrivacyOptions,
+              key: PrivacyKeyEnum.InviteForLeague,
+            },
+          ];
 
-      case strings.followerText:
-        return [
-          {
-            question: strings.whoCanFollowYourTeam,
-            options: followerFollowingOptions,
-            key: PrivacyKeyEnum.Follow,
-          },
-          {
-            question: strings.whoCanSeeTeamFollowers,
-            options:
-              entity.sport_type === Verbs.doubleSport
-                ? groupDefaultPrivacyOptionsForDoubleTeam
-                : groupPrivacyDefalutOptions,
-            key: PrivacyKeyEnum.Followers,
-          },
-        ];
+        case strings.followerText:
+          return [
+            {
+              question: strings.whoCanFollowYourTeam,
+              options: followerFollowingOptions,
+              key: PrivacyKeyEnum.Follow,
+            },
+            {
+              question: strings.whoCanSeeTeamFollowers,
+              options:
+                entity.sport_type === Verbs.doubleSport
+                  ? groupDefaultPrivacyOptionsForDoubleTeam
+                  : groupPrivacyDefalutOptions,
+              key: PrivacyKeyEnum.Followers,
+            },
+          ];
 
-      case strings.chatsTitle:
-        return [
-          {
-            question: strings.whoCanInviteYourTeamToChat,
-            options: teamChatPrivacyOptions,
-            key: PrivacyKeyEnum.Chats,
-          },
-        ];
+        case strings.chatsTitle:
+          return [
+            {
+              question: strings.whoCanInviteYourTeamToChat,
+              options: teamChatPrivacyOptions,
+              key: PrivacyKeyEnum.Chats,
+            },
+          ];
 
-      case strings.tag:
-        return [
-          {
-            question: strings.whocantagpostcommentorreply,
-            options:
-              entity.sport_type === Verbs.doubleSport
-                ? groupDefaultPrivacyOptionsForDoubleTeam
-                : groupPrivacyDefalutOptions,
-            key: PrivacyKeyEnum.Tag,
-          },
-        ];
+        case strings.tag:
+          return [
+            {
+              question: strings.whocantagpostcommentorreply,
+              options:
+                entity.sport_type === Verbs.doubleSport
+                  ? groupDefaultPrivacyOptionsForDoubleTeam
+                  : groupPrivacyDefalutOptions,
+              key: PrivacyKeyEnum.Tag,
+            },
+          ];
 
-      default:
-        return [];
+        default:
+          return [];
+      }
     }
+
+    if (entity.entity_type === Verbs.entityTypeClub) {
+      switch (option) {
+        case strings.postTitle:
+          return [
+            {
+              question: strings.whoCanViewPostsInClubProfile,
+              options: defaultClubPrivacyOptions,
+              key: PrivacyKeyEnum.Posts,
+            },
+            {
+              question: strings.whoCanWritePostsInClubProfile,
+              options: defaultClubPrivacyOptions,
+              key: PrivacyKeyEnum.PostWrite,
+              subText: strings.writePostInClubProfileSubText,
+            },
+          ];
+
+        case strings.events:
+          return [
+            {
+              question: strings.whoCanViewClubEventSection,
+              options: defaultClubPrivacyOptions,
+              key: PrivacyKeyEnum.Events,
+              subText: strings.whoCanViewClubEventSectionSubText,
+            },
+          ];
+
+        case strings.galleryTitle:
+          return [
+            {
+              question: strings.whoCanViewClubGallerySection,
+              options: groupJoinOptions,
+              key: PrivacyKeyEnum.Gallery,
+            },
+          ];
+
+        case strings.membersTitle:
+          return [
+            {
+              question: strings.whoCanJoinYourClub,
+              options: groupJoinOptions,
+              key: PrivacyKeyEnum.JoinAsMember,
+            },
+            {
+              question: strings.whoCanInviteToJoinClub,
+              options: inviteToJoinClubOptions,
+              key: PrivacyKeyEnum.InvitePersonToJoinGroup,
+            },
+            {
+              question: strings.whoCanViewClubMembers,
+              options: defaultClubPrivacyOptions,
+              key: PrivacyKeyEnum.ViewYourGroupMembers,
+            },
+          ];
+
+        case strings.team:
+          return [
+            {
+              question: strings.whatTeamCanJoinClub,
+              options: teamJoinClubOptions,
+              key: PrivacyKeyEnum.TeamJoinClub,
+            },
+          ];
+
+        case strings.followerText:
+          return [
+            {
+              question: strings.whoCanFollowYourClub,
+              options: followerFollowingOptions,
+              key: PrivacyKeyEnum.Follow,
+            },
+            {
+              question: strings.whoCanViewClubFollowers,
+              options: defaultClubPrivacyOptions,
+              key: PrivacyKeyEnum.Followers,
+            },
+          ];
+
+        case strings.chatsTitle:
+          return [
+            {
+              question: strings.whoCanInviteClubToChat,
+              options: clubChatPrivacyOptions,
+              key: PrivacyKeyEnum.Chats,
+            },
+          ];
+
+        case strings.tag:
+          return [
+            {
+              question: strings.whoCanTagClub,
+              options: defaultClubPrivacyOptions,
+              key: PrivacyKeyEnum.Tag,
+            },
+          ];
+
+        default:
+          return [];
+      }
+    }
+
+    return [];
   };
 
   const handleOptions = (option = '') => {
@@ -198,7 +308,11 @@ const GroupPrivacyScreen = ({navigation}) => {
       />
       <View style={{paddingTop: 20, paddingHorizontal: 15}}>
         <FlatList
-          data={GroupPrivacySettingsOptions}
+          data={
+            authContext.entity.role === Verbs.entityTypeTeam
+              ? TeamPrivacySettingsOptions
+              : ClubPrivacySettingsOptions
+          }
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item}) => (
             <>

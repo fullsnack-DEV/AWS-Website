@@ -136,6 +136,7 @@ const WritePostScreen = ({navigation, route}) => {
       const tagData = tagsOfEntity.map((tag) => ({
         entity_id: tag.entity_id,
         entity_type: 'taggedtimeline',
+        privacy_status: tag.privacy_status ?? true,
       }));
       const format_tagged_data = [...tagsOfEntity];
 
@@ -513,6 +514,7 @@ const WritePostScreen = ({navigation, route}) => {
         entity_data,
         entity_id: item?.[entity_text],
         entity_type: jsonData?.entity_type,
+        privacy_status: item.privacy_status,
       });
     }
 
@@ -581,13 +583,13 @@ const WritePostScreen = ({navigation, route}) => {
     data.forEach((obj) => {
       const id = obj.group_id ?? obj.user_id ?? obj.entity_id;
       const item = tagsOfEntity.find((temp) => temp.entity_id === id);
-      const privacyStatus = getPrivacyStatus(
-        PersonalUserPrivacyEnum[obj[PrivacyKeyEnum.Tag]],
-        obj,
-      );
 
-      if (!item && id !== authContext.entity.uid && privacyStatus) {
-        arr.push(obj);
+      if (!item && id !== authContext.entity.uid) {
+        const privacyStatus = getPrivacyStatus(
+          PersonalUserPrivacyEnum[item[PrivacyKeyEnum.Tag]],
+          item,
+        );
+        arr.push({...obj, privacy_status: privacyStatus});
       }
     });
 
@@ -1070,7 +1072,7 @@ const WritePostScreen = ({navigation, route}) => {
           const updatedSettings = {...privacySetting};
           updatedSettings[privacyKey] = settingsValue;
           setPrivacySetting({...updatedSettings});
-          setShowSettingsModal(false);
+          // setShowSettingsModal(false);
         }}
         privacySettings={privacySetting}
       />

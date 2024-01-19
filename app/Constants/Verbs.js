@@ -226,6 +226,9 @@ const Verbs = {
   INVITED_EVENT: 'Invited',
   post: 'Post',
   taggedPost: 'TaggedPost',
+  currency: 'currency',
+  availableTime: 'availableTime',
+  fee: 'fee',
 };
 
 export default Verbs;

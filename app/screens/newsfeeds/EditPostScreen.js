@@ -46,7 +46,11 @@ import {MAX_UPLOAD_POST_ASSETS, getPickedData} from '../../utils/imageAction';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import {updatePost} from '../../api/NewsFeeds';
 import FeedsAdvancedSettingsModal from './FeedsAdvancedSettingsModal';
-import {PrivacyKeyEnum} from '../../Constants/PrivacyOptionsConstant';
+import {
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../Constants/PrivacyOptionsConstant';
+import usePrivacySettings from '../../hooks/usePrivacySettings';
 
 const privacyOptions = [
   PrivacyKeyEnum.LikeCount,
@@ -80,6 +84,8 @@ const EditPostScreen = ({navigation, route}) => {
   const [privacySetting, setPrivacySetting] = useState({});
   const [showPreviewForUrl, setShowPreviewForUrl] = useState(true);
   const [tagsOfGame, setTagsOfGame] = useState([]);
+
+  const {getPrivacyStatus} = usePrivacySettings();
 
   useEffect(() => {
     if (isFocused && postData && postData.object) {
@@ -306,6 +312,7 @@ const EditPostScreen = ({navigation, route}) => {
           entity_data,
           entity_id: item?.[entity_text],
           entity_type: jsonData?.entity_type,
+          privacy_status: item.privacy_status,
         });
       setTagsOfEntity([...tagsOfEntity, ...tagsArray]);
       setLetModalVisible(false);
@@ -474,7 +481,11 @@ const EditPostScreen = ({navigation, route}) => {
       const id = obj.group_id ?? obj.user_id ?? obj.entity_id;
       const item = tagsOfEntity.find((temp) => temp.entity_id === id);
       if (!item && id !== authContext.entity.uid) {
-        arr.push(obj);
+        const privacyStatus = getPrivacyStatus(
+          PersonalUserPrivacyEnum[item[PrivacyKeyEnum.Tag]],
+          item,
+        );
+        arr.push({...obj, privacy_status: privacyStatus});
       }
     });
 
@@ -627,6 +638,7 @@ const EditPostScreen = ({navigation, route}) => {
       const tagData = tagsOfEntity.map((tag) => ({
         entity_id: tag.entity_id,
         entity_type: 'taggedtimeline',
+        privacy_status: tag.privacy_status ?? true,
       }));
       const format_tagged_data = [...tagsOfEntity];
 

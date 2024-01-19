@@ -79,6 +79,7 @@ const usePrivacySettings = () => {
         strings.onlymeTitleText,
         strings.noneText,
         strings.onlyTeamTitle,
+        strings.onlyClub,
       ].includes(privacyVal)
     ) {
       return authContext.entity.uid === entityId;
@@ -148,8 +149,45 @@ const usePrivacySettings = () => {
       return false;
     }
 
-    if (privacyVal === strings.teamMembers) {
+    if (
+      privacyVal === strings.teamMembers ||
+      privacyVal === strings.clubMember
+    ) {
       return memberList.includes(entityId);
+    }
+
+    if (privacyVal === strings.followerTitleText) {
+      const isMyFollower = followings.includes(authContext.entity.uid);
+      return isMyFollower;
+    }
+
+    if (privacyVal === strings.allTeams) {
+      return authContext.entity.role === Verbs.entityTypeTeam;
+    }
+
+    if (privacyVal === strings.clubMembersAndTeams) {
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        const isMyTeam =
+          authContext.entity.obj.parent_groups?.length > 0
+            ? entityObj.parent_groups.includes(authContext.entity.uid)
+            : false;
+
+        const isMyMember = memberList.includes(authContext.entity.uid);
+
+        return isMyMember || isMyTeam;
+      }
+      return false;
+    }
+
+    if (privacyVal === strings.teamsTitleText) {
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        const isMyTeam =
+          authContext.entity.obj.parent_groups?.length > 0
+            ? entityObj.parent_groups.includes(authContext.entity.uid)
+            : false;
+        return isMyTeam;
+      }
+      return false;
     }
     return true;
   };

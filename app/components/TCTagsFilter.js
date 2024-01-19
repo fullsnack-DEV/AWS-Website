@@ -7,15 +7,42 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
+import moment from 'moment';
 import {strings} from '../../Localization/translation';
 
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
 import images from '../Constants/ImagePath';
-import {getSportName} from '../utils';
+import {getJSDate, getSportName} from '../utils';
 import Verbs from '../Constants/Verbs';
 
 function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
+  const getFilterText = (option, obj) => {
+    switch (option) {
+      case Verbs.sportType:
+        return getSportName(filter, authContext);
+
+      case Verbs.fee:
+        if (filter?.minFee && !filter?.maxFee) {
+          return `> ${filter.minFee} ${filter.currency}`;
+        }
+        if (!filter?.minFee && filter?.maxFee) {
+          return `< ${filter.maxFee} ${filter.currency}`;
+        }
+        return `${filter.minFee} - ${filter.maxFee} ${filter.currency}`;
+
+      case Verbs.availableTime:
+        if (obj[option] === strings.filterPickaDate) {
+          return `${moment(getJSDate(filter.fromDateTime)).format(
+            'MMM DD',
+          )} - ${moment(getJSDate(filter.toDateTime)).format('MMM DD')}`;
+        }
+        return Object.values(obj);
+
+      default:
+        return Object.values(obj);
+    }
+  };
   const renderTags = ({item, index}) => (
     <>
       {Object.values(item)[0] !== strings.allType &&
@@ -34,16 +61,14 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
         Object.keys(item)[0] !== Verbs.sortOption &&
         Object.keys(item)[0] !== Verbs.searchCityLoc &&
         Object.keys(item)[0] !== Verbs.fromDateTime &&
-        Object.keys(item)[0] !== Verbs.toDateTime && (
+        Object.keys(item)[0] !== Verbs.toDateTime &&
+        Object.keys(item)[0] !== Verbs.currency && (
           <View
             style={styles.textContainer}
             onPress={() => onTagCancelPress({item, index})}>
             <Text style={styles.tagTitleText}>
-              {Object.keys(item)[0] === 'sport'
-                ? getSportName(filter, authContext)
-                : Object.values(item)}
+              {getFilterText(Object.keys(item)[0], item)}
             </Text>
-            {/* <Image source={images.tagDivider} style={styles.dividerImage} /> */}
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => onTagCancelPress({item, index})}>

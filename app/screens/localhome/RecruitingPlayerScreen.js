@@ -428,6 +428,18 @@ export default function RecruitingPlayerScreen({navigation, route}) {
           delete tempFilter.groupLeague;
         }
 
+        if (Object.keys(item)[0] === Verbs.availableTime) {
+          delete tempFilter.availableTime;
+          delete tempFilter.fromDateTime;
+          delete tempFilter.toDateTime;
+        }
+        if (Object.keys(item)[0] === Verbs.fee) {
+          delete tempFilter?.minFee;
+          delete tempFilter?.maxFee;
+          delete tempFilter?.currency;
+          delete tempFilter?.fee;
+        }
+
         // delete tempFilter[key];
       }
     });
