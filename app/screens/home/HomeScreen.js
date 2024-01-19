@@ -69,6 +69,9 @@ const personalPrivacyKeyArr = [
 const groupPrivacyKeyArr = [
   PrivacyKeyEnum.Posts,
   PrivacyKeyEnum.PostWrite,
+  PrivacyKeyEnum.Events,
+  PrivacyKeyEnum.ViewYourGroupMembers,
+  PrivacyKeyEnum.Followers,
   PrivacyKeyEnum.Chats,
   PrivacyKeyEnum.Gallery,
 ];
@@ -360,8 +363,7 @@ const HomeScreen = ({navigation, route}) => {
             fetchGroupDetails(uid, role, admin, fromRefresh);
           }}
           routeParams={route.params}
-          viewPostPrivacyStatus={groupPrivacyObject[PrivacyKeyEnum.Posts]}
-          writePostPrivacyStatus={groupPrivacyObject[PrivacyKeyEnum.PostWrite]}
+          privacyObj={groupPrivacyObject}
         />
       );
     }

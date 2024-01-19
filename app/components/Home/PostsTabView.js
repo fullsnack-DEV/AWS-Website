@@ -1,21 +1,12 @@
 // @flow
 import React from 'react';
 import {View, StyleSheet, Text, FlatList, TouchableOpacity} from 'react-native';
-import {strings} from '../../../Localization/translation';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 
-const PostsTabView = ({
-  list = [],
-  onPress = () => {},
-  postPrivacyStatus = true,
-}) =>
+const PostsTabView = ({list = [], onPress = () => {}}) =>
   list.length > 0 ? (
     <View style={styles.parent}>
-      {postPrivacyStatus && (
-        <Text style={styles.title}>{strings.postsTitleText}</Text>
-      )}
-
       <FlatList
         data={list}
         keyExtractor={(item) => item}
@@ -41,13 +32,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: colors.grayBackgroundColor,
-  },
-  title: {
-    fontSize: 20,
-    lineHeight: 30,
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RBold,
-    marginBottom: 15,
   },
   buttonContainer: {
     paddingHorizontal: 15,

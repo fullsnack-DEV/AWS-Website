@@ -17,13 +17,14 @@ import colors from '../../../Constants/Colors';
 import {
   GroupPrivacySettingsOptions,
   PrivacyKeyEnum,
+  binaryPrivacyOptions,
+  followerFollowingOptions,
+  teamChatPrivacyOptions,
   groupDefaultPrivacyOptionsForDoubleTeam,
-  groupMemberInvitePersonJoinTeam,
-  groupMemberJoinTeam,
-  groupMembersSportdefaultOptions,
+  groupInviteToJoinForTeamSportOptions,
+  groupInviteToJoinOptions,
+  groupJoinOptions,
   groupPrivacyDefalutOptions,
-  inviteToEventOptions,
-  inviteToGroupOptions,
 } from '../../../Constants/PrivacyOptionsConstant';
 
 import Verbs from '../../../Constants/Verbs';
@@ -74,7 +75,6 @@ const GroupPrivacyScreen = ({navigation}) => {
         return [
           {
             question: strings.whoCanViewEventSection,
-            subText: strings.eventsPrivacySubText,
             options:
               entity.sport_type === Verbs.doubleSport
                 ? groupDefaultPrivacyOptionsForDoubleTeam
@@ -98,27 +98,53 @@ const GroupPrivacyScreen = ({navigation}) => {
       case strings.membersTitle:
         return [
           {
-            question: strings.whoCanJoinTeam,
-            options: groupMemberJoinTeam,
-            key: PrivacyKeyEnum.MemberToJoinTeam,
+            question: strings.whoCanJoinTitle,
+            options: groupJoinOptions,
+            key: PrivacyKeyEnum.JoinAsMember,
           },
           {
             question: strings.whoCanInvitePersonToJoinYourTeam,
-            options: groupMemberInvitePersonJoinTeam,
-            key: PrivacyKeyEnum.InvitePersonToJoinTeam,
+            options:
+              entity.sport_type === Verbs.doubleSport
+                ? groupInviteToJoinOptions
+                : groupInviteToJoinForTeamSportOptions,
+
+            key: PrivacyKeyEnum.InvitePersonToJoinGroup,
           },
           {
             question: strings.whoCanViewYourTeamMembers,
-            options: groupMembersSportdefaultOptions,
-            key: PrivacyKeyEnum.ViewYourTeamMembers,
+            options: groupDefaultPrivacyOptionsForDoubleTeam,
+            key: PrivacyKeyEnum.ViewYourGroupMembers,
           },
         ];
 
-      case strings.followerTitleText:
+      case strings.clubAndLeague:
+        return [
+          {
+            question: strings.doYouAllowClubToInviteYouToJoinClub,
+            options: binaryPrivacyOptions,
+            key: PrivacyKeyEnum.InviteForClub,
+          },
+          {
+            question: strings.doYouAllLeaguesToInviteYouToJoinLeagues,
+            options: binaryPrivacyOptions,
+            key: PrivacyKeyEnum.InviteForLeague,
+          },
+        ];
+
+      case strings.followerText:
         return [
           {
             question: strings.whoCanFollowYourTeam,
-            options: groupPrivacyDefalutOptions,
+            options: followerFollowingOptions,
+            key: PrivacyKeyEnum.Follow,
+          },
+          {
+            question: strings.whoCanSeeTeamFollowers,
+            options:
+              entity.sport_type === Verbs.doubleSport
+                ? groupDefaultPrivacyOptionsForDoubleTeam
+                : groupPrivacyDefalutOptions,
             key: PrivacyKeyEnum.Followers,
           },
         ];
@@ -127,7 +153,7 @@ const GroupPrivacyScreen = ({navigation}) => {
         return [
           {
             question: strings.whoCanInviteYourTeamToChat,
-            options: groupPrivacyDefalutOptions,
+            options: teamChatPrivacyOptions,
             key: PrivacyKeyEnum.Chats,
           },
         ];
@@ -135,22 +161,12 @@ const GroupPrivacyScreen = ({navigation}) => {
       case strings.tag:
         return [
           {
-            question: strings.whoCanTagYourTeamOnPostCommentOrReply,
-            options: groupPrivacyDefalutOptions,
+            question: strings.whocantagpostcommentorreply,
+            options:
+              entity.sport_type === Verbs.doubleSport
+                ? groupDefaultPrivacyOptionsForDoubleTeam
+                : groupPrivacyDefalutOptions,
             key: PrivacyKeyEnum.Tag,
-          },
-        ];
-      case strings.invite:
-        return [
-          {
-            question: strings.whoCanInviteYouToJoinGroup,
-            options: inviteToGroupOptions,
-            key: PrivacyKeyEnum.InviteToJoinGroup,
-          },
-          {
-            question: strings.whoCanInviteYouToJoinEvent,
-            options: inviteToEventOptions,
-            key: PrivacyKeyEnum.InviteToJoinEvent,
           },
         ];
 
@@ -160,6 +176,10 @@ const GroupPrivacyScreen = ({navigation}) => {
   };
 
   const handleOptions = (option = '') => {
+    if (option === strings.blocked) {
+      return;
+    }
+
     const routeParams = {
       headerTitle: option,
       privacyOptions: [],

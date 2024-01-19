@@ -22,10 +22,42 @@ export const getFeeds = async (entityType, entityId, idLt, authContext) =>
     url: `${Config.BASE_URL}/newsfeeds?entity_type=${entityType}&entity_id=${entityId}&id_lt=${idLt}`,
     authContext,
   });
-export const getTimeline = async (entityType, entityId, idLt, authContext) =>
+
+export const getTimeline = async (entityType, entityId, authContext) =>
   makeAPIRequest({
     method: 'get',
     url: `${Config.BASE_URL}${entityType}/timeline/${entityId}`,
+    authContext,
+  });
+
+export const getTimelineNextData = async (
+  entityType,
+  entityId,
+  idLt,
+  authContext,
+) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}${entityType}/timeline/${entityId}?id_lt=${idLt}`,
+    authContext,
+  });
+
+export const getTaggedTimeline = async (entityType, entityId, authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}${entityType}/taggedtimeline/${entityId}`,
+    authContext,
+  });
+
+export const getTaggedTimelineNextData = async (
+  entityType,
+  entityId,
+  idLt,
+  authContext,
+) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}${entityType}/taggedtimeline/${entityId}?id_lt=${idLt}`,
     authContext,
   });
 

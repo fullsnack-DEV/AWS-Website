@@ -63,6 +63,7 @@ import {cancelFollowRequest} from '../../api/Users';
 import InviteMemberModal from '../../components/InviteMemberModal';
 import ClubInviteTeamModal from './ClubInviteTeamModal';
 import images from '../../Constants/ImagePath';
+import {PrivacyKeyEnum} from '../../Constants/PrivacyOptionsConstant';
 
 // import BottomSheet from '../../components/modals/BottomSheet';
 
@@ -77,8 +78,7 @@ const GroupHomeScreen = ({
   restrictReturn = false,
   pulltoRefresh = () => {},
   routeParams = {},
-  viewPostPrivacyStatus = true,
-  writePostPrivacyStatus = true,
+  privacyObj = {},
 }) => {
   const authContext = useContext(AuthContext);
 
@@ -257,6 +257,27 @@ const GroupHomeScreen = ({
     }
   };
 
+  const getTavOptions = () => {
+    if (groupData?.entity_type === Verbs.entityTypeTeam) {
+      if (privacyObj[PrivacyKeyEnum.Events]) {
+        return [
+          strings.infoTitle,
+          strings.scheduleTitle,
+          strings.scoreboard,
+          strings.stats,
+          strings.reviews,
+        ];
+      }
+      return [
+        strings.infoTitle,
+        strings.scoreboard,
+        strings.stats,
+        strings.reviews,
+      ];
+    }
+    return [strings.infoTitle, strings.galleryTitle];
+  };
+
   const ListHeader = () => (
     <>
       <GroupHomeHeader
@@ -286,65 +307,72 @@ const GroupHomeScreen = ({
         onClickFollowers={() => {
           followModalRef.current?.present();
         }}
+        memberPrivacyStatus={privacyObj[PrivacyKeyEnum.ViewYourGroupMembers]}
+        followerPrivacyStatus={privacyObj[PrivacyKeyEnum.Followers]}
       />
-      <MemberList
-        list={currentUserData.joined_members}
-        isAdmin={isAdmin}
-        containerStyle={{
-          paddingHorizontal: 15,
-          paddingVertical: 25,
-        }}
-        onPressMember={(groupObject = {}) => {
-          if (groupObject?.is_player) {
-            navigation.navigate('SportActivityHome', {
-              sport: groupData.sport,
-              sportType: groupData.sport_type,
-              uid: groupObject.user_id,
-              entityType: Verbs.entityTypePlayer,
-              backScreen: 'HomeScreen',
-              backScreenParams: {
-                uid: groupData.group_id,
-                role: groupData.entity_type,
+      {privacyObj[PrivacyKeyEnum.ViewYourGroupMembers] ? (
+        <MemberList
+          list={currentUserData.joined_members}
+          isAdmin={isAdmin}
+          containerStyle={{
+            paddingHorizontal: 15,
+            paddingVertical: 25,
+          }}
+          onPressMember={(groupObject = {}) => {
+            if (groupObject?.is_player) {
+              navigation.navigate('SportActivityHome', {
+                sport: groupData.sport,
+                sportType: groupData.sport_type,
+                uid: groupObject.user_id,
+                entityType: Verbs.entityTypePlayer,
+                backScreen: 'HomeScreen',
+                backScreenParams: {
+                  uid: groupData.group_id,
+                  role: groupData.entity_type,
+                },
+              });
+            } else {
+              navigation.push('HomeScreen', {
+                uid: groupObject.user_id ?? groupObject.group_id,
+                role: groupObject.entity_type ?? Verbs.entityTypePlayer,
+              });
+            }
+          }}
+          onPressMore={() => {
+            navigation.navigate('App', {
+              screen: 'Members',
+              params: {
+                groupObj: groupData,
+                groupID: groupId,
+                fromProfile: true,
+                showBackArrow: true,
+                comeFrom: 'HomeScreen',
+                routeParams: {
+                  uid: groupId,
+                  role: groupData.entity_type,
+                },
               },
             });
-          } else {
-            navigation.push('HomeScreen', {
-              uid: groupObject.user_id ?? groupObject.group_id,
-              role: groupObject.entity_type ?? Verbs.entityTypePlayer,
+          }}
+          addMember={() => {
+            navigation.navigate('MebmersStack', {
+              screen: 'CreateMemberProfileForm1',
+              params: {
+                showBackArrow: true,
+                comeFrom: 'HomeScreen',
+                routeParams: {
+                  uid: groupId,
+                  role: groupData.entity_type,
+                },
+              },
             });
-          }
-        }}
-        onPressMore={() => {
-          navigation.navigate('App', {
-            screen: 'Members',
-            params: {
-              groupObj: groupData,
-              groupID: groupId,
-              fromProfile: true,
-              showBackArrow: true,
-              comeFrom: 'HomeScreen',
-              routeParams: {
-                uid: groupId,
-                role: groupData.entity_type,
-              },
-            },
-          });
-        }}
-        addMember={() => {
-          navigation.navigate('MebmersStack', {
-            screen: 'CreateMemberProfileForm1',
-            params: {
-              showBackArrow: true,
-              comeFrom: 'HomeScreen',
-              routeParams: {
-                uid: groupId,
-                role: groupData.entity_type,
-              },
-            },
-          });
-        }}
-        isDoubleTeam={currentUserData.sport_type === Verbs.doubleSport}
-      />
+          }}
+          isDoubleTeam={currentUserData.sport_type === Verbs.doubleSport}
+        />
+      ) : (
+        <View style={{height: 20}} />
+      )}
+
       <GroupHomeButton
         groupData={currentUserData}
         loggedInEntity={authContext.entity}
@@ -353,17 +381,7 @@ const GroupHomeScreen = ({
       />
       <View style={styles.separator} />
       <PostsTabView
-        list={
-          groupData?.entity_type === Verbs.entityTypeTeam
-            ? [
-                strings.infoTitle,
-                strings.scheduleTitle,
-                strings.scoreboard,
-                strings.stats,
-                strings.reviews,
-              ]
-            : [strings.infoTitle, strings.galleryTitle]
-        }
+        list={getTavOptions()}
         onPress={(option) => {
           handleTabOptions(option);
         }}
@@ -1576,8 +1594,8 @@ const GroupHomeScreen = ({
               pulltoRefresh();
             }}
             routeParams={routeParams}
-            postsPrivacyStatus={viewPostPrivacyStatus}
-            writePostPrivacyStatus={writePostPrivacyStatus}
+            postsPrivacyStatus={privacyObj[PrivacyKeyEnum.Posts]}
+            writePostPrivacyStatus={privacyObj[PrivacyKeyEnum.PostWrite]}
           />
         </View>
 

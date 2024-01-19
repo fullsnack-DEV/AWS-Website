@@ -3330,7 +3330,7 @@ export default {
   shareEventsubText:
     'en_A post about this event will be created in posts of your ${0}.',
 
-  whoCanViewPostSection: "en_Who can view your team's posts section?",
+  whoCanViewPostSection: "en_Who can view posts in your team's profile?",
   whoCanViewEventSection: "en_Who can view your team's events section?",
   whoCanViewGallerySection: "en_Who can view your team's gallery section?",
   whoCanFollowYourTeam: 'en_Who can follow your team?',
@@ -3341,7 +3341,7 @@ export default {
   teamMembersAndClub: 'en_Team members & Club',
   onlyTeamTitle: 'en_Only team',
   whoCanWritePostTeamsPostsSection:
-    "en_Who can write a post in your team's posts section?",
+    "en_Who can write a post in your team's profile?",
   whoCanInvitePersonToJoinYourTeam:
     'en_Who can invite a person to join your team?',
   whoCanViewYourTeamMembers: 'en_Who can view your team members?',
@@ -3380,7 +3380,6 @@ export default {
   noPostTitle: 'en_No post',
   noPostFoundSubTitle: 'en_New posts will appear here.',
   toGroupName: 'en_To {0}',
-
   threetimes: 'en_3 Times',
   fourtimes: 'en_4 Times',
   fivetimes: 'en_5 Times',
@@ -3399,4 +3398,11 @@ export default {
   eighteentimes: 'en_18 Times',
   nineteentimes: 'en_19 Times',
   twentyimes: 'en_20 Times',
+  followerText: 'en_Follower',
+  clubAndLeague: 'en_Club & League',
+  doYouAllowClubToInviteYouToJoinClub:
+    'en_Do you want to allow clubs to invite your team to join their clubs?',
+  doYouAllLeaguesToInviteYouToJoinLeagues:
+    'en_Do you want to allow leagues to invite your team to join their leagues or tournaments?',
+  whoCanSeeTeamFollowers: "en_Who can view your team's followers?",
 };

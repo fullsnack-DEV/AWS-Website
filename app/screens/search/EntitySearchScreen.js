@@ -2598,7 +2598,15 @@ export default function EntitySearchScreen({navigation, route}) {
           entityId === item.group_id ||
           entityId === item.owner_id,
       );
-      if (!data) {
+      if (data) {
+        const newList = recentSearchData[authContext.entity.uid].filter(
+          (item) => {
+            const id = item.user_id ?? item.group_id ?? item.owner_id;
+            return id !== entityId;
+          },
+        );
+        recentSearchData[authContext.entity.uid] = [...newList, obj];
+      } else {
         recentSearchData[authContext.entity.uid] = [
           ...recentSearchData[authContext.entity.uid],
           obj,

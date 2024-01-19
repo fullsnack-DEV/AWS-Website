@@ -155,11 +155,6 @@ const NewsFeedList = ({
     dummyCall();
   }, [authContext.entity, onRefreshPress]);
 
-  const newsFeedKeyExtractor = useCallback(
-    (item) => `feed1${item?.id?.toString()}`,
-    [],
-  );
-
   const onViewableItemsChanged = useCallback(({viewableItems}) => {
     if (viewableItems?.length > 0) {
       setParentIndex(viewableItems?.[0]?.index ?? 0);
@@ -244,7 +239,7 @@ const NewsFeedList = ({
         refreshing={pullRefresh}
         onRefresh={newsFeedOnRefresh}
         nestedScrollEnabled={true}
-        keyExtractor={newsFeedKeyExtractor}
+        keyExtractor={(item, index) => index.toString()}
       />
     </View>
   );

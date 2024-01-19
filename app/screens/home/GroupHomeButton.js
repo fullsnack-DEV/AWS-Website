@@ -10,7 +10,8 @@ import fonts from '../../Constants/Fonts';
 import images from '../../Constants/ImagePath';
 import Verbs from '../../Constants/Verbs';
 import {getEntitySport} from '../../utils/sportsActivityUtils';
-import {teamInvitePrivacy} from '../../Constants/GeneralConstants';
+import {JoinPrivacy, teamInvitePrivacy} from '../../Constants/GeneralConstants';
+import {PrivacyKeyEnum} from '../../Constants/PrivacyOptionsConstant';
 
 const GroupHomeButton = ({
   groupData = {},
@@ -118,8 +119,12 @@ const GroupHomeButton = ({
           strings.declineInvite,
           strings.cancel,
         ]);
-      } else {
+      } else if (
+        groupData[PrivacyKeyEnum.JoinAsMember] !== JoinPrivacy.inviteOnly
+      ) {
         obj.btn1 = strings.join;
+      } else {
+        obj.btn1 = Verbs.HIDE_BUTTON;
       }
     }
     if (
@@ -203,8 +208,12 @@ const GroupHomeButton = ({
         obj.btn1 = strings.invitePending;
 
         setOptions([strings.acceptInvite, strings.declineInvite]);
-      } else {
+      } else if (
+        groupData[PrivacyKeyEnum.JoinAsMember] !== JoinPrivacy.inviteOnly
+      ) {
         obj.btn1 = strings.join;
+      } else {
+        obj.btn1 = Verbs.HIDE_BUTTON;
       }
     }
     if (loggedInEntity.role === Verbs.entityTypeTeam) {
@@ -295,7 +304,7 @@ const GroupHomeButton = ({
 
   return (
     <View style={styles.buttonRow}>
-      {buttons.btn1 ? (
+      {buttons.btn1 && buttons.btn1 !== Verbs.HIDE_BUTTON ? (
         <TouchableOpacity
           style={[
             styles.buttonContainer,

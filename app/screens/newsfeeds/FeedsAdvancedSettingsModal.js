@@ -1,6 +1,6 @@
 // @flow
 import React, {useState} from 'react';
-import {View, StyleSheet, Dimensions, Text, Image} from 'react-native';
+import {View, StyleSheet, Text, Image} from 'react-native';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
 import {strings} from '../../../Localization/translation';
@@ -55,9 +55,9 @@ const FeedsAdvancedSettingsModal = ({
           const contentHeight = event.nativeEvent.layout.height + 80;
 
           setSnapPoints([
-            '50%',
             contentHeight,
-            Dimensions.get('window').height - 40,
+            contentHeight,
+            // Dimensions.get('window').height - 40,
           ]);
         }}>
         <Text style={styles.modalTitile}>{strings.advancedSettings}</Text>

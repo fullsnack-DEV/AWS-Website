@@ -583,6 +583,8 @@ const images = {
   reservationNoData: require('../assets/images/reservation_no_data.png'),
   shieldWithStar: require('../assets/images/shield_with_star.png'),
   settingsIcon: require('../assets/images/settingsIcon.png'),
+  postImageIcon: require('../assets/images/postImageIcon.png'),
+  postTagIcon: require('../assets/images/postTagIcon.png'),
 };
 
 export default images;

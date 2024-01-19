@@ -84,6 +84,10 @@ const usePrivacySettings = () => {
       return authContext.entity.uid === entityId;
     }
 
+    if (privacyVal === strings.invitedOnly) {
+      return false;
+    }
+
     if (privacyVal === strings.myTeamClub) {
       const isMyTeamClub = checkIsMyTeamClub(entityId);
       return isMyTeamClub;
@@ -129,14 +133,24 @@ const usePrivacySettings = () => {
     }
 
     if (privacyVal === strings.clubsAndTeam) {
-      const isMyClub =
-        entityObj.parent_groups?.length > 0
-          ? entityObj.parent_groups.includes(authContext.entity.uid)
-          : false;
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        return authContext.entity.uid === entityId;
+      }
 
-      return isMyClub;
+      if (authContext.entity.role === Verbs.entityTypeClub) {
+        const isMyClub =
+          entityObj.parent_groups?.length > 0
+            ? entityObj.parent_groups.includes(authContext.entity.uid)
+            : false;
+
+        return isMyClub;
+      }
+      return false;
     }
 
+    if (privacyVal === strings.teamMembers) {
+      return memberList.includes(entityId);
+    }
     return true;
   };
 

@@ -127,7 +127,7 @@ export default function EventScreen({navigation, route}) {
   }, [route.params?.isCreatePost]);
 
   const getFeeds = useCallback(() => {
-    getTimeline(organizer.entity_type, eventData.cal_id, '', authContext)
+    getTimeline(organizer.entity_type, eventData.cal_id, authContext)
       .then((response) => {
         setFeedCalled(true);
         setFirstTimeLoading(false);
@@ -676,7 +676,7 @@ export default function EventScreen({navigation, route}) {
     setIsNextDataLoading(true);
     setFooterLoading(false);
     setPullRefresh(true);
-    getTimeline(organizer.entity_type, eventData.cal_id, '', authContext)
+    getTimeline(organizer.entity_type, eventData.cal_id, authContext)
       .then((response) => {
         setPostData([...response.payload.results]);
         setPullRefresh(false);

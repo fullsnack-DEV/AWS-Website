@@ -18,10 +18,14 @@ import {
   FollowerFollowingOptionsEnum,
   GroupDefalutPrivacyOptionsEnum,
   GroupDefaultPrivacyOptionsForDoubleTeamEnum,
+  GroupInviteToJoinForTeamSportOptionsEnum,
+  GroupInviteToJoinOptionsEnum,
+  GroupJoinOptionsEnum,
   InviteToEventOptionsEnum,
   PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
   ScoreboardPeriodPrivacyOptionsEnum,
+  TeamChatPrivacyOptionsEnum,
 } from '../../../Constants/PrivacyOptionsConstant';
 import {patchPlayer} from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -96,31 +100,32 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
         )
       ) {
         switch (key) {
-          case PrivacyKeyEnum.Posts:
-            if (authContext.entity.obj.sport_type === Verbs.doubleSport) {
-              return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
-            }
-            return GroupDefalutPrivacyOptionsEnum[privacyVal];
+          case PrivacyKeyEnum.JoinAsMember:
+            return GroupJoinOptionsEnum[privacyVal];
 
-          case PrivacyKeyEnum.PostWrite:
+          case PrivacyKeyEnum.InvitePersonToJoinGroup:
             if (authContext.entity.obj.sport_type === Verbs.doubleSport) {
-              return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
+              return GroupInviteToJoinForTeamSportOptionsEnum[privacyVal];
             }
-            return GroupDefalutPrivacyOptionsEnum[privacyVal];
+            return GroupInviteToJoinOptionsEnum[privacyVal];
 
-          case PrivacyKeyEnum.Chats:
-            if (authContext.entity.obj.sport_type === Verbs.doubleSport) {
-              return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
-            }
-            return GroupDefalutPrivacyOptionsEnum[privacyVal];
+          case PrivacyKeyEnum.ViewYourGroupMembers:
+            return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
 
-          case PrivacyKeyEnum.Gallery:
-            if (authContext.entity.obj.sport_type === Verbs.doubleSport) {
-              return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
-            }
-            return GroupDefalutPrivacyOptionsEnum[privacyVal];
+          case PrivacyKeyEnum.InviteForClub:
+          case PrivacyKeyEnum.InviteForLeague:
+            return BinaryPrivacyOptionsEnum[privacyVal];
+
+          case PrivacyKeyEnum.Follow:
+            return FollowerFollowingOptionsEnum[privacyVal];
+
+          case strings.chatsTitle:
+            return TeamChatPrivacyOptionsEnum[privacyVal];
 
           default:
+            if (authContext.entity.obj.sport_type === Verbs.doubleSport) {
+              return GroupDefaultPrivacyOptionsForDoubleTeamEnum[privacyVal];
+            }
             return GroupDefalutPrivacyOptionsEnum[privacyVal];
         }
       } else {

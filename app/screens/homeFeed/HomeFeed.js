@@ -14,8 +14,10 @@ import {
   createPost,
   createReaction,
   deletePost,
+  getTaggedTimeline,
+  getTaggedTimelineNextData,
   getTimeline,
-  getUserPosts,
+  getTimelineNextData,
 } from '../../api/NewsFeeds';
 import NewsFeedList from '../newsfeeds/NewsFeedList';
 import AuthContext from '../../auth/context';
@@ -28,8 +30,7 @@ import LikersModal from '../../components/modals/LikersModal';
 import {followUser, unfollowUser} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
 import CommentModal from '../../components/newsFeed/CommentModal';
-
-let onEndReachedCalledDuringMomentum = true;
+import TimeLineTabView from '../home/components/TimeLineTabView';
 
 const HomeFeed = ({
   onFeedScroll,
@@ -52,54 +53,88 @@ const HomeFeed = ({
 
   const [pullRefresh, setPullRefresh] = useState(false);
   const [postData, setPostData] = useState([]);
-  const [totalUserPostCount, setTotalUserPostCount] = useState(0);
   const [isNextDataLoading, setIsNextDataLoading] = useState(false);
   const [footerLoading, setFooterLoading] = useState(false);
   const [selectedPost, setSelectedPost] = useState({});
   const [showLikeModal, setShowLikeModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
+  const [selectedPostTab, setSelectedPostTab] = useState(Verbs.post);
+  const [taggedPostData, setTaggedPostData] = useState([]);
+  const [postsList, setPostsList] = useState([]);
 
   const isFocused = useIsFocused();
   const imageUploadContext = useContext(ImageUploadContext);
 
-  const getTimeLine = useCallback(() => {
-    let entityType = Verbs.entityTypeUsers;
-    if (
-      currentUserData.entity_type === Verbs.entityTypeUser ||
-      currentUserData.entity_type === Verbs.entityTypePlayer
-    ) {
-      entityType = Verbs.entityTypeUsers;
-    } else if (
-      currentUserData.entity_type === Verbs.entityTypeTeam ||
-      currentUserData.entity_type === Verbs.entityTypeClub
-    ) {
-      entityType = Verbs.entityTypeGroups;
+  useEffect(() => {
+    if (isFocused) {
+      if (selectedPostTab === Verbs.post) {
+        setPostsList(postData);
+      } else if (selectedPostTab === Verbs.taggedPost) {
+        setPostsList(taggedPostData);
+      } else {
+        setPostsList([]);
+      }
     }
+  }, [isFocused, selectedPostTab, postData, taggedPostData]);
 
-    getTimeline(entityType, userID, '', authContext)
+  const fetchUserTimeLine = useCallback(() => {
+    // let entityType = Verbs.entityTypeUsers;
+    // if (
+    //   currentUserData.entity_type === Verbs.entityTypeTeam ||
+    //   currentUserData.entity_type === Verbs.entityTypeClub
+    // ) {
+    //   entityType = Verbs.entityTypeGroups;
+    // }
+
+    // console.log({entityType});
+    getTimeline('entityType', userID, authContext)
       .then((res) => {
         setFeedCalled(true);
-        setTotalUserPostCount(res?.payload?.total_count);
-        setPostData([...res?.payload?.results]);
+        setPostData([...res.payload.results]);
+        if (res.payload?.next) {
+          setIsNextDataLoading(true);
+        } else {
+          setIsNextDataLoading(false);
+        }
         setPullRefresh(false);
       })
       .catch((e) => {
         console.log(e);
       });
-  }, [authContext, currentUserData.entity_type, userID]);
+  }, [authContext, userID]);
+
+  const fetchTaggedTimeLine = useCallback(() => {
+    // let entityType = Verbs.entityTypeUsers;
+    // if (
+    //   currentUserData.entity_type === Verbs.entityTypeTeam ||
+    //   currentUserData.entity_type === Verbs.entityTypeClub
+    // ) {
+    //   entityType = Verbs.entityTypeGroups;
+    // }
+
+    // console.log({entityType});
+    getTaggedTimeline('entityType', userID, authContext)
+      .then((res) => {
+        setFeedCalled(true);
+        setTaggedPostData([...res.payload.results]);
+        if (res.payload?.next) {
+          setIsNextDataLoading(true);
+        } else {
+          setIsNextDataLoading(false);
+        }
+        setPullRefresh(false);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, [authContext, userID]);
 
   useEffect(() => {
-    getTimeLine();
-  }, [isFocused, getTimeLine]);
-
-  useEffect(() => {
-    if (postData?.length > 0 && totalUserPostCount > 0) {
-      if (postData?.length === totalUserPostCount && isNextDataLoading)
-        setIsNextDataLoading(false);
-      else if (!isNextDataLoading && postData?.length <= totalUserPostCount)
-        setIsNextDataLoading(true);
+    if (isFocused) {
+      fetchUserTimeLine();
+      fetchTaggedTimeLine();
     }
-  }, [postData, totalUserPostCount, isNextDataLoading]);
+  }, [isFocused, fetchUserTimeLine, fetchTaggedTimeLine]);
 
   const onDeletePost = useCallback(
     (item) => {
@@ -124,7 +159,6 @@ const HomeFeed = ({
               (postItem) => postItem?.id !== params?.activity_id,
             );
             setPostData([...pData]);
-            setTotalUserPostCount((pCnt) => pCnt - 1);
           }
         })
         .catch((e) => {
@@ -185,26 +219,57 @@ const HomeFeed = ({
     [authContext, postData],
   );
 
-  const onEndReached = useCallback(() => {
-    if (!onEndReachedCalledDuringMomentum) {
-      setFooterLoading(true);
-      const id_lt = postData?.[postData.length - 1]?.id;
-      if (id_lt && isNextDataLoading) {
-        getUserPosts({last_activity_id: id_lt}, authContext)
-          .then((response) => {
-            if (response) {
+  const onEndReached = () => {
+    if (isNextDataLoading) {
+      const id_lt =
+        selectedPostTab === Verbs.post
+          ? postData?.[postData.length - 1]?.id
+          : taggedPostData?.[taggedPostData.length - 1]?.id;
+
+      if (id_lt) {
+        setFooterLoading(true);
+        if (selectedPostTab === Verbs.post) {
+          getTimelineNextData('entityType', userID, id_lt, authContext)
+            .then((response) => {
+              if (response.payload.results) {
+                setPostData((prevProps) => [
+                  ...prevProps,
+                  ...response.payload.results,
+                ]);
+                if (response.payload?.next) {
+                  setIsNextDataLoading(true);
+                } else {
+                  setIsNextDataLoading(false);
+                }
+              }
               setFooterLoading(false);
-              setTotalUserPostCount(response?.payload?.total_count);
-              setPostData([...postData, ...response.payload.results]);
-            }
-          })
-          .catch(() => {
-            setFooterLoading(false);
-          });
+            })
+            .catch(() => {
+              setFooterLoading(false);
+            });
+        } else if (selectedPostTab === Verbs.taggedPost) {
+          getTaggedTimelineNextData('entityType', userID, id_lt, authContext)
+            .then((response) => {
+              if (response.payload.results) {
+                setTaggedPostData((prevProps) => [
+                  ...prevProps,
+                  ...response.payload.results,
+                ]);
+                if (response.payload?.next) {
+                  setIsNextDataLoading(true);
+                } else {
+                  setIsNextDataLoading(false);
+                }
+              }
+              setFooterLoading(false);
+            })
+            .catch(() => {
+              setFooterLoading(false);
+            });
+        }
       }
-      onEndReachedCalledDuringMomentum = true;
     }
-  }, [authContext, isNextDataLoading, postData]);
+  };
 
   const StickyHeaderComponent = useMemo(
     () =>
@@ -235,6 +300,16 @@ const HomeFeed = ({
     () => (
       <>
         {homeFeedHeaderComponent()}
+        {postsPrivacyStatus && (
+          <TimeLineTabView
+            selectedOption={selectedPostTab}
+            onSelect={(value) => {
+              setSelectedPostTab(value);
+            }}
+            postCount={postData.length}
+            taggedPostCount={taggedPostData.length}
+          />
+        )}
         {isAdmin ||
         currentUserData?.entity_type !== Verbs.entityTypeUser ||
         currentUserData?.entity_type !== Verbs.entityTypePlayer ||
@@ -249,6 +324,10 @@ const HomeFeed = ({
       homeFeedHeaderComponent,
       isAdmin,
       forEvent,
+      postsPrivacyStatus,
+      selectedPostTab,
+      postData,
+      taggedPostData,
     ],
   );
 
@@ -269,10 +348,13 @@ const HomeFeed = ({
 
   const onRefreshPress = useCallback(() => {
     setPullRefresh(true);
-
-    getTimeLine();
+    if (selectedPostTab === Verbs.post) {
+      fetchUserTimeLine();
+    } else if (selectedPostTab === Verbs.taggedPost) {
+      fetchTaggedTimeLine();
+    }
     pulltoRefresh();
-  }, [getTimeLine, pulltoRefresh]);
+  }, [fetchUserTimeLine, pulltoRefresh, fetchTaggedTimeLine, selectedPostTab]);
 
   const createPostAfterUpload = (dataParams) => {
     let body = dataParams;
@@ -291,7 +373,11 @@ const HomeFeed = ({
 
     createPost(body, authContext)
       .then(() => {
-        getTimeLine();
+        if (selectedPostTab === Verbs.post) {
+          fetchUserTimeLine();
+        } else if (selectedPostTab === Verbs.taggedPost) {
+          fetchTaggedTimeLine();
+        }
         navigation.setParams({isCreatePost: undefined});
         setFullScreenLoading(false);
       })
@@ -329,7 +415,11 @@ const HomeFeed = ({
     if (!isFollowing) {
       followUser(params, userId, authContext)
         .then(() => {
-          getTimeLine(false);
+          if (selectedPostTab === Verbs.post) {
+            fetchUserTimeLine();
+          } else if (selectedPostTab === Verbs.taggedPost) {
+            fetchTaggedTimeLine();
+          }
         })
         .catch((error) => {
           setTimeout(() => {
@@ -339,7 +429,11 @@ const HomeFeed = ({
     } else {
       unfollowUser(params, userId, authContext)
         .then(() => {
-          getTimeLine(false);
+          if (selectedPostTab === Verbs.post) {
+            fetchUserTimeLine();
+          } else if (selectedPostTab === Verbs.taggedPost) {
+            fetchTaggedTimeLine();
+          }
         })
         .catch((error) => {
           setTimeout(() => {
@@ -365,7 +459,7 @@ const HomeFeed = ({
         ListHeaderComponent={ListHeaderComponent}
         scrollEnabled={true}
         onDeletePost={onDeletePost}
-        postData={currentTab === 0 && postsPrivacyStatus ? postData : []}
+        postData={currentTab === 0 && postsPrivacyStatus ? postsList : []}
         onLikePress={onLikePress}
         onEndReached={onEndReached}
         footerLoading={footerLoading && isNextDataLoading}

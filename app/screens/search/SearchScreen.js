@@ -313,7 +313,14 @@ const SearchScreen = ({navigation, route}) => {
           entityId === item.group_id ||
           entityId === item.owner_id,
       );
-      if (!obj) {
+      if (obj) {
+        const newList = localData[authContext.entity.uid].filter((item) => {
+          const id = item.user_id ?? item.group_id ?? item.owner_id;
+          return id !== entityId;
+        });
+
+        localData[authContext.entity.uid] = [...newList, data];
+      } else {
         localData[authContext.entity.uid] = [
           ...localData[authContext.entity.uid],
           data,
@@ -375,7 +382,9 @@ const SearchScreen = ({navigation, route}) => {
 
             <View style={{marginTop: 24, flex: 1}}>
               <FlatList
-                data={searchText ? [...searchResult] : [...filterResult]}
+                data={
+                  searchText ? [...searchResult] : [...filterResult.reverse()]
+                }
                 keyExtractor={(item, index) => index.toString()}
                 showsVerticalScrollIndicator={false}
                 renderItem={({item}) => (
@@ -445,7 +454,13 @@ const SearchScreen = ({navigation, route}) => {
                 const data = obj[authContext.entity.uid].find(
                   (item) => typeof item === 'string' && item === searchText,
                 );
-                if (!data) {
+
+                if (data) {
+                  const newList = obj[authContext.entity.uid].filter(
+                    (item) => typeof item !== 'string' && item !== searchText,
+                  );
+                  obj[authContext.entity.uid] = [...newList, searchText];
+                } else {
                   obj[authContext.entity.uid] = [
                     ...obj[authContext.entity.uid],
                     searchText,

@@ -224,6 +224,8 @@ const Verbs = {
   FOLLOWERS_EVENT: 'Followers',
   FOLLOWING_AND_FOLLOWERS: 'Following and Followers',
   INVITED_EVENT: 'Invited',
+  post: 'Post',
+  taggedPost: 'TaggedPost',
 };
 
 export default Verbs;

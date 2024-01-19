@@ -17,6 +17,8 @@ const GroupHomeHeader = ({
   isAdmin = false,
   onClickMembers = () => {},
   onClickFollowers = () => {},
+  memberPrivacyStatus = true,
+  followerPrivacyStatus = true,
 }) => {
   const [sporName, setSportName] = useState('');
 
@@ -96,28 +98,32 @@ const GroupHomeHeader = ({
                 marginLeft: 5,
               },
             ]}>
-            <Pressable
-              style={[
-                styles.row,
-                {
-                  justifyContent: 'flex-end',
-                  marginRight: 10,
-                },
-              ]}
-              onPress={onClickMembers}>
-              <Text style={styles.count} allowFontScaling>
-                {groupData.member_count}
-              </Text>
-              <Text allowFontScaling style={[styles.label, {flexShrink: 1}]}>
-                {strings.membersTitle}
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[styles.row, {justifyContent: 'flex-end'}]}
-              onPress={onClickFollowers}>
-              <Text style={styles.count}>{groupData.follower_count}</Text>
-              <Text style={styles.label}>{strings.followerTitleText}</Text>
-            </Pressable>
+            {memberPrivacyStatus ? (
+              <Pressable
+                style={[
+                  styles.row,
+                  {
+                    justifyContent: 'flex-end',
+                    marginRight: 10,
+                  },
+                ]}
+                onPress={onClickMembers}>
+                <Text style={styles.count} allowFontScaling>
+                  {groupData.member_count}
+                </Text>
+                <Text allowFontScaling style={[styles.label, {flexShrink: 1}]}>
+                  {strings.membersTitle}
+                </Text>
+              </Pressable>
+            ) : null}
+            {followerPrivacyStatus ? (
+              <Pressable
+                style={[styles.row, {justifyContent: 'flex-end'}]}
+                onPress={onClickFollowers}>
+                <Text style={styles.count}>{groupData.follower_count}</Text>
+                <Text style={styles.label}>{strings.followerTitleText}</Text>
+              </Pressable>
+            ) : null}
           </View>
         </View>
       </View>

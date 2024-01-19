@@ -304,10 +304,7 @@ const UserHomeScreen = ({
 
         format(strings.lastmember, authContext.entity.role),
         [
-          {
-            text: strings.cancel,
-            onPress: () => console.log('PRessed'),
-          },
+          {text: strings.cancel},
           {
             text: strings.remove,
             onPress: () => {
@@ -336,7 +333,6 @@ const UserHomeScreen = ({
         [
           {
             text: strings.cancel,
-            onPress: () => console.log('Cancel cancel'),
             style: 'cancel',
           },
           {
@@ -367,7 +363,6 @@ const UserHomeScreen = ({
         [
           {
             text: strings.OkText,
-            onPress: () => console.log('PRessed'),
           },
         ],
         {cancelable: false},
@@ -385,7 +380,6 @@ const UserHomeScreen = ({
         [
           {
             text: strings.cancel,
-            onPress: () => console.log('Cancel cancel'),
             style: 'cancel',
           },
           {
@@ -408,12 +402,7 @@ const UserHomeScreen = ({
       Alert.alert(
         strings.appName,
         strings.childMemberError,
-        [
-          {
-            text: strings.OkText,
-            onPress: () => console.log('PRessed'),
-          },
-        ],
+        [{text: strings.OkText}],
         {cancelable: false},
       );
       return;
@@ -450,12 +439,7 @@ const UserHomeScreen = ({
           Alert.alert(
             strings.appName,
             strings.childMemberError,
-            [
-              {
-                text: strings.OkText,
-                onPress: () => console.log('PRessed'),
-              },
-            ],
+            [{text: strings.OkText}],
             {cancelable: false},
           );
         } else {
@@ -757,7 +741,6 @@ const UserHomeScreen = ({
               });
             }
           }}
-          postPrivacyStatus={privacyObj[PrivacyKeyEnum.Posts]}
         />
       </>
     );
