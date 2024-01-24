@@ -9,26 +9,34 @@ import images from '../../../Constants/ImagePath';
 const AccountHeader = ({
   notificationCount = 0,
   onPressNotification = () => {},
+  onPressSettings = () => {},
 }) => (
   <View style={styles.parent}>
-    <Text style={styles.label}>{strings.account}</Text>
-    <TouchableOpacity style={styles.iconButton} onPress={onPressNotification}>
-      <Image
-        source={
-          notificationCount > 0
-            ? images.notificationBell
-            : images.notificationBellStright
-        }
-        style={styles.image}
-      />
-      {notificationCount > 0 && (
-        <View style={styles.countContainer}>
-          <Text style={styles.count}>
-            {notificationCount > 99 ? '99+' : notificationCount}
-          </Text>
-        </View>
-      )}
-    </TouchableOpacity>
+    <View>
+      <Text style={styles.label}>{strings.account}</Text>
+    </View>
+    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <TouchableOpacity style={styles.settingsIcon} onPress={onPressSettings}>
+        <Image source={images.accountSettingPrivacy} style={styles.image} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.iconButton} onPress={onPressNotification}>
+        <Image
+          source={
+            notificationCount > 0
+              ? images.notificationBell
+              : images.notificationBellStright
+          }
+          style={styles.image}
+        />
+        {notificationCount > 0 && (
+          <View style={styles.countContainer}>
+            <Text style={styles.count}>
+              {notificationCount > 99 ? '99+' : notificationCount}
+            </Text>
+          </View>
+        )}
+      </TouchableOpacity>
+    </View>
   </View>
 );
 
@@ -77,6 +85,13 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     color: colors.whiteColor,
     fontFamily: fonts.RRegular,
+  },
+  settingsIcon: {
+    marginRight: 20,
+    width: 25,
+    height: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 export default AccountHeader;

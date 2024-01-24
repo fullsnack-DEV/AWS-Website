@@ -363,21 +363,21 @@ export const prepareUserMenu = async (authContext, teams, clubs, baseUrl) => {
           },
         ],
       },
-      {
-        title: strings.settings,
-        data: [
-          {
-            key: strings.settingsTitleText,
-            icon: images.accountSettingPrivacy,
-            navigateTo: {
-              screenName: 'AccountStack',
-              data: {
-                screen: 'UserSettingPrivacyScreen',
-              },
-            },
-          },
-        ],
-      },
+      // {
+      //   title: strings.settings,
+      //   data: [
+      //     {
+      //       key: strings.settingsTitleText,
+      //       icon: images.accountSettingPrivacy,
+      //       navigateTo: {
+      //         screenName: 'AccountStack',
+      //         data: {
+      //           screen: 'UserSettingPrivacyScreen',
+      //         },
+      //       },
+      //     },
+      //   ],
+      // },
     ];
     return userMenu;
   } catch (error) {
@@ -470,21 +470,21 @@ export const prepareTeamMenu = (authContext, clubs) => {
         },
       ],
     },
-    {
-      title: strings.settings,
-      data: [
-        {
-          key: strings.settingsTitleText,
-          icon: images.accountSettingPrivacy,
-          navigateTo: {
-            screenName: 'AccountStack',
-            data: {
-              screen: 'GroupSettingPrivacyScreen',
-            },
-          },
-        },
-      ],
-    },
+    // {
+    //   title: strings.settings,
+    //   data: [
+    //     {
+    //       key: strings.settingsTitleText,
+    //       icon: images.accountSettingPrivacy,
+    //       navigateTo: {
+    //         screenName: 'AccountStack',
+    //         data: {
+    //           screen: 'GroupSettingPrivacyScreen',
+    //         },
+    //       },
+    //     },
+    //   ],
+    // },
   ];
   return teamMenu;
 };
@@ -531,21 +531,21 @@ export const prepareClubMenu = (teams) => {
         },
       ],
     },
-    {
-      title: strings.settings,
-      data: [
-        {
-          key: strings.settingsTitleText,
-          icon: images.accountSettingPrivacy,
-          navigateTo: {
-            screenName: 'AccountStack',
-            data: {
-              screen: 'GroupSettingPrivacyScreen',
-            },
-          },
-        },
-      ],
-    },
+    // {
+    //   title: strings.settings,
+    //   data: [
+    //     {
+    //       key: strings.settingsTitleText,
+    //       icon: images.accountSettingPrivacy,
+    //       navigateTo: {
+    //         screenName: 'AccountStack',
+    //         data: {
+    //           screen: 'GroupSettingPrivacyScreen',
+    //         },
+    //       },
+    //     },
+    //   ],
+    // },
   ];
   return clubMenu;
 };

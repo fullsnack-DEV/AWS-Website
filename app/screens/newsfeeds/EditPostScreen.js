@@ -482,8 +482,8 @@ const EditPostScreen = ({navigation, route}) => {
       const item = tagsOfEntity.find((temp) => temp.entity_id === id);
       if (!item && id !== authContext.entity.uid) {
         const privacyStatus = getPrivacyStatus(
-          PersonalUserPrivacyEnum[item[PrivacyKeyEnum.Tag]],
-          item,
+          PersonalUserPrivacyEnum[obj[PrivacyKeyEnum.Tag]],
+          obj,
         );
         arr.push({...obj, privacy_status: privacyStatus});
       }
@@ -870,10 +870,8 @@ const EditPostScreen = ({navigation, route}) => {
         onCloseModal={() => {
           setVisibleWhoModal(false);
         }}
-        onSelect={(settingsValue, privacyKey) => {
-          const updatedSettings = {...privacySetting};
-          updatedSettings[privacyKey] = settingsValue;
-          setPrivacySetting({...updatedSettings});
+        onSelect={(settingsObj = {}) => {
+          setPrivacySetting({...settingsObj});
           setVisibleWhoModal(false);
         }}
         privacySettings={privacySetting}

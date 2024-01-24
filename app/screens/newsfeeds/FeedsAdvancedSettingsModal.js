@@ -1,5 +1,5 @@
 // @flow
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, Text, Image} from 'react-native';
 import CustomModalWrapper from '../../components/CustomModalWrapper';
 import {ModalTypes} from '../../Constants/GeneralConstants';
@@ -35,6 +35,12 @@ const options = [
   },
 ];
 
+const privacyOptions = [
+  PrivacyKeyEnum.LikeCount,
+  PrivacyKeyEnum.CommentOnPost,
+  PrivacyKeyEnum.SharePost,
+];
+
 const FeedsAdvancedSettingsModal = ({
   showSettingsModal = false,
   onCloseModal = () => {},
@@ -42,25 +48,34 @@ const FeedsAdvancedSettingsModal = ({
   privacySettings = {},
 }) => {
   const [snapPoints, setSnapPoints] = useState([]);
+  const [tempPrivacy, setTempPrivacy] = useState({});
+
+  useEffect(() => {
+    if (showSettingsModal) {
+      const obj = {};
+      privacyOptions.forEach((key) => {
+        obj[key] = privacySettings[key] ?? 1;
+      });
+      setTempPrivacy(obj);
+    }
+  }, [showSettingsModal, privacySettings]);
+
   return (
     <CustomModalWrapper
       isVisible={showSettingsModal}
       closeModal={onCloseModal}
-      modalType={ModalTypes.style5}
-      title={strings.privacySettings}
+      modalType={ModalTypes.style6}
+      title={strings.advancedSettings}
       externalSnapPoints={snapPoints}
-      containerStyle={{padding: 0, paddingTop: 10}}>
+      containerStyle={{padding: 0, paddingTop: 10}}
+      headerRightButtonText={strings.done}
+      onRightButtonPress={() => onSelect(tempPrivacy)}>
       <View
         onLayout={(event) => {
           const contentHeight = event.nativeEvent.layout.height + 80;
 
-          setSnapPoints([
-            contentHeight,
-            contentHeight,
-            // Dimensions.get('window').height - 40,
-          ]);
+          setSnapPoints([contentHeight, contentHeight]);
         }}>
-        <Text style={styles.modalTitile}>{strings.advancedSettings}</Text>
         {options.map((item, index) => (
           <View key={index}>
             <View style={styles.listItem}>
@@ -73,8 +88,12 @@ const FeedsAdvancedSettingsModal = ({
               </View>
               <SwitchButton
                 options={item.option}
-                onPress={(option) => onSelect(option.value, item.key)}
-                selectedOption={privacySettings[item.key]}
+                onPress={(option) => {
+                  const updatedSettings = {...tempPrivacy};
+                  updatedSettings[item.key] = option.value;
+                  setTempPrivacy({...updatedSettings});
+                }}
+                selectedOption={tempPrivacy[item.key]}
               />
             </View>
             {options.length - 1 !== index && <View style={styles.separator} />}
@@ -86,14 +105,6 @@ const FeedsAdvancedSettingsModal = ({
 };
 
 const styles = StyleSheet.create({
-  modalTitile: {
-    fontSize: 20,
-    lineHeight: 30,
-    textAlign: 'center',
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-    marginBottom: 26,
-  },
   languageList: {
     fontSize: 16,
     lineHeight: 24,

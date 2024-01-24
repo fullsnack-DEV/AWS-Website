@@ -570,6 +570,27 @@ const AccountScreen = ({navigation, route}) => {
     );
   };
 
+  const handleSettings = () => {
+    switch (authContext.entity.role) {
+      case Verbs.entityTypePlayer:
+      case Verbs.entityTypeUser:
+        navigation.navigate('AccountStack', {
+          screen: 'UserSettingPrivacyScreen',
+        });
+        break;
+
+      case Verbs.entityTypeTeam:
+      case Verbs.entityTypeClub:
+        navigation.navigate('AccountStack', {
+          screen: 'GroupSettingPrivacyScreen',
+        });
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <AccountHeader
@@ -583,6 +604,7 @@ const AccountScreen = ({navigation, route}) => {
             },
           })
         }
+        onPressSettings={handleSettings}
       />
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       <ActivityLoader visible={onLoad} />

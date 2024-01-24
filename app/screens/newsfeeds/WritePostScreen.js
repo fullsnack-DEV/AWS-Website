@@ -56,12 +56,6 @@ import {
 } from '../../Constants/PrivacyOptionsConstant';
 import FeedsAdvancedSettingsModal from './FeedsAdvancedSettingsModal';
 
-const privacyOptions = [
-  PrivacyKeyEnum.LikeCount,
-  PrivacyKeyEnum.CommentOnPost,
-  PrivacyKeyEnum.SharePost,
-];
-
 const WritePostScreen = ({navigation, route}) => {
   const textInputRef = useRef();
   const videoPlayerRef = useRef();
@@ -94,16 +88,6 @@ const WritePostScreen = ({navigation, route}) => {
   const flatListRef = useRef();
   const [loading, setLoading] = useState(false);
   const {getPrivacyStatus} = usePrivacySettings();
-
-  useEffect(() => {
-    if (isFocused) {
-      const obj = {};
-      privacyOptions.forEach((key) => {
-        obj[key] = 1;
-      });
-      setPrivacySetting(obj);
-    }
-  }, [isFocused]);
 
   const handleRepost = () => {
     const item = {...route.params.repostData};
@@ -1068,11 +1052,9 @@ const WritePostScreen = ({navigation, route}) => {
         onCloseModal={() => {
           setShowSettingsModal(false);
         }}
-        onSelect={(settingsValue, privacyKey) => {
-          const updatedSettings = {...privacySetting};
-          updatedSettings[privacyKey] = settingsValue;
-          setPrivacySetting({...updatedSettings});
-          // setShowSettingsModal(false);
+        onSelect={(settingsObj = {}) => {
+          setPrivacySetting({...settingsObj});
+          setShowSettingsModal(false);
         }}
         privacySettings={privacySetting}
       />

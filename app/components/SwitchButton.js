@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import colors from '../Constants/Colors';
 import fonts from '../Constants/Fonts';
+import {strings} from '../../Localization/translation';
 
 const SwitchButton = ({
   options = [],
@@ -32,7 +33,7 @@ const SwitchButton = ({
             styles.label,
             options[0].value === selectedOption ? styles.activeLabel : {},
           ]}>
-          {options[0].label}
+          {strings[options[0].label]}
         </Text>
       </Pressable>
       <TouchableOpacity
@@ -46,7 +47,7 @@ const SwitchButton = ({
             styles.label,
             options[1].value === selectedOption ? styles.activeLabel : {},
           ]}>
-          {options[1].label}
+          {strings[options[1].label]}
         </Text>
       </TouchableOpacity>
     </View>
