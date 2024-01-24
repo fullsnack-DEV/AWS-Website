@@ -98,30 +98,37 @@ export default function AvailibilityScheduleScreen({
     (dateObj = {}, newItem = {}) => {
       const start = new Date(dateObj);
       start.setHours(0, 0, 0, 0);
-      const temp = [];
-      let tempSlot = [...allData];
 
-      if (Object.entries(newItem).length > 0) {
+      const temp = [];
+      let timeSlots = [];
+      let allAvailableSlots = [];
+
+      let tempSlot = allData.slice(); // Make a shallow copy
+
+      if (Object.keys(newItem).length > 0) {
         tempSlot.push(newItem);
       }
 
       tempSlot = newBlockedSlots(tempSlot);
 
+      const startTimestamp = start.getTime();
+      const dateMap = new Map();
+
       for (const blockedSlot of tempSlot) {
         const eventDate = Utility.getJSDate(blockedSlot.start_datetime);
         eventDate.setHours(0, 0, 0, 0);
-        if (
-          eventDate.getTime() === start.getTime() &&
-          blockedSlot.blocked === true
-        ) {
+
+        const eventTimestamp = eventDate.getTime();
+
+        if (eventTimestamp === startTimestamp && blockedSlot.blocked === true) {
           temp.push(blockedSlot);
         }
+
+        // Store blocked slots in a map for faster lookups
+        dateMap.set(eventTimestamp, blockedSlot);
       }
 
-      let timeSlots = [];
-      let allAvailableSlots = [];
-
-      if (temp?.[0]?.allDay === true && temp?.[0]?.blocked === true) {
+      if (temp[0]?.allDay === true && temp[0]?.blocked === true) {
         setSlots(temp);
       } else {
         timeSlots = createCalenderTimeSlots(Utility.getTCDate(start), 24, temp);
@@ -129,6 +136,7 @@ export default function AvailibilityScheduleScreen({
         allAvailableSlots = getAvailableSlots(timeSlots, dateObj);
       }
 
+      // Batch state updates
       setAvailableSlots(allAvailableSlots);
     },
     [allData, newBlockedSlots],
@@ -350,21 +358,19 @@ export default function AvailibilityScheduleScreen({
   };
 
   const deleteOrCreateSlotData = async (payload) => {
-    const tempSlot = [...allData];
-    if (payload.deleteSlotsIds.length > 0) {
-      payload.deleteSlotsIds.forEach((cal_id) => {
-        const index = allSlots.findIndex((item) => item.cal_id === cal_id);
-        tempSlot.splice(index, 1);
-      });
-    }
+    let tempSlot = [...allData];
 
-    if (payload.newSlots.length > 0) {
-      payload.newSlots.forEach((item) => {
-        tempSlot.push(item);
-      });
-    }
+    tempSlot = tempSlot.filter(
+      (item) => !payload.deleteSlotsIds.includes(item.cal_id),
+    );
 
-    setAllData([...tempSlot]);
+    const slotMap = new Map(allData.map((item) => [item.cal_id, item]));
+    payload.deleteSlotsIds.forEach((cal_id) => slotMap.delete(cal_id));
+    tempSlot = Array.from(slotMap.values());
+
+    tempSlot = tempSlot.concat(payload.newSlots);
+
+    setAllData(tempSlot);
   };
 
   const createCalenderViewData = useCallback(
@@ -467,11 +473,31 @@ export default function AvailibilityScheduleScreen({
     prepareSlotListArray,
   ]);
 
+  const renderItem = ({item, index}) => (
+    <BlockSlotView
+      key={index}
+      item={item}
+      startDate={item.start_datetime}
+      endDate={item.end_datetime}
+      allDay={item.allDay === true}
+      index={index}
+      slots={slotList}
+      onPress={() => {
+        if (isAdmin) {
+          setEditableSlots([item]);
+          setIsFromSlots(true);
+          setVisibleAvailabilityModal(true);
+        }
+      }}
+    />
+  );
+
   const renderContent = () => {
     if (listView) {
       return (
         <View style={{paddingHorizontal: 15}}>
           <FlatList
+            extraData={slots}
             data={listViewData}
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
@@ -479,14 +505,17 @@ export default function AvailibilityScheduleScreen({
               <AvailabilityListView
                 item={item}
                 onEdit={async () => {
+                  await prepareSlotArray(getJSDate(item.time));
+
                   setIsFromSlots(false);
-                  prepareSlotArray(getJSDate(item.time));
                   setVisibleAvailabilityModal(true);
                 }}
+                allData={allData}
                 addToSlotData={addToSlotData}
                 deleteFromSlotData={deleteFromSlotData}
                 deleteOrCreateSlotData={deleteOrCreateSlotData}
                 isAdmin={isAdmin}
+                allSlots={allSlots}
                 onPress={(slot) => {
                   setIsFromSlots(true);
                   setEditableSlots([slot]);
@@ -515,24 +544,12 @@ export default function AvailibilityScheduleScreen({
         <View style={{paddingHorizontal: 38}}>
           <SlotsBar availableSlots={availableSlots} />
 
-          {slotList.map((item, key) => (
-            <BlockSlotView
-              key={key}
-              item={item}
-              startDate={item.start_datetime}
-              endDate={item.end_datetime}
-              allDay={item.allDay === true}
-              index={key}
-              slots={slotList}
-              onPress={() => {
-                if (isAdmin) {
-                  setEditableSlots([item]);
-                  setIsFromSlots(true);
-                  setVisibleAvailabilityModal(true);
-                }
-              }}
-            />
-          ))}
+          <FlatList
+            data={slotList}
+            extraData={slots}
+            renderItem={renderItem}
+            keyExtractor={(_, index) => index.toString()}
+          />
         </View>
       </View>
     );
@@ -544,6 +561,7 @@ export default function AvailibilityScheduleScreen({
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{paddingBottom: 12}}>
       <ActivityLoader visible={loading} />
+
       {listView ? (
         <AvailabilityHeader
           isListView={listView}
@@ -561,9 +579,10 @@ export default function AvailibilityScheduleScreen({
       {isAdmin && !listView ? (
         <TouchableOpacity
           onPress={() => {
-            setIsFromSlots(true);
-
-            setVisibleAvailabilityModal(true);
+            if (isAdmin) {
+              // setIsFromSlots(true);
+              setVisibleAvailabilityModal(true);
+            }
           }}
           style={{
             alignSelf: 'center',

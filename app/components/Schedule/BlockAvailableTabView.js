@@ -59,7 +59,7 @@ export default function BlockAvailableTabView({
               ? [styles.activeEventPrivacyText, activeEventPrivacyText]
               : [styles.inactiveEventPrivacyText, inactiveEventPrivacyText]
           }>
-          {secondTabTitle} 
+          {secondTabTitle}
         </Text>
       </TouchableOpacity>
     </LinearGradient>

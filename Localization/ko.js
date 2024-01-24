@@ -30,6 +30,7 @@ export default {
   until: 'ko_Until',
   weekly: 'ko_Weekly',
   addTime: 'ko_Add time',
+  addTimeSlot: 'ko_Add Time slot',
   setAvailable: 'ko_Available',
   block: 'ko_Block',
   thisEvent: 'ko_This event',
@@ -244,7 +245,8 @@ export default {
   enterFeePlaceholder: 'ko_Enter fee',
   venueNamePlaceholder: 'ko_Venue Name',
   venueAddressPlaceholder: 'ko_Address',
-  venueDetailsPlaceholder: 'ko_Details (optional)',
+  venueDetailsPlaceholder: 'ko_Details',
+  venueDetailsPlaceholderOptional: 'ko_Details (optinal)',
   feeDetailsText: 'ko_Fee Details',
   feeDetailsPlaceholder: 'ko_Write Details regarding the registration fee…',
   membershipFeeTitle: 'ko_Membership Fee',
@@ -3325,10 +3327,15 @@ export default {
   sportBarAlertText: 'ko_You can add up to 10 sports to the filter bar.',
   requestDoubleTeamText: 'ko_sent you a request to create a team together',
   selectClubText:
-    'ko_ Select affiliated ${0} in whose posts you want to display the post about this event.',
+
+    'ko_ Select affiliated {0} in whose posts you want to display the post about this event.',
   shareEventPostText: 'ko_ Share Event Post',
+  hideeventPostText: 'ko_Hide Event Post',
   shareEventsubText:
-    'ko_A post about this event will be created in posts of your ${0}.',
+    'ko_A post about this event will be created in posts of your {0}.',
+  shareEventUserText: 'ko_A post about this event will be created in posts.',
+  noShareEventText:
+    'ko_No post about this event will be created in your posts.',
 
   whoCanViewPostSection: "ko_Who can view posts in your team's profile?",
   whoCanViewEventSection: "ko_Who can view your team's events section?",
@@ -3398,6 +3405,9 @@ export default {
   eighteentimes: 'ko_18 Times',
   nineteentimes: 'ko_19 Times',
   twentyimes: 'ko_20 Times',
+  deseectTeamsClubsText:
+    'ko_Deselect the affiliated {0} in whose posts you no longer want to display the post about this event.',
+  membersOfGroups: 'ko_Members of groups',
   followerText: 'ko_Follower',
   clubAndLeague: 'ko_Club & League',
   doYouAllowClubToInviteYouToJoinClub:
@@ -3424,5 +3434,13 @@ export default {
   whoCanTagClub: 'ko_Who can tag your club on a post, comment or reply?',
   clubMembersAndTeams: 'ko_Club members & teams',
   allTeams: 'ko_All teams',
+
+  discardModalText: 'ko_Are you sure you want to discard your unsaved changes?',
+  addMoreDetailText:
+    'ko_ Add a few more details before you complete creating an event.',
+  clubsText: 'ko_clubs',
+  teamsText: 'ko_teams',
+
   maxFeeAlert: 'ko_Max fee should be greater than min fee.',
+
 };

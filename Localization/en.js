@@ -30,6 +30,7 @@ export default {
   until: 'en_Until',
   weekly: 'en_Weekly',
   addTime: 'en_Add time',
+  addTimeSlot: 'en_Add Time slot',
   setAvailable: 'en_Available',
   block: 'en_Block',
   thisEvent: 'en_This event',
@@ -244,7 +245,8 @@ export default {
   enterFeePlaceholder: 'en_Enter fee',
   venueNamePlaceholder: 'en_Venue Name',
   venueAddressPlaceholder: 'en_Address',
-  venueDetailsPlaceholder: 'en_Details (optional)',
+  venueDetailsPlaceholder: 'en_Details',
+  venueDetailsPlaceholderOptional: 'en_Details (optinal)',
   feeDetailsText: 'en_Fee Details',
   feeDetailsPlaceholder: 'en_Write Details regarding the registration fee…',
   membershipFeeTitle: 'en_Membership Fee',
@@ -3325,11 +3327,14 @@ export default {
   sportBarAlertText: 'en_You can add up to 10 sports to the filter bar.',
   requestDoubleTeamText: 'en_sent you a request to create a team together',
   selectClubText:
-    'en_ Select affiliated ${0} in whose posts you want to display the post about this event.',
+    'en_ Select affiliated {0} in whose posts you want to display the post about this event.',
   shareEventPostText: 'en_ Share Event Post',
+  hideeventPostText: 'en_Hide Event Post',
   shareEventsubText:
-    'en_A post about this event will be created in posts of your ${0}.',
-
+    'en_A post about this event will be created in posts of your {0}.',
+  shareEventUserText: 'en_A post about this event will be created in posts.',
+  noShareEventText:
+    'en_No post about this event will be created in your posts.',
   whoCanViewPostSection: "en_Who can view posts in your team's profile?",
   whoCanViewEventSection: "en_Who can view your team's events section?",
   whoCanViewGallerySection: "en_Who can view your team's gallery section?",
@@ -3398,6 +3403,9 @@ export default {
   eighteentimes: 'en_18 Times',
   nineteentimes: 'en_19 Times',
   twentyimes: 'en_20 Times',
+  deseectTeamsClubsText:
+    'en_Deselect the affiliated {0} in whose posts you no longer want to display the post about this event.',
+  membersOfGroups: 'en_Members of groups',
   followerText: 'en_Follower',
   clubAndLeague: 'en_Club & League',
   doYouAllowClubToInviteYouToJoinClub:
@@ -3424,5 +3432,13 @@ export default {
   whoCanTagClub: 'en_Who can tag your club on a post, comment or reply?',
   clubMembersAndTeams: 'en_Club members & teams',
   allTeams: 'en_All teams',
+
+  discardModalText: 'en_Are you sure you want to discard your unsaved changes?',
+  addMoreDetailText:
+    'en_ Add a few more details before you complete creating an event.',
+  clubsText: 'en_clubs',
+  teamsText: 'en_teams',
+
   maxFeeAlert: 'en_Max fee should be greater than min fee.',
+
 };

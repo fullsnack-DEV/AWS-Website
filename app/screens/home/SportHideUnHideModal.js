@@ -21,7 +21,7 @@ export default function SportHideUnHideModal({isVisible, onCloseModal}) {
 
   const onSavePress = () => {
     const user = authContext.entity.obj;
-    setloading(true);
+    // setloading(true);
     let registeredSports =
       user.registered_sports?.length > 0 ? [...user.registered_sports] : [];
     let refereeSports =
@@ -35,8 +35,10 @@ export default function SportHideUnHideModal({isVisible, onCloseModal}) {
           if (ele.sport === item.sport && ele.sport_type === item.sport_type) {
             return {...ele, ...item};
           }
+
           return ele;
         });
+
         registeredSports = list;
       }
 
@@ -70,8 +72,8 @@ export default function SportHideUnHideModal({isVisible, onCloseModal}) {
     patchPlayer(body, authContext)
       .then(async (res) => {
         setloading(false);
-        await setAuthContextData(res.payload, authContext);
         onCloseModal();
+        await setAuthContextData(res.payload, authContext);
       })
       .catch((error) => {
         Alert.alert(error);

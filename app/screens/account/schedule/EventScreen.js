@@ -73,6 +73,7 @@ import CommentModal from '../../../components/newsFeed/CommentModal';
 import FeedsShimmer from '../../../components/shimmer/newsFeed/FeedsShimmer';
 import EventLikersModal from './EventLikersModal';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
+import ShareEventPostModal from './ShareEventPostModal';
 
 export default function EventScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -107,6 +108,8 @@ export default function EventScreen({navigation, route}) {
   const [showLikeModal, setShowLikeModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [openLikesModal, setOpenLikesModal] = useState(false);
+  const [visiblesharEventPostModal, setVisibleshareEventPostModal] =
+    useState(false);
 
   useEffect(() => {
     if (route.params?.isCreatePost) {
@@ -561,6 +564,16 @@ export default function EventScreen({navigation, route}) {
         } else {
           handleDeleteEvent();
         }
+
+        break;
+
+      case strings.shareEventPostText:
+        setShowActionSheet(false);
+        setTimeout(() => {
+          setVisibleshareEventPostModal(true);
+        }, 100);
+
+        Alert.alert('clicked');
         break;
 
       case strings.reportText:
@@ -826,6 +839,10 @@ export default function EventScreen({navigation, route}) {
         leftIcon={images.backArrow}
         leftIconPress={() => {
           if (route.params?.comeFrom) {
+            if (route.params?.comeFrom === 'HomeScheduleScreen') {
+              navigation.goBack();
+              return;
+            }
             navigation.navigate(route.params.comeFrom, {
               ...route.params,
             });
@@ -849,6 +866,8 @@ export default function EventScreen({navigation, route}) {
             setMoreOptions([
               strings.sendInvoice,
               strings.sendMessage,
+              strings.shareEventPostText,
+              strings.hideeventPostText,
               strings.editEvent,
               strings.deleteEvent,
             ]);
@@ -1664,6 +1683,12 @@ export default function EventScreen({navigation, route}) {
           });
         }}
         postOwnerId={selectedPost.actor?.id}
+      />
+
+      <ShareEventPostModal
+        visible={visiblesharEventPostModal}
+        onClose={() => setVisibleshareEventPostModal(false)}
+        eventData={eventData}
       />
     </SafeAreaView>
   );

@@ -111,7 +111,10 @@ const CustomModalWrapper = ({
             leftIcon={backIcon ?? images.crossImage}
             leftIconPress={() => {
               subscriptionRef?.current?.remove();
-              modalRef?.current?.dismiss();
+              if (fromAvalibility) {
+                modalRef?.current?.dismiss();
+              }
+
               closeModal();
               leftIconPress();
             }}

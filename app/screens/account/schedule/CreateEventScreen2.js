@@ -38,7 +38,7 @@ import GroupList from '../../../components/Schedule/GroupEvent/GroupList';
 import TCThinDivider from '../../../components/TCThinDivider';
 import {getGroupIndex} from '../../../api/elasticSearch';
 import GroupIcon from '../../../components/GroupIcon';
-import {getTeamsOfClub} from '../../../api/Groups';
+import {getGroupDetails, getGroups, getTeamsOfClub} from '../../../api/Groups';
 import TCFormProgress from '../../../components/TCFormProgress';
 
 export default function CreateEventScreen2({navigation, route}) {
@@ -55,6 +55,7 @@ export default function CreateEventScreen2({navigation, route}) {
 
   const [visibleWhoModal, setVisibleWhoModal] = useState(false);
   const [visibleWhoCanPostModal, setVisibleWhoCanPostModal] = useState(false);
+
   const [groupIDs] = useState(authContext.entity.obj.parent_groups ?? []);
   const [groups, setGroups] = useState([]);
 
@@ -99,6 +100,7 @@ export default function CreateEventScreen2({navigation, route}) {
   );
 
   const [selectWeekMonth] = useState(route.params?.selectWeekMonthFlag);
+  const [sharePostIds, setSharePostIds] = useState([]);
 
   const renderWhoCan = ({item}) => (
     <TouchableOpacity
@@ -158,6 +160,8 @@ export default function CreateEventScreen2({navigation, route}) {
     const entityRole =
       entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
 
+    arr.is_create_post = is_Create;
+    arr.event_share_groups = teamsClubsArray;
     let rule;
     if (selectWeekMonth === Verbs.eventRecurringEnum.Daily) {
       rule = 'FREQ=DAILY';
@@ -215,20 +219,29 @@ export default function CreateEventScreen2({navigation, route}) {
 
   useEffect(() => {
     if (authContext.entity.role === Verbs.entityTypeTeam) {
-      const groupQuery = {
-        query: {
-          terms: {
-            _id: groupIDs,
-          },
-        },
-      };
+      getGroupDetails(authContext.entity.uid, authContext)
+        .then((res) => {
+          const groupID = res.payload?.parent_groups ?? [];
 
-      getGroupIndex(groupQuery)
-        .then((response) => {
-          setGroups(response);
+          const groupQuery = {
+            query: {
+              terms: {
+                _id: groupID,
+              },
+            },
+          };
+
+          getGroupIndex(groupQuery)
+            .then((response) => {
+              setGroups(response);
+              setTeamsClubsArray(response.map((item) => item.group_id));
+            })
+            .catch((e) => {
+              Alert.alert('', e.messages);
+            });
         })
         .catch((e) => {
-          Alert.alert('', e.messages);
+          console.log(e.message);
         });
     } else {
       getTeamsforClubs();
@@ -319,12 +332,16 @@ export default function CreateEventScreen2({navigation, route}) {
             value: 0,
           },
           {
-            text: strings.followerTitleText,
+            text: strings.followersMyTeamClub,
             value: 2,
+          },
+          {
+            text: strings.myTeamClub,
+            value: 3,
           },
 
           {
-            text: strings.oraganizerOnly,
+            text: strings.onlymeTitleText,
             value: 1,
           },
         ];
@@ -337,26 +354,18 @@ export default function CreateEventScreen2({navigation, route}) {
             value: 0,
           },
           {
-            text: strings.followingAndFollowers,
+            text: strings.followersMyTeamClub,
             value: 2,
           },
           {
-            text: strings.followersRadio,
+            text: strings.myTeamClub,
             value: 3,
           },
+
           {
-            text: strings.invited,
+            text: strings.onlymeTitleText,
             value: 4,
           },
-          {
-            text: strings.oraganizerOnly,
-            value: 1,
-          },
-          // strings.everyoneTitleText,
-          // strings.followingAndFollowers,
-          // strings.following,
-          // strings.inviteOnly,
-          // strings.onlymeTitleText,
         ];
       }
 
@@ -368,7 +377,7 @@ export default function CreateEventScreen2({navigation, route}) {
           },
           {
             text: strings.oraganizerOnly,
-            value: 1,
+            value: 4,
           },
         ];
       }
@@ -389,16 +398,67 @@ export default function CreateEventScreen2({navigation, route}) {
         ];
       }
     }
-    if (
-      authContext.entity.role === Verbs.entityTypeTeam ||
-      authContext.entity.role === Verbs.entityTypeClub
-    ) {
+
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      if (authContext.entity.obj.sport_type === authContext.entity.obj.sport) {
+        if (whoOption === see) {
+          return [
+            {text: strings.everyoneTitleText, value: 0},
+            {text: strings.followersAndClub, value: 3},
+            {text: strings.teamMembersAndClub, value: 2},
+            {text: strings.clubsAndTeam, value: 1},
+          ];
+        }
+
+        if (whoOption === join) {
+          return [
+            {text: strings.everyoneTitleText, value: 0},
+            {text: strings.followersAndClub, value: 3},
+            {text: strings.teamMembersAndClub, value: 2},
+            {text: strings.clubsAndTeam, value: 1},
+          ];
+        }
+
+        if (whoOption === invite) {
+          return [
+            {text: strings.attendeeRadioText, value: 0},
+            {text: strings.oraganizerOnly, value: 1},
+          ];
+        }
+      } else {
+        if (whoOption === see) {
+          return [
+            {text: strings.everyoneTitleText, value: 0},
+            {text: strings.followersAndClub, value: 3},
+            {text: strings.teamMembersAndClub, value: 2},
+            {text: strings.onlyTeamTitle, value: 1},
+          ];
+        }
+
+        if (whoOption === join) {
+          return [
+            {text: strings.everyoneTitleText, value: 0},
+            {text: strings.followersAndClub, value: 3},
+            {text: strings.teamMembersAndClub, value: 2},
+            {text: strings.onlyTeamTitle, value: 1},
+          ];
+        }
+
+        if (whoOption === invite) {
+          return [
+            {text: strings.attendeeRadioText, value: 0},
+            {text: strings.oraganizerOnly, value: 1},
+          ];
+        }
+      }
+    }
+    if (authContext.entity.role === Verbs.entityTypeClub) {
       if (whoOption === see) {
         return [
           {text: strings.everyoneTitleText, value: 0},
           {text: strings.followerTitleText, value: 3},
-          {text: strings.membersTitle, value: 2},
-          {text: strings.oraganizerOnly, value: 1},
+          {text: strings.clubAndTheirMembers, value: 2},
+          {text: strings.onlyClub, value: 1},
         ];
       }
 
@@ -406,9 +466,8 @@ export default function CreateEventScreen2({navigation, route}) {
         return [
           {text: strings.everyoneTitleText, value: 0},
           {text: strings.followerTitleText, value: 3},
-          {text: strings.membersTitle, value: 2},
-          {text: strings.invited, value: 4},
-          {text: strings.oraganizerOnly, value: 1},
+          {text: strings.clubAndTheirMembers, value: 2},
+          {text: strings.onlyClub, value: 1},
         ];
       }
 
@@ -474,7 +533,7 @@ export default function CreateEventScreen2({navigation, route}) {
                 lineHeight: 24,
                 marginBottom: 15,
               }}>
-              Add a few more details before you complete creating an event.
+              {strings.addMoreDetailText}
             </Text>
 
             <View style={styles.containerStyle}>
@@ -495,8 +554,9 @@ export default function CreateEventScreen2({navigation, route}) {
                 </View>
               </TouchableOpacity>
 
-              {whoCanSeeOption.value === indexThree &&
-              authContext.entity.role === Verbs.entityTypeUser ? (
+              {/* {whoCanSeeOption.value === indexThree &&
+              (authContext.entity.role === Verbs.entityTypeUser ||
+                authContext.entity.role === Verbs.entityTypePlayer) ? (
                 <GroupList
                   list={groupsSeeList}
                   onCheck={(index) => {
@@ -513,7 +573,7 @@ export default function CreateEventScreen2({navigation, route}) {
                   }}
                   containerStyle={{marginTop: 20}}
                 />
-              ) : null}
+              ) : null} */}
             </View>
 
             <View style={styles.containerStyle}>
@@ -674,10 +734,14 @@ export default function CreateEventScreen2({navigation, route}) {
                           fontSize: 16,
                           lineHeight: 24,
                         }}>
-                        {format(
-                          strings.shareEventsubText,
-                          authContext.entity.role,
-                        )}
+                        {authContext.entity.role === Verbs.entityTypePlayer ||
+                        authContext.entity.role === Verbs.entityTypeUser
+                          ? strings.shareEventUserText
+                          : format(
+                              strings.shareEventsubText,
+
+                              authContext.entity.role,
+                            )}
                       </Text>
 
                       {getShowEventPostRenderCondition() && (
@@ -703,7 +767,9 @@ export default function CreateEventScreen2({navigation, route}) {
                             }}>
                             {format(
                               strings.selectClubText,
-                              authContext.entity.role,
+                              authContext.entity.role === Verbs.entityTypeClub
+                                ? strings.teamsText
+                                : strings.clubsText,
                             )}
                           </Text>
 
@@ -713,7 +779,23 @@ export default function CreateEventScreen2({navigation, route}) {
                             style={{marginTop: 24}}
                             bounces={false}
                             renderItem={({item}) => (
-                              <View
+                              <TouchableOpacity
+                                onPress={() => {
+                                  const i = teamsClubsArray.indexOf(
+                                    item.group_id,
+                                  );
+
+                                  if (i !== -1) {
+                                    const newArray = [...teamsClubsArray];
+                                    newArray.splice(i, 1);
+                                    setTeamsClubsArray(newArray);
+                                  } else {
+                                    setTeamsClubsArray((prevArray) => [
+                                      ...prevArray,
+                                      item.group_id,
+                                    ]);
+                                  }
+                                }}
                                 style={{
                                   flexDirection: 'row',
                                   justifyContent: 'space-between',
@@ -792,7 +874,7 @@ export default function CreateEventScreen2({navigation, route}) {
                                     }}
                                   />
                                 </TouchableOpacity>
-                              </View>
+                              </TouchableOpacity>
                             )}
                           />
                         </View>
@@ -806,7 +888,7 @@ export default function CreateEventScreen2({navigation, route}) {
                           fontSize: 16,
                           lineHeight: 24,
                         }}>
-                        No post about this event will be created in your posts.
+                        {strings.noShareEventText}
                       </Text>
                     </>
                   )}

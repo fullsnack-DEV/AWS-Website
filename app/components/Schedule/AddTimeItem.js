@@ -8,7 +8,7 @@ function AddTimeItem({source, addTimeText, onAddTimePress, containerStyle}) {
     <TouchableOpacity
       style={[styles.containerStyle, containerStyle]}
       onPress={onAddTimePress}>
-      <Image source={source} style={styles.imageStyle} resizeMode={'contain'} />
+      <Image source={source} style={styles.imageStyle} resizeMode={'center'} />
       <Text style={styles.addTimeTextStyle}>{addTimeText}</Text>
     </TouchableOpacity>
   );
@@ -30,7 +30,8 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     marginRight: 5,
-    tintColor: colors.blackColor,
+
+    marginTop: 2,
   },
   addTimeTextStyle: {
     fontSize: 12,

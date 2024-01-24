@@ -585,6 +585,8 @@ const images = {
   settingsIcon: require('../assets/images/settingsIcon.png'),
   postImageIcon: require('../assets/images/postImageIcon.png'),
   postTagIcon: require('../assets/images/postTagIcon.png'),
+  newDiselectCheckBox: require('../assets/images/diselectCheckBox.png'),
+  newSelectCheckBox: require('../assets/images/SelectCheckBox.png'),
 };
 
 export default images;

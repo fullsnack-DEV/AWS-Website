@@ -210,11 +210,17 @@ export default function ChangeSportsOrderScreen({
                 );
 
                 if (findIndex !== -1) {
-                  removedSport.splice(findIndex, 1);
+                  // Create a new array without the removed item
+                  const updatedRemovedSport = removedSport.slice();
+                  updatedRemovedSport.splice(findIndex, 1);
+                  setRemovedSport(updatedRemovedSport);
                 }
-                setRemovedSport([...removedSport]);
-                addedSport.push(item);
-                setAddedSport([...addedSport]);
+
+                // Create a new object with the updated properties
+                const updatedItem = {...item}; // You can add additional properties here if needed
+
+                // Add the updated item to addedSport
+                setAddedSport([...addedSport, updatedItem]);
               } else {
                 Alert.alert(strings.sportBarAlertText);
               }

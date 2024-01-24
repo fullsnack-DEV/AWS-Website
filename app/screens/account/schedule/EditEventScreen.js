@@ -769,7 +769,7 @@ export default function EditEventScreen({navigation, route}) {
         leftIcon={images.backArrow}
         leftIconPress={handleBackPress}
         isRightIconText
-        rightButtonText={strings.done}
+        rightButtonText={strings.next}
         onRightButtonPress={() => {
           onDonePress();
         }}
@@ -922,7 +922,7 @@ export default function EditEventScreen({navigation, route}) {
                     }}>
                     <TextInput
                       ref={venueInputRef}
-                      placeholder={strings.venueDetailsPlaceholder}
+                      placeholder={strings.venueDetailsPlaceholderOptional}
                       style={styles.detailsInputStyle}
                       onChangeText={(value) => {
                         setLocationDetail({

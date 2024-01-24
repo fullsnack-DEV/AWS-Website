@@ -149,7 +149,10 @@ const SportsListModal = ({
         closeModal={closeList}
         modalType={ModalTypes.style1}
         title={title}
-        onModalShow={() => onModalVisible()}
+        onModalShow={() => {
+          setSelectedSport({});
+          onModalVisible();
+        }}
         headerRightButtonText={rightButtonText}
         containerStyle={styles.parent}
         onRightButtonPress={() => {

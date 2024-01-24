@@ -595,7 +595,7 @@ export default function EditEventScreen2({navigation, route}) {
         }}
       />
 
-      <TCFormProgress totalSteps={2} curruentStep={1} />
+      <TCFormProgress totalSteps={2} curruentStep={2} />
       <ActivityLoader visible={loading} />
 
       <TCKeyboardView>

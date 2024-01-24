@@ -106,6 +106,7 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
           }
           return obj;
         });
+
         const formattedSportsList = getSportActivityList();
 
         const updatedOptionsList = options.map((option) => {
@@ -318,6 +319,7 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
       />
       <View style={styles.container}>
         <SectionList
+          extraData={menuOptions}
           stickySectionHeadersEnabled={false}
           showsVerticalScrollIndicator={false}
           sections={menuOptions}

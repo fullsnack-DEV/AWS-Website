@@ -139,7 +139,7 @@ const OrderedSporList = ({
         const index = list.indexOf(sport);
         list[index] = {
           ...list[index],
-          is_hide: !list[index].is_hide,
+          is_hide: list[index].is_hide,
         };
       } else {
         list.push(obj);
@@ -149,7 +149,8 @@ const OrderedSporList = ({
     }
 
     onToggle(list);
-    setToggledList(list);
+
+    setToggledList([...toggledList, ...list]);
   };
 
   const sportsView = (item, entityType, index) => {
@@ -433,6 +434,9 @@ const OrderedSporList = ({
         );
       }
       list = [...list, ...newList];
+    }
+    if (!isAdmin) {
+      list = list.filter((item) => !item.is_hide);
     }
 
     let updatedList = [];

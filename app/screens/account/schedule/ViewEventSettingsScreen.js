@@ -28,7 +28,7 @@ import ChangeSportsOrderScreen from './ChangeSportsOrderScreen';
 import {getUserSettings, saveUserSettings} from '../../../api/Users';
 import {getGroupIndex} from '../../../api/elasticSearch';
 
-export default function ViewEventSettingsScreen({navigation}) {
+export default function ViewEventSettingsScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const sortFilterData = [
     strings.eventFilterNoneTitle,
@@ -51,10 +51,12 @@ export default function ViewEventSettingsScreen({navigation}) {
   const [registeredSports, setRegisteredSports] = useState([]);
   const [listOfOrganiser, setListOfOrganiser] = useState(false);
   const [listOfSports, setListOfSports] = useState(false);
-  const [optionValue, setOptionValue] = useState();
-  const [userSetting, setUserSetting] = useState();
-  const [optionRender, setOptionRender] = useState();
+  const [optionValue, setOptionValue] = useState(route?.params?.sort);
+  const [userSetting, setUserSetting] = useState(route?.params?.sort);
+  const [optionRender, setOptionRender] = useState(route?.params?.sort);
   const [listOfClubs, setListofClubs] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [orderoForganizer, setOrderOfOrganizer] = useState(false);
 
   useEffect(() => {
     checkHasSports(authContext);
@@ -156,20 +158,22 @@ export default function ViewEventSettingsScreen({navigation}) {
   // Check user belong to any group
   const checkHasGroup = (data) => {
     if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
-      if (data.payload && data.payload.length > 0) {
+      if (data.payload && data.payload.length > 1) {
         setHasGroup(true);
       } else {
         setHasGroup(false);
       }
     } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
-      if (data && data.length > 0) {
+      if (data && data.length >= 1) {
         setHasGroup(true);
+      } else if (data && data.length > 1) {
+        setOrderOfOrganizer(true);
       } else {
         setHasGroup(false);
       }
     } else if (Object.entries(data.payload).length > 0) {
       const group = data.payload?.teams.length + data?.payload?.clubs.length;
-      if (group > 0) {
+      if (group > 1) {
         setHasGroup(true);
       }
     } else {
@@ -266,14 +270,14 @@ export default function ViewEventSettingsScreen({navigation}) {
           style={[
             styles.filterTitle,
             {
-              opacity: !renderOpacityOfOptions(item) ? 0.4 : 1,
+              opacity: !renderOpacityOfOptions(item) ? 0.5 : 1,
             },
           ]}>
           {item}
         </Text>
         {item === strings.eventFilterSportTitle &&
           sortFilterOption === index &&
-          registeredSports.length > 1 && (
+          registeredSports.length > 0 && (
             <Text
               style={styles.changeOrderStyle}
               onPress={() => {
@@ -339,8 +343,9 @@ export default function ViewEventSettingsScreen({navigation}) {
     }
 
     saveUserSettings(params, authContext)
-      .then(async () => {
+      .then(() => {
         setLoading(false);
+        navigation.goBack();
       })
       .catch(() => {
         setLoading(false);
@@ -372,15 +377,16 @@ export default function ViewEventSettingsScreen({navigation}) {
           rightComponent={
             <TouchableOpacity
               style={{padding: 2}}
-              onPress={async () => {
-                await onDonePress();
-                navigation.navigate('App', {
-                  screen: 'Schedule',
-                  params: {
-                    refresh: Date.now(),
-                    optionValue,
-                  },
-                });
+              onPress={() => {
+                onDonePress();
+
+                // navigation.navigate('App', {
+                //   screen: 'Schedule',
+                //   params: {
+                //     refresh: Date.now(),
+                //     optionValue,
+                //   },
+                // });
               }}>
               <Text style={{fontFamily: fonts.RMedium, fontSize: 16}}>
                 {strings.save}

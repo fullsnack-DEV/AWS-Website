@@ -39,6 +39,7 @@ import {showAlert} from '../../utils';
 import JoinRequestModal from '../../components/notificationComponent/JoinRequestModal';
 import SportActivitiesModal from './components/SportActivitiesModal';
 import {PrivacyKeyEnum} from '../../Constants/PrivacyOptionsConstant';
+import UserEditProfileModal from '../account/userSettingPrivacy/UserEditProfileModal';
 
 const UserHomeScreen = ({
   navigation,
@@ -70,6 +71,7 @@ const UserHomeScreen = ({
   const [mainFlatListFromTop] = useState(new Animated.Value(0));
   const [refreshModal, setRefreshModal] = useState(false);
   const [tab, setTab] = useState('');
+  const [visibleEditProfile, setVisibleEditProfile] = useState(false);
 
   const mainFlatListRef = useRef();
   const {onSwitchProfile} = useSwitchAccount();
@@ -582,12 +584,8 @@ const UserHomeScreen = ({
           break;
 
         case Verbs.editVerb:
-          navigation.navigate('AccountStack', {
-            screen: 'PersonalInformationScreen',
-            params: {
-              isEditProfile: true,
-            },
-          });
+          setVisibleEditProfile(true);
+
           break;
 
         case format(
@@ -825,6 +823,13 @@ const UserHomeScreen = ({
         onCloseModal={() => setVisibleSportactivities(false)}
         isAdmin={isAdmin}
         uid={route.params.uid ?? authContext.entity.uid}
+      />
+
+      <UserEditProfileModal
+        isVisible={visibleEditProfile}
+        closeModal={() => setVisibleEditProfile(false)}
+        isEditProfile={true}
+        route={route}
       />
     </>
   );

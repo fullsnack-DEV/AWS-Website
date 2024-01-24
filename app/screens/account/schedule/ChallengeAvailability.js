@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   Text,
   Alert,
   Dimensions,
+  Platform,
 } from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import moment from 'moment';
@@ -52,7 +53,9 @@ export default function ChallengeAvailability({
   isFromSlot = false,
 }) {
   const authContext = useContext(AuthContext);
-  const [repeatValue, setrepeatValue] = useState(strings.daily);
+  const flatListRef = useRef(null);
+  const [repeatValue, setrepeatValue] = useState(0);
+
   const [challengeAvailable, setChallengeAvailable] = useState([
     {
       id: 0,
@@ -60,6 +63,7 @@ export default function ChallengeAvailability({
       allDay: false,
       start_datetime: getRoundedDate(5),
       end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
+
       previous_start_datetime: getRoundedDate(5),
       previous_end_datetime: moment(getRoundedDate(5)).add(5, 'm').toDate(),
       is_recurring: false,
@@ -91,6 +95,7 @@ export default function ChallengeAvailability({
   ]);
 
   const [loading, setLoading] = useState(false);
+
   const [untilDateVisible, setUntilDateVisible] = useState(false);
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
@@ -108,10 +113,10 @@ export default function ChallengeAvailability({
         const currentTime = getTCDate(new Date());
         slots.forEach((item, index) => {
           let startDateTime = item.start_datetime;
-          const endDateTime = item.end_datetime;
-          if (startDateTime < currentTime && endDateTime < currentTime) {
-            return;
-          }
+          // const endDateTime = item.end_datetime;
+          // if (startDateTime < currentTime && endDateTime < currentTime) {
+          //   return;
+          // }
 
           if (startDateTime < currentTime) {
             startDateTime = currentTime;
@@ -128,6 +133,7 @@ export default function ChallengeAvailability({
           };
           editableSlots.push(temp);
         });
+
         let startDateTime = slots[0]?.start_datetime;
         if (startDateTime < currentTime) {
           startDateTime = currentTime;
@@ -145,6 +151,7 @@ export default function ChallengeAvailability({
         recurringSlots.push(tempRecrr);
         setOneTimeAvailability(editableSlots);
         setChallengeAvailable(editableSlots);
+
         setRecurringAvailability(recurringSlots);
       }
 
@@ -152,7 +159,7 @@ export default function ChallengeAvailability({
         setOneTime(false);
       }
     }
-  }, [isVisible]);
+  }, [isVisible, slotLevel, slots]);
 
   const deleteItemById = (id) => {
     const filteredData = challengeAvailable.filter((item) => item.id !== id);
@@ -280,6 +287,14 @@ export default function ChallengeAvailability({
         return false;
       }
     }
+
+    if (challengeAvailable[currentIndex].is_recurring) {
+      if (!challengeAvailable[currentIndex].untilDate) {
+        Alert.alert('Please select Valid until date');
+      }
+      return false;
+    }
+
     setLoading(true);
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
@@ -332,14 +347,12 @@ export default function ChallengeAvailability({
     });
 
     editSlots(entityRole, uid, filterData, authContext)
-      .then((response) => {
-        setTimeout(() => {
-          if (addToSlotData && deleteFromSlotData) {
-            deleteOrCreateSlotData(response.payload);
-          }
-          setLoading(false);
+      .then(async (response) => {
+        if (addToSlotData && deleteFromSlotData) {
+          await deleteOrCreateSlotData(response.payload);
           closeModal();
-        }, 5000);
+          setLoading(false);
+        }
       })
       .catch((error) => {
         setLoading(false);
@@ -351,7 +364,27 @@ export default function ChallengeAvailability({
   return (
     <CustomModalWrapper
       isVisible={isVisible}
-      closeModal={closeModal}
+      closeModal={() => {
+        if (!isFromSlot) {
+          Alert.alert(
+            strings.discardModalText,
+            '',
+            [
+              {
+                text: strings.cancel,
+              },
+              {
+                text: strings.discardText,
+                onPress: () => closeModal(),
+              },
+            ],
+
+            {cancelable: true},
+          );
+        } else {
+          closeModal();
+        }
+      }}
       modalType={ModalTypes.style1}
       title={strings.editChallengeAvailibility}
       headerRightButtonText={strings.save}
@@ -363,18 +396,31 @@ export default function ChallengeAvailability({
       externalSnapPoints={snapPoints}>
       <View
         onLayout={(event) => {
-          const contentHeight = event.nativeEvent.layout.height + 80;
+          const contentHeight = event.nativeEvent.layout.height + 40;
+          // setSnapPoints([
+          //   isFromSlot ? reccuringHeight : !oneTime ? '60%' : modalHeight,
+          //   isFromSlot ? reccuringHeight : !oneTime ? '60%' : modalHeight,
+          //   Dimensions.get('window').height - 20,
+          // ]);
 
           setSnapPoints([
-            '50%',
             contentHeight,
-            Dimensions.get('window').height - 40,
+            contentHeight,
+            Dimensions.get('window').height - 20,
           ]);
         }}>
         <ActivityLoader visible={loading} />
+
         <FlatList
+          ref={flatListRef}
+          extraData={challengeAvailable}
           data={challengeAvailable}
           showsVerticalScrollIndicator={false}
+          getItemLayout={(data, index) => ({
+            length: 200,
+            offset: 300 * index,
+            index,
+          })}
           ListHeaderComponent={() => (
             <View>
               {!slotLevel && !isFromSlot && (
@@ -401,13 +447,17 @@ export default function ChallengeAvailability({
                     }}
                     onSecondTabPress={() => {
                       setOneTime(false);
+
                       setOneTimeAvailability(challengeAvailable);
                       setChallengeAvailable(recurringAvailability);
                       if (setHeightRange) {
                         setHeightRange(0.7);
                       }
                     }}
-                    style={{marginTop: 23, marginBottom: 25}}
+                    style={{
+                      marginTop: 23,
+                      marginBottom: 25,
+                    }}
                   />
                 </View>
               )}
@@ -422,7 +472,14 @@ export default function ChallengeAvailability({
                 </Text>
                 <TouchableOpacity
                   onPress={() => {
-                    Alert.alert(strings.timezoneAvailability);
+                    Alert.alert(
+                      Platform.OS === 'android'
+                        ? ''
+                        : strings.timezoneAvailability,
+                      Platform.OS === 'android'
+                        ? strings.timezoneAvailability
+                        : '',
+                    );
                   }}>
                   <Text
                     style={{
@@ -442,7 +499,7 @@ export default function ChallengeAvailability({
           renderItem={({item: data, index}) => {
             const challengeItems = [...challengeAvailable];
             const background = challengeAvailable[index].isBlock
-              ? colors.grayBackgroundColor
+              ? colors.lightGrey
               : colors.availabilitySlotsBackground;
             const itemStartDateTime = new Date(
               challengeItems[index].start_datetime,
@@ -450,6 +507,7 @@ export default function ChallengeAvailability({
             itemStartDateTime.setHours(0, 0, 0, 0);
             const itemStartBeginingTime = getTCDate(itemStartDateTime);
             const currentStartDateTime = getTCDate(new Date());
+
             let blockAllDay = false;
             if (currentStartDateTime > itemStartBeginingTime) {
               blockAllDay = true;
@@ -459,6 +517,7 @@ export default function ChallengeAvailability({
                 style={{
                   marginTop: 10,
                   padding: 10,
+                  borderRadius: 5,
 
                   backgroundColor: background,
                   borderWidth: 1,
@@ -522,7 +581,7 @@ export default function ChallengeAvailability({
                   </View>
                   <BlockAvailableTabView
                     blocked={challengeAvailable[index].isBlock}
-                    firstTabTitle={strings.block}
+                    firstTabTitle={strings.blocked}
                     secondTabTitle={strings.setAvailable}
                     onFirstTabPress={() => {
                       const tempChallenge = [...challengeAvailable];
@@ -556,11 +615,14 @@ export default function ChallengeAvailability({
                 <EventTimeSelectItem
                   title={strings.starts}
                   toggle={!challengeAvailable[index].allDay}
-                  headerTextStyle={{paddingLeft: 0}}
+                  headerTextStyle={{
+                    paddingLeft: 0,
+                    color: colors.lightBlackColor,
+                  }}
                   style={{
                     backgroundColor: colors.whiteColor,
-                    // width: wp('88%'),
                   }}
+                  labelStyle={{color: colors.lightBlackColor}}
                   date={
                     challengeAvailable[index].start_datetime
                       ? moment(
@@ -584,9 +646,13 @@ export default function ChallengeAvailability({
                   style={{
                     backgroundColor: colors.whiteColor,
                   }}
+                  labelStyle={{color: colors.lightBlackColor}}
                   title={strings.ends}
                   toggle={!challengeAvailable[index].allDay}
-                  headerTextStyle={{paddingLeft: 0}}
+                  headerTextStyle={{
+                    paddingLeft: 0,
+                    color: colors.lightBlackColor,
+                  }}
                   date={
                     challengeAvailable[index].end_datetime
                       ? moment(
@@ -615,6 +681,11 @@ export default function ChallengeAvailability({
                     }}
                     title={strings.repeat}
                     dataSource={[
+                      {
+                        label: strings.never,
+                        value: Verbs.eventRecurringEnum.Never,
+                      },
+
                       {
                         label: strings.daily,
                         value: Verbs.eventRecurringEnum.Daily,
@@ -671,12 +742,14 @@ export default function ChallengeAvailability({
                       tempChallenge[index].is_recurring =
                         value !== Verbs.eventRecurringEnum.Never;
                       tempChallenge[index].repeat = value;
-                      setrepeatValue(value);
+
+                      setrepeatValue(tempChallenge[index].repeat);
+
                       setChallengeAvailable(tempChallenge);
                     }}
                     fontColor={
                       challengeAvailable[index].isBlock
-                        ? colors.darkGrayColor
+                        ? colors.lightGrey
                         : colors.availabilitySlotsBackground
                     }
                   />
@@ -686,22 +759,27 @@ export default function ChallengeAvailability({
                     style={{
                       backgroundColor: colors.whiteColor,
                     }}
+                    headerTextStyle={{
+                      paddingLeft: 0,
+                      color: colors.lightBlackColor,
+                    }}
+                    labelStyle={{color: colors.lightBlackColor}}
                     title={strings.until}
                     toggle={!challengeAvailable[index].allDay}
                     date={
                       challengeAvailable[index].untilDate
-                        ? moment(challengeAvailable[index].untilDate).format(
-                            'll',
-                          )
+                        ? moment(
+                            new Date(challengeAvailable[index].untilDate),
+                          ).format('ll')
                         : moment(challengeAvailable[index].end_datetime)
                             .add(1, 'Y')
                             .format('ll')
                     }
                     time={
                       challengeAvailable[index].untilDate
-                        ? moment(challengeAvailable[index].untilDate).format(
-                            'h:mm a',
-                          )
+                        ? moment(
+                            new Date(challengeAvailable[index].untilDate),
+                          ).format('h:mm a')
                         : moment(challengeAvailable[index].end_datetime).format(
                             'h:mm a',
                           )
@@ -717,30 +795,55 @@ export default function ChallengeAvailability({
             );
           }}
           ListFooterComponent={() =>
-            oneTime && showAddMore && showAddTimeButton ? (
-              <AddTimeItem
-                addTimeText={strings.addTime}
-                source={images.plus}
-                onAddTimePress={() => {
-                  const obj = {
-                    id: challengeAvailable.length,
-                    isBlock: true,
-                    allDay: false,
-                    is_recurring: false,
-                    start_datetime: getRoundedDate(5),
-                    end_datetime: moment(getRoundedDate(5))
-                      .add(5, 'm')
-                      .toDate(),
-                    previous_start_datetime: getRoundedDate(5),
-                    previous_end_datetime: moment(getRoundedDate(5))
-                      .add(5, 'm')
-                      .toDate(),
-                  };
-                  setChallengeAvailable([...challengeAvailable, obj]);
-                }}
-              />
+            oneTime && showAddMore && showAddTimeButton && !isFromSlot ? (
+              <View
+                style={{
+                  marginBottom: 80,
+                }}>
+                <AddTimeItem
+                  addTimeText={strings.addTimeSlot}
+                  source={images.plusInvoice}
+                  onAddTimePress={() => {
+                    const obj = {
+                      id: challengeAvailable.length,
+                      isBlock: true,
+                      allDay: false,
+                      is_recurring: false,
+                      start_datetime: getRoundedDate(5),
+                      end_datetime: moment(getRoundedDate(5))
+                        .add(5, 'm')
+                        .toDate(),
+                      previous_start_datetime: getRoundedDate(5),
+                      previous_end_datetime: moment(getRoundedDate(5))
+                        .add(5, 'm')
+                        .toDate(),
+                    };
+                    // Update the state with the new item
+                    setChallengeAvailable((prevChallenge) => [
+                      ...prevChallenge,
+                      obj,
+                    ]);
+
+                    // Scroll to the newly added item
+                    const newIndex = challengeAvailable.length; // Calculate the index
+
+                    setTimeout(() => {
+                      flatListRef.current.scrollToIndex({
+                        animated: true,
+                        index: newIndex,
+                      });
+                    }, 200);
+                  }}
+                />
+              </View>
             ) : (
-              <></>
+              <>
+                <View
+                  style={{
+                    marginBottom: 30,
+                  }}
+                />
+              </>
             )
           }
           ListFooterComponentStyle={{marginTop: 20}}

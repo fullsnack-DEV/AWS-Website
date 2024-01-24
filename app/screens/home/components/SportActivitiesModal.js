@@ -107,7 +107,6 @@ export default function SportActivitiesModal({
       {isAdmin ? (
         <ScreenHeader
           title={strings.sportActivity}
-          leftIcon={images.backArrow}
           leftIconPress={() => onCloseModal()}
           rightIcon2={images.chat3Dot}
           rightIcon2Press={() => setShowMoreOptions(true)}
@@ -116,7 +115,7 @@ export default function SportActivitiesModal({
       ) : (
         <ScreenHeader
           title={strings.sportActivity}
-          leftIcon={images.backArrow}
+          // leftIcon={images.backArrow}
           leftIconPress={() => onCloseModal()}
           containerStyle={styles.headerRow}
         />

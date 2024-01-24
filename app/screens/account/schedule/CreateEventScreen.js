@@ -18,7 +18,6 @@ import {
   Platform,
   Pressable,
   BackHandler,
-  // Dimensions,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import moment from 'moment';
@@ -72,7 +71,6 @@ import {
   DEFAULT_LONGITUDE,
   LATITUDE_DELTA,
   LONGITUDE_DELTA,
-  repeatArray,
 } from '../../../Constants/GeneralConstants';
 import {getSportList} from '../../../utils/sportsActivityUtils';
 import SportsListModal from '../registerPlayer/modals/SportsListModal';
@@ -80,6 +78,7 @@ import AddressWithMapModal from '../../../components/AddressWithMap/AddressWithM
 import CurrencyModal from '../../../components/CurrencyModal/CurrencyModal';
 import GroupIcon from '../../../components/GroupIcon';
 import TCFormProgress from '../../../components/TCFormProgress';
+import {repeatArray} from '../../../utils/constant';
 
 export default function CreateEventScreen({navigation, route}) {
   const actionSheet = useRef();
@@ -90,6 +89,7 @@ export default function CreateEventScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDescription, setEventDescription] = useState('');
+  const [repeatValues] = useState(repeatArray);
 
   const [minAttendees, setMinAttendees] = useState('');
   const [maxAttendees, setMaxAttendees] = useState('');
@@ -150,7 +150,7 @@ export default function CreateEventScreen({navigation, route}) {
 
   const [groupsSeeList, setGroupsSeeList] = useState([]);
   const [groupsJoinList, setGroupsJoinList] = useState([]);
-  const [occurance, setOccurance] = useState(0);
+  const [occurance, setOccurance] = useState(20);
   const [endDateOfOcuuredEvent, setEndDateOfOccuredEvent] = useState();
 
   useEffect(() => {
@@ -362,7 +362,7 @@ export default function CreateEventScreen({navigation, route}) {
                   setBackgroundImageChanged(true);
                 })
                 .catch((e) => {
-                  console.log(e);
+                  console.log(e.message);
                 });
             });
             break;
@@ -422,13 +422,6 @@ export default function CreateEventScreen({navigation, route}) {
       }
     } else if (!onlineUrl) {
       Alert.alert(strings.appName, strings.enterVenueUrlValidation);
-      return false;
-    }
-    if (
-      !locationDetail?.venue_detail ||
-      locationDetail?.venue_detail?.length < 1
-    ) {
-      Alert.alert(strings.appName, strings.enterVenueDescriptionValidation);
       return false;
     }
 
@@ -552,6 +545,16 @@ export default function CreateEventScreen({navigation, route}) {
             if (route.params?.comeName === 'LocalHomeScreen') {
               navigation.navigate('App', {
                 screen: 'LocalHome',
+              });
+            } else if (route.params?.comeName === 'HomeScreen') {
+              navigation.navigate('HomeStack', {
+                screen: 'HomeScheduleScreen',
+
+                params: {
+                  isFromHomeScreen: true,
+                  forUserHomeEvent: true,
+                  ...route.params,
+                },
               });
             } else {
               navigation.navigate('App', {
@@ -946,7 +949,12 @@ export default function CreateEventScreen({navigation, route}) {
                   if (value === strings.never) {
                     setEventUntildateTime(eventEndDateTime);
                   }
+
                   setSelectWeekMonth(value);
+
+                  setTimeout(() => {
+                    getTheEndDate(occurance);
+                  }, 500);
                 }}
                 titleStyle={{color: colors.userPostTimeColor}}
               />
@@ -956,17 +964,13 @@ export default function CreateEventScreen({navigation, route}) {
                   <EventMonthlySelection
                     title={strings.repeat}
                     forLongList={true}
-                    dataSource={repeatArray}
-                    placeholder={strings.never}
+                    dataSource={repeatValues}
+                    placeholder={strings.twentyimes}
                     value={occurance}
                     onValueChange={(value) => {
                       setOccurance(value);
-                      getTheEndDate(value);
 
-                      // if (value === strings.never) {
-                      //   setEventUntildateTime(eventEndDateTime);
-                      // }
-                      // setSelectWeekMonth(value);
+                      getTheEndDate(value);
                     }}
                     titleStyle={{color: colors.userPostTimeColor}}
                   />
@@ -974,7 +978,7 @@ export default function CreateEventScreen({navigation, route}) {
               )}
             </EventItemRender>
 
-            {occurance !== 0 && (
+            {selectWeekMonth !== Verbs.eventRecurringEnum.Never && (
               <View
                 style={{
                   alignSelf: 'flex-end',

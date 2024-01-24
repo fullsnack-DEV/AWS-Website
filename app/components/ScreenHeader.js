@@ -101,7 +101,7 @@ const ScreenHeader = ({
 
           {rightIcon2 ? (
             <TouchableOpacity
-              style={styles.iconContainer}
+              style={[styles.iconContainer, iconContainerStyle]}
               onPress={rightIcon2Press}>
               {loading ? (
                 <ActivityIndicator size={'small'} />

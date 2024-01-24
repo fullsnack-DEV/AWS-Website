@@ -212,9 +212,10 @@ export default function ScheduleScreen({navigation, route}) {
   const {toggleTabBar} = useTabBar();
   const [allUserGroups, setallUsersGroups] = useState([]);
   const [filterSetting, setFilterSetting] = useState({
-    sort: 1,
+    sort: 0,
     time: 0,
   });
+
   useEffect(() => {
     // Set TabBar visibility to true when this screen mounts
     toggleTabBar(true);
@@ -368,22 +369,8 @@ export default function ScheduleScreen({navigation, route}) {
           setShowOtherOptionForClub(response?.payload?.length);
 
           if (response.payload?.length === 0) {
-            if (route?.params?.optionValue) {
-              setFilterSetting({
-                ...filterSetting,
-                sort: route?.params?.optionValue,
-              });
-              return;
-            }
             setFilterSetting({...filterSetting, sort: 0});
           } else {
-            if (route?.params?.optionValue) {
-              setFilterSetting({
-                ...filterSetting,
-                sort: route?.params?.optionValue,
-              });
-              return;
-            }
             setFilterSetting({...filterSetting, sort: 1});
           }
         })
@@ -424,6 +411,7 @@ export default function ScheduleScreen({navigation, route}) {
 
               if (response && response?.length > 0) {
                 setTeamsclub(response);
+                setFilterSetting({...filterSetting, sort: 1});
               }
 
               if (groupIDs.length === 0) {
@@ -448,7 +436,7 @@ export default function ScheduleScreen({navigation, route}) {
     ) {
       getAlUsersGroups();
     }
-  }, [authContext]);
+  }, [isFocused]);
 
   // Check any event assigned to others option.
   useEffect(() => {
@@ -619,6 +607,7 @@ export default function ScheduleScreen({navigation, route}) {
       option: 0,
       title: strings.all,
     });
+
     getUserSettings(authContext)
       .then((setting) => {
         if (setting?.payload?.user) {
@@ -636,7 +625,7 @@ export default function ScheduleScreen({navigation, route}) {
               if (desiredGroup) {
                 scheduleFilter = desiredGroup.addedgroups ?? [];
               } else {
-                scheduleFilter = [];
+                scheduleFilter = clubsTeam;
               }
             } else {
               scheduleFilter = clubsTeam;
@@ -811,7 +800,7 @@ export default function ScheduleScreen({navigation, route}) {
         });
     } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
       await getGroupDetails(authContext.entity.uid, authContext)
-        .then(async (res) => {
+        .then((res) => {
           const groupIDs = res.payload?.parent_groups ?? [];
 
           const groupQuery = {
@@ -822,7 +811,7 @@ export default function ScheduleScreen({navigation, route}) {
             },
           };
 
-          await getGroupIndex(groupQuery)
+          getGroupIndex(groupQuery)
             .then((response) => {
               //  setGroups(response);
               participants = [authContext?.entity?.uid];
@@ -1447,21 +1436,19 @@ export default function ScheduleScreen({navigation, route}) {
   };
 
   const deleteOrCreateSlotData = async (payload) => {
-    const tempSlot = [...allSlots];
-    if (payload.deleteSlotsIds.length > 0) {
-      payload.deleteSlotsIds.forEach((cal_id) => {
-        const index = allSlots.findIndex((item) => item.cal_id === cal_id);
-        tempSlot.splice(index, 1);
-      });
-    }
+    let tempSlot = [...allSlots];
 
-    if (payload.newSlots.length > 0) {
-      payload.newSlots.forEach((item) => {
-        tempSlot.push(item);
-      });
-    }
+    tempSlot = tempSlot.filter(
+      (item) => !payload.deleteSlotsIds.includes(item.cal_id),
+    );
 
-    setAllSlots([...tempSlot]);
+    const slotMap = new Map(allSlots.map((item) => [item.cal_id, item]));
+    payload.deleteSlotsIds.forEach((cal_id) => slotMap.delete(cal_id));
+    tempSlot = Array.from(slotMap.values());
+
+    tempSlot = tempSlot.concat(payload.newSlots);
+
+    setAllSlots(tempSlot);
   };
 
   const generateTimestampRanges = (startTimestamp, endTimestamp) => {
@@ -1725,7 +1712,6 @@ export default function ScheduleScreen({navigation, route}) {
                 <FlatList
                   ref={refContainer}
                   horizontal={true}
-                  extraData={organizerOptions}
                   showsHorizontalScrollIndicator={false}
                   data={
                     (filterSetting.sort ===
@@ -1845,13 +1831,17 @@ export default function ScheduleScreen({navigation, route}) {
               )}
 
               {scheduleIndexCounter === 1 && (
-                <AvailibilityScheduleScreen
-                  allSlots={allSlots}
-                  isAdmin={isAdmin}
-                  setIsFromSlots={setIsFromSlots}
-                  setVisibleAvailabilityModal={setVisibleAvailabilityModal}
-                  setEditableSlots={setEditableSlots}
-                />
+                <>
+                  <AvailibilityScheduleScreen
+                    allSlots={allSlots}
+                    isAdmin={isAdmin}
+                    setIsFromSlots={setIsFromSlots}
+                    setVisibleAvailabilityModal={(val) => {
+                      setVisibleAvailabilityModal(val);
+                    }}
+                    setEditableSlots={setEditableSlots}
+                  />
+                </>
               )}
             </>
           )}
@@ -2264,6 +2254,7 @@ export default function ScheduleScreen({navigation, route}) {
             if (option === strings.eventsViewSettings) {
               navigation.navigate('ScheduleStack', {
                 screen: 'ViewEventSettingsScreen',
+                params: filterSetting,
               });
             } else if (option === strings.likeEvent) {
               navigation.navigate('ScheduleStack', {
@@ -2415,8 +2406,8 @@ export default function ScheduleScreen({navigation, route}) {
       <ChallengeAvailability
         isVisible={visibleAvailabilityModal}
         closeModal={() => {
-          setIsFromSlots(false);
           setVisibleAvailabilityModal(false);
+          setIsFromSlots(false);
         }}
         slots={editableSlots}
         addToSlotData={addToSlotData}

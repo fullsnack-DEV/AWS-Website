@@ -30,6 +30,7 @@ export default {
   until: 'th_Until',
   weekly: 'th_Weekly',
   addTime: 'th_Add time',
+  addTimeSlot: 'th_Add Time slot',
   setAvailable: 'th_Available',
   block: 'th_Block',
   thisEvent: 'th_This event',
@@ -244,7 +245,8 @@ export default {
   enterFeePlaceholder: 'th_Enter fee',
   venueNamePlaceholder: 'th_Venue Name',
   venueAddressPlaceholder: 'th_Address',
-  venueDetailsPlaceholder: 'th_Details (optional)',
+  venueDetailsPlaceholder: 'th_Details',
+  venueDetailsPlaceholderOptional: 'th_Details (optinal)',
   feeDetailsText: 'th_Fee Details',
   feeDetailsPlaceholder: 'th_Write Details regarding the registration fee…',
   membershipFeeTitle: 'th_Membership Fee',
@@ -3325,10 +3327,14 @@ export default {
   sportBarAlertText: 'th_You can add up to 10 sports to the filter bar.',
   requestDoubleTeamText: 'th_sent you a request to create a team together',
   selectClubText:
-    'th_ Select affiliated ${0} in whose posts you want to display the post about this event.',
+    'th_ Select affiliated {0} in whose posts you want to display the post about this event.',
   shareEventPostText: 'th_ Share Event Post',
+  hideeventPostText: 'th_Hide Event Post',
   shareEventsubText:
-    'th_A post about this event will be created in posts of your ${0}.',
+    'th_A post about this event will be created in posts of your {0}.',
+  shareEventUserText: 'th_A post about this event will be created in posts.',
+  noShareEventText:
+    'th_No post about this event will be created in your posts.',
 
   whoCanViewPostSection: "th_Who can view posts in your team's profile?",
   whoCanViewEventSection: "th_Who can view your team's events section?",
@@ -3398,6 +3404,9 @@ export default {
   eighteentimes: 'th_18 Times',
   nineteentimes: 'th_19 Times',
   twentyimes: 'th_20 Times',
+  deseectTeamsClubsText:
+    'th_Deselect the affiliated {0} in whose posts you no longer want to display the post about this event.',
+  membersOfGroups: 'th_Members of groups',
   followerText: 'th_Follower',
   clubAndLeague: 'th_Club & League',
   doYouAllowClubToInviteYouToJoinClub:
@@ -3424,5 +3433,13 @@ export default {
   whoCanTagClub: 'th_Who can tag your club on a post, comment or reply?',
   clubMembersAndTeams: 'th_Club members & teams',
   allTeams: 'th_All teams',
+
+  discardModalText: 'th_Are you sure you want to discard your unsaved changes?',
+  addMoreDetailText:
+    'th_ Add a few more details before you complete creating an event.',
+  clubsText: 'th_clubs',
+  teamsText: 'th_teams',
+
   maxFeeAlert: 'th_Max fee should be greater than min fee.',
+
 };
