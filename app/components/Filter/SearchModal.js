@@ -13,7 +13,6 @@ import {
   Text,
   TouchableWithoutFeedback,
   Platform,
-  Dimensions,
   Alert,
   TextInput,
   KeyboardAvoidingView,
@@ -54,7 +53,7 @@ const SearchModal = ({
   sports,
   isVisible,
   filterObject,
-  feeTitle,
+  feeTitle = strings.matchFee,
   showSportOption,
   onPressCancel = () => {},
   onPressApply = () => {},
@@ -108,26 +107,24 @@ const SearchModal = ({
   }, [isVisible, filters?.minFee, filters?.maxFee]);
 
   useEffect(() => {
+    if (filters?.sport !== strings.allSport && filters?.fee) {
+      const Usercurrency = getCountry(authContext.entity.obj.country);
+      setFilters((prevPros) => ({
+        ...prevPros,
+        currency: Usercurrency?.currency,
+      }));
+    }
+  }, [filters?.sport, filters?.fee, authContext.entity.obj.country]);
+
+  useEffect(() => {
     if (showFeeOption && filters?.sport !== strings.allSport) {
       const feeComponentVisibilityStatus =
         calculateVisibilityForTimeComponent();
-      if (feeComponentVisibilityStatus) {
-        const Usercurrency = getCountry(authContext.entity.obj.country);
-        setFilters((prevPros) => ({
-          ...prevPros,
-          currency: Usercurrency?.currency,
-        }));
-      }
       setShowFeeComponent(feeComponentVisibilityStatus);
     } else {
       setShowFeeComponent(false);
     }
-  }, [
-    filters?.sport,
-    calculateVisibilityForTimeComponent,
-    showFeeOption,
-    authContext.entity.obj.country,
-  ]);
+  }, [filters?.sport, calculateVisibilityForTimeComponent, showFeeOption]);
 
   useEffect(() => {
     if (isVisible) {
@@ -371,7 +368,20 @@ const SearchModal = ({
         modalType={ModalTypes.style1}
         title={strings.filter}
         headerRightButtonText={strings.apply}
+        containerStyle={{padding: 0, flex: 1}}
         onRightButtonPress={() => {
+          if (filters?.fee) {
+            if (
+              Number(filters?.maxFee) >= 0 &&
+              Number(filters?.minFee) >= 0 &&
+              Number(filters?.minFee) > Number(filters?.maxFee)
+            ) {
+              Alert.alert(strings.maxFeeAlert, '', [
+                {text: strings.okTitleText},
+              ]);
+              return;
+            }
+          }
           if (fType === filterType.RECRUIITINGMEMBERS) {
             const tempFilter = {
               ...filters,
@@ -438,7 +448,6 @@ const SearchModal = ({
                 getJSDate(filters.toDateTime).getTime(),
               ).format('MMM DD')}`;
             }
-
             onPressApply(tempFilter);
           } else if (
             fType === filterType.RECENTMATCHS ||
@@ -485,19 +494,20 @@ const SearchModal = ({
         <View
           style={{
             flex: 1,
-            position: 'absolute',
-            right: 0,
-            left: 0,
-            height: Dimensions.get('window').height - 50,
+            // position: 'absolute',
+            // right: 0,
+            // left: 0,
+            // height: Dimensions.get('window').height - 50,
           }}>
           <KeyboardAvoidingView
             style={{flex: 1}}
             keyboardVerticalOffset={keyboardVerticalOffset}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}>
+            behavior={Platform.OS === 'ios' ? 'height' : 'height'}>
             <ScrollView
               contentContainerStyle={{paddingBottom: 50}}
-              contentInset={{bottom: 50}}
-              scrollIndicatorInsets={{bottom: 50}}>
+              // contentInset={{bottom: 50}}
+              // scrollIndicatorInsets={{bottom: 50}}
+            >
               <View style={{marginTop: 5}}>
                 <View style={{flexDirection: 'column', margin: 15}}>
                   <View>

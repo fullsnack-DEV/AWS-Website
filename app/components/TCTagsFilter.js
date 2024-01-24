@@ -24,12 +24,18 @@ function TCTagsFilter({dataSource, onTagCancelPress, filter, authContext}) {
 
       case Verbs.fee:
         if (filter?.minFee && !filter?.maxFee) {
-          return `> ${filter.minFee} ${filter.currency}`;
+          return `> ${filter.minFee} ${
+            filter.currency ?? strings.defaultCurrency
+          }`;
         }
         if (!filter?.minFee && filter?.maxFee) {
-          return `< ${filter.maxFee} ${filter.currency}`;
+          return `< ${filter.maxFee} ${
+            filter.currency ?? strings.defaultCurrency
+          }`;
         }
-        return `${filter.minFee} - ${filter.maxFee} ${filter.currency}`;
+        return `${filter.minFee} - ${filter.maxFee} ${
+          filter.currency ?? strings.defaultCurrency
+        }`;
 
       case Verbs.availableTime:
         if (obj[option] === strings.filterPickaDate) {

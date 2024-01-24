@@ -768,6 +768,7 @@ const UserHomeScreen = ({
             pulltoRefresh={pulltoRefresh}
             routeParams={routeParams}
             postsPrivacyStatus={privacyObj[PrivacyKeyEnum.Posts]}
+            writePostPrivacyStatus={privacyObj[PrivacyKeyEnum.Posts]}
           />
         </View>
 

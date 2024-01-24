@@ -3424,4 +3424,5 @@ export default {
   whoCanTagClub: 'en_Who can tag your club on a post, comment or reply?',
   clubMembersAndTeams: 'en_Club members & teams',
   allTeams: 'en_All teams',
+  maxFeeAlert: 'en_Max fee should be greater than min fee.',
 };

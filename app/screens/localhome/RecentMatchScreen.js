@@ -460,6 +460,7 @@ export default function RecentMatchScreen({navigation, route}) {
         sports={sports}
         filterObject={filters}
         isVisible={settingPopup}
+        feeTitle={strings.matchFee}
         onPressApply={async (filterData) => {
           setloading(false);
           let tempFilter = {};

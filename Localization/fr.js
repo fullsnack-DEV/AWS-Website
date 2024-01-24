@@ -3271,8 +3271,6 @@ export default {
   whoCanViewYourPostsSection: 'fr_Who can view posts in your profile?',
   whoCanViewYourEventsSection: 'fr_Who can view your events section?',
   whoCanViewYourGallerySection: 'fr_Who can view your gallery?',
-  followersMyTeamClub: 'fr_Followers, my teams & clubs',
-  myTeamClub: 'fr_My teams & clubs',
   venueText1: 'fr_This function is currently under construction.',
   venueText2:
     'fr_Please check later for updates. You will be able to look for and book a venue here soon.',
@@ -3325,6 +3323,13 @@ export default {
   whoCanCommentOnYourPost: 'fr_Who can comment & reply on your post?',
   whoCanShareYourPost: 'fr_Who can share your post?',
   sportBarAlertText: 'fr_You can add up to 10 sports to the filter bar.',
+  requestDoubleTeamText: 'fr_sent you a request to create a team together',
+  selectClubText:
+    'fr_ Select affiliated ${0} in whose posts you want to display the post about this event.',
+  shareEventPostText: 'fr_ Share Event Post',
+  shareEventsubText:
+    'fr_A post about this event will be created in posts of your ${0}.',
+
   whoCanViewPostSection: "fr_Who can view posts in your team's profile?",
   whoCanViewEventSection: "fr_Who can view your team's events section?",
   whoCanViewGallerySection: "fr_Who can view your team's gallery section?",
@@ -3332,9 +3337,9 @@ export default {
   whoCanInviteYourTeamToChat: 'fr_Who can invite your team to chat?',
   whoCanTagYourTeamOnPostCommentOrReply:
     'fr_Who can tag your team on a post, comment or reply?',
-  followersAndClub: 'fr_Followers & Club',
-  teamMembersAndClub: 'fr_Team Members & Club',
-  onlyTeamTitle: 'fr_Only Team',
+  followersAndClub: 'fr_Followers & club',
+  teamMembersAndClub: 'fr_Team members & Club',
+  onlyTeamTitle: 'fr_Only team',
   whoCanWritePostTeamsPostsSection:
     "fr_Who can write a post in your team's profile?",
   whoCanInvitePersonToJoinYourTeam:
@@ -3375,7 +3380,6 @@ export default {
   noPostTitle: 'fr_No post',
   noPostFoundSubTitle: 'fr_New posts will appear here.',
   toGroupName: 'fr_To {0}',
-  toGroupName: 'fr_To {0}',
   threetimes: 'fr_3 Times',
   fourtimes: 'fr_4 Times',
   fivetimes: 'fr_5 Times',
@@ -3401,4 +3405,24 @@ export default {
   doYouAllLeaguesToInviteYouToJoinLeagues:
     'fr_Do you want to allow leagues to invite your team to join their leagues or tournaments?',
   whoCanSeeTeamFollowers: "fr_Who can view your team's followers?",
+  onlyClub: 'fr_Only club',
+  whoCanViewPostsInClubProfile: "fr_Who can view posts in your club's profile?",
+  whoCanWritePostsInClubProfile:
+    "fr_Who can write a post in your club's profile?",
+  writePostInClubProfileSubText: `fr_If your club has an affiliated team involved in a team sport, the team’s posts related to a match or event may still be displayed in your club's profile. (Display these words when "only club" is selected.)`,
+  whoCanViewClubEventSection: "fr_Who can view your club's events section?",
+  whoCanViewClubEventSectionSubText:
+    'fr_You can change who can see an individual event in your events section and the change applies to only that post.',
+  whoCanViewClubGallerySection: "fr_Who can view your club's gallery?",
+  whoCanJoinYourClub: 'fr_Who can join your club?',
+  whoCanInviteToJoinClub: 'fr_Who can invite a person to join your club?',
+  whoCanViewClubMembers: 'fr_Who can view your club members?',
+  whatTeamCanJoinClub: 'fr_What team can join your club?',
+  whoCanFollowYourClub: 'fr_Who can follow your club?',
+  whoCanViewClubFollowers: "Who can view your club's followers?",
+  whoCanInviteClubToChat: 'fr_Who can invite your club to chat?',
+  whoCanTagClub: 'fr_Who can tag your club on a post, comment or reply?',
+  clubMembersAndTeams: 'fr_Club members & teams',
+  allTeams: 'fr_All teams',
+  maxFeeAlert: 'fr_Max fee should be greater than min fee.',
 };

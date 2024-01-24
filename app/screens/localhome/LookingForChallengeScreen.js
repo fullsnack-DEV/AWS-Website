@@ -1303,9 +1303,7 @@ export default function LookingForChallengeScreen({navigation, route}) {
         favoriteSportsList={route.params.registerFavSports}
         sports={sports}
         filterObject={filters}
-        feeTitle={
-          authContext.entity.role === Verbs.entityTypeUser && strings.matchFee
-        }
+        feeTitle={strings.matchFee}
         isVisible={settingPopup}
         onPressApply={async (filterData) => {
           setloading(false);

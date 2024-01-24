@@ -1,5 +1,3 @@
-import {strings} from '../../Localization/translation';
-
 const PrivacyKeyEnum = {
   Slogan: 'who_can_view_slogan',
   SportActivityList: 'who_can_view_sport_activity_list',
@@ -40,278 +38,278 @@ const PrivacyKeyEnum = {
 
 const UserPrivacySettingOptions = [
   {
-    title: strings.mainHome,
+    title: 'mainHome',
     data: [
       {
-        label: strings.slogan,
+        label: 'slogan',
         extraData: null,
       },
       {
-        label: strings.SportActivitiesList,
+        label: 'SportActivitiesList',
         extraData: null,
       },
       {
-        label: strings.postTitle,
+        label: 'postTitle',
         extraData: null,
       },
       {
-        label: strings.event,
+        label: 'event',
         extraData: null,
       },
       {
-        label: strings.galleryTitle,
+        label: 'galleryTitle',
         extraData: null,
       },
     ],
   },
   {
-    title: strings.sportsActivityPage,
+    title: 'sportsActivityPage',
     data: [],
   },
   {
-    title: strings.otherTitle,
+    title: 'otherTitle',
     data: [
-      {label: strings.followingFollower, extraData: null},
-      {label: strings.teamClubAndLeague, extraData: null},
-      {label: strings.eventInvitation, extraData: null},
-      {label: strings.chatsTitle, extraData: null},
-      {label: strings.tag, extraData: null},
-      {label: strings.blocked, extraData: null},
+      {label: 'followingFollower', extraData: null},
+      {label: 'teamClubAndLeague', extraData: null},
+      {label: 'eventInvitation', extraData: null},
+      {label: 'chatsTitle', extraData: null},
+      {label: 'tag', extraData: null},
+      {label: 'blocked', extraData: null},
     ],
   },
 ];
 
 const binaryPrivacyOptions = [
-  {label: strings.yes, value: 1},
-  {label: strings.no, value: 0},
+  {label: 'yes', value: 1},
+  {label: 'no', value: 0},
 ];
 
 const BinaryPrivacyOptionsEnum = {
-  0: strings.no,
-  1: strings.yes,
+  0: 'no',
+  1: 'yes',
 };
 
 const PersonalUserPrivacyEnum = {
-  0: strings.onlymeTitleText,
-  1: strings.everyoneTitleText,
-  2: strings.followersMyTeamClub,
-  3: strings.myTeamClub,
+  0: 'onlymeTitleText',
+  1: 'everyoneTitleText',
+  2: 'followersMyTeamClub',
+  3: 'myTeamClub',
 };
 
 const ScoreboardPeriodPrivacyOptionsEnum = {
-  1: strings.all,
-  2: strings.past6Months,
-  3: strings.past3Months,
-  4: strings.past1Month,
+  1: 'all',
+  2: 'past6Months',
+  3: 'past3Months',
+  4: 'past1Month',
 };
 
 const defaultOptions = [
-  {label: strings.everyoneTitleText, value: 1},
-  {label: strings.followersMyTeamClub, value: 2},
-  {label: strings.myTeamClub, value: 3},
-  {label: strings.onlymeTitleText, value: 0},
+  {label: 'everyoneTitleText', value: 1},
+  {label: 'followersMyTeamClub', value: 2},
+  {label: 'myTeamClub', value: 3},
+  {label: 'onlymeTitleText', value: 0},
 ];
 
 const scoreboardPeriodPrivacyOptions = [
-  {label: strings.all, value: 1},
-  {label: strings.past6Months, value: 2},
-  {label: strings.past3Months, value: 3},
-  {label: strings.past1Month, value: 4},
+  {label: 'all', value: 1},
+  {label: 'past6Months', value: 2},
+  {label: 'past3Months', value: 3},
+  {label: 'past1Month', value: 4},
 ];
 
 const followerFollowingOptions = [
-  {label: strings.everyoneTitleText, value: 0},
-  {label: strings.byrequestaccepted, value: 1},
+  {label: 'everyoneTitleText', value: 0},
+  {label: 'byrequestaccepted', value: 1},
 ];
 
 const FollowerFollowingOptionsEnum = {
-  0: strings.everyoneTitleText,
-  1: strings.byrequestaccepted,
+  0: 'everyoneTitleText',
+  1: 'byrequestaccepted',
 };
 
 const inviteToGroupOptions = [
-  {label: strings.teamAndTheirMembers, value: 1},
-  {label: strings.clubAndTheirMembers, value: 2},
-  {label: strings.leagueAndTheirMembers, value: 3},
-  {label: strings.noneText, value: 0},
+  {label: 'teamAndTheirMembers', value: 1},
+  {label: 'clubAndTheirMembers', value: 2},
+  {label: 'leagueAndTheirMembers', value: 3},
+  {label: 'noneText', value: 0},
 ];
 
 const InviteToGroupOptionsEnum = {
-  0: strings.noneText,
-  1: strings.teamAndTheirMembers,
-  2: strings.clubAndTheirMembers,
-  3: strings.leagueAndTheirMembers,
+  0: 'noneText',
+  1: 'teamAndTheirMembers',
+  2: 'clubAndTheirMembers',
+  3: 'leagueAndTheirMembers',
 };
 
 const inviteToEventOptions = [
-  {label: strings.everyoneTitleText, value: 1},
-  {label: strings.followersMyTeamClub, value: 2},
-  {label: strings.myTeamClub, value: 3},
-  {label: strings.noneText, value: 0},
+  {label: 'everyoneTitleText', value: 1},
+  {label: 'followersMyTeamClub', value: 2},
+  {label: 'myTeamClub', value: 3},
+  {label: 'noneText', value: 4},
 ];
 
 const InviteToEventOptionsEnum = {
-  0: strings.noneText,
-  1: strings.everyoneTitleText,
-  2: strings.followersMyTeamClub,
-  3: strings.myTeamClub,
+  4: 'noneText',
+  1: 'everyoneTitleText',
+  2: 'followersMyTeamClub',
+  3: 'myTeamClub',
 };
 const TeamPrivacySettingsOptions = [
-  strings.postTitle,
-  strings.events,
-  strings.galleryTitle,
-  strings.membersTitle,
-  strings.clubAndLeague,
-  strings.followerText,
-  strings.chatsTitle,
-  strings.tag,
-  strings.blocked,
+  'postTitle',
+  'events',
+  'galleryTitle',
+  'membersTitle',
+  'clubAndLeague',
+  'followerText',
+  'chatsTitle',
+  'tag',
+  'blocked',
 ];
 
 const ClubPrivacySettingsOptions = [
-  strings.postTitle,
-  strings.events,
-  strings.galleryTitle,
-  strings.membersTitle,
-  strings.team,
-  strings.followerText,
-  strings.chatsTitle,
-  strings.tag,
-  strings.blocked,
+  'postTitle',
+  'events',
+  'galleryTitle',
+  'membersTitle',
+  'team',
+  'followerText',
+  'chatsTitle',
+  'tag',
+  'blocked',
 ];
 
 const groupPrivacyDefalutOptions = [
-  {label: strings.everyoneTitleText, value: 1},
-  {label: strings.followersAndClub, value: 2},
-  {label: strings.teamMembersAndClub, value: 3},
-  {label: strings.onlyTeamTitle, value: 4},
+  {label: 'everyoneTitleText', value: 1},
+  {label: 'followersAndClub', value: 2},
+  {label: 'teamMembersAndClub', value: 3},
+  {label: 'onlyTeamTitle', value: 4},
 ];
 
 const GroupDefalutPrivacyOptionsEnum = {
-  1: strings.everyoneTitleText,
-  2: strings.followersAndClub,
-  3: strings.teamMembersAndClub,
-  4: strings.onlyTeamTitle,
+  1: 'everyoneTitleText',
+  2: 'followersAndClub',
+  3: 'teamMembersAndClub',
+  4: 'onlyTeamTitle',
 };
 
 const groupDefaultPrivacyOptionsForDoubleTeam = [
-  {label: strings.everyoneTitleText, value: 1},
-  {label: strings.followersAndClub, value: 2},
-  {label: strings.teamMembersAndClub, value: 3},
-  {label: strings.clubsAndTeam, value: 0},
+  {label: 'everyoneTitleText', value: 1},
+  {label: 'followersAndClub', value: 2},
+  {label: 'teamMembersAndClub', value: 3},
+  {label: 'clubsAndTeam', value: 0},
 ];
 
 const GroupDefaultPrivacyOptionsForDoubleTeamEnum = {
-  1: strings.everyoneTitleText,
-  2: strings.followersAndClub,
-  3: strings.teamMembersAndClub,
-  0: strings.clubsAndTeam,
+  1: 'everyoneTitleText',
+  2: 'followersAndClub',
+  3: 'teamMembersAndClub',
+  0: 'clubsAndTeam',
 };
 
 const groupJoinOptions = [
-  {label: strings.everyoneTitleText, value: 0},
-  {label: strings.requestAccepted, value: 1},
-  {label: strings.invitedOnly, value: 2},
+  {label: 'everyoneTitleText', value: 0},
+  {label: 'requestAccepted', value: 1},
+  {label: 'invitedOnly', value: 2},
 ];
 
 const GroupJoinOptionsEnum = {
-  0: strings.everyoneTitleText,
-  1: strings.requestAccepted,
-  2: strings.invitedOnly,
+  0: 'everyoneTitleText',
+  1: 'requestAccepted',
+  2: 'invitedOnly',
 };
 
 const groupInviteToJoinOptions = [
-  {label: strings.teamMembers, value: 1},
-  {label: strings.onlyTeamTitle, value: 0},
+  {label: 'teamMembers', value: 1},
+  {label: 'onlyTeamTitle', value: 0},
 ];
 
 const GroupInviteToJoinOptionsEnum = {
-  1: strings.teamMembers,
-  0: strings.onlyTeamTitle,
+  1: 'teamMembers',
+  0: 'onlyTeamTitle',
 };
 
 const groupInviteToJoinForTeamSportOptions = [
-  {label: strings.teamMembersAndClub, value: 1},
-  {label: strings.clubsAndTeam, value: 0},
+  {label: 'teamMembersAndClub', value: 1},
+  {label: 'clubsAndTeam', value: 0},
 ];
 
 const GroupInviteToJoinForTeamSportOptionsEnum = {
-  1: strings.teamMembersAndClub,
-  0: strings.clubsAndTeam,
+  1: 'teamMembersAndClub',
+  0: 'clubsAndTeam',
 };
 
 const teamChatPrivacyOptions = [
-  {label: strings.everyoneTitleText, value: 1},
-  {label: strings.followersAndClub, value: 2},
-  {label: strings.teamMembersAndClub, value: 3},
-  {label: strings.clubstitle, value: 4},
+  {label: 'everyoneTitleText', value: 1},
+  {label: 'followersAndClub', value: 2},
+  {label: 'teamMembersAndClub', value: 3},
+  {label: 'clubstitle', value: 4},
 ];
 
 const TeamChatPrivacyOptionsEnum = {
-  1: strings.everyoneTitleText,
-  2: strings.followersAndClub,
-  3: strings.teamMembersAndClub,
-  4: strings.clubstitle,
+  1: 'everyoneTitleText',
+  2: 'followersAndClub',
+  3: 'teamMembersAndClub',
+  4: 'clubstitle',
 };
 
 const feedsPrivacyOption = [
-  {label: strings.offText, value: 0},
-  {label: strings.onText, value: 1},
+  {label: 'offText', value: 0},
+  {label: 'onText', value: 1},
 ];
 
 const feedsHideUnhideOption = [
-  {label: strings.hide, value: 0},
-  {label: strings.unhide, value: 1},
+  {label: 'hide', value: 0},
+  {label: 'unhide', value: 1},
 ];
 
 const defaultClubPrivacyOptions = [
-  {label: strings.everyoneTitleText, value: 1},
-  {label: strings.followerTitleText, value: 2},
-  {label: strings.clubMember, value: 3},
-  {label: strings.onlyClub, value: 4},
+  {label: 'everyoneTitleText', value: 1},
+  {label: 'followerTitleText', value: 2},
+  {label: 'clubMember', value: 3},
+  {label: 'onlyClub', value: 4},
 ];
 
 const DefaultClubPrivacyOptionsEnum = {
-  1: strings.everyoneTitleText,
-  2: strings.followerTitleText,
-  3: strings.clubMember,
-  4: strings.onlyClub,
+  1: 'everyoneTitleText',
+  2: 'followerTitleText',
+  3: 'clubMember',
+  4: 'onlyClub',
 };
 
 const inviteToJoinClubOptions = [
-  {label: strings.clubMembersAndTeams, value: 1},
-  {label: strings.onlyClub, value: 0},
+  {label: 'clubMembersAndTeams', value: 1},
+  {label: 'onlyClub', value: 0},
 ];
 
 const InviteToJoinClubOptionsEnum = {
-  0: strings.onlyClub,
-  1: strings.clubMembersAndTeams,
+  0: 'onlyClub',
+  1: 'clubMembersAndTeams',
 };
 
 const teamJoinClubOptions = [
-  {label: strings.allTeams, value: 0},
-  {label: strings.byrequestaccepted, value: 1},
-  {label: strings.invitedOnly, value: 2},
+  {label: 'allTeams', value: 0},
+  {label: 'byrequestaccepted', value: 1},
+  {label: 'invitedOnly', value: 2},
 ];
 
 const TeamJoinClubOptionsEnum = {
-  0: strings.allTeams,
-  1: strings.byrequestaccepted,
-  2: strings.invitedOnly,
+  0: 'allTeams',
+  1: 'byrequestaccepted',
+  2: 'invitedOnly',
 };
 
 const clubChatPrivacyOptions = [
-  {label: strings.everyoneTitleText, value: 1},
-  {label: strings.followerTitleText, value: 2},
-  {label: strings.clubMember, value: 3},
-  {label: strings.teamsTitleText, value: 4},
+  {label: 'everyoneTitleText', value: 1},
+  {label: 'followerTitleText', value: 2},
+  {label: 'clubMember', value: 3},
+  {label: 'teamsTitleText', value: 4},
 ];
 
 const ClubChatPrivacyOptionsEnum = {
-  1: strings.everyoneTitleText,
-  2: strings.followerTitleText,
-  3: strings.clubMember,
-  4: strings.teamsTitleText,
+  1: 'everyoneTitleText',
+  2: 'followerTitleText',
+  3: 'clubMember',
+  4: 'teamsTitleText',
 };
 
 export {

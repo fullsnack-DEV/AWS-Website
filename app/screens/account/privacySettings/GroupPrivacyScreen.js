@@ -1,4 +1,4 @@
-import {useContext, useEffect} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 import ScreenHeader from '../../../components/ScreenHeader';
 import {strings} from '../../../../Localization/translation';
 import images from '../../../Constants/ImagePath';
@@ -37,6 +38,20 @@ import AuthContext from '../../../auth/context';
 
 const GroupPrivacyScreen = ({navigation}) => {
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
+
+  const [menuOptions, setMenuOptions] = useState([]);
+
+  useEffect(() => {
+    if (isFocused) {
+      const list =
+        authContext.entity.role === Verbs.entityTypeTeam
+          ? TeamPrivacySettingsOptions
+          : ClubPrivacySettingsOptions;
+      const options = list.map((item) => strings[item]);
+      setMenuOptions(options);
+    }
+  }, [isFocused, authContext.entity.role]);
 
   useEffect(() => {
     const backAction = () => {
@@ -308,11 +323,7 @@ const GroupPrivacyScreen = ({navigation}) => {
       />
       <View style={{paddingTop: 20, paddingHorizontal: 15}}>
         <FlatList
-          data={
-            authContext.entity.role === Verbs.entityTypeTeam
-              ? TeamPrivacySettingsOptions
-              : ClubPrivacySettingsOptions
-          }
+          data={menuOptions}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item}) => (
             <>

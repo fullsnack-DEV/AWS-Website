@@ -47,7 +47,6 @@ import RecruitingMemberModal from './RecruitingMemberModal';
 import usePrivacySettings from '../../hooks/usePrivacySettings';
 import {
   BinaryPrivacyOptionsEnum,
-  FollowerFollowingOptionsEnum,
   GroupDefalutPrivacyOptionsEnum,
   GroupDefaultPrivacyOptionsForDoubleTeamEnum,
   PersonalUserPrivacyEnum,
@@ -124,9 +123,7 @@ const HomeScreen = ({navigation, route}) => {
         const obj = {};
         personalPrivacyKeyArr.forEach((item) => {
           let privacyVal = PersonalUserPrivacyEnum[currentUserData[item]];
-          if (item === PrivacyKeyEnum.FollowingAndFollowers) {
-            privacyVal = FollowerFollowingOptionsEnum[currentUserData[item]];
-          } else if (
+          if (
             item === PrivacyKeyEnum.InviteForTeam ||
             item === PrivacyKeyEnum.InviteForClub
           ) {

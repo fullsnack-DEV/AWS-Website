@@ -94,7 +94,18 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
         authContext.entity.role === Verbs.entityTypePlayer ||
         authContext.entity.role === Verbs.entityTypeUser
       ) {
-        const options = [...UserPrivacySettingOptions];
+        const options = UserPrivacySettingOptions.map((item) => {
+          const obj = {};
+          obj.title = strings[item.title];
+          if (item.data.length > 0) {
+            const optionList = item.data.map((ele) => ({
+              label: strings[ele.label],
+              extraData: ele.extraData,
+            }));
+            obj.data = [...optionList];
+          }
+          return obj;
+        });
         const formattedSportsList = getSportActivityList();
 
         const updatedOptionsList = options.map((option) => {

@@ -64,8 +64,16 @@ const usePrivacySettings = () => {
     return false;
   };
 
-  const getPrivacyStatus = (privacyVal = '', entityObj = {}) => {
+  const getPrivacyStatus = (value = '', entityObj = {}) => {
+    const privacyVal = strings[value];
     const entityId = entityObj.user_id ?? entityObj.group_id;
+
+    if (privacyVal === strings.yes) {
+      return true;
+    }
+    if (privacyVal === strings.no) {
+      return false;
+    }
 
     if (
       entityId === authContext.entity.uid ||

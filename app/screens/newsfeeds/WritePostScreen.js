@@ -586,8 +586,8 @@ const WritePostScreen = ({navigation, route}) => {
 
       if (!item && id !== authContext.entity.uid) {
         const privacyStatus = getPrivacyStatus(
-          PersonalUserPrivacyEnum[item[PrivacyKeyEnum.Tag]],
-          item,
+          PersonalUserPrivacyEnum[obj[PrivacyKeyEnum.Tag]],
+          obj,
         );
         arr.push({...obj, privacy_status: privacyStatus});
       }

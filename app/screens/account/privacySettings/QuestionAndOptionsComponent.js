@@ -4,6 +4,7 @@ import {View, StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import images from '../../../Constants/ImagePath';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
+import {strings} from '../../../../Localization/translation';
 
 const QuestionAndOptionsComponent = ({
   title = '',
@@ -29,7 +30,7 @@ const QuestionAndOptionsComponent = ({
           {marginBottom: options.length - 1 !== index ? 15 : 0},
         ]}>
         <View style={{flex: 1, marginRight: 5}}>
-          <Text style={styles.radioBtnText}>{option.label}</Text>
+          <Text style={styles.radioBtnText}>{strings[option.label]}</Text>
         </View>
         <View style={styles.imageContainer}>
           <Image

@@ -273,7 +273,8 @@ const HomeFeed = ({
 
   const StickyHeaderComponent = useMemo(
     () =>
-      (isAdmin || writePostPrivacyStatus) && (
+      isAdmin &&
+      writePostPrivacyStatus && (
         <WritePost
           navigation={navigation}
           postDataItem={currentUserData}

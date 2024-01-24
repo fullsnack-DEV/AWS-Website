@@ -940,6 +940,7 @@ export default function LookingTeamScreen({navigation, route}) {
         }
         showTimeComponent
         showFeeOption
+        feeTitle={strings.matchFee}
         onPressApply={async (filterData) => {
           setloading(false);
           let tempFilter = {};

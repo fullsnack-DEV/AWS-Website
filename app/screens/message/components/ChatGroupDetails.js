@@ -130,7 +130,10 @@ const ChatGroupDetails = ({
   const handleAddMembers = (memberList = []) => {
     setShowInviteModal(false);
 
-    if (members.length === 2) {
+    if (
+      members.length === 2 &&
+      channel?.data?.group_type !== Verbs.channelTypeGeneral
+    ) {
       createNewChannel(memberList);
     } else {
       addMembersToChannel({

@@ -160,7 +160,6 @@ export default function InviteToEventScreen({navigation, route}) {
       return true;
     }
     if (user.invite_me_event === EventInvitePrivacy.followersMyTeamClub) {
-
       if (
         authContext.entity.role === Verbs.entityTypePlayer ||
         authContext.entity.role === Verbs.entityTypeUser
@@ -210,9 +209,7 @@ export default function InviteToEventScreen({navigation, route}) {
     return (
       <>
         <Pressable
-
           disabled={!checkInviteToEventPrivacyOfUser(item)}
-
           style={[
             {
               opacity: checkInviteToEventPrivacyOfUser(item) ? 1 : 0.4,
