@@ -1,22 +1,31 @@
 // @flow
-import React from 'react';
+import React, {useRef} from 'react';
 import {View, StyleSheet, TextInput, Pressable} from 'react-native';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 
-const EditBioScreen = ({bio = '', setData = () => {}}) => (
-  <View style={styles.parent}>
-    <Pressable style={styles.container}>
-      <TextInput
-        value={bio}
-        onChangeText={(text) => setData(text)}
-        style={styles.label}
-        numberOfLines={4}
-        blurOnSubmit={false}
-      />
-    </Pressable>
-  </View>
-);
+const EditBioScreen = ({bio = '', setData = () => {}}) => {
+  const inputRef = useRef();
+  return (
+    <View style={styles.parent}>
+      <Pressable
+        style={styles.container}
+        onPress={() => {
+          inputRef.current.focus();
+        }}>
+        <TextInput
+          defaultValue={bio}
+          onChangeText={(text) => setData(text)}
+          style={styles.input}
+          numberOfLines={4}
+          blurOnSubmit={false}
+          multiline
+          ref={inputRef}
+        />
+      </Pressable>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   parent: {
@@ -24,14 +33,14 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   container: {
-    //  minHeight: 193,
+    minHeight: 193,
     backgroundColor: colors.textFieldBackground,
     paddingTop: 9,
     paddingBottom: 15,
     paddingHorizontal: 13,
     borderRadius: 5,
   },
-  label: {
+  input: {
     fontSize: 16,
     lineHeight: 24,
     color: colors.lightBlackColor,

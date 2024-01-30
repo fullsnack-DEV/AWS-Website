@@ -73,15 +73,15 @@ const PostForEvent = ({
           )}
           <View style={[styles.row, {marginTop: 5}]}>
             <GroupIcon
-              imageUrl={postData.actor.data.full_image}
-              entityType={postData.actor.data.entity_type}
-              groupName={postData.actor.data.group_name}
+              imageUrl={postData.actor.data?.full_image ?? ''}
+              entityType={postData.actor.data?.entity_type ?? ''}
+              groupName={postData.actor.data?.group_name ?? ''}
               containerStyle={styles.profileIcon}
             />
             <View>
               <Text style={styles.organizerName} numberOfLines={1}>
-                {postData.actor.data.full_name ??
-                  postData.actor.data.group_name}
+                {postData.actor.data?.full_name ??
+                  postData.actor.data?.group_name}
               </Text>
             </View>
           </View>

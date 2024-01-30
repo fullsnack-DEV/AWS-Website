@@ -1,15 +1,13 @@
 // @flow
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import colors from '../../../../../Constants/Colors';
 import {getJSDate} from '../../../../../utils';
 
-const screenWidth = Dimensions.get('window').width;
-const totalBarWidth = parseInt(screenWidth * 0.3, 10);
-
 const AvailabilityBar = ({list = []}) => {
   const [timeSlots, setTimeSlots] = useState([]);
+  const [barWidth, setBarWidth] = useState(0);
 
   useEffect(() => {
     if (list.length > 0) {
@@ -62,12 +60,17 @@ const AvailabilityBar = ({list = []}) => {
   }, [list]);
 
   const calculateBarWidth = (hrs) => {
-    const barWidth = totalBarWidth / 24;
-    return barWidth * hrs;
+    const finalBarWidth = barWidth / 24;
+    return finalBarWidth * hrs;
   };
 
   return timeSlots.length > 0 ? (
-    <View style={styles.parent}>
+    <View
+      style={styles.parent}
+      onLayout={(event) => {
+        const contentWidth = event.nativeEvent.layout.width;
+        setBarWidth(contentWidth);
+      }}>
       {timeSlots.map((slot, index) => (
         <View
           style={[
@@ -75,7 +78,7 @@ const AvailabilityBar = ({list = []}) => {
             {
               width: calculateBarWidth(slot.hrs),
               backgroundColor: slot.blocked
-                ? colors.grayBackgroundColor
+                ? colors.iosActionSheetBgColor
                 : colors.availabilityBarColor,
             },
           ]}
@@ -84,25 +87,33 @@ const AvailabilityBar = ({list = []}) => {
       ))}
     </View>
   ) : (
-    <View style={styles.fullWidthBar} />
+    <View
+      onLayout={(event) => {
+        const contentWidth = event.nativeEvent.layout.width;
+        setBarWidth(contentWidth);
+      }}
+      style={styles.fullWidthBar}
+    />
   );
 };
 
 const styles = StyleSheet.create({
   parent: {
-    width: totalBarWidth,
-    height: 15,
+    flex: 1,
+    // width: totalBarWidth,
+    height: 10,
     marginLeft: 10,
-    borderRadius: 3,
+    borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.grayBackgroundColor,
+    backgroundColor: colors.iosActionSheetBgColor,
   },
   fullWidthBar: {
-    width: totalBarWidth,
-    height: 15,
+    flex: 1,
+    // width: totalBarWidth,
+    height: 10,
     marginLeft: 10,
-    borderRadius: 3,
+    borderRadius: 5,
     backgroundColor: colors.availabilityBarColor,
   },
 });

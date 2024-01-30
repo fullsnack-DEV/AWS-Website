@@ -15,6 +15,7 @@ import React, {
   useImperativeHandle,
   useState,
 } from 'react';
+import {useIsFocused} from '@react-navigation/native';
 import ImagePicker from 'react-native-image-crop-picker';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
@@ -30,6 +31,14 @@ import {strings} from '../../../Localization/translation';
 import {widthPercentageToDP} from '../../utils';
 import images from '../../Constants/ImagePath';
 import ActivityLoader from '../../components/loader/ActivityLoader';
+import BottomSheet from '../../components/modals/BottomSheet';
+import PrivacySettingsModal from '../../components/PrivacySettingsModal';
+import {
+  PrivacyKeyEnum,
+  defaultClubPrivacyOptions,
+  defaultOptions,
+} from '../../Constants/PrivacyOptionsConstant';
+import Verbs from '../../Constants/Verbs';
 
 const AllInOneGallery = ({
   navigation,
@@ -43,12 +52,54 @@ const AllInOneGallery = ({
   handleBackPress = () => {},
 }) => {
   const authContext = useContext(AuthContext);
+  const isFocused = useIsFocused();
   const [galleryType, setGalleryType] = useState(GALLERY_TYPE.FROMME);
   const [galleryData, setGalleryData] = useState([]);
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
   const [taggedNumber, setTaggedNumber] = useState(0);
   const [uplodedNumber, setUploadedNumber] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showOptions, setShowOptions] = useState(false);
+  const [showViewPrivacyModal, setShowViewPrivacyModal] = useState(false);
+  const [selectedPrivacyOption, setSelectedPrivacyOption] = useState({});
+  const [privacyOptionsList, setPrivacyOptionsList] = useState([]);
+
+  const getPrivacyOptionsList = useCallback(() => {
+    if (authContext.entity.role === Verbs.entityTypeClub) {
+      return [
+        {
+          question: 'whoCanViewClubGallerySection',
+          options: defaultClubPrivacyOptions,
+          key: PrivacyKeyEnum.Gallery,
+        },
+      ];
+    }
+    return [
+      {
+        question: 'whoCanViewYourGallerySection',
+        options: defaultOptions,
+        key: PrivacyKeyEnum.Gallery,
+      },
+    ];
+  }, [authContext.entity.role]);
+
+  useEffect(() => {
+    if (isFocused) {
+      const options = getPrivacyOptionsList();
+      setPrivacyOptionsList(options);
+
+      const obj = {};
+      options.forEach((item) => {
+        const privacyVal =
+          authContext.entity.obj[item.key] !== undefined
+            ? authContext.entity.obj[item.key]
+            : 1;
+        const option = item.options.find((ele) => ele.value === privacyVal);
+        obj[item.key] = option;
+      });
+      setSelectedPrivacyOption(obj);
+    }
+  }, [isFocused, authContext.entity.obj]);
 
   useImperativeHandle(galleryRef, () => ({
     refreshGallery() {
@@ -122,48 +173,45 @@ const AllInOneGallery = ({
     }
   };
 
-  const allGalleryRenderItem = useCallback(
-    ({item}) => {
-      const myItem =
-        typeof item?.object === 'string'
-          ? JSON.parse(item?.object)
-          : item?.object;
-      // if (
-      //   (index === 0 && authContext.entity.uid === entity_id) ||
-      //   (index === 0 && entity_type === 'game' && isAdmin)
-      // ) {
-      //   return (
-      //     <AddPhotoItem
-      //       onAddPhotoPress={() => {
-      //         ImagePicker.openPicker({
-      //           height: widthPercentageToDP(32.3),
-      //           width: widthPercentageToDP(32.3),
-      //           multiple: true,
-      //           maxFiles: MAX_UPLOAD_POST_ASSETS,
-      //         }).then((pickImages) => {
-      //           onAddPhotoPress(pickImages);
-      //         });
-      //       }}
-      //     />
-      //   );
-      // }
+  const allGalleryRenderItem = useCallback(({item}) => {
+    const myItem =
+      typeof item?.object === 'string'
+        ? JSON.parse(item?.object)
+        : item?.object;
+    // if (
+    //   (index === 0 && authContext.entity.uid === entity_id) ||
+    //   (index === 0 && entity_type === 'game' && isAdmin)
+    // ) {
+    //   return (
+    //     <AddPhotoItem
+    //       onAddPhotoPress={() => {
+    //         ImagePicker.openPicker({
+    //           height: widthPercentageToDP(32.3),
+    //           width: widthPercentageToDP(32.3),
+    //           multiple: true,
+    //           maxFiles: MAX_UPLOAD_POST_ASSETS,
+    //         }).then((pickImages) => {
+    //           onAddPhotoPress(pickImages);
+    //         });
+    //       }}
+    //     />
+    //   );
+    // }
 
-      if (myItem?.attachments?.length > 0) {
-        if (myItem?.attachments?.[0]?.type === 'image') {
-          if (myItem?.attachments?.length === 1)
-            return <SingleImageRender data={myItem} extraData={item} />;
-          return <MultipleImageRender data={myItem} extraData={item} />;
-        }
-        if (myItem?.attachments?.[0]?.type === 'video') {
-          if (myItem?.attachments?.length === 1)
-            return <SingleVideoRender data={myItem} />;
-          return <MultipleVideoRender data={myItem} />;
-        }
+    if (myItem?.attachments?.length > 0) {
+      if (myItem?.attachments?.[0]?.type === 'image') {
+        if (myItem?.attachments?.length === 1)
+          return <SingleImageRender data={myItem} extraData={item} />;
+        return <MultipleImageRender data={myItem} extraData={item} />;
       }
-      return <View />;
-    },
-    [authContext.entity.uid, entity_id, onAddPhotoPress],
-  );
+      if (myItem?.attachments?.[0]?.type === 'video') {
+        if (myItem?.attachments?.length === 1)
+          return <SingleVideoRender data={myItem} />;
+        return <MultipleVideoRender data={myItem} />;
+      }
+    }
+    return <View />;
+  }, []);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -194,6 +242,12 @@ const AllInOneGallery = ({
           });
         }}
         rightButtonTextStyle={{marginLeft: 15}}
+        rightIcon2={
+          authContext.entity.uid === entity_id || isAdmin
+            ? images.chat3Dot
+            : null
+        }
+        rightIcon2Press={() => setShowOptions(true)}
       />
       <View
         style={{
@@ -255,6 +309,34 @@ const AllInOneGallery = ({
           keyExtractor={(item, index) => `mainGallery${index}`}
         />
       </View>
+
+      <BottomSheet
+        isVisible={showOptions}
+        closeModal={() => setShowOptions(false)}
+        optionList={[strings.privacySettings]}
+        onSelect={(option) => {
+          if (option === strings.privacySettings) {
+            setShowViewPrivacyModal(true);
+          }
+          setShowOptions(false);
+        }}
+      />
+
+      <PrivacySettingsModal
+        isVisible={showViewPrivacyModal}
+        closeModal={() => setShowViewPrivacyModal(false)}
+        title={strings.viewPrivacySettings}
+        options={privacyOptionsList}
+        onSelect={(key, option) => {
+          const obj = {...selectedPrivacyOption};
+          obj[key] = option;
+          setSelectedPrivacyOption(obj);
+        }}
+        selectedOptions={selectedPrivacyOption}
+        onSave={() => {
+          setShowViewPrivacyModal(false);
+        }}
+      />
     </SafeAreaView>
   );
 };

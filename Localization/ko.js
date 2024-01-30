@@ -312,7 +312,7 @@ export default {
     'ko_Does a user need the approval for its membership request from the club to join it?',
   whoJoinText: 'ko_Who can join the club?',
   whoCanJoinTeam: 'ko_Who can join the team?',
-  whoCanJoinTeam: 'ko_Who can join your team?',
+  whoCanJoinYourTeam: 'ko_Who can join your team?',
   whoCanJoinClub: 'ko_Who can join the club?',
   everyoneText: 'ko_Everyone and Every team',
   onlyPersonText: 'ko_Only person or team invited by club',
@@ -3327,7 +3327,6 @@ export default {
   sportBarAlertText: 'ko_You can add up to 10 sports to the filter bar.',
   requestDoubleTeamText: 'ko_sent you a request to create a team together',
   selectClubText:
-
     'ko_ Select affiliated {0} in whose posts you want to display the post about this event.',
   shareEventPostText: 'ko_ Share Event Post',
   hideeventPostText: 'ko_Hide Event Post',
@@ -3440,7 +3439,11 @@ export default {
     'ko_ Add a few more details before you complete creating an event.',
   clubsText: 'ko_clubs',
   teamsText: 'ko_teams',
-
   maxFeeAlert: 'ko_Max fee should be greater than min fee.',
-
+  viewPrivacySettings: 'ko_View Privacy Settings',
+  newMatchesWillAppearHere: 'ko_New match will appear here.',
+  whoCanSeeItemsOfBasicInfo:
+    'ko_Who can see the following items of your basic info?',
+  theseSettingsWillBeAppliedForBasicInfo:
+    'ko_These settings will be applied to all screens where your basic info is displayed.',
 };

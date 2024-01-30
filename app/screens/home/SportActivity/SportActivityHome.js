@@ -45,15 +45,12 @@ import {
 } from '../../../api/Games';
 import StatSection from './components/StatSection';
 import ReviewSection from './components/ReviewSection';
-import SectionWrapperModal from './SectionWrapperModal';
 import colors from '../../../Constants/Colors';
 import InfoSection from './components/InfoSection';
 import LookingForSettingModal from './contentScreens/LookingForSettingModal';
-import EditWrapperScreen from './EditWrapperScreen';
-import PrivacySettingsScreen from './PrivacySettingsScreen';
 import usePrivacySettings from '../../../hooks/usePrivacySettings';
 import {
-  PersonalUserPrivacyEnum,
+  InviteToEventOptionsEnum,
   PrivacyKeyEnum,
 } from '../../../Constants/PrivacyOptionsConstant';
 import useStreamChatUtils from '../../../hooks/useStreamChatUtils';
@@ -77,24 +74,18 @@ const SportActivityHome = ({navigation, route}) => {
     totalDraws: 0,
     totalMatches: 0,
   });
-  const [activeTab, setActiveTab] = useState(strings.infoTitle);
-  const [settingModalObj, setSettingModalObj] = useState({
-    option: '',
-    title: '',
-  });
 
   const {sport, sportType, uid, backScreen, backScreenParams, entityType} =
     route.params;
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
-  const [showSectionModal, setShowSetionModal] = useState(false);
-  const [showWrapperModal, setShowWrapperModal] = useState(false);
+
   const lookingForModalRef = useRef();
-  const privacySettingModalRef = useRef();
   const {getPrivacyStatusForSportActivity, getPrivacyStatus} =
     usePrivacySettings();
   const [infoContentPrivacyStatus, setInfoContentPrivacyStatus] = useState({});
   const {createChannel, isCreatingChannel} = useStreamChatUtils();
+  const [chatPrivacyStatus, setChatPrivacyStatus] = useState(true);
 
   const getUserData = useCallback(
     (userId) => {
@@ -102,7 +93,11 @@ const SportActivityHome = ({navigation, route}) => {
       getUserDetails(userId, authContext)
         .then((res1) => {
           const userDetails = res1.payload;
-
+          const privacyStatus = getPrivacyStatus(
+            InviteToEventOptionsEnum[userDetails[PrivacyKeyEnum.Chats]],
+            userDetails,
+          );
+          setChatPrivacyStatus(privacyStatus);
           const groupQuery = {
             query: {
               terms: {
@@ -205,46 +200,6 @@ const SportActivityHome = ({navigation, route}) => {
       ]);
     }
   }, [isAdmin, sportType, entityType]);
-
-  const handleEditNavigation = (sectionName, title) => {
-    if (sectionName === strings.matchVenues) {
-      navigation.navigate('AccountStack', {
-        screen: 'ManageChallengeScreen',
-        params: {
-          groupObj: userData,
-          sportName: sportObj?.sport,
-          sportType: sportObj?.sport_type,
-        },
-      });
-    } else {
-      setSettingModalObj({option: sectionName, title});
-
-      setShowWrapperModal(true);
-      // navigation.navigate('HomeStack', {
-      //   screen: 'EditWrapperScreen',
-      //   params: {
-      //     section: sectionName,
-      //     title,
-      //     sportObj,
-      //     sportIcon,
-      //     entityType,
-      //   },
-      // });
-    }
-  };
-
-  const handlePrivacySettings = (sectionName, privacyKey) => {
-    // navigation.navigate('PrivacySettingsScreen', {
-    //   sportIcon,
-    //   section: sectionName,
-    //   sport: sportObj?.sport,
-    //   sportType: sportObj?.sport_type,
-    //   privacyKey,
-    //   entityType,
-    // });
-    setSettingModalObj({option: sectionName, privacyKey});
-    privacySettingModalRef.current?.present();
-  };
 
   const handleMoreOptions = (selectedOption) => {
     setShowMoreOptions(false);
@@ -438,18 +393,37 @@ const SportActivityHome = ({navigation, route}) => {
     getScorekeeperMatchList,
   ]);
 
+  useEffect(() => {
+    if (sportObj?.sport) {
+      const privacySetting = getPrivacyStatusForSportActivity(
+        sportObj,
+        userData,
+      );
+      setInfoContentPrivacyStatus(privacySetting);
+    }
+  }, [sportObj, userData]);
+
   const handleSectionClick = (section) => {
+    let activeTab = strings.infoTitle;
     if (
       section === strings.refereedMatchesTitle ||
       section === strings.scorekeptMatches
     ) {
-      setActiveTab(strings.matchesTitleText);
+      activeTab = strings.matchesTitleText;
     } else {
-      setActiveTab(section);
+      activeTab = section;
     }
-    const privacySetting = getPrivacyStatusForSportActivity(sportObj, userData);
-    setInfoContentPrivacyStatus(privacySetting);
-    setShowSetionModal(true);
+
+    navigation.navigate('SectionWrapperScreen', {
+      selectedOption: activeTab,
+      userObj: userData,
+      isAdmin,
+      sportObject: sportObj,
+      entityType,
+      sport,
+      sportType,
+      sportIcon,
+    });
   };
 
   const getHeaderBorderColor = () => {
@@ -573,6 +547,7 @@ const SportActivityHome = ({navigation, route}) => {
         // rightIcon1={!isAdmin ? images.tab_message : null}
         rightIcon2={images.chat3Dot}
         containerStyle={{
+          paddingTop: 0,
           paddingBottom: 7,
           borderBottomWidth: 3,
           borderBottomColor: getHeaderBorderColor(),
@@ -606,9 +581,7 @@ const SportActivityHome = ({navigation, route}) => {
             });
           }}
           sportType={sportObj?.sport_type}
-          chatPrivacyStatus={getPrivacyStatus(
-            PersonalUserPrivacyEnum[userData[PrivacyKeyEnum.Chats]],
-          )}
+          chatPrivacyStatus={chatPrivacyStatus}
         />
         <ActivityLoader visible={isCreatingChannel} />
         <ChallengeButton
@@ -728,22 +701,6 @@ const SportActivityHome = ({navigation, route}) => {
         }}
         type="ios"
       />
-      <SectionWrapperModal
-        isVisible={showSectionModal}
-        closeModal={() => setShowSetionModal(false)}
-        handleEditNavigation={handleEditNavigation}
-        handlePrivacySettings={handlePrivacySettings}
-        selectedOption={activeTab}
-        userData={userData}
-        isAdmin={isAdmin}
-        sportObj={sportObj}
-        entityType={entityType}
-        navigation={navigation}
-        sport={sport}
-        sportType={sportType}
-        sportIcon={sportIcon}
-        infoContentPrivacyStatus={infoContentPrivacyStatus}
-      />
 
       <LookingForSettingModal
         modalRef={lookingForModalRef}
@@ -751,31 +708,6 @@ const SportActivityHome = ({navigation, route}) => {
         sportObj={sportObj}
         entityType={entityType}
         sportType={sportObj?.sport_type}
-      />
-
-      <EditWrapperScreen
-        isVisible={showWrapperModal}
-        closeModal={() => {
-          setShowWrapperModal(false);
-        }}
-        entityType={entityType}
-        section={settingModalObj.option}
-        title={settingModalObj.title}
-        sportIcon={sportIcon}
-        sportObj={sportObj}
-      />
-
-      <PrivacySettingsScreen
-        modalRef={privacySettingModalRef}
-        closeModal={() => {
-          privacySettingModalRef.current.dismiss();
-          setShowSetionModal(false);
-        }}
-        section={settingModalObj.option}
-        sport={sport}
-        sportType={sportType}
-        sportIcon={sportIcon}
-        privacyKey={settingModalObj.title}
       />
     </SafeAreaView>
   );

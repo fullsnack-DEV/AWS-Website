@@ -69,7 +69,7 @@ import ReviewDetailsScreen from '../screens/home/SportActivity/ReviewDetailsScre
 import MembershipFeeScreen from '../screens/home/MembershipFeeScreen';
 import GroupFollowersScreen from '../screens/account/groupConnections/GroupFollowersScreen';
 import EventsListScreen from '../screens/account/schedule/EventsListScreen';
-import PrivacySettingsScreen from '../screens/home/SportActivity/PrivacySettingsScreen';
+
 import ReplyScreen from '../screens/home/SportActivity/contentScreens/ReplyScreen';
 import UserGalleryScreen from '../screens/home/user/UserGalleryScreen';
 import UserScoreboardScreen from '../screens/home/user/UserScoreboardScreen';
@@ -81,6 +81,7 @@ import ChooseTimeSlotScreen from '../screens/challenge/createChallenge/ChooseTim
 import ChallengeScreen from '../screens/challenge/createChallenge/ChallengeScreen';
 import GroupMembersScreen from '../screens/account/groupConnections/GroupMembersScreen';
 import HomeScheduleScreen from '../screens/home/HomeScheduleScreen';
+import SectionWrapperScreen from '../screens/home/SportActivity/SectionWrapperScreen';
 
 const Stack = createStackNavigator();
 
@@ -100,11 +101,6 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="EditWrapperScreen"
       component={EditWrapperScreen}
-      options={{headerShown: false}}
-    />
-    <Stack.Screen
-      name="PrivacySettingsScreen"
-      component={PrivacySettingsScreen}
       options={{headerShown: false}}
     />
     <Stack.Screen
@@ -956,6 +952,11 @@ const HomeNavigator = () => (
     <Stack.Screen
       name="GroupMembersScreen"
       component={GroupMembersScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="SectionWrapperScreen"
+      component={SectionWrapperScreen}
       options={{headerShown: false}}
     />
   </Stack.Navigator>

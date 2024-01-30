@@ -312,7 +312,7 @@ export default {
     'fr_Does a user need the approval for its membership request from the club to join it?',
   whoJoinText: 'fr_Who can join the club?',
   whoCanJoinTeam: 'fr_Who can join the team?',
-  whoCanJoinTeam: 'fr_Who can join your team?',
+  whoCanJoinYourTeam: 'fr_Who can join your team?',
   whoCanJoinClub: 'fr_Who can join the club?',
   everyoneText: 'fr_Everyone and Every team',
   onlyPersonText: 'fr_Only person or team invited by club',
@@ -3327,7 +3327,6 @@ export default {
   sportBarAlertText: 'fr_You can add up to 10 sports to the filter bar.',
   requestDoubleTeamText: 'fr_sent you a request to create a team together',
   selectClubText:
-
     'fr_ Select affiliated {0} in whose posts you want to display the post about this event.',
   shareEventPostText: 'fr_ Share Event Post',
   hideeventPostText: 'fr_Hide Event Post',
@@ -3440,7 +3439,11 @@ export default {
     'fr_ Add a few more details before you complete creating an event.',
   clubsText: 'fr_clubs',
   teamsText: 'fr_teams',
-
   maxFeeAlert: 'fr_Max fee should be greater than min fee.',
-
+  viewPrivacySettings: 'fr_View Privacy Settings',
+  newMatchesWillAppearHere: 'fr_New match will appear here.',
+  whoCanSeeItemsOfBasicInfo:
+    'fr_Who can see the following items of your basic info?',
+  theseSettingsWillBeAppliedForBasicInfo:
+    'fr_These settings will be applied to all screens where your basic info is displayed.',
 };

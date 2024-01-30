@@ -42,6 +42,9 @@ import SelectedMatchList from '../../components/newsFeed/SelectedMatchList';
 import {getTaggedEntityData, prepareTagName} from '../../utils';
 import usePrivacySettings from '../../hooks/usePrivacySettings';
 import {
+  DefaultClubPrivacyOptionsEnum,
+  GroupDefalutPrivacyOptionsEnum,
+  GroupDefaultPrivacyOptionsForDoubleTeamEnum,
   PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
 } from '../../Constants/PrivacyOptionsConstant';
@@ -274,19 +277,39 @@ export default function UserTagSelectionListScreen({navigation, route}) {
     }
   };
 
+  const checkPrivacyStatus = (data = {}) => {
+    if (currentTab === strings.matchesTitleText) {
+      return false;
+    }
+
+    let privacyVal = '';
+
+    if (data.entity_type === Verbs.entityTypeTeam) {
+      privacyVal =
+        data.sport_type === Verbs.doubleSport
+          ? GroupDefaultPrivacyOptionsForDoubleTeamEnum[
+              data[PrivacyKeyEnum.Tag]
+            ]
+          : GroupDefalutPrivacyOptionsEnum[data[PrivacyKeyEnum.Tag]];
+    } else if (data.entity_type === Verbs.entityTypeClub) {
+      privacyVal = DefaultClubPrivacyOptionsEnum[data[PrivacyKeyEnum.Tag]];
+    } else {
+      privacyVal = PersonalUserPrivacyEnum[data[PrivacyKeyEnum.Tag]];
+    }
+
+    const status = getPrivacyStatus(privacyVal, data);
+
+    return status;
+  };
+
   const handleSelection = (data = {}) => {
     const list =
       currentTab === strings.matchesTitleText ? [] : [...seletedEntity];
 
     let newList = [...list];
-    const status =
-      currentTab === strings.matchesTitleText
-        ? getPrivacyStatus(
-            PersonalUserPrivacyEnum[data[PrivacyKeyEnum.Tag]],
-            data,
-          )
-        : false;
+    const status = checkPrivacyStatus(data);
 
+    // console.log({status});
     if (list.length > 0) {
       let obj = null;
       if (

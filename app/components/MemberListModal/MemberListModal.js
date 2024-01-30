@@ -35,7 +35,7 @@ import AuthContext from '../../auth/context';
 import {onResendRequest} from '../../utils/accountUtils';
 import usePrivacySettings from '../../hooks/usePrivacySettings';
 import {
-  PersonalUserPrivacyEnum,
+  InviteToCreateDoubleTeamOptionsEnum,
   PrivacyKeyEnum,
 } from '../../Constants/PrivacyOptionsConstant';
 
@@ -67,7 +67,7 @@ const MemberListModal = ({
         const doubleTeamPlayers = sportsList.filter((item) => {
           if (item[PrivacyKeyEnum.CreateTeamForDoubleSport]) {
             const status = getPrivacyStatus(
-              PersonalUserPrivacyEnum[
+              InviteToCreateDoubleTeamOptionsEnum[
                 item[PrivacyKeyEnum.CreateTeamForDoubleSport]
               ],
               item,

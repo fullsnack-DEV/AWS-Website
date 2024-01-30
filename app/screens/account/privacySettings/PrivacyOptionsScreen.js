@@ -24,13 +24,13 @@ import {
   InviteToEventOptionsEnum,
   PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
-  ScoreboardPeriodPrivacyOptionsEnum,
   TeamChatPrivacyOptionsEnum,
   defaultClubPrivacyOptions,
   groupJoinOptions,
   InviteToJoinClubOptionsEnum,
   TeamJoinClubOptionsEnum,
   ClubChatPrivacyOptionsEnum,
+  InviteToCreateDoubleTeamOptionsEnum,
 } from '../../../Constants/PrivacyOptionsConstant';
 import {patchPlayer} from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -59,11 +59,8 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
           };
 
           if (
+            route.params.sportObject.sport_type === Verbs.singleSport ||
             [
-              PrivacyKeyEnum.Clubs,
-              PrivacyKeyEnum.Leagues,
-              PrivacyKeyEnum.Teams,
-              PrivacyKeyEnum.HomeFacility,
               PrivacyKeyEnum.ScoreboardTimePeriod,
               PrivacyKeyEnum.Scoreboard,
             ].includes(item.key)
@@ -72,14 +69,12 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
               ? sportPrivacyObj[item.key]
               : 1;
           }
+
           return sportPrivacyObj[item.key] >= 0 ? sportPrivacyObj[item.key] : 0;
         }
         if (
+          route.params?.sportObject?.sport_type === Verbs.singleSport ||
           [
-            PrivacyKeyEnum.Clubs,
-            PrivacyKeyEnum.Leagues,
-            PrivacyKeyEnum.Teams,
-            PrivacyKeyEnum.HomeFacility,
             PrivacyKeyEnum.ScoreboardTimePeriod,
             PrivacyKeyEnum.Scoreboard,
           ].includes(item.key)
@@ -88,12 +83,24 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
         }
         return 0;
       }
-      return entity[item.key] ?? 1;
+
+      if (
+        [
+          PrivacyKeyEnum.Gender,
+          PrivacyKeyEnum.YearOfBirth,
+          PrivacyKeyEnum.Height,
+          PrivacyKeyEnum.Weight,
+        ].includes(item.key)
+      ) {
+        return entity[item.key] >= 0 ? entity[item.key] : 0;
+      }
+      return entity[item.key] >= 0 ? entity[item.key] : 1;
     },
     [
       authContext.entity.obj,
       route.params?.isFromSportActivitySettings,
       route.params?.sportObject?.privacy_settings,
+      route.params?.sportObject?.sport_type,
     ],
   );
 
@@ -131,7 +138,6 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
         }
       } else if (authContext.entity.role === Verbs.entityTypeClub) {
         switch (key) {
-          case PrivacyKeyEnum.Gallery:
           case PrivacyKeyEnum.JoinAsMember:
             return groupJoinOptions[privacyVal];
 
@@ -152,9 +158,6 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
         }
       } else {
         switch (key) {
-          case PrivacyKeyEnum.YearOfBirth:
-            return ScoreboardPeriodPrivacyOptionsEnum[privacyVal];
-
           case PrivacyKeyEnum.Follow:
             return FollowerFollowingOptionsEnum[privacyVal];
 
@@ -164,6 +167,13 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
           case PrivacyKeyEnum.InviteForTeam:
           case PrivacyKeyEnum.InviteForClub:
             return BinaryPrivacyOptionsEnum[privacyVal];
+
+          case PrivacyKeyEnum.Events:
+          case PrivacyKeyEnum.Chats:
+            return InviteToEventOptionsEnum[privacyVal];
+
+          case PrivacyKeyEnum.CreateTeamForDoubleSport:
+            return InviteToCreateDoubleTeamOptionsEnum[privacyVal];
 
           default:
             return PersonalUserPrivacyEnum[privacyVal];
@@ -297,6 +307,16 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
         <ScrollView
           contentContainerStyle={styles.container}
           showsVerticalScrollIndicator={false}>
+          {headerTitle === strings.basicInfoText ? (
+            <View>
+              <Text style={styles.titleQuestion}>
+                {strings.whoCanSeeItemsOfBasicInfo}
+              </Text>
+              <Text style={styles.titleSubText}>
+                {strings.theseSettingsWillBeAppliedForBasicInfo}
+              </Text>
+            </View>
+          ) : null}
           {(privacyOptions ?? []).map((item, index) => {
             const selectedOption =
               selectedOptions.find((ele) => item.key === ele.key) ?? {};
@@ -362,6 +382,20 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
+  },
+  titleQuestion: {
+    fontSize: 20,
+    lineHeight: 30,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RMedium,
+    marginBottom: 15,
+  },
+  titleSubText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.lightBlackColor,
+    fontFamily: fonts.RRegular,
+    marginBottom: 25,
   },
 });
 

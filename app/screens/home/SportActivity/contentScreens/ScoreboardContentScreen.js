@@ -1,7 +1,7 @@
 // @flow
 import {useIsFocused} from '@react-navigation/native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
 import {strings} from '../../../../../Localization/translation';
 import {
   getGameScoreboardEvents,
@@ -15,6 +15,7 @@ import fonts from '../../../../Constants/Fonts';
 import GameStatus from '../../../../Constants/GameStatus';
 import Verbs from '../../../../Constants/Verbs';
 import ScoreBoardList from '../components/ScoreBoardList';
+import images from '../../../../Constants/ImagePath';
 
 const ScoreboardContentScreen = ({
   userData = {},
@@ -188,14 +189,30 @@ const ScoreboardContentScreen = ({
           </Text>
         </TouchableOpacity>
       </View>
-      <ScoreBoardList
-        loading={loading}
-        matchList={scoreboardList}
-        screenType={Verbs.screenTypeMainScreen}
-        sectionList={getSectionList()}
-        matchCount={getMatchCount()}
-        onCardPress={onCardPress}
-      />
+      {scoreboardList.length > 0 && (
+        <ScoreBoardList
+          loading={loading}
+          matchList={scoreboardList}
+          screenType={Verbs.screenTypeMainScreen}
+          sectionList={getSectionList()}
+          matchCount={getMatchCount()}
+          onCardPress={onCardPress}
+        />
+      )}
+
+      {!loading && scoreboardList.length === 0 ? (
+        <View style={styles.container}>
+          <View style={{alignItems: 'center', marginBottom: 50}}>
+            <Text style={styles.noDataText}>{strings.noMatch}</Text>
+            <Text style={styles.noDataSubText}>
+              {strings.newMatchesWillAppearHere}
+            </Text>
+          </View>
+          <View style={styles.imageContainer}>
+            <Image source={images.noMatchImageIcon} style={styles.image} />
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 };
@@ -227,6 +244,37 @@ const styles = StyleSheet.create({
   activeTabLabel: {
     fontFamily: fonts.RBold,
     color: colors.tabFontColor,
+  },
+  imageContainer: {
+    width: 208,
+    height: 226,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noDataText: {
+    fontSize: 20,
+    lineHeight: 30,
+    color: colors.googleColor,
+    fontFamily: fonts.RBold,
+    textAlign: 'center',
+  },
+  noDataSubText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.googleColor,
+    fontFamily: fonts.RRegular,
+    marginTop: 5,
+    textAlign: 'center',
   },
 });
 export default ScoreboardContentScreen;

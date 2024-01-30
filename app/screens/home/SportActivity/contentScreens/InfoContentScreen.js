@@ -22,7 +22,6 @@ import {getJSDate} from '../../../../utils';
 import CertificateList from '../components/CertificateList';
 import ServicableArea from '../components/ServicableArea';
 import {getTitleForRegister} from '../../../../utils/sportsActivityUtils';
-import CustomModalWrapper from '../../../../components/CustomModalWrapper';
 import BottomSheet from '../../../../components/modals/BottomSheet';
 import {PrivacyKeyEnum} from '../../../../Constants/PrivacyOptionsConstant';
 
@@ -49,9 +48,10 @@ const InfoContentScreen = ({
   entityType = Verbs.entityTypePlayer,
   onPressCertificate = () => {},
   privacyStatus = {},
+  setShowInfo = () => {},
+  userPrivacyStatus = {},
 }) => {
   const [options, setOptions] = useState([]);
-  const [showInfo, setShowInfo] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editModalInfo, setEditModalInfo] = useState({
     section: '',
@@ -60,7 +60,6 @@ const InfoContentScreen = ({
   const [editButtonOptions, setEditButtonOptions] = useState([]);
 
   const [forHome] = useState(true);
-  const [snapPoints, setSnapPoints] = useState([]);
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -75,9 +74,7 @@ const InfoContentScreen = ({
         const arr = [...OptionList];
         arr.splice(2, 0, strings.homeFacility);
         arr.splice(3, 0, strings.matchVenues);
-        if (sportObj.sport === Verbs.tennisSport) {
-          arr.splice(4, 0, strings.ntrpTitle);
-        }
+        arr.splice(4, 0, strings.ntrpTitle);
 
         setOptions([...arr]);
       } else {
@@ -117,7 +114,7 @@ const InfoContentScreen = ({
         );
 
       case strings.basicInfoText:
-        return <UserDetails user={user} privacyStatus={privacyStatus} />;
+        return <UserDetails user={user} privacyStatus={userPrivacyStatus} />;
 
       case strings.clubstitle:
         return (
@@ -210,9 +207,7 @@ const InfoContentScreen = ({
   const editOptions = (sectionName) => {
     switch (sectionName) {
       case strings.bio:
-        setEditModalInfo({section: sectionName, privacyKey: privacyKey.bio});
-        setEditButtonOptions([strings.editbio, strings.privacySettingText]);
-        setShowEditModal(true);
+        handleEditOption(sectionName, strings.editbio);
         break;
 
       case strings.basicInfoText:
@@ -220,7 +215,10 @@ const InfoContentScreen = ({
           section: sectionName,
           privacyKey: privacyKey.basicInfo,
         });
-        setEditButtonOptions([strings.privacySettingText]);
+        setEditButtonOptions([
+          strings.basicInfoText,
+          strings.privacySettingText,
+        ]);
         setShowEditModal(true);
         break;
 
@@ -245,22 +243,17 @@ const InfoContentScreen = ({
       case strings.homeFacility:
         setEditModalInfo({
           section: sectionName,
-          privacyKey: '',
+          privacyKey: privacyKey.homeFacility,
         });
-        setEditButtonOptions([strings.editHomePlaceText]);
+        setEditButtonOptions([
+          strings.editHomePlaceText,
+          strings.privacySettingText,
+        ]);
         setShowEditModal(true);
         break;
 
       case strings.ntrpTitle:
-        setEditModalInfo({
-          section: sectionName,
-          privacyKey: privacyKey.ntrp,
-        });
-        setEditButtonOptions([
-          strings.editNTRPText,
-          strings.privacySettingText,
-        ]);
-        setShowEditModal(true);
+        handleEditOption(sectionName, strings.editNTRPText);
         break;
 
       case strings.matchVenues:
@@ -273,24 +266,20 @@ const InfoContentScreen = ({
         break;
 
       case strings.teamstitle:
+        setEditModalInfo({
+          section: sectionName,
+          privacyKey: privacyKey.teams,
+        });
+        setEditButtonOptions([strings.privacySettingText]);
+        setShowEditModal(true);
         break;
 
       case strings.certiTitle:
-        setEditModalInfo({
-          section: sectionName,
-          privacyKey: '',
-        });
-        setEditButtonOptions([strings.editCertificateText]);
-        setShowEditModal(true);
+        handleEditOption(sectionName, strings.editCertificateText);
         break;
 
       case strings.servicableAreas:
-        setEditModalInfo({
-          section: sectionName,
-          privacyKey: '',
-        });
-        setEditButtonOptions([strings.editServicableAreasText]);
-        setShowEditModal(true);
+        handleEditOption(sectionName, strings.editServicableAreasText);
         break;
 
       default:
@@ -359,7 +348,7 @@ const InfoContentScreen = ({
                     {item === strings.matchVenues ? (
                       <TouchableOpacity
                         style={styles.infoButtonContainer}
-                        onPress={() => setShowInfo(true)}>
+                        onPress={() => setShowInfo()}>
                         <Image source={images.infoIcon} style={styles.icon} />
                       </TouchableOpacity>
                     ) : null}
@@ -381,24 +370,6 @@ const InfoContentScreen = ({
           );
         }}
       />
-      {/* <Modal visible={showInfo} transparent animationType="slide"></Modal> */}
-      <CustomModalWrapper
-        isVisible={showInfo}
-        closeModal={() => setShowInfo(false)}
-        externalSnapPoints={snapPoints}>
-        <View
-          onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
-
-            setSnapPoints([
-              '50%',
-              contentHeight,
-              Dimensions.get('window').height - 40,
-            ]);
-          }}>
-          <Text style={styles.label}>{strings.matchVenueInfo}</Text>
-        </View>
-      </CustomModalWrapper>
 
       <BottomSheet
         isVisible={showEditModal}

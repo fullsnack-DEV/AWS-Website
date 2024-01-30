@@ -34,7 +34,7 @@ import usePrivacySettings from '../../hooks/usePrivacySettings';
 import {
   GroupDefalutPrivacyOptionsEnum,
   GroupDefaultPrivacyOptionsForDoubleTeamEnum,
-  PersonalUserPrivacyEnum,
+  InviteToEventOptionsEnum,
   PrivacyKeyEnum,
 } from '../../Constants/PrivacyOptionsConstant';
 
@@ -239,7 +239,7 @@ const MessageInviteScreen = ({
       status = getPrivacyStatus(privacyVal, entityObj.data);
     } else {
       status = getPrivacyStatus(
-        PersonalUserPrivacyEnum[entityObj.data[PrivacyKeyEnum.Chats]],
+        InviteToEventOptionsEnum[entityObj.data[PrivacyKeyEnum.Chats]],
         entityObj.data,
       );
     }

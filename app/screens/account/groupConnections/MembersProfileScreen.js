@@ -72,7 +72,7 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import usePrivacySettings from '../../../hooks/usePrivacySettings';
 import {
-  PersonalUserPrivacyEnum,
+  InviteToEventOptionsEnum,
   PrivacyKeyEnum,
 } from '../../../Constants/PrivacyOptionsConstant';
 
@@ -298,24 +298,28 @@ export default function MembersProfileScreen({navigation, route}) {
     }
   };
 
+  useEffect(() => {
+    if (route?.params?.memberID) {
+      getUserDetails(route.params.memberID, authContext)
+        .then((res) => {
+          if (res.payload?.user_id) {
+            const status = getPrivacyStatus(
+              InviteToEventOptionsEnum[res.payload[PrivacyKeyEnum.Chats]],
+              res.payload,
+            );
+            setChatPrivacyStatus(status);
+          }
+        })
+        .catch((err) => {
+          console.log('error for getting userinfo ==>', err);
+        });
+    }
+  }, [route?.params?.memberID, authContext]);
+
   const getMemberInformation = () => {
     if (!firstTimeLoad) setloading(true);
     entity = authContext.entity;
     setSwitchUser(entity);
-
-    getUserDetails(memberID, authContext)
-      .then((res) => {
-        if (res.payload?.user_id) {
-          const status = getPrivacyStatus(
-            PersonalUserPrivacyEnum[res.payload[PrivacyKeyEnum.Chats]],
-            res.payload,
-          );
-          setChatPrivacyStatus(status);
-        }
-      })
-      .catch((err) => {
-        console.log('error for getting userinfo ==>', err);
-      });
 
     // Setting of Edit option
 

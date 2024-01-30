@@ -79,6 +79,14 @@ import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import AvailibilityScheduleScreen from '../account/schedule/AvailibityScheduleScreen';
 import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
+import PrivacySettingsModal from '../../components/PrivacySettingsModal';
+import {
+  PrivacyKeyEnum,
+  defaultClubPrivacyOptions,
+  groupDefaultPrivacyOptionsForDoubleTeam,
+  groupPrivacyDefalutOptions,
+  inviteToEventOptions,
+} from '../../Constants/PrivacyOptionsConstant';
 
 export default function HomeScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
@@ -202,12 +210,64 @@ export default function HomeScheduleScreen({navigation, route}) {
   const [filterCancelled, setFilterCancelled] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
   const [isFromHomeScreen] = useState(route?.params?.isFromHomeScreen);
-
   const [showOtherOptionForClub, setShowOtherOptionForClub] = useState(false);
-
   const [showOtherOptionForTeam, setShowOtherOptionforTeam] = useState(false);
-
   const [allUserGroups, setallUsersGroups] = useState([]);
+  const [showViewPrivacyModal, setShowViewPrivacyModal] = useState(false);
+  const [selectedPrivacyOption, setSelectedPrivacyOption] = useState({});
+  const [privacyOptionsList, setPrivacyOptionsList] = useState([]);
+
+  const getPrivacyOptionsList = useCallback(() => {
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      return [
+        {
+          question: 'whoCanViewEventSection',
+          subText: 'whoCanViewClubEventSectionSubText',
+          options:
+            authContext.entity.obj.sport_type === Verbs.doubleSport
+              ? groupDefaultPrivacyOptionsForDoubleTeam
+              : groupPrivacyDefalutOptions,
+          key: PrivacyKeyEnum.Events,
+        },
+      ];
+    }
+    if (authContext.entity.role === Verbs.entityTypeClub) {
+      return [
+        {
+          question: 'whoCanViewClubEventSection',
+          subText: 'whoCanViewClubEventSectionSubText',
+          options: defaultClubPrivacyOptions,
+          key: PrivacyKeyEnum.Events,
+        },
+      ];
+    }
+    return [
+      {
+        question: 'whoCanViewYourEventsSection',
+        subText: 'eventsPrivacySubText',
+        options: inviteToEventOptions,
+        key: PrivacyKeyEnum.Events,
+      },
+    ];
+  }, [authContext.entity.role, authContext.entity.obj.sport_type]);
+
+  useEffect(() => {
+    if (isFocused) {
+      const options = getPrivacyOptionsList();
+      setPrivacyOptionsList(options);
+
+      const obj = {};
+      options.forEach((item) => {
+        const privacyVal =
+          authContext.entity.obj[item.key] !== undefined
+            ? authContext.entity.obj[item.key]
+            : 1;
+        const option = item.options.find((ele) => ele.value === privacyVal);
+        obj[item.key] = option;
+      });
+      setSelectedPrivacyOption(obj);
+    }
+  }, [isFocused, authContext.entity.obj]);
 
   useEffect(() => {
     if (route?.params?.isAdmin !== undefined) {
@@ -2224,9 +2284,10 @@ export default function HomeScheduleScreen({navigation, route}) {
                 screen: 'ViewEventSettingsScreen',
               });
             } else {
-              navigation.navigate('ScheduleStack', {
-                screen: 'ViewPrivacyScreen',
-              });
+              // navigation.navigate('ScheduleStack', {
+              //   screen: 'ViewPrivacyScreen',
+              // });
+              setShowViewPrivacyModal(true);
             }
             setSettingsModal(false);
           }}
@@ -2365,6 +2426,22 @@ export default function HomeScheduleScreen({navigation, route}) {
           }}
         />
       </View>
+
+      <PrivacySettingsModal
+        isVisible={showViewPrivacyModal}
+        closeModal={() => setShowViewPrivacyModal(false)}
+        title={strings.viewPrivacySettings}
+        options={privacyOptionsList}
+        onSelect={(key, option) => {
+          const obj = {...selectedPrivacyOption};
+          obj[key] = option;
+          setSelectedPrivacyOption(obj);
+        }}
+        selectedOptions={selectedPrivacyOption}
+        onSave={() => {
+          setShowViewPrivacyModal(false);
+        }}
+      />
 
       {/*  Availability edit modal */}
       {/* <Modal

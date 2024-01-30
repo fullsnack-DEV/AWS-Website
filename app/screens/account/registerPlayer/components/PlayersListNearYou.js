@@ -48,7 +48,7 @@ const PlayersListNearYou = ({
     const inviteStatus = [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(
       loggedInEntityType,
     )
-      ? getPrivacyStatus(BinaryPrivacyOptionsEnum(getPrivacyVal(item), item))
+      ? getPrivacyStatus(BinaryPrivacyOptionsEnum[getPrivacyVal(item)], item)
       : true;
 
     return (

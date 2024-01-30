@@ -35,14 +35,12 @@ const SportActivityPrivacyOptionsScreen = ({navigation, route}) => {
   const getChildOptions = () => {
     if (sportObject.sport_type === Verbs.singleSport) {
       return [
-        strings.basicinfotitle,
         strings.homeFacility,
         strings.clubsTitleText,
         strings.leaguesTitle,
       ];
     }
     return [
-      strings.basicinfotitle,
       strings.teamsTitleText,
       strings.clubsTitleText,
       strings.leaguesTitle,
@@ -84,35 +82,6 @@ const SportActivityPrivacyOptionsScreen = ({navigation, route}) => {
             question: strings.whoCanSeeYourLeagues,
             options: defaultOptions,
             key: PrivacyKeyEnum.Leagues,
-          },
-        ];
-
-      case strings.basicinfotitle:
-        return [
-          {
-            question: strings.whoCanSeeYourYearOfBirth,
-            options: defaultOptions,
-            key: PrivacyKeyEnum.YearOfBirth,
-          },
-          {
-            question: strings.whoCanSeeYourGender,
-            options: defaultOptions,
-            key: PrivacyKeyEnum.Gender,
-          },
-          {
-            question: strings.whoCanSeeYourHeight,
-            options: defaultOptions,
-            key: PrivacyKeyEnum.Height,
-          },
-          {
-            question: strings.whoCanSeeYourWeight,
-            options: defaultOptions,
-            key: PrivacyKeyEnum.Weight,
-          },
-          {
-            question: strings.whoCanSeeYouLanguages,
-            options: defaultOptions,
-            key: PrivacyKeyEnum.Langueages,
           },
         ];
 

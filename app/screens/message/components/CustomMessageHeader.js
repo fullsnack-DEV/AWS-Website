@@ -20,7 +20,7 @@ const CustomMessageHeader = ({message, channel}) => {
       channel.data?.group_type === Verbs.channelTypeGeneral ||
       channel.data?.channel_type === Verbs.channelTypeAuto
     ) {
-      entityName = member.user.group_name ?? member.user.name;
+      entityName = member?.user?.group_name ?? member?.user?.name ?? '';
     } else {
       entityName = member.user.group_name ?? '';
     }

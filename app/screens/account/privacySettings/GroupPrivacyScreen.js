@@ -101,6 +101,7 @@ const GroupPrivacyScreen = ({navigation}) => {
                   ? groupDefaultPrivacyOptionsForDoubleTeam
                   : groupPrivacyDefalutOptions,
               key: PrivacyKeyEnum.Events,
+              subText: strings.whoCanViewClubEventSectionSubText,
             },
           ];
 
@@ -119,7 +120,7 @@ const GroupPrivacyScreen = ({navigation}) => {
         case strings.membersTitle:
           return [
             {
-              question: strings.whoCanJoinTitle,
+              question: strings.whoCanJoinYourTeam,
               options: groupJoinOptions,
               key: PrivacyKeyEnum.JoinAsMember,
             },
@@ -227,7 +228,7 @@ const GroupPrivacyScreen = ({navigation}) => {
           return [
             {
               question: strings.whoCanViewClubGallerySection,
-              options: groupJoinOptions,
+              options: defaultClubPrivacyOptions,
               key: PrivacyKeyEnum.Gallery,
             },
           ];

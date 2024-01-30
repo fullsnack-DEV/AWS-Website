@@ -32,6 +32,11 @@ import TCThinDivider from './TCThinDivider';
 import InviteMemberbyEmailModal from './InviteMemberByEmail';
 import GroupIcon from './GroupIcon';
 import Verbs from '../Constants/Verbs';
+import usePrivacySettings from '../hooks/usePrivacySettings';
+import {
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../Constants/PrivacyOptionsConstant';
 
 function InviteMemberModal({
   isVisible,
@@ -50,6 +55,8 @@ function InviteMemberModal({
   const [searchText, setSearchText] = useState('');
   const [showInviteByEmail, setShowInvitwByEmail] = useState(false);
   const [filteredList, setFilteredList] = useState([]);
+
+  const {getPrivacyStatus} = usePrivacySettings();
 
   useEffect(() => {
     getUsers(filters);
@@ -164,10 +171,21 @@ function InviteMemberModal({
 
   const renderPlayer = ({item}) => {
     const isChecked = selectedList.includes(item.user_id);
+    const privacyStatus = getPrivacyStatus(
+      PersonalUserPrivacyEnum[
+        item[
+          item.entity_type === Verbs.entityTypeTeam
+            ? PrivacyKeyEnum.InviteForTeam
+            : PrivacyKeyEnum.InviteForClub
+        ]
+      ],
+      item,
+    );
     return (
       <Pressable
         onPress={() => selectPlayer(item)}
-        style={styles.topViewContainer}>
+        style={[styles.topViewContainer, {opacity: privacyStatus ? 1 : 0.5}]}
+        disabled={!privacyStatus}>
         <View style={{flexDirection: 'row'}}>
           <View style={{marginTop: 15}}>
             <GroupIcon

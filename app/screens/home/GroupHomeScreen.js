@@ -79,6 +79,7 @@ const GroupHomeScreen = ({
   pulltoRefresh = () => {},
   routeParams = {},
   privacyObj = {},
+  updatePrivacyObj = () => {},
 }) => {
   const authContext = useContext(AuthContext);
 
@@ -131,6 +132,12 @@ const GroupHomeScreen = ({
 
     return true;
   }, [navigation, route.params.comeFrom, restrictReturn]);
+
+  useEffect(() => {
+    if (currentUserData?.group_id) {
+      updatePrivacyObj(currentUserData);
+    }
+  }, [currentUserData]);
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
@@ -257,23 +264,53 @@ const GroupHomeScreen = ({
     }
   };
 
-  const getTavOptions = () => {
+  const getTabOptions = () => {
     if (groupData?.entity_type === Verbs.entityTypeTeam) {
-      if (privacyObj[PrivacyKeyEnum.Events]) {
-        return [
-          strings.infoTitle,
-          strings.scheduleTitle,
-          strings.scoreboard,
-          strings.stats,
-          strings.reviews,
-        ];
-      }
-      return [
+      const teamOptions = [
         strings.infoTitle,
+        strings.scheduleTitle,
         strings.scoreboard,
         strings.stats,
         strings.reviews,
       ];
+
+      const optionsList = [];
+      teamOptions.forEach((key) => {
+        if (key === strings.scheduleTitle) {
+          if (privacyObj[PrivacyKeyEnum.Events]) {
+            optionsList.push(key);
+          }
+        } else {
+          optionsList.push(key);
+        }
+      });
+
+      return optionsList;
+    }
+    if (groupData?.entity_type === Verbs.entityTypeClub) {
+      const clubOptions = [
+        strings.infoTitle,
+        strings.scheduleTitle,
+        strings.scoreboard,
+        strings.stats,
+        strings.galleryTitle,
+      ];
+      const optionsList = [];
+      clubOptions.forEach((key) => {
+        if (key === strings.scheduleTitle) {
+          if (privacyObj[PrivacyKeyEnum.Events]) {
+            optionsList.push(key);
+          }
+        } else if (key === strings.galleryTitle) {
+          if (privacyObj[PrivacyKeyEnum.Gallery]) {
+            optionsList.push(key);
+          }
+        } else {
+          optionsList.push(key);
+        }
+      });
+
+      return optionsList;
     }
     return [strings.infoTitle, strings.galleryTitle];
   };
@@ -381,7 +418,7 @@ const GroupHomeScreen = ({
       />
       <View style={styles.separator} />
       <PostsTabView
-        list={getTavOptions()}
+        list={getTabOptions()}
         onPress={(option) => {
           handleTabOptions(option);
         }}

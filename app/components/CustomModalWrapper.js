@@ -46,6 +46,7 @@ const CustomModalWrapper = ({
   isRightIconText = true,
   isRightButtonDisabled = false,
   fromAvalibility = true,
+  headerLabelStyle = {},
 }) => {
   const modalRef = useRef();
   const navigation = useNavigation();
@@ -131,6 +132,7 @@ const CustomModalWrapper = ({
             rightIcon1={rightIcon1}
             rightIcon1Press={rightIcon1Press}
             isRightButtonDisabled={isRightButtonDisabled}
+            labelStyle={headerLabelStyle}
           />
         );
 

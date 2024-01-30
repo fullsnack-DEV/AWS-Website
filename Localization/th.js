@@ -312,7 +312,7 @@ export default {
     'th_Does a user need the approval for its membership request from the club to join it?',
   whoJoinText: 'th_Who can join the club?',
   whoCanJoinTeam: 'th_Who can join the team?',
-  whoCanJoinTeam: 'th_Who can join your team?',
+  whoCanJoinYourTeam: 'th_Who can join your team?',
   whoCanJoinClub: 'th_Who can join the club?',
   everyoneText: 'th_Everyone and Every team',
   onlyPersonText: 'th_Only person or team invited by club',
@@ -3439,7 +3439,11 @@ export default {
     'th_ Add a few more details before you complete creating an event.',
   clubsText: 'th_clubs',
   teamsText: 'th_teams',
-
   maxFeeAlert: 'th_Max fee should be greater than min fee.',
-
+  viewPrivacySettings: 'th_View Privacy Settings',
+  newMatchesWillAppearHere: 'th_New match will appear here.',
+  whoCanSeeItemsOfBasicInfo:
+    'th_Who can see the following items of your basic info?',
+  theseSettingsWillBeAppliedForBasicInfo:
+    'th_These settings will be applied to all screens where your basic info is displayed.',
 };

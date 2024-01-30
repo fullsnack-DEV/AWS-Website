@@ -47,10 +47,14 @@ import RecruitingMemberModal from './RecruitingMemberModal';
 import usePrivacySettings from '../../hooks/usePrivacySettings';
 import {
   BinaryPrivacyOptionsEnum,
+  ClubChatPrivacyOptionsEnum,
+  DefaultClubPrivacyOptionsEnum,
   GroupDefalutPrivacyOptionsEnum,
   GroupDefaultPrivacyOptionsForDoubleTeamEnum,
+  InviteToEventOptionsEnum,
   PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
+  TeamChatPrivacyOptionsEnum,
 } from '../../Constants/PrivacyOptionsConstant';
 
 const personalPrivacyKeyArr = [
@@ -101,40 +105,64 @@ const HomeScreen = ({navigation, route}) => {
 
   const {getPrivacyStatus} = usePrivacySettings();
 
+  const fetchPrivacyObj = useCallback((entityObj = {}) => {
+    if (entityObj.entity_type === Verbs.entityTypeTeam) {
+      const obj = {};
+      groupPrivacyKeyArr.forEach((key) => {
+        let privacyVal =
+          entityObj.sport_type === Verbs.doubleSport
+            ? GroupDefaultPrivacyOptionsForDoubleTeamEnum[entityObj[key]]
+            : GroupDefalutPrivacyOptionsEnum[entityObj[key]];
+
+        if (key === PrivacyKeyEnum.ViewYourGroupMembers) {
+          privacyVal =
+            GroupDefaultPrivacyOptionsForDoubleTeamEnum[entityObj[key]];
+        } else if (key === PrivacyKeyEnum.Chats) {
+          privacyVal = TeamChatPrivacyOptionsEnum[entityObj[key]];
+        }
+
+        obj[key] = getPrivacyStatus(privacyVal, entityObj);
+      });
+
+      setGroupPrivacyObject(obj);
+    } else if (entityObj.entity_type === Verbs.entityTypeClub) {
+      const obj = {};
+      groupPrivacyKeyArr.forEach((key) => {
+        let privacyVal = DefaultClubPrivacyOptionsEnum[entityObj[key]];
+
+        if (key === PrivacyKeyEnum.Chats) {
+          privacyVal = ClubChatPrivacyOptionsEnum[entityObj[key]];
+        }
+
+        obj[key] = getPrivacyStatus(privacyVal, entityObj);
+      });
+
+      setGroupPrivacyObject(obj);
+    } else {
+      const obj = {};
+      personalPrivacyKeyArr.forEach((item) => {
+        let privacyVal = PersonalUserPrivacyEnum[entityObj[item]];
+        if (
+          item === PrivacyKeyEnum.InviteForTeam ||
+          item === PrivacyKeyEnum.InviteForClub
+        ) {
+          privacyVal = BinaryPrivacyOptionsEnum[entityObj[item]];
+        } else if (
+          item === PrivacyKeyEnum.Events ||
+          item === PrivacyKeyEnum.Chats
+        ) {
+          privacyVal = InviteToEventOptionsEnum[entityObj[item]];
+        }
+        obj[item] = getPrivacyStatus(privacyVal, entityObj);
+      });
+
+      setPersonalPrivacyObject(obj);
+    }
+  }, []);
+
   useEffect(() => {
     if (isFocused && currentUserData?.entity_type) {
-      if (
-        [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(
-          currentUserData.entity_type,
-        )
-      ) {
-        const obj = {};
-        groupPrivacyKeyArr.forEach((key) => {
-          const isDoubleSportTeam =
-            currentUserData.sport_type === Verbs.doubleSport;
-          const privacyVal = isDoubleSportTeam
-            ? GroupDefaultPrivacyOptionsForDoubleTeamEnum[currentUserData[key]]
-            : GroupDefalutPrivacyOptionsEnum[currentUserData[key]];
-
-          obj[key] = getPrivacyStatus(privacyVal, currentUserData);
-        });
-        setGroupPrivacyObject(obj);
-      } else {
-        const obj = {};
-        personalPrivacyKeyArr.forEach((item) => {
-          let privacyVal = PersonalUserPrivacyEnum[currentUserData[item]];
-          if (
-            item === PrivacyKeyEnum.InviteForTeam ||
-            item === PrivacyKeyEnum.InviteForClub
-          ) {
-            privacyVal = BinaryPrivacyOptionsEnum[currentUserData[item]];
-          }
-
-          obj[item] = getPrivacyStatus(privacyVal, currentUserData);
-        });
-
-        setPersonalPrivacyObject(obj);
-      }
+      fetchPrivacyObj(currentUserData);
     }
   }, [isFocused, currentUserData]);
 
@@ -331,6 +359,7 @@ const HomeScreen = ({navigation, route}) => {
           routeParams={route.params}
           loggedInGroupMembers={loggedInGroupMembers}
           privacyObj={personalPrivacyObject}
+          updatePrivacyObj={fetchPrivacyObj}
         />
       );
     }
@@ -361,6 +390,7 @@ const HomeScreen = ({navigation, route}) => {
           }}
           routeParams={route.params}
           privacyObj={groupPrivacyObject}
+          updatePrivacyObj={fetchPrivacyObj}
         />
       );
     }

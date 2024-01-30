@@ -58,10 +58,23 @@ const usePrivacySettings = () => {
       authContext.entity.role === Verbs.entityTypeTeam ||
       authContext.entity.role === Verbs.entityTypeClub
     ) {
-      return memberList.includes(entityId);
+      if (memberList.length > 0) {
+        return memberList.includes(entityId);
+      }
+      if (authContext.entity.obj.user_history?.length > 0) {
+        return authContext.entity.obj.user_history.includes(entityId);
+      }
+      return false;
     }
 
     return false;
+  };
+
+  const checkIsMyFollower = (entityId = '', entityObj = {}) => {
+    const isMyFollower =
+      followings.includes(entityId) || entityObj?.is_following;
+
+    return isMyFollower;
   };
 
   const getPrivacyStatus = (value = '', entityObj = {}) => {
@@ -98,13 +111,22 @@ const usePrivacySettings = () => {
     }
 
     if (privacyVal === strings.myTeamClub) {
-      const isMyTeamClub = checkIsMyTeamClub(entityId);
-      return isMyTeamClub;
+      if (
+        authContext.entity.role === Verbs.entityTypeTeam ||
+        authContext.entity.role === Verbs.entityTypeClub
+      ) {
+        setTimeout(() => {
+          const isMyTeamClub = checkIsMyTeamClub(entityId);
+
+          return isMyTeamClub;
+        }, 300);
+      }
+      return false;
     }
 
     if (privacyVal === strings.followersMyTeamClub) {
       const isMyTeamClub = checkIsMyTeamClub(entityId);
-      const isMyFollower = followings.includes(entityId);
+      const isMyFollower = checkIsMyFollower(entityId, entityObj);
 
       return isMyTeamClub || isMyFollower;
     }
@@ -118,7 +140,7 @@ const usePrivacySettings = () => {
     }
 
     if (privacyVal === strings.followersAndClub) {
-      const isMyFollower = followings.includes(authContext.entity.uid);
+      const isMyFollower = checkIsMyFollower(entityId, entityObj);
       const isMyClub =
         entityObj.parent_groups?.length > 0
           ? entityObj.parent_groups.includes(authContext.entity.uid)
@@ -165,7 +187,7 @@ const usePrivacySettings = () => {
     }
 
     if (privacyVal === strings.followerTitleText) {
-      const isMyFollower = followings.includes(authContext.entity.uid);
+      const isMyFollower = checkIsMyFollower(entityId, entityObj);
       return isMyFollower;
     }
 
@@ -206,54 +228,43 @@ const usePrivacySettings = () => {
       PrivacyKeyEnum.Clubs,
       PrivacyKeyEnum.Leagues,
       PrivacyKeyEnum.Teams,
-      PrivacyKeyEnum.YearOfBirth,
-      PrivacyKeyEnum.Gender,
-      PrivacyKeyEnum.Height,
-      PrivacyKeyEnum.Weight,
-      PrivacyKeyEnum.Langueages,
       PrivacyKeyEnum.Scoreboard,
       PrivacyKeyEnum.ScoreboardTimePeriod,
     ];
     const privacyObj = {};
     if (sportObj.privacy_settings) {
       privacyKeys.forEach((key) => {
-        if (
-          [
-            PrivacyKeyEnum.Clubs,
-            PrivacyKeyEnum.Leagues,
-            PrivacyKeyEnum.Teams,
-            PrivacyKeyEnum.HomeFacility,
-            PrivacyKeyEnum.Scoreboard,
-          ].includes(key)
-        ) {
-          privacyObj[key] =
-            PersonalUserPrivacyEnum[sportObj.privacy_settings[key]] ??
-            PersonalUserPrivacyEnum[1];
-        } else if (key === PrivacyKeyEnum.ScoreboardTimePeriod) {
-          privacyObj[key] =
-            ScoreboardPeriodPrivacyOptionsEnum[
-              sportObj.privacy_settings[key]
-            ] ?? ScoreboardPeriodPrivacyOptionsEnum[1];
+        if (sportObj.sport_type === Verbs.singleSport) {
+          if (key === PrivacyKeyEnum.ScoreboardTimePeriod) {
+            privacyObj[key] =
+              ScoreboardPeriodPrivacyOptionsEnum[
+                sportObj.privacy_settings[key]
+              ] >= 0
+                ? ScoreboardPeriodPrivacyOptionsEnum[
+                    sportObj.privacy_settings[key]
+                  ]
+                : ScoreboardPeriodPrivacyOptionsEnum[1];
+          } else {
+            privacyObj[key] =
+              PersonalUserPrivacyEnum[sportObj.privacy_settings[key]] >= 0
+                ? PersonalUserPrivacyEnum[sportObj.privacy_settings[key]]
+                : PersonalUserPrivacyEnum[1];
+          }
         } else {
           privacyObj[key] =
-            PersonalUserPrivacyEnum[sportObj.privacy_settings[key]] ??
-            PersonalUserPrivacyEnum[0];
+            PersonalUserPrivacyEnum[sportObj.privacy_settings[key]] >= 0
+              ? PersonalUserPrivacyEnum[sportObj.privacy_settings[key]]
+              : PersonalUserPrivacyEnum[0];
         }
       });
     } else {
       privacyKeys.forEach((key) => {
-        if (
-          [
-            PrivacyKeyEnum.Clubs,
-            PrivacyKeyEnum.Leagues,
-            PrivacyKeyEnum.Teams,
-            PrivacyKeyEnum.HomeFacility,
-            PrivacyKeyEnum.Scoreboard,
-          ].includes(key)
-        ) {
-          privacyObj[key] = PersonalUserPrivacyEnum[1];
-        } else if (key === PrivacyKeyEnum.ScoreboardTimePeriod) {
-          privacyObj[key] = ScoreboardPeriodPrivacyOptionsEnum[1];
+        if (sportObj.sport_type === Verbs.singleSport) {
+          if (key === PrivacyKeyEnum.ScoreboardTimePeriod) {
+            privacyObj[key] = ScoreboardPeriodPrivacyOptionsEnum[1];
+          } else {
+            privacyObj[key] = PersonalUserPrivacyEnum[1];
+          }
         } else {
           privacyObj[key] = PersonalUserPrivacyEnum[0];
         }

@@ -40,11 +40,20 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import SendNewInvoiceModal from '../Invoice/SendNewInvoiceModal';
 import InviteMemberModal from '../../../components/InviteMemberModal';
 import RequestBasicInfoModal from './RequestBasicInfoModal';
-import GroupPrivacyModal from './GroupPrivacyModal';
 import MemberFilterModal from './MemberFilterModal';
 import {getPendingRequest} from '../../../api/Notificaitons';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import BottomSheet from '../../../components/modals/BottomSheet';
+import PrivacySettingsModal from '../../../components/PrivacySettingsModal';
+import {
+  PrivacyKeyEnum,
+  defaultClubPrivacyOptions,
+  groupDefaultPrivacyOptionsForDoubleTeam,
+  groupInviteToJoinForTeamSportOptions,
+  groupInviteToJoinOptions,
+  groupJoinOptions,
+  inviteToJoinClubOptions,
+} from '../../../Constants/PrivacyOptionsConstant';
 
 export default function GroupMembersScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -76,6 +85,70 @@ export default function GroupMembersScreen({navigation, route}) {
   const [shimmerLoading, setShimmerLoading] = useState(false);
   const [showActionSheetPlus, setShowActionSheetPlus] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
+  const [showViewPrivacyModal, setShowViewPrivacyModal] = useState(false);
+  const [selectedPrivacyOption, setSelectedPrivacyOption] = useState({});
+  const [viewPrivacyOptions, setViewPrivacyOptions] = useState([]);
+
+  useEffect(() => {
+    if (isFocused) {
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        setViewPrivacyOptions([
+          {
+            question: 'whoCanJoinYourTeam',
+            options: groupJoinOptions,
+            key: PrivacyKeyEnum.JoinAsMember,
+          },
+          {
+            question: 'whoCanInvitePersonToJoinYourTeam',
+            options:
+              authContext.entity.obj.sport_type === Verbs.doubleSport
+                ? groupInviteToJoinOptions
+                : groupInviteToJoinForTeamSportOptions,
+            key: PrivacyKeyEnum.InvitePersonToJoinGroup,
+          },
+          {
+            question: 'whoCanViewYourTeamMembers',
+            options: groupDefaultPrivacyOptionsForDoubleTeam,
+            key: PrivacyKeyEnum.ViewYourGroupMembers,
+          },
+        ]);
+      } else if (authContext.entity.role === Verbs.entityTypeClub) {
+        setViewPrivacyOptions([
+          {
+            question: 'whoCanJoinYourClub',
+            options: groupJoinOptions,
+            key: PrivacyKeyEnum.JoinAsMember,
+          },
+          {
+            question: 'whoCanInviteToJoinClub',
+            options: inviteToJoinClubOptions,
+            key: PrivacyKeyEnum.InvitePersonToJoinGroup,
+          },
+          {
+            question: 'whoCanViewClubMembers',
+            options: defaultClubPrivacyOptions,
+            key: PrivacyKeyEnum.ViewYourGroupMembers,
+          },
+        ]);
+      }
+    }
+  }, [isFocused, authContext.entity.role]);
+
+  useEffect(() => {
+    if (isFocused && viewPrivacyOptions.length > 0) {
+      const obj = {};
+      viewPrivacyOptions.forEach((item) => {
+        const privacyVal =
+          authContext.entity.obj[item.key] !== undefined
+            ? authContext.entity.obj[item.key]
+            : 1;
+        const option = item.options.find((ele) => ele.value === privacyVal);
+        obj[item.key] = option;
+      });
+
+      setSelectedPrivacyOption(obj);
+    }
+  }, [isFocused, authContext.entity.obj, viewPrivacyOptions]);
 
   useEffect(() => {
     const backAction = () => {
@@ -929,19 +1002,31 @@ export default function GroupMembersScreen({navigation, route}) {
               break;
 
             case strings.privacyPolicy:
-              setVisiblePrivacyModal(true);
+              // setVisiblePrivacyModal(true);
+              setShowViewPrivacyModal(true);
               break;
 
             default:
               break;
           }
+          setShowActionSheetPlus(false);
         }}
       />
 
-      <GroupPrivacyModal
-        isVisible={visiblePrivacyModal}
-        closeModal={() => setVisiblePrivacyModal(false)}
-        grpId={groupID}
+      <PrivacySettingsModal
+        isVisible={showViewPrivacyModal}
+        closeModal={() => setShowViewPrivacyModal(false)}
+        title={strings.viewPrivacySettings}
+        options={viewPrivacyOptions}
+        onSelect={(key, option) => {
+          const obj = {...selectedPrivacyOption};
+          obj[key] = option;
+          setSelectedPrivacyOption(obj);
+        }}
+        selectedOptions={selectedPrivacyOption}
+        onSave={() => {
+          setShowViewPrivacyModal(false);
+        }}
       />
 
       <SendNewInvoiceModal

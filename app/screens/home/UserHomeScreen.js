@@ -53,6 +53,7 @@ const UserHomeScreen = ({
   routeParams = {},
   loggedInGroupMembers = [],
   privacyObj = {},
+  updatePrivacyObj = () => {},
 }) => {
   const authContext = useContext(AuthContext);
   const galleryRef = useRef();
@@ -75,6 +76,12 @@ const UserHomeScreen = ({
 
   const mainFlatListRef = useRef();
   const {onSwitchProfile} = useSwitchAccount();
+
+  useEffect(() => {
+    if (currentUserData?.user_id) {
+      updatePrivacyObj(currentUserData);
+    }
+  }, [currentUserData]);
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(

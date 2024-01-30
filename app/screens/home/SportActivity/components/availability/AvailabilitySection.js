@@ -81,11 +81,8 @@ const AvailabilitySection = ({
 
   return (
     <View style={styles.parent}>
-      <View style={styles.row}>
+      <View style={[styles.row, {marginBottom: 15}]}>
         <Text style={styles.title}>{strings.availability}</Text>
-        {/* <TouchableOpacity onPress={onSeeAll}>
-          <Text style={styles.buttonText}>{strings.seeAllText}</Text>
-        </TouchableOpacity> */}
         <TouchableOpacity style={styles.nextIcon} onPress={onSeeAll}>
           <Image source={images.rightArrow} style={styles.image} />
         </TouchableOpacity>
@@ -95,32 +92,32 @@ const AvailabilitySection = ({
           <ActivityIndicator size={'small'} />
         </View>
       ) : (
-        <View
-          style={[
-            styles.row,
-            {marginBottom: 0, justifyContent: 'space-between'},
-          ]}>
-          <View>
+        <View style={styles.barContainer}>
+          <View style={{flex: 1, marginRight: 15}}>
             {leftColumn.map((item, index) => {
               const slots = getList(item);
               return (
-                <View style={[styles.row, styles.barContainer]} key={index}>
-                  <Text numberOfLines={1} style={[styles.label, {width: 35}]}>
-                    {moment(item).format('M/D')}
-                  </Text>
+                <View style={styles.row} key={index}>
+                  <View style={{width: 43, alignItems: 'flex-end'}}>
+                    <Text numberOfLines={1} style={styles.label}>
+                      {moment(item).format('M/D')}
+                    </Text>
+                  </View>
                   <AvailabilityBar list={slots} />
                 </View>
               );
             })}
           </View>
-          <View>
+          <View style={{flex: 1, marginLeft: 15}}>
             {rightColumn.map((item, index) => {
               const slots = getList(item);
               return (
-                <View style={[styles.row, styles.barContainer]} key={index}>
-                  <Text numberOfLines={1} style={[styles.label, {width: 50}]}>
-                    {moment(item).format('M/D')}
-                  </Text>
+                <View style={styles.row} key={index}>
+                  <View style={{width: 43, alignItems: 'flex-end'}}>
+                    <Text numberOfLines={1} style={styles.label}>
+                      {moment(item).format('M/D')}
+                    </Text>
+                  </View>
                   <AvailabilityBar list={slots} />
                 </View>
               );
@@ -151,7 +148,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    // justifyContent: 'space-between',
     marginBottom: 5,
   },
   label: {
@@ -161,8 +157,12 @@ const styles = StyleSheet.create({
     color: colors.lightBlackColor,
   },
   barContainer: {
-    flex: 1,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.lightGrayBackground,
+    padding: 15,
+    borderRadius: 12,
   },
   loaderView: {
     minHeight: 150,

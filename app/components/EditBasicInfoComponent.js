@@ -22,7 +22,6 @@ import LanguagesListModal from '../screens/account/registerPlayer/modals/Languag
 import {languageList, getJSDate} from '../utils';
 import {heightMesurement, weightMesurement} from '../utils/constant';
 import AddressLocationModal from './AddressLocationModal/AddressLocationModal';
-import TCKeyboardView from './TCKeyboardView';
 import * as Utility from '../utils/index';
 import Verbs from '../Constants/Verbs';
 import TCPhoneNumber from './TCPhoneNumber';
@@ -209,266 +208,262 @@ const EditBasicInfoComponent = ({
   };
 
   return (
-    <TCKeyboardView>
-      <View style={[styles.parent, containerStyle]}>
-        <View style={{marginBottom: 35}}>
-          <Text style={styles.titleText}>{strings.gender.toUpperCase()}</Text>
-          <Text
-            style={[
-              styles.titleText,
-              {
-                fontFamily: fonts.RRegular,
-                marginBottom: 0,
-                textTransform: 'capitalize',
-              },
-            ]}>
-            {userInfo.gender}
-            {/* {userInfo.gender.charAt(0).toUpperCase() + userInfo.gender.slice(1)} */}
-          </Text>
-        </View>
+    <View style={[styles.parent, containerStyle]}>
+      <View style={{marginBottom: 35}}>
+        <Text style={styles.titleText}>{strings.gender.toUpperCase()}</Text>
+        <Text
+          style={[
+            styles.titleText,
+            {
+              fontFamily: fonts.RRegular,
+              marginBottom: 0,
+              textTransform: 'capitalize',
+            },
+          ]}>
+          {userInfo.gender}
+          {/* {userInfo.gender.charAt(0).toUpperCase() + userInfo.gender.slice(1)} */}
+        </Text>
+      </View>
 
-        <View style={{marginBottom: 35}}>
-          <Text style={styles.titleText}>
-            {strings.birthDatePlaceholder.toUpperCase()}
-          </Text>
-          <Text
-            style={[
-              styles.titleText,
-              {
-                fontFamily: fonts.RRegular,
-                marginBottom: 0,
-                textTransform: 'capitalize',
-              },
-            ]}>
-            {moment(getJSDate(userInfo?.birthday)).format('MMM DD,YYYY')}
-          </Text>
-        </View>
+      <View style={{marginBottom: 35}}>
+        <Text style={styles.titleText}>
+          {strings.birthDatePlaceholder.toUpperCase()}
+        </Text>
+        <Text
+          style={[
+            styles.titleText,
+            {
+              fontFamily: fonts.RRegular,
+              marginBottom: 0,
+              textTransform: 'capitalize',
+            },
+          ]}>
+          {moment(getJSDate(userInfo?.birthday)).format('MMM DD,YYYY')}
+        </Text>
+      </View>
 
-        <View style={{marginBottom: 35}}>
-          <Text style={styles.titleText}>{strings.height.toUpperCase()}</Text>
-          <View style={styles.row}>
-            <View style={{flex: 1, marginRight: 7}}>
-              <TextInput
-                placeholder={strings.height}
-                style={[styles.inputField, {textAlign: 'center'}]}
-                onChangeText={(text) => {
-                  setUserInfo({
-                    ...userInfo,
-                    height: {
-                      height: text,
-                      height_type:
-                        userInfo.height?.height_type ?? Verbs.defaultHeightType,
-                    },
-                  });
-                }}
-                value={userInfo?.height?.height}
-                keyboardType="number-pad"
-              />
-            </View>
-            <View style={{flex: 1, marginLeft: 8}}>
-              <RNPickerSelect
-                placeholder={{
-                  label: strings.heightTypeText,
-                  value: null,
-                }}
-                items={heightMesurement}
-                onValueChange={(value) => {
-                  setUserInfo({
-                    ...userInfo,
-                    height: {
-                      height: userInfo.height?.height,
-                      height_type: value,
-                    },
-                  });
-                }}
-                value={userInfo?.height?.height_type ?? Verbs.defaultHeightType}
-                useNativeAndroidPickerStyle={false}
-                style={{
-                  inputIOS: styles.inputField,
-                  inputAndroid: [styles.inputField, {textAlign: 'center'}],
-                }}
-                Icon={() => (
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.miniDownArrow}
-                  />
-                )}
-              />
-            </View>
-          </View>
-        </View>
-
-        <View style={{marginBottom: 35}}>
-          <Text style={styles.titleText}>{strings.weight.toUpperCase()}</Text>
-          <View style={styles.row}>
-            <View style={{flex: 1, marginRight: 7}}>
-              <TextInput
-                placeholder={strings.weight}
-                style={[styles.inputField, {textAlign: 'center'}]}
-                onChangeText={(text) => {
-                  setUserInfo({
-                    ...userInfo,
-                    weight: {
-                      weight: text,
-                      weight_type:
-                        userInfo.weight?.weight_type ?? Verbs.defaultWeightType,
-                    },
-                  });
-                }}
-                value={userInfo.weight?.weight}
-                keyboardType="number-pad"
-              />
-            </View>
-            <View style={{flex: 1, marginLeft: 8}}>
-              <RNPickerSelect
-                placeholder={{
-                  label: strings.heightTypeText,
-                  value: null,
-                }}
-                items={weightMesurement}
-                onValueChange={(value) => {
-                  setUserInfo({
-                    ...userInfo,
-                    weight: {
-                      weight: userInfo.weight?.weight,
-                      weight_type: value,
-                    },
-                  });
-                }}
-                value={userInfo.weight?.weight_type ?? Verbs.defaultWeightType}
-                useNativeAndroidPickerStyle={false}
-                style={{
-                  inputIOS: styles.inputField,
-                  inputAndroid: [styles.inputField, {textAlign: 'center'}],
-                }}
-                Icon={() => (
-                  <Image
-                    source={images.dropDownArrow}
-                    style={styles.miniDownArrow}
-                  />
-                )}
-              />
-            </View>
-          </View>
-        </View>
-
-        <View style={{marginBottom: 35}}>
-          <Text style={styles.titleText}>
-            {strings.languages.toUpperCase()}
-          </Text>
-          <Pressable onPress={() => setShowLanguageModal(true)}>
+      <View style={{marginBottom: 35}}>
+        <Text style={styles.titleText}>{strings.height.toUpperCase()}</Text>
+        <View style={styles.row}>
+          <View style={{flex: 1, marginRight: 7}}>
             <TextInput
-              placeholder={strings.leaguesPlaceholder}
-              style={styles.inputField}
-              editable={false}
-              pointerEvents={'none'}
-              value={languageName}
+              placeholder={strings.height}
+              style={[styles.inputField, {textAlign: 'center'}]}
+              onChangeText={(text) => {
+                setUserInfo({
+                  ...userInfo,
+                  height: {
+                    height: text,
+                    height_type:
+                      userInfo.height?.height_type ?? Verbs.defaultHeightType,
+                  },
+                });
+              }}
+              value={userInfo?.height?.height}
+              keyboardType="number-pad"
             />
-          </Pressable>
+          </View>
+          <View style={{flex: 1, marginLeft: 8}}>
+            <RNPickerSelect
+              placeholder={{
+                label: strings.heightTypeText,
+                value: null,
+              }}
+              items={heightMesurement}
+              onValueChange={(value) => {
+                setUserInfo({
+                  ...userInfo,
+                  height: {
+                    height: userInfo.height?.height,
+                    height_type: value,
+                  },
+                });
+              }}
+              value={userInfo?.height?.height_type ?? Verbs.defaultHeightType}
+              useNativeAndroidPickerStyle={false}
+              style={{
+                inputIOS: styles.inputField,
+                inputAndroid: [styles.inputField, {textAlign: 'center'}],
+              }}
+              Icon={() => (
+                <Image
+                  source={images.dropDownArrow}
+                  style={styles.miniDownArrow}
+                />
+              )}
+            />
+          </View>
         </View>
+      </View>
 
-        <Text style={styles.titleText}>{strings.phone.toUpperCase()}</Text>
-        <FlatList
-          data={phoneNumber}
-          renderItem={renderPhoneNumbers}
-          keyExtractor={(item, index) => index.toString()}
-        />
+      <View style={{marginBottom: 35}}>
+        <Text style={styles.titleText}>{strings.weight.toUpperCase()}</Text>
+        <View style={styles.row}>
+          <View style={{flex: 1, marginRight: 7}}>
+            <TextInput
+              placeholder={strings.weight}
+              style={[styles.inputField, {textAlign: 'center'}]}
+              onChangeText={(text) => {
+                setUserInfo({
+                  ...userInfo,
+                  weight: {
+                    weight: text,
+                    weight_type:
+                      userInfo.weight?.weight_type ?? Verbs.defaultWeightType,
+                  },
+                });
+              }}
+              value={userInfo.weight?.weight}
+              keyboardType="number-pad"
+            />
+          </View>
+          <View style={{flex: 1, marginLeft: 8}}>
+            <RNPickerSelect
+              placeholder={{
+                label: strings.heightTypeText,
+                value: null,
+              }}
+              items={weightMesurement}
+              onValueChange={(value) => {
+                setUserInfo({
+                  ...userInfo,
+                  weight: {
+                    weight: userInfo.weight?.weight,
+                    weight_type: value,
+                  },
+                });
+              }}
+              value={userInfo.weight?.weight_type ?? Verbs.defaultWeightType}
+              useNativeAndroidPickerStyle={false}
+              style={{
+                inputIOS: styles.inputField,
+                inputAndroid: [styles.inputField, {textAlign: 'center'}],
+              }}
+              Icon={() => (
+                <Image
+                  source={images.dropDownArrow}
+                  style={styles.miniDownArrow}
+                />
+              )}
+            />
+          </View>
+        </View>
+      </View>
 
-        <Pressable
+      <View style={{marginBottom: 35}}>
+        <Text style={styles.titleText}>{strings.languages.toUpperCase()}</Text>
+        <Pressable onPress={() => setShowLanguageModal(true)}>
+          <TextInput
+            placeholder={strings.leaguesPlaceholder}
+            style={styles.inputField}
+            editable={false}
+            pointerEvents={'none'}
+            value={languageName}
+          />
+        </Pressable>
+      </View>
+
+      <Text style={styles.titleText}>{strings.phone.toUpperCase()}</Text>
+      <FlatList
+        data={phoneNumber}
+        renderItem={renderPhoneNumbers}
+        keyExtractor={(item, index) => index.toString()}
+      />
+
+      <Pressable
+        style={{
+          backgroundColor: colors.textFieldBackground,
+          paddingVertical: 5,
+          paddingHorizontal: 10,
+          alignSelf: 'center',
+          borderRadius: 5,
+          marginBottom: 50,
+          marginTop: 8,
+        }}
+        onPress={() => {
+          addPhoneNumber();
+        }}>
+        <Text
           style={{
-            backgroundColor: colors.textFieldBackground,
-            paddingVertical: 5,
-            paddingHorizontal: 10,
-            alignSelf: 'center',
-            borderRadius: 5,
-            marginBottom: 50,
-            marginTop: 8,
-          }}
-          onPress={() => {
-            addPhoneNumber();
+            textAlign: 'center',
+            fontFamily: fonts.RBold,
+            fontSize: 12,
+            lineHeight: 18,
+            color: colors.lightBlackColor,
           }}>
+          {strings.addPhone}
+        </Text>
+      </Pressable>
+
+      <View style={{marginBottom: 35}}>
+        <Text style={styles.titleText}>
+          {strings.mailingAddressText.toUpperCase()}
+        </Text>
+        <Pressable
+          onPress={() => {
+            setVisibleAddressModal(true);
+          }}
+          style={styles.mailingContainer}>
           <Text
-            style={{
-              textAlign: 'center',
-              fontFamily: fonts.RBold,
-              fontSize: 12,
-              lineHeight: 18,
-              color: colors.lightBlackColor,
-            }}>
-            {strings.addPhone}
+            style={[
+              styles.mailingText,
+              userInfo.mail_formattedAddress || userInfo.mail_street_address
+                ? {color: colors.lightBlackColor}
+                : {color: colors.userPostTimeColor},
+            ]}>
+            {userInfo.mail_formattedAddress || userInfo.mail_street_address
+              ? userInfo.mail_formattedAddress || userInfo.mail_street_address
+              : strings.address}
           </Text>
         </Pressable>
-
-        <View style={{marginBottom: 35}}>
-          <Text style={styles.titleText}>
-            {strings.mailingAddressText.toUpperCase()}
-          </Text>
-          <Pressable
-            onPress={() => {
-              setVisibleAddressModal(true);
-            }}
-            style={styles.mailingContainer}>
-            <Text
-              style={[
-                styles.mailingText,
-                userInfo.mail_formattedAddress || userInfo.mail_street_address
-                  ? {color: colors.lightBlackColor}
-                  : {color: colors.userPostTimeColor},
-              ]}>
-              {userInfo.mail_formattedAddress || userInfo.mail_street_address
-                ? userInfo.mail_formattedAddress || userInfo.mail_street_address
-                : strings.address}
-            </Text>
-          </Pressable>
-        </View>
-
-        <LanguagesListModal
-          isVisible={showLanguageModal}
-          closeList={() => setShowLanguageModal(false)}
-          languageList={languages}
-          onSelect={handleLanguageSelection}
-          onApply={() => {
-            setShowLanguageModal(false);
-            if (selectedLanguages.length > 0) {
-              const list = selectedLanguages.map((item) => item.language);
-              setUserInfo({...userInfo, language: list});
-            }
-          }}
-        />
-
-        <AddressLocationModal
-          visibleLocationModal={visibleAddressModal}
-          setVisibleAddressModalhandler={() => setVisibleAddressModal(false)}
-          onAddressSelect={handleLocation}
-          handleSetLocationOptions={handleLocation}
-          onDonePress={(street, code) => {
-            const obj = {...userInfo};
-            obj.mail_postal_code = code;
-            obj.mail_street_address = [
-              street,
-              userInfo.mail_city,
-              userInfo.mail_state,
-              userInfo.mail_country,
-              code,
-            ]
-              .filter((w) => w)
-              .join(', ');
-            setUserInfo(obj);
-          }}
-        />
-
-        <TCCountryCodeModal
-          countryCodeVisible={countryCodeVisible}
-          onCloseModal={() => {
-            setCountryCodeVisible(false);
-          }}
-          countryCodeObj={(obj) => {
-            changedValue(obj, currenrIndex);
-            setCountryCodeVisible(false);
-          }}
-        />
       </View>
-    </TCKeyboardView>
+
+      <LanguagesListModal
+        isVisible={showLanguageModal}
+        closeList={() => setShowLanguageModal(false)}
+        languageList={languages}
+        onSelect={handleLanguageSelection}
+        onApply={() => {
+          setShowLanguageModal(false);
+          if (selectedLanguages.length > 0) {
+            const list = selectedLanguages.map((item) => item.language);
+            setUserInfo({...userInfo, language: list});
+          }
+        }}
+      />
+
+      <AddressLocationModal
+        visibleLocationModal={visibleAddressModal}
+        setVisibleAddressModalhandler={() => setVisibleAddressModal(false)}
+        onAddressSelect={handleLocation}
+        handleSetLocationOptions={handleLocation}
+        onDonePress={(street, code) => {
+          const obj = {...userInfo};
+          obj.mail_postal_code = code;
+          obj.mail_street_address = [
+            street,
+            userInfo.mail_city,
+            userInfo.mail_state,
+            userInfo.mail_country,
+            code,
+          ]
+            .filter((w) => w)
+            .join(', ');
+          setUserInfo(obj);
+        }}
+      />
+
+      <TCCountryCodeModal
+        countryCodeVisible={countryCodeVisible}
+        onCloseModal={() => {
+          setCountryCodeVisible(false);
+        }}
+        countryCodeObj={(obj) => {
+          changedValue(obj, currenrIndex);
+          setCountryCodeVisible(false);
+        }}
+      />
+    </View>
   );
 };
 

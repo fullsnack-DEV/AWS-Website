@@ -69,6 +69,7 @@ const UserPrivacySettingOptions = [
   {
     title: 'otherTitle',
     data: [
+      {label: 'basicInfoText', extraData: null},
       {label: 'followingFollower', extraData: null},
       {label: 'teamClubAndLeague', extraData: null},
       {label: 'eventInvitation', extraData: null},
@@ -154,6 +155,19 @@ const InviteToEventOptionsEnum = {
   2: 'followersMyTeamClub',
   3: 'myTeamClub',
 };
+
+const inviteToCreateDoubleTeamOptions = [
+  {label: 'everyoneTitleText', value: 1},
+  {label: 'followerTitleText', value: 2},
+  {label: 'noneText', value: 0},
+];
+
+const InviteToCreateDoubleTeamOptionsEnum = {
+  0: 'noneText',
+  1: 'everyoneTitleText',
+  2: 'followerTitleText',
+};
+
 const TeamPrivacySettingsOptions = [
   'postTitle',
   'events',
@@ -351,4 +365,6 @@ export {
   TeamJoinClubOptionsEnum,
   clubChatPrivacyOptions,
   ClubChatPrivacyOptionsEnum,
+  inviteToCreateDoubleTeamOptions,
+  InviteToCreateDoubleTeamOptionsEnum,
 };

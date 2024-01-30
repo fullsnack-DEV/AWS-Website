@@ -1,12 +1,13 @@
 // @flow
 import React, {useContext, useEffect, useState} from 'react';
 import {Alert} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import {strings} from '../../../../Localization/translation';
 import {patchPlayer} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
 import images from '../../../Constants/ImagePath';
 import {setAuthContextData} from '../../../utils';
-import EditBasicInfoScreen from './contentScreens/EditBasicInfoScreen';
+// import EditBasicInfoScreen from './contentScreens/EditBasicInfoScreen';
 import EditBioScreen from './contentScreens/EditBioScreen';
 import EditHomeFacilityScreen from './contentScreens/EditHomeFacilityScreen';
 import EditNTRPScreen from './contentScreens/EditNTRPScreen';
@@ -17,39 +18,45 @@ import {DEFAULT_NTRP, ModalTypes} from '../../../Constants/GeneralConstants';
 import AvailableServiceAreas from './contentScreens/AvailableServiceAreas';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import CustomModalWrapper from '../../../components/CustomModalWrapper';
+import EditBasicInfoComponent from '../../../components/EditBasicInfoComponent';
+import TCKeyboardView from '../../../components/TCKeyboardView';
 
 const EditWrapperScreen = ({
-  isVisible,
+  isVisible = false,
   closeModal = () => {},
   section,
   title,
   sportObj,
   sportIcon,
   entityType,
+  updateSportObj = () => {},
+  updateUserObj = () => {},
 }) => {
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
   const [selectedCertificates, setSelectedCertificates] = useState([]);
   const [updatedSportObj, setUpdatedSportObj] = useState({});
   const [isRightButtonDisabled, setIsRightButtonDisabled] = useState(false);
-  // const {section, title, sportObj, sportIcon, entityType} = route.params;
+
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    setUserData(authContext.entity.obj);
-  }, [authContext]);
+    if (isVisible && authContext.entity.uid) {
+      setUserData(authContext.entity.obj);
+    }
+  }, [isVisible, authContext.entity.uid, authContext.entity.obj]);
 
   useEffect(() => {
-    if (sportObj?.certificates?.length > 0) {
+    if (isVisible && sportObj?.certificates?.length > 0) {
       setSelectedCertificates(sportObj.certificates);
     }
-  }, [sportObj?.certificates]);
+  }, [isVisible, sportObj?.certificates]);
 
   useEffect(() => {
-    if (sportObj) {
+    if (isVisible && sportObj?.sport) {
       setUpdatedSportObj(sportObj);
     }
-  }, [sportObj]);
+  }, [isVisible, sportObj]);
 
   const renderView = () => {
     switch (section) {
@@ -69,12 +76,23 @@ const EditWrapperScreen = ({
 
       case strings.basicInfoText:
         return (
-          <EditBasicInfoScreen
-            {...userData}
-            setData={(data) => {
-              setUserData({...userData, ...data});
-            }}
-          />
+          // <EditBasicInfoScreen
+          //   {...userData}
+          //   setData={(data) => {
+          //     setUserData({...userData, ...data});
+          //   }}
+          // />
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <TCKeyboardView>
+              <EditBasicInfoComponent
+                userInfo={userData}
+                containerStyle={{paddingHorizontal: 15, paddingVertical: 20}}
+                setUserInfo={(obj) => {
+                  setUserData({...userData, ...obj});
+                }}
+              />
+            </TCKeyboardView>
+          </ScrollView>
         );
 
       case strings.ntrpTitle:
@@ -150,22 +168,14 @@ const EditWrapperScreen = ({
     }
   };
 
-  const updateUser = (data = userData) => {
+  const updateUser = (data = {}) => {
     setLoading(true);
-
     patchPlayer(data, authContext)
       .then(async (res) => {
-        setLoading(false);
+        updateSportObj({...updatedSportObj});
+        updateUserObj(res.payload);
         await setAuthContextData(res.payload, authContext);
-        // navigation.navigate('HomeStack', {
-        //   screen: 'SportActivityHome',
-        //   params: {
-        //     sport: sportObj?.sport,
-        //     sportType: sportObj?.sport_type,
-        //     uid: userData.user_id,
-        //     entityType,
-        //   },
-        // });
+        setLoading(false);
         closeModal();
       })
       .catch((error) => {
@@ -233,7 +243,7 @@ const EditWrapperScreen = ({
       } else if (entityType === Verbs.entityTypeScorekeeper) {
         data.scorekeeper_data = newList;
       }
-      setUserData(data);
+      setUserData({...data});
       updateUser(data);
     }
   };
@@ -252,7 +262,7 @@ const EditWrapperScreen = ({
         closeModal();
       }}
       isRightIconText
-      rightButtonText={strings.save}
+      headerRightButtonText={strings.save}
       onRightButtonPress={handleSave}
       isRightButtonDisabled={isRightButtonDisabled}>
       <ActivityLoader visible={loading} />

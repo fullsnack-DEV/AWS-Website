@@ -22,6 +22,7 @@ import {
   binaryPrivacyOptions,
   defaultOptions,
   followerFollowingOptions,
+  inviteToCreateDoubleTeamOptions,
   inviteToEventOptions,
 } from '../../../Constants/PrivacyOptionsConstant';
 import AuthContext from '../../../auth/context';
@@ -42,49 +43,29 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
       authContext.entity.obj,
       Verbs.entityTypePlayer,
     );
-    const refereeingSportsList = getEntitySportList(
-      authContext.entity.obj,
-      Verbs.entityTypeReferee,
-    );
 
-    const scorekeepingSportsList = getEntitySportList(
-      authContext.entity.obj,
-      Verbs.entityTypeScorekeeper,
-    );
+    const formattedSportsList =
+      playingSportsList.length > 0
+        ? playingSportsList.map((sport) => {
+            const obj = {label: null, extraData: null};
+            if (sport?.sport_name) {
+              obj.extraData = {...sport};
+            } else {
+              const sportName = getSportName(
+                sport.sport,
+                sport.sport_type,
+                authContext.sports,
+              );
+              obj.extraData = {...sport, sport_name: sportName};
+            }
+            obj.label = format(
+              strings.playingSportText,
+              obj.extraData.sport_name,
+            );
+            return obj;
+          })
+        : [];
 
-    const finalList = [
-      ...playingSportsList,
-      ...refereeingSportsList,
-      ...scorekeepingSportsList,
-    ];
-
-    const formattedSportsList = finalList.map((sport) => {
-      const obj = {label: null, extraData: null};
-      if (sport?.sport_name) {
-        obj.extraData = {...sport};
-      } else {
-        const sportName = getSportName(
-          sport.sport,
-          sport.sport_type,
-          authContext.sports,
-        );
-        obj.extraData = {...sport, sport_name: sportName};
-      }
-      if (sport.type === Verbs.entityTypeReferee) {
-        obj.label = format(
-          strings.refreeingSportText,
-          obj.extraData.sport_name,
-        );
-      } else if (sport.type === Verbs.entityTypeScorekeeper) {
-        obj.label = format(
-          strings.scorekeepingSportText,
-          obj.extraData.sport_name,
-        );
-      } else {
-        obj.label = format(strings.playingSportText, obj.extraData.sport_name);
-      }
-      return obj;
-    });
     return formattedSportsList;
   }, [authContext.entity.obj, authContext.sports]);
 
@@ -174,7 +155,7 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
           {
             question: strings.whoCanViewYourEventsSection,
             subText: strings.eventsPrivacySubText,
-            options: defaultOptions,
+            options: inviteToEventOptions,
             key: PrivacyKeyEnum.Events,
           },
         ];
@@ -192,7 +173,7 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
         return [
           {
             question: strings.whocaninviteyoutochat,
-            options: defaultOptions,
+            options: inviteToEventOptions,
             key: PrivacyKeyEnum.Chats,
           },
         ];
@@ -225,7 +206,7 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
           {
             question: strings.whocaninviteteamtogetherdoublesports,
             subText: strings.privacyDoubleSportSubText,
-            options: defaultOptions,
+            options: inviteToCreateDoubleTeamOptions,
             key: PrivacyKeyEnum.CreateTeamForDoubleSport,
           },
           {
@@ -254,6 +235,35 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
           },
         ];
 
+      case strings.basicInfoText:
+        return [
+          {
+            question: strings.gender.toUpperCase(),
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Gender,
+          },
+          {
+            question: strings.yearOfBirth.toUpperCase(),
+            options: defaultOptions,
+            key: PrivacyKeyEnum.YearOfBirth,
+          },
+          {
+            question: strings.height.toUpperCase(),
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Height,
+          },
+          {
+            question: strings.weight.toUpperCase(),
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Weight,
+          },
+          {
+            question: strings.language.toUpperCase(),
+            options: defaultOptions,
+            key: PrivacyKeyEnum.Langueages,
+          },
+        ];
+
       default:
         return [];
     }
@@ -265,38 +275,11 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
     }
 
     if (extraData) {
-      if (extraData?.sport) {
-        if (extraData.type === Verbs.entityTypePlayer) {
-          navigation.navigate('SportActivityPrivacyOptionsScreen', {
-            headerTitle: options,
-            sportObject: {...extraData},
-          });
-        } else {
-          const refereeScorekeeperQuestions = [
-            {
-              question: strings.whoCanSeeYourYearOfBirth,
-              options: defaultOptions,
-              key: PrivacyKeyEnum.YearOfBirth,
-            },
-            {
-              question: strings.whoCanSeeYourGender,
-              options: defaultOptions,
-              key: PrivacyKeyEnum.Gender,
-            },
-            {
-              question: strings.whoCanSeeYouLanguages,
-              options: defaultOptions,
-              key: PrivacyKeyEnum.Langueages,
-            },
-          ];
-          navigation.navigate('PrivacyOptionsScreen', {
-            headerTitle: options,
-            privacyOptions: refereeScorekeeperQuestions,
-            isFromSportActivitySettings: true,
-            sportObject: extraData,
-            entityType: authContext.entity.role,
-          });
-        }
+      if (extraData?.sport && extraData?.type === Verbs.entityTypePlayer) {
+        navigation.navigate('SportActivityPrivacyOptionsScreen', {
+          headerTitle: options,
+          sportObject: {...extraData},
+        });
       }
     } else {
       const routeParams = {

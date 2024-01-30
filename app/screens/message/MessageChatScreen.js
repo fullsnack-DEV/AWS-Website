@@ -63,7 +63,7 @@ import usePrivacySettings from '../../hooks/usePrivacySettings';
 import {
   GroupDefalutPrivacyOptionsEnum,
   GroupDefaultPrivacyOptionsForDoubleTeamEnum,
-  PersonalUserPrivacyEnum,
+  InviteToEventOptionsEnum,
   PrivacyKeyEnum,
 } from '../../Constants/PrivacyOptionsConstant';
 import {getGroupDetails} from '../../api/Groups';
@@ -206,21 +206,7 @@ const MessageChatScreen = ({navigation, route}) => {
     );
   };
 
-  const handleTagPress = async (mentions = [], mentionText = '') => {
-    const entity_name = mentionText.slice(1);
-    const member = mentions.find(
-      (item) => item.group_name ?? item.name === entity_name,
-    );
-    if (!member) {
-      return;
-    }
-    const memberId = member.id.includes('@')
-      ? selectedTagMember.id?.split('@')[0]
-      : selectedTagMember.id;
-
-    if (memberId === authContext.entity.uid) {
-      return;
-    }
+  const getChatPrivacy = async (member = {}) => {
     let chatPrivacyStatus = true;
     if (
       [Verbs.entityTypeTeam, Verbs.entityTypeClub].includes(member.entityType)
@@ -240,10 +226,29 @@ const MessageChatScreen = ({navigation, route}) => {
     } else {
       const response = await getUserDetails(member.id, authContext);
       chatPrivacyStatus = getPrivacyStatus(
-        PersonalUserPrivacyEnum[response.payload[PrivacyKeyEnum.Chats]],
+        InviteToEventOptionsEnum[response.payload[PrivacyKeyEnum.Chats]],
       );
     }
+    return chatPrivacyStatus;
+  };
 
+  const handleTagPress = async (mentions = [], mentionText = '') => {
+    const entity_name = mentionText.slice(1);
+    const member = mentions.find(
+      (item) => item.group_name ?? item.name === entity_name,
+    );
+    if (!member) {
+      return;
+    }
+    const memberId = member.id.includes('@')
+      ? selectedTagMember.id?.split('@')[0]
+      : selectedTagMember.id;
+
+    if (memberId === authContext.entity.uid) {
+      return;
+    }
+
+    const chatPrivacyStatus = await getChatPrivacy(member);
     const options = chatPrivacyStatus
       ? [
           format(strings.chatWith, entity_name),
@@ -256,31 +261,48 @@ const MessageChatScreen = ({navigation, route}) => {
     setShowTagOptions(true);
   };
 
-  const handleTagOptions = (option) => {
+  const handleCreateChannel = (memberId = '') => {
+    const obj = {
+      id: memberId,
+      name: selectedTagMember.group_name ?? selectedTagMember.name,
+      image: selectedTagMember.image,
+      entityType: selectedTagMember.entityType,
+    };
+
+    createChannel([obj])
+      .then(async (channelObj) => {
+        if (channelObj !== null) {
+          await channelObj.watch();
+          navigation.replace('MessageChatScreen', {
+            channel: channelObj,
+          });
+        }
+      })
+      .catch((err) => {
+        Alert.alert(strings.alertmessagetitle, err.message);
+      });
+  };
+
+  const handleTagOptions = async (option) => {
     setShowTagOptions(false);
     const memberId = selectedTagMember.id.includes('@')
       ? selectedTagMember.id.split('@')[0]
       : selectedTagMember.id;
+    const chatPrivacyStatus = await getChatPrivacy(selectedTagMember);
     if (option === tagOptions[0]) {
-      const obj = {
-        id: memberId,
-        name: selectedTagMember.group_name ?? selectedTagMember.name,
-        image: selectedTagMember.image,
-        entityType: selectedTagMember.entityType,
-      };
-
-      createChannel([obj])
-        .then(async (channelObj) => {
-          if (channelObj !== null) {
-            await channelObj.watch();
-            navigation.replace('MessageChatScreen', {
-              channel: channelObj,
-            });
-          }
-        })
-        .catch((err) => {
-          Alert.alert(strings.alertmessagetitle, err.message);
+      if (chatPrivacyStatus) {
+        handleCreateChannel(memberId);
+      } else {
+        navigation.navigate('HomeStack', {
+          screen: 'HomeScreen',
+          params: {
+            uid: memberId,
+            role: selectedTagMember.entityType,
+            comeFrom: 'MessageChatScreen',
+            routeParams: channel,
+          },
         });
+      }
     } else if (option === tagOptions[1]) {
       navigation.navigate('HomeStack', {
         screen: 'HomeScreen',

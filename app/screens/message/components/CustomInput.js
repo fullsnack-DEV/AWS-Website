@@ -14,6 +14,7 @@ import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import BottomSheet from '../../../components/modals/BottomSheet';
 import Verbs from '../../../Constants/Verbs';
+import useDraftAPI from '../../../hooks/useDraftAPI';
 
 const CancelFileUpload = (files, removeFile) => {
   files.forEach((item) => {
@@ -114,6 +115,11 @@ const CustomInput = () => {
   } = useMessageInputContext();
 
   const {channel} = useChannelContext();
+  const {handleInputChange, getInputDraft, removeInputDraft} = useDraftAPI();
+
+  useEffect(() => {
+    getInputDraft();
+  }, []);
 
   const pickImageFromGallery = () => {
     ImagePicker.openPicker({
@@ -227,6 +233,7 @@ const CustomInput = () => {
     if (text || mentionedUsers.length > 0) {
       await channel.sendMessage(obj, {skip_push: true});
       setText('');
+      removeInputDraft();
     }
   };
 
@@ -247,6 +254,7 @@ const CustomInput = () => {
           <View style={{flex: 1}}>
             <AutoCompleteInput
               additionalTextInputProps={{placeholder: strings.sendAMessage}}
+              onChange={handleInputChange}
             />
           </View>
           <TouchableOpacity

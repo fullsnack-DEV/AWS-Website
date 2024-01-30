@@ -32,7 +32,7 @@ import SelectedInviteeCard from './SelectedInviteeCard';
 import {
   GroupDefalutPrivacyOptionsEnum,
   GroupDefaultPrivacyOptionsForDoubleTeamEnum,
-  PersonalUserPrivacyEnum,
+  InviteToEventOptionsEnum,
   PrivacyKeyEnum,
 } from '../../../Constants/PrivacyOptionsConstant';
 import usePrivacySettings from '../../../hooks/usePrivacySettings';
@@ -207,7 +207,7 @@ const InviteModal = ({
       status = getPrivacyStatus(privacyVal, entityObj.data);
     } else {
       status = getPrivacyStatus(
-        PersonalUserPrivacyEnum[entityObj.data[PrivacyKeyEnum.Chats]],
+        InviteToEventOptionsEnum[entityObj.data[PrivacyKeyEnum.Chats]],
         entityObj.data,
       );
     }

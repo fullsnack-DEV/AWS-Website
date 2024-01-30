@@ -69,13 +69,14 @@ const FeedsAdvancedSettingsModal = ({
       externalSnapPoints={snapPoints}
       containerStyle={{padding: 0, paddingTop: 10}}
       headerRightButtonText={strings.done}
-      onRightButtonPress={() => onSelect(tempPrivacy)}>
+      onRightButtonPress={() => onSelect(tempPrivacy)}
+      headerLabelStyle={{fontFamily: fonts.RMedium}}>
       <View
         onLayout={(event) => {
           const contentHeight = event.nativeEvent.layout.height + 80;
-
           setSnapPoints([contentHeight, contentHeight]);
-        }}>
+        }}
+        style={{paddingBottom: 25}}>
         {options.map((item, index) => (
           <View key={index}>
             <View style={styles.listItem}>
@@ -106,8 +107,8 @@ const FeedsAdvancedSettingsModal = ({
 
 const styles = StyleSheet.create({
   languageList: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 18,
+    lineHeight: 26,
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
