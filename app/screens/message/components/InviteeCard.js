@@ -11,38 +11,45 @@ const InviteeCard = ({
   isChecked = false,
   onPress = () => {},
   privacyStatus = true,
-}) => (
-  <>
-    <TouchableOpacity
-      style={[styles.parent, {opacity: privacyStatus ? 1 : 0.5}]}
-      onPress={onPress}
-      disabled={!privacyStatus}>
-      <View style={styles.userDetails}>
-        <GroupIcon
-          imageUrl={item.image}
-          entityType={item.entityType}
-          groupName={item.name}
-          containerStyle={styles.profileIcon}
-          textstyle={{fontSize: 12}}
-        />
-        <View style={{flex: 1}}>
-          <Text style={styles.nameText} numberOfLines={1}>
-            {item.name}
-          </Text>
-          <Text style={styles.cityText}>{item.city}</Text>
+}) => {
+  const getCheckBox = () => {
+    if (!privacyStatus) {
+      return images.newDiselectCheckBox;
+    }
+    if (isChecked) {
+      return images.yellowCheckBox;
+    }
+    return images.messageCheckboxBorder;
+  };
+
+  return (
+    <>
+      <TouchableOpacity
+        style={[styles.parent, {opacity: privacyStatus ? 1 : 0.5}]}
+        onPress={onPress}
+        disabled={!privacyStatus}>
+        <View style={styles.userDetails}>
+          <GroupIcon
+            imageUrl={item.image}
+            entityType={item.entityType}
+            groupName={item.name}
+            containerStyle={styles.profileIcon}
+            textstyle={{fontSize: 12}}
+          />
+          <View style={{flex: 1}}>
+            <Text style={styles.nameText} numberOfLines={1}>
+              {item.name}
+            </Text>
+            <Text style={styles.cityText}>{item.city}</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.iconContainer}>
-        <Image
-          source={
-            isChecked ? images.yellowCheckBox : images.messageCheckboxBorder
-          }
-          style={styles.icon}
-        />
-      </View>
-    </TouchableOpacity>
-  </>
-);
+        <View style={styles.iconContainer}>
+          <Image source={getCheckBox()} style={styles.icon} />
+        </View>
+      </TouchableOpacity>
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
   parent: {

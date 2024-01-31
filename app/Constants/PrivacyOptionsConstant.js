@@ -53,10 +53,6 @@ const UserPrivacySettingOptions = [
         extraData: null,
       },
       {
-        label: 'event',
-        extraData: null,
-      },
-      {
         label: 'galleryTitle',
         extraData: null,
       },
@@ -170,7 +166,6 @@ const InviteToCreateDoubleTeamOptionsEnum = {
 
 const TeamPrivacySettingsOptions = [
   'postTitle',
-  'events',
   'galleryTitle',
   'membersTitle',
   'clubAndLeague',
@@ -182,7 +177,6 @@ const TeamPrivacySettingsOptions = [
 
 const ClubPrivacySettingsOptions = [
   'postTitle',
-  'events',
   'galleryTitle',
   'membersTitle',
   'team',

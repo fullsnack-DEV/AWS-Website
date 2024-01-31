@@ -22,6 +22,7 @@ const ScoreboardContentScreen = ({
   sport = '',
   entityType = Verbs.entityTypePlayer,
   onCardPress = () => {},
+  viewPrivacyStatus = true,
 }) => {
   const [scoreboardList, setScoreboardList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -189,30 +190,52 @@ const ScoreboardContentScreen = ({
           </Text>
         </TouchableOpacity>
       </View>
-      {scoreboardList.length > 0 && (
-        <ScoreBoardList
-          loading={loading}
-          matchList={scoreboardList}
-          screenType={Verbs.screenTypeMainScreen}
-          sectionList={getSectionList()}
-          matchCount={getMatchCount()}
-          onCardPress={onCardPress}
-        />
-      )}
+      {viewPrivacyStatus ? (
+        <>
+          {scoreboardList.length > 0 && (
+            <ScoreBoardList
+              loading={loading}
+              matchList={scoreboardList}
+              screenType={Verbs.screenTypeMainScreen}
+              sectionList={getSectionList()}
+              matchCount={getMatchCount()}
+              onCardPress={onCardPress}
+            />
+          )}
 
-      {!loading && scoreboardList.length === 0 ? (
-        <View style={styles.container}>
-          <View style={{alignItems: 'center', marginBottom: 50}}>
-            <Text style={styles.noDataText}>{strings.noMatch}</Text>
-            <Text style={styles.noDataSubText}>
-              {strings.newMatchesWillAppearHere}
-            </Text>
-          </View>
-          <View style={styles.imageContainer}>
-            <Image source={images.noMatchImageIcon} style={styles.image} />
-          </View>
+          {!loading && scoreboardList.length === 0 ? (
+            <View style={styles.container}>
+              <View style={{alignItems: 'center', marginBottom: 50}}>
+                <Text style={styles.noDataText}>{strings.noMatch}</Text>
+                <Text style={styles.noDataSubText}>
+                  {strings.newMatchesWillAppearHere}
+                </Text>
+              </View>
+              <View style={styles.imageContainer}>
+                <Image source={images.noMatchImageIcon} style={styles.image} />
+              </View>
+            </View>
+          ) : null}
+        </>
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingBottom: 90,
+          }}>
+          <Text
+            style={{
+              fontSize: 16,
+              lineHeight: 24,
+              color: colors.googleColor,
+              fontFamily: fonts.RRegular,
+            }}>
+            {strings.noMatchesToShow}
+          </Text>
         </View>
-      ) : null}
+      )}
     </View>
   );
 };

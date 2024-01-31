@@ -79,14 +79,6 @@ import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import AvailibilityScheduleScreen from '../account/schedule/AvailibityScheduleScreen';
 import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
-import PrivacySettingsModal from '../../components/PrivacySettingsModal';
-import {
-  PrivacyKeyEnum,
-  defaultClubPrivacyOptions,
-  groupDefaultPrivacyOptionsForDoubleTeam,
-  groupPrivacyDefalutOptions,
-  inviteToEventOptions,
-} from '../../Constants/PrivacyOptionsConstant';
 
 export default function HomeScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
@@ -156,8 +148,6 @@ export default function HomeScheduleScreen({navigation, route}) {
     strings.filterPickaDate,
   ];
 
-  const settingsOptions = [strings.eventsViewSettings, strings.viewPrivacy];
-
   // let nextThreeMonth = new Date();
   // nextThreeMonth = nextThreeMonth.setMonth(nextThreeMonth.getMonth() + 3);
 
@@ -186,8 +176,7 @@ export default function HomeScheduleScreen({navigation, route}) {
   const [isScorekeeping, setIsScoreKeeping] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isSortbyOthers, setIsSortByOthers] = useState(true);
-  const [eventSettingsOption, setEventSettingsOption] =
-    useState(settingsOptions);
+  const [eventSettingsOption, setEventSettingsOption] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({
     option: 0,
     title: strings.all,
@@ -213,65 +202,12 @@ export default function HomeScheduleScreen({navigation, route}) {
   const [showOtherOptionForClub, setShowOtherOptionForClub] = useState(false);
   const [showOtherOptionForTeam, setShowOtherOptionforTeam] = useState(false);
   const [allUserGroups, setallUsersGroups] = useState([]);
-  const [showViewPrivacyModal, setShowViewPrivacyModal] = useState(false);
-  const [selectedPrivacyOption, setSelectedPrivacyOption] = useState({});
-  const [privacyOptionsList, setPrivacyOptionsList] = useState([]);
-
-  const getPrivacyOptionsList = useCallback(() => {
-    if (authContext.entity.role === Verbs.entityTypeTeam) {
-      return [
-        {
-          question: 'whoCanViewEventSection',
-          subText: 'whoCanViewClubEventSectionSubText',
-          options:
-            authContext.entity.obj.sport_type === Verbs.doubleSport
-              ? groupDefaultPrivacyOptionsForDoubleTeam
-              : groupPrivacyDefalutOptions,
-          key: PrivacyKeyEnum.Events,
-        },
-      ];
-    }
-    if (authContext.entity.role === Verbs.entityTypeClub) {
-      return [
-        {
-          question: 'whoCanViewClubEventSection',
-          subText: 'whoCanViewClubEventSectionSubText',
-          options: defaultClubPrivacyOptions,
-          key: PrivacyKeyEnum.Events,
-        },
-      ];
-    }
-    return [
-      {
-        question: 'whoCanViewYourEventsSection',
-        subText: 'eventsPrivacySubText',
-        options: inviteToEventOptions,
-        key: PrivacyKeyEnum.Events,
-      },
-    ];
-  }, [authContext.entity.role, authContext.entity.obj.sport_type]);
-
-  useEffect(() => {
-    if (isFocused) {
-      const options = getPrivacyOptionsList();
-      setPrivacyOptionsList(options);
-
-      const obj = {};
-      options.forEach((item) => {
-        const privacyVal =
-          authContext.entity.obj[item.key] !== undefined
-            ? authContext.entity.obj[item.key]
-            : 1;
-        const option = item.options.find((ele) => ele.value === privacyVal);
-        obj[item.key] = option;
-      });
-      setSelectedPrivacyOption(obj);
-    }
-  }, [isFocused, authContext.entity.obj]);
 
   useEffect(() => {
     if (route?.params?.isAdmin !== undefined) {
       setIsAdmin(route.params.isAdmin);
+      const options = route.params.isAdmin ? [strings.eventsViewSettings] : [];
+      setEventSettingsOption(options);
     }
   }, [route?.params?.isAdmin]);
 
@@ -449,7 +385,8 @@ export default function HomeScheduleScreen({navigation, route}) {
           Alert.alert(strings.townsCupTitle, e.message);
         });
     } else {
-      setEventSettingsOption(settingsOptions);
+      const options = isAdmin ? [strings.eventsViewSettings] : [];
+      setEventSettingsOption(options);
     }
 
     if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
@@ -503,7 +440,7 @@ export default function HomeScheduleScreen({navigation, route}) {
     ) {
       getAlUsersGroups();
     }
-  }, [authContext]);
+  }, [authContext, isAdmin]);
 
   const configureEvents = useCallback((eventsData, games) => {
     const eventTimeTableData = eventsData.map((item) => {
@@ -1508,13 +1445,11 @@ export default function HomeScheduleScreen({navigation, route}) {
                 : null
             }
             rightIcon3={
-              authContext.entity.role === Verbs.entityTypeTeam
-                ? scheduleIndexCounter === 0
-                  ? isAdmin
-                    ? images.vertical3Dot
-                    : null
-                  : null
-                : images.vertical3Dot
+              isAdmin &&
+              // authContext.entity.role === Verbs.entityTypeTeam &&
+              scheduleIndexCounter === 0
+                ? images.vertical3Dot
+                : null
             }
             rightIcon2Press={() =>
               navigation.navigate('ScheduleStack', {
@@ -1578,12 +1513,14 @@ export default function HomeScheduleScreen({navigation, route}) {
                     />
                   </TouchableOpacity>
 
-                  <TouchableOpacity onPress={() => setSettingsModal(true)}>
-                    <Image
-                      source={images.vertical3Dot}
-                      style={styles.threeDotImageStyle}
-                    />
-                  </TouchableOpacity>
+                  {isAdmin && (
+                    <TouchableOpacity onPress={() => setSettingsModal(true)}>
+                      <Image
+                        source={images.vertical3Dot}
+                        style={styles.threeDotImageStyle}
+                      />
+                    </TouchableOpacity>
+                  )}
                 </View>
               )
             }
@@ -1643,6 +1580,7 @@ export default function HomeScheduleScreen({navigation, route}) {
         /> */}
       </View>
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
+
       <View
         style={[
           styles.mainContainer,
@@ -2283,11 +2221,6 @@ export default function HomeScheduleScreen({navigation, route}) {
               navigation.navigate('ScheduleStack', {
                 screen: 'ViewEventSettingsScreen',
               });
-            } else {
-              // navigation.navigate('ScheduleStack', {
-              //   screen: 'ViewPrivacyScreen',
-              // });
-              setShowViewPrivacyModal(true);
             }
             setSettingsModal(false);
           }}
@@ -2426,66 +2359,6 @@ export default function HomeScheduleScreen({navigation, route}) {
           }}
         />
       </View>
-
-      <PrivacySettingsModal
-        isVisible={showViewPrivacyModal}
-        closeModal={() => setShowViewPrivacyModal(false)}
-        title={strings.viewPrivacySettings}
-        options={privacyOptionsList}
-        onSelect={(key, option) => {
-          const obj = {...selectedPrivacyOption};
-          obj[key] = option;
-          setSelectedPrivacyOption(obj);
-        }}
-        selectedOptions={selectedPrivacyOption}
-        onSave={() => {
-          setShowViewPrivacyModal(false);
-        }}
-      />
-
-      {/*  Availability edit modal */}
-      {/* <Modal
-        onBackdropPress={() => setVisibleAvailabilityModal(false)}
-        isVisible={visibleAvailabilityModal}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={[
-            styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 50},
-          ]}>
-          <ChallengeAvailability
-            setVisibleAvailabilityModal={setVisibleAvailabilityModal}
-            slots={[]}
-            slotType={editableSlotsType}
-            setEditableSlotsType={setEditableSlotsType}
-          />
-        </View>
-      </Modal> */}
-
-      {/* <ActionSheet
-        ref={plusActionSheet}
-        options={[
-          strings.createEvent,
-          strings.editChallengeAvailibilityText,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            navigation.navigate('CreateEventScreen', {
-              comeName: 'ScheduleScreen',
-            });
-          } else if (index === 1) {
-            setVisibleAvailabilityModal(true);
-          }
-        }}
-      /> */}
     </SafeAreaView>
   );
 }

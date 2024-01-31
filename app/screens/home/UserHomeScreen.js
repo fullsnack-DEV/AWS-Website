@@ -690,66 +690,56 @@ const UserHomeScreen = ({
     {useNativeDriver: false},
   );
 
-  const userDetailsSection = () => {
-    const tabList = [];
-    if (privacyObj[PrivacyKeyEnum.Events]) {
-      tabList.push(strings.event);
-    }
-    if (privacyObj[PrivacyKeyEnum.Gallery]) {
-      tabList.push(strings.galleryTitle);
-    }
+  const userDetailsSection = () => (
+    <>
+      <UserHomeHeader
+        currentUserData={currentUserData}
+        onConnectionButtonPress={(tabs = '') => {
+          setTab(tabs);
+          setRefreshModal(true);
+        }}
+        onAction={onUserAction}
+        isAdmin={isAdmin}
+        followRequestSent={followRequestSent}
+        loggedInEntity={authContext.entity}
+        privacyObj={privacyObj}
+      />
+      <View style={styles.activityList}>
+        {privacyObj[PrivacyKeyEnum.SportActivityList] && (
+          <OrderedSporList
+            user={currentUserData}
+            type="horizontal"
+            isAdmin={isAdmin}
+            onCardPress={handleSportActivityPress}
+          />
+        )}
+      </View>
 
-    return (
-      <>
-        <UserHomeHeader
-          currentUserData={currentUserData}
-          onConnectionButtonPress={(tabs = '') => {
-            setTab(tabs);
-            setRefreshModal(true);
-          }}
-          onAction={onUserAction}
-          isAdmin={isAdmin}
-          followRequestSent={followRequestSent}
-          loggedInEntity={authContext.entity}
-          privacyObj={privacyObj}
-        />
-        <View style={styles.activityList}>
-          {privacyObj[PrivacyKeyEnum.SportActivityList] && (
-            <OrderedSporList
-              user={currentUserData}
-              type="horizontal"
-              isAdmin={isAdmin}
-              onCardPress={handleSportActivityPress}
-            />
-          )}
-        </View>
-
-        <PostsTabView
-          list={tabList}
-          onPress={(option) => {
-            if (option === strings.galleryTitle) {
-              navigation.navigate('UserGalleryScreen', {
-                isAdmin,
-                galleryRef,
-                entityType: route?.params?.role ?? authContext.entity?.role,
-                entityID: route?.params?.uid ?? authContext.entity?.uid,
-                currentUserData,
-              });
-            } else if (option === strings.event) {
-              navigation.navigate('HomeScheduleScreen', {
-                isAdmin,
-                isFromHomeScreen: true,
-                role: route.params?.role ?? authContext.entity.role,
-                uid: route.params?.uid ?? authContext.entity.uid,
-                forUserHomeEvent: true,
-                currentUserData,
-              });
-            }
-          }}
-        />
-      </>
-    );
-  };
+      <PostsTabView
+        list={[strings.event, strings.galleryTitle]}
+        onPress={(option) => {
+          if (option === strings.galleryTitle) {
+            navigation.navigate('UserGalleryScreen', {
+              isAdmin,
+              galleryRef,
+              entityType: route?.params?.role ?? authContext.entity?.role,
+              entityID: route?.params?.uid ?? authContext.entity?.uid,
+              currentUserData,
+            });
+          } else if (option === strings.event) {
+            navigation.navigate('HomeScheduleScreen', {
+              isAdmin,
+              isFromHomeScreen: true,
+              role: route.params?.role ?? authContext.entity.role,
+              uid: route.params?.uid ?? authContext.entity.uid,
+              forUserHomeEvent: true,
+              currentUserData,
+            });
+          }
+        }}
+      />
+    </>
+  );
 
   return (
     <>
@@ -799,6 +789,7 @@ const UserHomeScreen = ({
         userId={route.params.uid ?? authContext.entity.uid}
         userName={currentUserData.full_name}
         tab={tab}
+        viewPrivacyStatus={privacyObj[PrivacyKeyEnum.FollowingAndFollowers]}
       />
 
       <SwitchAccountLoader

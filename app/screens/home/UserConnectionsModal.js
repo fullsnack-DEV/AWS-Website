@@ -51,6 +51,7 @@ export default function UserConnectionModal({
   entityType,
   userId,
   tab,
+  viewPrivacyStatus = true,
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -186,6 +187,9 @@ export default function UserConnectionModal({
   };
 
   const renderList = (option) => {
+    if (!viewPrivacyStatus) {
+      return null;
+    }
     let list = [];
 
     if (option === strings.followerTitleText && data.follower.count > 0) {
@@ -337,7 +341,33 @@ export default function UserConnectionModal({
           </View>
         </View>
 
-        {loading ? <UserListShimmer /> : renderList(selectedTab)}
+        {!viewPrivacyStatus && (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingBottom: 90,
+            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                lineHeight: 24,
+                color: colors.googleColor,
+                fontFamily: fonts.RRegular,
+              }}>
+              {selectedTab === strings.followerTitleText
+                ? strings.noFollowersToShow
+                : strings.noFollowingsToShow}
+            </Text>
+          </View>
+        )}
+
+        {viewPrivacyStatus && loading ? (
+          <UserListShimmer />
+        ) : (
+          renderList(selectedTab)
+        )}
       </View>
     </CustomModalWrapper>
   );

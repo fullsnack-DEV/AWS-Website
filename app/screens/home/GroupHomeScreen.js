@@ -228,6 +228,7 @@ const GroupHomeScreen = ({
           isAdmin,
           isFromHomeScreen: true,
           role: route.params?.role ?? authContext.entity.role,
+          currentUserData,
         });
         break;
       case strings.scoreboard:
@@ -274,18 +275,7 @@ const GroupHomeScreen = ({
         strings.reviews,
       ];
 
-      const optionsList = [];
-      teamOptions.forEach((key) => {
-        if (key === strings.scheduleTitle) {
-          if (privacyObj[PrivacyKeyEnum.Events]) {
-            optionsList.push(key);
-          }
-        } else {
-          optionsList.push(key);
-        }
-      });
-
-      return optionsList;
+      return teamOptions;
     }
     if (groupData?.entity_type === Verbs.entityTypeClub) {
       const clubOptions = [
@@ -295,22 +285,8 @@ const GroupHomeScreen = ({
         strings.stats,
         strings.galleryTitle,
       ];
-      const optionsList = [];
-      clubOptions.forEach((key) => {
-        if (key === strings.scheduleTitle) {
-          if (privacyObj[PrivacyKeyEnum.Events]) {
-            optionsList.push(key);
-          }
-        } else if (key === strings.galleryTitle) {
-          if (privacyObj[PrivacyKeyEnum.Gallery]) {
-            optionsList.push(key);
-          }
-        } else {
-          optionsList.push(key);
-        }
-      });
 
-      return optionsList;
+      return clubOptions;
     }
     return [strings.infoTitle, strings.galleryTitle];
   };
@@ -344,8 +320,6 @@ const GroupHomeScreen = ({
         onClickFollowers={() => {
           followModalRef.current?.present();
         }}
-        memberPrivacyStatus={privacyObj[PrivacyKeyEnum.ViewYourGroupMembers]}
-        followerPrivacyStatus={privacyObj[PrivacyKeyEnum.Followers]}
       />
       {privacyObj[PrivacyKeyEnum.ViewYourGroupMembers] ? (
         <MemberList
@@ -1698,6 +1672,7 @@ const GroupHomeScreen = ({
         closeModal={() => setRefreshMemberModal(false)}
         groupID={groupId}
         showMember={groupData.show_members}
+        viewPrivacyStatus={privacyObj[PrivacyKeyEnum.ViewYourGroupMembers]}
       />
 
       <FollowFollowingModal
@@ -1706,6 +1681,7 @@ const GroupHomeScreen = ({
         closeModal={() => setRefreshMemberModal(false)}
         groupID={groupId}
         showFollower={groupData.show_followers}
+        viewPrivacyStatus={privacyObj[PrivacyKeyEnum.Followers]}
       />
       <JoinButtonModal
         isVisible={showJoinModal}

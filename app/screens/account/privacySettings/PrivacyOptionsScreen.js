@@ -168,7 +168,6 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
           case PrivacyKeyEnum.InviteForClub:
             return BinaryPrivacyOptionsEnum[privacyVal];
 
-          case PrivacyKeyEnum.Events:
           case PrivacyKeyEnum.Chats:
             return InviteToEventOptionsEnum[privacyVal];
 

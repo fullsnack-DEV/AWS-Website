@@ -38,6 +38,7 @@ import UserListShimmer from '../../components/shimmer/commonComponents/UserListS
 import images from '../../Constants/ImagePath';
 import TCFollowUnfollwButton from '../../components/TCFollowUnfollwButton';
 import {followUser, unfollowUser} from '../../api/Users';
+import TCThinDivider from '../../components/TCThinDivider';
 
 const renderBackdrop = (props) => (
   <BottomSheetBackdrop
@@ -63,6 +64,7 @@ export default function FollowFollowingModal({
   closeModal,
   groupID,
   showFollower = true,
+  viewPrivacyStatus = true,
 }) {
   const snapPoints = useMemo(() => ['95%', '95%'], []);
   const [loading, setLoading] = useState(false);
@@ -210,6 +212,10 @@ export default function FollowFollowingModal({
   };
 
   const renderList = () => {
+    if (!viewPrivacyStatus) {
+      return null;
+    }
+
     if (followersList.length > 0 && showFollower) {
       const filteredList = followersList.filter((item) => {
         const itemName = item.group_name ?? item.full_name;
@@ -294,27 +300,35 @@ export default function FollowFollowingModal({
           style={{textAlign: 'center', fontFamily: fonts.RBold, fontSize: 16}}>
           {strings.followerTitleText}
         </Text>
+        <TCThinDivider
+          width={'100%'}
+          marginTop={5}
+          height={1}
+          color={colors.writePostSepratorColor}
+        />
         <View style={{flex: 1, paddingHorizontal: 15}}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              placeholderTextColor={colors.userPostTimeColor}
-              style={styles.textInputStyle}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder={strings.searchText}
-            />
-            {searchQuery.length > 0 && (
-              <TouchableOpacity
-                onPress={() => {
-                  setSearchQuery('');
-                }}>
-                <Image
-                  source={images.closeRound}
-                  style={{height: 15, width: 15}}
-                />
-              </TouchableOpacity>
-            )}
-          </View>
+          {viewPrivacyStatus && (
+            <View style={styles.inputContainer}>
+              <TextInput
+                placeholderTextColor={colors.userPostTimeColor}
+                style={styles.textInputStyle}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder={strings.searchText}
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setSearchQuery('');
+                  }}>
+                  <Image
+                    source={images.closeRound}
+                    style={{height: 15, width: 15}}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
 
           {!showFollower && (
             <View style={styles.emptyContainer}>
@@ -327,8 +341,26 @@ export default function FollowFollowingModal({
               </Text>
             </View>
           )}
-
-          {loading ? <UserListShimmer /> : renderList()}
+          {!viewPrivacyStatus ? (
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingBottom: 90,
+              }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  lineHeight: 24,
+                  color: colors.googleColor,
+                  fontFamily: fonts.RRegular,
+                }}>
+                {strings.noFollowersToShow}
+              </Text>
+            </View>
+          ) : null}
+          {viewPrivacyStatus && loading ? <UserListShimmer /> : renderList()}
         </View>
       </BottomSheetModal>
     </BottomSheetModalProvider>

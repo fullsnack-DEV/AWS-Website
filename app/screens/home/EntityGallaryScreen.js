@@ -8,6 +8,13 @@ import {createPost} from '../../api/NewsFeeds';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import ImageProgress from '../../components/newsFeed/ImageProgress';
+import {
+  DefaultClubPrivacyOptionsEnum,
+  GroupDefalutPrivacyOptionsEnum,
+  GroupDefaultPrivacyOptionsForDoubleTeamEnum,
+  PrivacyKeyEnum,
+} from '../../Constants/PrivacyOptionsConstant';
+import usePrivacySettings from '../../hooks/usePrivacySettings';
 
 export default function EntityGallaryScreen({navigation, route}) {
   const galleryRef = useRef();
@@ -17,6 +24,25 @@ export default function EntityGallaryScreen({navigation, route}) {
 
   const [currentUserData] = useState(route?.params?.currentUserData);
   const [loading, setLoading] = useState(false);
+  const [viewPrivacyStatus, setViewPrivacyStatus] = useState(true);
+  const {getPrivacyStatus} = usePrivacySettings();
+
+  useEffect(() => {
+    if (isFocused && currentUserData?.group_id) {
+      let privacyVal = '';
+      const key = PrivacyKeyEnum.Gallery;
+      if (currentUserData.entity_type === Verbs.entityTypeClub) {
+        privacyVal = DefaultClubPrivacyOptionsEnum[currentUserData[key]];
+      } else if (currentUserData.entity_type === Verbs.entityTypeTeam) {
+        privacyVal =
+          currentUserData.sport_type === Verbs.doubleSport
+            ? GroupDefaultPrivacyOptionsForDoubleTeamEnum[currentUserData[key]]
+            : GroupDefalutPrivacyOptionsEnum[currentUserData[key]];
+      }
+      const status = getPrivacyStatus(privacyVal, currentUserData);
+      setViewPrivacyStatus(status);
+    }
+  }, [isFocused, currentUserData]);
 
   const createPostAfterUpload = (dataParams) => {
     let body = dataParams;
@@ -95,6 +121,7 @@ export default function EntityGallaryScreen({navigation, route}) {
           });
         }}
         isCreatePost={(route.params?.isCreatePost ?? false) && !loading}
+        viewPrivacyStatus={viewPrivacyStatus}
       />
     </SafeAreaView>
   );

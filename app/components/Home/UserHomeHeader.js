@@ -245,35 +245,33 @@ const UserHomeHeader = ({
           <Text style={styles.description}>{currentUserData.description}</Text>
         ) : null}
       </View>
-      {privacyObj[PrivacyKeyEnum.FollowingAndFollowers] && (
-        <View
-          style={[styles.row, {justifyContent: 'flex-start', marginTop: 20}]}>
-          <Pressable
-            style={[styles.row, {marginRight: 25}]}
-            onPress={() => onConnectionButtonPress(strings.following)}>
-            <Text
-              style={[
-                styles.location,
-                {fontFamily: fonts.RBold, marginRight: 5},
-              ]}>
-              {currentUserData.following_count}
-            </Text>
-            <Text style={styles.location}>{strings.following}</Text>
-          </Pressable>
-          <Pressable
-            style={styles.row}
-            onPress={() => onConnectionButtonPress(strings.followerTitleText)}>
-            <Text
-              style={[
-                styles.location,
-                {fontFamily: fonts.RBold, marginRight: 5},
-              ]}>
-              {currentUserData.follower_count}
-            </Text>
-            <Text style={styles.location}>{strings.followerTitleText}</Text>
-          </Pressable>
-        </View>
-      )}
+
+      <View style={[styles.row, {justifyContent: 'flex-start', marginTop: 20}]}>
+        <Pressable
+          style={[styles.row, {marginRight: 25}]}
+          onPress={() => onConnectionButtonPress(strings.following)}>
+          <Text
+            style={[
+              styles.location,
+              {fontFamily: fonts.RBold, marginRight: 5},
+            ]}>
+            {currentUserData.following_count}
+          </Text>
+          <Text style={styles.location}>{strings.following}</Text>
+        </Pressable>
+        <Pressable
+          style={styles.row}
+          onPress={() => onConnectionButtonPress(strings.followerTitleText)}>
+          <Text
+            style={[
+              styles.location,
+              {fontFamily: fonts.RBold, marginRight: 5},
+            ]}>
+            {currentUserData.follower_count}
+          </Text>
+          <Text style={styles.location}>{strings.followerTitleText}</Text>
+        </Pressable>
+      </View>
 
       <BottomSheet
         isVisible={showModal}

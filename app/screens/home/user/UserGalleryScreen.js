@@ -10,6 +10,11 @@ import {ImageUploadContext} from '../../../context/ImageUploadContext';
 import {createPost} from '../../../api/NewsFeeds';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
+import usePrivacySettings from '../../../hooks/usePrivacySettings';
+import {
+  PersonalUserPrivacyEnum,
+  PrivacyKeyEnum,
+} from '../../../Constants/PrivacyOptionsConstant';
 
 export default function UserGalleryScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -21,6 +26,17 @@ export default function UserGalleryScreen({navigation, route}) {
   const [entityID] = useState(route?.params?.entityID);
   const [currentUserData] = useState(route?.params?.currentUserData);
   const [loading, setLoading] = useState(false);
+  const [viewPrivacyStatus, setViewPrivacyStatus] = useState(true);
+  const {getPrivacyStatus} = usePrivacySettings();
+
+  useEffect(() => {
+    if (isFocused && currentUserData?.user_id) {
+      const key = PrivacyKeyEnum.Gallery;
+      const privacyVal = PersonalUserPrivacyEnum[currentUserData[key]];
+      const status = getPrivacyStatus(privacyVal, currentUserData);
+      setViewPrivacyStatus(status);
+    }
+  }, [isFocused, currentUserData]);
 
   const createPostAfterUpload = (dataParams) => {
     let body = dataParams;
@@ -128,6 +144,7 @@ export default function UserGalleryScreen({navigation, route}) {
           });
         }}
         isCreatePost={(route.params?.isCreatePost ?? false) && !loading}
+        viewPrivacyStatus={viewPrivacyStatus}
       />
     </View>
   );

@@ -203,47 +203,51 @@ export default function InviteToEventScreen({navigation, route}) {
     setSelectedList(newList);
   };
 
-  const renderPlayer = ({item}) => {
-    const isChecked = selectedList.includes(item.user_id);
-
-    return (
-      <>
-        <Pressable
-          disabled={!checkInviteToEventPrivacyOfUser(item)}
-          style={[
-            {
-              opacity: checkInviteToEventPrivacyOfUser(item) ? 1 : 0.4,
-            },
-            styles.row,
-            {flex: 1, paddingHorizontal: 5, justifyContent: 'space-between'},
-          ]}
-          onPress={() => {
-            selectPlayer(item);
-          }}>
-          <View style={[styles.row, {flex: 1}]}>
-            <GroupIcon
-              imageUrl={item.thumbnail}
-              entityType={Verbs.entityTypePlayer}
-              containerStyle={styles.playerProfile}
-            />
-            <View style={{flex: 1, marginRight: 15}}>
-              <Text style={styles.name} numberOfLines={1}>
-                {item.full_name}
-              </Text>
-              <Text style={styles.city}>{item.city}</Text>
-            </View>
-          </View>
-          <View style={styles.checkBox}>
-            <Image
-              source={isChecked ? images.orangeCheckBox : images.uncheckBox}
-              style={styles.image}
-            />
-          </View>
-        </Pressable>
-        <View style={styles.separator} />
-      </>
-    );
+  const getCheckBox = (entity = {}) => {
+    const isChecked = selectedList.includes(entity.user_id);
+    if (!checkInviteToEventPrivacyOfUser(entity)) {
+      return images.newDiselectCheckBox;
+    }
+    if (isChecked) {
+      return images.orangeCheckBox;
+    }
+    return images.uncheckBox;
   };
+
+  const renderPlayer = ({item}) => (
+    <>
+      <Pressable
+        disabled={!checkInviteToEventPrivacyOfUser(item)}
+        style={[
+          {
+            opacity: checkInviteToEventPrivacyOfUser(item) ? 1 : 0.4,
+          },
+          styles.row,
+          {flex: 1, paddingHorizontal: 5, justifyContent: 'space-between'},
+        ]}
+        onPress={() => {
+          selectPlayer(item);
+        }}>
+        <View style={[styles.row, {flex: 1}]}>
+          <GroupIcon
+            imageUrl={item.thumbnail}
+            entityType={Verbs.entityTypePlayer}
+            containerStyle={styles.playerProfile}
+          />
+          <View style={{flex: 1, marginRight: 15}}>
+            <Text style={styles.name} numberOfLines={1}>
+              {item.full_name}
+            </Text>
+            <Text style={styles.city}>{item.city}</Text>
+          </View>
+        </View>
+        <View style={styles.checkBox}>
+          <Image source={getCheckBox(item)} style={styles.image} />
+        </View>
+      </Pressable>
+      <View style={styles.separator} />
+    </>
+  );
 
   return (
     <SafeAreaView style={styles.parent}>

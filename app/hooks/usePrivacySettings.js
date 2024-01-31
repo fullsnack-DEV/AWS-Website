@@ -232,44 +232,37 @@ const usePrivacySettings = () => {
       PrivacyKeyEnum.ScoreboardTimePeriod,
     ];
     const privacyObj = {};
-    if (sportObj.privacy_settings) {
-      privacyKeys.forEach((key) => {
+
+    privacyKeys.forEach((key) => {
+      if (
+        sportObj.privacy_settings &&
+        sportObj.privacy_settings[key] !== undefined
+      ) {
         if (sportObj.sport_type === Verbs.singleSport) {
           if (key === PrivacyKeyEnum.ScoreboardTimePeriod) {
             privacyObj[key] =
               ScoreboardPeriodPrivacyOptionsEnum[
                 sportObj.privacy_settings[key]
-              ] >= 0
-                ? ScoreboardPeriodPrivacyOptionsEnum[
-                    sportObj.privacy_settings[key]
-                  ]
-                : ScoreboardPeriodPrivacyOptionsEnum[1];
+              ];
           } else {
             privacyObj[key] =
-              PersonalUserPrivacyEnum[sportObj.privacy_settings[key]] >= 0
-                ? PersonalUserPrivacyEnum[sportObj.privacy_settings[key]]
-                : PersonalUserPrivacyEnum[1];
+              PersonalUserPrivacyEnum[sportObj.privacy_settings[key]];
           }
         } else {
           privacyObj[key] =
-            PersonalUserPrivacyEnum[sportObj.privacy_settings[key]] >= 0
-              ? PersonalUserPrivacyEnum[sportObj.privacy_settings[key]]
-              : PersonalUserPrivacyEnum[0];
+            PersonalUserPrivacyEnum[sportObj.privacy_settings[key]];
         }
-      });
-    } else {
-      privacyKeys.forEach((key) => {
-        if (sportObj.sport_type === Verbs.singleSport) {
-          if (key === PrivacyKeyEnum.ScoreboardTimePeriod) {
-            privacyObj[key] = ScoreboardPeriodPrivacyOptionsEnum[1];
-          } else {
-            privacyObj[key] = PersonalUserPrivacyEnum[1];
-          }
+      } else if (sportObj.sport_type === Verbs.singleSport) {
+        if (key === PrivacyKeyEnum.ScoreboardTimePeriod) {
+          privacyObj[key] = ScoreboardPeriodPrivacyOptionsEnum[1];
         } else {
-          privacyObj[key] = PersonalUserPrivacyEnum[0];
+          privacyObj[key] = PersonalUserPrivacyEnum[1];
         }
-      });
-    }
+      } else {
+        privacyObj[key] = PersonalUserPrivacyEnum[0];
+      }
+    });
+
     const privacySettings = {};
     privacyKeys.forEach((item) => {
       const status = getPrivacyStatus(privacyObj[item], entityObj);

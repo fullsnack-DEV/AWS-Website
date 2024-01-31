@@ -92,19 +92,6 @@ const GroupPrivacyScreen = ({navigation}) => {
             },
           ];
 
-        case strings.events:
-          return [
-            {
-              question: strings.whoCanViewEventSection,
-              options:
-                entity.sport_type === Verbs.doubleSport
-                  ? groupDefaultPrivacyOptionsForDoubleTeam
-                  : groupPrivacyDefalutOptions,
-              key: PrivacyKeyEnum.Events,
-              subText: strings.whoCanViewClubEventSectionSubText,
-            },
-          ];
-
         case strings.galleryTitle:
           return [
             {
@@ -211,16 +198,6 @@ const GroupPrivacyScreen = ({navigation}) => {
               options: defaultClubPrivacyOptions,
               key: PrivacyKeyEnum.PostWrite,
               subText: strings.writePostInClubProfileSubText,
-            },
-          ];
-
-        case strings.events:
-          return [
-            {
-              question: strings.whoCanViewClubEventSection,
-              options: defaultClubPrivacyOptions,
-              key: PrivacyKeyEnum.Events,
-              subText: strings.whoCanViewClubEventSectionSubText,
             },
           ];
 

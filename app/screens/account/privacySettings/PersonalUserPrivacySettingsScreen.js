@@ -150,16 +150,6 @@ const PersonalUserPrivacySettingsScreen = ({navigation}) => {
           },
         ];
 
-      case strings.event:
-        return [
-          {
-            question: strings.whoCanViewYourEventsSection,
-            subText: strings.eventsPrivacySubText,
-            options: inviteToEventOptions,
-            key: PrivacyKeyEnum.Events,
-          },
-        ];
-
       case strings.galleryTitle:
         return [
           {

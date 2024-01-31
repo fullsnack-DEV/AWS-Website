@@ -32,6 +32,7 @@ const EditBasicInfoComponent = ({
   userInfo = {},
   containerStyle = {},
   setUserInfo = () => {},
+  onPressInfoButton = () => {},
 }) => {
   const [visibleAddressModal, setVisibleAddressModal] = useState(false);
   const [languages, setLanguages] = useState([]);
@@ -418,6 +419,12 @@ const EditBasicInfoComponent = ({
         </Pressable>
       </View>
 
+      <Pressable style={styles.bottomButton} onPress={onPressInfoButton}>
+        <Text style={styles.bottomButtonText}>
+          {strings.whereBasicInfoWillBeDisplayed}
+        </Text>
+      </Pressable>
+
       <LanguagesListModal
         isVisible={showLanguageModal}
         closeList={() => setShowLanguageModal(false)}
@@ -510,6 +517,19 @@ const styles = StyleSheet.create({
   mailingText: {
     fontSize: 16,
     lineHeight: 23,
+    fontFamily: fonts.RRegular,
+  },
+  bottomButton: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginTop: 20,
+    marginBottom: 35,
+  },
+  bottomButtonText: {
+    textDecorationLine: 'underline',
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.lightBlackColor,
     fontFamily: fonts.RRegular,
   },
 });

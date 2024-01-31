@@ -76,14 +76,6 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import AvailabilityShimmer from '../../../components/shimmer/schedule/AvailibilityShimmer';
 import {useTabBar} from '../../../context/TabbarContext';
 import ChallengeAvailability from './ChallengeAvailability';
-import PrivacySettingsModal from '../../../components/PrivacySettingsModal';
-import {
-  PrivacyKeyEnum,
-  defaultClubPrivacyOptions,
-  groupDefaultPrivacyOptionsForDoubleTeam,
-  groupPrivacyDefalutOptions,
-  inviteToEventOptions,
-} from '../../../Constants/PrivacyOptionsConstant';
 
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
@@ -156,7 +148,7 @@ export default function ScheduleScreen({navigation, route}) {
   const settingsOptions = [
     strings.likeEvent,
     strings.eventsViewSettings,
-    strings.viewPrivacy,
+    // strings.viewPrivacy,
   ];
 
   // let nextThreeMonth = new Date();
@@ -223,61 +215,6 @@ export default function ScheduleScreen({navigation, route}) {
     sort: 0,
     time: 0,
   });
-  const [showViewPrivacyModal, setShowViewPrivacyModal] = useState(false);
-  const [selectedPrivacyOption, setSelectedPrivacyOption] = useState({});
-  const [privacyOptionsList, setPrivacyOptionsList] = useState([]);
-
-  const getPrivacyOptionsList = useCallback(() => {
-    if (authContext.entity.role === Verbs.entityTypeTeam) {
-      return [
-        {
-          question: 'whoCanViewEventSection',
-          subText: 'whoCanViewClubEventSectionSubText',
-          options:
-            authContext.entity.obj.sport_type === Verbs.doubleSport
-              ? groupDefaultPrivacyOptionsForDoubleTeam
-              : groupPrivacyDefalutOptions,
-          key: PrivacyKeyEnum.Events,
-        },
-      ];
-    }
-    if (authContext.entity.role === Verbs.entityTypeClub) {
-      return [
-        {
-          question: 'whoCanViewClubEventSection',
-          subText: 'whoCanViewClubEventSectionSubText',
-          options: defaultClubPrivacyOptions,
-          key: PrivacyKeyEnum.Events,
-        },
-      ];
-    }
-    return [
-      {
-        question: 'whoCanViewYourEventsSection',
-        subText: 'eventsPrivacySubText',
-        options: inviteToEventOptions,
-        key: PrivacyKeyEnum.Events,
-      },
-    ];
-  }, [authContext.entity.role, authContext.entity.obj.sport_type]);
-
-  useEffect(() => {
-    if (isFocused) {
-      const options = getPrivacyOptionsList();
-      setPrivacyOptionsList(options);
-
-      const obj = {};
-      options.forEach((item) => {
-        const privacyVal =
-          authContext.entity.obj[item.key] !== undefined
-            ? authContext.entity.obj[item.key]
-            : 1;
-        const option = item.options.find((ele) => ele.value === privacyVal);
-        obj[item.key] = option;
-      });
-      setSelectedPrivacyOption(obj);
-    }
-  }, [isFocused, authContext.entity.obj]);
 
   useEffect(() => {
     // Set TabBar visibility to true when this screen mounts
@@ -2323,11 +2260,6 @@ export default function ScheduleScreen({navigation, route}) {
               navigation.navigate('ScheduleStack', {
                 screen: 'LikedEventScreen',
               });
-            } else {
-              // navigation.navigate('ScheduleStack', {
-              //   screen: 'ViewPrivacyScreen',
-              // });
-              setShowViewPrivacyModal(true);
             }
             setSettingsModal(false);
           }}
@@ -2480,66 +2412,6 @@ export default function ScheduleScreen({navigation, route}) {
         deleteOrCreateSlotData={deleteOrCreateSlotData}
         isFromSlot={isFromSlots}
       />
-
-      <PrivacySettingsModal
-        isVisible={showViewPrivacyModal}
-        closeModal={() => setShowViewPrivacyModal(false)}
-        title={strings.viewPrivacySettings}
-        options={privacyOptionsList}
-        onSelect={(key, option) => {
-          const obj = {...selectedPrivacyOption};
-          obj[key] = option;
-          setSelectedPrivacyOption(obj);
-        }}
-        selectedOptions={selectedPrivacyOption}
-        onSave={() => {
-          setShowViewPrivacyModal(false);
-        }}
-      />
-
-      {/*  Availability edit modal */}
-      {/* <Modal
-        onBackdropPress={() => setVisibleAvailabilityModal(false)}
-        isVisible={visibleAvailabilityModal}
-        animationInTiming={300}
-        animationOutTiming={800}
-        backdropTransitionInTiming={300}
-        backdropTransitionOutTiming={800}
-        style={{
-          margin: 0,
-        }}>
-        <View
-          style={[
-            styles.bottomPopupContainer,
-            {height: Dimensions.get('window').height - 50},
-          ]}>
-          <ChallengeAvailability
-            setVisibleAvailabilityModal={setVisibleAvailabilityModal}
-            slots={[]}
-            slotType={editableSlotsType}
-            setEditableSlotsType={setEditableSlotsType}
-          />
-        </View>
-      </Modal> */}
-
-      {/* <ActionSheet
-        ref={plusActionSheet}
-        options={[
-          strings.createEvent,
-          strings.editChallengeAvailibilityText,
-          strings.cancel,
-        ]}
-        cancelButtonIndex={2}
-        onPress={(index) => {
-          if (index === 0) {
-            navigation.navigate('CreateEventScreen', {
-              comeName: 'ScheduleScreen',
-            });
-          } else if (index === 1) {
-            setVisibleAvailabilityModal(true);
-          }
-        }}
-      /> */}
     </SafeAreaView>
   );
 }

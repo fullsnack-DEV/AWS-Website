@@ -3446,4 +3446,14 @@ export default {
     'th_Who can see the following items of your basic info?',
   theseSettingsWillBeAppliedForBasicInfo:
     'th_These settings will be applied to all screens where your basic info is displayed.',
+  noPostsToShow: 'th_No posts to show',
+  noEventsToShow: 'th_No events to show',
+  noPhotosAndVideosToShow: 'th_No photos & videos to show',
+  noMatchesToShow: 'th_No matches to show',
+  noFollowersToShow: 'th_No followers to show',
+  noFollowingsToShow: 'th_No followings to show',
+  noMembersToShow: 'th_No members to show',
+  whereBasicInfoWillBeDisplayed: 'th_Where my basic Info will be displayed',
+  basicInfoModalText:
+    'th_Basic Info will be displayed in the "Info" section in your sport activity pages, which are generatedafter you are registered as a player, referee, scorekeeper, or coach in the app. You can choose which items you allow others to see in the privacy settings.',
 };

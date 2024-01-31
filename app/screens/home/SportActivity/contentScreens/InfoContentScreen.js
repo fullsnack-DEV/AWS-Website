@@ -1,8 +1,14 @@
 // @flow
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, Image, Dimensions} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+  FlatList,
+} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import ReadMore from '@fawazahmed/react-native-read-more';
@@ -117,14 +123,19 @@ const InfoContentScreen = ({
         return <UserDetails user={user} privacyStatus={userPrivacyStatus} />;
 
       case strings.clubstitle:
-        return (
+        return privacyStatus[PrivacyKeyEnum.Clubs] ? (
           <ClubList list={user.joined_clubs ?? []} sport={sportObj?.sport} />
-        );
+        ) : null;
 
       case strings.leagues:
-        return <Text style={styles.label}>{strings.noneText}</Text>;
+        return privacyStatus[PrivacyKeyEnum.Leagues] ? (
+          <Text style={styles.label}>{strings.noneText}</Text>
+        ) : null;
 
       case strings.homeFacility:
+        if (!privacyStatus[PrivacyKeyEnum.HomeFacility]) {
+          return null;
+        }
         return user?.homePlace ? (
           <View style={{width: Dimensions.get('window').width}}>
             <View style={{paddingHorizontal: 17}}>
@@ -140,7 +151,10 @@ const InfoContentScreen = ({
             <EventMapView
               coordinate={user.homePlace.coordinate}
               region={user.homePlace.region}
-              style={{width: Dimensions.get('window').width, marginBottom: 15}}
+              style={{
+                width: Dimensions.get('window').width,
+                marginBottom: 15,
+              }}
             />
           </View>
         ) : (
@@ -173,13 +187,13 @@ const InfoContentScreen = ({
         return <Venues list={sportObj.setting?.venue ?? []} />;
 
       case strings.teamstitle:
-        return (
+        return privacyStatus[PrivacyKeyEnum.Teams] ? (
           <TeamsList
             list={user.joined_teams ?? []}
             sport={sportObj?.sport}
             sportType={sportObj?.sport_type}
           />
-        );
+        ) : null;
 
       case strings.certiTitle:
         return isAdmin ? (
@@ -293,82 +307,51 @@ const InfoContentScreen = ({
         data={options}
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
-        renderItem={({item, index}) => {
-          if (
-            item === strings.teamstitle &&
-            !privacyStatus[PrivacyKeyEnum.Teams]
-          ) {
-            return null;
-          }
-
-          if (
-            item === strings.clubstitle &&
-            !privacyStatus[PrivacyKeyEnum.Clubs]
-          ) {
-            return null;
-          }
-
-          if (
-            item === strings.homeFacility &&
-            !privacyStatus[PrivacyKeyEnum.HomeFacility]
-          ) {
-            return null;
-          }
-
-          if (
-            item === strings.leagues &&
-            !privacyStatus[PrivacyKeyEnum.Leagues]
-          ) {
-            return null;
-          }
-
-          return (
-            <View>
+        renderItem={({item, index}) => (
+          <View>
+            <View
+              style={[
+                styles.sectionContainer,
+                item === strings.basicInfoText
+                  ? {paddingVertical: 0, paddingTop: 25, paddingBottom: 10}
+                  : {},
+                item === strings.matchVenues || item === strings.homeFacility
+                  ? {paddingHorizontal: 0}
+                  : {},
+              ]}>
               <View
                 style={[
-                  styles.sectionContainer,
-                  item === strings.basicInfoText
-                    ? {paddingVertical: 0, paddingTop: 25, paddingBottom: 10}
-                    : {},
+                  styles.row,
+                  {marginBottom: 15},
                   item === strings.matchVenues || item === strings.homeFacility
-                    ? {paddingHorizontal: 0}
+                    ? {paddingHorizontal: 17}
                     : {},
                 ]}>
-                <View
-                  style={[
-                    styles.row,
-                    {marginBottom: 15},
-                    item === strings.matchVenues ||
-                    item === strings.homeFacility
-                      ? {paddingHorizontal: 17}
-                      : {},
-                  ]}>
-                  <View style={[styles.row, {justifyContent: 'center'}]}>
-                    <Text style={styles.sectionTitle}>{item}</Text>
-                    {item === strings.matchVenues ? (
-                      <TouchableOpacity
-                        style={styles.infoButtonContainer}
-                        onPress={() => setShowInfo()}>
-                        <Image source={images.infoIcon} style={styles.icon} />
-                      </TouchableOpacity>
-                    ) : null}
-                  </View>
-                  {isAdmin ? (
+                <View style={[styles.row, {justifyContent: 'center'}]}>
+                  <Text style={styles.sectionTitle}>{item}</Text>
+                  {item === strings.matchVenues ? (
                     <TouchableOpacity
-                      style={styles.editButtonContainer}
-                      onPress={() => editOptions(item)}>
-                      <Image source={images.editPencil} style={styles.icon} />
+                      style={styles.infoButtonContainer}
+                      onPress={() => setShowInfo()}>
+                      <Image source={images.infoIcon} style={styles.icon} />
                     </TouchableOpacity>
                   ) : null}
                 </View>
-                {renderSectionContent(item)}
+                {isAdmin ? (
+                  <TouchableOpacity
+                    style={styles.editButtonContainer}
+                    onPress={() => editOptions(item)}>
+                    <Image source={images.editPencil} style={styles.icon} />
+                  </TouchableOpacity>
+                ) : null}
               </View>
-              {index !== options.length - 1 ? (
-                <View style={styles.separator} />
-              ) : null}
+              {renderSectionContent(item)}
             </View>
-          );
-        }}
+            {index !== options.length - 1 ? (
+              <View style={styles.separator} />
+            ) : null}
+          </View>
+        )}
       />
 
       <BottomSheet

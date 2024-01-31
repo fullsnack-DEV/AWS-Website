@@ -301,16 +301,15 @@ const HomeFeed = ({
     () => (
       <>
         {homeFeedHeaderComponent()}
-        {postsPrivacyStatus && (
-          <TimeLineTabView
-            selectedOption={selectedPostTab}
-            onSelect={(value) => {
-              setSelectedPostTab(value);
-            }}
-            postCount={postData.length}
-            taggedPostCount={taggedPostData.length}
-          />
-        )}
+        <TimeLineTabView
+          selectedOption={selectedPostTab}
+          onSelect={(value) => {
+            setSelectedPostTab(value);
+          }}
+          postCount={postData.length}
+          taggedPostCount={taggedPostData.length}
+        />
+
         {isAdmin ||
         currentUserData?.entity_type !== Verbs.entityTypeUser ||
         currentUserData?.entity_type !== Verbs.entityTypePlayer ||
@@ -325,7 +324,6 @@ const HomeFeed = ({
       homeFeedHeaderComponent,
       isAdmin,
       forEvent,
-      postsPrivacyStatus,
       selectedPostTab,
       postData,
       taggedPostData,

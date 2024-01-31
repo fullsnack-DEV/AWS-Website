@@ -22,6 +22,7 @@ import {
   PersonalUserPrivacyEnum,
   PrivacyKeyEnum,
 } from '../../../Constants/PrivacyOptionsConstant';
+import {ModalTypes} from '../../../Constants/GeneralConstants';
 
 const userPrivacyOptions = [
   PrivacyKeyEnum.Gender,
@@ -61,6 +62,7 @@ const SectionWrapperScreen = ({navigation, route}) => {
   });
   const [showInfo, setShowInfo] = useState(false);
   const [snapPoints, setSnapPoints] = useState([]);
+  const [showBasicInfoModal, setShowBasicInfoModal] = useState(false);
 
   useEffect(() => {
     if (sportObj?.sport) {
@@ -155,6 +157,9 @@ const SectionWrapperScreen = ({navigation, route}) => {
                 },
               });
             }}
+            viewPrivacyStatus={
+              infoContentPrivacyStatus[PrivacyKeyEnum.Scoreboard]
+            }
           />
         );
 
@@ -266,6 +271,7 @@ const SectionWrapperScreen = ({navigation, route}) => {
           setSportObj(obj);
         }}
         updateUserObj={(obj) => setUserData({...obj})}
+        openBasicInfoModal={() => setShowBasicInfoModal(true)}
       />
 
       <SportActivityPrivacyModal
@@ -298,6 +304,21 @@ const SectionWrapperScreen = ({navigation, route}) => {
           }}>
           <Text style={styles.label}>{strings.matchVenueInfo}</Text>
         </View>
+      </CustomModalWrapper>
+
+      <CustomModalWrapper
+        isVisible={showBasicInfoModal}
+        closeModal={() => setShowBasicInfoModal(false)}
+        modalType={ModalTypes.style2}>
+        <Text
+          style={{
+            fontSize: 16,
+            lineHeight: 24,
+            color: colors.lightBlackColor,
+            fontFamily: fonts.RRegular,
+          }}>
+          {strings.basicInfoModalText}
+        </Text>
       </CustomModalWrapper>
     </SafeAreaView>
   );

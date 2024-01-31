@@ -1,5 +1,5 @@
 import React, {useState, useLayoutEffect, useContext, useEffect} from 'react';
-import {Alert, SafeAreaView} from 'react-native';
+import {Alert, SafeAreaView, Text} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import {getUserDetails, updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
@@ -10,6 +10,10 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import EditBasicInfoComponent from '../../../components/EditBasicInfoComponent';
 import AccountBasicInfoShimmer from '../../../components/shimmer/account/AccountBasicInfoShimmer';
 import TCKeyboardView from '../../../components/TCKeyboardView';
+import CustomModalWrapper from '../../../components/CustomModalWrapper';
+import fonts from '../../../Constants/Fonts';
+import colors from '../../../Constants/Colors';
+import {ModalTypes} from '../../../Constants/GeneralConstants';
 
 export default function BasicInfoScreen({navigation}) {
   const isFocused = useIsFocused();
@@ -17,6 +21,7 @@ export default function BasicInfoScreen({navigation}) {
   const authContext = useContext(AuthContext);
   const [loading, setloading] = useState(false);
   const [userInfo, setUserInfo] = useState();
+  const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
@@ -155,9 +160,27 @@ export default function BasicInfoScreen({navigation}) {
 
               setUserInfo(UpdatedObj);
             }}
+            onPressInfoButton={() => {
+              setShowInfo(true);
+            }}
           />
         </TCKeyboardView>
       )}
+
+      <CustomModalWrapper
+        isVisible={showInfo}
+        closeModal={() => setShowInfo(false)}
+        modalType={ModalTypes.style2}>
+        <Text
+          style={{
+            fontSize: 16,
+            lineHeight: 24,
+            color: colors.lightBlackColor,
+            fontFamily: fonts.RRegular,
+          }}>
+          {strings.basicInfoModalText}
+        </Text>
+      </CustomModalWrapper>
     </SafeAreaView>
   );
 }

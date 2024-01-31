@@ -44,6 +44,7 @@ export default function GroupMembersModal({
   groupID,
   closeModal,
   showMember = true,
+  viewPrivacyStatus = true,
 }) {
   const [members, setMembers] = useState([]);
   const [searchMember, setSearchMember] = useState();
@@ -423,7 +424,7 @@ export default function GroupMembersModal({
         />
 
         {/* <ActivityLoader visible={loading} /> */}
-        {SearchBox()}
+        {viewPrivacyStatus && SearchBox()}
 
         {!showMember && (
           <View style={styles.emptyContaier}>
@@ -436,27 +437,48 @@ export default function GroupMembersModal({
             </Text>
           </View>
         )}
-
-        <BottomSheetFlatList
-          extraData={searchMember}
-          data={searchMember}
-          renderItem={renderMembers}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={() => (
-            <View style={styles.listemptyView}>
-              <Text style={{textAlign: 'center'}}>{strings.liseemptyText}</Text>
-            </View>
-          )}
-          refreshing={isRefreshing}
-          onRefresh={handleRefresh}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={handleRefresh}
-            />
-          }
-          keyExtractor={(item, index) => `${item.first_name}/${index}`}
-        />
+        {viewPrivacyStatus ? (
+          <BottomSheetFlatList
+            extraData={searchMember}
+            data={searchMember}
+            renderItem={renderMembers}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={() => (
+              <View style={styles.listemptyView}>
+                <Text style={{textAlign: 'center'}}>
+                  {strings.liseemptyText}
+                </Text>
+              </View>
+            )}
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+            keyExtractor={(item, index) => `${item.first_name}/${index}`}
+          />
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingBottom: 90,
+            }}>
+            <Text
+              style={{
+                fontSize: 16,
+                lineHeight: 24,
+                color: colors.googleColor,
+                fontFamily: fonts.RRegular,
+              }}>
+              {strings.noMembersToShow}
+            </Text>
+          </View>
+        )}
       </BottomSheetModal>
     </BottomSheetModalProvider>
   );

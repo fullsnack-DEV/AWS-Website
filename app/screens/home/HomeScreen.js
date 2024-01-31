@@ -61,9 +61,7 @@ const personalPrivacyKeyArr = [
   PrivacyKeyEnum.SportActivityList,
   PrivacyKeyEnum.Slogan,
   PrivacyKeyEnum.Posts,
-  PrivacyKeyEnum.Gallery,
   PrivacyKeyEnum.FollowingAndFollowers,
-  PrivacyKeyEnum.Events,
   PrivacyKeyEnum.InviteForTeam,
   PrivacyKeyEnum.InviteForClub,
   PrivacyKeyEnum.Chats,
@@ -72,11 +70,9 @@ const personalPrivacyKeyArr = [
 const groupPrivacyKeyArr = [
   PrivacyKeyEnum.Posts,
   PrivacyKeyEnum.PostWrite,
-  PrivacyKeyEnum.Events,
   PrivacyKeyEnum.ViewYourGroupMembers,
   PrivacyKeyEnum.Followers,
   PrivacyKeyEnum.Chats,
-  PrivacyKeyEnum.Gallery,
 ];
 
 const HomeScreen = ({navigation, route}) => {
@@ -147,10 +143,7 @@ const HomeScreen = ({navigation, route}) => {
           item === PrivacyKeyEnum.InviteForClub
         ) {
           privacyVal = BinaryPrivacyOptionsEnum[entityObj[item]];
-        } else if (
-          item === PrivacyKeyEnum.Events ||
-          item === PrivacyKeyEnum.Chats
-        ) {
+        } else if (item === PrivacyKeyEnum.Chats) {
           privacyVal = InviteToEventOptionsEnum[entityObj[item]];
         }
         obj[item] = getPrivacyStatus(privacyVal, entityObj);

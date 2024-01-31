@@ -31,6 +31,7 @@ const EditWrapperScreen = ({
   entityType,
   updateSportObj = () => {},
   updateUserObj = () => {},
+  openBasicInfoModal = () => {},
 }) => {
   const [userData, setUserData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -90,6 +91,7 @@ const EditWrapperScreen = ({
                 setUserInfo={(obj) => {
                   setUserData({...userData, ...obj});
                 }}
+                onPressInfoButton={openBasicInfoModal}
               />
             </TCKeyboardView>
           </ScrollView>

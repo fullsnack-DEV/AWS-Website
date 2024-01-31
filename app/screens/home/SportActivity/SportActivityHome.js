@@ -81,9 +81,8 @@ const SportActivityHome = ({navigation, route}) => {
   const isFocused = useIsFocused();
 
   const lookingForModalRef = useRef();
-  const {getPrivacyStatusForSportActivity, getPrivacyStatus} =
-    usePrivacySettings();
-  const [infoContentPrivacyStatus, setInfoContentPrivacyStatus] = useState({});
+  const {getPrivacyStatus} = usePrivacySettings();
+
   const {createChannel, isCreatingChannel} = useStreamChatUtils();
   const [chatPrivacyStatus, setChatPrivacyStatus] = useState(true);
 
@@ -393,16 +392,6 @@ const SportActivityHome = ({navigation, route}) => {
     getScorekeeperMatchList,
   ]);
 
-  useEffect(() => {
-    if (sportObj?.sport) {
-      const privacySetting = getPrivacyStatusForSportActivity(
-        sportObj,
-        userData,
-      );
-      setInfoContentPrivacyStatus(privacySetting);
-    }
-  }, [sportObj, userData]);
-
   const handleSectionClick = (section) => {
     let activeTab = strings.infoTitle;
     if (
@@ -656,17 +645,15 @@ const SportActivityHome = ({navigation, route}) => {
             />
           ) : null}
 
-          {infoContentPrivacyStatus[PrivacyKeyEnum.Scoreboard] && (
-            <ScoreBoardList
-              loading={isFetchingMatchList}
-              matchList={matchList}
-              onSeeAll={() =>
-                handleSectionClick(getScoreboardListTitle(entityType))
-              }
-              screenType={Verbs.screenTypeModal}
-              title={getScoreboardListTitle(entityType)}
-            />
-          )}
+          <ScoreBoardList
+            loading={isFetchingMatchList}
+            matchList={matchList}
+            onSeeAll={() =>
+              handleSectionClick(getScoreboardListTitle(entityType))
+            }
+            screenType={Verbs.screenTypeModal}
+            title={getScoreboardListTitle(entityType)}
+          />
 
           {entityType === Verbs.entityTypePlayer ? (
             <StatSection

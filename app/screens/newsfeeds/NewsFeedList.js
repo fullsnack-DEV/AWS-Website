@@ -167,7 +167,24 @@ const NewsFeedList = ({
 
   const listEmpty = useCallback(() => {
     if (!viewPostPrivacyStatus) {
-      return null;
+      return (
+        <View
+          style={{
+            marginTop: 35,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Text
+            style={{
+              fontSize: 16,
+              lineHeight: 24,
+              color: colors.googleColor,
+              fontFamily: fonts.RRegular,
+            }}>
+            {strings.noPostsToShow}
+          </Text>
+        </View>
+      );
     }
     if (feedAPI) {
       return isNewsFeedScreen ? (

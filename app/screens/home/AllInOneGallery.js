@@ -50,6 +50,7 @@ const AllInOneGallery = ({
   galleryRef,
   isCreatePost = false,
   handleBackPress = () => {},
+  viewPrivacyStatus = true,
 }) => {
   const authContext = useContext(AuthContext);
   const isFocused = useIsFocused();
@@ -282,33 +283,53 @@ const AllInOneGallery = ({
             </TouchableOpacity>
           ))}
       </View>
-      <View style={{flex: 1}}>
-        <FlatList
-          ListEmptyComponent={
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: 200,
-              }}>
-              <Text
+      {viewPrivacyStatus ? (
+        <View style={{flex: 1}}>
+          <FlatList
+            ListEmptyComponent={
+              <View
                 style={{
-                  textAlign: 'center',
-                  fontFamily: fonts.RLight,
-                  fontSize: 16,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: 200,
                 }}>
-                {strings.noGalleryFound}
-              </Text>
-            </View>
-          }
-          data={galleryData}
-          bounces={false}
-          renderItem={allGalleryRenderItem}
-          numColumns={3}
-          style={{marginHorizontal: 1.5}}
-          keyExtractor={(item, index) => `mainGallery${index}`}
-        />
-      </View>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontFamily: fonts.RLight,
+                    fontSize: 16,
+                  }}>
+                  {strings.noGalleryFound}
+                </Text>
+              </View>
+            }
+            data={galleryData}
+            bounces={false}
+            renderItem={allGalleryRenderItem}
+            numColumns={3}
+            style={{marginHorizontal: 1.5}}
+            keyExtractor={(item, index) => `mainGallery${index}`}
+          />
+        </View>
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingBottom: 90,
+          }}>
+          <Text
+            style={{
+              fontSize: 16,
+              lineHeight: 24,
+              color: colors.googleColor,
+              fontFamily: fonts.RRegular,
+            }}>
+            {strings.noPhotosAndVideosToShow}
+          </Text>
+        </View>
+      )}
 
       <BottomSheet
         isVisible={showOptions}
