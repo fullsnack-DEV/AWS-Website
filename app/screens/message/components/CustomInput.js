@@ -112,6 +112,8 @@ const CustomInput = () => {
     text,
     mentionedUsers,
     setText,
+    quotedMessage,
+    clearQuotedMessageState,
   } = useMessageInputContext();
 
   const {channel} = useChannelContext();
@@ -231,7 +233,14 @@ const CustomInput = () => {
       obj.text = text;
     }
     if (text || mentionedUsers.length > 0) {
+      if (quotedMessage) {
+        obj.quoted_message_id = quotedMessage.id;
+      }
+
       await channel.sendMessage(obj, {skip_push: true});
+      if (quotedMessage) {
+        clearQuotedMessageState();
+      }
       setText('');
       removeInputDraft();
     }
@@ -239,8 +248,9 @@ const CustomInput = () => {
 
   return (
     <View style={styles.parent}>
-      <ImageUploadPreview />
-      <CustomFileUploadPreview />
+      {imageUploads.length > 0 && <ImageUploadPreview />}
+      {fileUploads.length > 0 && <CustomFileUploadPreview />}
+
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.cameraIcon}
@@ -254,7 +264,7 @@ const CustomInput = () => {
           <View style={{flex: 1}}>
             <AutoCompleteInput
               additionalTextInputProps={{placeholder: strings.sendAMessage}}
-              onChange={handleInputChange}
+              onChange={(value) => handleInputChange(value, quotedMessage)}
             />
           </View>
           <TouchableOpacity

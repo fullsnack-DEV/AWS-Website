@@ -15,7 +15,11 @@ const CustomReplyInputPreview = () => {
         {quotedMessage.attachments.length > 0 ? (
           <View style={styles.attachment}>
             <Image
-              source={{uri: quotedMessage.attachments[0].image_url}}
+              source={{
+                uri:
+                  quotedMessage.attachments[0].image_url ??
+                  quotedMessage.attachments[0].asset_url,
+              }}
               style={[styles.icon, {borderRadius: 5, resizeMode: 'cover'}]}
             />
           </View>

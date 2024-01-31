@@ -43,10 +43,20 @@ const MessageMediaFullScreen = ({navigation, route}) => {
           (item, index) => index !== currentViewIndex,
         );
 
-        await authContext.chatClient.partialUpdateMessage(messageId, {
-          set: {
-            attachments: updatedAttachments,
+        const obj = {
+          attachments: updatedAttachments,
+          deleted_for_me: {
+            status: true,
+            user_id: [],
+            is_media_only: true,
           },
+        };
+        if (updatedAttachments.length === 0) {
+          obj.text = 'dummy';
+        }
+
+        await authContext.chatClient.partialUpdateMessage(messageId, {
+          set: {...obj},
         });
         setLoading(false);
         navigation.goBack();
@@ -58,7 +68,6 @@ const MessageMediaFullScreen = ({navigation, route}) => {
 
   const downloadImage = async (url = '') => {
     const supported = await Linking.canOpenURL(url);
-
     if (supported) {
       await Linking.openURL(url);
     } else {
@@ -70,12 +79,19 @@ const MessageMediaFullScreen = ({navigation, route}) => {
     if (item.type === Verbs.mediaTypeImage) {
       return (
         <Pressable
-          style={{flex: 1, paddingVertical: showFullScreen ? 0 : 50}}
+          style={{
+            flex: 1,
+            paddingVertical: showFullScreen ? 0 : 50,
+          }}
           onPress={() => setShowFullScreen(!showFullScreen)}>
-          <Image source={{uri: item.image_url}} style={styles.image} />
+          <Image
+            source={{uri: item.image_url ?? item.asset_url}}
+            style={styles.image}
+          />
         </Pressable>
       );
     }
+
     if (item.type === Verbs.mediaTypeVideo) {
       return (
         <Pressable

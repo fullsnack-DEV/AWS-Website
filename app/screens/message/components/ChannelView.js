@@ -7,6 +7,7 @@ import {strings} from '../../../../Localization/translation';
 import fonts from '../../../Constants/Fonts';
 import CustomAvatar from './CustomAvatar';
 import {
+  checkIsMessageDeleted,
   getChannelMembers,
   getChannelName,
   getLastMessageTime,
@@ -37,12 +38,18 @@ const ChannelView = ({channel, latestMessagePreview}) => {
   }, [getMentionCount]);
 
   const getLastMessage = () => {
+    const isDeletedMessage = checkIsMessageDeleted(
+      authContext.chatClient.userID,
+      latestMessagePreview.messageObject,
+    );
     if (latestMessagePreview.messageObject?.text) {
-      return latestMessagePreview.messageObject.text;
+      return isDeletedMessage
+        ? strings.messageDeletedText
+        : latestMessagePreview.messageObject.text;
     }
 
     if (latestMessagePreview.messageObject?.attachments?.length > 0) {
-      return 'Photo';
+      return isDeletedMessage ? strings.messageDeletedText : strings.photoText;
     }
 
     return format(

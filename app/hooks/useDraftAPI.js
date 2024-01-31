@@ -13,14 +13,14 @@ const getDrafts = async () => {
   return data ? JSON.parse(data) : {};
 };
 
-const updateDraft = async (key, value, entityId) => {
+const updateDraft = async (key, inputObj, entityId) => {
   const drafts = await getDrafts();
   const draftsObj = {...(drafts[entityId] ?? {})};
 
-  if (!value) {
+  if (!inputObj.value) {
     delete draftsObj[key];
   } else {
-    draftsObj[key] = value;
+    draftsObj[key] = inputObj;
     drafts[entityId] = {...draftsObj};
   }
 
@@ -30,12 +30,16 @@ const updateDraft = async (key, value, entityId) => {
 const useDraftAPI = () => {
   const authContext = useContext(AuthContext);
   const {channel} = useChannelContext();
-  const {setText} = useMessageInputContext();
+  const {setText, setQuotedMessageState} = useMessageInputContext();
 
   const handleInputChange = useCallback(
-    (value) => {
+    (value, quotedMessage) => {
+      const obj = {
+        value,
+        quotedMessage,
+      };
       setText(value);
-      updateDraft(channel.id, value, authContext.entity.uid);
+      updateDraft(channel.id, obj, authContext.entity.uid);
     },
     [channel.id],
   );
@@ -44,8 +48,10 @@ const useDraftAPI = () => {
     const drafts = await getDrafts();
     const draftsObj = {...(drafts[authContext.entity.uid] ?? {})};
     const result = draftsObj[channel.id] ?? '';
-
-    setText(result);
+    if (result.quotedMessage) {
+      setQuotedMessageState(result.quotedMessage);
+    }
+    setText(result.value);
     return result;
   }, [authContext.entity.uid, channel.id]);
 

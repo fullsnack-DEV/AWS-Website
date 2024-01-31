@@ -61,7 +61,9 @@ const CustomReplyComponent = () => {
                     marginVertical: 5,
                   }}
                   source={{
-                    uri: message.quoted_message.attachments[0].image_url,
+                    uri:
+                      message.quoted_message.attachments[0].image_url ??
+                      message.quoted_message.attachments[0].asset_url,
                   }}
                 />
               )}

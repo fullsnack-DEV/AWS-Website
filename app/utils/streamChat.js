@@ -274,6 +274,9 @@ export const checkIsMessageDeleted = (chatUserId = '', message = {}) => {
     return true;
   }
   if (message.deleted_for_me?.status) {
+    if (message.deleted_for_me?.is_media_only) {
+      return true;
+    }
     const userId = message.deleted_for_me.user_id.find(
       (item) => item === chatUserId,
     );
