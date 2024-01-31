@@ -59,6 +59,7 @@ import {
   countNumberOfWeekFromDay,
   getRoundedDate,
   getJSDate,
+  countNumberOfWeeks,
 } from '../../../utils';
 import NumberOfAttendees from '../../../components/Schedule/NumberOfAttendees';
 import {getGroups} from '../../../api/Groups';
@@ -581,7 +582,7 @@ export default function CreateEventScreen({navigation, route}) {
     return () => backHandler.remove();
   }, [handleBackPress]);
 
-  const getRecurringEventsByOccurrence = (eventObject) => {
+  const getRecurringEventsByOccurrence = (eventObject = {}) => {
     const ruleObj = RRule.parseString(eventObject.rrule);
 
     ruleObj.dtstart = getJSDate(eventObject.start_datetime);
@@ -606,13 +607,17 @@ export default function CreateEventScreen({navigation, route}) {
     const lastEvent = dates[dates.length - 1];
 
     setEndDateOfOccuredEvent(
-      moment(getJSDate(lastEvent.end_datetime)).format('MMMM DD, YYYY'),
+      moment(getJSDate(lastEvent.end_datetime)).format('MMMM DD, YYYY') ?? '',
     );
     return dates;
   };
 
   const getTheEndDate = (occr) => {
     let rule;
+    if (selectWeekMonth === 0) {
+      return;
+    }
+
     if (selectWeekMonth === Verbs.eventRecurringEnum.Daily) {
       rule = 'FREQ=DAILY';
     } else if (selectWeekMonth === Verbs.eventRecurringEnum.Weekly) {
@@ -946,15 +951,51 @@ export default function CreateEventScreen({navigation, route}) {
                 placeholder={strings.never}
                 value={selectWeekMonth}
                 onValueChange={(value) => {
-                  if (value === strings.never) {
+                  if (value === 0) {
                     setEventUntildateTime(eventEndDateTime);
+                    return;
                   }
 
                   setSelectWeekMonth(value);
+                  getTheEndDate(20);
 
-                  setTimeout(() => {
-                    getTheEndDate(occurance);
-                  }, 500);
+                  let rule;
+
+                  if (value === Verbs.eventRecurringEnum.Daily) {
+                    rule = 'FREQ=DAILY';
+                  } else if (value === Verbs.eventRecurringEnum.Weekly) {
+                    rule = 'FREQ=WEEKLY';
+                  } else if (value === Verbs.eventRecurringEnum.WeekOfMonth) {
+                    rule = `FREQ=MONTHLY;BYDAY=${getDayFromDate(
+                      eventStartDateTime,
+                    )
+                      .substring(0, 2)
+                      .toUpperCase()};BYSETPOS=${countNumberOfWeeks(
+                      eventStartDateTime,
+                    )}`;
+                  } else if (value === Verbs.eventRecurringEnum.DayOfMonth) {
+                    rule = `FREQ=MONTHLY;BYMONTHDAY=${eventStartDateTime.getDate()}`;
+                  } else if (value === Verbs.eventRecurringEnum.WeekOfYear) {
+                    rule = `FREQ=YEARLY;BYDAY=${getDayFromDate(
+                      eventStartDateTime,
+                    )
+                      .substring(0, 2)
+                      .toUpperCase()};BYSETPOS=${countNumberOfWeeks(
+                      eventStartDateTime,
+                    )}`;
+                  } else if (value === Verbs.eventRecurringEnum.DayOfYear) {
+                    rule = `FREQ=YEARLY;BYMONTHDAY=${eventStartDateTime.getDate()};BYMONTH=${eventStartDateTime.getMonth()}`;
+                  }
+
+                  const eventObj = {
+                    rrule: rule,
+                    occurrence: 20,
+                    tzid: Intl.DateTimeFormat()?.resolvedOptions().timeZone,
+                    start_datetime: getTCDate(eventStartDateTime),
+                    end_datetime: getTCDate(eventEndDateTime),
+                  };
+
+                  getRecurringEventsByOccurrence(eventObj);
                 }}
                 titleStyle={{color: colors.userPostTimeColor}}
               />

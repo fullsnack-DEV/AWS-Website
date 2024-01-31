@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
-import {useIsFocused} from '@react-navigation/native';
 import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import {updateUserProfile} from '../../../api/Users';
 import AuthContext from '../../../auth/context';
@@ -38,7 +37,6 @@ const UserEditProfileModal = ({
   route,
 }) => {
   const authContext = useContext(AuthContext);
-  const isFocused = useIsFocused();
 
   const [profileOptions, setProfileOptions] = useState([
     strings.camera,
@@ -52,7 +50,7 @@ const UserEditProfileModal = ({
   const [locationPopup, setLocationPopup] = useState();
 
   useEffect(() => {
-    if (isFocused) {
+    if (isVisible) {
       const obj = {...authContext.entity.obj};
       if (
         route.params?.city &&
@@ -64,8 +62,11 @@ const UserEditProfileModal = ({
         obj.country = route.params.country;
       }
       setUserInfo(obj);
+      if (obj?.thumbnail) {
+        setProfileOptions([...profileOptions, strings.deleteTitle]);
+      }
     }
-  }, [isFocused, route.params, authContext]);
+  }, [isVisible]);
 
   // Form Validation
   const checkValidation = () => {
@@ -175,9 +176,6 @@ const UserEditProfileModal = ({
   };
 
   const onProfileImageClicked = () => {
-    if (userInfo?.thumbnail) {
-      setProfileOptions([...profileOptions, strings.deleteTitle]);
-    }
     setShowProfileOptions(true);
   };
 

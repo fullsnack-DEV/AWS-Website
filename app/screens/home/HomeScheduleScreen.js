@@ -79,6 +79,7 @@ import images from '../../Constants/ImagePath';
 import {strings} from '../../../Localization/translation';
 import AvailibilityScheduleScreen from '../account/schedule/AvailibityScheduleScreen';
 import EventScheduleScreen from '../account/schedule/EventScheduleScreen';
+import ViewPrivacyEventModal from '../account/schedule/ViewPrivacyEventModal';
 
 export default function HomeScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
@@ -201,6 +202,9 @@ export default function HomeScheduleScreen({navigation, route}) {
   const [isFromHomeScreen] = useState(route?.params?.isFromHomeScreen);
   const [showOtherOptionForClub, setShowOtherOptionForClub] = useState(false);
   const [showOtherOptionForTeam, setShowOtherOptionforTeam] = useState(false);
+
+  const [visibleViewEventModal, setVisibleViewEventModal] = useState(false);
+
   const [allUserGroups, setallUsersGroups] = useState([]);
 
   useEffect(() => {
@@ -2221,6 +2225,10 @@ export default function HomeScheduleScreen({navigation, route}) {
               navigation.navigate('ScheduleStack', {
                 screen: 'ViewEventSettingsScreen',
               });
+
+            } else {
+              setVisibleViewEventModal(true);
+
             }
             setSettingsModal(false);
           }}
@@ -2359,6 +2367,57 @@ export default function HomeScheduleScreen({navigation, route}) {
           }}
         />
       </View>
+
+
+      <ViewPrivacyEventModal
+        visible={visibleViewEventModal}
+        closeModal={() => setVisibleViewEventModal(false)}
+      />
+
+      {/*  Availability edit modal */}
+      {/* <Modal
+        onBackdropPress={() => setVisibleAvailabilityModal(false)}
+        isVisible={visibleAvailabilityModal}
+        animationInTiming={300}
+        animationOutTiming={800}
+        backdropTransitionInTiming={300}
+        backdropTransitionOutTiming={800}
+        style={{
+          margin: 0,
+        }}>
+        <View
+          style={[
+            styles.bottomPopupContainer,
+            {height: Dimensions.get('window').height - 50},
+          ]}>
+          <ChallengeAvailability
+            setVisibleAvailabilityModal={setVisibleAvailabilityModal}
+            slots={[]}
+            slotType={editableSlotsType}
+            setEditableSlotsType={setEditableSlotsType}
+          />
+        </View>
+      </Modal> */}
+
+      {/* <ActionSheet
+        ref={plusActionSheet}
+        options={[
+          strings.createEvent,
+          strings.editChallengeAvailibilityText,
+          strings.cancel,
+        ]}
+        cancelButtonIndex={2}
+        onPress={(index) => {
+          if (index === 0) {
+            navigation.navigate('CreateEventScreen', {
+              comeName: 'ScheduleScreen',
+            });
+          } else if (index === 1) {
+            setVisibleAvailabilityModal(true);
+          }
+        }}
+      /> */}
+
     </SafeAreaView>
   );
 }

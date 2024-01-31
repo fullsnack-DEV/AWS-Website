@@ -26,6 +26,7 @@ import images from '../../Constants/ImagePath';
 import fonts from '../../Constants/Fonts';
 
 const viewabilityConfig = {itemVisiblePercentThreshold: 50};
+
 const NewsFeedList = ({
   onFeedScroll,
   refs,
@@ -38,6 +39,7 @@ const NewsFeedList = ({
   ListHeaderComponent,
   onRefreshPress = () => {},
   onDeletePost = () => {},
+  onHideEvent = () => {},
   pullRefresh = false,
   onLikePress = () => {},
   onStartShouldSetResponderCapture = () => {},
@@ -87,6 +89,9 @@ const NewsFeedList = ({
   const renderNewsFeed = ({item, index}) => {
     const onDeleteButtonPress = () => onDeletePost(item);
     const onLikeButtonPress = () => onLikePress(item);
+    const onHidePostPress = () => {
+      onHideEvent(item);
+    };
     return (
       <View>
         <NewsFeedPostItems
@@ -100,6 +105,7 @@ const NewsFeedList = ({
           onImageProfilePress={() => onProfilePress(item)}
           onLikePress={onLikeButtonPress}
           onDeletePost={onDeleteButtonPress}
+          onHideEventPost={onHidePostPress}
           isNewsFeedScreen={isNewsFeedScreen}
           openProfilId={openProfilId}
           entityDetails={entityDetails}

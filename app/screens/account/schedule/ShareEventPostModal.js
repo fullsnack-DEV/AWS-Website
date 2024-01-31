@@ -14,7 +14,7 @@ import GroupIcon from '../../../components/GroupIcon';
 import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
-import {editEvent} from '../../../api/Schedule';
+import {shareEventPost} from '../../../api/Schedule';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 
 const ShareEventPostModal = ({visible, onClose, eventData = {}}) => {
@@ -30,17 +30,13 @@ const ShareEventPostModal = ({visible, onClose, eventData = {}}) => {
 
   const onEditEvent = () => {
     setloading(true);
-    const data = eventData;
-    const entity = authContext.entity;
-    const uid = entity.uid || entity.auth.user_id;
-    const entityRole =
-      entity.role === Verbs.entityTypeUser
-        ? Verbs.entityTypeUsers
-        : Verbs.entityTypeGroups;
-    data.event_share_groups = eventShareGroups;
-    data.event_noshare_groups = diselectArray;
 
-    editEvent(entityRole, uid, data, authContext)
+    const data = {
+      event_removed_groups: diselectArray,
+      event_share_groups: eventShareGroups,
+    };
+
+    shareEventPost(eventData.cal_id, data, authContext)
       .then(() => {
         setloading(false);
         onClose();
@@ -129,14 +125,14 @@ const ShareEventPostModal = ({visible, onClose, eventData = {}}) => {
         bounces={false}
         renderItem={({item}) => (
           <TouchableOpacity
-            disabled={!eventShareGroups.includes(item.group_id)}
+            disabled={!sharedGroups.includes(item.group_id)}
             onPress={() => {
               const i = eventShareGroups.indexOf(item.group_id);
               if (i !== -1) {
                 const newArray = [...eventShareGroups];
                 newArray.splice(i, 1);
                 setEventShareGroups(newArray);
-                setDiselectedArray([...diselectArray, item.group_id]);
+                setDiselectedArray([item.group_id]);
               } else {
                 setEventShareGroups((prevArray) => [
                   ...prevArray,

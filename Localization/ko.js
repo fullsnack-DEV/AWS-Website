@@ -3440,6 +3440,11 @@ export default {
   clubsText: 'ko_clubs',
   teamsText: 'ko_teams',
   maxFeeAlert: 'ko_Max fee should be greater than min fee.',
+
+  deleteEventPostAlert:
+    'ko_If you delete this event post, all shared post of this post in other groups will be deleted.',
+  attendeesAndInvited: 'ko_attendees & invited',
+
   viewPrivacySettings: 'ko_View Privacy Settings',
   newMatchesWillAppearHere: 'ko_New match will appear here.',
   whoCanSeeItemsOfBasicInfo:
@@ -3456,4 +3461,5 @@ export default {
   whereBasicInfoWillBeDisplayed: 'ko_Where my basic Info will be displayed',
   basicInfoModalText:
     'ko_Basic Info will be displayed in the "Info" section in your sport activity pages, which are generatedafter you are registered as a player, referee, scorekeeper, or coach in the app. You can choose which items you allow others to see in the privacy settings.',
+
 };

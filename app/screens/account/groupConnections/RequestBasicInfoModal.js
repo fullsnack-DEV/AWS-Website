@@ -11,7 +11,7 @@ import {
   Dimensions,
 } from 'react-native';
 
-import React, {useState, useCallback, useEffect, useContext, memo} from 'react';
+import React, {useState, useCallback, useEffect, useContext} from 'react';
 import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import {format} from 'react-string-format';
 import Verbs from '../../../Constants/Verbs';
@@ -29,7 +29,11 @@ import {strings} from '../../../../Localization/translation';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {getGroupMembers, sendBasicInfoRequest} from '../../../api/Groups';
 
-function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
+function RequestBasicInfoModal({
+  isVisible = false,
+  closeModal = () => {},
+  groupID,
+}) {
   const [loading, setloading] = useState(false);
   const authContext = useContext(AuthContext);
   const [players, setPlayers] = useState([]);
@@ -105,6 +109,12 @@ function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
 
   useEffect(() => {
     getMembers();
+
+    if (isVisible) {
+      setIsInfoModalVisible(true);
+    } else {
+      setIsInfoModalVisible(false);
+    }
   }, [isVisible]);
 
   const onCloseModal = () => {
@@ -364,6 +374,7 @@ function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
           )}
         </View>
       </CustomModalWrapper>
+
       <CustomModalWrapper
         isVisible={isInfoModalVisible}
         closeModal={() => setIsInfoModalVisible(false)}
@@ -373,14 +384,15 @@ function RequestBasicInfoModal({isVisible, closeModal = () => {}, groupID}) {
         <View
           style={{
             flex: 1,
+            backgroundColor: 'red',
           }}
           onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
+            const contentHeight = event.nativeEvent.layout.height + 30;
 
             setSnapPoints([
-              '30%',
+              '70%',
               contentHeight,
-              Dimensions.get('window').height - 40,
+              Dimensions.get('window').height - 20,
             ]);
           }}>
           <Text
@@ -554,4 +566,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(RequestBasicInfoModal);
+export default RequestBasicInfoModal;

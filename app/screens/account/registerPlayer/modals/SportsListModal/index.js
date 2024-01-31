@@ -146,7 +146,10 @@ const SportsListModal = ({
     <>
       <CustomModalWrapper
         isVisible={isVisible}
-        closeModal={closeList}
+        closeModal={() => {
+          setSelectedSport({});
+          closeList();
+        }}
         modalType={ModalTypes.style1}
         title={title}
         onModalShow={() => {
@@ -156,7 +159,10 @@ const SportsListModal = ({
         headerRightButtonText={rightButtonText}
         containerStyle={styles.parent}
         onRightButtonPress={() => {
-          if (!selectedSport?.sport_name) {
+          if (
+            selectedSport === null ||
+            Object.keys(selectedSport).length === 0
+          ) {
             return;
           }
 

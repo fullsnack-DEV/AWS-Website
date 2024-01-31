@@ -1,5 +1,6 @@
 import React, {useCallback, memo, useEffect, useState, useContext} from 'react';
-import {Alert, View} from 'react-native';
+import {Alert, Platform, View} from 'react-native';
+import {format} from 'react-string-format';
 import Share from 'react-native-share';
 import Clipboard from '@react-native-clipboard/clipboard';
 import AuthContext from '../../../auth/context';
@@ -22,6 +23,7 @@ const NewsFeedPostItems = memo(
     onLikePress,
     caller_id,
     onDeletePost,
+    onHideEventPost,
     onImageProfilePress,
     updateCommentCount,
     isNewsFeedScreen,
@@ -49,6 +51,8 @@ const NewsFeedPostItems = memo(
     const [privacyStatusForShare, setPrivacyStatusForShare] = useState(true);
     const [privacyStatusForLikeCount, setPrivacyStatusForLikeCount] =
       useState(true);
+
+    const parsedEventData = JSON.parse(item.object);
 
     useEffect(() => {
       if (item?.id) {
@@ -121,18 +125,37 @@ const NewsFeedPostItems = memo(
         case strings.delete:
         case strings.deletePost:
           setShowMoreOptions(false);
-          Alert.alert(
-            strings.alertmessagetitle,
-            strings.doYouWantToDeleteThisPost,
-            [
-              {text: strings.cancel, style: 'cancel'},
-              {
-                text: strings.delete,
-                style: 'destructive',
-                onPress: () => onDeletePost(),
-              },
-            ],
-          );
+
+          if (
+            postType === Verbs.eventVerb &&
+            parsedEventData?.event_data?.event_share_groups?.length > 0
+          ) {
+            Alert.alert(
+              Platform.OS === 'android' ? '' : strings.deleteEventPostAlert,
+              Platform.OS === 'android' ? strings.deleteEventPostAlert : '',
+              [
+                {text: strings.cancel, style: 'cancel'},
+                {
+                  text: strings.delete,
+                  style: 'destructive',
+                  onPress: () => onDeletePost(),
+                },
+              ],
+            );
+          } else {
+            Alert.alert(
+              strings.alertmessagetitle,
+              strings.doYouWantToDeleteThisPost,
+              [
+                {text: strings.cancel, style: 'cancel'},
+                {
+                  text: strings.delete,
+                  style: 'destructive',
+                  onPress: () => onDeletePost(),
+                },
+              ],
+            );
+          }
 
           break;
 
@@ -170,6 +193,21 @@ const NewsFeedPostItems = memo(
           obj[PrivacyKeyEnum.SharePost] = 1;
           onUpdatePost(obj, item);
           setShowMoreOptions(false);
+          break;
+
+        case format(strings.hideeventPostText, getPostText()):
+          setShowMoreOptions(false);
+          setTimeout(() => {
+            onHideEventPost();
+          }, 100);
+
+          break;
+
+        case format(strings.unhideeventPostText, getPostText()):
+          setShowMoreOptions(false);
+          setTimeout(() => {
+            onHideEventPost();
+          }, 100);
           break;
 
         case strings.report:
@@ -228,6 +266,18 @@ const NewsFeedPostItems = memo(
       openCommentModal(item);
     }, [item, openCommentModal]);
 
+    const getPostText = () => {
+      if (authContext.entity.role === Verbs.entityTypeClub) {
+        return strings.clubsTextHide;
+      }
+
+      if (authContext.entity.role === Verbs.entityTypeTeam) {
+        return strings.teamsTextHide;
+      }
+
+      return strings.profileHide;
+    };
+
     return (
       <View
         style={{
@@ -239,7 +289,15 @@ const NewsFeedPostItems = memo(
             postData={item}
             onImageProfilePress={onImageProfilePress}
             onThreeDotPress={() => {
+              const eventdata = JSON.parse(item.object);
+              // find out if he is in shared list
+              const isInSharedList =
+                eventdata?.event_data?.event_share_groups?.includes(
+                  authContext.entity.uid,
+                );
+
               let option = [];
+
               if (item.actor.id === authContext.entity.uid) {
                 const postObj = JSON.parse(item.object);
 
@@ -248,6 +306,13 @@ const NewsFeedPostItems = memo(
                   commenting: postObj[PrivacyKeyEnum.CommentOnPost] ?? 1,
                   reposting: postObj[PrivacyKeyEnum.SharePost] ?? 1,
                 };
+                // if (
+                //   postObj?.event_data.event_share_groups?.includes(
+                //     authContext.entity.uid,
+                //   )
+                // ) {
+                //   option.push(strings.remove);
+                // }
 
                 if (privacyObj.commenting) {
                   option.push(strings.turnOffCommenting);
@@ -266,7 +331,48 @@ const NewsFeedPostItems = memo(
                 } else {
                   option.push(strings.turnOnReposting);
                 }
-                option.push(strings.deletePost);
+                if (eventdata.event_data?.entityId === authContext.entity.uid) {
+                  option.push(
+                    postObj?.event_data.event_hide_groups.includes(
+                      authContext.entity.uid,
+                    )
+                      ? format(strings.unhideeventPostText, getPostText())
+                      : format(strings.hideeventPostText, getPostText()),
+                  );
+                  option.push(strings.deletePost);
+                }
+              } else if (eventdata.entityId === authContext.entity.uid) {
+                const postObj = JSON.parse(item.object);
+                option.push(
+                  postObj?.event_data.event_hide_groups.includes(
+                    authContext.entity.uid,
+                  )
+                    ? format(strings.unhideeventPostText, getPostText())
+                    : format(strings.hideeventPostText, getPostText()),
+                );
+              } else if (isInSharedList) {
+                if (item.actor.id !== authContext.entity.uid) {
+                  if (authContext.entity.role === Verbs.entityTypeTeam) {
+                    option.push(strings.remove, strings.report);
+                  } else {
+                    option.push(
+                      format(strings.hideeventPostText, getPostText()),
+                      strings.report,
+                    );
+                  }
+                } else {
+                  const postObj = JSON.parse(item.object);
+
+                  option.push(
+                    postObj?.event_data.event_hide_groups.includes(
+                      authContext.entity.uid,
+                    )
+                      ? format(strings.unhideeventPostText, getPostText())
+                      : format(strings.hideeventPostText, getPostText()),
+
+                    strings.report,
+                  );
+                }
               } else {
                 option = [strings.report, strings.blockAccount];
               }
@@ -361,6 +467,7 @@ const NewsFeedPostItems = memo(
         </View>
         <BottomSheet
           type="ios"
+          textStyle={{textAlign: 'center'}}
           isVisible={showMoreOptions}
           closeModal={() => setShowMoreOptions(false)}
           optionList={moreOptions}

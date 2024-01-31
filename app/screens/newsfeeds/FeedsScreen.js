@@ -35,6 +35,7 @@ import LikersModal from '../../components/modals/LikersModal';
 import {followUser, unfollowUser} from '../../api/Users';
 import CommentModal from '../../components/newsFeed/CommentModal';
 import {useTabBar} from '../../context/TabbarContext';
+import {hideEvent} from '../../api/Schedule';
 
 const FeedsScreen = ({navigation, route}) => {
   const authContext = useContext(AuthContext);
@@ -85,6 +86,7 @@ const FeedsScreen = ({navigation, route}) => {
         setFeedCalled(true);
         setFirstTimeLoading(false);
         setPostData([...response.payload.results]);
+
         setLoading(false);
       })
       .catch((e) => {
@@ -144,11 +146,34 @@ const FeedsScreen = ({navigation, route}) => {
           }
           setLoading(false);
         })
-        .catch(() => {
+        .catch((e) => {
+          Alert.alert(e.message);
           setLoading(false);
         });
     },
     [authContext, postData],
+  );
+
+  const onHideEvent = useCallback(
+    (item) => {
+      setLoading(true);
+      const eventdata = JSON.parse(item.object);
+      const data = {
+        hide_event: !eventdata.event_data?.event_hide_groups?.includes(
+          authContext.entity.uid,
+        ),
+      };
+
+      hideEvent(eventdata.event_data.cal_id, data, authContext)
+        .then(() => {
+          setLoading(false);
+        })
+        .catch((e) => {
+          //  setloading(false);
+          Alert.alert('', e.messages);
+        });
+    },
+    [authContext],
   );
 
   const onRefreshPress = useCallback(() => {
@@ -295,6 +320,7 @@ const FeedsScreen = ({navigation, route}) => {
       updateCommentCount={updateCommentCount}
       pullRefresh={pullRefresh}
       onDeletePost={onDeletePost}
+      onHideEvent={onHideEvent}
       postData={postData}
       onRefreshPress={onRefreshPress}
       footerLoading={footerLoading && isNextDataLoading}

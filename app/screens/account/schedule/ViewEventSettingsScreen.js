@@ -164,10 +164,8 @@ export default function ViewEventSettingsScreen({navigation, route}) {
         setHasGroup(false);
       }
     } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
-      if (data && data.length >= 1) {
+      if (data && data.length > 1) {
         setHasGroup(true);
-      } else if (data && data.length > 1) {
-        setOrderOfOrganizer(true);
       } else {
         setHasGroup(false);
       }
@@ -345,7 +343,16 @@ export default function ViewEventSettingsScreen({navigation, route}) {
     saveUserSettings(params, authContext)
       .then(() => {
         setLoading(false);
-        navigation.goBack();
+
+        navigation.navigate('App', {
+          screen: 'Schedule',
+          params: {
+            isRefresh: false,
+            opValue: optionValue,
+          },
+        });
+
+        // navigation.goBack();
       })
       .catch(() => {
         setLoading(false);

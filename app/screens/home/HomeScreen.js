@@ -21,7 +21,7 @@ import AuthContext from '../../auth/context';
 
 import {getUserDetails, sendInvitationInGroup} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
-import {getGroupIndex} from '../../api/elasticSearch';
+import {getGroupIndex, getUserIndex} from '../../api/elasticSearch';
 import Verbs from '../../Constants/Verbs';
 import UserHomeScreen from './UserHomeScreen';
 import BottomSheet from '../../components/modals/BottomSheet';
@@ -40,7 +40,10 @@ import SwitchAccountModal from '../../components/account/SwitchAccountModal';
 import useStreamChatUtils from '../../hooks/useStreamChatUtils';
 import ActivityLoader from '../../components/loader/ActivityLoader';
 import InviteMemberModal from '../../components/InviteMemberModal';
-import {getDataForNextScreen} from '../localhome/LocalHomeUtils';
+import {
+  getDataForNextScreen,
+  getTeamSportOnlyList,
+} from '../localhome/LocalHomeUtils';
 import {locationType} from '../../utils/constant';
 import SportActivitiesModal from './components/SportActivitiesModal';
 import RecruitingMemberModal from './RecruitingMemberModal';
@@ -56,6 +59,8 @@ import {
   PrivacyKeyEnum,
   TeamChatPrivacyOptionsEnum,
 } from '../../Constants/PrivacyOptionsConstant';
+import SportsListModal from '../account/registerPlayer/modals/SportsListModal';
+import SportListMultiModal from '../../components/SportListMultiModal/SportListMultiModal';
 
 const personalPrivacyKeyArr = [
   PrivacyKeyEnum.SportActivityList,
@@ -80,6 +85,8 @@ const HomeScreen = ({navigation, route}) => {
   const isFocused = useIsFocused();
   const {createChannel, isCreatingChannel} = useStreamChatUtils();
 
+  const [visibleSportsModalForClub, setVisibleSportsModalForClub] =
+    useState(false);
   const [pointEvent] = useState('auto');
   const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserData, setCurrentUserData] = useState({});
@@ -98,6 +105,10 @@ const HomeScreen = ({navigation, route}) => {
   const [groupPrivacyObject, setGroupPrivacyObject] = useState({});
   const [showChatActionSheet, setShowChatActionSheet] = useState(false);
   const [chatActions, setChatActions] = useState([]);
+  const [visibleSportsModalForTeam, setVisibleSportsModalForTeam] =
+    useState(false);
+  const [teamSport, setTeamSport] = useState([]);
+  const [players, setPlayers] = useState([]);
 
   const {getPrivacyStatus} = usePrivacySettings();
 
@@ -236,6 +247,35 @@ const HomeScreen = ({navigation, route}) => {
         console.log(e);
       });
   };
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const generalsQuery = {
+        size: 100,
+        query: {bool: {must: [{bool: {should: []}}]}},
+      };
+
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const response = await getUserIndex(generalsQuery);
+
+      if (response.length > 0) {
+        const result = response.map((obj) => ({
+          ...obj,
+          isChecked: false,
+        }));
+
+        const filteredResult = result.filter(
+          (e) => e.user_id !== authContext.entity.auth.user.user_id,
+        );
+
+        setPlayers([...filteredResult]);
+      }
+    };
+
+    getUsers();
+  }, [authContext.entity.auth.user.user_id]);
 
   useEffect(() => {
     const loginEntity = authContext.entity;
@@ -659,6 +699,27 @@ const HomeScreen = ({navigation, route}) => {
     }
   };
 
+  useEffect(() => {
+    const TeamSportList = getTeamSportOnlyList(
+      authContext,
+      Verbs.entityTypeTeam,
+    );
+
+    const OnlyTeamSport = TeamSportList.filter(
+      (item) => item.sport === item.sport_type,
+    );
+
+    setTeamSport(
+      authContext.entity.role === Verbs.entityTypeClub
+        ? OnlyTeamSport
+        : TeamSportList,
+    );
+
+    return () => {
+      setTeamSport([]);
+    };
+  }, [authContext]);
+
   const openGroupChannel = async () => {
     const filter = {
       type: 'messaging',
@@ -856,7 +917,41 @@ const HomeScreen = ({navigation, route}) => {
           setShowSwitchAccountModal(false);
         }}
         onCreate={(option) => {
-          console.log({option});
+          setShowSwitchAccountModal(false);
+          if (option === strings.team) {
+            setTimeout(() => setVisibleSportsModalForTeam(true), 1000);
+          } else if (option === strings.club) {
+            setTimeout(() => setVisibleSportsModalForClub(true), 1000);
+          } else {
+            console.log({option});
+          }
+        }}
+      />
+
+      <SportsListModal
+        isVisible={visibleSportsModalForTeam}
+        closeList={() => setVisibleSportsModalForTeam(false)}
+        title={strings.createTeamText}
+        sportsList={teamSport}
+        forTeam={true}
+        authContext={authContext}
+        playerList={players}
+      />
+
+      <SportListMultiModal
+        isVisible={visibleSportsModalForClub}
+        closeList={() => setVisibleSportsModalForClub(false)}
+        title={strings.createClubNotes}
+        onNext={(sportsList) => {
+          setVisibleSportsModalForClub(false);
+
+          const transformedSportArray = Object.keys(sportsList).map(
+            (key) => sportsList[key],
+          );
+          navigation.navigate('AccountStack', {
+            screen: 'CreateClubForm1',
+            params: transformedSportArray,
+          });
         }}
       />
 

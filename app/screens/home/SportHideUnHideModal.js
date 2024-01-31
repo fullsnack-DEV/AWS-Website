@@ -21,7 +21,7 @@ export default function SportHideUnHideModal({isVisible, onCloseModal}) {
 
   const onSavePress = () => {
     const user = authContext.entity.obj;
-    // setloading(true);
+    setloading(true);
     let registeredSports =
       user.registered_sports?.length > 0 ? [...user.registered_sports] : [];
     let refereeSports =

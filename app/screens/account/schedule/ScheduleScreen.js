@@ -76,6 +76,7 @@ import ScreenHeader from '../../../components/ScreenHeader';
 import AvailabilityShimmer from '../../../components/shimmer/schedule/AvailibilityShimmer';
 import {useTabBar} from '../../../context/TabbarContext';
 import ChallengeAvailability from './ChallengeAvailability';
+import ViewPrivacyEventModal from './ViewPrivacyEventModal';
 
 export default function ScheduleScreen({navigation, route}) {
   let authContext = useContext(AuthContext);
@@ -192,8 +193,7 @@ export default function ScheduleScreen({navigation, route}) {
   const [rsvpFilterOption, setRsvpFilterOption] = useState(0);
   const [filterPopup, setFilterPopup] = useState(false);
   const [allSlots, setAllSlots] = useState([]);
-  // const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
-  //   useState(false);
+
   const [settingsModal, setSettingsModal] = useState(false);
   const [allUserData, setAllUserData] = useState([]);
   // eslint-disable-next-line no-unused-vars
@@ -210,11 +210,14 @@ export default function ScheduleScreen({navigation, route}) {
 
   const [showOtherOptionForTeam, setShowOtherOptionforTeam] = useState(false);
   const {toggleTabBar} = useTabBar();
-  const [allUserGroups, setallUsersGroups] = useState([]);
+
   const [filterSetting, setFilterSetting] = useState({
     sort: 0,
     time: 0,
   });
+  const [visibleViewEventModal, setVisibleViewEventModal] = useState(false);
+  const [slotLevel, setSlotLevel] = useState(false);
+  const [reFreshBar] = useState(route.params?.isRefresh ?? true);
 
   useEffect(() => {
     // Set TabBar visibility to true when this screen mounts
@@ -343,10 +346,14 @@ export default function ScheduleScreen({navigation, route}) {
   const getAlUsersGroups = () => {
     getGroups(authContext)
       .then((response) => {
-        const {teams, clubs} = response.payload ?? [];
+        // const {teams, clubs} = response.payload ?? [];
         if (Object.keys(response.payload).length > 0) {
-          setFilterSetting({...filterSetting, sort: 1});
-          setallUsersGroups([...teams, ...clubs]);
+          if (!reFreshBar) {
+            setFilterSetting({...filterSetting, sort: route.params?.opValue});
+          } else {
+            setFilterSetting({...filterSetting, sort: 2});
+            // setallUsersGroups([...teams, ...clubs]);
+          }
         } else {
           setFilterSetting({...filterSetting, sort: 0});
         }
@@ -369,9 +376,22 @@ export default function ScheduleScreen({navigation, route}) {
           setShowOtherOptionForClub(response?.payload?.length);
 
           if (response.payload?.length === 0) {
-            setFilterSetting({...filterSetting, sort: 0});
+            if (!reFreshBar) {
+              setFilterSetting({
+                ...filterSetting,
+                sort: route.params?.opValue,
+              });
+            } else {
+              setFilterSetting({...filterSetting, sort: 0});
+            }
+          } else if (!reFreshBar) {
+            setFilterSetting({
+              ...filterSetting,
+              sort: route.params?.opValue,
+            });
           } else {
             setFilterSetting({...filterSetting, sort: 1});
+            setTeamsclub(response);
           }
         })
 
@@ -402,23 +422,36 @@ export default function ScheduleScreen({navigation, route}) {
             .then((response) => {
               //  setGroups(response);
 
-              const group_data = [
-                {
-                  id: authContext.entity?.obj?.group_id,
-                  name: authContext.entity?.obj?.group_name,
-                },
-              ];
-
               if (response && response?.length > 0) {
-                setTeamsclub(response);
-                setFilterSetting({...filterSetting, sort: 1});
+                if (!reFreshBar) {
+                  setFilterSetting({
+                    ...filterSetting,
+                    sort: route.params?.opValue,
+                  });
+                } else {
+                  setFilterSetting({...filterSetting, sort: 1});
+                  setTeamsclub(response);
+                }
               }
 
               if (groupIDs.length === 0) {
-                setFilterSetting({...filterSetting, sort: 0});
+                if (!reFreshBar) {
+                  setFilterSetting({
+                    ...filterSetting,
+                    sort: route.params?.opValue,
+                  });
+                } else {
+                  setFilterSetting({...filterSetting, sort: 0});
+                }
               }
 
-              setAllUserData(group_data);
+              const updatedOrganizerOptions = [
+                {group_name: strings.all, group_id: 0},
+                ...response,
+              ];
+              if (reFreshBar) {
+                setOrganizerOptions(updatedOrganizerOptions);
+              }
             })
             .catch((e) => {
               Alert.alert('', e.messages);
@@ -695,14 +728,15 @@ export default function ScheduleScreen({navigation, route}) {
                 ...scheduleFilter,
                 {group_name: strings.othersText, group_id: 2},
               ]);
-            } else {
-              setOrganizerOptions([
-                {group_name: strings.all, group_id: 0},
-                {group_name: Verbs.me, group_id: 1},
-                ...allUserGroups,
-                // {group_name: strings.othersText, group_id: 2},
-              ]);
             }
+            // else {
+            //   setOrganizerOptions([
+            //     {group_name: strings.all, group_id: 0},
+            //     {group_name: Verbs.me, group_id: 1},
+            //     ...allUserGroups,
+            //     // {group_name: strings.othersText, group_id: 2},
+            //   ]);
+            // }
 
             setloading(false);
           }
@@ -800,7 +834,7 @@ export default function ScheduleScreen({navigation, route}) {
         });
     } else if ([Verbs.entityTypeTeam].includes(authContext.entity.role)) {
       await getGroupDetails(authContext.entity.uid, authContext)
-        .then((res) => {
+        .then(async (res) => {
           const groupIDs = res.payload?.parent_groups ?? [];
 
           const groupQuery = {
@@ -811,7 +845,7 @@ export default function ScheduleScreen({navigation, route}) {
             },
           };
 
-          getGroupIndex(groupQuery)
+          await getGroupIndex(groupQuery)
             .then((response) => {
               //  setGroups(response);
               participants = [authContext?.entity?.uid];
@@ -1836,6 +1870,7 @@ export default function ScheduleScreen({navigation, route}) {
                     allSlots={allSlots}
                     isAdmin={isAdmin}
                     setIsFromSlots={setIsFromSlots}
+                    setSlotLevel={setSlotLevel}
                     setVisibleAvailabilityModal={(val) => {
                       setVisibleAvailabilityModal(val);
                     }}
@@ -1881,18 +1916,20 @@ export default function ScheduleScreen({navigation, route}) {
                   screen: 'GroupEventScreen',
                 });
               } else if (index === 2) {
-                navigation.navigate('ScheduleStack', {
-                  screen: 'ViewPrivacyScreen',
-                });
+                setVisibleViewEventModal(true);
+                // navigation.navigate('ScheduleStack', {
+                //   screen: 'ViewPrivacyScreen',
+                // });
               }
             } else if (index === 0) {
               navigation.navigate('ScheduleStack', {
                 screen: 'DefaultColorScreen',
               });
             } else if (index === 1) {
-              navigation.navigate('ScheduleStack', {
-                screen: 'ViewPrivacyScreen',
-              });
+              setVisibleViewEventModal(true);
+              // navigation.navigate('ScheduleStack', {
+              //   screen: 'ViewPrivacyScreen',
+              // });
             }
           }}
         />
@@ -2260,6 +2297,13 @@ export default function ScheduleScreen({navigation, route}) {
               navigation.navigate('ScheduleStack', {
                 screen: 'LikedEventScreen',
               });
+
+            } else {
+              setVisibleViewEventModal(true);
+              // navigation.navigate('ScheduleStack', {
+              //   screen: 'ViewPrivacyScreen',
+              // });
+
             }
             setSettingsModal(false);
           }}
@@ -2408,10 +2452,18 @@ export default function ScheduleScreen({navigation, route}) {
         slots={editableSlots}
         addToSlotData={addToSlotData}
         showAddMore={true}
+        slotLevel={slotLevel}
         deleteFromSlotData={deleteFromSlotData}
         deleteOrCreateSlotData={deleteOrCreateSlotData}
         isFromSlot={isFromSlots}
       />
+
+
+      <ViewPrivacyEventModal
+        visible={visibleViewEventModal}
+        closeModal={() => setVisibleViewEventModal(false)}
+      />
+
     </SafeAreaView>
   );
 }

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-undef */
+
 import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
@@ -11,10 +12,9 @@ import {
   SafeAreaView,
   Alert,
   Platform,
-
-  // Dimensions,
 } from 'react-native';
 import {FlatList, ScrollView} from 'react-native-gesture-handler';
+import {useIsFocused} from '@react-navigation/native';
 import {format} from 'react-string-format';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AuthContext from '../../../auth/context';
@@ -24,7 +24,6 @@ import fonts from '../../../Constants/Fonts';
 import images from '../../../Constants/ImagePath';
 import {strings} from '../../../../Localization/translation';
 import {createEvent} from '../../../api/Schedule';
-// import TCProfileView from '../../../components/TCProfileView';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import EventVenueTogglebtn from '../../../components/Schedule/EventVenueTogglebtn';
 import TCKeyboardView from '../../../components/TCKeyboardView';
@@ -40,16 +39,18 @@ import {getGroupIndex} from '../../../api/elasticSearch';
 import GroupIcon from '../../../components/GroupIcon';
 import {getGroupDetails, getGroups, getTeamsOfClub} from '../../../api/Groups';
 import TCFormProgress from '../../../components/TCFormProgress';
+import BottomSheet from '../../../components/modals/BottomSheet';
 
 export default function CreateEventScreen2({navigation, route}) {
   const authContext = useContext(AuthContext);
   const [eventPosted, setEventPosted] = useState({
-    value: 1,
-    text: strings.scheduleAndPostText,
+    value: 0,
+    text: strings.scheduleOnlyText,
   });
+  const isFocused = useIsFocused();
   const [eventStartDateTime] = useState(route.params?.eventStartDateTimeflag);
 
-  const [is_Create, setIsCreate] = useState(true);
+  const [is_Create, setIsCreate] = useState(false);
 
   const [loading, setloading] = useState(false);
 
@@ -100,7 +101,176 @@ export default function CreateEventScreen2({navigation, route}) {
   );
 
   const [selectWeekMonth] = useState(route.params?.selectWeekMonthFlag);
-  const [sharePostIds, setSharePostIds] = useState([]);
+  const [teamData, setTeamData] = useState({});
+
+  const automatePrivacyOptions = (item) => {
+    if (
+      authContext.entity.role === Verbs.entityTypeUser ||
+      authContext.entity.role === Verbs.entityTypePlayer
+    ) {
+      if (item.text === strings.everyoneTitleText) {
+        setWhoCanJoinOption({
+          text: strings.everyoneTitleText,
+          value: 0,
+        });
+
+        setWhoCanPost({
+          text: strings.everyoneTitleText,
+          value: 0,
+        });
+      } else if (item.text === strings.followersMyTeamClub) {
+        setWhoCanJoinOption({
+          text: strings.followersMyTeamClub,
+          value: 2,
+        });
+
+        setWhoCanPost({
+          text: strings.followersMyTeamClub,
+          value: 2,
+        });
+      } else if (item.text === strings.myTeamClub) {
+        setWhoCanJoinOption({
+          text: strings.invitedOnly,
+          value: 3,
+        });
+
+        setWhoCanPost({
+          text: strings.attendeesAndInvited,
+          value: 3,
+        });
+      }
+    }
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      if (authContext.entity.obj.sport_type === authContext.entity.obj.sport) {
+        if (item.text === strings.everyoneTitleText) {
+          setWhoCanJoinOption({
+            text: strings.everyoneTitleText,
+            value: 0,
+          });
+
+          setWhoCanPost({
+            text: strings.everyoneTitleText,
+            value: 0,
+          });
+        } else if (item.text === strings.followersAndClub) {
+          setWhoCanJoinOption({
+            text: strings.followersRadio,
+            value: 3,
+          });
+
+          setWhoCanPost({
+            text: strings.followersAndClub,
+            value: 4,
+          });
+        } else if (item.text === strings.teamMembersAndClub) {
+          setWhoCanJoinOption({
+            text: strings.teamAndMembersText,
+            value: 2,
+          });
+
+          setWhoCanPost({
+            text: strings.teamMembersAndClub,
+            value: 5,
+          });
+        } else if (item.text === strings.attendeesAndInvited) {
+          setWhoCanJoinOption({
+            text: strings.inviteOnly,
+            value: 1,
+          });
+
+          setWhoCanPost({
+            text: strings.attendeeRadioText,
+            value: 0,
+          });
+        }
+      }
+      if (item.text === strings.everyoneTitleText) {
+        setWhoCanJoinOption({
+          text: strings.everyoneTitleText,
+          value: 0,
+        });
+
+        setWhoCanPost({
+          text: strings.everyoneTitleText,
+          value: 0,
+        });
+      } else if (item.text === strings.followersAndClub) {
+        setWhoCanJoinOption({
+          text: strings.followersRadio,
+          value: 3,
+        });
+
+        setWhoCanPost({
+          text: strings.followersAndClub,
+          value: 4,
+        });
+      } else if (item.text === strings.teamMembersAndClub) {
+        setWhoCanJoinOption({
+          text: strings.teamAndMembersText,
+          value: 2,
+        });
+
+        setWhoCanPost({
+          text: strings.teamMembersAndClub,
+          value: 5,
+        });
+      } else if (item.text === strings.attendeesAndInvited) {
+        setWhoCanJoinOption({
+          text: strings.inviteOnly,
+          value: 1,
+        });
+
+        setWhoCanPost({
+          text: strings.attendeeRadioText,
+          value: 0,
+        });
+      }
+    }
+
+    if (authContext.entity.role === Verbs.entityTypeClub) {
+      if (item.text === strings.everyoneTitleText) {
+        setWhoCanJoinOption({
+          text: strings.everyoneTitleText,
+          value: 0,
+        });
+
+        setWhoCanPost({
+          text: strings.everyoneTitleText,
+          value: 1,
+        });
+      } else if (item.text === strings.followersRadio) {
+        setWhoCanJoinOption({
+          text: strings.followersRadio,
+          value: 3,
+        });
+
+        setWhoCanPost({
+          text: strings.followersRadio,
+          value: 3,
+        });
+      } else if (item.text === strings.clubAndTheirMembers) {
+        setWhoCanJoinOption({
+          text: strings.clubAndTheirMembers,
+          value: 2,
+        });
+
+        setWhoCanPost({
+          text: strings.clubAndTheirMembers,
+          value: 9,
+        });
+      } else if (item.text === strings.attendeesAndInvited) {
+        setWhoCanJoinOption({
+          text: strings.inviteOnly,
+          value: 1,
+        });
+
+        setWhoCanPost({
+          text: strings.attendeeRadioText,
+          value: 0,
+        });
+      }
+    }
+  };
 
   const renderWhoCan = ({item}) => (
     <TouchableOpacity
@@ -113,6 +283,8 @@ export default function CreateEventScreen2({navigation, route}) {
       onPress={() => {
         if (whoOption === see) {
           setWhoCanSeeOption(item);
+
+          automatePrivacyOptions(item);
         } else if (whoOption === join) {
           setWhoCanJoinOption(item);
         } else if (whoOption === invite) {
@@ -160,8 +332,10 @@ export default function CreateEventScreen2({navigation, route}) {
     const entityRole =
       entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
 
-    arr.is_create_post = is_Create;
-    arr.event_share_groups = teamsClubsArray;
+    if (is_Create) {
+      arr.event_share_groups = teamsClubsArray;
+    }
+
     let rule;
     if (selectWeekMonth === Verbs.eventRecurringEnum.Daily) {
       rule = 'FREQ=DAILY';
@@ -203,8 +377,6 @@ export default function CreateEventScreen2({navigation, route}) {
       });
   };
 
-  // get team of clubs
-
   const getTeamsforClubs = () => {
     getTeamsOfClub(authContext.entity.obj.group_id, authContext)
       .then((res) => {
@@ -215,13 +387,17 @@ export default function CreateEventScreen2({navigation, route}) {
       });
   };
 
-  // get clubs for Team
-
   useEffect(() => {
+    automatePrivacyOptions({
+      text: strings.everyoneRadio,
+      value: 0,
+    });
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       getGroupDetails(authContext.entity.uid, authContext)
         .then((res) => {
           const groupID = res.payload?.parent_groups ?? [];
+
+          setTeamData(res?.payload);
 
           const groupQuery = {
             query: {
@@ -234,6 +410,7 @@ export default function CreateEventScreen2({navigation, route}) {
           getGroupIndex(groupQuery)
             .then((response) => {
               setGroups(response);
+
               setTeamsClubsArray(response.map((item) => item.group_id));
             })
             .catch((e) => {
@@ -246,7 +423,7 @@ export default function CreateEventScreen2({navigation, route}) {
     } else {
       getTeamsforClubs();
     }
-  }, []);
+  }, [isFocused]);
 
   const generateRandomImage = () => {
     const image1 = 'backgroundFullImage.png';
@@ -264,6 +441,7 @@ export default function CreateEventScreen2({navigation, route}) {
     routeData.who_can_invite = {...whoCanInviteOption};
     routeData.who_can_see = {...whoCanPost};
     routeData.who_can_join = {...whoCanJoinOption};
+
     routeData.who_can_post = {...whoCanPost};
 
     if (whoCanSeeOption.value === 2) {
@@ -341,7 +519,7 @@ export default function CreateEventScreen2({navigation, route}) {
           },
 
           {
-            text: strings.onlymeTitleText,
+            text: strings.attendeesAndInvited,
             value: 1,
           },
         ];
@@ -358,13 +536,8 @@ export default function CreateEventScreen2({navigation, route}) {
             value: 2,
           },
           {
-            text: strings.myTeamClub,
+            text: strings.invitedOnly,
             value: 3,
-          },
-
-          {
-            text: strings.onlymeTitleText,
-            value: 4,
           },
         ];
       }
@@ -376,7 +549,7 @@ export default function CreateEventScreen2({navigation, route}) {
             value: 0,
           },
           {
-            text: strings.oraganizerOnly,
+            text: strings.onlymeTitleText,
             value: 4,
           },
         ];
@@ -385,15 +558,15 @@ export default function CreateEventScreen2({navigation, route}) {
         return [
           {
             text: strings.everyoneRadio,
-            value: 0,
-          },
-          {
-            text: strings.attendeeRadioText,
             value: 1,
           },
           {
-            text: strings.oraganizerOnly,
+            text: strings.followersMyTeamClub,
             value: 2,
+          },
+          {
+            text: strings.attendeesAndInvited,
+            value: 3,
           },
         ];
       }
@@ -406,23 +579,44 @@ export default function CreateEventScreen2({navigation, route}) {
             {text: strings.everyoneTitleText, value: 0},
             {text: strings.followersAndClub, value: 3},
             {text: strings.teamMembersAndClub, value: 2},
-            {text: strings.clubsAndTeam, value: 1},
+            {text: strings.attendeesAndInvited, value: 7},
           ];
         }
 
         if (whoOption === join) {
           return [
             {text: strings.everyoneTitleText, value: 0},
-            {text: strings.followersAndClub, value: 3},
-            {text: strings.teamMembersAndClub, value: 2},
-            {text: strings.clubsAndTeam, value: 1},
+            {text: strings.followersRadio, value: 3},
+            {text: strings.teamAndMembersText, value: 2},
+            {text: strings.inviteOnly, value: 1},
           ];
         }
 
         if (whoOption === invite) {
           return [
             {text: strings.attendeeRadioText, value: 0},
-            {text: strings.oraganizerOnly, value: 1},
+            {text: strings.onlyTeam, value: 1},
+          ];
+        }
+
+        if (whoOption === post) {
+          return [
+            {
+              text: strings.everyoneRadio,
+              value: 1,
+            },
+            {
+              text: strings.followersAndClub,
+              value: 4,
+            },
+            {
+              text: strings.teamMembersAndClub,
+              value: 5,
+            },
+            {
+              text: strings.attendeeRadioText,
+              value: 6,
+            },
           ];
         }
       } else {
@@ -431,23 +625,44 @@ export default function CreateEventScreen2({navigation, route}) {
             {text: strings.everyoneTitleText, value: 0},
             {text: strings.followersAndClub, value: 3},
             {text: strings.teamMembersAndClub, value: 2},
-            {text: strings.onlyTeamTitle, value: 1},
+            {text: strings.attendeesAndInvited, value: 1},
           ];
         }
 
         if (whoOption === join) {
           return [
             {text: strings.everyoneTitleText, value: 0},
-            {text: strings.followersAndClub, value: 3},
-            {text: strings.teamMembersAndClub, value: 2},
-            {text: strings.onlyTeamTitle, value: 1},
+            {text: strings.followersRadio, value: 3},
+            {text: strings.teamMembers, value: 2},
+            {text: strings.invitedOnly, value: 1},
           ];
         }
 
         if (whoOption === invite) {
           return [
             {text: strings.attendeeRadioText, value: 0},
-            {text: strings.oraganizerOnly, value: 1},
+            {text: strings.onlyTeam, value: 1},
+          ];
+        }
+
+        if (whoOption === post) {
+          return [
+            {
+              text: strings.everyoneRadio,
+              value: 1,
+            },
+            {
+              text: strings.followersAndClub,
+              value: 4,
+            },
+            {
+              text: strings.teamMembersAndClub,
+              value: 5,
+            },
+            {
+              text: strings.attendeeRadioText,
+              value: 7,
+            },
           ];
         }
       }
@@ -458,7 +673,7 @@ export default function CreateEventScreen2({navigation, route}) {
           {text: strings.everyoneTitleText, value: 0},
           {text: strings.followerTitleText, value: 3},
           {text: strings.clubAndTheirMembers, value: 2},
-          {text: strings.onlyClub, value: 1},
+          {text: strings.attendeesAndInvited, value: 1},
         ];
       }
 
@@ -467,14 +682,35 @@ export default function CreateEventScreen2({navigation, route}) {
           {text: strings.everyoneTitleText, value: 0},
           {text: strings.followerTitleText, value: 3},
           {text: strings.clubAndTheirMembers, value: 2},
-          {text: strings.onlyClub, value: 1},
+          {text: strings.invitedOnly, value: 1},
         ];
       }
 
       if (whoOption === invite) {
         return [
           {text: strings.attendeeRadioText, value: 0},
-          {text: strings.oraganizerOnly, value: 1},
+          {text: strings.onlyClub, value: 1},
+        ];
+      }
+
+      if (whoOption === post) {
+        return [
+          {
+            text: strings.everyoneRadio,
+            value: 1,
+          },
+          {
+            text: strings.followersRadio,
+            value: 8,
+          },
+          {
+            text: strings.clubMembersRadio,
+            value: 9,
+          },
+          {
+            text: strings.attendeeRadioText,
+            value: 10,
+          },
         ];
       }
     }
@@ -484,7 +720,7 @@ export default function CreateEventScreen2({navigation, route}) {
   const getShowEventPostRenderCondition = () => {
     if (authContext.entity.role === Verbs.entityTypeTeam) {
       if (
-        authContext.entity.obj?.parent_groups?.length > 0 &&
+        teamData?.parent_groups?.length > 0 &&
         authContext.entity.obj.sport_type === authContext.entity.obj.sport
       ) {
         return true;
@@ -509,7 +745,6 @@ export default function CreateEventScreen2({navigation, route}) {
         onRightButtonPress={() => {
           onDonePress();
         }}
-        // loading={loading}
       />
 
       <TCFormProgress totalSteps={2} curruentStep={2} />
@@ -541,6 +776,7 @@ export default function CreateEventScreen2({navigation, route}) {
               <TouchableOpacity
                 onPress={() => {
                   setWhoOption(see);
+
                   setVisibleWhoModal(true);
                 }}>
                 <View style={styles.dropContainer}>
@@ -553,27 +789,6 @@ export default function CreateEventScreen2({navigation, route}) {
                   />
                 </View>
               </TouchableOpacity>
-
-              {/* {whoCanSeeOption.value === indexThree &&
-              (authContext.entity.role === Verbs.entityTypeUser ||
-                authContext.entity.role === Verbs.entityTypePlayer) ? (
-                <GroupList
-                  list={groupsSeeList}
-                  onCheck={(index) => {
-                    groupsSeeList[index].isSelected =
-                      !groupsSeeList[index].isSelected;
-                    setGroupsSeeList([...groupsSeeList]);
-                  }}
-                  onAllPress={(isAllSelected) => {
-                    const newList = groupsSeeList.map((item) => ({
-                      ...item,
-                      isSelected: !isAllSelected,
-                    }));
-                    setGroupsSeeList([...newList]);
-                  }}
-                  containerStyle={{marginTop: 20}}
-                />
-              ) : null} */}
             </View>
 
             <View style={styles.containerStyle}>
@@ -593,26 +808,6 @@ export default function CreateEventScreen2({navigation, route}) {
                   />
                 </View>
               </TouchableOpacity>
-
-              {whoCanJoinOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser ? (
-                <GroupList
-                  list={groupsJoinList}
-                  onCheck={(index) => {
-                    groupsJoinList[index].isSelected =
-                      !groupsJoinList[index].isSelected;
-                    setGroupsJoinList([...groupsJoinList]);
-                  }}
-                  onAllPress={(isAllSelected) => {
-                    const newList = groupsJoinList.map((item) => ({
-                      ...item,
-                      isSelected: !isAllSelected,
-                    }));
-                    setGroupsJoinList([...newList]);
-                  }}
-                  containerStyle={{marginTop: 20}}
-                />
-              ) : null}
             </View>
 
             <View style={styles.containerStyle}>
@@ -627,31 +822,11 @@ export default function CreateEventScreen2({navigation, route}) {
                     {whoCanInviteOption.text}
                   </Text>
                   <Image
-                    source={images.dropDownArrow}
+                    source={images.dropDownArrow2}
                     style={styles.downArrowWhoCan}
                   />
                 </View>
               </TouchableOpacity>
-
-              {whoCanInviteOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser ? (
-                <GroupList
-                  list={groupsSeeList}
-                  onCheck={(index) => {
-                    groupsSeeList[index].isSelected =
-                      !groupsSeeList[index].isSelected;
-                    setGroupsSeeList([...groupsSeeList]);
-                  }}
-                  onAllPress={(isAllSelected) => {
-                    const newList = groupsSeeList.map((item) => ({
-                      ...item,
-                      isSelected: !isAllSelected,
-                    }));
-                    setGroupsSeeList([...newList]);
-                  }}
-                  containerStyle={{marginTop: 20}}
-                />
-              ) : null}
             </View>
             {/* who Can write post on Event Home */}
 
@@ -675,26 +850,6 @@ export default function CreateEventScreen2({navigation, route}) {
                   />
                 </View>
               </TouchableOpacity>
-
-              {/* {whoCanInviteOption.value === 2 &&
-              authContext.entity.role === Verbs.entityTypeUser ? (
-                <GroupList
-                  list={groupsSeeList}
-                  onCheck={(index) => {
-                    groupsSeeList[index].isSelected =
-                      !groupsSeeList[index].isSelected;
-                    setGroupsSeeList([...groupsSeeList]);
-                  }}
-                  onAllPress={(isAllSelected) => {
-                    const newList = groupsSeeList.map((item) => ({
-                      ...item,
-                      isSelected: !isAllSelected,
-                    }));
-                    setGroupsSeeList([...newList]);
-                  }}
-                  containerStyle={{marginTop: 20}}
-                />
-              ) : null} */}
             </View>
 
             <TCThinDivider
@@ -717,16 +872,29 @@ export default function CreateEventScreen2({navigation, route}) {
                   title={strings.createEventPostTitle}
                   isRequired={true}>
                   <EventVenueTogglebtn
-                    offline={is_Create}
+                    offline={!is_Create}
                     firstTabTitle={strings.doNotCreateText}
                     secondTabTitle={strings.createText}
-                    onFirstTabPress={() => setIsCreate(true)}
-                    onSecondTabPress={() => setIsCreate(false)}
+                    onFirstTabPress={() => {
+                      setIsCreate(false);
+                      setEventPosted({
+                        value: 0,
+                        text: strings.scheduleOnlyText,
+                      });
+                    }}
+                    onSecondTabPress={() => {
+                      setIsCreate(true);
+
+                      setEventPosted({
+                        value: 1,
+                        text: strings.scheduleAndPostText,
+                      });
+                    }}
                     activeEventPrivacyText={{fontSize: 11}}
                     inactiveEventPrivacyText={{fontSize: 11}}
                   />
 
-                  {!is_Create ? (
+                  {is_Create ? (
                     <>
                       <Text
                         style={{
@@ -893,46 +1061,11 @@ export default function CreateEventScreen2({navigation, route}) {
                     </>
                   )}
                 </EventItemRender>
-
-                <View style={styles.containerStyle}>
-                  <View style={{flexDirection: 'row'}}>
-                    <TouchableOpacity
-                      style={styles.checkboxPost}
-                      onPress={() => {
-                        if (eventPosted.value === indexTwo) {
-                          setEventPosted({
-                            value: 0,
-                            text: strings.scheduleOnlyText,
-                          });
-                        } else {
-                          setEventPosted({
-                            value: 1,
-                            text: strings.scheduleAndPostText,
-                          });
-                        }
-                      }}>
-                      <Image
-                        source={
-                          eventPosted.value === 1
-                            ? images.yellowCheckBox
-                            : images.uncheckWhite
-                        }
-                        style={styles.checkboxPostImg}
-                        resizeMode={'contain'}
-                      />
-                    </TouchableOpacity>
-                    <Text
-                      style={[styles.allDayText, {flex: 1, flexWrap: 'wrap'}]}>
-                      {strings.eventPostCreate}
-                    </Text>
-                  </View>
-                </View>
               </>
             )}
           </View>
         </ScrollView>
       </TCKeyboardView>
-
       <CustomModalWrapper
         isVisible={visibleWhoModal}
         closeModal={() => setVisibleWhoModal(false)}
@@ -944,12 +1077,17 @@ export default function CreateEventScreen2({navigation, route}) {
         }}
         externalSnapPoints={snapPoints}>
         <View
-          onLayout={(event) => {
+          onLayout={async (event) => {
             const contentHeight = event.nativeEvent.layout.height + 80;
 
-            setSnapPoints([contentHeight, contentHeight]);
+            setSnapPoints(['40%', '40%', '40%']);
           }}>
-          {getOptions().map((item, index) => renderWhoCan({item, index}))}
+          <FlatList
+            data={getOptions()}
+            renderItem={renderWhoCan}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+          />
         </View>
       </CustomModalWrapper>
       <CustomModalWrapper
@@ -964,14 +1102,7 @@ export default function CreateEventScreen2({navigation, route}) {
         externalSnapPoints={snapPoints}>
         <View
           onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
-
-            setSnapPoints([
-              // '50%',
-              contentHeight,
-              contentHeight,
-              // Dimensions.get('window').height - 40,
-            ]);
+            setSnapPoints(['40%', '40%', '40%']);
           }}>
           <FlatList
             data={getOptions()}
@@ -986,26 +1117,10 @@ export default function CreateEventScreen2({navigation, route}) {
 }
 
 const styles = StyleSheet.create({
-  checkboxPostImg: {
-    width: wp('4.5%'),
-    height: wp('4.5%'),
-    marginTop: 5,
-  },
-  checkboxPost: {
-    left: wp(0),
-    marginRight: 10,
-  },
-  allDayText: {
-    fontSize: 16,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
-
   checkboxImg: {
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
-    // alignSelf: 'center',
   },
   checkbox: {
     width: 20,
@@ -1044,10 +1159,10 @@ const styles = StyleSheet.create({
     marginVertical: 3,
   },
   downArrowWhoCan: {
-    height: 15,
+    height: 20,
     resizeMode: 'contain',
     tintColor: colors.lightBlackColor,
-    width: 15,
+    width: 10,
     right: 15,
   },
 

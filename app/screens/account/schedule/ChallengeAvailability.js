@@ -135,6 +135,7 @@ export default function ChallengeAvailability({
         });
 
         let startDateTime = slots[0]?.start_datetime;
+
         if (startDateTime < currentTime) {
           startDateTime = currentTime;
         }
@@ -240,6 +241,7 @@ export default function ChallengeAvailability({
           59,
         )
       : date;
+
     setUntilDateVisible(!untilDateVisible);
     setChallengeAvailable([...tempChallenge]);
   };
@@ -286,13 +288,6 @@ export default function ChallengeAvailability({
         Alert.alert(strings.overlappingAvailability);
         return false;
       }
-    }
-
-    if (challengeAvailable[currentIndex].is_recurring) {
-      if (!challengeAvailable[currentIndex].untilDate) {
-        Alert.alert('Please select Valid until date');
-      }
-      return false;
     }
 
     setLoading(true);
@@ -365,7 +360,8 @@ export default function ChallengeAvailability({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={() => {
-        if (!isFromSlot) {
+        setrepeatValue(0);
+        if (!slotLevel) {
           Alert.alert(
             strings.discardModalText,
             '',
@@ -746,6 +742,18 @@ export default function ChallengeAvailability({
                       setrepeatValue(tempChallenge[index].repeat);
 
                       setChallengeAvailable(tempChallenge);
+
+                      tempChallenge[index].untilDate = tempChallenge[index]
+                        .allDay
+                        ? new Date(
+                            tempChallenge[index].end_datetime.getFullYear(),
+                            tempChallenge[index].end_datetime.getMonth(),
+                            tempChallenge[index].end_datetime.getDate(),
+                            23,
+                            59,
+                            59,
+                          )
+                        : tempChallenge[index].end_datetime;
                     }}
                     fontColor={
                       challengeAvailable[index].isBlock
@@ -899,7 +907,7 @@ export default function ChallengeAvailability({
             .toDate()}
           minutesGap={5}
           mode={challengeAvailable[currentIndex]?.allDay ? 'date' : 'datetime'}
-          date={challengeAvailable[currentIndex]?.untilDate}
+          date={challengeAvailable[currentIndex].untilDate}
         />
       </View>
     </CustomModalWrapper>

@@ -139,7 +139,7 @@ const OrderedSporList = ({
         const index = list.indexOf(sport);
         list[index] = {
           ...list[index],
-          is_hide: list[index].is_hide,
+          is_hide: !list[index].is_hide,
         };
       } else {
         list.push(obj);
@@ -150,7 +150,7 @@ const OrderedSporList = ({
 
     onToggle(list);
 
-    setToggledList([...toggledList, ...list]);
+    setToggledList(list);
   };
 
   const sportsView = (item, entityType, index) => {
@@ -166,7 +166,6 @@ const OrderedSporList = ({
             {borderBottomWidth: 0},
           ]}
           onPress={() => {
-            // Alert.alert('popo');
             onCardPress(item, item?.item_type);
           }}>
           <View style={[styles.imageContainer, {marginHorizontal: 0}]}>
@@ -210,6 +209,7 @@ const OrderedSporList = ({
       (ele) =>
         ele?.sport && sport.sport === ele.sport && entityType === ele.type,
     );
+
     const isHide = obj?.is_hide;
 
     if (type === 'horizontal') {
@@ -218,9 +218,8 @@ const OrderedSporList = ({
           style={[
             styles.horizontalCard,
             index === 0 ? {marginLeft: 15} : {},
-            item.is_hide
-              ? {borderBottomColor: colors.userPostTimeColor, opacity: 0.5}
-              : {borderBottomColor: getCardBorderColor(entityType)},
+
+            {borderBottomColor: getCardBorderColor(entityType)},
           ]}
           disabled={item.is_hide}
           onPress={() => {
@@ -244,9 +243,8 @@ const OrderedSporList = ({
         style={[
           styles.sportView,
           styles.row,
-          item.is_hide
-            ? {borderLeftColor: colors.userPostTimeColor, opacity: 0.5}
-            : {borderLeftColor: getCardBorderColor(entityType)},
+
+          {borderLeftColor: getCardBorderColor(entityType)},
         ]}
         onPress={() => {
           onCardPress(item, entityType);
@@ -370,6 +368,7 @@ const OrderedSporList = ({
       <View style={{paddingTop: 15, paddingHorizontal: 15}}>
         <FlatList
           data={sportList}
+          extraData={toggledList}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item, index}) => sportsView(item, item.type, index)}
           showsVerticalScrollIndicator={false}

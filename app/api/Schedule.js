@@ -119,3 +119,26 @@ export const myLikeEvents = async (authContext) =>
     url: `${Config.BASE_URL}events/me/like`,
     authContext,
   });
+
+export const shareEventPost = async (event_id, params, authContext) =>
+  makeAPIRequest({
+    method: 'post',
+    url: `${Config.BASE_URL}events/${event_id}/share`,
+    data: params,
+    authContext,
+  });
+
+export const hideEvent = async (event_id, data, authContext) =>
+  makeAPIRequest({
+    method: 'post',
+    url: `${Config.BASE_URL}events/${event_id}/hide`,
+    data,
+    authContext,
+  });
+
+export const commentAllow = async (event_id, authContext) =>
+  makeAPIRequest({
+    method: 'get',
+    url: `${Config.BASE_URL}events/${event_id}/commentallow`,
+    authContext,
+  });

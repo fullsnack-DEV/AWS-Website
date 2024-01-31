@@ -31,6 +31,7 @@ import {followUser, unfollowUser} from '../../api/Users';
 import {strings} from '../../../Localization/translation';
 import CommentModal from '../../components/newsFeed/CommentModal';
 import TimeLineTabView from '../home/components/TimeLineTabView';
+import {hideEvent} from '../../api/Schedule';
 
 const HomeFeed = ({
   onFeedScroll,
@@ -167,6 +168,31 @@ const HomeFeed = ({
         });
     },
     [authContext, postData],
+  );
+
+  const onHideEvent = useCallback(
+    (item) => {
+      setFullScreenLoading(true);
+      const eventdata = JSON.parse(item.object);
+      const data = {
+        hide_event: !eventdata.event_data?.event_hide_groups?.includes(
+          authContext.entity.uid,
+        ),
+      };
+
+      hideEvent(eventdata.event_data.cal_id, data, authContext)
+        .then(() => {
+          // refresh the screen
+          fetchUserTimeLine();
+          setFullScreenLoading(false);
+        })
+        .catch((e) => {
+          //  setloading(false);
+          setFullScreenLoading(false);
+          Alert.alert('', e.messages);
+        });
+    },
+    [authContext],
   );
 
   const onLikePress = useCallback(
@@ -458,6 +484,7 @@ const HomeFeed = ({
         ListHeaderComponent={ListHeaderComponent}
         scrollEnabled={true}
         onDeletePost={onDeletePost}
+        onHideEvent={onHideEvent}
         postData={currentTab === 0 && postsPrivacyStatus ? postsList : []}
         onLikePress={onLikePress}
         onEndReached={onEndReached}

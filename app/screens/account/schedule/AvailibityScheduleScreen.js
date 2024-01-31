@@ -23,6 +23,7 @@ export default function AvailibilityScheduleScreen({
   setEditableSlots = () => {},
   setVisibleAvailabilityModal = () => {},
   setIsFromSlots = () => {},
+  setSlotLevel = () => {},
 }) {
   const [loading, setLoading] = useState(false);
   const [allData, setAllData] = useState(allSlots);
@@ -486,6 +487,8 @@ export default function AvailibilityScheduleScreen({
         if (isAdmin) {
           setEditableSlots([item]);
           setIsFromSlots(true);
+          setSlotLevel(true);
+
           setVisibleAvailabilityModal(true);
         }
       }}
@@ -504,9 +507,9 @@ export default function AvailibilityScheduleScreen({
             renderItem={({item}) => (
               <AvailabilityListView
                 item={item}
-                onEdit={async () => {
-                  await prepareSlotArray(getJSDate(item.time));
-
+                onEdit={() => {
+                  prepareSlotArray(getJSDate(item.time));
+                  setSlotLevel(false);
                   setIsFromSlots(false);
                   setVisibleAvailabilityModal(true);
                 }}
@@ -519,6 +522,8 @@ export default function AvailibilityScheduleScreen({
                 onPress={(slot) => {
                   setIsFromSlots(true);
                   setEditableSlots([slot]);
+                  setSlotLevel(true);
+
                   setVisibleAvailabilityModal(true);
                 }}
               />
@@ -581,6 +586,7 @@ export default function AvailibilityScheduleScreen({
           onPress={() => {
             if (isAdmin) {
               // setIsFromSlots(true);
+              setSlotLevel(false);
               setVisibleAvailabilityModal(true);
             }
           }}

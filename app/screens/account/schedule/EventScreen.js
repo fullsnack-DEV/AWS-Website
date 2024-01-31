@@ -31,7 +31,9 @@ import AuthContext from '../../../auth/context';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
 import {
   attendEvent,
+  commentAllow,
   deleteEvent,
+  hideEvent,
   likeEvent,
   removeAttendeeFromEvent,
 } from '../../../api/Schedule';
@@ -110,6 +112,7 @@ export default function EventScreen({navigation, route}) {
   const [openLikesModal, setOpenLikesModal] = useState(false);
   const [visiblesharEventPostModal, setVisibleshareEventPostModal] =
     useState(false);
+  const [canComment, setCanComment] = useState(false);
 
   useEffect(() => {
     if (route.params?.isCreatePost) {
@@ -142,11 +145,24 @@ export default function EventScreen({navigation, route}) {
       });
   }, [authContext, eventData.cal_id, organizer.entity_type]);
 
+  const commentPrivacyStatus = () => {
+    setloading(true);
+    commentAllow(eventData.cal_id, authContext)
+      .then((res) => {
+        setCanComment(res.payload);
+        setloading(false);
+      })
+      .catch((e) => {
+        console.log(e.message);
+      });
+  };
+
   useEffect(() => {
     if (isFocused) {
+      commentPrivacyStatus();
       getFeeds();
     }
-  }, [getFeeds, isFocused, route.params?.isCreatePost]);
+  }, [getFeeds, isFocused, route.params.isCreatePost]);
 
   const recurringEditList = [
     {
@@ -500,6 +516,36 @@ export default function EventScreen({navigation, route}) {
       });
   };
 
+  const onHideEvent = () => {
+    setloading(true);
+
+    const data = {
+      hide_event: !eventData?.event_hide_groups?.includes(
+        authContext.entity.uid,
+      ),
+    };
+    hideEvent(eventData.cal_id, data, authContext)
+      .then(() => {
+        setloading(false);
+        const UpdatedEventData = eventData;
+        if (eventData?.event_hide_groups?.includes(authContext.entity.uid)) {
+          const newHidegroups = eventData.event_hide_groups.filter(
+            (item) => item !== authContext.entity.uid,
+          );
+
+          UpdatedEventData.event_hide_groups = newHidegroups;
+        } else {
+          UpdatedEventData.event_hide_groups.push(authContext.entity.uid);
+        }
+
+        setEventData(UpdatedEventData);
+      })
+      .catch((e) => {
+        setloading(false);
+        Alert.alert('', e.messages);
+      });
+  };
+
   const renderDeleteRecurringOptions = ({item}) => (
     <>
       <View
@@ -573,7 +619,21 @@ export default function EventScreen({navigation, route}) {
           setVisibleshareEventPostModal(true);
         }, 100);
 
-        Alert.alert('clicked');
+        break;
+      case format(strings.hideeventPostText, getPostText()):
+        // call the Hide event function here
+        // setShowActionSheet(false);
+        setTimeout(() => {
+          onHideEvent();
+        }, 200);
+
+        break;
+
+      case format(strings.unhideeventPostText, getPostText()):
+        // setShowActionSheet(false);
+        setTimeout(() => {
+          onHideEvent();
+        }, 200);
         break;
 
       case strings.reportText:
@@ -832,6 +892,18 @@ export default function EventScreen({navigation, route}) {
       });
   };
 
+  const getPostText = () => {
+    if (authContext.entity.role === Verbs.entityTypeClub) {
+      return strings.clubsTextHide;
+    }
+
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      return strings.teamsTextHide;
+    }
+
+    return strings.profileHide;
+  };
+
   return (
     <SafeAreaView style={styles.mainContainerStyle}>
       <ScreenHeader
@@ -863,21 +935,31 @@ export default function EventScreen({navigation, route}) {
         }}
         rightIcon2Press={() => {
           if (isOrganizer) {
-            setMoreOptions([
-              strings.sendInvoice,
-              strings.sendMessage,
-              strings.shareEventPostText,
-              strings.hideeventPostText,
-              strings.editEvent,
-              strings.deleteEvent,
-            ]);
+            if (eventData?.activity_id) {
+              setMoreOptions([
+                strings.sendInvoice,
+                strings.sendMessage,
+                strings.shareEventPostText,
+                eventData?.event_hide_groups?.includes(authContext.entity.uid)
+                  ? format(strings.unhideeventPostText, getPostText())
+                  : format(strings.hideeventPostText, getPostText()),
+                strings.editEvent,
+                strings.deleteEvent,
+              ]);
+            } else {
+              setMoreOptions([
+                strings.sendInvoice,
+                strings.sendMessage,
+                strings.editEvent,
+                strings.deleteEvent,
+              ]);
+            }
           } else {
             setMoreOptions([strings.reportText, strings.blockEventOrganiser]);
           }
           setShowActionSheet(true);
         }}
         containerStyle={{marginLeft: 8}}
-        // loading={loading}
       />
       <View style={{position: 'absolute', bottom: 32, zIndex: 100}}>
         <ImageProgress />
@@ -1104,6 +1186,41 @@ export default function EventScreen({navigation, route}) {
                 </View>
               )}
             </View>
+
+            {/* dummy comment modal */}
+
+            {eventData?.activity_id ? (
+              <View
+                style={{
+                  paddingVertical: 13,
+                  marginTop: 5,
+                }}>
+                <TouchableOpacity
+                  disabled={!canComment}
+                  onPress={() => setShowCommentModal(true)}
+                  style={{
+                    alignSelf: 'center',
+                    textAlign: 'center',
+                    borderRadius: 8,
+                    paddingHorizontal: 25,
+                    paddingVertical: 10,
+                    backgroundColor: canComment
+                      ? colors.availabilityBarColor
+                      : 'red',
+                    opacity: canComment ? 1 : 0.3,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontFamily: fonts.RBold,
+                      color: colors.whiteColor,
+                    }}>
+                    Comment Modal
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : null}
+
             <View style={[styles.divider, {marginHorizontal: 15}]} />
 
             {eventData.going?.length > 0 && (
@@ -1511,6 +1628,7 @@ export default function EventScreen({navigation, route}) {
       </ScrollView>
       <BottomSheet
         type={Platform.OS}
+        textStyle={{textAlign: 'center'}}
         isVisible={showActionSheet}
         closeModal={() => setShowActionSheet(false)}
         optionList={moreOptions}
@@ -1630,6 +1748,7 @@ export default function EventScreen({navigation, route}) {
           setSendNewInvoice(true);
         }}
       />
+
       <SendNewInvoiceModal
         isVisible={sendNewInvoice}
         invoiceType={InvoiceType.Event}
@@ -1665,7 +1784,7 @@ export default function EventScreen({navigation, route}) {
       />
 
       <CommentModal
-        postId={selectedPost.id}
+        postId={eventData.activity_id}
         showCommentModal={showCommentModal}
         updateCommentCount={(updatedCommentData) => {
           updateCommentCount(updatedCommentData);
