@@ -280,7 +280,11 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
       patchPlayer(payload, authContext)
         .then(async (response) => {
           await setAuthContextData(response.payload, authContext);
-          navigation.goBack();
+          if (route.params?.isFromSportActivitySettings) {
+            navigation.navigate('PersonalUserPrivacySettingsScreen');
+          } else {
+            navigation.goBack();
+          }
           setLoading(false);
         })
         .catch((err) => {

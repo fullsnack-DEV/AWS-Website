@@ -4,7 +4,7 @@ import {View, StyleSheet, TextInput, Pressable} from 'react-native';
 import colors from '../../../../Constants/Colors';
 import fonts from '../../../../Constants/Fonts';
 
-const EditBioScreen = ({bio = '', setData = () => {}}) => {
+const EditBioScreen = ({about = '', setData = () => {}}) => {
   const inputRef = useRef();
   return (
     <View style={styles.parent}>
@@ -14,7 +14,7 @@ const EditBioScreen = ({bio = '', setData = () => {}}) => {
           inputRef.current.focus();
         }}>
         <TextInput
-          defaultValue={bio}
+          defaultValue={about}
           onChangeText={(text) => setData(text)}
           style={styles.input}
           numberOfLines={4}

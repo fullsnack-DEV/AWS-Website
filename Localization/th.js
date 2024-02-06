@@ -3461,5 +3461,6 @@ export default {
   whereBasicInfoWillBeDisplayed: 'th_Where my basic Info will be displayed',
   basicInfoModalText:
     'th_Basic Info will be displayed in the "Info" section in your sport activity pages, which are generatedafter you are registered as a player, referee, scorekeeper, or coach in the app. You can choose which items you allow others to see in the privacy settings.',
-
+  video: 'th_Video',
+  othersTitle: 'th_OTHERS',
 };

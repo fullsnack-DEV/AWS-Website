@@ -18,7 +18,7 @@ import AuthContext from '../../../auth/context';
 
 const ChannelView = ({channel, latestMessagePreview}) => {
   const {state, data} = channel;
-  const {navigate} = useNavigation();
+  const navigation = useNavigation();
   const authContext = useContext(AuthContext);
   const [memberCount, setMemberCount] = useState(0);
   const [unreadMentionCount, setUnreadMentionCount] = useState(0);
@@ -49,7 +49,17 @@ const ChannelView = ({channel, latestMessagePreview}) => {
     }
 
     if (latestMessagePreview.messageObject?.attachments?.length > 0) {
-      return isDeletedMessage ? strings.messageDeletedText : strings.photoText;
+      if (isDeletedMessage) {
+        return strings.messageDeletedText;
+      }
+      if (
+        latestMessagePreview.messageObject?.attachments[0].type ===
+        Verbs.mediaTypeVideo
+      ) {
+        return strings.video;
+      }
+
+      return strings.photoText;
     }
 
     return format(
@@ -62,7 +72,11 @@ const ChannelView = ({channel, latestMessagePreview}) => {
     <TouchableHighlight
       onPress={async () => {
         await channel.watch();
-        navigate('MessageStack', {
+        // navigate('MessageStack', {
+        //   screen: 'MessageChatScreen',
+        //   params: {channel},
+        // });
+        navigation.push('MessageStack', {
           screen: 'MessageChatScreen',
           params: {channel},
         });

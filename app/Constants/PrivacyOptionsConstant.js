@@ -63,7 +63,7 @@ const UserPrivacySettingOptions = [
     data: [],
   },
   {
-    title: 'otherTitle',
+    title: 'othersTitle',
     data: [
       {label: 'basicInfoText', extraData: null},
       {label: 'followingFollower', extraData: null},

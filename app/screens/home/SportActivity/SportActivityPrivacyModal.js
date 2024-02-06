@@ -126,7 +126,7 @@ const SportActivityPrivacyModal = ({
       default:
         return [];
     }
-  }, [sectionName]);
+  }, [sectionName, entityType]);
 
   useEffect(() => {
     if (isVisible) {
@@ -157,7 +157,7 @@ const SportActivityPrivacyModal = ({
         const obj = {...(sportObj?.privacy_settings ?? {})};
         privacyOptions.forEach((item) => {
           const option = item.options.find(
-            (ele) => (obj[item.key]?.value ?? 1) === ele.value,
+            (ele) => ele.value === (obj[item.key] ?? 1),
           );
           if (option) {
             options.push({...option, key: item.key});
@@ -167,7 +167,13 @@ const SportActivityPrivacyModal = ({
 
       setSelectedOptions([...options]);
     }
-  }, [isVisible, privacyOptions, sportObj?.privacy_settings, sectionName]);
+  }, [
+    isVisible,
+    privacyOptions,
+    sportObj?.privacy_settings,
+    sectionName,
+    authContext.entity.obj,
+  ]);
 
   const handleSave = () => {
     const entity = {...authContext.entity.obj};

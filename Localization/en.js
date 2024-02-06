@@ -3437,7 +3437,6 @@ export default {
   whoCanTagClub: 'en_Who can tag your club on a post, comment or reply?',
   clubMembersAndTeams: 'en_Club members & teams',
   allTeams: 'en_All teams',
- 
 
   discardModalText: 'en_Are you sure you want to discard your unsaved changes?',
   addMoreDetailText:
@@ -3447,8 +3446,8 @@ export default {
   maxFeeAlert: 'en_Max fee should be greater than min fee.',
 
   deleteEventPostAlert:
-    'en_If you delete this event post, all shared post of this post in other groups will be deleted.', 
-     attendeesAndInvited: 'en_attendees & invited',
+    'en_If you delete this event post, all shared post of this post in other groups will be deleted.',
+  attendeesAndInvited: 'en_attendees & invited',
 
   viewPrivacySettings: 'en_View Privacy Settings',
   newMatchesWillAppearHere: 'en_New match will appear here.',
@@ -3466,5 +3465,6 @@ export default {
   whereBasicInfoWillBeDisplayed: 'en_Where my basic Info will be displayed',
   basicInfoModalText:
     'en_Basic Info will be displayed in the "Info" section in your sport activity pages, which are generatedafter you are registered as a player, referee, scorekeeper, or coach in the app. You can choose which items you allow others to see in the privacy settings.',
-
+  video: 'en_Video',
+  othersTitle: 'en_OTHERS',
 };

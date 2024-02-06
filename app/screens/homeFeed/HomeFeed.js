@@ -297,31 +297,45 @@ const HomeFeed = ({
     }
   };
 
-  const StickyHeaderComponent = useMemo(
-    () =>
-      isAdmin &&
-      writePostPrivacyStatus && (
-        <WritePost
-          navigation={navigation}
-          postDataItem={currentUserData}
-          onWritePostPress={() => {
-            navigation.navigate('NewsFeedStack', {
-              screen: 'WritePostScreen',
-              params: {
-                postData: currentUserData,
-                selectedImageList: [],
-                comeFrom: 'HomeScreen',
-                routeParams: {
-                  uid: routeParams.uid,
-                  role: routeParams.role,
-                },
+  const StickyHeaderComponent = useMemo(() => {
+    if (!writePostPrivacyStatus) {
+      return null;
+    }
+    if (
+      [Verbs.entityTypePlayer, Verbs.entityTypeUser].includes(
+        currentUserData.entity_type,
+      ) &&
+      !isAdmin
+    ) {
+      return null;
+    }
+    return (
+      <WritePost
+        navigation={navigation}
+        postDataItem={currentUserData}
+        onWritePostPress={() => {
+          navigation.navigate('NewsFeedStack', {
+            screen: 'WritePostScreen',
+            params: {
+              postData: currentUserData,
+              selectedImageList: [],
+              comeFrom: 'HomeScreen',
+              routeParams: {
+                uid: routeParams.uid,
+                role: routeParams.role,
               },
-            });
-          }}
-        />
-      ),
-    [isAdmin, currentUserData, navigation, routeParams, writePostPrivacyStatus],
-  );
+            },
+          });
+        }}
+      />
+    );
+  }, [
+    isAdmin,
+    currentUserData,
+    navigation,
+    routeParams,
+    writePostPrivacyStatus,
+  ]);
 
   const ListHeaderComponent = useMemo(
     () => (
@@ -427,7 +441,7 @@ const HomeFeed = ({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeParams?.isCreatePost]);
+  }, [isFocused, routeParams?.isCreatePost]);
 
   const handleFollowUnfollow = (
     userId,

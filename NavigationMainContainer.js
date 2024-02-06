@@ -84,10 +84,10 @@ function NavigationMainContainer() {
             })
             .catch(() => {
               setLoading(false);
-
               reject();
             });
         } else {
+          setLoading(false);
           reject();
         }
       }, reject);
@@ -109,15 +109,19 @@ function NavigationMainContainer() {
         setLoading(false);
       } else {
         const refereshToken = await getRefereshToken();
-        const token = {
-          token: refereshToken.token,
-          expirationTime: refereshToken.expirationTime,
-        };
+        if (refereshToken?.token) {
+          const token = {
+            token: refereshToken.token,
+            expirationTime: refereshToken.expirationTime,
+          };
 
-        setTokenData(token);
-        setEntity({...contextEntity});
-        Utility.setStorage('authContextEntity', {...contextEntity});
-        setLoading(false);
+          setTokenData(token);
+          setEntity({...contextEntity});
+          Utility.setStorage('authContextEntity', {...contextEntity});
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
       }
     },
     [setTokenData, setEntity, setUser],

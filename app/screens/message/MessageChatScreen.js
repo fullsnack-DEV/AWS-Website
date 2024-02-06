@@ -100,7 +100,6 @@ const MessageChatScreen = ({navigation, route}) => {
         params: {...route.params.routeParams, from: 'chatscreen'},
       });
     } else if (route.params?.comeFrom) {
-      console.log('route.params.routeParams ==>', route.params.routeParams);
       navigation.navigate(route.params.comeFrom, {
         ...route.params.routeParams,
       });
@@ -154,7 +153,7 @@ const MessageChatScreen = ({navigation, route}) => {
     await channel.removeMembers(memberIds);
 
     setShowDetails(false);
-    navigation.goBack();
+    handleBackPress();
   };
 
   const deleteForMe = async () => {
@@ -227,6 +226,7 @@ const MessageChatScreen = ({navigation, route}) => {
       const response = await getUserDetails(member.id, authContext);
       chatPrivacyStatus = getPrivacyStatus(
         InviteToEventOptionsEnum[response.payload[PrivacyKeyEnum.Chats]],
+        response.payload,
       );
     }
     return chatPrivacyStatus;

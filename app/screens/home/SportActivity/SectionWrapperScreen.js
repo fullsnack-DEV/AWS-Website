@@ -71,7 +71,11 @@ const SectionWrapperScreen = ({navigation, route}) => {
         userData,
       );
       setInfoContentPrivacyStatus(privacySetting);
+    }
+  }, [sportObj, userData]);
 
+  useEffect(() => {
+    if (userData?.user_id) {
       const obj = {};
       userPrivacyOptions.forEach((key) => {
         let privacyVal = 1;
@@ -88,7 +92,7 @@ const SectionWrapperScreen = ({navigation, route}) => {
       });
       setUserPrivacyStatus(obj);
     }
-  }, [sportObj, userData]);
+  }, [userData, getPrivacyStatus]);
 
   const handleEditNavigation = (sectionName, title) => {
     if (sectionName === strings.matchVenues) {
@@ -283,6 +287,7 @@ const SectionWrapperScreen = ({navigation, route}) => {
         sportIcon={sportIcon}
         sportObj={sportObj}
         onSave={(obj) => {
+          setSportObj({...obj});
           const privacySetting = getPrivacyStatusForSportActivity(
             obj,
             userData,

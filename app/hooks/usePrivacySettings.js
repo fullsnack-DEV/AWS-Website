@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from 'react';
+import {useCallback, useContext, useEffect, useState} from 'react';
 import {strings} from '../../Localization/translation';
 import AuthContext from '../auth/context';
 import Verbs from '../Constants/Verbs';
@@ -53,174 +53,193 @@ const usePrivacySettings = () => {
     }
   }, [authContext]);
 
-  const checkIsMyTeamClub = (entityId = '') => {
-    if (
-      authContext.entity.role === Verbs.entityTypeTeam ||
-      authContext.entity.role === Verbs.entityTypeClub
-    ) {
-      if (memberList.length > 0) {
-        return memberList.includes(entityId);
-      }
-      if (authContext.entity.obj.user_history?.length > 0) {
-        return authContext.entity.obj.user_history.includes(entityId);
-      }
-      return false;
-    }
-
-    return false;
-  };
-
-  const checkIsMyFollower = (entityId = '', entityObj = {}) => {
-    const isMyFollower =
-      followings.includes(entityId) || entityObj?.is_following;
-
-    return isMyFollower;
-  };
-
-  const getPrivacyStatus = (value = '', entityObj = {}) => {
-    const privacyVal = strings[value];
-    const entityId = entityObj.user_id ?? entityObj.group_id;
-
-    if (privacyVal === strings.yes) {
-      return true;
-    }
-    if (privacyVal === strings.no) {
-      return false;
-    }
-
-    if (
-      entityId === authContext.entity.uid ||
-      [strings.all, strings.everyoneTitleText].includes(privacyVal)
-    ) {
-      return true;
-    }
-
-    if (
-      [
-        strings.onlymeTitleText,
-        strings.noneText,
-        strings.onlyTeamTitle,
-        strings.onlyClub,
-      ].includes(privacyVal)
-    ) {
-      return authContext.entity.uid === entityId;
-    }
-
-    if (privacyVal === strings.invitedOnly) {
-      return false;
-    }
-
-    if (privacyVal === strings.myTeamClub) {
+  const checkIsMyTeamClub = useCallback(
+    (entityId = '') => {
       if (
         authContext.entity.role === Verbs.entityTypeTeam ||
         authContext.entity.role === Verbs.entityTypeClub
       ) {
-        setTimeout(() => {
-          const isMyTeamClub = checkIsMyTeamClub(entityId);
+        if (memberList.length > 0) {
+          return memberList.includes(entityId);
+        }
 
-          return isMyTeamClub;
-        }, 300);
+        if (authContext.entity.obj.user_history?.length > 0) {
+          return authContext.entity.obj.user_history.includes(entityId);
+        }
+        return false;
       }
+
       return false;
-    }
+    },
+    [authContext.entity.role, authContext.entity.obj.user_history, memberList],
+  );
 
-    if (privacyVal === strings.followersMyTeamClub) {
-      const isMyTeamClub = checkIsMyTeamClub(entityId);
-      const isMyFollower = checkIsMyFollower(entityId, entityObj);
+  const checkIsMyFollower = useCallback(
+    (entityId = '', entityObj = {}) => {
+      const isMyFollower =
+        followings.includes(entityId) || entityObj?.is_following;
 
-      return isMyTeamClub || isMyFollower;
-    }
+      return isMyFollower;
+    },
+    [followings],
+  );
 
-    if (
-      privacyVal === strings.teamAndTheirMembers ||
-      privacyVal === strings.clubAndTheirMembers
-    ) {
-      const isMyTeamClub = checkIsMyTeamClub(entityId);
-      return isMyTeamClub;
-    }
+  const getPrivacyStatus = useCallback(
+    (value = '', entityObj = {}) => {
+      if (!value) {
+        return true;
+      }
+      const privacyVal = strings[value];
 
-    if (privacyVal === strings.followersAndClub) {
-      const isMyFollower = checkIsMyFollower(entityId, entityObj);
-      const isMyClub =
-        entityObj.parent_groups?.length > 0
-          ? entityObj.parent_groups.includes(authContext.entity.uid)
-          : false;
+      const entityId = entityObj.user_id ?? entityObj.group_id;
 
-      return isMyClub || isMyFollower;
-    }
+      if (privacyVal === strings.yes) {
+        return true;
+      }
+      if (privacyVal === strings.no) {
+        return false;
+      }
 
-    if (privacyVal === strings.teamMembersAndClub) {
-      const isTeamMember =
-        entityObj.user_history?.length > 0
-          ? entityObj.user_history.includes(authContext.entity.uid)
-          : false;
+      if (
+        entityId === authContext.entity.uid ||
+        [strings.all, strings.everyoneTitleText].includes(privacyVal)
+      ) {
+        return true;
+      }
 
-      const isMyClub =
-        entityObj.parent_groups?.length > 0
-          ? entityObj.parent_groups.includes(authContext.entity.uid)
-          : false;
-
-      return isTeamMember || isMyClub;
-    }
-
-    if (privacyVal === strings.clubsAndTeam) {
-      if (authContext.entity.role === Verbs.entityTypeTeam) {
+      if (
+        [
+          strings.onlymeTitleText,
+          strings.noneText,
+          strings.onlyTeamTitle,
+          strings.onlyClub,
+        ].includes(privacyVal)
+      ) {
         return authContext.entity.uid === entityId;
       }
 
-      if (authContext.entity.role === Verbs.entityTypeClub) {
+      if (privacyVal === strings.invitedOnly) {
+        return false;
+      }
+
+      if (privacyVal === strings.myTeamClub) {
+        if (
+          authContext.entity.role === Verbs.entityTypeTeam ||
+          authContext.entity.role === Verbs.entityTypeClub
+        ) {
+          const isMyTeamClub = checkIsMyTeamClub(entityId);
+
+          return isMyTeamClub;
+        }
+        return false;
+      }
+
+      if (privacyVal === strings.followersMyTeamClub) {
+        const isMyTeamClub = checkIsMyTeamClub(entityId);
+        const isMyFollower = checkIsMyFollower(entityId, entityObj);
+
+        return isMyTeamClub || isMyFollower;
+      }
+
+      if (
+        privacyVal === strings.teamAndTheirMembers ||
+        privacyVal === strings.clubAndTheirMembers
+      ) {
+        const isMyTeamClub = checkIsMyTeamClub(entityId);
+        return isMyTeamClub;
+      }
+
+      if (privacyVal === strings.followersAndClub) {
+        const isMyFollower = checkIsMyFollower(entityId, entityObj);
         const isMyClub =
           entityObj.parent_groups?.length > 0
             ? entityObj.parent_groups.includes(authContext.entity.uid)
             : false;
 
-        return isMyClub;
+        return isMyClub || isMyFollower;
       }
-      return false;
-    }
 
-    if (
-      privacyVal === strings.teamMembers ||
-      privacyVal === strings.clubMember
-    ) {
-      return memberList.includes(entityId);
-    }
+      if (privacyVal === strings.teamMembersAndClub) {
+        const isTeamMember =
+          entityObj.user_history?.length > 0
+            ? entityObj.user_history.includes(authContext.entity.uid)
+            : false;
 
-    if (privacyVal === strings.followerTitleText) {
-      const isMyFollower = checkIsMyFollower(entityId, entityObj);
-      return isMyFollower;
-    }
-
-    if (privacyVal === strings.allTeams) {
-      return authContext.entity.role === Verbs.entityTypeTeam;
-    }
-
-    if (privacyVal === strings.clubMembersAndTeams) {
-      if (authContext.entity.role === Verbs.entityTypeTeam) {
-        const isMyTeam =
-          authContext.entity.obj.parent_groups?.length > 0
+        const isMyClub =
+          entityObj.parent_groups?.length > 0
             ? entityObj.parent_groups.includes(authContext.entity.uid)
             : false;
 
-        const isMyMember = memberList.includes(authContext.entity.uid);
-
-        return isMyMember || isMyTeam;
+        return isTeamMember || isMyClub;
       }
-      return false;
-    }
 
-    if (privacyVal === strings.teamsTitleText) {
-      if (authContext.entity.role === Verbs.entityTypeTeam) {
-        const isMyTeam =
-          authContext.entity.obj.parent_groups?.length > 0
-            ? entityObj.parent_groups.includes(authContext.entity.uid)
-            : false;
-        return isMyTeam;
+      if (privacyVal === strings.clubsAndTeam) {
+        if (authContext.entity.role === Verbs.entityTypeTeam) {
+          return authContext.entity.uid === entityId;
+        }
+
+        if (authContext.entity.role === Verbs.entityTypeClub) {
+          const isMyClub =
+            entityObj.parent_groups?.length > 0
+              ? entityObj.parent_groups.includes(authContext.entity.uid)
+              : false;
+
+          return isMyClub;
+        }
+        return false;
       }
-      return false;
-    }
-    return true;
-  };
+
+      if (
+        privacyVal === strings.teamMembers ||
+        privacyVal === strings.clubMember
+      ) {
+        return memberList.includes(entityId);
+      }
+
+      if (privacyVal === strings.followerTitleText) {
+        const isMyFollower = checkIsMyFollower(entityId, entityObj);
+        return isMyFollower;
+      }
+
+      if (privacyVal === strings.allTeams) {
+        return authContext.entity.role === Verbs.entityTypeTeam;
+      }
+
+      if (privacyVal === strings.clubMembersAndTeams) {
+        if (authContext.entity.role === Verbs.entityTypeTeam) {
+          const isMyTeam =
+            authContext.entity.obj.parent_groups?.length > 0
+              ? entityObj.parent_groups.includes(authContext.entity.uid)
+              : false;
+
+          const isMyMember = memberList.includes(authContext.entity.uid);
+
+          return isMyMember || isMyTeam;
+        }
+        return false;
+      }
+
+      if (privacyVal === strings.teamsTitleText) {
+        if (authContext.entity.role === Verbs.entityTypeTeam) {
+          const isMyTeam =
+            authContext.entity.obj.parent_groups?.length > 0
+              ? entityObj.parent_groups.includes(authContext.entity.uid)
+              : false;
+          return isMyTeam;
+        }
+        return false;
+      }
+      return true;
+    },
+    [
+      authContext.entity.obj.parent_groups,
+      authContext.entity.role,
+      authContext.entity.uid,
+      checkIsMyFollower,
+      checkIsMyTeamClub,
+      memberList,
+    ],
+  );
 
   const getPrivacyStatusForSportActivity = (sportObj = {}, entityObj = {}) => {
     const privacyKeys = [

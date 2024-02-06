@@ -211,6 +211,7 @@ function InviteMemberModal({
         </View>
         <Pressable
           onPress={() => selectPlayer(item)}
+          disabled={!privacyStatus}
           style={{
             height: 22,
             width: 22,

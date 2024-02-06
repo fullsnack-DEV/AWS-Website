@@ -81,13 +81,15 @@ const NewsFeedDescription = ({
         return null;
       }
       return (
-        <TouchableOpacity
-          onPress={() => isTagName && handleNamePress(match, startTagIndex)}>
-          <Text
-            style={{...styles.username, color: colors.tagColor, ...tagStyle}}>
-            {match}
-          </Text>
-        </TouchableOpacity>
+        <Text
+          style={{...styles.username, color: colors.tagColor, ...tagStyle}}
+          onPress={() => {
+            if (isTagName) {
+              handleNamePress(match, startTagIndex);
+            }
+          }}>
+          {match}
+        </Text>
       );
     },
     [descriptions, handleNamePress, tagData, tagStyle],

@@ -32,14 +32,14 @@ import BottomSheet from '../../../../components/modals/BottomSheet';
 import {PrivacyKeyEnum} from '../../../../Constants/PrivacyOptionsConstant';
 
 const OptionList = [
-  strings.bio,
+  strings.abouttitle,
   strings.basicInfoText,
   strings.clubstitle,
   strings.leagues,
 ];
 
 const OptionList1 = [
-  strings.bio,
+  strings.abouttitle,
   strings.basicInfoText,
   strings.certiTitle,
   strings.servicableAreas,
@@ -93,7 +93,7 @@ const InfoContentScreen = ({
 
   const renderSectionContent = (sectionName) => {
     switch (sectionName) {
-      case strings.bio:
+      case strings.abouttitle:
         return (
           <>
             <ReadMore
@@ -220,8 +220,8 @@ const InfoContentScreen = ({
 
   const editOptions = (sectionName) => {
     switch (sectionName) {
-      case strings.bio:
-        handleEditOption(sectionName, strings.editbio);
+      case strings.abouttitle:
+        handleEditOption(sectionName, strings.editabouttitle);
         break;
 
       case strings.basicInfoText:
@@ -230,7 +230,7 @@ const InfoContentScreen = ({
           privacyKey: privacyKey.basicInfo,
         });
         setEditButtonOptions([
-          strings.basicInfoText,
+          strings.editBasicInfoText,
           strings.privacySettingText,
         ]);
         setShowEditModal(true);

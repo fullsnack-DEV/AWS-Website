@@ -112,63 +112,66 @@ const HomeScreen = ({navigation, route}) => {
 
   const {getPrivacyStatus} = usePrivacySettings();
 
-  const fetchPrivacyObj = useCallback((entityObj = {}) => {
-    if (entityObj.entity_type === Verbs.entityTypeTeam) {
-      const obj = {};
-      groupPrivacyKeyArr.forEach((key) => {
-        let privacyVal =
-          entityObj.sport_type === Verbs.doubleSport
-            ? GroupDefaultPrivacyOptionsForDoubleTeamEnum[entityObj[key]]
-            : GroupDefalutPrivacyOptionsEnum[entityObj[key]];
+  const fetchPrivacyObj = useCallback(
+    (entityObj = {}) => {
+      if (entityObj.entity_type === Verbs.entityTypeTeam) {
+        const obj = {};
+        groupPrivacyKeyArr.forEach((key) => {
+          let privacyVal =
+            entityObj.sport_type === Verbs.doubleSport
+              ? GroupDefaultPrivacyOptionsForDoubleTeamEnum[entityObj[key]]
+              : GroupDefalutPrivacyOptionsEnum[entityObj[key]];
 
-        if (key === PrivacyKeyEnum.ViewYourGroupMembers) {
-          privacyVal =
-            GroupDefaultPrivacyOptionsForDoubleTeamEnum[entityObj[key]];
-        } else if (key === PrivacyKeyEnum.Chats) {
-          privacyVal = TeamChatPrivacyOptionsEnum[entityObj[key]];
-        }
+          if (key === PrivacyKeyEnum.ViewYourGroupMembers) {
+            privacyVal =
+              GroupDefaultPrivacyOptionsForDoubleTeamEnum[entityObj[key]];
+          } else if (key === PrivacyKeyEnum.Chats) {
+            privacyVal = TeamChatPrivacyOptionsEnum[entityObj[key]];
+          }
 
-        obj[key] = getPrivacyStatus(privacyVal, entityObj);
-      });
+          obj[key] = getPrivacyStatus(privacyVal, entityObj);
+        });
 
-      setGroupPrivacyObject(obj);
-    } else if (entityObj.entity_type === Verbs.entityTypeClub) {
-      const obj = {};
-      groupPrivacyKeyArr.forEach((key) => {
-        let privacyVal = DefaultClubPrivacyOptionsEnum[entityObj[key]];
+        setGroupPrivacyObject(obj);
+      } else if (entityObj.entity_type === Verbs.entityTypeClub) {
+        const obj = {};
+        groupPrivacyKeyArr.forEach((key) => {
+          let privacyVal = DefaultClubPrivacyOptionsEnum[entityObj[key]];
 
-        if (key === PrivacyKeyEnum.Chats) {
-          privacyVal = ClubChatPrivacyOptionsEnum[entityObj[key]];
-        }
+          if (key === PrivacyKeyEnum.Chats) {
+            privacyVal = ClubChatPrivacyOptionsEnum[entityObj[key]];
+          }
 
-        obj[key] = getPrivacyStatus(privacyVal, entityObj);
-      });
+          obj[key] = getPrivacyStatus(privacyVal, entityObj);
+        });
 
-      setGroupPrivacyObject(obj);
-    } else {
-      const obj = {};
-      personalPrivacyKeyArr.forEach((item) => {
-        let privacyVal = PersonalUserPrivacyEnum[entityObj[item]];
-        if (
-          item === PrivacyKeyEnum.InviteForTeam ||
-          item === PrivacyKeyEnum.InviteForClub
-        ) {
-          privacyVal = BinaryPrivacyOptionsEnum[entityObj[item]];
-        } else if (item === PrivacyKeyEnum.Chats) {
-          privacyVal = InviteToEventOptionsEnum[entityObj[item]];
-        }
-        obj[item] = getPrivacyStatus(privacyVal, entityObj);
-      });
+        setGroupPrivacyObject(obj);
+      } else {
+        const obj = {};
+        personalPrivacyKeyArr.forEach((item) => {
+          let privacyVal = PersonalUserPrivacyEnum[entityObj[item]];
+          if (
+            item === PrivacyKeyEnum.InviteForTeam ||
+            item === PrivacyKeyEnum.InviteForClub
+          ) {
+            privacyVal = BinaryPrivacyOptionsEnum[entityObj[item]];
+          } else if (item === PrivacyKeyEnum.Chats) {
+            privacyVal = InviteToEventOptionsEnum[entityObj[item]];
+          }
+          obj[item] = getPrivacyStatus(privacyVal, entityObj);
+        });
 
-      setPersonalPrivacyObject(obj);
-    }
-  }, []);
+        setPersonalPrivacyObject(obj);
+      }
+    },
+    [getPrivacyStatus],
+  );
 
   useEffect(() => {
     if (isFocused && currentUserData?.entity_type) {
       fetchPrivacyObj(currentUserData);
     }
-  }, [isFocused, currentUserData]);
+  }, [isFocused, currentUserData, fetchPrivacyObj]);
 
   const getUserData = (uid) => {
     setLoading(true);

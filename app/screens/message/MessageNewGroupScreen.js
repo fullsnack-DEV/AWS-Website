@@ -182,7 +182,7 @@ const MessageNewGroupScreen = ({
     <CustomModalWrapper
       isVisible={isVisible}
       closeModal={handleModalClose}
-      modalType={ModalTypes.style6}
+      modalType={ModalTypes.style1}
       title={strings.newGroup}
       leftIconPress={handleModalClose}
       isRightIconText

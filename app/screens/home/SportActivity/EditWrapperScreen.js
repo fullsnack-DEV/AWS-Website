@@ -61,14 +61,14 @@ const EditWrapperScreen = ({
 
   const renderView = () => {
     switch (section) {
-      case strings.bio:
+      case strings.abouttitle:
         return (
           <EditBioScreen
-            bio={updatedSportObj.descriptions}
-            setData={(bio) => {
+            about={updatedSportObj.descriptions}
+            setData={(about) => {
               const obj = {
                 ...updatedSportObj,
-                descriptions: bio,
+                descriptions: about,
               };
               setUpdatedSportObj(obj);
             }}
