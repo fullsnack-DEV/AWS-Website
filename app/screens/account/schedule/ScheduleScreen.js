@@ -2297,13 +2297,11 @@ export default function ScheduleScreen({navigation, route}) {
               navigation.navigate('ScheduleStack', {
                 screen: 'LikedEventScreen',
               });
-
             } else {
               setVisibleViewEventModal(true);
               // navigation.navigate('ScheduleStack', {
               //   screen: 'ViewPrivacyScreen',
               // });
-
             }
             setSettingsModal(false);
           }}
@@ -2458,12 +2456,10 @@ export default function ScheduleScreen({navigation, route}) {
         isFromSlot={isFromSlots}
       />
 
-
       <ViewPrivacyEventModal
         visible={visibleViewEventModal}
         closeModal={() => setVisibleViewEventModal(false)}
       />
-
     </SafeAreaView>
   );
 }
@@ -2686,14 +2682,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: colors.blackColor,
   },
-  // closeButton: {
-  //   alignSelf: 'center',
-  //   width: 15,
-  //   height: 15,
-  //   marginLeft: 5,
-  //   resizeMode: 'contain',
-  //   tintColor: colors.blackColor,
-  // },
+
   topHeaderContainer: {
     // backgroundColor: '#333',
     height: 40,
@@ -2701,8 +2690,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    // marginRight: 25,
-    // marginLeft: 15,
   },
 
   radioButtonStyle: {
@@ -2717,13 +2704,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RRegular,
     color: colors.lightBlackColor,
   },
-  // changeOrderStyle: {
-  //   fontSize: 14,
-  //   fontFamily: fonts.RRegular,
-  //   color: colors.themeColor,
-  //   textDecorationLine: 'underline',
-  //   marginLeft: 20,
-  // },
+
   threeDotImageStyle: {
     height: 25,
     width: 25,

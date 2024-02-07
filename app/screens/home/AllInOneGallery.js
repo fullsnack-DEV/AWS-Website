@@ -179,25 +179,6 @@ const AllInOneGallery = ({
       typeof item?.object === 'string'
         ? JSON.parse(item?.object)
         : item?.object;
-    // if (
-    //   (index === 0 && authContext.entity.uid === entity_id) ||
-    //   (index === 0 && entity_type === 'game' && isAdmin)
-    // ) {
-    //   return (
-    //     <AddPhotoItem
-    //       onAddPhotoPress={() => {
-    //         ImagePicker.openPicker({
-    //           height: widthPercentageToDP(32.3),
-    //           width: widthPercentageToDP(32.3),
-    //           multiple: true,
-    //           maxFiles: MAX_UPLOAD_POST_ASSETS,
-    //         }).then((pickImages) => {
-    //           onAddPhotoPress(pickImages);
-    //         });
-    //       }}
-    //     />
-    //   );
-    // }
 
     if (myItem?.attachments?.length > 0) {
       if (myItem?.attachments?.[0]?.type === 'image') {
@@ -307,7 +288,6 @@ const AllInOneGallery = ({
             bounces={false}
             renderItem={allGalleryRenderItem}
             numColumns={3}
-            style={{marginHorizontal: 1.5}}
             keyExtractor={(item, index) => `mainGallery${index}`}
           />
         </View>

@@ -320,6 +320,80 @@ const ClubChatPrivacyOptionsEnum = {
   4: 'teamsTitleText',
 };
 
+const WhoCanSeeEventUserEnum = {
+  0: 'everyoneTitleText',
+  2: 'followersMyTeamClub',
+  3: 'myTeamClub',
+  9: 'attendeesAndInvited',
+};
+
+const WhoCanJoinEventUserEnum = {
+  0: 'everyoneTitleText',
+  2: 'followersMyTeamClub',
+  3: 'invitedOnly',
+};
+const WhoCanInviteEventUserEnum = {
+  0: 'attendeeRadioText',
+  4: 'onlymeTitleText',
+};
+
+const WhoCanSeeEventTeamEnum = {
+  0: 'everyoneTitleText',
+  3: 'followersAndClub',
+  2: 'teamMembersAndClub',
+  7: 'attendeesAndInvited',
+};
+
+const WhoCanJoinEventTeamEnum = {
+  0: 'everyoneTitleText',
+  3: 'followersRadio',
+  2: 'teamAndMembersText',
+  1: 'inviteOnly',
+};
+
+const WhoCanInviteEventTeamEnum = {
+  0: 'attendeeRadioText',
+  1: 'onlyTeam',
+};
+
+const WhoCanSeeEventDoubleTeamEnum = {
+  0: 'everyoneTitleText',
+  3: 'followersAndClub',
+  2: 'teamMembersAndClub',
+  7: 'attendeesAndInvited',
+};
+
+const WhoCanJoinEventDoubleTeamEnum = {
+  0: 'everyoneTitleText',
+  3: 'followersRadio',
+  2: 'teamMembers',
+  1: 'inviteOnly',
+};
+
+const WhoCanInviteEventDoubleTeamEnum = {
+  0: 'attendeeRadioText',
+  1: 'onlyTeam',
+};
+
+const WhoCanSeeEventClubEnum = {
+  0: 'everyoneTitleText',
+  3: 'followerTitleText',
+  2: 'clubAndTheirMembers',
+  7: 'attendeesAndInvited',
+};
+
+const WhoCanJoinEventClubEnum = {
+  0: 'everyoneTitleText',
+  3: 'followerTitleText',
+  2: 'clubAndTheirMembers',
+  7: 'invitedOnly',
+};
+
+const WhoCanInviteEventClubEnum = {
+  0: 'attendeeRadioText',
+  1: 'onlyClub',
+};
+
 export {
   UserPrivacySettingOptions,
   defaultOptions,
@@ -361,4 +435,16 @@ export {
   ClubChatPrivacyOptionsEnum,
   inviteToCreateDoubleTeamOptions,
   InviteToCreateDoubleTeamOptionsEnum,
+  WhoCanSeeEventUserEnum,
+  WhoCanJoinEventUserEnum,
+  WhoCanInviteEventUserEnum,
+  WhoCanSeeEventTeamEnum,
+  WhoCanJoinEventTeamEnum,
+  WhoCanInviteEventTeamEnum,
+  WhoCanSeeEventDoubleTeamEnum,
+  WhoCanJoinEventDoubleTeamEnum,
+  WhoCanInviteEventDoubleTeamEnum,
+  WhoCanSeeEventClubEnum,
+  WhoCanJoinEventClubEnum,
+  WhoCanInviteEventClubEnum,
 };

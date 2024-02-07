@@ -29,7 +29,9 @@ const PostForEvent = ({
       <FeedProfile
         data={postData.actor.data}
         time={postData.time}
-        onImageProfilePress={onImageProfilePress}
+        onImageProfilePress={() => {
+          onImageProfilePress();
+        }}
         isRepost={false}
         onThreeDotPress={onThreeDotPress}
         isEvent
@@ -73,11 +75,9 @@ const PostForEvent = ({
           )}
           <View style={[styles.row, {marginTop: 5}]}>
             <GroupIcon
-
               imageUrl={postData.actor.data?.full_image ?? ''}
               entityType={postData.actor.data?.entity_type ?? ''}
               groupName={postData.actor.data?.group_name ?? ''}
-
               containerStyle={styles.profileIcon}
             />
             <View>

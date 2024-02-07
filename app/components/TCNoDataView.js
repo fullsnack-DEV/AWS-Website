@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
   },
   noDataPlaceholder: {
     alignSelf: 'center',
-    color: colors.veryLightGray,
-    fontSize: 20,
+    color: colors.googleColor,
+    fontSize: 16,
     fontFamily: fonts.RRegular,
   },
 });

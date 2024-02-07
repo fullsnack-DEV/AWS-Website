@@ -43,7 +43,7 @@ import Verbs from '../../Constants/Verbs';
 import HomeFeed from '../homeFeed/HomeFeed';
 import GroupHomeButton from './GroupHomeButton';
 import {ErrorCodes} from '../../utils/constant';
-import {getGamesList, showAlert} from '../../utils';
+import {getGamesList, setAuthContextData, showAlert} from '../../utils';
 import MemberList from '../../components/Home/MemberList';
 import {ImageUploadContext} from '../../context/ImageUploadContext';
 import {createPost} from '../../api/NewsFeeds';
@@ -72,7 +72,7 @@ const GroupHomeScreen = ({
   route,
   groupId,
   isAdmin = false,
-  pointEvent = 'auto',
+  // pointEvent = 'auto',
   isAccountDeactivated = false,
   groupData = {},
   restrictReturn = false,
@@ -231,6 +231,17 @@ const GroupHomeScreen = ({
           currentUserData,
         });
         break;
+
+      case strings.events:
+        navigation.navigate('HomeScheduleScreen', {
+          uid: groupId,
+          isAdmin,
+          isFromHomeScreen: true,
+          role: route.params?.role ?? authContext.entity.role,
+          currentUserData,
+        });
+        break;
+
       case strings.scoreboard:
         navigation.navigate('EntityScoreboardScreen', {
           uid: groupId,
@@ -280,7 +291,7 @@ const GroupHomeScreen = ({
     if (groupData?.entity_type === Verbs.entityTypeClub) {
       const clubOptions = [
         strings.infoTitle,
-        strings.scheduleTitle,
+        strings.events,
         strings.scoreboard,
         strings.stats,
         strings.galleryTitle,
@@ -329,41 +340,47 @@ const GroupHomeScreen = ({
             paddingHorizontal: 15,
             paddingVertical: 25,
           }}
-          onPressMember={(groupObject = {}) => {
-            if (groupObject?.is_player) {
-              navigation.navigate('SportActivityHome', {
-                sport: groupData.sport,
-                sportType: groupData.sport_type,
-                uid: groupObject.user_id,
-                entityType: Verbs.entityTypePlayer,
-                backScreen: 'HomeScreen',
-                backScreenParams: {
-                  uid: groupData.group_id,
-                  role: groupData.entity_type,
+          onPressMember={() => {
+            bottomSheetRef.current?.present();
+            // if (groupObject?.is_player) {
+            //   navigation.navigate('SportActivityHome', {
+            //     sport: groupData.sport,
+            //     sportType: groupData.sport_type,
+            //     uid: groupObject.user_id,
+            //     entityType: Verbs.entityTypePlayer,
+            //     backScreen: 'HomeScreen',
+            //     backScreenParams: {
+            //       uid: groupData.group_id,
+            //       role: groupData.entity_type,
+            //     },
+            //   });
+            // } else {
+            //   navigation.push('HomeScreen', {
+            //     uid: groupObject.user_id ?? groupObject.group_id,
+            //     role: groupObject.entity_type ?? Verbs.entityTypePlayer,
+            //   });
+            // }
+          }}
+          onPressMore={() => {
+            if (isAdmin) {
+              navigation.navigate('App', {
+                screen: 'Members',
+                params: {
+                  groupObj: groupData,
+                  groupID: groupId,
+                  fromProfile: true,
+                  showBackArrow: true,
+                  comeFrom: 'HomeScreen',
+                  routeParams: {
+                    uid: groupId,
+                    role: groupData.entity_type,
+                  },
                 },
               });
             } else {
-              navigation.push('HomeScreen', {
-                uid: groupObject.user_id ?? groupObject.group_id,
-                role: groupObject.entity_type ?? Verbs.entityTypePlayer,
-              });
+              Alert.alert('lklk');
+              bottomSheetRef.current?.present();
             }
-          }}
-          onPressMore={() => {
-            navigation.navigate('App', {
-              screen: 'Members',
-              params: {
-                groupObj: groupData,
-                groupID: groupId,
-                fromProfile: true,
-                showBackArrow: true,
-                comeFrom: 'HomeScreen',
-                routeParams: {
-                  uid: groupId,
-                  role: groupData.entity_type,
-                },
-              },
-            });
           }}
           addMember={() => {
             navigation.navigate('MebmersStack', {
@@ -818,86 +835,93 @@ const GroupHomeScreen = ({
     }
 
     joinTeam(params, groupId, authContext)
-      .then((response) => {
+      .then(async (response) => {
         setRefreshMemberModal(true);
 
         setShowJoinModal(false);
 
-        const inviteRequest = response.payload.data?.action
-          ? {...response.payload.data}
-          : {
-              action: response.payload?.action,
-              entity_type: authContext.entity.role,
-              invited_id: response.payload?.foreign_id,
-              group_id: groupData.group_id,
-              activity_id: response.payload?.id,
+        if (response?.payload) {
+          const inviteRequest = response.payload.data?.action
+            ? {...response.payload.data}
+            : {
+                action: response.payload?.action,
+                entity_type: authContext.entity.role,
+                invited_id: response.payload?.foreign_id,
+                group_id: groupData.group_id,
+                activity_id: response.payload?.id,
+              };
+
+          if (response.payload.error_code) {
+            const obj = {
+              ...currentUserData,
+              invite_request: inviteRequest,
             };
+            setCurrentUserData(obj);
+            if (
+              response.payload.error_code ===
+              ErrorCodes.MEMBERALREADYINVITEERRORCODE
+            ) {
+              setLoading(false);
 
-        if (response.payload.error_code) {
-          const obj = {
-            ...currentUserData,
-            invite_request: inviteRequest,
-          };
-          setCurrentUserData(obj);
-          if (
-            response.payload.error_code ===
-            ErrorCodes.MEMBERALREADYINVITEERRORCODE
-          ) {
-            setLoading(false);
+              Alert.alert('', response.payload.user_message, [
+                {text: strings.okTitleText},
+              ]);
+            } else if (
+              response.payload.error_code ===
+              ErrorCodes.MEMBERALREADYREQUESTERRORCODE
+            ) {
+              setLoading(false);
 
-            Alert.alert('', response.payload.user_message, [
-              {text: strings.okTitleText},
-            ]);
-          } else if (
-            response.payload.error_code ===
-            ErrorCodes.MEMBERALREADYREQUESTERRORCODE
-          ) {
+              Alert.alert('', response.payload.user_message, [
+                {text: strings.okTitleText},
+              ]);
+            } else if (
+              response.payload.error_code === ErrorCodes.MEMBEREXISTERRORCODE
+            ) {
+              setLoading(false);
+              Alert.alert('', response.payload.user_message, [
+                {text: strings.cancel},
+                {
+                  text: strings.join,
+                  onPress: () => userJoinGroup('message', true),
+                },
+              ]);
+            } else {
+              setLoading(false);
+              Alert.alert('', response.payload.user_message, [
+                {text: strings.okTitleText},
+              ]);
+            }
+          } else if (response.payload.action === Verbs.requestVerb) {
+            const obj = {
+              ...currentUserData,
+              invite_request: inviteRequest,
+            };
+            setCurrentUserData(obj);
             setLoading(false);
-
-            Alert.alert('', response.payload.user_message, [
-              {text: strings.okTitleText},
-            ]);
-          } else if (
-            response.payload.error_code === ErrorCodes.MEMBEREXISTERRORCODE
-          ) {
-            setLoading(false);
-            Alert.alert('', response.payload.user_message, [
-              {text: strings.cancel},
-              {
-                text: strings.join,
-                onPress: () => userJoinGroup('message', true),
-              },
-            ]);
+            Alert.alert(
+              strings.alertmessagetitle,
+              format(strings.alreadySendRequestMsg, groupData.group_name),
+              [{text: strings.okTitleText}],
+            );
           } else {
+            setCurrentGroupData(Verbs.joinVerb);
             setLoading(false);
-            Alert.alert('', response.payload.user_message, [
-              {text: strings.okTitleText},
-            ]);
+            Alert.alert(
+              strings.alertmessagetitle,
+              format(strings.alertTitle1, groupData.group_name),
+              [{text: strings.okTitleText}],
+            );
+            if (authContext.entity.role === Verbs.entityTypeClub) {
+              await setAuthContextData(response.payload, authContext);
+            }
           }
-        } else if (response.payload.action === Verbs.requestVerb) {
-          const obj = {
-            ...currentUserData,
-            invite_request: inviteRequest,
-          };
-          setCurrentUserData(obj);
-          setLoading(false);
-          Alert.alert(
-            strings.alertmessagetitle,
-            format(strings.alreadySendRequestMsg, groupData.group_name),
-            [{text: strings.okTitleText}],
-          );
-        } else {
-          setCurrentGroupData(Verbs.joinVerb);
-          setLoading(false);
-          Alert.alert(
-            strings.alertmessagetitle,
-            format(strings.alertTitle1, groupData.group_name),
-            [{text: strings.okTitleText}],
-          );
         }
+        setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
+
         setTimeout(() => {
           Alert.alert(strings.alertmessagetitle, error.message);
         }, 10);
@@ -908,13 +932,17 @@ const GroupHomeScreen = ({
     setLoading(true);
     const params = {};
     leaveTeam(params, groupId, authContext)
-      .then(() => {
-        setCurrentGroupData(Verbs.leaveVerb);
+      .then((res) => {
+        if (res?.payload) {
+          setCurrentGroupData(Verbs.leaveVerb);
 
-        setLoading(false);
-        setRefreshMemberModal(true);
+          setLoading(false);
+          setRefreshMemberModal(true);
 
-        showAlert(format(strings.youHaveLeftTheteam, groupData.entity_type));
+          showAlert(format(strings.youHaveLeftTheteam, groupData.entity_type));
+        } else {
+          showAlert(strings.soloAdminAlertMessage);
+        }
       })
       .catch((error) => {
         setLoading(false);
@@ -1460,6 +1488,8 @@ const GroupHomeScreen = ({
       showAlert(
         format(strings.thisGroupIsInviteOnly, currentUserData.entity_type),
       );
+    } else if (currentUserData.is_pause) {
+      showAlert(strings.theGoupIsPausedAlert);
     } else {
       setShowJoinModal(true);
     }
@@ -1485,10 +1515,15 @@ const GroupHomeScreen = ({
         break;
       case strings.leaveTeam:
         userLeaveGroup();
+
         break;
 
       case strings.invite:
-        setShoeclubInviteTeamModal(true);
+        if (currentUserData?.is_pause) {
+          showAlert(strings.theGoupIsPausedAlert);
+        } else {
+          setShoeclubInviteTeamModal(true);
+        }
 
         break;
 
@@ -1588,7 +1623,13 @@ const GroupHomeScreen = ({
           flex: 1,
           opacity: isAccountDeactivated ? 0.5 : 1,
         }}
-        pointerEvents={pointEvent}>
+        // pointerEvents={
+        //   currentUserData.is_pause &&
+        //   currentUserData?.entity === Verbs.entityTypeClub
+        //     ? 'none'
+        //     : 'box-only'
+        // }
+      >
         <ActivityLoader visible={loading} />
         <View style={{flex: 1}}>
           <HomeFeed
@@ -1687,7 +1728,9 @@ const GroupHomeScreen = ({
         isVisible={showJoinModal}
         closeModal={() => setShowJoinModal(false)}
         currentUserData={currentUserData}
-        onJoinPress={(message) => userJoinGroup(message)}
+        onJoinPress={(message) => {
+          userJoinGroup(message);
+        }}
         onAcceptPress={() =>
           onAccept(currentUserData.invite_request.activity_id)
         }
@@ -1762,6 +1805,7 @@ const GroupHomeScreen = ({
         currentUserData.am_i_admin !== true &&
         currentUserData.entity_type === Verbs.entityTypeTeam &&
         currentUserData.sport === authContext.entity.obj.sport &&
+        currentUserData.is_pause !== true &&
         !isAdmin && (
           <View style={styles.bottomButtonContainer}>
             <View

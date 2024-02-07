@@ -148,6 +148,9 @@ export default function GroupMembersModal({
             onChangeText={(text) => {
               setSearchText(text);
             }}
+            onSubmitEditing={(text) => {
+              setSearchText(text);
+            }}
             placeholder={strings.searchText}
           />
           {searchText.length > 0 && (

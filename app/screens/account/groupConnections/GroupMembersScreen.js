@@ -921,8 +921,18 @@ export default function GroupMembersScreen({navigation, route}) {
           title={strings.membersTitle}
           rightIcon1={switchUser.uid === groupID ? images.createMember : null}
           rightIcon2={switchUser.uid === groupID ? images.vertical3Dot : null}
-          rightIcon1Press={() => setShowActionSheet(true)}
-          rightIcon2Press={() => setShowActionSheetPlus(true)}
+          rightIcon1Press={() => {
+            if (authContext.entity.obj?.is_pause) {
+              return;
+            }
+            setShowActionSheet(true);
+          }}
+          rightIcon2Press={() => {
+            if (authContext.entity.obj?.is_pause) {
+              return;
+            }
+            setShowActionSheetPlus(true);
+          }}
           iconContainerStyle={{marginRight: 7}}
         />
       </View>
@@ -961,6 +971,7 @@ export default function GroupMembersScreen({navigation, route}) {
         closeModal={() => setShowActionSheet(false)}
         optionList={[strings.inviteMemberText, strings.createMemberProfileText]}
         onSelect={(option) => {
+          setShowActionSheet(false);
           switch (option) {
             case strings.inviteMemberText:
               setShowInviteMember(true);
@@ -990,6 +1001,7 @@ export default function GroupMembersScreen({navigation, route}) {
         isVisible={showActionSheetPlus}
         closeModal={() => setShowActionSheetPlus(false)}
         onSelect={(option) => {
+          setShowActionSheetPlus(false);
           switch (option) {
             case strings.sendrequestForBaicInfoText:
               setShowInfoModal(true);

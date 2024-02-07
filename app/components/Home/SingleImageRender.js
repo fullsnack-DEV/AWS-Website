@@ -4,7 +4,6 @@ import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 import _ from 'lodash';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import SingleImageModal from '../newsFeed/SingleImageModal';
 import colors from '../../Constants/Colors';
 import {createReaction} from '../../api/NewsFeeds';
@@ -116,17 +115,15 @@ function SingleImageRender({data, extraData}) {
 
 const styles = StyleSheet.create({
   imageStyle: {
-    height: wp(32.3),
-    width: wp(32.3),
+    height: 130,
+    width: 130,
+    resizeMode: 'contain',
   },
   imagesViewStyle: {
     flexDirection: 'row',
-    margin: 1.5,
-    marginTop: 0,
+
     borderWidth: 0.5,
     borderColor: colors.disableColor,
-    height: wp(32.3),
-    width: wp(32.3),
   },
 });
 

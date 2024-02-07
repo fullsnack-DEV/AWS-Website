@@ -14,7 +14,6 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
-import {format} from 'react-string-format';
 import {useNavigation} from '@react-navigation/native';
 
 import {FlatList} from 'react-native-gesture-handler';
@@ -263,14 +262,7 @@ export default function FollowFollowingModal({
 
     return (
       <View style={{flex: 1}}>
-        {showFollower && (
-          <TCNoDataView
-            title={format(
-              strings.noTabsFoundText_dy,
-              Verbs.privacyTypeFollowers,
-            )}
-          />
-        )}
+        {showFollower && <TCNoDataView title={strings.noContentToShow} />}
       </View>
     );
   };
@@ -337,7 +329,7 @@ export default function FollowFollowingModal({
                   textAlign: 'center',
                   textAlignVertical: 'center',
                 }}>
-                {strings.noAvailableContentToShow}
+                {strings.noContentToShow}
               </Text>
             </View>
           )}
@@ -356,7 +348,7 @@ export default function FollowFollowingModal({
                   color: colors.googleColor,
                   fontFamily: fonts.RRegular,
                 }}>
-                {strings.noFollowersToShow}
+                {strings.noContentToShow}
               </Text>
             </View>
           ) : null}

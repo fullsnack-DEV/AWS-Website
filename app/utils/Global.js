@@ -145,7 +145,7 @@ const globalApiCall = async ({
     responseType,
     cancelToken,
   };
-  // console.log('BEFORE API Opetions::--->', JSON.stringify(options));
+  console.log('BEFORE API Opetions::--->', JSON.stringify(options));
   try {
     const response = await axios(options);
     if (!response.data.status) {
@@ -161,7 +161,7 @@ const globalApiCall = async ({
       error: e,
     };
     console.log('SERVER ERROR ::--->', error);
-    // throw new Error(e);
+    throw new Error(e);
   }
 };
 

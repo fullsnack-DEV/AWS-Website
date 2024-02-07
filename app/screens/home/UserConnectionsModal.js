@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import React, {useState, useCallback, useContext, useEffect} from 'react';
 import {FlatList} from 'react-native-gesture-handler';
-import {format} from 'react-string-format';
 import {useNavigation} from '@react-navigation/native';
 import colors from '../../Constants/Colors';
 import AuthContext from '../../auth/context';
@@ -275,8 +274,15 @@ export default function UserConnectionModal({
     }
 
     return (
-      <View style={{flex: 1}}>
-        <TCNoDataView title={format(strings.noTabsFoundText_dy, selectedTab)} />
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <View style={{marginTop: -15}}>
+          <TCNoDataView title={strings.noContentToShow} />
+        </View>
       </View>
     );
   };

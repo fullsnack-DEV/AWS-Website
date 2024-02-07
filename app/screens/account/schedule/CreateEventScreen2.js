@@ -1,3 +1,4 @@
+/* eslint-disable no-sparse-arrays */
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-undef */
@@ -31,15 +32,17 @@ import {getDayFromDate} from '../../../utils';
 import uploadImages from '../../../utils/imageAction';
 import Verbs from '../../../Constants/Verbs';
 import ScreenHeader from '../../../components/ScreenHeader';
-import CustomModalWrapper from '../../../components/CustomModalWrapper';
-import {ModalTypes} from '../../../Constants/GeneralConstants';
-import GroupList from '../../../components/Schedule/GroupEvent/GroupList';
+
 import TCThinDivider from '../../../components/TCThinDivider';
 import {getGroupIndex} from '../../../api/elasticSearch';
 import GroupIcon from '../../../components/GroupIcon';
 import {getGroupDetails, getGroups, getTeamsOfClub} from '../../../api/Groups';
 import TCFormProgress from '../../../components/TCFormProgress';
 import BottomSheet from '../../../components/modals/BottomSheet';
+import {
+  singleEventPostPrivacy,
+  singleEventPrivacy,
+} from '../../../Constants/GeneralConstants';
 
 export default function CreateEventScreen2({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -62,7 +65,8 @@ export default function CreateEventScreen2({navigation, route}) {
 
   const [snapPoints, setSnapPoints] = useState([]);
   const [teamsClubsArray, setTeamsClubsArray] = useState([]);
-
+  const [updatedJoin, setUpdatedJoin] = useState([]);
+  const [updateWrite, setUpdateWrite] = useState([]);
   const see = 'see';
   const join = 'join';
   const posted = 'posted';
@@ -75,22 +79,22 @@ export default function CreateEventScreen2({navigation, route}) {
   const [whoOption, setWhoOption] = useState();
   const [whoCanJoinOption, setWhoCanJoinOption] = useState({
     text: strings.everyoneRadio,
-    value: 0,
+    value: singleEventPrivacy.everyone,
   });
 
   const [whoCanSeeOption, setWhoCanSeeOption] = useState({
     text: strings.everyoneRadio,
-    value: 0,
+    value: singleEventPrivacy.everyone,
   });
 
   const [whoCanInviteOption, setWhoCanInviteOption] = useState({
     text: strings.attendeeRadioText,
-    value: 0,
+    value: singleEventPrivacy.everyone,
   });
 
   const [whoCanPost, setWhoCanPost] = useState({
     text: strings.everyoneRadio,
-    value: 0,
+    value: singleEventPrivacy.everyone,
   });
 
   const [groupsSeeList, setGroupsSeeList] = useState(
@@ -111,33 +115,153 @@ export default function CreateEventScreen2({navigation, route}) {
       if (item.text === strings.everyoneTitleText) {
         setWhoCanJoinOption({
           text: strings.everyoneTitleText,
-          value: 0,
+          value: singleEventPrivacy.everyone,
         });
 
         setWhoCanPost({
           text: strings.everyoneTitleText,
-          value: 0,
+          value: singleEventPrivacy.everyone,
         });
+
+        const updateJoin = [
+          {
+            text: strings.everyoneTitleText,
+            value: singleEventPrivacy.everyone,
+            disable: false,
+          },
+          {
+            text: strings.followersRadio,
+            value: singleEventPrivacy.followers,
+            disable: false,
+          },
+          {
+            text: strings.invitedOnly,
+            value: singleEventPrivacy.invitedOnly,
+            disable: false,
+          },
+        ];
+
+        const updatePost = [
+          {
+            text: strings.everyoneRadio,
+            value: singleEventPostPrivacy.everyone,
+            disable: false,
+          },
+          {
+            text: strings.followersMyTeamClub,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
+          },
+          {
+            text: strings.attendeesAndInvited,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
+          },
+        ];
+        getOptions(true);
+
+        setUpdatedJoin(updateJoin);
+        setUpdateWrite(updatePost);
       } else if (item.text === strings.followersMyTeamClub) {
         setWhoCanJoinOption({
-          text: strings.followersMyTeamClub,
-          value: 2,
+          text: strings.followersRadio,
+          value: singleEventPostPrivacy.followersMyTeamClub,
         });
 
         setWhoCanPost({
           text: strings.followersMyTeamClub,
-          value: 2,
+          value: singleEventPostPrivacy.followersMyTeamClub,
         });
+
+        const updateJoin = [
+          {
+            text: strings.everyoneTitleText,
+            value: singleEventPrivacy.everyone,
+            disable: true,
+          },
+          {
+            text: strings.followersRadio,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
+          },
+          {
+            text: strings.invitedOnly,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
+          },
+        ];
+
+        const updatePost = [
+          {
+            text: strings.everyoneRadio,
+            value: singleEventPostPrivacy.everyone,
+            disable: true,
+          },
+          {
+            text: strings.followersMyTeamClub,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
+          },
+          {
+            text: strings.attendeesAndInvited,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
+          },
+        ];
+        getOptions(true);
+
+        setUpdatedJoin(updateJoin);
+        setUpdateWrite(updatePost);
       } else if (item.text === strings.myTeamClub) {
         setWhoCanJoinOption({
           text: strings.invitedOnly,
-          value: 3,
+          value: singleEventPostPrivacy.attendesAndInvites,
         });
 
         setWhoCanPost({
           text: strings.attendeesAndInvited,
-          value: 3,
+          value: singleEventPostPrivacy.attendesAndInvites,
         });
+
+        const updateJoin = [
+          {
+            text: strings.everyoneTitleText,
+            value: singleEventPrivacy.everyone,
+            disable: true,
+          },
+          {
+            text: strings.followersRadio,
+            value: singleEventPrivacy.followers,
+            disable: true,
+          },
+          {
+            text: strings.invitedOnly,
+            value: singleEventPrivacy.invitedOnly,
+            disable: false,
+          },
+        ];
+
+        const updatePost = [
+          {
+            text: strings.everyoneRadio,
+            value: singleEventPostPrivacy.everyone,
+            disable: true,
+          },
+          {
+            text: strings.followersMyTeamClub,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: true,
+          },
+          {
+            text: strings.attendeesAndInvited,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
+          },
+        ];
+        getOptions(true);
+
+        setUpdatedJoin(updateJoin);
+        setUpdateWrite(updatePost);
       }
     }
     if (authContext.entity.role === Verbs.entityTypeTeam) {
@@ -145,84 +269,266 @@ export default function CreateEventScreen2({navigation, route}) {
         if (item.text === strings.everyoneTitleText) {
           setWhoCanJoinOption({
             text: strings.everyoneTitleText,
-            value: 0,
+            value: singleEventPrivacy.everyone,
           });
+
+          // for Update
+          const UpdatedJoin = [
+            {text: strings.everyoneTitleText, value: 0, disable: false},
+            {text: strings.followersRadio, value: 3, disable: false},
+            {text: strings.teamAndMembersText, value: 2, disable: false},
+            {text: strings.inviteOnly, value: 1, disable: false},
+          ];
 
           setWhoCanPost({
             text: strings.everyoneTitleText,
-            value: 0,
+            value: singleEventPrivacy.everyone,
           });
+
+          const UpdatedPost = [
+            {
+              text: strings.everyoneRadio,
+              value: singleEventPostPrivacy.everyone,
+              disable: false,
+            },
+            {
+              text: strings.followersAndClub,
+              value: singleEventPostPrivacy.followersAndClubs,
+              disable: false,
+            },
+            {
+              text: strings.teamMembersAndClub,
+              value: singleEventPostPrivacy.teamMembersAndClubs,
+              disable: false,
+            },
+            {
+              text: strings.attendeeRadioText,
+              value: singleEventPostPrivacy.attendes,
+              disable: false,
+            },
+          ];
+          setUpdatedJoin(UpdatedJoin);
+          setUpdateWrite(UpdatedPost);
+          getOptions(true);
         } else if (item.text === strings.followersAndClub) {
           setWhoCanJoinOption({
             text: strings.followersRadio,
-            value: 3,
+            value: singleEventPostPrivacy.attendesAndInvites,
           });
 
           setWhoCanPost({
             text: strings.followersAndClub,
-            value: 4,
+            value: singleEventPostPrivacy.followersAndClubs,
           });
+
+          const UpdatedJoin = [
+            {
+              text: strings.everyoneTitleText,
+              value: singleEventPrivacy.everyone,
+              disable: true,
+            },
+            {
+              text: strings.followersRadio,
+              value: singleEventPostPrivacy.attendesAndInvites,
+              disable: false,
+            },
+            {
+              text: strings.teamAndMembersText,
+              value: singleEventPostPrivacy.followersAndClubs,
+              disable: false,
+            },
+            {
+              text: strings.inviteOnly,
+              value: singleEventPostPrivacy.everyone,
+              disable: false,
+            },
+          ];
+
+          const UpdatedPost = [
+            {
+              text: strings.everyoneRadio,
+              value: singleEventPostPrivacy.everyone,
+              disable: true,
+            },
+            {
+              text: strings.followersAndClub,
+              value: singleEventPostPrivacy.followersAndClubs,
+              disable: false,
+            },
+            {
+              text: strings.teamMembersAndClub,
+              value: singleEventPostPrivacy.teamMembersAndClubs,
+              disable: false,
+            },
+            {
+              text: strings.attendeeRadioText,
+              value: singleEventPostPrivacy.attendes,
+              disable: false,
+            },
+          ];
+
+          setUpdateWrite(UpdatedPost);
+          setUpdatedJoin(UpdatedJoin);
+          getOptions(true);
         } else if (item.text === strings.teamMembersAndClub) {
           setWhoCanJoinOption({
             text: strings.teamAndMembersText,
-            value: 2,
+            value: singleEventPostPrivacy.followersMyTeamClub,
           });
+
+          const UpdatedJoin = [
+            {
+              text: strings.everyoneTitleText,
+              value: singleEventPrivacy.everyone,
+              disable: true,
+            },
+            {
+              text: strings.followersRadio,
+              value: singleEventPostPrivacy.attendesAndInvites,
+              disable: true,
+            },
+            {
+              text: strings.teamAndMembersText,
+              value: singleEventPostPrivacy.followersMyTeamClub,
+              disable: false,
+            },
+            {
+              text: strings.inviteOnly,
+              value: singleEventPostPrivacy.everyone,
+              disable: false,
+            },
+          ];
 
           setWhoCanPost({
             text: strings.teamMembersAndClub,
-            value: 5,
+            value: singleEventPostPrivacy.teamMembersAndClubs,
           });
+
+          const UpdatedPost = [
+            {
+              text: strings.everyoneRadio,
+              value: singleEventPostPrivacy.everyone,
+              disable: true,
+            },
+            {
+              text: strings.followersAndClub,
+              value: singleEventPostPrivacy.followersAndClubs,
+              disable: true,
+            },
+            {
+              text: strings.teamMembersAndClub,
+              value: singleEventPostPrivacy.teamMembersAndClubs,
+              disable: false,
+            },
+            {
+              text: strings.attendeeRadioText,
+              value: singleEventPostPrivacy.attendes,
+              disable: false,
+            },
+          ];
+          setUpdatedJoin(UpdatedJoin);
+          getOptions(true);
+          setUpdateWrite(UpdatedPost);
         } else if (item.text === strings.attendeesAndInvited) {
           setWhoCanJoinOption({
             text: strings.inviteOnly,
-            value: 1,
+            value: singleEventPostPrivacy.everyone,
           });
+
+          const UpdatedJoin = [
+            {
+              text: strings.everyoneTitleText,
+              value: singleEventPrivacy.everyone,
+              disable: true,
+            },
+            {
+              text: strings.followersRadio,
+              value: singleEventPostPrivacy.attendesAndInvites,
+              disable: true,
+            },
+            {
+              text: strings.teamAndMembersText,
+              value: singleEventPostPrivacy.followersMyTeamClub,
+              disable: true,
+            },
+            {
+              text: strings.inviteOnly,
+              value: singleEventPostPrivacy.everyone,
+              disable: false,
+            },
+          ];
 
           setWhoCanPost({
             text: strings.attendeeRadioText,
-            value: 0,
+            value: singleEventPrivacy.everyone,
           });
+
+          const UpdatedPost = [
+            {
+              text: strings.everyoneRadio,
+              value: singleEventPostPrivacy.everyone,
+              disable: true,
+            },
+            {
+              text: strings.followersAndClub,
+              value: singleEventPostPrivacy.followersAndClubs,
+              disable: true,
+            },
+            {
+              text: strings.teamMembersAndClub,
+              value: singleEventPostPrivacy.teamMembersAndClubs,
+              disable: true,
+            },
+            {
+              text: strings.attendeeRadioText,
+              value: singleEventPostPrivacy.attendes,
+              disable: false,
+            },
+          ];
+          setUpdatedJoin(UpdatedJoin);
+          getOptions(true);
+          setUpdateWrite(UpdatedPost);
         }
       }
       if (item.text === strings.everyoneTitleText) {
         setWhoCanJoinOption({
           text: strings.everyoneTitleText,
-          value: 0,
+          value: singleEventPrivacy.everyone,
         });
 
         setWhoCanPost({
           text: strings.everyoneTitleText,
-          value: 0,
+          value: singleEventPrivacy.everyone,
         });
       } else if (item.text === strings.followersAndClub) {
         setWhoCanJoinOption({
           text: strings.followersRadio,
-          value: 3,
+          value: singleEventPostPrivacy.attendesAndInvites,
         });
 
         setWhoCanPost({
           text: strings.followersAndClub,
-          value: 4,
+          value: singleEventPostPrivacy.followersAndClubs,
         });
       } else if (item.text === strings.teamMembersAndClub) {
         setWhoCanJoinOption({
           text: strings.teamAndMembersText,
-          value: 2,
+          value: singleEventPostPrivacy.followersMyTeamClub,
         });
 
         setWhoCanPost({
           text: strings.teamMembersAndClub,
-          value: 5,
+          value: singleEventPostPrivacy.teamMembersAndClubs,
         });
       } else if (item.text === strings.attendeesAndInvited) {
         setWhoCanJoinOption({
           text: strings.inviteOnly,
-          value: 1,
+          value: singleEventPostPrivacy.everyone,
         });
 
         setWhoCanPost({
           text: strings.attendeeRadioText,
-          value: 0,
+          value: singleEventPrivacy.everyone,
         });
       }
     }
@@ -231,107 +537,268 @@ export default function CreateEventScreen2({navigation, route}) {
       if (item.text === strings.everyoneTitleText) {
         setWhoCanJoinOption({
           text: strings.everyoneTitleText,
-          value: 0,
+          value: singleEventPrivacy.everyone,
         });
 
         setWhoCanPost({
           text: strings.everyoneTitleText,
-          value: 1,
+          value: singleEventPostPrivacy.everyone,
         });
+
+        const updateJoin = [
+          {
+            text: strings.everyoneTitleText,
+            value: singleEventPrivacy.everyone,
+            disable: false,
+          },
+          {
+            text: strings.followerTitleText,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
+          },
+          {
+            text: strings.clubAndTheirMembers,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
+          },
+          {
+            text: strings.invitedOnly,
+            value: singleEventPostPrivacy.everyone,
+            disable: false,
+          },
+        ];
+
+        const UpdatedPost = [
+          {
+            text: strings.everyoneRadio,
+            value: singleEventPostPrivacy.everyone,
+            disable: false,
+          },
+          {
+            text: strings.followersRadio,
+            value: singleEventPostPrivacy.allFollowers,
+            disable: false,
+          },
+          {
+            text: strings.clubMembersRadio,
+            value: singleEventPostPrivacy.allClubs,
+            disable: false,
+          },
+          {
+            text: strings.attendeeRadioText,
+            value: singleEventPostPrivacy.allAttended,
+            disable: false,
+          },
+          ,
+        ];
+        setUpdatedJoin(updateJoin);
+        setUpdateWrite(UpdatedPost);
       } else if (item.text === strings.followersRadio) {
         setWhoCanJoinOption({
           text: strings.followersRadio,
-          value: 3,
+          value: singleEventPostPrivacy.attendesAndInvites,
         });
 
         setWhoCanPost({
           text: strings.followersRadio,
-          value: 3,
+          value: singleEventPostPrivacy.attendesAndInvites,
         });
+
+        const updateJoin = [
+          {
+            text: strings.everyoneTitleText,
+            value: singleEventPrivacy.everyone,
+            disable: true,
+          },
+          {
+            text: strings.followerTitleText,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
+          },
+          {
+            text: strings.clubAndTheirMembers,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
+          },
+          {
+            text: strings.invitedOnly,
+            value: singleEventPostPrivacy.everyone,
+            disable: false,
+          },
+        ];
+
+        const UpdatedPost = [
+          {
+            text: strings.everyoneRadio,
+            value: singleEventPostPrivacy.everyone,
+            disable: true,
+          },
+          {
+            text: strings.followersRadio,
+            value: singleEventPostPrivacy.allFollowers,
+            disable: false,
+          },
+          {
+            text: strings.clubMembersRadio,
+            value: singleEventPostPrivacy.allClubs,
+            disable: false,
+          },
+          {
+            text: strings.attendeeRadioText,
+            value: singleEventPostPrivacy.allAttended,
+            disable: false,
+          },
+          ,
+        ];
+        setUpdatedJoin(updateJoin);
+        setUpdateWrite(UpdatedPost);
       } else if (item.text === strings.clubAndTheirMembers) {
         setWhoCanJoinOption({
           text: strings.clubAndTheirMembers,
-          value: 2,
+          value: singleEventPostPrivacy.followersMyTeamClub,
         });
 
         setWhoCanPost({
-          text: strings.clubAndTheirMembers,
-          value: 9,
+          text: strings.clubMembersRadio,
+          value: singleEventPostPrivacy.allClubs,
         });
+
+        const updateJoin = [
+          {
+            text: strings.everyoneTitleText,
+            value: singleEventPrivacy.followersMyTeamClub,
+            disable: true,
+          },
+          {
+            text: strings.followerTitleText,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: true,
+          },
+          {
+            text: strings.clubAndTheirMembers,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
+          },
+          {
+            text: strings.invitedOnly,
+            value: singleEventPostPrivacy.everyone,
+            disable: false,
+          },
+        ];
+
+        const UpdatedPost = [
+          {
+            text: strings.everyoneRadio,
+            value: singleEventPostPrivacy.everyone,
+            disable: true,
+          },
+          {
+            text: strings.followersRadio,
+            value: singleEventPostPrivacy.allFollowers,
+            disable: true,
+          },
+          {
+            text: strings.clubMembersRadio,
+            value: singleEventPostPrivacy.allClubs,
+            disable: false,
+          },
+          {
+            text: strings.attendeeRadioText,
+            value: singleEventPostPrivacy.allAttended,
+            disable: false,
+          },
+          ,
+        ];
+        setUpdatedJoin(updateJoin);
+        setUpdateWrite(UpdatedPost);
       } else if (item.text === strings.attendeesAndInvited) {
         setWhoCanJoinOption({
           text: strings.inviteOnly,
-          value: 1,
+          value: singleEventPostPrivacy.everyone,
         });
 
         setWhoCanPost({
           text: strings.attendeeRadioText,
-          value: 0,
+          value: singleEventPrivacy.followersMyTeamClub,
         });
+
+        const updateJoin = [
+          {
+            text: strings.everyoneTitleText,
+            value: singleEventPrivacy.everyone,
+            disable: true,
+          },
+          {
+            text: strings.followerTitleText,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: true,
+          },
+          {
+            text: strings.clubAndTheirMembers,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: true,
+          },
+          {
+            text: strings.invitedOnly,
+            value: singleEventPostPrivacy.everyone,
+            disable: false,
+          },
+        ];
+
+        const UpdatedPost = [
+          {
+            text: strings.everyoneRadio,
+            value: singleEventPostPrivacy.everyone,
+            disable: true,
+          },
+          {
+            text: strings.followersRadio,
+            value: singleEventPostPrivacy.allFollowers,
+            disable: true,
+          },
+          {
+            text: strings.clubMembersRadio,
+            value: singleEventPostPrivacy.allClubs,
+            disable: true,
+          },
+          {
+            text: strings.attendeeRadioText,
+            value: singleEventPostPrivacy.allAttended,
+            disable: false,
+          },
+          ,
+        ];
+        setUpdatedJoin(updateJoin);
+        setUpdateWrite(UpdatedPost);
       }
     }
   };
 
-  const renderWhoCan = ({item}) => (
-    <TouchableOpacity
-      style={{
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 15,
-      }}
-      onPress={() => {
-        if (whoOption === see) {
-          setWhoCanSeeOption(item);
-
-          automatePrivacyOptions(item);
-        } else if (whoOption === join) {
-          setWhoCanJoinOption(item);
-        } else if (whoOption === invite) {
-          setWhoCanInviteOption(item);
-        } else if (whoOption === post) {
-          setWhoCanPost(item);
-        } else {
-          setEventPosted(item);
-        }
-
-        setVisibleWhoModal(false);
-        setVisibleWhoCanPostModal(false);
-      }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginBottom: 15,
-          flex: 1,
-        }}>
-        <Text style={styles.languageList}>{item.text}</Text>
-        <View style={styles.checkbox}>
-          {(whoOption === see && whoCanSeeOption.value === item?.value) ||
-          (whoOption === join && whoCanJoinOption.value === item?.value) ||
-          (whoOption === posted && eventPosted.value === item?.value) ||
-          (whoOption === invite && whoCanInviteOption.value === item?.value) ||
-          (whoOption === post && whoCanPost.value === item?.value) ? (
-            <Image
-              source={images.radioCheckYellow}
-              style={styles.checkboxImg}
-            />
-          ) : (
-            <Image source={images.radioUnselect} style={styles.checkboxImg} />
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
   const createEventDone = (data) => {
-    setloading(true);
+    // setloading(true);
     const arr = {...data};
     const entity = authContext.entity;
     const uid = entity.uid || entity.auth.user_id;
     const entityRole =
       entity.role === Verbs.entityTypeUser ? 'users' : 'groups';
 
+    if (authContext.entity.role === Verbs.entityTypeClub) {
+      arr.owner_sub_type = Verbs.entityTypeClub;
+    }
+    if (authContext.entity.role === Verbs.entityTypeTeam) {
+      if (authContext.entity.obj.sport_type === authContext.entity.obj.sport) {
+        arr.owner_sub_type = Verbs.entityTypeTeam;
+      } else {
+        arr.owner_sub_type = Verbs.entityTypeDoubleTeam;
+      }
+    }
+
+    if (
+      authContext.entity.role === Verbs.entityTypeUser ||
+      authContext.entity.role === Verbs.entityTypePlayer
+    ) {
+      arr.owner_sub_type = Verbs.entityTypeUser;
+    }
     if (is_Create) {
       arr.event_share_groups = teamsClubsArray;
     }
@@ -439,30 +906,10 @@ export default function CreateEventScreen2({navigation, route}) {
     routeData.event_posted_at = eventPosted;
 
     routeData.who_can_invite = {...whoCanInviteOption};
-    routeData.who_can_see = {...whoCanPost};
+    routeData.who_can_see = {...whoCanSeeOption};
     routeData.who_can_join = {...whoCanJoinOption};
 
     routeData.who_can_post = {...whoCanPost};
-
-    if (whoCanSeeOption.value === 2) {
-      const checkedGroup = groupsSeeList.filter((obj) => obj.isSelected);
-      const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-      if (authContext.entity.role === Verbs.entityTypeUser) {
-        routeData.who_can_see.group_ids = resultOfIds;
-      } else {
-        routeData.who_can_see.group_ids = [authContext.entity.uid];
-      }
-    }
-
-    if (whoCanJoinOption.value === 2) {
-      const checkedGroup = groupsJoinList.filter((obj) => obj.isSelected);
-      const resultOfIds = checkedGroup.map((obj) => obj.group_id);
-      if (authContext.entity.role === Verbs.entityTypeUser) {
-        routeData.who_can_join.group_ids = resultOfIds;
-      } else {
-        routeData.who_can_join.group_ids = [authContext.entity.uid];
-      }
-    }
 
     if (route.params?.backgroundImageChangedFlag) {
       const imageArray = [];
@@ -498,7 +945,7 @@ export default function CreateEventScreen2({navigation, route}) {
     }
   };
 
-  const getOptions = () => {
+  const getOptions = (UpdateJoin) => {
     if (
       authContext.entity.role === Verbs.entityTypeUser ||
       authContext.entity.role === Verbs.entityTypePlayer
@@ -507,37 +954,47 @@ export default function CreateEventScreen2({navigation, route}) {
         return [
           {
             text: strings.everyoneTitleText,
-            value: 0,
+            value: singleEventPrivacy.everyone,
+            disable: false,
           },
           {
             text: strings.followersMyTeamClub,
-            value: 2,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
           },
           {
             text: strings.myTeamClub,
-            value: 3,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
           },
 
           {
             text: strings.attendeesAndInvited,
-            value: 1,
+            value: singleEventPostPrivacy.allClubs,
+            disable: false,
           },
         ];
       }
 
       if (whoOption === join) {
+        if (UpdateJoin === undefined) {
+          return updatedJoin;
+        }
         return [
           {
             text: strings.everyoneTitleText,
-            value: 0,
+            value: singleEventPrivacy.everyone,
+            disable: false,
           },
           {
-            text: strings.followersMyTeamClub,
-            value: 2,
+            text: strings.followersRadio,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
           },
           {
             text: strings.invitedOnly,
-            value: 3,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
           },
         ];
       }
@@ -546,27 +1003,35 @@ export default function CreateEventScreen2({navigation, route}) {
         return [
           {
             text: strings.attendeeRadioText,
-            value: 0,
+            value: singleEventPrivacy.everyone,
+            disable: false,
           },
           {
             text: strings.onlymeTitleText,
-            value: 4,
+            value: singleEventPostPrivacy.followersAndClubs,
+            disable: false,
           },
         ];
       }
       if (whoOption === post) {
+        if (UpdateJoin === undefined) {
+          return updateWrite;
+        }
         return [
           {
             text: strings.everyoneRadio,
-            value: 1,
+            value: singleEventPostPrivacy.everyone,
+            disable: false,
           },
           {
             text: strings.followersMyTeamClub,
-            value: 2,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
           },
           {
             text: strings.attendeesAndInvited,
-            value: 3,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
           },
         ];
       }
@@ -576,72 +1041,152 @@ export default function CreateEventScreen2({navigation, route}) {
       if (authContext.entity.obj.sport_type === authContext.entity.obj.sport) {
         if (whoOption === see) {
           return [
-            {text: strings.everyoneTitleText, value: 0},
-            {text: strings.followersAndClub, value: 3},
-            {text: strings.teamMembersAndClub, value: 2},
-            {text: strings.attendeesAndInvited, value: 7},
+            {
+              text: strings.everyoneTitleText,
+              value: singleEventPrivacy.everyone,
+              disable: false,
+            },
+            {
+              text: strings.followersAndClub,
+              value: singleEventPostPrivacy.attendesAndInvites,
+              disable: false,
+            },
+            {
+              text: strings.teamMembersAndClub,
+              value: singleEventPostPrivacy.followersMyTeamClub,
+              disable: false,
+            },
+            {
+              text: strings.attendeesAndInvited,
+              value: singleEventPostPrivacy.onlyInvited,
+              disable: false,
+            },
           ];
         }
 
         if (whoOption === join) {
+          if (UpdateJoin === undefined) {
+            return updatedJoin;
+          }
           return [
-            {text: strings.everyoneTitleText, value: 0},
-            {text: strings.followersRadio, value: 3},
-            {text: strings.teamAndMembersText, value: 2},
-            {text: strings.inviteOnly, value: 1},
+            {
+              text: strings.everyoneTitleText,
+              value: singleEventPrivacy.everyone,
+              disable: false,
+            },
+            {
+              text: strings.followersRadio,
+              value: singleEventPostPrivacy.attendesAndInvites,
+              disable: false,
+            },
+            {
+              text: strings.teamAndMembersText,
+              value: singleEventPostPrivacy.followersMyTeamClub,
+              disable: false,
+            },
+            {
+              text: strings.inviteOnly,
+              value: singleEventPostPrivacy.everyone,
+              disable: false,
+            },
           ];
         }
 
         if (whoOption === invite) {
           return [
-            {text: strings.attendeeRadioText, value: 0},
-            {text: strings.onlyTeam, value: 1},
+            {
+              text: strings.attendeeRadioText,
+              value: singleEventPrivacy.everyone,
+              disable: false,
+            },
+            {
+              text: strings.onlyTeam,
+              value: singleEventPostPrivacy.everyone,
+              disable: false,
+            },
           ];
         }
 
         if (whoOption === post) {
+          if (UpdateJoin === undefined) {
+            return updateWrite;
+          }
           return [
             {
               text: strings.everyoneRadio,
-              value: 1,
+              value: singleEventPostPrivacy.everyone,
+              disable: false,
             },
             {
               text: strings.followersAndClub,
-              value: 4,
+              value: singleEventPostPrivacy.followersAndClubs,
+              disable: false,
             },
             {
               text: strings.teamMembersAndClub,
-              value: 5,
+              value: singleEventPostPrivacy.teamMembersAndClubs,
+              disable: false,
             },
             {
               text: strings.attendeeRadioText,
-              value: 6,
+              value: singleEventPostPrivacy.attendes,
+              disable: false,
             },
           ];
         }
       } else {
         if (whoOption === see) {
           return [
-            {text: strings.everyoneTitleText, value: 0},
-            {text: strings.followersAndClub, value: 3},
-            {text: strings.teamMembersAndClub, value: 2},
-            {text: strings.attendeesAndInvited, value: 1},
+            {
+              text: strings.everyoneTitleText,
+              value: singleEventPrivacy.everyone,
+            },
+            {
+              text: strings.followersAndClub,
+              value: singleEventPostPrivacy.attendesAndInvites,
+            },
+            {
+              text: strings.teamMembersAndClub,
+              value: singleEventPostPrivacy.followersMyTeamClub,
+            },
+            {
+              text: strings.attendeesAndInvited,
+              value: singleEventPostPrivacy.onlyInvited,
+            },
           ];
         }
 
         if (whoOption === join) {
           return [
-            {text: strings.everyoneTitleText, value: 0},
-            {text: strings.followersRadio, value: 3},
-            {text: strings.teamMembers, value: 2},
-            {text: strings.invitedOnly, value: 1},
+            {
+              text: strings.everyoneTitleText,
+              value: singleEventPrivacy.everyone,
+            },
+            {
+              text: strings.followersRadio,
+              value: singleEventPostPrivacy.attendesAndInvites,
+            },
+            {
+              text: strings.teamMembers,
+              value: singleEventPostPrivacy.followersMyTeamClub,
+            },
+            {
+              text: strings.invitedOnly,
+              value: singleEventPostPrivacy.everyone,
+            },
           ];
         }
 
         if (whoOption === invite) {
           return [
-            {text: strings.attendeeRadioText, value: 0},
-            {text: strings.onlyTeam, value: 1},
+            {
+              text: strings.attendeeRadioText,
+              value: singleEventPrivacy.everyone,
+            },
+            {
+              text: strings.onlyTeam,
+              value: singleEventPostPrivacy.everyone,
+            },
           ];
         }
 
@@ -649,19 +1194,19 @@ export default function CreateEventScreen2({navigation, route}) {
           return [
             {
               text: strings.everyoneRadio,
-              value: 1,
+              value: singleEventPostPrivacy.everyone,
             },
             {
               text: strings.followersAndClub,
-              value: 4,
+              value: singleEventPostPrivacy.followersAndClubs,
             },
             {
               text: strings.teamMembersAndClub,
-              value: 5,
+              value: singleEventPostPrivacy.teamMembersAndClubs,
             },
             {
               text: strings.attendeeRadioText,
-              value: 7,
+              value: singleEventPostPrivacy.onlyInvited,
             },
           ];
         }
@@ -670,46 +1215,94 @@ export default function CreateEventScreen2({navigation, route}) {
     if (authContext.entity.role === Verbs.entityTypeClub) {
       if (whoOption === see) {
         return [
-          {text: strings.everyoneTitleText, value: 0},
-          {text: strings.followerTitleText, value: 3},
-          {text: strings.clubAndTheirMembers, value: 2},
-          {text: strings.attendeesAndInvited, value: 1},
+          {
+            text: strings.everyoneTitleText,
+            value: singleEventPrivacy.everyone,
+            disable: false,
+          },
+          {
+            text: strings.followerTitleText,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
+          },
+          {
+            text: strings.clubAndTheirMembers,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
+          },
+          {
+            text: strings.attendeesAndInvited,
+            value: singleEventPostPrivacy.onlyInvited,
+            disable: false,
+          },
         ];
       }
 
       if (whoOption === join) {
+        if (UpdateJoin === undefined) {
+          return updatedJoin;
+        }
         return [
-          {text: strings.everyoneTitleText, value: 0},
-          {text: strings.followerTitleText, value: 3},
-          {text: strings.clubAndTheirMembers, value: 2},
-          {text: strings.invitedOnly, value: 1},
+          {
+            text: strings.everyoneTitleText,
+            value: singleEventPrivacy.everyone,
+            disable: false,
+          },
+          {
+            text: strings.followerTitleText,
+            value: singleEventPostPrivacy.attendesAndInvites,
+            disable: false,
+          },
+          {
+            text: strings.clubAndTheirMembers,
+            value: singleEventPostPrivacy.followersMyTeamClub,
+            disable: false,
+          },
+          {
+            text: strings.invitedOnly,
+            value: singleEventPostPrivacy.onlyInvited,
+            disable: false,
+          },
         ];
       }
 
       if (whoOption === invite) {
         return [
-          {text: strings.attendeeRadioText, value: 0},
-          {text: strings.onlyClub, value: 1},
+          {
+            text: strings.attendeeRadioText,
+            value: singleEventPrivacy.everyone,
+          },
+          {
+            text: strings.onlyClub,
+            value: singleEventPostPrivacy.everyone,
+          },
         ];
       }
 
       if (whoOption === post) {
+        if (UpdateJoin === undefined) {
+          return updateWrite;
+        }
         return [
           {
             text: strings.everyoneRadio,
-            value: 1,
+            value: singleEventPostPrivacy.everyone,
+            disable: false,
           },
           {
             text: strings.followersRadio,
-            value: 8,
+            value: singleEventPostPrivacy.allFollowers,
+            disable: false,
           },
           {
             text: strings.clubMembersRadio,
-            value: 9,
+            value: singleEventPostPrivacy.allClubs,
+            disable: false,
           },
           {
             text: strings.attendeeRadioText,
-            value: 10,
+            value: singleEventPostPrivacy.allAttended,
+            disable: false,
           },
         ];
       }
@@ -1066,67 +1659,40 @@ export default function CreateEventScreen2({navigation, route}) {
           </View>
         </ScrollView>
       </TCKeyboardView>
-      <CustomModalWrapper
-        isVisible={visibleWhoModal}
-        closeModal={() => setVisibleWhoModal(false)}
-        modalType={ModalTypes.style2}
-        title={whoOption === join ? strings.whoCanJoin : strings.whoCanSee}
-        containerStyle={{
-          padding: 15,
-          marginBottom: Platform.OS === 'ios' ? 35 : 0,
-        }}
-        externalSnapPoints={snapPoints}>
-        <View
-          onLayout={async (event) => {
-            const contentHeight = event.nativeEvent.layout.height + 80;
 
-            setSnapPoints(['40%', '40%', '40%']);
-          }}>
-          <FlatList
-            data={getOptions()}
-            renderItem={renderWhoCan}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-      </CustomModalWrapper>
-      <CustomModalWrapper
-        isVisible={visibleWhoCanPostModal}
-        closeModal={() => setVisibleWhoCanPostModal(false)}
-        modalType={ModalTypes.style2}
-        title={whoOption === join ? strings.whoCanJoin : strings.whoCanSee}
-        containerStyle={{
-          padding: 15,
-          marginBottom: Platform.OS === 'ios' ? 35 : 0,
+      <BottomSheet
+        isVisible={visibleWhoCanPostModal || visibleWhoModal}
+        closeModal={() => {
+          setVisibleWhoCanPostModal(false);
+
+          setVisibleWhoModal(false);
         }}
-        externalSnapPoints={snapPoints}>
-        <View
-          onLayout={(event) => {
-            setSnapPoints(['40%', '40%', '40%']);
-          }}>
-          <FlatList
-            data={getOptions()}
-            renderItem={renderWhoCan}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-      </CustomModalWrapper>
+        forObjArray={true}
+        optionList={getOptions()}
+        onSelect={(item) => {
+          if (whoOption === see) {
+            setWhoCanSeeOption(item);
+
+            automatePrivacyOptions(item);
+          } else if (whoOption === join) {
+            setWhoCanJoinOption(item);
+          } else if (whoOption === invite) {
+            setWhoCanInviteOption(item);
+          } else if (whoOption === post) {
+            setWhoCanPost(item);
+          } else {
+            setEventPosted(item);
+          }
+
+          setVisibleWhoModal(false);
+          setVisibleWhoCanPostModal(false);
+        }}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  checkboxImg: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-  },
-
   textInputDropStyle: {
     flex: 1,
     alignSelf: 'center',
@@ -1164,12 +1730,5 @@ const styles = StyleSheet.create({
     tintColor: colors.lightBlackColor,
     width: 10,
     right: 15,
-  },
-
-  languageList: {
-    color: colors.lightBlackColor,
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    marginRight: 10,
   },
 });

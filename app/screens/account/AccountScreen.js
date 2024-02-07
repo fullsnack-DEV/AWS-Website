@@ -65,6 +65,7 @@ const AccountScreen = ({navigation, route}) => {
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [showSwitchAccountModal, setShowSwitchAccountModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [fetchingUserdata, setFetchingUserdata] = useState(false);
   const [accountMenu, setAccountMenu] = useState([]);
   const [imageBaseUrl, setImageBaseUrl] = useState('');
   const [navigationOptions, setNavigationOptions] = useState({});
@@ -95,11 +96,9 @@ const AccountScreen = ({navigation, route}) => {
   const {toggleTabBar} = useTabBar();
 
   useEffect(() => {
-    // Set TabBar visibility to true when this screen mounts
     toggleTabBar(true);
 
     return () => {
-      // Set TabBar visibility to false when this screen unmounts
       toggleTabBar(false);
     };
   }, [isFocused, toggleTabBar]);
@@ -162,21 +161,37 @@ const AccountScreen = ({navigation, route}) => {
       .catch((error) => {
         setLoading(false);
         console.log(error.message);
-        // Alert.alert(error.message);
       });
   }, [authContext]);
 
   const getAccountMenu = useCallback(
-    (teams = [], clubs = [], imgBaseUrl = '') => {
+    async (teams = [], clubs = [], imgBaseUrl = '') => {
       switch (authContext.entity.role) {
-        case Verbs.entityTypeClub:
-          return prepareClubMenu(teams);
+        case Verbs.entityTypeClub: {
+          const clubMenu = prepareClubMenu(teams);
 
-        case Verbs.entityTypeTeam:
-          return prepareTeamMenu(authContext, clubs);
+          return clubMenu;
+        }
+
+        case Verbs.entityTypeTeam: {
+          const teamMenu = prepareTeamMenu(authContext, clubs);
+
+          return teamMenu;
+        }
 
         default:
-          return prepareUserMenu(authContext, teams, clubs, imgBaseUrl);
+          try {
+            const menu = await prepareUserMenu(
+              authContext,
+              teams,
+              clubs,
+              imgBaseUrl,
+            );
+
+            return menu;
+          } catch (error) {
+            return [];
+          }
       }
     },
     [authContext],
@@ -261,16 +276,14 @@ const AccountScreen = ({navigation, route}) => {
               ? response[0]
               : [];
         }
-
+        setFetchingUserdata(true);
         const menu = await getAccountMenu(
           fetchedTeams,
           fetchedClubs,
           imageBaseUrl,
         );
-
+        setFetchingUserdata(false);
         setAccountMenu(menu);
-
-        setLoading(false);
       })
       .catch((e) => {
         setLoading(false);
@@ -673,7 +686,10 @@ const AccountScreen = ({navigation, route}) => {
 
       <SwitchAccountModal
         isVisible={showSwitchAccountModal}
-        closeModal={() => setShowSwitchAccountModal(false)}
+        loadingUserData={fetchingUserdata}
+        closeModal={() => {
+          setShowSwitchAccountModal(false);
+        }}
         onCreate={(option) => {
           setShowSwitchAccountModal(false);
 

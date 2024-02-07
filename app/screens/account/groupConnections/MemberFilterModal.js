@@ -28,7 +28,6 @@ export default function MemberFilterModal({
   onApplyPress,
 }) {
   const [parentGroup, setParentGroup] = useState([]);
-
   const [isallForRole, setIsAllForRole] = useState(false);
   const [isallForGroup, setIsAllForGroup] = useState(false);
   const [loading, setloading] = useState(false);
@@ -97,22 +96,11 @@ export default function MemberFilterModal({
   const [connectData] = useState(ConnectionData);
 
   const onCloseModal = () => {
-    const updatedRole = role.map((roleItem) => ({
-      ...roleItem,
-      is_checked: true,
-    }));
     setProfileOptions({
       title: strings.alltitle,
       connected: Verbs.ALL_ROLE,
     });
 
-    const updateGroups = parentGroup.map((roleItem) => ({
-      ...roleItem,
-      is_disable: false,
-    }));
-
-    setRole(updatedRole);
-    setParentGroup(updateGroups);
     closeModal();
   };
 

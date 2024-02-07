@@ -1028,7 +1028,9 @@ const WritePostScreen = ({navigation, route}) => {
               onPress={() => {
                 navigation.navigate('UserTagSelectionListScreen', {
                   postData,
-                  routeParams: route.params.isRepost ? {...route.params} : {},
+                  routeParams: route.params.isRepost
+                    ? {...route.params}
+                    : {...route.params},
                   gameTags: tagsOfGame,
                   tagsOfEntity,
                   comeFrom: 'WritePostScreen',

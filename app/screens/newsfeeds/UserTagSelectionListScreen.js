@@ -481,6 +481,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           navigation.navigate(route.params.comeFrom, {
             selectedImageList: [],
             ...route.params.routeParams,
+
             postData,
             selectedTagList: seletedEntity,
             selectedMatchTags: selectedMatch,
@@ -488,6 +489,7 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           })
         }
       />
+
       <Pressable style={styles.inputContainer}>
         <TextInput
           placeholder={strings.searchText}
@@ -523,7 +525,6 @@ export default function UserTagSelectionListScreen({navigation, route}) {
           </View>
         </ScrollView>
       </View>
-
       {renderTopTabView()}
       <View style={{flex: 1}}>{renderTabContain()}</View>
     </SafeAreaView>

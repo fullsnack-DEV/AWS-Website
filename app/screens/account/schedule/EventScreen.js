@@ -76,6 +76,8 @@ import FeedsShimmer from '../../../components/shimmer/newsFeed/FeedsShimmer';
 import EventLikersModal from './EventLikersModal';
 import ImageProgress from '../../../components/newsFeed/ImageProgress';
 import ShareEventPostModal from './ShareEventPostModal';
+import usePrivacySettings from '../../../hooks/usePrivacySettings';
+import {WhoCanJoinEventUserEnum} from '../../../Constants/PrivacyOptionsConstant';
 
 export default function EventScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -87,8 +89,6 @@ export default function EventScreen({navigation, route}) {
   const [going, setGoing] = useState([]);
   const [eventData, setEventData] = useState(route.params.data ?? {});
   const [activeTab, setActiveTab] = useState(strings.infoTitle);
-  const [myFollowers, setMyFollowers] = useState([]);
-  const [myMembers, setMyMembers] = useState([]);
   const [infoModal, setInfoModal] = useState(false);
   const [infoType, setInfoType] = useState('');
   const [recurringEditModal, setRecurringEditModal] = useState(false);
@@ -113,6 +113,9 @@ export default function EventScreen({navigation, route}) {
   const [visiblesharEventPostModal, setVisibleshareEventPostModal] =
     useState(false);
   const [canComment, setCanComment] = useState(false);
+  const [isGoing, setIsGoing] = useState(false);
+
+  const {getPrivacyStatus} = usePrivacySettings();
 
   useEffect(() => {
     if (route.params?.isCreatePost) {
@@ -379,7 +382,7 @@ export default function EventScreen({navigation, route}) {
           res.payload.forEach((item) => {
             tempArr.push(item.user_id);
           });
-          setMyFollowers(tempArr);
+          // setMyFollowers(tempArr);
         }
       })
       .catch(() => {});
@@ -391,51 +394,30 @@ export default function EventScreen({navigation, route}) {
           res.payload.forEach((item) => {
             tempArr.push(item.user_id);
           });
-          setMyMembers(tempArr);
+          // setMyMembers(tempArr);
         })
         .catch(() => {});
     }
   }, [eventData, authContext]);
 
-  const checkIsGoing = () => {
-    if (!['user', 'player'].includes(authContext.entity.role)) {
-      return false;
-    }
+  useEffect(() => {
+    if (isFocused) {
+      const joinPrivacy = getPrivacyStatus(
+        WhoCanJoinEventUserEnum[eventData.who_can_join.value],
+        authContext.entity.obj,
+        true,
+        eventData.created_by?.uid,
+      );
 
-    if (eventData.who_can_join?.value === 0) {
-      return true;
-    }
-
-    if (eventData.who_can_join?.value === 1) {
-      if (myFollowers.includes(authContext.entity.auth.user_id)) {
-        return true;
+      if (eventData?.who_can_join.value === 1 && route?.params.requestID) {
+        setIsGoing(true);
+      } else {
+        setIsGoing(joinPrivacy);
       }
     }
-
-    if (['user', 'player'].includes(authContext.entity.role)) {
-      if (eventData.owner_id === authContext.entity.auth.user_id) {
-        return true;
-      }
-    }
-
-    if (eventData.who_can_join?.value === 3) {
-      if (myMembers.includes(authContext.entity.auth.user_id)) {
-        return true;
-      }
-    }
-
-    if (!['user', 'player'].includes(authContext.entity.role)) {
-      return true;
-    }
-
-    return false;
-  };
+  }, [isFocused]);
 
   const checkIsInvite = () => {
-    // if (eventData.owner_type === 'groups') {
-    //   return false;
-    // }
-
     if (['user', 'player'].includes(authContext.entity.role)) {
       if (eventData.who_can_invite?.value === 0) {
         const tempArr = [];
@@ -449,8 +431,19 @@ export default function EventScreen({navigation, route}) {
       if (eventData.owner_id === authContext.entity.auth.user_id) {
         return true;
       }
-    } else {
-      return true;
+    }
+    if (
+      authContext.entity.role === Verbs.entityTypeClub ||
+      authContext.entity.role === Verbs.entityTypeTeam
+    ) {
+      if (eventData.who_can_invite?.value === 0) {
+        return false;
+      }
+      if (eventData.who_can_invite?.value === 1) {
+        if (eventData.owner_id === authContext.entity.uid) {
+          return true;
+        }
+      }
     }
 
     return false;
@@ -474,14 +467,16 @@ export default function EventScreen({navigation, route}) {
   };
 
   const renderGoingView = ({item}) => (
-    <View style={styles.goingContainer}>
+    <TouchableOpacity
+      onPress={() => setShowGoingModal(true)}
+      style={styles.goingContainer}>
       <Image
         source={
           item?.thumbnail ? {uri: item.thumbnail} : images.profilePlaceHolder
         }
         style={styles.image}
       />
-    </View>
+    </TouchableOpacity>
   );
 
   const clickInfoIcon = (type) => {
@@ -984,31 +979,33 @@ export default function EventScreen({navigation, route}) {
             {!eventData.is_Offline && (
               <Text style={styles.onlineText}>{strings.onlineText}</Text>
             )}
-            <TouchableOpacity
-              onPress={() => setOpenLikesModal(true)}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 15,
-                justifyContent: 'center',
-              }}>
-              <Image
-                source={images.likeImage}
+            {eventData?.likes?.length > 0 && (
+              <TouchableOpacity
+                onPress={() => setOpenLikesModal(true)}
                 style={{
-                  height: 15,
-                  width: 15,
-                }}
-                tintColor={colors.blackColor}
-              />
-              <Text
-                style={{
-                  marginTop: 1,
-                  fontFamily: fonts.RBold,
-                  marginLeft: 5,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginLeft: 15,
+                  justifyContent: 'center',
                 }}>
-                {eventData?.likes?.length ?? 0}
-              </Text>
-            </TouchableOpacity>
+                <Image
+                  source={images.likeImage}
+                  style={{
+                    height: 15,
+                    width: 15,
+                  }}
+                  tintColor={colors.blackColor}
+                />
+                <Text
+                  style={{
+                    marginTop: 1,
+                    fontFamily: fonts.RBold,
+                    marginLeft: 5,
+                  }}>
+                  {eventData?.likes?.length ?? 0}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           <EventTimeItem
@@ -1027,7 +1024,7 @@ export default function EventScreen({navigation, route}) {
 
           {/* Join and Invite button wrapper */}
           <View style={styles.buttonContainer}>
-            {checkIsGoing() && (
+            {isGoing && (
               <TCProfileButton
                 title={
                   (eventData.going ?? []).filter(
@@ -1085,7 +1082,7 @@ export default function EventScreen({navigation, route}) {
                 title={strings.invite}
                 style={[
                   styles.firstButtonStyle,
-                  {width: checkIsGoing() ? '48%' : '100%'},
+                  {width: isGoing ? '48%' : '100%'},
                 ]}
                 showArrow={false}
                 imageStyle={styles.checkMarkStyle}
@@ -1239,12 +1236,6 @@ export default function EventScreen({navigation, route}) {
 
                     <Text
                       onPress={() => {
-                        // navigation.navigate('GoingListScreen', {
-                        //   showRemove:
-                        //     authContext.entity.uid === organizer.user_id,
-                        //   going_ids: eventData.going ?? [],
-                        //   eventData,
-                        // });
                         setShowGoingModal(true);
                       }}
                       style={styles.seeAllText}>
@@ -1514,8 +1505,16 @@ export default function EventScreen({navigation, route}) {
                 style={[styles.textValueStyle, {fontFamily: fonts.RRegular}]}>
                 {format(
                   strings.minMaxText_dy,
-                  `${eventData.min_attendees}   `,
-                  eventData.max_attendees,
+                  `${
+                    eventData.min_attendees === 0
+                      ? '-'
+                      : eventData.min_attendees
+                  }   `,
+                  `${
+                    eventData.max_attendees === 0
+                      ? '-'
+                      : eventData.max_attendees
+                  }`,
                 )}
               </Text>
             </EventItemRender>

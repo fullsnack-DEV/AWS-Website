@@ -145,11 +145,9 @@ function LocalHomeScreen({navigation, route}) {
   const {toggleTabBar} = useTabBar();
 
   useEffect(() => {
-    // Set TabBar visibility to true when this screen mounts
     toggleTabBar(true);
 
     return () => {
-      // Set TabBar visibility to false when this screen unmounts
       toggleTabBar(false);
     };
   }, [isFocused, toggleTabBar]);
@@ -367,6 +365,8 @@ function LocalHomeScreen({navigation, route}) {
           loggedInEntityId: authContext.entity.uid,
         });
 
+        console.log(response, 'From res');
+
         if (event_list.owners.length > 0) {
           setOwners(event_list.owners);
         }
@@ -376,16 +376,7 @@ function LocalHomeScreen({navigation, route}) {
           validEventList = event_list.validEventList;
         }
 
-        let finalList = [];
-        validEventList.forEach((item) => {
-          if (item?.rrule) {
-            const rEvents = Utility.getEventOccuranceFromRule(item);
-            finalList = [...finalList, ...rEvents];
-          } else {
-            finalList.push(item);
-          }
-        });
-        const result = finalList.filter(
+        const result = validEventList.filter(
           (item) =>
             item.start_datetime >=
             Number(parseFloat(new Date().getTime() / 1000).toFixed(0)),

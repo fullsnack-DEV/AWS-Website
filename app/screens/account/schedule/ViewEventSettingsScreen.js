@@ -369,9 +369,13 @@ export default function ViewEventSettingsScreen({navigation, route}) {
           leftComponent={
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('App', {
-                  screen: 'Schedule',
-                });
+                if (route.params?.FromHomeScreen) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate('App', {
+                    screen: 'Schedule',
+                  });
+                }
               }}>
               <Image source={images.backArrow} style={styles.backImageStyle} />
             </TouchableOpacity>

@@ -20,6 +20,24 @@ const teamInvitePrivacy = {
   teamOnlyPrivacyOption: 0,
 };
 
+export const singleEventPrivacy = {
+  everyone: 0,
+  followers: 2,
+  invitedOnly: 3,
+};
+export const singleEventPostPrivacy = {
+  everyone: 1,
+  followersMyTeamClub: 2,
+  attendesAndInvites: 3,
+  followersAndClubs: 4,
+  teamMembersAndClubs: 5,
+  attendes: 6,
+  allFollowers: 8,
+  allClubs: 9,
+  allAttended: 10,
+  onlyInvited: 7,
+};
+
 const JoinPrivacy = {
   everyone: 0,
   acceptedByMe: 1,

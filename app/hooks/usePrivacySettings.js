@@ -85,7 +85,12 @@ const usePrivacySettings = () => {
   );
 
   const getPrivacyStatus = useCallback(
-    (value = '', entityObj = {}) => {
+    (
+      value = '',
+      entityObj = {},
+      isFromEvent = false,
+      eventOrganizerID = null,
+    ) => {
       if (!value) {
         return true;
       }
@@ -127,7 +132,9 @@ const usePrivacySettings = () => {
           authContext.entity.role === Verbs.entityTypeTeam ||
           authContext.entity.role === Verbs.entityTypeClub
         ) {
-          const isMyTeamClub = checkIsMyTeamClub(entityId);
+          const isMyTeamClub = checkIsMyTeamClub(
+            isFromEvent ? eventOrganizerID : entityId,
+          );
 
           return isMyTeamClub;
         }
@@ -135,8 +142,13 @@ const usePrivacySettings = () => {
       }
 
       if (privacyVal === strings.followersMyTeamClub) {
-        const isMyTeamClub = checkIsMyTeamClub(entityId);
-        const isMyFollower = checkIsMyFollower(entityId, entityObj);
+        const isMyTeamClub = checkIsMyTeamClub(
+          isFromEvent ? eventOrganizerID : entityId,
+        );
+        const isMyFollower = checkIsMyFollower(
+          isFromEvent ? eventOrganizerID : entityId,
+          entityObj,
+        );
 
         return isMyTeamClub || isMyFollower;
       }

@@ -3458,4 +3458,8 @@ export default {
     'fr_Basic Info will be displayed in the "Info" section in your sport activity pages, which are generatedafter you are registered as a player, referee, scorekeeper, or coach in the app. You can choose which items you allow others to see in the privacy settings.',
   video: 'fr_Video',
   othersTitle: 'fr_OTHERS',
+  soloAdminAlertMessage:
+    "en_You are sole admin and group has other member, So You can't leave the group",
+  theGoupIsPausedAlert: 'en_group you want to join is paused now',
+  noContentToShow: 'en_No contents to show',
 };

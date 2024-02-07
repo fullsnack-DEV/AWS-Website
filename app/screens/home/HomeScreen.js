@@ -758,7 +758,11 @@ const HomeScreen = ({navigation, route}) => {
             onPress={() => handleBackPress()}>
             <Image
               source={images.backIconBigger}
-              style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+              style={{
+                width: '100%',
+                height: '100%',
+                resizeMode: 'contain',
+              }}
             />
           </Pressable>
           <View
@@ -787,6 +791,7 @@ const HomeScreen = ({navigation, route}) => {
         <View style={[styles.row, {marginLeft: 22}]}>
           {!isAdmin && chatPrivacyStatus ? (
             <Pressable
+              disabled={currentUserData?.is_pause}
               style={styles.imageContainer}
               onPress={handleChatButtonPress}>
               <Image

@@ -79,7 +79,14 @@ const MessageMainScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.parent}>
-      <View style={styles.headerRow}>
+      <View
+        pointerEvents={authContext.isAccountDeactivated ? 'box-only' : 'auto'}
+        style={[
+          styles.headerRow,
+          {
+            opacity: authContext.isAccountDeactivated ? 0.5 : 1,
+          },
+        ]}>
         <View style={{flex: 1}}>
           <Text style={styles.headerTitle}>{strings.chatsTitle}</Text>
         </View>
@@ -106,7 +113,12 @@ const MessageMainScreen = ({navigation}) => {
       {authContext.isAccountDeactivated && <TCAccountDeactivate />}
       {loading && <ChatShimmer />}
       {authContext.chatClient?.userID && !loading ? (
-        <View style={{flex: 1}}>
+        <View
+          pointerEvents={authContext.isAccountDeactivated ? 'box-only' : 'auto'}
+          style={{
+            flex: 1,
+            opacity: authContext.isAccountDeactivated ? 0.5 : 1,
+          }}>
           <ChatOverlayProvider>
             <Chat client={authContext.chatClient}>
               <ChannelList

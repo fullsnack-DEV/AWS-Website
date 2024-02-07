@@ -32,6 +32,7 @@ const BottomSheet = ({
   cancelButtonTextStyle = {},
   subTextStyle = {},
   forLongList = false,
+  forObjArray = false,
 }) => {
   const [optionsWithSubText, setOptionsWithSubText] = useState([]);
 
@@ -75,36 +76,64 @@ const BottomSheet = ({
               </>
             )}
             <ScrollView scrollEnabled={forLongList}>
-              {optionList.map((item, index) => (
-                <View key={index}>
-                  <TouchableOpacity
-                    style={[styles.buttonContainer, itemStyle]}
-                    onPress={() => onSelect(item, index)}>
-                    <Text
-                      style={[
-                        styles.buttonText,
-                        item?.includes('Delete')
-                          ? {color: colors.redColor}
-                          : {},
-                        textStyle,
-                      ]}>
-                      {optionsWithSubText.length > 0 ? item.label : item}
-                    </Text>
-                    {optionsWithSubText.length > 0 && (
-                      <Text
+              {forObjArray ? (
+                <>
+                  {optionList.map((item, index) => (
+                    <View key={index}>
+                      <TouchableOpacity
+                        disabled={item.disable}
                         style={[
-                          styles.subTitle,
-                          {color: colors.neonBlue, textAlign: 'center'},
-                        ]}>
-                        {item.subText}
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                  {index !== optionList.length - 1 && (
-                    <View style={[styles.dividor, separatorLineStyle]} />
-                  )}
-                </View>
-              ))}
+                          styles.buttonContainer,
+                          itemStyle,
+                          {
+                            opacity: item.disable ? 0.3 : 1,
+                          },
+                        ]}
+                        onPress={() => onSelect(item, index)}>
+                        <Text style={[styles.buttonText, textStyle]}>
+                          {item.text}
+                        </Text>
+                      </TouchableOpacity>
+                      {index !== optionList.length - 1 && (
+                        <View style={[styles.dividor, separatorLineStyle]} />
+                      )}
+                    </View>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {optionList.map((item, index) => (
+                    <View key={index}>
+                      <TouchableOpacity
+                        style={[styles.buttonContainer, itemStyle]}
+                        onPress={() => onSelect(item, index)}>
+                        <Text
+                          style={[
+                            styles.buttonText,
+                            item?.includes('Delete')
+                              ? {color: colors.redColor}
+                              : {},
+                            textStyle,
+                          ]}>
+                          {optionsWithSubText.length > 0 ? item.label : item}
+                        </Text>
+                        {optionsWithSubText.length > 0 && (
+                          <Text
+                            style={[
+                              styles.subTitle,
+                              {color: colors.neonBlue, textAlign: 'center'},
+                            ]}>
+                            {item.subText}
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                      {index !== optionList.length - 1 && (
+                        <View style={[styles.dividor, separatorLineStyle]} />
+                      )}
+                    </View>
+                  ))}
+                </>
+              )}
             </ScrollView>
           </View>
 
@@ -146,26 +175,55 @@ const BottomSheet = ({
             </View>
           )}
           <ScrollView>
-            {optionList.map((item, index) => (
-              <TouchableOpacity
-                style={[
-                  {marginBottom: index !== optionList.length - 1 ? 30 : 0},
-                  itemStyle,
-                ]}
-                key={index}
-                onPress={() => onSelect(item, index)}>
-                <Text style={[styles.androidButtonText, textStyle]}>
-                  {optionsWithSubText.length > 0
-                    ? optionsWithSubText[index].label
-                    : item}
-                </Text>
-                {optionsWithSubText.length > 0 && (
-                  <Text style={[styles.subTitle, subTextStyle]}>
-                    {optionsWithSubText[index].subText}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            ))}
+            {forObjArray ? (
+              <>
+                {optionList.map((item, index) => (
+                  <TouchableOpacity
+                    disabled={item.disable}
+                    style={[
+                      {marginBottom: index !== optionList.length - 1 ? 30 : 0},
+                      itemStyle,
+                      {
+                        opacity: item.disable ? 0.3 : 1,
+                      },
+                    ]}
+                    key={index}
+                    onPress={() => onSelect(item, index)}>
+                    <Text style={[styles.androidButtonText, textStyle]}>
+                      {item.text}
+                    </Text>
+                    {optionsWithSubText.length > 0 && (
+                      <Text style={[styles.subTitle, subTextStyle]}>
+                        {optionsWithSubText[index].subText}
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </>
+            ) : (
+              <>
+                {optionList.map((item, index) => (
+                  <TouchableOpacity
+                    style={[
+                      {marginBottom: index !== optionList.length - 1 ? 30 : 0},
+                      itemStyle,
+                    ]}
+                    key={index}
+                    onPress={() => onSelect(item, index)}>
+                    <Text style={[styles.androidButtonText, textStyle]}>
+                      {optionsWithSubText.length > 0
+                        ? optionsWithSubText[index].label
+                        : item}
+                    </Text>
+                    {optionsWithSubText.length > 0 && (
+                      <Text style={[styles.subTitle, subTextStyle]}>
+                        {optionsWithSubText[index].subText}
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </>
+            )}
           </ScrollView>
         </View>
       );

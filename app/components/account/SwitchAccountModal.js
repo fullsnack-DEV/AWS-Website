@@ -35,6 +35,7 @@ const SwitchAccountModal = ({
   isVisible = false,
   closeModal = () => {},
   onCreate = () => {},
+  loadingUserData = false,
 }) => {
   const authContext = useContext(AuthContext);
   const [accountList, setAccountList] = useState([]);
@@ -96,8 +97,9 @@ const SwitchAccountModal = ({
         setSelectedAccount(entity);
 
         await onSwitchProfile(entity);
-
-        closeModal();
+        if (!loadingUserData) {
+          closeModal();
+        }
       } catch (error) {
         console.error('Error occurred:', error);
         closeModal();
@@ -369,8 +371,13 @@ const SwitchAccountModal = ({
         entityType={selectedAccount.entity_type}
         entityImage={selectedAccount.thumbnail}
         stopLoading={() => {
-          // closeModal();
           setShowLoader(false);
+          // // closeModal();
+          // if (!loadingUserData) {
+          //   setShowLoader(false);
+          // } else {
+          //   setShowLoader(true);
+          // }
         }}
       />
     </CustomModalWrapper>
