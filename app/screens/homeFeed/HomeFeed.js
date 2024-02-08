@@ -62,6 +62,9 @@ const HomeFeed = ({
   const [selectedPostTab, setSelectedPostTab] = useState(Verbs.post);
   const [taggedPostData, setTaggedPostData] = useState([]);
   const [postsList, setPostsList] = useState([]);
+  const [nextIdForPostTimeLine, setNextIdForPostTimeLine] = useState('');
+  const [nextIdForTaggedPostTimeLine, setNextIdForTaggedPostTimeLine] =
+    useState('');
 
   const isFocused = useIsFocused();
   const imageUploadContext = useContext(ImageUploadContext);
@@ -79,22 +82,17 @@ const HomeFeed = ({
   }, [isFocused, selectedPostTab, postData, taggedPostData]);
 
   const fetchUserTimeLine = useCallback(() => {
-    // let entityType = Verbs.entityTypeUsers;
-    // if (
-    //   currentUserData.entity_type === Verbs.entityTypeTeam ||
-    //   currentUserData.entity_type === Verbs.entityTypeClub
-    // ) {
-    //   entityType = Verbs.entityTypeGroups;
-    // }
-
-    // console.log({entityType});
     getTimeline('entityType', userID, authContext)
       .then((res) => {
         setFeedCalled(true);
         setPostData([...res.payload.results]);
         if (res.payload?.next) {
+          const splitNextData = res.payload.next.split('&');
+          const id_lt = splitNextData[1].split('=')[1];
+          setNextIdForPostTimeLine(id_lt);
           setIsNextDataLoading(true);
         } else {
+          setNextIdForPostTimeLine('');
           setIsNextDataLoading(false);
         }
         setPullRefresh(false);
@@ -105,22 +103,17 @@ const HomeFeed = ({
   }, [authContext, userID]);
 
   const fetchTaggedTimeLine = useCallback(() => {
-    // let entityType = Verbs.entityTypeUsers;
-    // if (
-    //   currentUserData.entity_type === Verbs.entityTypeTeam ||
-    //   currentUserData.entity_type === Verbs.entityTypeClub
-    // ) {
-    //   entityType = Verbs.entityTypeGroups;
-    // }
-
-    // console.log({entityType});
     getTaggedTimeline('entityType', userID, authContext)
       .then((res) => {
         setFeedCalled(true);
         setTaggedPostData([...res.payload.results]);
         if (res.payload?.next) {
+          const splitNextData = res.payload.next.split('&');
+          const id_lt = splitNextData[1].split('=')[1];
+          setNextIdForTaggedPostTimeLine(id_lt);
           setIsNextDataLoading(true);
         } else {
+          setNextIdForTaggedPostTimeLine('');
           setIsNextDataLoading(false);
         }
         setPullRefresh(false);
@@ -247,52 +240,66 @@ const HomeFeed = ({
 
   const onEndReached = () => {
     if (isNextDataLoading) {
-      const id_lt =
-        selectedPostTab === Verbs.post
-          ? postData?.[postData.length - 1]?.id
-          : taggedPostData?.[taggedPostData.length - 1]?.id;
-
-      if (id_lt) {
-        setFooterLoading(true);
-        if (selectedPostTab === Verbs.post) {
-          getTimelineNextData('entityType', userID, id_lt, authContext)
-            .then((response) => {
-              if (response.payload.results) {
-                setPostData((prevProps) => [
-                  ...prevProps,
-                  ...response.payload.results,
-                ]);
-                if (response.payload?.next) {
-                  setIsNextDataLoading(true);
-                } else {
-                  setIsNextDataLoading(false);
-                }
+      setFooterLoading(true);
+      if (selectedPostTab === Verbs.post && nextIdForPostTimeLine) {
+        getTimelineNextData(
+          'entityType',
+          userID,
+          nextIdForPostTimeLine,
+          authContext,
+        )
+          .then((response) => {
+            if (response.payload.results) {
+              setPostData((prevProps) => [
+                ...prevProps,
+                ...response.payload.results,
+              ]);
+              if (response.payload?.next) {
+                const splitNextData = response.payload.next.split('&');
+                const id_lt = splitNextData[1].split('=')[1];
+                setNextIdForPostTimeLine(id_lt);
+                setIsNextDataLoading(true);
+              } else {
+                setNextIdForPostTimeLine('');
+                setIsNextDataLoading(false);
               }
-              setFooterLoading(false);
-            })
-            .catch(() => {
-              setFooterLoading(false);
-            });
-        } else if (selectedPostTab === Verbs.taggedPost) {
-          getTaggedTimelineNextData('entityType', userID, id_lt, authContext)
-            .then((response) => {
-              if (response.payload.results) {
-                setTaggedPostData((prevProps) => [
-                  ...prevProps,
-                  ...response.payload.results,
-                ]);
-                if (response.payload?.next) {
-                  setIsNextDataLoading(true);
-                } else {
-                  setIsNextDataLoading(false);
-                }
+            }
+            setFooterLoading(false);
+          })
+          .catch(() => {
+            setFooterLoading(false);
+          });
+      } else if (
+        selectedPostTab === Verbs.taggedPost &&
+        nextIdForTaggedPostTimeLine
+      ) {
+        getTaggedTimelineNextData(
+          'entityType',
+          userID,
+          nextIdForTaggedPostTimeLine,
+          authContext,
+        )
+          .then((response) => {
+            if (response.payload.results) {
+              setTaggedPostData((prevProps) => [
+                ...prevProps,
+                ...response.payload.results,
+              ]);
+              if (response.payload?.next) {
+                const splitNextData = response.payload.next.split('&');
+                const id_lt = splitNextData[1].split('=')[1];
+                setNextIdForTaggedPostTimeLine(id_lt);
+                setIsNextDataLoading(true);
+              } else {
+                setNextIdForTaggedPostTimeLine('');
+                setIsNextDataLoading(false);
               }
-              setFooterLoading(false);
-            })
-            .catch(() => {
-              setFooterLoading(false);
-            });
-        }
+            }
+            setFooterLoading(false);
+          })
+          .catch(() => {
+            setFooterLoading(false);
+          });
       }
     }
   };

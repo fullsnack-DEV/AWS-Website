@@ -214,6 +214,20 @@ const GroupDefaultPrivacyOptionsForDoubleTeamEnum = {
   0: 'clubsAndTeam',
 };
 
+const postOptionsForDoubleTeamSport = [
+  {label: 'everyoneTitleText', value: 1},
+  {label: 'followersAndClub', value: 2},
+  {label: 'teamMembersAndClub', value: 3},
+  {label: 'clubsAndTeam', value: 6},
+];
+
+const PostOptionsEnumForDoubleTeamSport = {
+  1: 'everyoneTitleText',
+  2: 'followersAndClub',
+  3: 'teamMembersAndClub',
+  6: 'clubsAndTeam',
+};
+
 const groupJoinOptions = [
   {label: 'everyoneTitleText', value: 0},
   {label: 'requestAccepted', value: 1},
@@ -435,6 +449,8 @@ export {
   ClubChatPrivacyOptionsEnum,
   inviteToCreateDoubleTeamOptions,
   InviteToCreateDoubleTeamOptionsEnum,
+  postOptionsForDoubleTeamSport,
+  PostOptionsEnumForDoubleTeamSport,
   WhoCanSeeEventUserEnum,
   WhoCanJoinEventUserEnum,
   WhoCanInviteEventUserEnum,

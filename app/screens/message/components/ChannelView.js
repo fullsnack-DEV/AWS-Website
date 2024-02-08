@@ -68,6 +68,28 @@ const ChannelView = ({channel, latestMessagePreview}) => {
     );
   };
 
+  const renderUnreadCount = () => {
+    if (state.unreadCount > 0 || unreadMentionCount > 0) {
+      const count =
+        unreadMentionCount > 0
+          ? state.unreadCount + unreadMentionCount
+          : state.unreadCount;
+
+      return (
+        <View
+          style={[
+            styles.channelUnreadCount,
+            count?.toString()?.length > 1 ? {paddingHorizontal: 6} : {},
+          ]}>
+          <Text style={styles.channelUnreadText}>
+            {unreadMentionCount > 0 ? `@${count}` : count}
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
   return (
     <TouchableHighlight
       onPress={async () => {
@@ -127,16 +149,7 @@ const ChannelView = ({channel, latestMessagePreview}) => {
         </View>
         <View style={{alignItems: 'flex-end'}}>
           <Text style={styles.channelAge}>{getLastMessageTime(channel)}</Text>
-
-          {state.unreadCount > 0 || unreadMentionCount > 0 ? (
-            <View style={styles.channelUnreadCount}>
-              <Text style={styles.channelUnreadText}>
-                {unreadMentionCount > 0
-                  ? `@${state.unreadCount + unreadMentionCount}`
-                  : state.unreadCount}
-              </Text>
-            </View>
-          ) : null}
+          {renderUnreadCount()}
         </View>
       </>
     </TouchableHighlight>

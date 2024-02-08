@@ -45,7 +45,6 @@ const FeedsScreen = ({navigation, route}) => {
   const [postData, setPostData] = useState([]);
   const [firstTimeLoading, setFirstTimeLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [isNextDataLoading, setIsNextDataLoading] = useState(true);
   const [footerLoading, setFooterLoading] = useState(false);
   const [currentUserDetail, setCurrentUserDetail] = useState(null);
@@ -58,6 +57,7 @@ const FeedsScreen = ({navigation, route}) => {
   const [selectedPost, setSelectedPost] = useState({});
   const [showLikeModal, setShowLikeModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
+  const [nextId, setNextId] = useState('');
 
   const {toggleTabBar} = useTabBar();
 
@@ -86,7 +86,16 @@ const FeedsScreen = ({navigation, route}) => {
         setFeedCalled(true);
         setFirstTimeLoading(false);
         setPostData([...response.payload.results]);
+        if (response.payload?.next) {
+          const splitNextData = response.payload.next.split('&');
+          const id_lt = splitNextData[1].split('=')[1];
 
+          setNextId(id_lt);
+          setIsNextDataLoading(true);
+        } else {
+          setNextId('');
+          setIsNextDataLoading(false);
+        }
         setLoading(false);
       })
       .catch((e) => {
@@ -177,7 +186,6 @@ const FeedsScreen = ({navigation, route}) => {
   );
 
   const onRefreshPress = useCallback(() => {
-    setIsMoreLoading(false);
     setIsNextDataLoading(true);
     setFooterLoading(false);
     setPullRefresh(true);
@@ -185,6 +193,15 @@ const FeedsScreen = ({navigation, route}) => {
       .then((response) => {
         setPostData([...response.payload.results]);
         setPullRefresh(false);
+        if (response.payload?.next) {
+          const splitNextData = response.payload.next.split('&');
+          const id_lt = splitNextData[1].split('=')[1];
+          setNextId(id_lt);
+          setIsNextDataLoading(true);
+        } else {
+          setNextId('');
+          setIsNextDataLoading(false);
+        }
       })
       .catch((e) => {
         console.log(e.message);
@@ -243,27 +260,28 @@ const FeedsScreen = ({navigation, route}) => {
   );
 
   const onEndReached = useCallback(() => {
-    if (postData.length === 0) return;
-    setIsMoreLoading(true);
-    setFooterLoading(true);
-    const id_lt = postData?.[postData.length - 1]?.id;
-    if (id_lt && isMoreLoading && isNextDataLoading) {
-      getNewsFeedNextList(id_lt, authContext)
+    if (isNextDataLoading && nextId) {
+      setFooterLoading(true);
+      getNewsFeedNextList(nextId, authContext)
         .then((response) => {
-          if (response) {
-            if (response.payload.next === '') {
-              setIsNextDataLoading(false);
-            }
-            setIsMoreLoading(false);
-            setFooterLoading(false);
-            setPostData([...postData, ...response.payload.results]);
+          setPostData([...postData, ...response.payload.results]);
+
+          if (response.payload?.next) {
+            const splitNextData = response.payload.next.split('&');
+            const id_lt = splitNextData[1].split('=')[1];
+            setNextId(id_lt);
+            setIsNextDataLoading(true);
+          } else {
+            setNextId('');
+            setIsNextDataLoading(false);
           }
+          setFooterLoading(false);
         })
         .catch(() => {
           setFooterLoading(false);
         });
     }
-  }, [authContext, isMoreLoading, isNextDataLoading, postData]);
+  }, [authContext, isNextDataLoading, postData, nextId]);
 
   const updateCommentCount = useCallback(
     (updatedComment) => {

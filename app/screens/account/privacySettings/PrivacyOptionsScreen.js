@@ -31,6 +31,7 @@ import {
   TeamJoinClubOptionsEnum,
   ClubChatPrivacyOptionsEnum,
   InviteToCreateDoubleTeamOptionsEnum,
+  PostOptionsEnumForDoubleTeamSport,
 } from '../../../Constants/PrivacyOptionsConstant';
 import {patchPlayer} from '../../../api/Users';
 import ActivityLoader from '../../../components/loader/ActivityLoader';
@@ -127,8 +128,15 @@ const PrivacyOptionsScreen = ({navigation, route}) => {
           case PrivacyKeyEnum.Follow:
             return FollowerFollowingOptionsEnum[privacyVal];
 
-          case strings.chatsTitle:
+          case PrivacyKeyEnum.Chats:
             return TeamChatPrivacyOptionsEnum[privacyVal];
+
+          case PrivacyKeyEnum.Posts:
+          case PrivacyKeyEnum.PostWrite:
+            if (authContext.entity.obj.sport_type === Verbs.doubleSport) {
+              return PostOptionsEnumForDoubleTeamSport[privacyVal];
+            }
+            return GroupDefalutPrivacyOptionsEnum[privacyVal];
 
           default:
             if (authContext.entity.obj.sport_type === Verbs.doubleSport) {

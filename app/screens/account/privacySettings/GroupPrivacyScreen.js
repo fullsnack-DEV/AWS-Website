@@ -31,6 +31,7 @@ import {
   inviteToJoinClubOptions,
   teamJoinClubOptions,
   clubChatPrivacyOptions,
+  postOptionsForDoubleTeamSport,
 } from '../../../Constants/PrivacyOptionsConstant';
 
 import Verbs from '../../../Constants/Verbs';
@@ -78,7 +79,7 @@ const GroupPrivacyScreen = ({navigation}) => {
               question: strings.whoCanViewPostSection,
               options:
                 entity.sport_type === Verbs.doubleSport
-                  ? groupDefaultPrivacyOptionsForDoubleTeam
+                  ? postOptionsForDoubleTeamSport
                   : groupPrivacyDefalutOptions,
               key: PrivacyKeyEnum.Posts,
             },
@@ -86,7 +87,7 @@ const GroupPrivacyScreen = ({navigation}) => {
               question: strings.whoCanWritePostTeamsPostsSection,
               options:
                 entity.sport_type === Verbs.doubleSport
-                  ? groupDefaultPrivacyOptionsForDoubleTeam
+                  ? postOptionsForDoubleTeamSport
                   : groupPrivacyDefalutOptions,
               key: PrivacyKeyEnum.PostWrite,
             },

@@ -31,7 +31,7 @@ import {strings} from '../../../../Localization/translation';
 import fonts from '../../../Constants/Fonts';
 import TCUserRoleBadge from '../../../components/TCUserRoleBadge';
 import TCThinDivider from '../../../components/TCThinDivider';
-import {getHitSlop} from '../../../utils';
+import {getHitSlop, getStorage} from '../../../utils';
 import {followUser, unfollowUser} from '../../../api/Users';
 import TCFollowUnfollwButton from '../../../components/TCFollowUnfollwButton';
 import Verbs from '../../../Constants/Verbs';
@@ -54,6 +54,7 @@ import {
   groupJoinOptions,
   inviteToJoinClubOptions,
 } from '../../../Constants/PrivacyOptionsConstant';
+import RequestBasicInfoInformationModal from './RequestBasicInfoInformationModal';
 
 export default function GroupMembersScreen({navigation, route}) {
   const authContext = useContext(AuthContext);
@@ -88,6 +89,7 @@ export default function GroupMembersScreen({navigation, route}) {
   const [showViewPrivacyModal, setShowViewPrivacyModal] = useState(false);
   const [selectedPrivacyOption, setSelectedPrivacyOption] = useState({});
   const [viewPrivacyOptions, setViewPrivacyOptions] = useState([]);
+  const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
@@ -1005,6 +1007,14 @@ export default function GroupMembersScreen({navigation, route}) {
           switch (option) {
             case strings.sendrequestForBaicInfoText:
               setShowInfoModal(true);
+              setTimeout(() => {
+                getStorage('showPopup').then((res) => {
+                  const isShow = res[groupID];
+                  if (!isShow) {
+                    setIsInfoModalVisible(true);
+                  }
+                });
+              }, 300);
               break;
 
             case strings.invoice:
@@ -1055,6 +1065,14 @@ export default function GroupMembersScreen({navigation, route}) {
         isVisible={showInfoModal}
         groupID={groupID}
         closeModal={() => setShowInfoModal(false)}
+      />
+
+      <RequestBasicInfoInformationModal
+        isVisible={isInfoModalVisible}
+        closeModal={() => {
+          setIsInfoModalVisible(false);
+        }}
+        groupId={groupID}
       />
 
       <MemberFilterModal

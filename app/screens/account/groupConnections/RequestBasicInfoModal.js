@@ -8,7 +8,6 @@ import {
   Alert,
   TextInput,
   TouchableOpacity,
-  Dimensions,
 } from 'react-native';
 
 import React, {useState, useCallback, useEffect, useContext} from 'react';
@@ -19,7 +18,7 @@ import GroupIcon from '../../../components/GroupIcon';
 import TCThinDivider from '../../../components/TCThinDivider';
 import images from '../../../Constants/ImagePath';
 import AuthContext from '../../../auth/context';
-import {getStorage, setStorage, showAlert} from '../../../utils';
+import {showAlert} from '../../../utils';
 import fonts from '../../../Constants/Fonts';
 import colors from '../../../Constants/Colors';
 import InviteListShimmer from './InviteListShimmer';
@@ -42,11 +41,8 @@ function RequestBasicInfoModal({
   const [searchText, setSearchText] = useState('');
 
   const [filteredList, setFilteredList] = useState([]);
-  const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
-  const [showCheck, setShowCheck] = useState(false);
-  const [snapPoints, setSnapPoints] = useState([]);
 
-  const getMembers = () => {
+  const getMembers = useCallback(() => {
     setSelectedList([]);
 
     getGroupMembers(groupID, authContext)
@@ -55,16 +51,6 @@ function RequestBasicInfoModal({
 
         setPlayers([...response.payload]);
         setFilteredList([...response.payload]);
-
-        setTimeout(() => {
-          getStorage('showPopup').then((isShow) => {
-            if (isShow || isShow === null) {
-              setIsInfoModalVisible(true);
-            } else {
-              setIsInfoModalVisible(false);
-            }
-          });
-        }, 300);
       })
       .catch((e) => {
         setloading(false);
@@ -72,7 +58,7 @@ function RequestBasicInfoModal({
           Alert.alert(strings.alertmessagetitle, e.message);
         }, 10);
       });
-  };
+  }, [groupID, authContext]);
 
   const sendRequestForBasicInfo = () => {
     if (selectedList.length > 0) {
@@ -108,14 +94,10 @@ function RequestBasicInfoModal({
   };
 
   useEffect(() => {
-    getMembers();
-
     if (isVisible) {
-      setIsInfoModalVisible(true);
-    } else {
-      setIsInfoModalVisible(false);
+      getMembers();
     }
-  }, [isVisible]);
+  }, [isVisible, getMembers]);
 
   const onCloseModal = () => {
     setSearchText('');
@@ -280,163 +262,60 @@ function RequestBasicInfoModal({
     </View>
   );
 
-  const infoList = [
-    {
-      title: strings.gender,
-    },
-    {
-      title: strings.birthdayAgeText,
-    },
-    {
-      title: strings.height,
-    },
-    {
-      title: strings.weight,
-    },
-    {
-      title: strings.phoneNumber,
-    },
-    {
-      title: strings.emailPlaceHolder,
-    },
-  ];
-
-  const RenderInfoDetail = ({item}) => (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}>
-      <View
-        style={{
-          width: 5,
-          height: 5,
-          backgroundColor: colors.blackColor,
-          borderRadius: 50,
-        }}
-      />
-      <Text style={styles.basicInfoList}>{item?.title}</Text>
-    </View>
-  );
-
   return (
-    <>
-      <CustomModalWrapper
-        isVisible={isVisible}
-        closeModal={onCloseModal}
-        modalType={ModalTypes.style1}
-        headerRightButtonText={strings.send}
-        onRightButtonPress={() => sendRequestForBasicInfo()}
-        title={strings.sendrequestForBaicInfoText}
-        containerStyle={{padding: 0, flex: 1}}>
-        <View style={styles.mainContainer}>
-          <ActivityLoader visible={loading} />
+    <CustomModalWrapper
+      isVisible={isVisible}
+      closeModal={onCloseModal}
+      modalType={ModalTypes.style1}
+      headerRightButtonText={strings.send}
+      onRightButtonPress={() => sendRequestForBasicInfo()}
+      title={strings.sendrequestForBaicInfoText}
+      containerStyle={{padding: 0, flex: 1}}>
+      <View style={styles.mainContainer}>
+        <ActivityLoader visible={loading} />
 
-          <View style={styles.floatingInput}>
-            <View style={styles.inputContainer}>
-              <TextInput
-                placeholderTextColor={colors.userPostTimeColor}
-                style={styles.textInputStyle}
-                value={searchText}
-                onChangeText={(text) => {
-                  setSearchText(text);
-                }}
-                placeholder={strings.searchText}
-              />
-              {searchText.length > 0 && (
-                <TouchableOpacity
-                  onPress={() => {
-                    setSearchText('');
-                  }}>
-                  <Image
-                    source={images.closeRound}
-                    style={{height: 15, width: 15}}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-
-          {players.length === 0 ? (
-            <InviteListShimmer />
-          ) : (
-            <FlatList
-              extraData={filteredList}
-              ItemSeparatorComponent={ItemSeparatorComponent}
-              ListHeaderComponent={listHeaderComponent}
-              showsVerticalScrollIndicator={false}
-              data={filteredList}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderPlayer}
-              stickyHeaderIndices={[0]}
-              ListEmptyComponent={listEmptyComponent}
+        <View style={styles.floatingInput}>
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholderTextColor={colors.userPostTimeColor}
+              style={styles.textInputStyle}
+              value={searchText}
+              onChangeText={(text) => {
+                setSearchText(text);
+              }}
+              placeholder={strings.searchText}
             />
-          )}
-        </View>
-      </CustomModalWrapper>
-
-      <CustomModalWrapper
-        isVisible={isInfoModalVisible}
-        closeModal={() => setIsInfoModalVisible(false)}
-        modalType={ModalTypes.style3}
-        containerStyle={{padding: 0, flex: 1}}
-        externalSnapPoints={snapPoints}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'red',
-          }}
-          onLayout={(event) => {
-            const contentHeight = event.nativeEvent.layout.height + 30;
-
-            setSnapPoints([
-              '70%',
-              contentHeight,
-              Dimensions.get('window').height - 20,
-            ]);
-          }}>
-          <Text
-            style={{
-              fontFamily: fonts.RMedium,
-              fontSize: 20,
-              marginLeft: 30,
-              marginRight: 44,
-              marginBottom: 15,
-              color: colors.lightBlackColor,
-            }}>
-            {strings.sentBasicInfoText}
-          </Text>
-          <View
-            style={{
-              marginLeft: 30,
-            }}>
-            <FlatList
-              data={infoList}
-              renderItem={({item}) => <RenderInfoDetail item={item} />}
-            />
-          </View>
-
-          <Text style={styles.basicInfoRequestText}>
-            {strings.requestInfoAcceptedText}
-          </Text>
-
-          <View
-            style={{flexDirection: 'row', marginLeft: 25, marginBottom: 20}}>
-            <Pressable
-              onPress={async () => {
-                await setStorage('showPopup', showCheck);
-                setShowCheck(!showCheck);
-              }}>
-              <Image
-                source={showCheck ? images.orangeCheckBox : images.uncheckWhite}
-                style={{height: 18, width: 18, resizeMode: 'contain'}}
-              />
-            </Pressable>
-            <Text style={styles.checkBoxItemText}>{strings.showAgainText}</Text>
+            {searchText.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  setSearchText('');
+                }}>
+                <Image
+                  source={images.closeRound}
+                  style={{height: 15, width: 15}}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
-      </CustomModalWrapper>
-    </>
+
+        {players.length === 0 ? (
+          <InviteListShimmer />
+        ) : (
+          <FlatList
+            extraData={filteredList}
+            ItemSeparatorComponent={ItemSeparatorComponent}
+            ListHeaderComponent={listHeaderComponent}
+            showsVerticalScrollIndicator={false}
+            data={filteredList}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderPlayer}
+            stickyHeaderIndices={[0]}
+            ListEmptyComponent={listEmptyComponent}
+          />
+        )}
+      </View>
+    </CustomModalWrapper>
   );
 }
 
@@ -538,31 +417,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
     width: '90%',
     marginTop: 20,
-  },
-
-  basicInfoList: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    marginLeft: 10,
-    marginBottom: 5,
-  },
-  basicInfoRequestText: {
-    fontFamily: fonts.RRegular,
-    fontSize: 16,
-    color: colors.lightBlackColor,
-    marginLeft: 30,
-    marginRight: 26,
-    lineHeight: 24,
-    marginTop: 15,
-    marginBottom: 30,
-  },
-
-  checkBoxItemText: {
-    fontFamily: fonts.RRegular,
-    fontSize: 14,
-    color: colors.veryLightBlack,
-    marginLeft: 7,
   },
 });
 

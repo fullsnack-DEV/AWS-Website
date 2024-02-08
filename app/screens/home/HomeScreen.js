@@ -56,6 +56,7 @@ import {
   GroupDefaultPrivacyOptionsForDoubleTeamEnum,
   InviteToEventOptionsEnum,
   PersonalUserPrivacyEnum,
+  PostOptionsEnumForDoubleTeamSport,
   PrivacyKeyEnum,
   TeamChatPrivacyOptionsEnum,
 } from '../../Constants/PrivacyOptionsConstant';
@@ -127,8 +128,15 @@ const HomeScreen = ({navigation, route}) => {
               GroupDefaultPrivacyOptionsForDoubleTeamEnum[entityObj[key]];
           } else if (key === PrivacyKeyEnum.Chats) {
             privacyVal = TeamChatPrivacyOptionsEnum[entityObj[key]];
+          } else if (
+            key === PrivacyKeyEnum.Posts ||
+            key === PrivacyKeyEnum.PostWrite
+          ) {
+            privacyVal =
+              entityObj.sport_type === Verbs.doubleSport
+                ? PostOptionsEnumForDoubleTeamSport[entityObj[key]]
+                : GroupDefalutPrivacyOptionsEnum[entityObj[key]];
           }
-
           obj[key] = getPrivacyStatus(privacyVal, entityObj);
         });
 
