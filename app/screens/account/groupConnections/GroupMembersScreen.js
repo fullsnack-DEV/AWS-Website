@@ -78,7 +78,6 @@ export default function GroupMembersScreen({navigation, route}) {
   const [groupID] = useState(route.params?.groupID ?? authContext.entity.uid);
   const [userJoinedGrpList, setUserJoinedGrpList] = useState();
   const [clubToCheckAdmin, setClubToCheckAdmin] = useState(false);
-  const [visiblePrivacyModal, setVisiblePrivacyModal] = useState(false);
   const [visibleFilterModal, setVisibleFilterModal] = useState(false);
   const [pendingReqNumber, setpendingReqNumber] = useState(10);
   const [filterloading, setFilterLoading] = useState(false);
@@ -89,7 +88,13 @@ export default function GroupMembersScreen({navigation, route}) {
   const [showViewPrivacyModal, setShowViewPrivacyModal] = useState(false);
   const [selectedPrivacyOption, setSelectedPrivacyOption] = useState({});
   const [viewPrivacyOptions, setViewPrivacyOptions] = useState([]);
+
+  const [tagArray, setTagArray] = useState([]);
+  const [connectedArray, setConnectArray] = useState([]);
+  const [filteredTeams, setFilterTeams] = useState([]);
+
   const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
+
 
   useEffect(() => {
     if (isFocused) {
@@ -949,6 +954,49 @@ export default function GroupMembersScreen({navigation, route}) {
             extraData={searchMember}
             data={searchMember}
             renderItem={renderMembers}
+            ListHeaderComponent={() => (
+              <FlatList
+                data={tagArray}
+                horizontal
+                style={{marginLeft: 15}}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  paddingVertical: 5,
+                  marginBottom: 5,
+                }}
+                renderItem={({item, index}) => (
+                  <View
+                    style={[
+                      styles.textContainer,
+                      index !== 0 ? {marginLeft: 15} : {},
+                    ]}>
+                    <View>
+                      <Text style={styles.tagTitleText}>{item}</Text>
+                    </View>
+                    <View style={styles.dividerImage} />
+                    <TouchableOpacity
+                      style={styles.closeButton}
+                      onPress={() => {
+                        console.log(item);
+                        const filterRoles = tagArray.filter((i) => i !== item);
+                        if (filterRoles.length === 0) {
+                          getMembers(groupID, authContext);
+                          setTagArray(filterRoles);
+                        } else {
+                          setTagArray(filterRoles);
+                          getFilteredMember(
+                            filterRoles,
+                            connectedArray,
+                            filteredTeams,
+                          );
+                        }
+                      }}>
+                      <Image source={images.cancelImage} style={styles.image} />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              />
+            )}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={() => (
               <View style={styles.listemptyView}>
@@ -1083,6 +1131,9 @@ export default function GroupMembersScreen({navigation, route}) {
         onApplyPress={(role, connectArray, filterTeams) => {
           getFilteredMember(role, connectArray, filterTeams);
           setVisibleFilterModal(false);
+          setTagArray(role);
+          setConnectArray(connectArray);
+          setFilterTeams(filterTeams);
         }}
       />
     </SafeAreaView>
@@ -1198,5 +1249,40 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     zIndex: 1,
     width: '90%',
+  },
+  textContainer: {
+    height: 25,
+    borderRadius: 5,
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingLeft: 10,
+    paddingRight: 5,
+    backgroundColor: colors.textFieldBackground,
+  },
+  closeButton: {
+    width: 8,
+    height: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  dividerImage: {
+    width: 1,
+    height: 25,
+    backgroundColor: colors.bgColor,
+    marginLeft: 10,
+    marginRight: 5,
+  },
+
+  tagTitleText: {
+    fontSize: 12,
+    lineHeight: 21,
+    textAlign: 'center',
+    fontFamily: fonts.RRegular,
+    color: colors.lightBlackColor,
   },
 });

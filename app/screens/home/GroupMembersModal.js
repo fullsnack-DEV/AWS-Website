@@ -416,7 +416,7 @@ export default function GroupMembersModal({
 
         <View style={{alignItems: 'center', alignSelf: 'center'}}>
           <Text style={{fontSize: 16, fontFamily: fonts.RBold, lineHeight: 24}}>
-            {strings.member}
+            {strings.membersTitle}
           </Text>
         </View>
         <TCThinDivider

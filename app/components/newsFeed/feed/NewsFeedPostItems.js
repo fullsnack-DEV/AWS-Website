@@ -195,6 +195,14 @@ const NewsFeedPostItems = memo(
           setShowMoreOptions(false);
           break;
 
+        case strings.remove:
+          setShowMoreOptions(false);
+          setTimeout(() => {
+            onDeletePost();
+          }, 100);
+
+          break;
+
         case format(strings.hideeventPostText, getPostText()):
           setShowMoreOptions(false);
           setTimeout(() => {
@@ -290,7 +298,7 @@ const NewsFeedPostItems = memo(
             onImageProfilePress={onImageProfilePress}
             onThreeDotPress={() => {
               const eventdata = JSON.parse(item.object);
-              // find out if he is in shared list
+
               const isInSharedList =
                 eventdata?.event_data?.event_share_groups?.includes(
                   authContext.entity.uid,
@@ -306,13 +314,6 @@ const NewsFeedPostItems = memo(
                   commenting: postObj[PrivacyKeyEnum.CommentOnPost] ?? 1,
                   reposting: postObj[PrivacyKeyEnum.SharePost] ?? 1,
                 };
-                // if (
-                //   postObj?.event_data.event_share_groups?.includes(
-                //     authContext.entity.uid,
-                //   )
-                // ) {
-                //   option.push(strings.remove);
-                // }
 
                 if (privacyObj.commenting) {
                   option.push(strings.turnOffCommenting);
@@ -374,7 +375,7 @@ const NewsFeedPostItems = memo(
                   );
                 }
               } else {
-                option = [strings.report, strings.blockAccount];
+                option = [strings.report];
               }
               setMoreOptions(option);
               setShowMoreOptions(true);

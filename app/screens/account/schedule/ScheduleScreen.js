@@ -343,29 +343,6 @@ export default function ScheduleScreen({navigation, route}) {
     setEndDateVisible(false);
   };
 
-  const getAlUsersGroups = () => {
-    getGroups(authContext)
-      .then((response) => {
-        // const {teams, clubs} = response.payload ?? [];
-        if (Object.keys(response.payload).length > 0) {
-          if (!reFreshBar) {
-            setFilterSetting({...filterSetting, sort: route.params?.opValue});
-          } else {
-            setFilterSetting({...filterSetting, sort: 2});
-            // setallUsersGroups([...teams, ...clubs]);
-          }
-        } else {
-          setFilterSetting({...filterSetting, sort: 0});
-        }
-        setloading(false);
-      })
-      .catch((e) => {
-        setloading(false);
-
-        Alert.alert(strings.townsCupTitle, e.message);
-      });
-  };
-
   // Check Validation to show the event settings for clubs
   useEffect(() => {
     if ([Verbs.entityTypeClub].includes(authContext.entity.role)) {
@@ -467,7 +444,22 @@ export default function ScheduleScreen({navigation, route}) {
         authContext.entity.role,
       )
     ) {
-      getAlUsersGroups();
+      getGroups(authContext)
+        .then((response) => {
+          if (Object.keys(response.payload).length > 0) {
+            if (!reFreshBar) {
+              setFilterSetting({...filterSetting, sort: route.params?.opValue});
+            } else {
+              setFilterSetting({...filterSetting, sort: 3});
+            }
+          }
+          setloading(false);
+        })
+        .catch((e) => {
+          setloading(false);
+
+          Alert.alert(strings.townsCupTitle, e.message);
+        });
     }
   }, [isFocused]);
 
