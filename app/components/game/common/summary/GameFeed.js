@@ -303,8 +303,6 @@ const GameFeed = (
   const renderWritePostView = useMemo(
     () => (
       <WritePost
-        navigation={navigation}
-        postDataItem={currentUserData}
         onWritePostPress={() => {
           navigation.navigate('NewsFeedStack', {
             screen: 'WritePostScreen',

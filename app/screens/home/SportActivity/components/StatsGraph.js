@@ -84,8 +84,8 @@ const StatsGraph = ({
           alignItems: 'center',
         }}>
         <Pie
-          radius={80}
-          innerRadius={66}
+          radius={76}
+          innerRadius={69}
           sections={chartData}
           strokeCap={'round'}
         />

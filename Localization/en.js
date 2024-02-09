@@ -2482,9 +2482,9 @@ export default {
   blockUserAccount: 'en_Block This User Account',
   reportThisReview: 'en_Report This Review',
   reportThisReply: 'en_Report This Reply',
-  tcLevelPointsText: 'en_TC LEVEL & POINTS',
+  tcLevelPointsText: 'en_TC Level & Points',
   tcLevel: 'en_TC Level',
-  dmRate: 'en_DM RATE',
+  dmRate: 'en_DM Rate',
   dmsText: 'en_DMs',
   dtsText: 'en_D&Ts',
   disputedMatches: 'en_Disputed Matches',
@@ -3471,4 +3471,5 @@ export default {
     "en_You are sole admin and group has other member, So You can't leave the group",
   theGoupIsPausedAlert: 'en_group you want to join is paused now',
   noContentToShow: 'en_No contents to show',
+  availableMatchVenues: 'en_Available Match Venues',
 };

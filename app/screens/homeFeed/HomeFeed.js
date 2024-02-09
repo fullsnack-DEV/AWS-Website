@@ -318,8 +318,6 @@ const HomeFeed = ({
     }
     return (
       <WritePost
-        navigation={navigation}
-        postDataItem={currentUserData}
         onWritePostPress={() => {
           navigation.navigate('NewsFeedStack', {
             screen: 'WritePostScreen',
@@ -424,7 +422,7 @@ const HomeFeed = ({
         } else if (selectedPostTab === Verbs.taggedPost) {
           fetchTaggedTimeLine();
         }
-        navigation.setParams({isCreatePost: undefined});
+        navigation.setParams({...routeParams, isCreatePost: undefined});
         setFullScreenLoading(false);
       })
       .catch((e) => {
@@ -436,6 +434,7 @@ const HomeFeed = ({
   useEffect(() => {
     if (isFocused && routeParams?.isCreatePost) {
       const {dataParams, imageArray} = routeParams;
+      navigation.setParams({...routeParams, isCreatePost: undefined});
       if (imageArray.length > 0) {
         imageUploadContext.uploadData(
           authContext,

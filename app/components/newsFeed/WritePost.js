@@ -1,18 +1,14 @@
-import React, {memo, useEffect, useState} from 'react';
+import React, {memo, useContext, useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import colors from '../../Constants/Colors';
 import fonts from '../../Constants/Fonts';
 import {strings} from '../../../Localization/translation';
 import GroupIcon from '../GroupIcon';
+import AuthContext from '../../auth/context';
 
-const WritePost = ({postDataItem, onWritePostPress}) => {
-  const [entityData, setEntityData] = useState({});
-
-  useEffect(() => {
-    if (postDataItem) {
-      setEntityData(postDataItem);
-    }
-  }, [postDataItem]);
+const WritePost = ({onWritePostPress}) => {
+  const authContext = useContext(AuthContext);
+  const [entityData] = useState({...authContext.entity.obj});
 
   return (
     <View style={styles.mainContainer}>

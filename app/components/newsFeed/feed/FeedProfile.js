@@ -16,6 +16,7 @@ const FeedProfile = ({
   onThreeDotPress = () => {},
   isEvent = false,
   showMoreOptions = false,
+  groupName = '',
 }) => (
   <View style={styles.mainContainer}>
     <TouchableOpacity
@@ -33,17 +34,30 @@ const FeedProfile = ({
         textstyle={{fontSize: 12}}
       />
       <View style={{flex: 1}}>
-        <Text
-          numberOfLines={2}
-          style={styles.userNameTxt}
-          onPress={onImageProfilePress}>
-          {data.full_name ?? data.group_name}{' '}
-          {isEvent && (
-            <Text style={[styles.userNameTxt, {fontFamily: fonts.RRegular}]}>
-              {strings.createdEvent}
+        <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+          <Text
+            numberOfLines={2}
+            style={styles.userNameTxt}
+            onPress={onImageProfilePress}>
+            {data.full_name ?? data.group_name}{' '}
+            {isEvent && (
+              <Text style={[styles.userNameTxt, {fontFamily: fonts.RRegular}]}>
+                {strings.createdEvent}
+              </Text>
+            )}
+          </Text>
+          {groupName && (
+            <Image
+              source={images.nextFilledArrow}
+              style={styles.iconContainer}
+            />
+          )}
+          {groupName && (
+            <Text numberOfLines={2} style={styles.userNameTxt}>
+              {groupName}{' '}
             </Text>
           )}
-        </Text>
+        </View>
         <Text style={styles.activeTimeAgoTxt}>
           {formatTimestampForDisplay(time)}
         </Text>
@@ -97,6 +111,12 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     marginRight: 15,
+  },
+  iconContainer: {
+    height: 8,
+    width: 4,
+    resizeMode: 'contain',
+    marginHorizontal: 8,
   },
 });
 export default FeedProfile;

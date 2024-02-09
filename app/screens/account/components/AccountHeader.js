@@ -29,7 +29,13 @@ const AccountHeader = ({
           style={styles.image}
         />
         {notificationCount > 0 && (
-          <View style={styles.countContainer}>
+          <View
+            style={[
+              styles.countContainer,
+              notificationCount?.toString()?.length > 1
+                ? {paddingHorizontal: 6}
+                : {},
+            ]}>
             <Text style={styles.count}>
               {notificationCount > 99 ? '99+' : notificationCount}
             </Text>
@@ -70,21 +76,20 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   countContainer: {
-    width: 26,
-    height: 15,
-    borderRadius: 25,
+    paddingHorizontal: 5,
+    borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
     top: -3,
     right: 0,
-    backgroundColor: colors.notificationCountBgColor,
+    backgroundColor: colors.redColorCard,
   },
   count: {
-    fontSize: 12,
-    lineHeight: 15,
     color: colors.whiteColor,
-    fontFamily: fonts.RRegular,
+    fontSize: 12,
+    lineHeight: 18,
+    textAlign: 'center',
   },
   settingsIcon: {
     marginRight: 20,

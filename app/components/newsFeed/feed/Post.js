@@ -25,6 +25,7 @@ const Post = ({
   openProfilId,
   isRepost = false,
   showMoreOptions = false,
+  entityDetails = {},
 }) => {
   const postData = getPostData(item);
   const repostActivity = {...postData.activity};
@@ -49,6 +50,11 @@ const Post = ({
           isRepost={false}
           onThreeDotPress={onThreeDotPress}
           showMoreOptions={showMoreOptions}
+          groupName={
+            item?.group_id
+              ? item?.group?.group_name ?? entityDetails?.group_name
+              : null
+          }
         />
       </View>
       {isRepost && (
@@ -87,6 +93,12 @@ const Post = ({
               onImageProfilePress={onImageProfilePress}
               isRepost
               onThreeDotPress={onThreeDotPress}
+              groupName={
+                repostActivity?.group_id
+                  ? repostActivity?.group?.group_name ??
+                    entityDetails?.group_name
+                  : null
+              }
             />
           </View>
         ) : (

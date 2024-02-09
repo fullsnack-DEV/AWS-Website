@@ -2482,9 +2482,9 @@ export default {
   blockUserAccount: 'fr_Block This User Account',
   reportThisReview: 'fr_Report This Review',
   reportThisReply: 'fr_Report This Reply',
-  tcLevelPointsText: 'fr_TC LEVEL & POINTS',
+  tcLevelPointsText: 'fr_TC Level & Points',
   tcLevel: 'fr_TC Level',
-  dmRate: 'fr_DM RATE',
+  dmRate: 'fr_DM Rate',
   dmsText: 'fr_DMs',
   dtsText: 'fr_D&Ts',
   disputedMatches: 'fr_Disputed Matches',
@@ -3329,13 +3329,17 @@ export default {
   selectClubText:
     'fr_ Select affiliated {0} in whose posts you want to display the post about this event.',
   shareEventPostText: 'fr_ Share Event Post',
-  hideeventPostText: 'fr_Hide Event Post',
+  hideeventPostText: 'fr_Hide Event Post from my {0}',
+  unhideeventPostText: 'fr_Unhide Event Post from my {0}',
+  teamsTextHide: "fr_team's Profile",
+  clubsTextHide: "fr_club's Profile",
+  profileHide: 'fr_Profile',
+
   shareEventsubText:
     'fr_A post about this event will be created in posts of your {0}.',
   shareEventUserText: 'fr_A post about this event will be created in posts.',
   noShareEventText:
     'fr_No post about this event will be created in your posts.',
-
   whoCanViewPostSection: "fr_Who can view posts in your team's profile?",
   whoCanViewEventSection: "fr_Who can view your team's events section?",
   whoCanViewGallerySection: "fr_Who can view your team's gallery section?",
@@ -3440,6 +3444,11 @@ export default {
   clubsText: 'fr_clubs',
   teamsText: 'fr_teams',
   maxFeeAlert: 'fr_Max fee should be greater than min fee.',
+
+  deleteEventPostAlert:
+    'fr_If you delete this event post, all shared post of this post in other groups will be deleted.',
+  attendeesAndInvited: 'fr_attendees & invited',
+
   viewPrivacySettings: 'fr_View Privacy Settings',
   newMatchesWillAppearHere: 'fr_New match will appear here.',
   whoCanSeeItemsOfBasicInfo:
@@ -3459,7 +3468,8 @@ export default {
   video: 'fr_Video',
   othersTitle: 'fr_OTHERS',
   soloAdminAlertMessage:
-    "en_You are sole admin and group has other member, So You can't leave the group",
-  theGoupIsPausedAlert: 'en_group you want to join is paused now',
-  noContentToShow: 'en_No contents to show',
+    "fr_You are sole admin and group has other member, So You can't leave the group",
+  theGoupIsPausedAlert: 'fr_group you want to join is paused now',
+  noContentToShow: 'fr_No contents to show',
+  availableMatchVenues: 'fr_Available Match Venues',
 };

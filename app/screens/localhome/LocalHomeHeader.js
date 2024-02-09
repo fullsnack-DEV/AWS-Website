@@ -93,7 +93,13 @@ export default function LocalHomeHeader({
                 style={styles.notificationIcon}
               />
               {notificationCount > 0 && (
-                <View style={styles.countContainer}>
+                <View
+                  style={[
+                    styles.countContainer,
+                    notificationCount?.toString()?.length > 1
+                      ? {paddingHorizontal: 6}
+                      : {},
+                  ]}>
                   <Text style={styles.count}>
                     {notificationCount > 99 ? '99+' : notificationCount}
                   </Text>
@@ -156,21 +162,20 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   countContainer: {
-    width: 26,
-    height: 15,
-    borderRadius: 25,
+    paddingHorizontal: 5,
+    borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    top: -8,
-    right: -8,
-    backgroundColor: colors.notificationCountBgColor,
+    top: -10,
+    right: 0,
+    backgroundColor: colors.redColorCard,
   },
   count: {
-    fontSize: 12,
-    lineHeight: 15,
     color: colors.whiteColor,
-    fontFamily: fonts.RRegular,
+    fontSize: 12,
+    lineHeight: 18,
+    textAlign: 'center',
   },
   downArrow: {
     width: 10,

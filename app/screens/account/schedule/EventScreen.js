@@ -1572,8 +1572,6 @@ export default function EventScreen({navigation, route}) {
           <View style={{marginTop: -20}}>
             {isWritePostVisible(eventData.who_can_post) && (
               <WritePost
-                navigation={navigation}
-                postDataItem={authContext.entity.obj}
                 onWritePostPress={() => {
                   navigation.navigate('NewsFeedStack', {
                     screen: 'WritePostScreen',

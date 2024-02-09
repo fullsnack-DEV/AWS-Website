@@ -907,7 +907,7 @@ export default function ChallengeAvailability({
             .toDate()}
           minutesGap={5}
           mode={challengeAvailable[currentIndex]?.allDay ? 'date' : 'datetime'}
-          date={challengeAvailable[currentIndex].untilDate}
+          date={challengeAvailable[currentIndex]?.untilDate}
         />
       </View>
     </CustomModalWrapper>

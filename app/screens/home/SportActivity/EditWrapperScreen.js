@@ -127,7 +127,7 @@ const EditWrapperScreen = ({
           />
         );
 
-      case strings.matchVenues:
+      case strings.availableMatchVenues:
         return null;
 
       case strings.teamstitle:

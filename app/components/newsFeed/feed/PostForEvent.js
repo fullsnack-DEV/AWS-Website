@@ -14,6 +14,7 @@ const PostForEvent = ({
   onThreeDotPress = () => {},
   onImageProfilePress = () => {},
   showMoreOptions = false,
+  entityDetails = {},
 }) => {
   const [eventData, setEventData] = useState({});
 
@@ -36,6 +37,11 @@ const PostForEvent = ({
         onThreeDotPress={onThreeDotPress}
         isEvent
         showMoreOptions={showMoreOptions}
+        groupName={
+          postData?.group_id
+            ? postData?.group?.group_name ?? entityDetails?.group_name
+            : null
+        }
       />
       <View style={styles.card}>
         <View style={styles.bacgroundImageContainer}>

@@ -79,7 +79,7 @@ const InfoContentScreen = ({
       ) {
         const arr = [...OptionList];
         arr.splice(2, 0, strings.homeFacility);
-        arr.splice(3, 0, strings.matchVenues);
+        arr.splice(3, 0, strings.availableMatchVenues);
         arr.splice(4, 0, strings.ntrpTitle);
 
         setOptions([...arr]);
@@ -183,7 +183,7 @@ const InfoContentScreen = ({
           </View>
         );
 
-      case strings.matchVenues:
+      case strings.availableMatchVenues:
         return <Venues list={sportObj.setting?.venue ?? []} />;
 
       case strings.teamstitle:
@@ -270,12 +270,12 @@ const InfoContentScreen = ({
         handleEditOption(sectionName, strings.editNTRPText);
         break;
 
-      case strings.matchVenues:
+      case strings.availableMatchVenues:
         setEditModalInfo({
           section: sectionName,
           privacyKey: '',
         });
-        setEditButtonOptions([strings.challengeSettingText]);
+        setEditButtonOptions([strings.incomingChallengeSettingsTitle]);
         setShowEditModal(true);
         break;
 
@@ -315,7 +315,8 @@ const InfoContentScreen = ({
                 item === strings.basicInfoText
                   ? {paddingVertical: 0, paddingTop: 25, paddingBottom: 10}
                   : {},
-                item === strings.matchVenues || item === strings.homeFacility
+                item === strings.availableMatchVenues ||
+                item === strings.homeFacility
                   ? {paddingHorizontal: 0}
                   : {},
               ]}>
@@ -323,13 +324,14 @@ const InfoContentScreen = ({
                 style={[
                   styles.row,
                   {marginBottom: 15},
-                  item === strings.matchVenues || item === strings.homeFacility
+                  item === strings.availableMatchVenues ||
+                  item === strings.homeFacility
                     ? {paddingHorizontal: 17}
                     : {},
                 ]}>
                 <View style={[styles.row, {justifyContent: 'center'}]}>
                   <Text style={styles.sectionTitle}>{item}</Text>
-                  {item === strings.matchVenues ? (
+                  {item === strings.availableMatchVenues ? (
                     <TouchableOpacity
                       style={styles.infoButtonContainer}
                       onPress={() => setShowInfo()}>

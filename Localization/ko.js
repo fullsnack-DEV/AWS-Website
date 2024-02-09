@@ -2482,9 +2482,9 @@ export default {
   blockUserAccount: 'ko_Block This User Account',
   reportThisReview: 'ko_Report This Review',
   reportThisReply: 'ko_Report This Reply',
-  tcLevelPointsText: 'ko_TC LEVEL & POINTS',
+  tcLevelPointsText: 'ko_TC Level & Points',
   tcLevel: 'ko_TC Level',
-  dmRate: 'ko_DM RATE',
+  dmRate: 'ko_DM Rate',
   dmsText: 'ko_DMs',
   dtsText: 'ko_D&Ts',
   disputedMatches: 'ko_Disputed Matches',
@@ -3329,13 +3329,17 @@ export default {
   selectClubText:
     'ko_ Select affiliated {0} in whose posts you want to display the post about this event.',
   shareEventPostText: 'ko_ Share Event Post',
-  hideeventPostText: 'ko_Hide Event Post',
+  hideeventPostText: 'ko_Hide Event Post from my {0}',
+  unhideeventPostText: 'ko_Unhide Event Post from my {0}',
+  teamsTextHide: "ko_team's Profile",
+  clubsTextHide: "ko_club's Profile",
+  profileHide: 'ko_Profile',
+
   shareEventsubText:
     'ko_A post about this event will be created in posts of your {0}.',
   shareEventUserText: 'ko_A post about this event will be created in posts.',
   noShareEventText:
     'ko_No post about this event will be created in your posts.',
-
   whoCanViewPostSection: "ko_Who can view posts in your team's profile?",
   whoCanViewEventSection: "ko_Who can view your team's events section?",
   whoCanViewGallerySection: "ko_Who can view your team's gallery section?",
@@ -3464,7 +3468,8 @@ export default {
   video: 'ko_Video',
   othersTitle: 'ko_OTHERS',
   soloAdminAlertMessage:
-    "en_You are sole admin and group has other member, So You can't leave the group",
-  theGoupIsPausedAlert: 'en_group you want to join is paused now',
-  noContentToShow: 'en_No contents to show',
+    "ko_You are sole admin and group has other member, So You can't leave the group",
+  theGoupIsPausedAlert: 'ko_group you want to join is paused now',
+  noContentToShow: 'ko_No contents to show',
+  availableMatchVenues: 'ko_Available Match Venues',
 };

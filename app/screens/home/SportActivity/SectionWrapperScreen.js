@@ -1,5 +1,5 @@
 // @flow
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {View, StyleSheet, SafeAreaView, Text} from 'react-native';
 import {strings} from '../../../../Localization/translation';
 import InfoContentScreen from './contentScreens/InfoContentScreen';
@@ -8,7 +8,6 @@ import AuthContext from '../../../auth/context';
 import ReviewsContentScreen from './contentScreens/ReviewsContentScreen';
 import {getGameHomeScreen} from '../../../utils/gameUtils';
 import StatsContentScreen from './contentScreens/StatsContentScreen';
-import AvailabilityScreen from './contentScreens/AvailabilityContentScreen';
 import colors from '../../../Constants/Colors';
 import images from '../../../Constants/ImagePath';
 import BottomSheet from '../../../components/modals/BottomSheet';
@@ -23,6 +22,10 @@ import {
   PrivacyKeyEnum,
 } from '../../../Constants/PrivacyOptionsConstant';
 import {ModalTypes} from '../../../Constants/GeneralConstants';
+import ChallengeAvailability from '../../account/schedule/ChallengeAvailability';
+import AvailibilityScheduleScreen from '../../account/schedule/AvailibityScheduleScreen';
+import {getEventsSlots} from '../../../utils';
+import Verbs from '../../../Constants/Verbs';
 
 const userPrivacyOptions = [
   PrivacyKeyEnum.Gender,
@@ -63,6 +66,12 @@ const SectionWrapperScreen = ({navigation, route}) => {
   const [showInfo, setShowInfo] = useState(false);
   const [snapPoints, setSnapPoints] = useState([]);
   const [showBasicInfoModal, setShowBasicInfoModal] = useState(false);
+  const [isFromSlots, setIsFromSlots] = useState(false);
+  const [visibleAvailabilityModal, setVisibleAvailabilityModal] =
+    useState(false);
+  const [editableSlots, setEditableSlots] = useState([]);
+  const [slotLevel, setSlotLevel] = useState(false);
+  const [slots, setSlots] = useState([]);
 
   useEffect(() => {
     if (sportObj?.sport) {
@@ -95,7 +104,7 @@ const SectionWrapperScreen = ({navigation, route}) => {
   }, [userData, getPrivacyStatus]);
 
   const handleEditNavigation = (sectionName, title) => {
-    if (sectionName === strings.matchVenues) {
+    if (sectionName === strings.availableMatchVenues) {
       // navigation.navigate('AccountStack', {
       //   screen: 'ManageChallengeScreen',
       //   params: {
@@ -113,6 +122,107 @@ const SectionWrapperScreen = ({navigation, route}) => {
   const handlePrivacySettings = (sectionName, privacyKey) => {
     setSettingModalObj({option: sectionName, privacyKey});
     setShowPrivacySettingsModal(true);
+  };
+
+  const getSlotData = useCallback(() => {
+    const entityId = userData.user_id ?? userData.group_id;
+    getEventsSlots([entityId]).then((response) => {
+      setSlots(response);
+    });
+  }, [userData.user_id, userData.group_id]);
+
+  useEffect(() => {
+    getSlotData();
+  }, [getSlotData]);
+
+  const generateTimestampRanges = (startTimestamp, endTimestamp) => {
+    const startDate = startTimestamp * Verbs.THOUSAND_SECOND;
+    const endDate = endTimestamp * Verbs.THOUSAND_SECOND;
+    const ranges = [];
+    let startOfCurrentRange = startDate;
+
+    while (startOfCurrentRange < endDate) {
+      const startDateFullDate = new Date(startOfCurrentRange);
+      let endOfCurrentDay = new Date(
+        startDateFullDate.getFullYear(),
+        startDateFullDate.getMonth(),
+        startDateFullDate.getDate() + 1,
+      ).getTime();
+
+      if (endOfCurrentDay > endDate) {
+        endOfCurrentDay = endDate;
+      }
+
+      ranges.push({start: startOfCurrentRange, end: endOfCurrentDay});
+
+      startOfCurrentRange = endOfCurrentDay;
+    }
+
+    return ranges;
+  };
+
+  const addToSlotData = (data) => {
+    const tempData = [...slots];
+    data.forEach((item1) => {
+      slots.forEach((item2, key) => {
+        if (
+          item1.start_datetime <= item2.end_datetime &&
+          item1.end_datetime > item2.end_datetime
+        ) {
+          tempData[key].end_datetime = item1.end_datetime;
+        } else if (
+          item1.end_datetime >= item2.start_datetime &&
+          item1.start_datetime < item2.end_datetime
+        ) {
+          tempData[key].start_datetime = item1.start_datetime;
+        }
+      });
+      tempData.push(item1);
+    });
+    // tempData = newBlockedSlots(tempData);
+    const newPlans = tempData.flatMap((plan) => {
+      const {start_datetime, end_datetime} = plan;
+      const timestampRange = generateTimestampRanges(
+        start_datetime,
+        end_datetime,
+      );
+      if (timestampRange.length > 1) {
+        return timestampRange.map(({start, end}) => ({
+          ...plan,
+          start_datetime: start / Verbs.THOUSAND_SECOND,
+          end_datetime: end / Verbs.THOUSAND_SECOND,
+          actual_enddatetime: end / Verbs.THOUSAND_SECOND,
+        }));
+      }
+      return plan;
+    });
+    setSlots(newPlans);
+  };
+
+  const deleteFromSlotData = async (delArr) => {
+    const tempSlot = [...slots];
+    delArr.forEach((cal_id) => {
+      const index = tempSlot.findIndex((item) => item.cal_id === cal_id);
+      slots.splice(index, 1);
+    });
+    setSlots([...slots]);
+    return slots;
+  };
+
+  const deleteOrCreateSlotData = async (payload) => {
+    let tempSlot = [...slots];
+
+    tempSlot = tempSlot.filter(
+      (item) => !payload.deleteSlotsIds.includes(item.cal_id),
+    );
+
+    const slotMap = new Map(slots.map((item) => [item.cal_id, item]));
+    payload.deleteSlotsIds.forEach((cal_id) => slotMap.delete(cal_id));
+    tempSlot = Array.from(slotMap.values());
+
+    tempSlot = tempSlot.concat(payload.newSlots);
+
+    setSlots(tempSlot);
   };
 
   const renderContent = () => {
@@ -227,7 +337,19 @@ const SectionWrapperScreen = ({navigation, route}) => {
         );
 
       case strings.availability:
-        return <AvailabilityScreen userData={userData} />;
+        return (
+          <AvailibilityScheduleScreen
+            allSlots={slots}
+            isAdmin={userData.user_id === authContext.entity.uid}
+            setIsFromSlots={setIsFromSlots}
+            setSlotLevel={setSlotLevel}
+            onDayPress={() => getSlotData()}
+            setVisibleAvailabilityModal={(val) => {
+              setVisibleAvailabilityModal(val);
+            }}
+            setEditableSlots={setEditableSlots}
+          />
+        );
 
       default:
         return null;
@@ -325,6 +447,21 @@ const SectionWrapperScreen = ({navigation, route}) => {
           {strings.basicInfoModalText}
         </Text>
       </CustomModalWrapper>
+
+      <ChallengeAvailability
+        isVisible={visibleAvailabilityModal}
+        closeModal={() => {
+          setVisibleAvailabilityModal(false);
+          setIsFromSlots(false);
+        }}
+        slots={editableSlots}
+        addToSlotData={addToSlotData}
+        showAddMore={true}
+        slotLevel={slotLevel}
+        deleteFromSlotData={deleteFromSlotData}
+        deleteOrCreateSlotData={deleteOrCreateSlotData}
+        isFromSlot={isFromSlots}
+      />
     </SafeAreaView>
   );
 };

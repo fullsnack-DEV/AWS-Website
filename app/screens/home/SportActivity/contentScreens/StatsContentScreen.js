@@ -190,8 +190,8 @@ const StatsContentScreen = ({sportType = '', sport, authContext, userId}) => {
           <View>
             <Text style={styles.title}>
               {sportType === Verbs.singleSport
-                ? strings.totalMatches.toUpperCase()
-                : strings.matchesTitleText.toUpperCase()}{' '}
+                ? strings.totalMatches
+                : strings.matchesTitleText}{' '}
               {statsObject.totalMatches}
             </Text>
           </View>

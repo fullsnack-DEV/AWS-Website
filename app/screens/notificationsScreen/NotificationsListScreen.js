@@ -1334,7 +1334,13 @@ function NotificationsListScreen({navigation, route}) {
                 <View style={styles.subHeader}>
                   <Text style={styles.header}>{section}</Text>
                   {section === strings.pendingrequests && (
-                    <View style={{backgroundColor: 'red', borderRadius: 20}}>
+                    <View
+                      style={[
+                        styles.countContainer,
+                        isNotificationListName?.toString()?.length > 1
+                          ? {paddingHorizontal: 6}
+                          : {},
+                      ]}>
                       <Text style={styles.popUp}>
                         {isNotificationListName}+
                       </Text>
@@ -1431,15 +1437,10 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   popUp: {
-    // backgroundColor: 'red',
-    fontFamily: fonts.RBold,
-    fontSize: 12,
-    padding: 0,
-    // alignContent: 'center',
-    width: 30,
     color: colors.whiteColor,
+    fontSize: 12,
+    lineHeight: 18,
     textAlign: 'center',
-    // borderRadius:50
   },
 
   subHeader: {
@@ -1482,6 +1483,13 @@ const styles = StyleSheet.create({
     fontFamily: fonts.RBold,
     color: colors.veryLightBlack,
     alignSelf: 'center',
+  },
+  countContainer: {
+    borderRadius: 50,
+    alignItems: 'center',
+    paddingHorizontal: 5,
+    justifyContent: 'center',
+    backgroundColor: colors.redColorCard,
   },
 });
 

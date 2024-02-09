@@ -381,6 +381,7 @@ const NewsFeedPostItems = memo(
               setShowMoreOptions(true);
             }}
             showMoreOptions
+            entityDetails={entityDetails}
           />
         ) : (
           <Post
@@ -445,6 +446,7 @@ const NewsFeedPostItems = memo(
             openProfilId={openProfilId}
             isRepost={postType === Verbs.repostVerb}
             showMoreOptions
+            entityDetails={entityDetails}
           />
         )}
         <View style={{paddingHorizontal: 5}}>

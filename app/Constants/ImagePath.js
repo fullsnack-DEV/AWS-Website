@@ -588,6 +588,7 @@ const images = {
   newDiselectCheckBox: require('../assets/images/diselectCheckBox.png'),
   newSelectCheckBox: require('../assets/images/SelectCheckBox.png'),
   noMatchImageIcon: require('../assets/images/noMatchImageIcon.png'),
+  nextFilledArrow: require('../assets/images/nextFilledArrow.png'),
 };
 
 export default images;

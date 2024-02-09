@@ -146,7 +146,6 @@ const WritePostScreen = ({navigation, route}) => {
           postData.entity_type === Verbs.entityTypeClub
         ) {
           dataParams.group_id = postData.group_id;
-          dataParams.feed_type = postData.entity_type;
         }
         if (
           postData.entity_type === Verbs.entityTypeUser ||
@@ -894,6 +893,9 @@ const WritePostScreen = ({navigation, route}) => {
             data={repostData.actor.data}
             isRepost
             showThreeDot={false}
+            groupName={
+              repostData?.group_id ? repostData?.group?.group_name : null
+            }
           />
           <NewsFeedDescription
             descriptions={objData.text}
