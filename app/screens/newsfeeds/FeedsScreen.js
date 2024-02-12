@@ -6,7 +6,16 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import {StyleSheet, View, Alert, Text, SafeAreaView, Image} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Alert,
+  Text,
+  SafeAreaView,
+  Image,
+  Platform,
+} from 'react-native';
+import {Shadow} from 'react-native-shadow-2';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import _ from 'lodash';
 import {useIsFocused} from '@react-navigation/native';
@@ -362,41 +371,57 @@ const FeedsScreen = ({navigation, route}) => {
   );
 
   const RenderTopHeader = () => (
-    <View style={styles.headerRow}>
-      <View>
-        <Text style={styles.headerTitle}>{strings.feedTitleText}</Text>
+    <Shadow
+      distance={Platform.OS === 'android' ? 2 : 0}
+      offset={Platform.OS === 'android' ? ['0%', '2.2%'] : [0, 0]}
+      startColor={'rgba(0,0,0,0.05)'}
+      stretch
+      containerStyle={{
+        shadowOffset: {
+          width: 0,
+          height: 1,
+        },
+        shadowRadius: 3,
+        shadowOpacity: 5,
+        shadowColor: colors.maskColor,
+        backgroundColor: colors.privacyBgColor,
+      }}>
+      <View style={styles.headerRow}>
+        <View>
+          <Text style={styles.headerTitle}>{strings.feedTitleText}</Text>
+        </View>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <TouchableOpacity
+            style={[styles.headerIconContainer, {marginRight: 8}]}
+            onPress={() => {
+              navigation.navigate('NewsFeedStack', {
+                screen: 'WritePostScreen',
+                params: {
+                  postData: currentUserDetail,
+                  selectedImageList: [],
+                },
+              });
+            }}>
+            <Image source={images.feedPlusIcon} style={styles.icon} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('UniversalSearchStack', {
+                screen: 'EntitySearchScreen',
+                params: {
+                  sportsList: sports,
+                  sportsArray: sportArr,
+                  parentStack: 'App',
+                  screen: 'NewsFeed',
+                },
+              });
+            }}
+            style={[styles.headerIconContainer, {marginLeft: 7}]}>
+            <Image source={images.searchIcon} style={styles.icon} />
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <TouchableOpacity
-          style={[styles.headerIconContainer, {marginRight: 8}]}
-          onPress={() => {
-            navigation.navigate('NewsFeedStack', {
-              screen: 'WritePostScreen',
-              params: {
-                postData: currentUserDetail,
-                selectedImageList: [],
-              },
-            });
-          }}>
-          <Image source={images.feedPlusIcon} style={styles.icon} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('UniversalSearchStack', {
-              screen: 'EntitySearchScreen',
-              params: {
-                sportsList: sports,
-                sportsArray: sportArr,
-                parentStack: 'App',
-                screen: 'NewsFeed',
-              },
-            });
-          }}
-          style={[styles.headerIconContainer, {marginLeft: 7}]}>
-          <Image source={images.searchIcon} style={styles.icon} />
-        </TouchableOpacity>
-      </View>
-    </View>
+    </Shadow>
   );
 
   const createPostAfterUpload = (dataParams) => {
@@ -543,14 +568,14 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingLeft: 18,
     backgroundColor: colors.whiteColor,
-    shadowColor: colors.blackColor,
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.1019,
-    shadowRadius: 5,
-    elevation: 5,
+    // shadowColor: colors.blackColor,
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 3,
+    // },
+    // shadowOpacity: 0.1019,
+    // shadowRadius: 5,
+    // elevation: 5,
 
     top: 0,
     left: 0,

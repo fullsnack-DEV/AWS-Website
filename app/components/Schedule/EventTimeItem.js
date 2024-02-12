@@ -30,7 +30,11 @@ const EventTimeItem = ({
           style={{width: 14, height: 18, marginRight: 10}}
         />
         {is_Offline ? (
-          <Text style={styles.fromTimeTextStyle}>{location} </Text>
+          <Text
+            numberOfLines={1}
+            style={[styles.fromTimeTextStyle, {flex: 1.2}]}>
+            {location}
+          </Text>
         ) : (
           <Text
             style={[

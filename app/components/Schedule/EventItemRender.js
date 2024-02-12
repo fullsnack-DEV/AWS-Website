@@ -25,7 +25,7 @@ function EventItemRender({
           <TouchableOpacity onPress={() => clickInfoIcon(type)}>
             <Image
               source={icon}
-              style={{width: 15, height: 15, marginTop: 5}}
+              style={{width: 15, height: 15, marginTop: 10, marginLeft: 10}}
             />
           </TouchableOpacity>
         )}

@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import {StatusBar} from 'react-native';
+import {AppState, StatusBar} from 'react-native';
 import {decode, encode} from 'base-64';
 import messaging from '@react-native-firebase/messaging';
 import Orientation from 'react-native-orientation';
@@ -100,6 +100,39 @@ function App() {
     //   strings.networkConnectivityErrorMessage,
     // );
   };
+
+  const clearAsyncStorageValue = async () => {
+    try {
+      console.log('AsyncStorage value cleared successfully');
+    } catch (error) {
+      console.log('Error clearing AsyncStorage value: ', error.message);
+    }
+  };
+
+  useEffect(() => {
+    const appStateListener = AppState.addEventListener(
+      'change',
+      (nextAppState) => {
+        console.log('Next AppState is: ', nextAppState);
+        if (nextAppState === 'inactive') {
+          clearAsyncStorageValue();
+        }
+      },
+    );
+    return () => {
+      appStateListener?.remove();
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   console.log(AppState, 'from state');
+  //   if (
+  //     AppState.currentState === 'inactive' ||
+  //     AppState.currentState === 'unknown'
+  //   ) {
+  //     clearAsyncStorageValue();
+  //   }
+  // }, []);
 
   useEffect(() => {
     NetInfo.addEventListener((state) => {

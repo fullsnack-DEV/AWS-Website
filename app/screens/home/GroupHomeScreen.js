@@ -1622,14 +1622,7 @@ const GroupHomeScreen = ({
         style={{
           flex: 1,
           opacity: isAccountDeactivated ? 0.5 : 1,
-        }}
-        // pointerEvents={
-        //   currentUserData.is_pause &&
-        //   currentUserData?.entity === Verbs.entityTypeClub
-        //     ? 'none'
-        //     : 'box-only'
-        // }
-      >
+        }}>
         <ActivityLoader visible={loading} />
         <View style={{flex: 1}}>
           <HomeFeed

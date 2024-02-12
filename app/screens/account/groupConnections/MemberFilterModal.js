@@ -76,7 +76,9 @@ export default function MemberFilterModal({
     },
   ]);
 
-  const [role, setRole] = useState(filterEntity);
+  const [role, setRole] = useState(
+    authContext.entity.role !== Verbs.entityTypeClub ? filterEntity : [],
+  );
 
   const [ConnectionData] = useState([
     {
@@ -149,6 +151,10 @@ export default function MemberFilterModal({
         });
     }
   };
+
+  if (visible) {
+    getParentClub();
+  }
 
   const onItemPress = (item) => {
     if (item.is_group) {
@@ -395,8 +401,7 @@ export default function MemberFilterModal({
 
     if (parentGroup.length > 0) {
       if (
-        (!rolesWithIsCheckedTrue.length > 0 ||
-          !connectWithIcCheckedTrue.length > 0 ||
+        (!connectWithIcCheckedTrue.length > 0 ||
           !TeamsSelectedIds.length > 0) &&
         parentGroup.length > 0
       ) {

@@ -3472,4 +3472,8 @@ export default {
   theGoupIsPausedAlert: 'en_group you want to join is paused now',
   noContentToShow: 'en_No contents to show',
   availableMatchVenues: 'en_Available Match Venues',
+  whoCanSeeEventScreenText: 'en_Who can See this event page',
+  whoCanJoinEventScreenText: 'en_Who can join this event',
+  whoCanInviteEventScreenText: 'en_Who can invite others to this event',
+  whoCanCommentEventScreenText: 'en_Who can comment in this Event page',
 };

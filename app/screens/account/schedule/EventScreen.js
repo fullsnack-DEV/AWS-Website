@@ -12,6 +12,7 @@ import {
   Platform,
   BackHandler,
 } from 'react-native';
+import {Shadow} from 'react-native-shadow-2';
 import moment from 'moment';
 import {ScrollView} from 'react-native-gesture-handler';
 import {useIsFocused} from '@react-navigation/native';
@@ -42,6 +43,7 @@ import TCProfileButton from '../../../components/TCProfileButton';
 import {getGroupIndex, getUserIndex} from '../../../api/elasticSearch';
 import TCProfileView from '../../../components/TCProfileView';
 import Verbs from '../../../Constants/Verbs';
+
 import {
   getJSDate,
   ordinal_suffix_of,
@@ -78,6 +80,7 @@ import ImageProgress from '../../../components/newsFeed/ImageProgress';
 import ShareEventPostModal from './ShareEventPostModal';
 import usePrivacySettings from '../../../hooks/usePrivacySettings';
 import {WhoCanJoinEventUserEnum} from '../../../Constants/PrivacyOptionsConstant';
+import TCThinDivider from '../../../components/TCThinDivider';
 
 export default function EventScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -88,7 +91,7 @@ export default function EventScreen({navigation, route}) {
   const [organizer, setOrganizer] = useState({});
   const [going, setGoing] = useState([]);
   const [eventData, setEventData] = useState(route.params.data ?? {});
-  const [activeTab, setActiveTab] = useState(strings.infoTitle);
+  const [activeTab] = useState(strings.infoTitle);
   const [infoModal, setInfoModal] = useState(false);
   const [infoType, setInfoType] = useState('');
   const [recurringEditModal, setRecurringEditModal] = useState(false);
@@ -112,6 +115,7 @@ export default function EventScreen({navigation, route}) {
   const [openLikesModal, setOpenLikesModal] = useState(false);
   const [visiblesharEventPostModal, setVisibleshareEventPostModal] =
     useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [canComment, setCanComment] = useState(false);
   const [isGoing, setIsGoing] = useState(false);
 
@@ -899,10 +903,37 @@ export default function EventScreen({navigation, route}) {
     return strings.profileHide;
   };
 
+  const getTheTitle = () =>
+    `${strings.event} : ${
+      eventData.selected_sport && eventData.selected_sport.sport_name
+    }`;
+
+  // const renderInviteButton = () => (
+  //   <TouchableOpacity
+  //     style={{
+  //       marginHorizontal: 15,
+  //       height: 35,
+  //       backgroundColor: colors.lightGrey,
+  //       marginTop: 20,
+  //       alignItems: 'center',
+  //       justifyContent: 'center',
+  //     }}>
+  //     <Text
+  //       style={{
+  //         fontFamily: fonts.RBold,
+  //         lineHeight: 24,
+  //         fontSize: 14,
+  //       }}>
+  //       {strings.invite}
+  //     </Text>
+  //   </TouchableOpacity>
+  // );
+
   return (
     <SafeAreaView style={styles.mainContainerStyle}>
       <ScreenHeader
-        title={strings.event}
+        const
+        title={getTheTitle()}
         leftIcon={images.backArrow}
         leftIconPress={() => {
           if (route.params?.comeFrom) {
@@ -962,49 +993,37 @@ export default function EventScreen({navigation, route}) {
 
       <ActivityLoader visible={loading} />
 
-      <ScrollView stickyHeaderIndices={[2]}>
+      <ScrollView>
         <EventBackgroundPhoto
           isEdit={!!eventData.background_thumbnail}
           isPreview={true}
           isImage={!!eventData.background_thumbnail}
           imageURL={{uri: eventData?.background_thumbnail}}
+          containerStyle={{width: '100%'}}
         />
         <View style={{paddingHorizontal: 15}}>
-          <Text style={styles.eventTitleStyle}>{titleValue}</Text>
-
-          <View style={styles.row}>
-            <Text style={styles.sportTitleStyle}>
-              {eventData.selected_sport && eventData.selected_sport.sport_name}
-            </Text>
-            {!eventData.is_Offline && (
-              <Text style={styles.onlineText}>{strings.onlineText}</Text>
-            )}
-            {eventData?.likes?.length > 0 && (
+          {/* title and Like */}
+          <View style={styles.titleAndLikeContainer}>
+            <Text style={styles.eventTitleStyle}>{titleValue}</Text>
+            {!eventData?.likes?.length > 0 && (
               <TouchableOpacity
                 onPress={() => setOpenLikesModal(true)}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginLeft: 15,
-                  justifyContent: 'center',
-                }}>
+                style={styles.likeButtonContainer}>
                 <Image
                   source={images.likeImage}
-                  style={{
-                    height: 15,
-                    width: 15,
-                  }}
+                  style={styles.likeImageStyle}
                   tintColor={colors.blackColor}
                 />
-                <Text
-                  style={{
-                    marginTop: 1,
-                    fontFamily: fonts.RBold,
-                    marginLeft: 5,
-                  }}>
+                <Text style={styles.likeNumber}>
                   {eventData?.likes?.length ?? 0}
                 </Text>
               </TouchableOpacity>
+            )}
+          </View>
+
+          <View style={styles.row}>
+            {!eventData.is_Offline && (
+              <Text style={styles.onlineText}>{strings.onlineText}</Text>
             )}
           </View>
 
@@ -1022,6 +1041,27 @@ export default function EventScreen({navigation, route}) {
             is_Offline={eventData.is_Offline}
           />
 
+          <TCThinDivider marginTop={15} width={'100%'} marginBottom={15} />
+
+          {/* comment media Pasrt */}
+          <FlatList
+            data={new Array(5).fill(null)}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            renderItem={() => (
+              <TouchableOpacity
+                style={{
+                  width: 65,
+                  height: 65,
+                  backgroundColor: colors.availabilityBarColor,
+                  marginHorizontal: 12,
+                  borderRadius: 8,
+                }}
+              />
+            )}
+          />
+
+          <TCThinDivider marginTop={15} width={'100%'} />
           {/* Join and Invite button wrapper */}
           <View style={styles.buttonContainer}>
             {isGoing && (
@@ -1098,7 +1138,115 @@ export default function EventScreen({navigation, route}) {
             )}
           </View>
         </View>
-        <View style={styles.tabContainerStyle}>
+
+        {/* Comment Section */}
+
+        <View style={styles.commentWrapperStyle}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Image
+              style={{
+                height: 24,
+                width: 24,
+                resizeMode: 'contain',
+              }}
+              source={images.commentImage}
+            />
+            <Text
+              style={{
+                marginLeft: 5,
+                fontSize: 16,
+                lineHeight: 24,
+                fontFamily: fonts.RMedium,
+              }}>
+              {strings.comments} {32}
+            </Text>
+            <View>
+              <Image
+                style={{
+                  height: 24,
+                  width: 24,
+                  resizeMode: 'contain',
+                }}
+                source={images.accountScreenLogo}
+              />
+            </View>
+          </View>
+        </View>
+
+        {/* comments Card */}
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: colors.lightGrey,
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            paddingVertical: 10,
+            alignSelf: 'center',
+            paddingHorizontal: 10,
+            borderRadius: 8,
+          }}>
+          <Image
+            style={{
+              height: 30,
+              width: 30,
+              borderRadius: 100,
+            }}
+            source={images.usaImage}
+          />
+          <View
+            style={{
+              width: 200,
+              marginLeft: 8,
+              marginRight: 7,
+            }}>
+            <View style={{}}>
+              <Text
+                numberOfLines={2}
+                style={{
+                  fontSize: 16,
+                  lineHeight: 20,
+                }}>
+                <Text
+                  style={{
+                    fontFamily: fonts.RBold,
+                  }}>
+                  Linoel Messi
+                </Text>
+                Welcome! I hope to see you in match on Sepx...
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: 5,
+              }}>
+              <Text style={styles.bottomTagsStyle}>2d Ago</Text>
+              <Text style={styles.bottomTagsStyle}>90 likes</Text>
+
+              <Text style={[styles.bottomTagsStyle, {marginRight: 0}]}>
+                Reply
+              </Text>
+            </View>
+          </View>
+          <Image
+            resizeMode="contain"
+            style={{
+              height: 40,
+              width: 40,
+              borderRadius: 8,
+            }}
+            source={images.usaImage}
+          />
+        </TouchableOpacity>
+
+        <TCThinDivider
+          height={7}
+          width={'100%'}
+          marginTop={25}
+          marginBottom={25}
+        />
+
+        {/* <View style={styles.tabContainerStyle}>
           <View style={styles.tabContainer}>
             <TouchableOpacity
               style={[
@@ -1135,12 +1283,12 @@ export default function EventScreen({navigation, route}) {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
 
         {activeTab === strings.infoTitle ? (
           <>
             <View style={styles.containerStyle}>
-              <Text style={styles.headerTextStyle}>{strings.describeText}</Text>
+              <Text style={styles.headerTextStyle}>{strings.about}</Text>
               <ReadMore
                 numberOfLines={3}
                 style={styles.longTextStyle}
@@ -1186,7 +1334,7 @@ export default function EventScreen({navigation, route}) {
 
             {/* dummy comment modal */}
 
-            {eventData?.activity_id ? (
+            {/* {eventData?.activity_id ? (
               <View
                 style={{
                   paddingVertical: 13,
@@ -1216,7 +1364,7 @@ export default function EventScreen({navigation, route}) {
                   </Text>
                 </TouchableOpacity>
               </View>
-            ) : null}
+            ) : null} */}
 
             <View style={[styles.divider, {marginHorizontal: 15}]} />
 
@@ -1227,20 +1375,26 @@ export default function EventScreen({navigation, route}) {
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
+
                       marginBottom: 15,
                     }}>
                     <Text style={[styles.headerTextStyle, {marginBottom: 0}]}>
                       {`${strings.going} (${going?.length})`}
                     </Text>
-
-                    <Text
+                    <TouchableOpacity
                       onPress={() => {
                         setShowGoingModal(true);
-                      }}
-                      style={styles.seeAllText}>
-                      {`${strings.seeAllText}`}
-                    </Text>
+                      }}>
+                      <Image
+                        style={{
+                          height: 30,
+                          width: 30,
+                          marginTop: 2,
+                          marginLeft: 10,
+                        }}
+                        source={images.accountScreenLogo}
+                      />
+                    </TouchableOpacity>
                   </View>
 
                   <FlatList
@@ -1253,7 +1407,7 @@ export default function EventScreen({navigation, route}) {
                 <View style={[styles.divider, {marginHorizontal: 15}]} />
               </>
             )}
-
+            {/* evemt Map */}
             <EventItemRender title={strings.venue}>
               {eventData.is_Offline ? (
                 <>
@@ -1470,7 +1624,6 @@ export default function EventScreen({navigation, route}) {
             <View style={styles.sepratorViewStyle} />
             <EventItemRender
               title={strings.eventFee}
-              icon={images.infoIcon}
               clickInfoIcon={clickInfoIcon}
               type={'fee'}>
               <Text
@@ -1520,9 +1673,59 @@ export default function EventScreen({navigation, route}) {
             </EventItemRender>
 
             {isOrganizer && (
-              <>
-                <View style={styles.sepratorViewStyle} />
-                <EventItemRender title={strings.whoCanSeeTitle}>
+              <View
+                style={{
+                  backgroundColor: colors.buttonClickBgEffect,
+                  paddingBottom: 80,
+                  marginTop: 35,
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    paddingHorizontal: 15,
+                    alignItems: 'center',
+                    marginTop: 15,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontFamily: fonts.RBold,
+                      lineHeight: 30,
+                    }}>
+                    {strings.privacySettingText}
+                  </Text>
+                  <TouchableOpacity
+                    style={{
+                      height: 48,
+                      width: 48,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Image
+                      style={{
+                        height: 20,
+                        width: 20,
+                        resizeMode: 'contain',
+                        marginTop: 3,
+                      }}
+                      source={images.settingsIcon}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    marginTop: 15,
+                    marginHorizontal: 15,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontFamily: fonts.RMedium,
+                      lineHeight: 30,
+                    }}>
+                    {strings.whoCanJoinEventScreenText}
+                  </Text>
                   <Text
                     style={[
                       styles.textValueStyle,
@@ -1530,10 +1733,21 @@ export default function EventScreen({navigation, route}) {
                     ]}>
                     {eventData.who_can_see?.text}
                   </Text>
-                </EventItemRender>
+                </View>
 
-                <View style={styles.sepratorViewStyle} />
-                <EventItemRender title={strings.whoCanJoinTitle}>
+                <View
+                  style={{
+                    marginTop: 15,
+                    marginHorizontal: 15,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontFamily: fonts.RMedium,
+                      lineHeight: 30,
+                    }}>
+                    {strings.whoCanJoinEventScreenText}
+                  </Text>
                   <Text
                     style={[
                       styles.textValueStyle,
@@ -1541,10 +1755,21 @@ export default function EventScreen({navigation, route}) {
                     ]}>
                     {eventData.who_can_join?.text}
                   </Text>
-                </EventItemRender>
+                </View>
 
-                <View style={styles.sepratorViewStyle} />
-                <EventItemRender title={strings.whoCanInviteTitle}>
+                <View
+                  style={{
+                    marginTop: 15,
+                    marginHorizontal: 15,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontFamily: fonts.RMedium,
+                      lineHeight: 30,
+                    }}>
+                    {strings.whoCanInviteEventScreenText}
+                  </Text>
                   <Text
                     style={[
                       styles.textValueStyle,
@@ -1552,9 +1777,21 @@ export default function EventScreen({navigation, route}) {
                     ]}>
                     {eventData.who_can_invite?.text}
                   </Text>
-                </EventItemRender>
-                <View style={styles.sepratorViewStyle} />
-                <EventItemRender title={strings.whoCanWritePostoneventHome}>
+                </View>
+
+                <View
+                  style={{
+                    marginTop: 15,
+                    marginHorizontal: 15,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontFamily: fonts.RMedium,
+                      lineHeight: 30,
+                    }}>
+                    {strings.whoCanCommentEventScreenText}
+                  </Text>
                   <Text
                     style={[
                       styles.textValueStyle,
@@ -1562,8 +1799,8 @@ export default function EventScreen({navigation, route}) {
                     ]}>
                     {eventData?.who_can_post?.text}
                   </Text>
-                </EventItemRender>
-              </>
+                </View>
+              </View>
             )}
 
             {/* <View marginBottom={70} /> */}
@@ -1623,6 +1860,70 @@ export default function EventScreen({navigation, route}) {
           </View>
         )}
       </ScrollView>
+      {/* Sticky Footer */}
+      <Shadow
+        containerStyle={{
+          shadowOffset: {
+            width: 0,
+            height: 5,
+          },
+          shadowRadius: 7,
+          shadowOpacity: 9,
+          shadowColor: colors.maskColor,
+          backgroundColor: colors.privacyBgColor,
+          borderBottomRightRadius: 5,
+          borderBottomLeftRadius: 5,
+          bottom: -30,
+        }}>
+        <View
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: 100,
+            backgroundColor: colors.whiteColor,
+            bottom: 0,
+          }}>
+          <View
+            style={{
+              marginTop: 15,
+              flexDirection: 'row',
+              marginHorizontal: 15,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+            <View>
+              <Text
+                style={{
+                  color: colors.lightBlackColor,
+                  fontSize: 16,
+                  lineHeight: 24,
+                  fontFamily: fonts.RBold,
+                }}>
+                $200.00 CAD
+              </Text>
+              <Text> 29 spots left </Text>
+            </View>
+            <TouchableOpacity
+              style={{
+                backgroundColor: colors.reservationAmountColor,
+                borderRadius: 8,
+              }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontFamily: fonts.RBold,
+                  lineHeight: 24,
+                  paddingHorizontal: 44,
+                  marginVertical: 7,
+                  color: colors.whiteColor,
+                }}>
+                Attend
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Shadow>
+
       <BottomSheet
         type={Platform.OS}
         textStyle={{textAlign: 'center'}}
@@ -1837,17 +2138,18 @@ const styles = StyleSheet.create({
     lineHeight: 35,
     fontFamily: fonts.RBold,
     color: colors.lightBlackColor,
+    marginRight: 5,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  sportTitleStyle: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RRegular,
-    color: colors.lightBlackColor,
-  },
+  // sportTitleStyle: {
+  //   fontSize: 16,
+  //   lineHeight: 24,
+  //   fontFamily: fonts.RRegular,
+  //   color: colors.lightBlackColor,
+  // },
   firstButtonStyle: {
     margin: 0,
     height: 27,
@@ -1927,9 +2229,9 @@ const styles = StyleSheet.create({
     left: 26,
     bottom: 0,
   },
-  seeAllText: {
-    color: colors.themeColor,
-  },
+  // seeAllText: {
+  //   color: colors.themeColor,
+  // },
   textUrl: {
     textDecorationLine: 'underline',
     textDecorationStyle: 'solid',
@@ -1941,38 +2243,38 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 15,
   },
-  tabContainerStyle: {
-    backgroundColor: colors.whiteColor,
-    marginVertical: 25,
-    paddingTop: 10,
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.writePostSepratorColor,
-    paddingBottom: 9,
-  },
-  tabItemText: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: fonts.RMedium,
-    color: colors.lightBlackColor,
-  },
-  activeTabItem: {
-    paddingBottom: 7,
-    borderBottomWidth: 3,
-    borderBottomColor: colors.tabFontColor,
-  },
-  activeTabItemText: {
-    fontFamily: fonts.RBlack,
-    color: colors.tabFontColor,
-  },
+  // tabContainerStyle: {
+  //   backgroundColor: colors.whiteColor,
+  //   marginVertical: 25,
+  //   paddingTop: 10,
+  // },
+  // tabContainer: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  // },
+  // tabItem: {
+  //   flex: 1,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   borderBottomWidth: 1,
+  //   borderBottomColor: colors.writePostSepratorColor,
+  //   paddingBottom: 9,
+  // },
+  // tabItemText: {
+  //   fontSize: 16,
+  //   lineHeight: 24,
+  //   fontFamily: fonts.RMedium,
+  //   color: colors.lightBlackColor,
+  // },
+  // activeTabItem: {
+  //   paddingBottom: 7,
+  //   borderBottomWidth: 3,
+  //   borderBottomColor: colors.tabFontColor,
+  // },
+  // activeTabItemText: {
+  //   fontFamily: fonts.RBlack,
+  //   color: colors.tabFontColor,
+  // },
   longTextStyle: {
     fontSize: 16,
     lineHeight: 24,
@@ -2011,5 +2313,66 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: colors.bgColor,
+  },
+  titleAndLikeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  likeButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 5,
+    justifyContent: 'center',
+    marginTop: 5,
+  },
+  likeImageStyle: {
+    height: 12,
+    width: 12,
+  },
+  likeNumber: {
+    marginTop: 1,
+    fontFamily: fonts.RBold,
+    marginLeft: 5,
+    fontSize: 12,
+  },
+  commentWrapperStyle: {
+    marginLeft: 15,
+    marginTop: 20,
+    marginBottom: 15,
+  },
+
+  // commentCard: {
+  //   backgroundColor: colors.lightGrey,
+  //   flexDirection: 'row',
+  //   alignItems: 'flex-start',
+  //   paddingVertical: 10,
+  //   alignSelf: 'center',
+  //   paddingHorizontal: 10,
+  //   borderRadius: 8,
+  // },
+
+  // userImageStyle: {
+  //   height: 30,
+  //   width: 30,
+  //   borderRadius: 100,
+  // },
+
+  // commentMidddleWrapper: {
+  //   width: 200,
+  //   marginLeft: 8,
+  //   marginRight: 7,
+  // },
+
+  // middleWrapperContentText: {
+  //   fontSize: 16,
+  //   lineHeight: 20,
+  // },
+
+  bottomTagsStyle: {
+    color: colors.userPostTimeColor,
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: fonts.RBold,
+    marginRight: 15,
   },
 });

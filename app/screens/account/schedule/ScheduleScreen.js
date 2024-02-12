@@ -30,7 +30,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
 import ActionSheet from 'react-native-actionsheet';
 import {useIsFocused} from '@react-navigation/native';
@@ -220,11 +220,9 @@ export default function ScheduleScreen({navigation, route}) {
   const [reFreshBar] = useState(route.params?.isRefresh ?? true);
 
   useEffect(() => {
-    // Set TabBar visibility to true when this screen mounts
     toggleTabBar(true);
 
     return () => {
-      // Set TabBar visibility to false when this screen unmounts
       toggleTabBar(false);
     };
   }, [isFocused, toggleTabBar]);
@@ -495,6 +493,8 @@ export default function ScheduleScreen({navigation, route}) {
           Utility.getJSDate(b.start_datetime),
       ),
     );
+
+    getStoredFilterOptions();
   }, []);
 
   useEffect(() => {
@@ -610,6 +610,26 @@ export default function ScheduleScreen({navigation, route}) {
         setloading(false);
       })
       .catch(() => setloading(false));
+  };
+
+  const getStoredFilterOptions = async () => {
+    AsyncStorage.getItem('scheduleFilter').then((val) => {
+      console.log(val, 'From cal');
+
+      setTimeFilterOpetion(val.options);
+      // setFilterSetting({
+      //   ...filterSetting,
+      //   time: timeFilterOpetion,
+      // });
+
+      // setTimeSelectionOption(strings.filterAntTime);
+      // setIndigator(true);
+      const parsedFilters = JSON.parse(val);
+      console.log(parsedFilters.options, 'rroroo');
+      setFilterTagOptions(parsedFilters.options);
+
+      setTimeSelectionOption(strings.filterAntTime);
+    });
   };
 
   useEffect(() => {
@@ -1347,37 +1367,38 @@ export default function ScheduleScreen({navigation, route}) {
     </View>
   );
 
-  const setFilterTagOptions = () => {
+  const setFilterTagOptions = (TFilterOption) => {
     let timeFilter;
 
-    if (timeFilterOpetion === 0) {
-      if (timeSelectionOption === strings.filterToday) {
+    console.log(TFilterOption, 'in the Filter Top optins');
+    if (TFilterOption === 0) {
+      if (TFilterOption === strings.filterToday) {
         timeFilter = `${strings.filterToday} . ${strings.eventFilterTimeFuture}`;
-      } else if (timeSelectionOption === strings.filterTomorrow) {
+      } else if (TFilterOption === strings.filterTomorrow) {
         timeFilter = `${strings.filterTomorrow}`;
-      } else if (timeSelectionOption === strings.filterThisMonth) {
+      } else if (TFilterOption === strings.filterThisMonth) {
         timeFilter = `${strings.filterThisMonth} . ${strings.eventFilterTimeFuture}`;
-      } else if (timeSelectionOption === strings.filterNextMonth) {
+      } else if (TFilterOption === strings.filterNextMonth) {
         timeFilter = `${strings.filterNextMonth}`;
-      } else if (timeSelectionOption === strings.filterPickaDate) {
+      } else if (TFilterOption === strings.filterPickaDate) {
         timeFilter = `${moment(startDateTime).format('MMM DD')} - ${moment(
           endDateTime,
         ).format('MMM DD')}`;
       }
     }
 
-    if (timeFilterOpetion === 1) {
-      if (timeSelectionOption === strings.filterAntTime) {
+    if (TFilterOption === 1) {
+      if (TFilterOption === strings.filterAntTime) {
         timeFilter = `${strings.filterAntTime} . ${strings.eventFilterTimePast}`;
-      } else if (timeSelectionOption === strings.filterToday) {
+      } else if (TFilterOption === strings.filterToday) {
         timeFilter = `${strings.filterToday} . ${strings.eventFilterTimePast}`;
-      } else if (timeSelectionOption === strings.filterYesterday) {
+      } else if (TFilterOption === strings.filterYesterday) {
         timeFilter = `${strings.filterYesterday}`;
-      } else if (timeSelectionOption === strings.filterThisMonth) {
+      } else if (TFilterOption === strings.filterThisMonth) {
         timeFilter = `${strings.filterThisMonth} . ${strings.eventFilterTimePast}`;
-      } else if (timeSelectionOption === strings.filterLastMonth) {
+      } else if (TFilterOption === strings.filterLastMonth) {
         timeFilter = `${strings.filterLastMonth}`;
-      } else if (timeSelectionOption === strings.filterPickaDate) {
+      } else if (TFilterOption === strings.filterPickaDate) {
         timeFilter = `${moment(startDateTime).format('MMM DD')} - ${moment(
           endDateTime,
         ).format('MMM DD')}`;
@@ -1387,7 +1408,7 @@ export default function ScheduleScreen({navigation, route}) {
     if (rsvpFilterOptions[rsvpFilterOption] !== strings.eventFilterRsvpAll) {
       option = [timeFilter, rsvpFilterOptions[rsvpFilterOption]];
     }
-
+    console.log(option, 'fropo');
     setFilterTags(option);
   };
 
@@ -1635,7 +1656,10 @@ export default function ScheduleScreen({navigation, route}) {
                     />
                   </TouchableOpacity>
 
-                  <TouchableOpacity onPress={() => setSettingsModal(true)}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSettingsModal(true);
+                    }}>
                     <Image
                       source={images.vertical3Dot}
                       style={styles.threeDotImageStyle}
@@ -1712,6 +1736,8 @@ export default function ScheduleScreen({navigation, route}) {
                 <TouchableOpacity
                   onPress={() => {
                     setFilterPopup(true);
+
+                    // set async here
                   }}>
                   <FastImage
                     source={images.localHomeFilter}
@@ -1893,7 +1919,6 @@ export default function ScheduleScreen({navigation, route}) {
               ? 3
               : 2
           }
-          // destructiveButtonIndex={3}
           onPress={(index) => {
             if (
               authContext.entity.role === Verbs.entityTypePlayer ||
@@ -1909,9 +1934,6 @@ export default function ScheduleScreen({navigation, route}) {
                 });
               } else if (index === 2) {
                 setVisibleViewEventModal(true);
-                // navigation.navigate('ScheduleStack', {
-                //   screen: 'ViewPrivacyScreen',
-                // });
               }
             } else if (index === 0) {
               navigation.navigate('ScheduleStack', {
@@ -1919,9 +1941,6 @@ export default function ScheduleScreen({navigation, route}) {
               });
             } else if (index === 1) {
               setVisibleViewEventModal(true);
-              // navigation.navigate('ScheduleStack', {
-              //   screen: 'ViewPrivacyScreen',
-              // });
             }
           }}
         />
@@ -2072,7 +2091,19 @@ export default function ScheduleScreen({navigation, route}) {
                     time: timeFilterOpetion,
                   });
                   setIndigator(false);
-                  setFilterTagOptions();
+                  setFilterTagOptions(timeFilterOpetion);
+
+                  const filterOptions = {
+                    options: timeFilterOpetion,
+                  };
+
+                  console.log(timeFilterOpetion, 'From options');
+
+                  AsyncStorage.setItem(
+                    'scheduleFilter',
+                    JSON.stringify(filterOptions),
+                  );
+
                   // await getEventsAndSlotsList();
                 }}>
                 <Text style={styles.applyText}>{strings.apply}</Text>

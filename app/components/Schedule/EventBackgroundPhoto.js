@@ -87,18 +87,15 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   bgStyle: {
-    height: 200,
-    marginTop: 10,
+    height: 165,
     borderRadius: 5,
-    marginBottom: 15,
+    marginBottom: 20,
     alignItems: 'center',
-    marginHorizontal: 10,
+
     justifyContent: 'center',
     backgroundColor: colors.textFieldBackground,
   },
-  imageBorder: {
-    borderRadius: 5,
-  },
+  imageBorder: {},
 });
 
 export default EventBackgroundPhoto;

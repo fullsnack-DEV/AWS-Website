@@ -14,17 +14,16 @@ import {
   TextInput,
   BackHandler,
   RefreshControl,
+  AppState,
 } from 'react-native';
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext from '../../../auth/context';
-
 import {
   getGroupDetails,
   getGroupMembers,
   getJoinedGroups,
 } from '../../../api/Groups';
-
 import images from '../../../Constants/ImagePath';
 import colors from '../../../Constants/Colors';
 import {strings} from '../../../../Localization/translation';
@@ -94,7 +93,10 @@ export default function GroupMembersScreen({navigation, route}) {
   const [filteredTeams, setFilterTeams] = useState([]);
 
   const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
+  const [frstTimeVisited, setFirstTimeVisited] = useState(false);
 
+  // if
+  const STORAGE_KEY = 'member/Filters';
 
   useEffect(() => {
     if (isFocused) {
@@ -217,17 +219,32 @@ export default function GroupMembersScreen({navigation, route}) {
     getPendingRequestData();
   }, [visibleFilterModal]);
 
+  const GetMemberFunction = async () => {
+    AsyncStorage.getItem('visitedScreen').then(async (val) => {
+      if (val || val === null) {
+        getMembers(groupID, authContext);
+      }
+    });
+  };
+
   useFocusEffect(
     React.useCallback(() => {
-      getMembers(groupID, authContext);
+      GetMemberFunction();
     }, [active, authContext, groupID]),
   );
 
   // eslint-disable-next-line consistent-return
-  const getFilteredMember = (roleArray, connectArray, filterTeams = []) => {
+  const getFilteredMember = (
+    roleArray,
+    connectArray,
+    filterTeams = [],
+    extraMembers = [],
+  ) => {
     const resultfilterTeams = filterTeams.filter(
       (item) => item !== Verbs.ALL_ROLE && item !== Verbs.NonTeamMember_Role,
     );
+
+    console.log(extraMembers, 'from rrmrmrm');
 
     const isNonTeamMember = filterTeams.includes(Verbs.NonTeamMember_Role);
 
@@ -256,7 +273,10 @@ export default function GroupMembersScreen({navigation, route}) {
       return;
     }
 
-    const filteredMembers = searchMember.filter((item) => {
+    const filterCriteria =
+      extraMembers.length > 0 ? extraMembers : searchMember;
+
+    const filteredMembers = filterCriteria?.filter((item) => {
       // Role Filter
 
       if (
@@ -462,6 +482,39 @@ export default function GroupMembersScreen({navigation, route}) {
         });
     }
   };
+  const clearAsyncStorageValue = async () => {
+    try {
+      AsyncStorage.setItem('visitedScreen', 'true');
+
+      AsyncStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({role: [], connectArray: [], filterTeams: []}),
+      );
+      setTagArray([]);
+
+      getMembers(groupID, authContext);
+    } catch (error) {
+      console.log('Error clearing AsyncStorage value: ', error.message);
+    }
+  };
+
+  useEffect(() => {
+    const appStateListener = AppState.addEventListener(
+      'change',
+      (nextAppState) => {
+        console.log('Next AppState is: ', nextAppState);
+        if (nextAppState === 'inactive') {
+          setFirstTimeVisited(true);
+          clearAsyncStorageValue();
+        } else {
+          setFirstTimeVisited(false);
+        }
+      },
+    );
+    return () => {
+      appStateListener?.remove();
+    };
+  }, []);
 
   const getMembers = async (groupIDs, authContexts, grp_ids = '') => {
     // eslint-disable-next-line no-unused-expressions
@@ -471,6 +524,8 @@ export default function GroupMembersScreen({navigation, route}) {
       getGroupMembers(groupIDs, authContexts, grp_ids)
         .then((response) => {
           const unsortedReponse = response.payload;
+
+          console.log(frstTimeVisited, 'from visited');
 
           unsortedReponse.sort((a, b) =>
             a.first_name.normalize().localeCompare(b.first_name.normalize()),
@@ -492,6 +547,35 @@ export default function GroupMembersScreen({navigation, route}) {
           setShimmerLoading(false);
           setFilterLoading(false);
           setIsRefreshing(false);
+
+          if (frstTimeVisited === false) {
+            AsyncStorage.getItem(STORAGE_KEY).then((filters) => {
+              console.log(filters, 'from fofofof');
+              const parsedFilters = JSON.parse(filters);
+              if (filters && parsedFilters.role.length > 0) {
+                try {
+                  setSearchMember(SortedMembers);
+                  console.log('in get member');
+                  getFilteredMember(
+                    parsedFilters.role,
+                    parsedFilters.connectArray,
+                    parsedFilters.filterTeams,
+                    SortedMembers,
+                  );
+                  setTagArray(parsedFilters.role);
+                } catch (error) {
+                  console.error('Error parsing filters:', error);
+                }
+              } else {
+                setMembers(SortedMembers);
+
+                setSearchMember(SortedMembers);
+                setShimmerLoading(false);
+                setFilterLoading(false);
+                setIsRefreshing(false);
+              }
+            });
+          }
         })
         .catch((e) => {
           setShimmerLoading(false);
@@ -976,10 +1060,18 @@ export default function GroupMembersScreen({navigation, route}) {
                     <View style={styles.dividerImage} />
                     <TouchableOpacity
                       style={styles.closeButton}
-                      onPress={() => {
+                      onPress={async () => {
                         console.log(item);
                         const filterRoles = tagArray.filter((i) => i !== item);
                         if (filterRoles.length === 0) {
+                          AsyncStorage.setItem(
+                            STORAGE_KEY,
+                            JSON.stringify({
+                              role: [],
+                              connectArray: [],
+                              filterTeams: [],
+                            }),
+                          );
                           getMembers(groupID, authContext);
                           setTagArray(filterRoles);
                         } else {
@@ -1128,12 +1220,24 @@ export default function GroupMembersScreen({navigation, route}) {
         groupID={groupID}
         authContext={authContext}
         closeModal={() => setVisibleFilterModal(false)}
-        onApplyPress={(role, connectArray, filterTeams) => {
+        onApplyPress={async (role, connectArray, filterTeams) => {
           getFilteredMember(role, connectArray, filterTeams);
           setVisibleFilterModal(false);
           setTagArray(role);
           setConnectArray(connectArray);
           setFilterTeams(filterTeams);
+
+          if (
+            authContext.entity.role === Verbs.entityTypeTeam ||
+            authContext.entity.role === Verbs.entityTypeUser ||
+            authContext.entity.role === Verbs.entityTypePlayer
+          )
+            AsyncStorage.setItem(
+              STORAGE_KEY,
+              JSON.stringify({role, connectArray, filterTeams}),
+            );
+
+          AsyncStorage.setItem('visitedScreen', 'false');
         }}
       />
     </SafeAreaView>
