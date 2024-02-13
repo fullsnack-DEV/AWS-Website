@@ -3476,4 +3476,17 @@ export default {
   whoCanJoinEventScreenText: 'en_Who can join this event',
   whoCanInviteEventScreenText: 'en_Who can invite others to this event',
   whoCanCommentEventScreenText: 'en_Who can comment in this Event page',
+  eventBookingRefundText:
+    'en_For refunds, please contact the event organizer or Stripe. TownCup has no control over event fees paid through Stripe or in cash.',
+  eventBookingOragnizerRefundText:
+    'en_The organizer must refund the event fee to attendees if the event is canceled. The organizer must also refund the event fee if the attendees cancel their event reservations after the event is reschedule.',
+  eventBookingInvoiceText:
+    'en_  You will receive an invoice for the event fee right after you complete your booking.You can pay the event fee to the event organizer via the invoice.',
+  eventCompleteBooking: 'en_Complete Booking',
+  reviewEventDetailText: 'en_Review the event details before booking the event',
+  orderDetails: 'en_Order details',
+  IcannotJoinEventText: 'en_I cannot Join the event',
+  IwillJoinTheEvent: 'en_I will join the Event',
+  youAreText: 'en_You are',
+  goingTextEvent: 'en_Going!',
 };

@@ -17,6 +17,8 @@ import LikedEventScreen from '../screens/account/schedule/LikedEventScreen';
 
 import CreateEventScreen2 from '../screens/account/schedule/CreateEventScreen2';
 import EditEventScreen2 from '../screens/account/schedule/EditEventScreen2';
+import EventCheckoutScreen from '../screens/account/schedule/EventCheckoutScreen';
+import CompleteBookingFile from '../screens/account/schedule/CompleteBookingFile';
 
 const Stack = createStackNavigator();
 
@@ -45,6 +47,17 @@ const ScheduleNavigator = () => (
     <Stack.Screen
       name="EventScreen"
       component={EventScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="BookEventScreen"
+      component={CompleteBookingFile}
+      options={{headerShown: false}}
+    />
+
+    <Stack.Screen
+      name="EventCheckoutScreen"
+      component={EventCheckoutScreen}
       options={{headerShown: false}}
     />
     <Stack.Screen

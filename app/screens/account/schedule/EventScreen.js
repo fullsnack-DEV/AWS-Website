@@ -118,6 +118,10 @@ export default function EventScreen({navigation, route}) {
   // eslint-disable-next-line no-unused-vars
   const [canComment, setCanComment] = useState(false);
   const [isGoing, setIsGoing] = useState(false);
+  const [showActionSheetForGoing, setShowActionSheetForGoing] = useState(false);
+  const [goingOptionForOrganizer, setGoingOptionForOrganizer] = useState([
+    strings.IcannotJoinEventText,
+  ]);
 
   const {getPrivacyStatus} = usePrivacySettings();
 
@@ -908,26 +912,155 @@ export default function EventScreen({navigation, route}) {
       eventData.selected_sport && eventData.selected_sport.sport_name
     }`;
 
-  // const renderInviteButton = () => (
-  //   <TouchableOpacity
-  //     style={{
-  //       marginHorizontal: 15,
-  //       height: 35,
-  //       backgroundColor: colors.lightGrey,
-  //       marginTop: 20,
-  //       alignItems: 'center',
-  //       justifyContent: 'center',
-  //     }}>
-  //     <Text
-  //       style={{
-  //         fontFamily: fonts.RBold,
-  //         lineHeight: 24,
-  //         fontSize: 14,
-  //       }}>
-  //       {strings.invite}
-  //     </Text>
-  //   </TouchableOpacity>
-  // );
+  const renderInviteButtonForGroups = () => (
+    <TouchableOpacity
+      style={{
+        marginHorizontal: 15,
+        height: 35,
+        backgroundColor: colors.lightGrey,
+        marginTop: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <Text
+        style={{
+          fontFamily: fonts.RBold,
+          lineHeight: 24,
+          fontSize: 14,
+        }}>
+        {strings.invite}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const renderstickButtonsForUser = () => (
+    <View
+      style={{
+        marginTop: 15,
+        flexDirection: 'row',
+        marginHorizontal: 15,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}>
+      <View>
+        <Text
+          style={{
+            color: colors.lightBlackColor,
+            fontSize: 16,
+            lineHeight: 24,
+            fontFamily: fonts.RBold,
+          }}>
+          $200.00 CAD
+        </Text>
+        <Text> 29 spots left </Text>
+      </View>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('EventCheckoutScreen', {
+            data: eventData,
+            organizer,
+          })
+        }
+        style={{
+          backgroundColor: colors.reservationAmountColor,
+          borderRadius: 8,
+        }}>
+        <Text
+          style={{
+            fontSize: 14,
+            fontFamily: fonts.RBold,
+            lineHeight: 24,
+            paddingHorizontal: 44,
+            marginVertical: 7,
+            color: colors.whiteColor,
+          }}>
+          Attend
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderStickyButtonsForOrganizer = () => (
+    <View
+      style={{
+        marginTop: 15,
+        flexDirection: 'row',
+        marginHorizontal: 15,
+        alignItems: 'center',
+      }}>
+      <TouchableOpacity
+        onPress={() => {
+          setShowActionSheetForGoing(true);
+        }}
+        style={{
+          backgroundColor: colors.lightGrey,
+          borderRadius: 8,
+          flex: 1.2,
+          marginRight: 10,
+        }}>
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: fonts.RMedium,
+            lineHeight: 24,
+            paddingHorizontal: 44,
+            marginVertical: 7,
+            color: colors.eventGoingColor,
+          }}>
+          {strings.youAreText}{' '}
+          <Text
+            style={{
+              fontFamily: fonts.RBold,
+            }}>
+            {strings.goingTextEvent}
+          </Text>
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('EventCheckoutScreen', {
+            data: eventData,
+            organizer,
+          })
+        }
+        style={{
+          backgroundColor: colors.lightGrey,
+          borderRadius: 8,
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text
+          style={{
+            fontSize: 14,
+            fontFamily: fonts.RBold,
+            lineHeight: 24,
+            paddingHorizontal: 44,
+            marginVertical: 7,
+            color: colors.lightBlackColor,
+            textTransform: 'capitalize',
+          }}>
+          {strings.invite}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderStickFooterButtons = () => {
+    if (
+      (authContext.entity.role === Verbs.entityTypeUser ||
+        authContext.entity.role === Verbs.entityTypePlayer) &&
+      !organizer
+    ) {
+      return renderstickButtonsForUser();
+    }
+    if (isOrganizer) {
+      return renderStickyButtonsForOrganizer();
+    }
+
+    return renderInviteButtonForGroups();
+  };
 
   return (
     <SafeAreaView style={styles.mainContainerStyle}>
@@ -1862,65 +1995,33 @@ export default function EventScreen({navigation, route}) {
       </ScrollView>
       {/* Sticky Footer */}
       <Shadow
+        distance={Platform.OS === 'android' ? 8 : 0}
         containerStyle={{
           shadowOffset: {
             width: 0,
-            height: 5,
+            height: -15,
           },
+
           shadowRadius: 7,
           shadowOpacity: 9,
-          shadowColor: colors.maskColor,
+          shadowColor: colors.stickFooterShadowColor,
           backgroundColor: colors.privacyBgColor,
           borderBottomRightRadius: 5,
           borderBottomLeftRadius: 5,
-          bottom: -30,
+          position: 'absolute',
+          width: '100%',
+          height: 100,
+          bottom: -10,
         }}>
         <View
           style={{
-            position: 'absolute',
             width: '100%',
             height: 100,
+
             backgroundColor: colors.whiteColor,
-            bottom: 0,
+            position: 'absolute',
           }}>
-          <View
-            style={{
-              marginTop: 15,
-              flexDirection: 'row',
-              marginHorizontal: 15,
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
-            <View>
-              <Text
-                style={{
-                  color: colors.lightBlackColor,
-                  fontSize: 16,
-                  lineHeight: 24,
-                  fontFamily: fonts.RBold,
-                }}>
-                $200.00 CAD
-              </Text>
-              <Text> 29 spots left </Text>
-            </View>
-            <TouchableOpacity
-              style={{
-                backgroundColor: colors.reservationAmountColor,
-                borderRadius: 8,
-              }}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontFamily: fonts.RBold,
-                  lineHeight: 24,
-                  paddingHorizontal: 44,
-                  marginVertical: 7,
-                  color: colors.whiteColor,
-                }}>
-                Attend
-              </Text>
-            </TouchableOpacity>
-          </View>
+          {renderStickFooterButtons()}
         </View>
       </Shadow>
 
@@ -2045,6 +2146,24 @@ export default function EventScreen({navigation, route}) {
         onPressInvoice={() => {
           setSendNewInvoice(true);
         }}
+      />
+
+      <BottomSheet
+        type={Platform.OS}
+        textStyle={{textAlign: 'center'}}
+        isVisible={showActionSheetForGoing}
+        closeModal={() => setShowActionSheetForGoing(false)}
+        optionList={goingOptionForOrganizer}
+        onSelect={(item) => {
+          if (item === strings.IcannotJoinEventText) {
+            setGoingOptionForOrganizer([strings.IwillJoinTheEvent]);
+          } else {
+            setGoingOptionForOrganizer([strings.IcannotJoinEventText]);
+          }
+
+          setShowActionSheetForGoing(false);
+        }}
+        cancelButtonTextStyle={isOrganizer ? {fontFamily: fonts.RBold} : {}}
       />
 
       <SendNewInvoiceModal

@@ -139,7 +139,7 @@ const colors = {
   winGraphColor: '#157EFB',
   availabilityBarColor: '#70D486',
   placeHolderColor: '#999999',
-
+  stickFooterShadowColor: 'rgba(0,0,0,0.1)',
   availabilitySlotsBackground: '#E2F7D1',
   modalBackgroundColor: 'rgba(0,0,0,0.5)',
   createClubGradientfrom: 'rgba(170, 216, 64, 0.6)',
@@ -172,5 +172,6 @@ const colors = {
   iosActionSheetBgColor: '#DFDFDF',
   leaveClubTextColor: '#FF0000',
   blockColor: '#6DD819',
+  eventGoingColor: '#218891',
 };
 export default colors;
